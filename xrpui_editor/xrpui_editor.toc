@@ -1,0 +1,8 @@
+## Interface: 50400
+## Title: XRP Editor
+## Version: 5.4.7.0
+## Author: Justin Snelgrove
+## Notes: Profile editor for XRP.
+## Dependencies: XRP, XRP_Profiles
+XRP_Editor.xml
+XRP_Editor.lua

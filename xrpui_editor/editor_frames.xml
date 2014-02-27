@@ -1,0 +1,386 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\..\FrameXML\UI.xsd">
+<!--
+	© Justin Snelgrove
+
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+	<!-- Here there be dragons. XML dragons, the most dangerous sort. -->
+	<!-- It's dangerous to go alone, take a syntax highlighter. -->
+	<!-- No, seriously, though. This is the easiest way to get a good UI. -->
+	<Include file="XRP_EditorTemplates.xml"/>
+	<Frame name="$parentEditor" parentKey="Editor" toplevel="true" movable="true" parent="XRP" enableMouse="true" inherits="ButtonFrameTemplate" hidden="true">
+		<Layers>
+			<Layer level="OVERLAY">
+				<!-- Version Information -->
+				<FontString name="$parentVersion" parentKey="Version" inherits="GameFontNormalSmall" text="XRP_VERSION">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" x="8" y="10"/>
+					</Anchors>
+					<Color r="0.5" g="0.5" b="0.5"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="$parentAppearance" parentKey="Appearance" useParentLevel="true" hidden="false">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Inset" relativePoint="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset" relativePoint="BOTTOMRIGHT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<!-- Name Label -->
+						<FontString name="$parentNALabel" parentKey="NALabel" inherits="GameFontNormalSmall" text="XRP_NA">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="12" y="-8"/>
+							</Anchors>
+						</FontString>
+						<!-- Nickname Label -->
+						<FontString name="$parentNILabel" parentKey="NILabel" inherits="GameFontNormalSmall" text="XRP_NI">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.NALabel" relativePoint="LEFT" x="186" y="0"/>
+							</Anchors>
+						</FontString>
+						<!-- Title Label -->
+						<FontString name="$parentNTLabel" parentKey="NTLabel" inherits="GameFontNormalSmall" text="XRP_NT">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.NALabel" relativePoint="BOTTOMLEFT" x="0" y="-25"/>
+							</Anchors>
+						</FontString>
+						<!-- House/Clan Label -->
+						<FontString name="$parentNHLabel" parentKey="NHLabel" inherits="GameFontNormalSmall" text="XRP_NH">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.NTLabel" relativePoint="LEFT" x="201" y="0"/>
+							</Anchors>
+						</FontString>
+						<!-- Eyes Label -->
+						<FontString name="$parentAELabel" parentKey="AELabel" inherits="GameFontNormalSmall" text="XRP_AE">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.NTLabel" relativePoint="BOTTOMLEFT" x="0" y="-25"/>
+							</Anchors>
+						</FontString>
+						<!-- Race Label -->
+						<FontString name="$parentRALabel" parentKey="RALabel" inherits="GameFontNormalSmall" text="XRP_RA">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.AELabel" relativePoint="LEFT" x="105" y="0"/>
+							</Anchors>
+						</FontString>
+						<!-- Height Label -->
+						<FontString name="$parentAHLabel" parentKey="AHLabel" inherits="GameFontNormalSmall" text="XRP_AH">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.RALabel" relativePoint="LEFT" x="100" y="0"/>
+							</Anchors>
+						</FontString>
+						<!-- Weight Label -->
+						<FontString name="$parentAWLabel" parentKey="AWLabel" inherits="GameFontNormalSmall" text="XRP_AW">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.AHLabel" relativePoint="LEFT" x="56" y="0"/>
+							</Anchors>
+						</FontString>
+						<!-- Currently Label -->
+						<FontString name="$parentCULabel" parentKey="CULabel" inherits="GameFontNormalSmall" text="XRP_CU">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.AELabel" relativePoint="BOTTOMLEFT" x="0" y="-25"/>
+							</Anchors>
+						</FontString>
+						<!-- Description Label -->
+						<FontString name="$parentDELabel" parentKey="DELabel" inherits="GameFontNormalSmall" text="XRP_DE">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.CULabel" relativePoint="BOTTOMLEFT" x="0" y="-25"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<!-- Name Box -->
+					<EditBox name="$parentNA" parentKey="NA" inherits="InputBoxTemplate" autoFocus="false">
+						<Size x="176" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.NALabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
+						</Anchors>
+					</EditBox>
+					<!-- Nickname Box -->
+					<EditBox name="$parentNI" parentKey="NI" inherits="InputBoxTemplate" autoFocus="false">
+						<Size x="120" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.NILabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
+						</Anchors>
+					</EditBox>
+					<!-- Title Box -->
+					<EditBox name="$parentNT" parentKey="NT" inherits="InputBoxTemplate" autoFocus="false">
+						<Size x="191" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.NTLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
+						</Anchors>
+					</EditBox>
+					<!-- House/Clan Box -->
+					<EditBox name="$parentNH" parentKey="NH" inherits="InputBoxTemplate" autoFocus="false">
+						<Size x="105" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.NHLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
+						</Anchors>
+					</EditBox>
+					<!-- Eyes Box -->
+					<EditBox name="$parentAE" parentKey="AE" inherits="InputBoxTemplate" autoFocus="false">
+						<Size x="95" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.AELabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
+						</Anchors>
+					</EditBox>
+					<!-- Race Box -->
+					<EditBox name="$parentRA" parentKey="RA" inherits="InputBoxTemplate" autoFocus="false">
+						<Size x="91" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.RALabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
+						</Anchors>
+					</EditBox>
+					<!-- Height Box -->
+					<EditBox name="$parentAH" parentKey="AH" inherits="InputBoxTemplate" autoFocus="false">
+						<Size x="45" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.AHLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
+						</Anchors>
+					</EditBox>
+					<!-- Weight Box -->
+					<EditBox name="$parentAW" parentKey="AW" inherits="InputBoxTemplate" autoFocus="false">
+						<Size x="45" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.AWLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
+						</Anchors>
+					</EditBox>
+					<!-- Currently Box -->
+					<EditBox name="$parentCU" parentKey="CU" inherits="InputBoxTemplate" autoFocus="false">
+						<Size x="306" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.CULabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
+						</Anchors>
+					</EditBox>
+					<!-- Description Box -->
+					<ScrollFrame name="$parentDE" parentKey="DE" inherits="LargeInputScrollFrameTemplate">
+						<Size x="301" y="163"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.DELabel" relativePoint="BOTTOMLEFT" x="2" y="-5"/>
+						</Anchors>
+					</ScrollFrame>
+				</Frames>
+			</Frame>
+			<Frame name="$parentBiography" parentKey="Biography" useParentLevel="true" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Inset" relativePoint="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset" relativePoint="BOTTOMRIGHT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<!-- Age Label -->
+						<FontString name="$parentAGLabel" parentKey="AGLabel" inherits="GameFontNormalSmall" text="XRP_AG">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="12" y="-8"/>
+							</Anchors>
+						</FontString>
+						<!-- Home Label -->
+						<FontString name="$parentHHLabel" parentKey="HHLabel" inherits="GameFontNormalSmall" text="XRP_HH">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.AGLabel" relativePoint="LEFT" x="50" y="0"/>
+							</Anchors>
+						</FontString>
+						<!-- Birthplace Label -->
+						<FontString name="$parentHBLabel" parentKey="HBLabel" inherits="GameFontNormalSmall" text="XRP_HB">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.HHLabel" relativePoint="LEFT" x="133" y="0"/>
+							</Anchors>
+						</FontString>
+						<!-- Motto Label -->
+						<FontString name="$parentMOLabel" parentKey="MOLabel" inherits="GameFontNormalSmall" text="XRP_MO">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.AGLabel" relativePoint="BOTTOMLEFT" x="0" y="-25"/>
+							</Anchors>
+						</FontString>
+						<!-- History Label -->
+						<FontString name="$parentHILabel" parentKey="HILabel" inherits="GameFontNormalSmall" text="XRP_HI">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.MOLabel" relativePoint="BOTTOMLEFT" x="0" y="-25"/>
+							</Anchors>
+						</FontString>
+						<!-- Status Label -->
+						<FontString name="$parentFRLabel" parentKey="FRLabel" inherits="GameFontNormalSmall" text="XRP_FR">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.HILabel" relativePoint="BOTTOMLEFT" x="0" y="-208"/>
+							</Anchors>
+						</FontString>
+						<!-- Status Label -->
+						<FontString name="$parentFCLabel" parentKey="FCLabel" inherits="GameFontNormalSmall" text="XRP_FC">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.FRLabel" relativePoint="LEFT" x="158" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<!-- Age Box -->
+					<EditBox name="$parentAG" parentKey="AG" inherits="InputBoxTemplate" autoFocus="false">
+						<Size x="40" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.AGLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
+						</Anchors>
+					</EditBox>
+					<!-- Home Box -->
+					<EditBox name="$parentHH" parentKey="HH" inherits="InputBoxTemplate" autoFocus="false">
+						<Size x="123" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.HHLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
+						</Anchors>
+					</EditBox>
+					<!-- Birthplace Box -->
+					<EditBox name="$parentHB" parentKey="HB" inherits="InputBoxTemplate" autoFocus="false">
+						<Size x="123" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.HBLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
+						</Anchors>
+					</EditBox>
+					<!-- Motto Box -->
+					<EditBox name="$parentMO" parentKey="MO" inherits="InputBoxTemplate" autoFocus="false">
+						<Size x="306" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.MOLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
+						</Anchors>
+					</EditBox>
+					<!-- History Box -->
+					<ScrollFrame name="$parentHI" parentKey="HI" inherits="LargeInputScrollFrameTemplate">
+						<Size x="301" y="193"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.HILabel" relativePoint="BOTTOMLEFT" x="2" y="-5"/>
+						</Anchors>
+					</ScrollFrame>
+					<!-- Style Menu -->
+					<Button name="$parentFR" parentKey="FR" inherits="UIDropDownMenuTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.FRLabel" relativePoint="BOTTOMLEFT" x="-22" y="0"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								UIDropDownMenu_SetWidth(self, 139, 0);
+							</OnLoad>
+						</Scripts>
+					</Button>
+					<!-- Status Menu -->
+					<Button name="$parentFC" parentKey="FC" inherits="UIDropDownMenuTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.FCLabel" relativePoint="BOTTOMLEFT" x="-22" y="0"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								UIDropDownMenu_SetWidth(self, 139, 0);
+							</OnLoad>
+						</Scripts>
+					</Button>
+				</Frames>
+			</Frame>
+			<!-- Saved Character Profiles -->
+			<Button name="$parentProfiles" parentKey="Profiles" inherits="UIDropDownMenuTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-145" y="-27"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						UIDropDownMenu_Initialize(self, XRP.Editor.ProfilesInit);
+						UIDropDownMenu_SetWidth(self, 100, 0);
+					</OnLoad>
+				</Scripts>
+			</Button>
+			<!-- + Profile Button -->
+			<Button name="$parentPlusProfile" parentKey="PlusProfile" inherits="UIPanelButtonTemplate" text=" + ">
+				<Size x="28" y="28"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Profiles" relativePoint="RIGHT" x="34" y="2"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						StaticPopup_Show("XRP_EDITOR_ADD");
+					</OnClick>
+				</Scripts>
+			</Button>
+			<!-- - Profile Button -->
+			<Button name="$parentMinusProfile" parentKey="MinusProfile" inherits="UIPanelButtonTemplate" text=" - ">
+				<Size x="28" y="28"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.PlusProfile" relativePoint="RIGHT" x="0" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						StaticPopup_Show("XRP_EDITOR_DELETE");
+					</OnClick>
+				</Scripts>
+			</Button>
+			<!-- Save Button -->
+			<Button name="$parentSave" parentKey="Save" inherits="UIPanelButtonTemplate" text="XRP_EDITOR_SAVE">
+				<Size x="96" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-10" y="4"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						XRP.Editor:Save();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<!-- Save and Use Button -->
+			<Button name="$parentSaveUse" parentKey="SaveUse" inherits="UIPanelButtonTemplate" text="XRP_EDITOR_SAVEUSE">
+				<Size x="96" y="22"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.Save" relativePoint="LEFT"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						XRP.Editor:Save();
+						XRP.Profiles:Set(XRP.Editor.Profiles:GetText());
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentTab1" parentKey="Tab1" inherits="CharacterFrameTabButtonTemplate" id="1" text="Appearance">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="11" y="2"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PanelTemplates_SetTab(self:GetParent(), 1);
+						self:GetParent().Biography:Hide();
+						self:GetParent().Appearance:Show();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentTab2" parentKey="Tab2" inherits="CharacterFrameTabButtonTemplate" id="2" text="Biography">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Tab1" relativePoint="RIGHT" x="-16" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PanelTemplates_SetTab(self:GetParent(), 2);
+						self:GetParent().Appearance:Hide();
+						self:GetParent().Biography:Show();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				self:RegisterEvent("ADDON_LOADED");
+			</OnLoad>
+			<OnEvent>
+				if event == "ADDON_LOADED" and ... == "XRP_Editor" then
+					self:Init(...)
+					self:UnregisterEvent("ADDON_LOADED")
+				end
+			</OnEvent>
+		</Scripts>
+	</Frame>
+</Ui>
