@@ -1,0 +1,10 @@
+## Interface: 50400
+## Title: XRP Viewer
+## Version: 5.4.7.0
+## Author: Justin Snelgrove
+## Notes: Profile viewer for XRP.
+## Dependencies: XRP, XRP_Remote
+## X-License: GPLv3
+
+XRP_Viewer.xml
+XRP_Viewer.lua
