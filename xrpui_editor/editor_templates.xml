@@ -15,6 +15,9 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
+	<EditBox name="FancyInputBoxTemplate" inherits="InputBoxTemplate" virtual="true">
+		<FontString inherits="GameFontWhite"/>
+	</EditBox>
 	<ScrollFrame name="LargeInputScrollFrameTemplate" inherits="UIPanelScrollFrameTemplate" virtual="true">
 		<Size x="278" y="48"/>
 		<Layers>
@@ -120,7 +123,7 @@
 						self:GetParent().FocusButton:Show();
 					</OnEditFocusLost>
 				</Scripts>
-				<FontString inherits="ChatFontNormal"/>
+				<FontString inherits="GameFontWhite"/>
 			</EditBox>
 		</ScrollChild>
 	</ScrollFrame>
