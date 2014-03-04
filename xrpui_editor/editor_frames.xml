@@ -103,63 +103,63 @@
 				</Layers>
 				<Frames>
 					<!-- Name Box -->
-					<EditBox name="$parentNA" parentKey="NA" inherits="InputBoxTemplate" autoFocus="false">
+					<EditBox name="$parentNA" parentKey="NA" inherits="FancyInputBoxTemplate" autoFocus="false">
 						<Size x="176" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.NALabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
 						</Anchors>
 					</EditBox>
 					<!-- Nickname Box -->
-					<EditBox name="$parentNI" parentKey="NI" inherits="InputBoxTemplate" autoFocus="false">
+					<EditBox name="$parentNI" parentKey="NI" inherits="FancyInputBoxTemplate" autoFocus="false">
 						<Size x="120" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.NILabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
 						</Anchors>
 					</EditBox>
 					<!-- Title Box -->
-					<EditBox name="$parentNT" parentKey="NT" inherits="InputBoxTemplate" autoFocus="false">
+					<EditBox name="$parentNT" parentKey="NT" inherits="FancyInputBoxTemplate" autoFocus="false">
 						<Size x="191" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.NTLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
 						</Anchors>
 					</EditBox>
 					<!-- House/Clan Box -->
-					<EditBox name="$parentNH" parentKey="NH" inherits="InputBoxTemplate" autoFocus="false">
+					<EditBox name="$parentNH" parentKey="NH" inherits="FancyInputBoxTemplate" autoFocus="false">
 						<Size x="105" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.NHLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
 						</Anchors>
 					</EditBox>
 					<!-- Eyes Box -->
-					<EditBox name="$parentAE" parentKey="AE" inherits="InputBoxTemplate" autoFocus="false">
+					<EditBox name="$parentAE" parentKey="AE" inherits="FancyInputBoxTemplate" autoFocus="false">
 						<Size x="95" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.AELabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
 						</Anchors>
 					</EditBox>
 					<!-- Race Box -->
-					<EditBox name="$parentRA" parentKey="RA" inherits="InputBoxTemplate" autoFocus="false">
+					<EditBox name="$parentRA" parentKey="RA" inherits="FancyInputBoxTemplate" autoFocus="false">
 						<Size x="91" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.RALabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
 						</Anchors>
 					</EditBox>
 					<!-- Height Box -->
-					<EditBox name="$parentAH" parentKey="AH" inherits="InputBoxTemplate" autoFocus="false">
+					<EditBox name="$parentAH" parentKey="AH" inherits="FancyInputBoxTemplate" autoFocus="false">
 						<Size x="45" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.AHLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
 						</Anchors>
 					</EditBox>
 					<!-- Weight Box -->
-					<EditBox name="$parentAW" parentKey="AW" inherits="InputBoxTemplate" autoFocus="false">
+					<EditBox name="$parentAW" parentKey="AW" inherits="FancyInputBoxTemplate" autoFocus="false">
 						<Size x="45" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.AWLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
 						</Anchors>
 					</EditBox>
 					<!-- Currently Box -->
-					<EditBox name="$parentCU" parentKey="CU" inherits="InputBoxTemplate" autoFocus="false">
+					<EditBox name="$parentCU" parentKey="CU" inherits="FancyInputBoxTemplate" autoFocus="false">
 						<Size x="306" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.CULabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
@@ -211,7 +211,7 @@
 								<Anchor point="TOPLEFT" relativeKey="$parent.MOLabel" relativePoint="BOTTOMLEFT" x="0" y="-25"/>
 							</Anchors>
 						</FontString>
-						<!-- Status Label -->
+						<!-- Style Label -->
 						<FontString name="$parentFRLabel" parentKey="FRLabel" inherits="GameFontNormalSmall" text="XRP_FR">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.HILabel" relativePoint="BOTTOMLEFT" x="0" y="-208"/>
@@ -227,28 +227,28 @@
 				</Layers>
 				<Frames>
 					<!-- Age Box -->
-					<EditBox name="$parentAG" parentKey="AG" inherits="InputBoxTemplate" autoFocus="false">
+					<EditBox name="$parentAG" parentKey="AG" inherits="FancyInputBoxTemplate" autoFocus="false">
 						<Size x="40" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.AGLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
 						</Anchors>
 					</EditBox>
 					<!-- Home Box -->
-					<EditBox name="$parentHH" parentKey="HH" inherits="InputBoxTemplate" autoFocus="false">
+					<EditBox name="$parentHH" parentKey="HH" inherits="FancyInputBoxTemplate" autoFocus="false">
 						<Size x="123" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.HHLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
 						</Anchors>
 					</EditBox>
 					<!-- Birthplace Box -->
-					<EditBox name="$parentHB" parentKey="HB" inherits="InputBoxTemplate" autoFocus="false">
+					<EditBox name="$parentHB" parentKey="HB" inherits="FancyInputBoxTemplate" autoFocus="false">
 						<Size x="123" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.HBLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
 						</Anchors>
 					</EditBox>
 					<!-- Motto Box -->
-					<EditBox name="$parentMO" parentKey="MO" inherits="InputBoxTemplate" autoFocus="false">
+					<EditBox name="$parentMO" parentKey="MO" inherits="FancyInputBoxTemplate" autoFocus="false">
 						<Size x="306" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.MOLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
@@ -269,6 +269,13 @@
 						<Scripts>
 							<OnLoad>
 								UIDropDownMenu_SetWidth(self, 139, 0);
+								function self:SetText(value)
+									UIDropDownMenu_Initialize(self, self.initialize);
+									UIDropDownMenu_SetSelectedValue(self, value);
+								end;
+								function self:GetText()
+									return UIDropDownMenu_GetSelectedValue(self);
+								end;
 							</OnLoad>
 						</Scripts>
 					</Button>
@@ -280,6 +287,13 @@
 						<Scripts>
 							<OnLoad>
 								UIDropDownMenu_SetWidth(self, 139, 0);
+								function self:SetText(value)
+									UIDropDownMenu_Initialize(self, self.initialize);
+									UIDropDownMenu_SetSelectedValue(self, value);
+								end;
+								function self:GetText()
+									return UIDropDownMenu_GetSelectedValue(self);
+								end;
 							</OnLoad>
 						</Scripts>
 					</Button>
@@ -292,8 +306,14 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						UIDropDownMenu_Initialize(self, XRP.Editor.ProfilesInit);
 						UIDropDownMenu_SetWidth(self, 100, 0);
+						function self:SetText(value)
+							UIDropDownMenu_Initialize(self, self.initialize);
+							UIDropDownMenu_SetSelectedValue(self, value);
+						end;
+						function self:GetText()
+							return UIDropDownMenu_GetSelectedValue(self);
+						end;
 					</OnLoad>
 				</Scripts>
 			</Button>
@@ -321,8 +341,20 @@
 					</OnClick>
 				</Scripts>
 			</Button>
+			<!-- R Profile Button -->
+			<Button name="$parentRenameProfile" parentKey="RenameProfile" inherits="UIPanelButtonTemplate" text=" R ">
+				<Size x="28" y="28"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.MinusProfile" relativePoint="RIGHT" x="0" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						StaticPopup_Show("XRP_EDITOR_RENAME");
+					</OnClick>
+				</Scripts>
+			</Button>
 			<!-- Save Button -->
-			<Button name="$parentSave" parentKey="Save" inherits="UIPanelButtonTemplate" text="XRP_EDITOR_SAVE">
+			<Button name="$parentSave" parentKey="Save" inherits="UIPanelButtonTemplate" text="SAVE">
 				<Size x="96" y="22"/>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-10" y="4"/>
@@ -334,7 +366,7 @@
 				</Scripts>
 			</Button>
 			<!-- Save and Use Button -->
-			<Button name="$parentSaveUse" parentKey="SaveUse" inherits="UIPanelButtonTemplate" text="XRP_EDITOR_SAVEUSE">
+			<Button name="$parentActivate" parentKey="Activate" inherits="UIPanelButtonTemplate" text="Activate">
 				<Size x="96" y="22"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.Save" relativePoint="LEFT"/>
@@ -342,7 +374,7 @@
 				<Scripts>
 					<OnClick>
 						XRP.Editor:Save();
-						XRP.Profiles:Set(XRP.Editor.Profiles:GetText());
+						XRP.Storage:Activate(XRP.Editor.Profiles:GetText());
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -372,15 +404,9 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				self:RegisterEvent("ADDON_LOADED");
-			</OnLoad>
-			<OnEvent>
-				if event == "ADDON_LOADED" and ... == "XRP_Editor" then
-					self:Init(...)
-					self:UnregisterEvent("ADDON_LOADED")
-				end
-			</OnEvent>
+			<OnShow>
+				SetPortraitTexture(self.portrait, "player")
+			</OnShow>
 		</Scripts>
 	</Frame>
 </Ui>
