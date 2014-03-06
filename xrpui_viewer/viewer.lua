@@ -32,9 +32,10 @@ local function init()
 				SetPortraitTexture(self.portrait, "player")
 				self:SetScript("OnShow", nil)
 			end)
+			self.SupportedFields = { "NA", "NI", "NT", "NH", "AE", "RA", "AH", "AW", "CU", "AG", "HH", "HB", "MO", "HI", "FR", "FC", "VA", "GC", "GR", "GS" }
 			XRP.Remote:HookReceive(function(name)
 				if XRP.Viewer.CurrentTarget == name then
-					XRP.Viewer:Load(XRP.Remote:Get(name, XRP.Remote.AllFields))
+					XRP.Viewer:Load(XRP.Remote:Get(name, XRP.Viewer.SupportedFields))
 				end
 			end)
 		self:UnregisterEvent("ADDON_LOADED")
@@ -60,8 +61,7 @@ local function init()
 		XRP.Viewer[key] = XRP.Viewer.Biography[key].EditBox
 	end
 
-	self.CurrentTarget = XRP:UnitNameWithRealm("player")
---	self:Load(XRP.Remote:Get(XRP:UnitNameWithRealm("player")))
+	self.CurrentTarget = XRP.Character.Name
 	self:RegisterEvent("ADDON_LOADED")
 end
 
@@ -71,10 +71,10 @@ function XRP.Viewer:Load(profile)
 	-- appropriate 'real' function if needed. The Remote module always fills the
 	-- entire profile with values, even if they're empty, so we do not need to
 	-- empty anything first.
-	for key in pairs(XRP.Fields.Codes) do
+	for _, key in pairs(self.SupportedFields) do
 		if key == "FR" or key == "FC" then
 			if tonumber(profile[key]) ~= nil then
-				self[key]:SetText(XRP.Fields.Values[key][tonumber(profile[key])+1])
+				self[key]:SetText(XRP_VALUES[key][tonumber(profile[key])+1])
 			else
 				self[key]:SetText(profile[key])
 			end
@@ -86,7 +86,7 @@ function XRP.Viewer:Load(profile)
 			end
 		elseif key == "NA" then
 			self.TitleText:SetText(profile[key])
-		else
+		elseif key ~= "GC" and key ~= "GR" and key ~= "GS" then -- Non-visible use.
 			self[key]:SetText(profile[key])
 		end
 	end
@@ -99,15 +99,14 @@ function XRP.Viewer:ViewUnit(unit)
 	local name = XRP:UnitNameWithRealm(unit)
 	XRP.Remote:CacheUnit(unit)
 	self.CurrentTarget = name
-	self:Load(XRP.Remote:Get(name, XRP.Remote.AllFields))
+	self:Load(XRP.Remote:Get(name, XRP.Viewer.SupportedFields))
 	ShowUIPanel(self)
 	SetPortraitTexture(self.portrait, unit)
 end
 
 function XRP.Viewer:View(name)
---	name = XRP:UnitNameWithRealm(name)
 	self.CurrentTarget = name
-	self:Load(XRP.Remote:Get(name, XRP.Remote.AllFields))
+	self:Load(XRP.Remote:Get(name, XRP.Viewer.SupportedFields))
 	ShowUIPanel(self)
 	SetPortraitToTexture(self.portrait, "Interface\\Icons\\INV_Misc_Book_17")
 end
