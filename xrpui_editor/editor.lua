@@ -30,7 +30,15 @@ local function init()
 			PanelTemplates_SetTab(self, 1)
 			self.TitleText:SetText(XRP_EDITOR_VERSION)
 
-			-- Ugh, DropDownMenus.
+			self.SupportedFields = { "NA", "NI", "NT", "NH", "AE", "RA", "AH", "AW", "CU", "AG", "HH", "HB", "MO", "HI", "FR", "FC" }
+
+			-- Ugh, DropDownMenus. These are a royal pain in the ass to work
+			-- with, but make for a really nice-looking UI. In theory a
+			-- menuList variable can be used instead of these static
+			-- functions but Blizzard's code somehow ends up wiping that
+			-- variable out, at least when there's multiple menus. Also be
+			-- sure to call UIDropDownMenu_Initialize(A.Menu, A.Menu.initialize)
+			-- before setting their values in code, or it does funny things.
 			UIDropDownMenu_Initialize(self.Profiles, function()
 				local info
 				for _, value in pairs(XRP.Storage:List()) do
@@ -49,7 +57,7 @@ local function init()
 
 			UIDropDownMenu_Initialize(self.FR, function()
 				local info
-				for value, text in pairs(XRP.Fields.Values.FR) do
+				for value, text in pairs(XRP_VALUES.FR) do
 					info = UIDropDownMenu_CreateInfo()
 					info.text = text
 					info.value = tostring(value - 1)
@@ -64,7 +72,7 @@ local function init()
 
 			UIDropDownMenu_Initialize(self.FC, function()
 				local info
-				for value, text in pairs(XRP.Fields.Values.FC) do
+				for value, text in pairs(XRP_VALUES.FC) do
 					info = UIDropDownMenu_CreateInfo()
 					info.text = text
 					info.value = tostring(value - 1)
@@ -176,15 +184,15 @@ local function init()
 
 	-- Setup shorthand access for easier looping later.
 	-- Appearance tab
-	for _, key in pairs({"NA", "NI", "NT", "NH", "AE", "RA", "AH", "AW", "CU"}) do
-		XRP.Editor[key] = XRP.Editor.Appearance[key]
+	for _, field in pairs({"NA", "NI", "NT", "NH", "AE", "RA", "AH", "AW", "CU"}) do
+		XRP.Editor[field] = XRP.Editor.Appearance[field]
 	end
 	-- EditBox is inside ScrollFrame
 	XRP.Editor["DE"] = XRP.Editor.Appearance["DE"].EditBox
 
 	-- Biography tab
-	for _, key in pairs({"AG", "HH", "HB", "MO",  "FR", "FC"}) do
-		XRP.Editor[key] = XRP.Editor.Biography[key]
+	for _, field in pairs({"AG", "HH", "HB", "MO",  "FR", "FC"}) do
+		XRP.Editor[field] = XRP.Editor.Biography[field]
 	end
 	-- EditBox is inside ScrollFrame
 	XRP.Editor["HI"] = XRP.Editor.Biography["HI"].EditBox
@@ -203,8 +211,8 @@ function XRP.Editor:Save()
 	-- This doesn't need to be smart. GetText() should be mapped to the
 	-- appropriate 'real' function if GetText() isn't already right. Further,
 	-- the Storage module does compaction on its own.
-	for key in pairs(XRP.Fields.Codes) do
-		profile[key] = self[key]:GetText()
+	for _, field in pairs(self.SupportedFields) do
+		profile[field] = self[field]:GetText()
 	end
 
 	if XRP.Storage:Save(profile, name) then
@@ -218,11 +226,15 @@ function XRP.Editor:Load(profile, name)
 	clearfocus(self)
 	-- This does not need to be very smart. SetText() should be mapped to the
 	-- appropriate 'real' function if needed.
-	profile = XRP:ExpandProfile(profile)
-	for key, value in pairs(profile) do
-		self[key]:SetText(value)
-		if key ~= "FR" and key ~= "FC" then
-			self[key]:SetCursorPosition(0)
+	for _, field in pairs(self.SupportedFields) do
+		if field == "FC" or field == "FR" then
+			self[field]:SetText(profile[field] or "0")
+		elseif field == "RA" then
+			self[field]:SetText(profile[field] or XRP:LocalizeRace(XRP.Character.Fields.GR))
+			self[field]:SetCursorPosition(0)
+		else
+			self[field]:SetText(profile[field] or "")
+			self[field]:SetCursorPosition(0)
 		end
 	end
 
