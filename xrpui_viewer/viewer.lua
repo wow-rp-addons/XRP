@@ -33,7 +33,7 @@ local function init()
 				self:SetScript("OnShow", nil)
 			end)
 			self.SupportedFields = { "NA", "NI", "NT", "NH", "AE", "RA", "AH", "AW", "CU", "AG", "HH", "HB", "MO", "HI", "FR", "FC", "VA", "GC", "GR", "GS" }
-			XRP.Remote:HookReceive(function(name)
+			XRP:HookEvent("PROFILE_RECEIVE", function(name)
 				if XRP.Viewer.CurrentTarget == name then
 					XRP.Viewer:Load(XRP.Remote:Get(name, XRP.Viewer.SupportedFields))
 				end
