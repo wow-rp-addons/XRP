@@ -85,13 +85,13 @@ local function init()
 				end
 			end)
 
-			XRP.Storage:HookDelete(function(name)
+			XRP:HookEvent("PROFILE_DELETE", function(name)
 				if XRP.Editor.Profiles:GetText() == name then
 					XRP.Editor:Load(XRP.Storage:Get("Default"), "Default")
 				end
 			end)
 
-			XRP.Storage:HookRename(function(name, newname)
+			XRP:HookEvent("PROFILE_RENAME", function(name, newname)
 				if XRP.Editor.Profiles:GetText() == Name then
 					XRP.Editor:Load(XRP.Storage:Get(newname), newname)
 				end
