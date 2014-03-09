@@ -1,0 +1,10 @@
+## Interface: 50400
+## Title: XRP Tooltip
+## Version: 5.4.7.0
+## Author: Justin Snelgrove
+## Notes: Mouseover tooltips for XRP.
+## Dependencies: XRP, XRP_Remote
+## X-License: GPLv3
+
+XRP_Tooltip.xml
+XRP_Tooltip.lua
