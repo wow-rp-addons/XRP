@@ -16,13 +16,14 @@
 ]]
 
 function OutputScrollFrame_OnLoad(self)
-	local scrollBar = self.ScrollBar
-	scrollBar:ClearAllPoints()
-	scrollBar:SetPoint("TOPLEFT", self, "TOPRIGHT", -13, -11)
-	scrollBar:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", -13, 9)
-	_G[self:GetName().."ScrollBarScrollDownButton"]:SetPoint("TOP", scrollBar, "BOTTOM", 0, 4)
-	_G[self:GetName().."ScrollBarScrollUpButton"]:SetPoint("BOTTOM", scrollBar, "TOP", 0, -4)
-	self.scrollBarHideable = 1
-	scrollBar:Hide()
+	-- Numerical values for touching this all up found in Blizzard's
+	-- InputScrollFrame_OnLoad.
+	self.ScrollBar:ClearAllPoints()
+	self.ScrollBar:SetPoint("TOPLEFT", self, "TOPRIGHT", -13, -11)
+	self.ScrollBar:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", -13, 9)
+	_G[self:GetName().."ScrollBarScrollDownButton"]:SetPoint("TOP", self.ScrollBar, "BOTTOM", 0, 4)
+	_G[self:GetName().."ScrollBarScrollUpButton"]:SetPoint("BOTTOM", self.ScrollBar, "TOP", 0, -4)
+	self.ScrollBarHideable = 1
+	self.ScrollBar:Hide()
 	self.EditBox:SetWidth(self:GetWidth() - 18)
 end
