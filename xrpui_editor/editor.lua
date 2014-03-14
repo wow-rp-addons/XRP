@@ -15,6 +15,8 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
+local supportedfields = { "NA", "NI", "NT", "NH", "AE", "RA", "AH", "AW", "CU", "DE", "AG", "HH", "HB", "MO", "HI", "FR", "FC" }
+
 local function init()
 	local self = XRP.Editor
 	self:SetScript("OnEvent", function(self, event, addon)
@@ -29,8 +31,6 @@ local function init()
 			PanelTemplates_SetNumTabs(self, 2)
 			PanelTemplates_SetTab(self, 1)
 			self.TitleText:SetText(XRP_EDITOR_VERSION)
-
-			self.SupportedFields = { "NA", "NI", "NT", "NH", "AE", "RA", "AH", "AW", "CU", "AG", "HH", "HB", "MO", "HI", "FR", "FC" }
 
 			-- Ugh, DropDownMenus. These are a royal pain in the ass to work
 			-- with, but make for a really nice-looking UI. In theory a
@@ -47,7 +47,7 @@ local function init()
 					info.value = value
 					info.func = function(self, arg1, arg2, checked)
 						if not checked then
-							XRP.Editor:Load(XRP.Storage:Get(self.value), self.value)
+							XRP.Editor:Open(self.value)
 							UIDropDownMenu_SetSelectedValue(UIDROPDOWNMENU_OPEN_MENU, self.value)
 						end
 					end
@@ -87,20 +87,26 @@ local function init()
 
 			XRP:HookEvent("PROFILE_DELETE", function(name)
 				if XRP.Editor.Profiles:GetText() == name then
-					XRP.Editor:Load(XRP.Storage:Get("Default"), "Default")
+					XRP.Editor:Open("Default")
 				end
 			end)
 
 			XRP:HookEvent("PROFILE_RENAME", function(name, newname)
 				if XRP.Editor.Profiles:GetText() == Name then
-					XRP.Editor:Load(XRP.Storage:Get(newname), newname)
+					XRP.Editor:Open(newname)
+				end
+			end)
+
+			XRP:HookEvent("PROFILE_SAVE", function(name)
+				if XRP.Editor.Profiles:GetText() == name then
+					XRP.Editor:Open(name)
 				end
 			end)
 
 			self:UnregisterEvent("ADDON_LOADED")
 			self:RegisterEvent("PLAYER_LOGIN")
 		elseif event == "PLAYER_LOGIN" then
-			self:Load(XRP.Storage:Get("Default"), "Default")
+			self:Open("Default")
 			self:UnregisterEvent("PLAYER_LOGIN")
 		end
 	end)
@@ -126,10 +132,10 @@ local function init()
 		OnAccept = function(self, data, data2)
 			local text = self.editBox:GetText()
 			if XRP.Storage:Add(text) then
-				XRP.Editor:Load(XRP.Storage:Get(text), text)
+				XRP.Editor:Open(text)
 			else
 				XRP:Console(4, "Editor", "Profile already exists, loading it in the editor.")
-				XRP.Editor:Load(XRP.Storage:Get(text), text)
+				XRP.Editor:Open(text)
 			end
 		end,
 		enterClicksFirstButton = true,
@@ -210,15 +216,17 @@ function XRP.Editor:Save()
 
 	-- This doesn't need to be smart. GetText() should be mapped to the
 	-- appropriate 'real' function if GetText() isn't already right. Further,
-	-- the Storage module does compaction on its own.
-	for _, field in pairs(self.SupportedFields) do
+	-- the Storage module expects empty strings (which is what GetText() gets
+	-- when the field is empty) for actually empty fields. If it's nil, it's
+	-- assumed that the field should be left alone, rather than emptied.
+	for _, field in pairs(supportedfields) do
 		profile[field] = self[field]:GetText()
 	end
 
 	if XRP.Storage:Save(profile, name) then
-		XRP:Console(6, "Editor", "Changes were saved to "..name..".")
+		XRP:Console(6, "Editor", format("Changes were saved to %s.", name))
 	else
-		XRP:Console(6, "Editor", "No changes to save for "..name..".")
+		XRP:Console(6, "Editor", format("No changes to save for %s.", name))
 	end
 end
 
@@ -226,19 +234,20 @@ function XRP.Editor:Load(profile, name)
 	clearfocus(self)
 	-- This does not need to be very smart. SetText() should be mapped to the
 	-- appropriate 'real' function if needed.
-	for _, field in pairs(self.SupportedFields) do
-		if field == "FC" or field == "FR" then
-			self[field]:SetText(profile[field] or "0")
-		elseif field == "RA" then
-			self[field]:SetText(profile[field] or XRP:LocalizeRace(XRP.Character.Fields.GR))
+	for field, value in pairs(profile) do
+		if field ~= "FC" and field ~= "FR" then
+			self[field]:SetText(value)
 			self[field]:SetCursorPosition(0)
 		else
-			self[field]:SetText(profile[field] or "")
-			self[field]:SetCursorPosition(0)
+			self[field]:SetText(value)
 		end
 	end
 
 	self.Profiles:SetText(name)
+end
+
+function XRP.Editor:Open(name)
+	XRP.Editor:Load(XRP.Storage:Get(name, supportedfields), name)
 end
 
 init()
