@@ -355,9 +355,9 @@
 			</Button>
 			<!-- Save Button -->
 			<Button name="$parentSave" parentKey="Save" inherits="UIPanelButtonTemplate" text="SAVE">
-				<Size x="96" y="22"/>
+				<Size x="96" y="21"/>
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-10" y="4"/>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-6" y="4"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -367,7 +367,7 @@
 			</Button>
 			<!-- Save and Use Button -->
 			<Button name="$parentActivate" parentKey="Activate" inherits="UIPanelButtonTemplate" text="Activate">
-				<Size x="96" y="22"/>
+				<Size x="96" y="21"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.Save" relativePoint="LEFT"/>
 				</Anchors>
