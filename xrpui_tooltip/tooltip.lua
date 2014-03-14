@@ -22,8 +22,18 @@ local function init()
 		if event == "ADDON_LOADED" and addon == "XRP_Tooltip" then
 
 			GameTooltip:HookScript("OnTooltipSetUnit", function(self)
-				-- Ugh, this isn't even perfect. GetUnit() won't return 'odd'
-				-- units, like "targettarget" even if they're completely valid.
+				-- GetUnit() will not return any sort of the non-basic unit
+				-- strings, such as "targettarget", "pettarget", etc. It'll
+				-- only spit out the name in the first parameter, which is
+				-- not something we can use. This mainly causes problems for
+				-- custom unit frames which call GameTooltip:SetUnit() with
+				-- such unit strings. Bizarrely, a split-second later it will
+				-- often properly return a unit string such as "mouseover"
+				-- that we could have used.
+				--
+				-- TODO: Maybe it's worth using an OnUpdate script to try one
+				-- more time on the next screen render to get a useful unit
+				-- string, if unit == nil?
 				local unit = select(2, self:GetUnit())
 				if UnitIsPlayer(unit) then
 					XRP.Tooltip:PlayerUnit(unit)
@@ -34,8 +44,12 @@ local function init()
 				local tooltip, unit = GameTooltip:GetUnit()
 				-- Note: This will pointlessly re-render if there are two
 				-- players with the same base name from different realms.
-				-- No harm done, just extra CPU cycles.
-				if tooltip and tooltip == Ambiguate(name, "none") then
+				-- No harm done, just a few extra CPU cycles.
+				--
+				-- TODO: Check if the off-realm tooltip targets have their
+				-- realms attached. If so, use names with realms by attaching
+				-- a realm name if needed.
+				if tooltip and tooltip == XRP:NameWithoutRealm(name) then
 					XRP.Tooltip:RefreshPlayer()
 					-- If the mouse has already left the unit, the tooltip
 					-- will get stuck visible if we don't do this. It still
@@ -50,7 +64,11 @@ local function init()
 			-- WORKAROUND: Blizzard's compact raid frames reset the colors
 			-- of the first line in the tooltip ... *AFTER* calling SetUnit().
 			-- This hook runs right after the code that changes the color and
-			-- it just changes it back.
+			-- it just changes it back (without redoing the entire tooltip).
+			--
+			-- If there are any other instances of this sort of idiocy, this
+			-- function should be made into a local and used as a hook on
+			-- any such code.
 			hooksecurefunc("UnitFrame_UpdateTooltip", function()
 				local unit = select(2, GameTooltip:GetUnit())
 				if UnitIsPlayer(unit) then
@@ -133,33 +151,47 @@ local function rendertooltip()
 end
 
 --[[
-	Tooltip example (line numbers are for reference only):
+	Tooltip lines ([ ] denotes only if applicable):
 
-	1 Boromir, Son of Denethor <Away> <PvP>
-	2 Nickname: "Ringstealer"
-	3 Robber of Hobbits
-	4 <Gondor Needs No Guild>
-	5 Boromir the Beloved (WyrmrestAccord)			 RP
-	6 Currently: Not stealing rings.
-	7 Level 60 Human Warrior (Player)
-	8 Normal roleplayer				Looking for contact
+	Name/Roleplay Name [<Away>|<Busy>] [<PvP>] [<Offline>]
+	[Nickname: "RP Nickname"]
+	[RP Title]
+	[<Guild>]
+	Name with Title [(Realm Name)]					  [RP]
+	[Currently: RP currently doing.]
+	Level 00 Race Class (Player)
+	[Roleplaying style]					[Character status]
+	[Current Location]
 
-	Line-by-line description:
-	1: Name, AFK/DND flag, PvP flag. Name is faction colored, others are item-
-	   specific colors.
-	2: Nickname. Specific colors, mildly subdued.
-	3: Title. White, plain.
-	4: Guild (in angle brackets). White, plain.
-	5: In-game unit name, with in-game title. Realm in brackets if not same
-	   realm. RP tag at the far end of the line indicates the presence of an
-	   RP addon. TODO: Maybe make the RP tag more MRP-like with identifiers.
-	6: Currently line. Brown-ish, moderately subdued.
-	7: Game information (race is RP race). White colors, except class which is
-	   class-colored. TODO: Maybe make the level colored to match difficulty.
-	8: Roleplaying style and roleplaying status. NYI, need to consider colors.
+	Notes:
+	  *	Most of the user input fields (i.e., RP fields) are truncated if they
+		are too long. The goal is to have lines no more than ~90 characters,
+		which is generous. The Currently field truncates with an ellipsis, but
+		all others currently hard truncate (since they really shouldn't be
+		long enough to trigger this).
+	  * This doesn't, and probably should never, use line wrapping. It would be
+		great for several of these fields, but is tricky and inconsistent to
+		use, and can cause problems in the default tooltips.
+	  *	"Name/Roleplay Name" is NA field if available, otherwise base name of
+		the character (stripped of server name).
+	  *	"Name with Title" is the in-game name/title, such as "Assistant
+		Professor Smith".
+	  *	"Realm Name" is run through a function that (should) space the name
+		correctly.
+	  *	"Current Location" is rare. It should only show up if the player is
+		far away from you, yet you can still see their tooltip (i.e., raid or
+		party unit frames).
+	  *	When the unit is not visible (out of range), in addition to the added
+		location line, much of the standard information is either unavailable
+		or intentionally stripped. It's only a slight modification of the
+		default tooltip, with coloration and some rearrangement.
 ]]
 
 function XRP.Tooltip:PlayerUnit(unit)
+	-- The currentunit table stores, as it says on the tin, the current (well,
+	-- technically last) unit we rendered a tooltip for. This allows for a
+	-- refresh of the tooltip as it fades, rather than only being able to
+	-- refresh if the mouse is still over the unit.
 	currentunit.name = XRP:UnitNameWithRealm(unit)
 	currentunit.faction = UnitFactionGroup(unit)
 	if not currentunit.faction or type(XRP_FACTION_COLORS[currentunit.faction]) ~= "table" then
@@ -168,9 +200,11 @@ function XRP.Tooltip:PlayerUnit(unit)
 	currentunit.afk = UnitIsAFK(unit)
 	currentunit.dnd = UnitIsDND(unit)
 	currentunit.pvp = UnitIsPVP(unit)
+	currentunit.visible = UnitIsVisible(unit)
 	currentunit.connected = UnitIsConnected(unit)
+	currentunit.location = (not currentunit.visible and currentunit.connected and GameTooltipTextLeft3:GetText()) or nil
 	currentunit.guild = GetGuildInfo(unit)
-	currentunit.pvpname = UnitPVPName(unit) or Ambiguate(currentunit.name, "none")
+	currentunit.pvpname = UnitPVPName(unit) or XRP:NameWithoutRealm(currentunit.name)
 	currentunit.realm = select(2, UnitName(unit))
 	currentunit.level = UnitLevel(unit)
 	currentunit.race = UnitRace(unit)
@@ -180,11 +214,15 @@ function XRP.Tooltip:PlayerUnit(unit)
 end
 
 function XRP.Tooltip:RefreshPlayer()
-	local profile = XRP.Remote:Get(currentunit.name, "TT")
+	-- Caveat: Getting a tooltip for UNKNOWN fills some fields badly, like NA,
+	-- which will always be "Unknown".
+	--
+	-- TODO: Maybe make a true dummy profile table instead? Or alternately be
+	-- sure to not *require* the presence of fields and use an empty table?
+	local profile = currentunit.visible and XRP.Remote:Get(currentunit.name, "TT") or XRP.Remote:Get(UNKNOWN, "TT")
 
 	lines = {}
-
-	local namestring = profile.NA or Ambiguate(currentunit.name, "none")
+	local namestring = format("%.80s", profile.NA ~= UNKNOWN and profile.NA or XRP:NameWithoutRealm(currentunit.name))
 	if currentunit.afk then
 		namestring = format("%s |cff99994d%s|r", namestring, CHAT_FLAG_AFK)
 	elseif currentunit.dnd then
@@ -214,7 +252,7 @@ function XRP.Tooltip:RefreshPlayer()
 	if profile.NI ~= "" then
 		lines[#lines+1] = {
 			left = {
-				text = format("|cff6070a0%s: |r\"%s\"", XRP_NI, profile.NI),
+				text = format("|cff6070a0%s: |r\"%.80s\"", XRP_NI, profile.NI),
 				color = { r = 0.6, g = 0.7, b = 0.9 },
 			},
 		}
@@ -224,7 +262,7 @@ function XRP.Tooltip:RefreshPlayer()
 		lines[#lines+1] = {
 			left = {
 				text = profile.NT,
-				color = { r = 1.0, g = 1.0, b = 1.0 },
+				color = DEFAULT_COLOR,
 			},
 		}
 	end
@@ -240,11 +278,7 @@ function XRP.Tooltip:RefreshPlayer()
 
 	local pvpnamestring = currentunit.pvpname
 	if currentunit.realm and currentunit.realm ~= "" then
-		-- TODO: Would be really nice to format the realm with spaces. This
-		-- is complex, however, as there are realms like Aman'Thul, Area 52,
-		-- and Sisters of Elune that cause problems with automated spacing.
-		-- Strange that Blizzard has no way to get the 'localized' name.
-		pvpnamestring = format("%s (%s)", pvpnamestring, currentunit.realm)
+		pvpnamestring = format("%s (%s)", pvpnamestring, XRP:RealmNameWithSpacing(currentunit.realm))
 	end
 	lines[#lines+1] = {
 		left = {
@@ -264,9 +298,8 @@ function XRP.Tooltip:RefreshPlayer()
 	if profile.CU ~= "" then
 		lines[#lines+1] = {
 			left = {
-				text = format("|cffa08050%s:|r %s", XRP_CU, profile.CU),
+				text = format("|cffa08050%s:|r %.80s%s", XRP_CU, profile.CU, profile.CU:len()>80 and CONTINUED or ""),
 				color = { r = 0.9, g = 0.7, b = 0.6},
-				wrap = true,
 			},
 		}
 	end
@@ -277,7 +310,7 @@ function XRP.Tooltip:RefreshPlayer()
 			-- Note: RAID_CLASS_COLORS[classid].colorStr does *not* have a pipe
 			-- escape in it -- it's just the AARRGGBB string. Some other default
 			-- color strings do, so be sure to check.
-			text = format("%s %d %s |c%s%s|r (%s)", LEVEL, currentunit.level, race, RAID_CLASS_COLORS[currentunit.classid].colorStr, currentunit.class, PLAYER),
+			text = format("%s %d %.40s |c%s%s|r (%s)", LEVEL, currentunit.level, race, RAID_CLASS_COLORS[currentunit.classid].colorStr, currentunit.class, PLAYER),
 			color = DEFAULT_COLOR,
 		},
 	}
@@ -285,12 +318,21 @@ function XRP.Tooltip:RefreshPlayer()
 	if profile.FR ~= "0" or profile.FC ~= "0" then
 		lines[#lines+1] = {
 			left = {
-				text = profile.FR == "0" and " " or (tonumber(profile.FR) and XRP_VALUES.FR[tonumber(profile.FR)+1]) or profile.FR,
+				text = format("%.40s", profile.FR == "0" and " " or (tonumber(profile.FR) and XRP_VALUES.FR[tonumber(profile.FR)+1]) or profile.FR),
 				color = FC_COLORS[profile.FC == "1" and 1 or 2],
 			},
 			right = {
-				text = profile.FC == "0" and "" or tonumber(profile.FC) and XRP_VALUES.FC[tonumber(profile.FC)+1] or profile.FC,
+				text = format("%.40s", profile.FC == "0" and "" or tonumber(profile.FC) and XRP_VALUES.FC[tonumber(profile.FC)+1] or profile.FC),
 				color = FC_COLORS[profile.FC == "1" and 1 or 2],
+			},
+		}
+	end
+
+	if not currentunit.visible and currentunit.location then
+		lines[#lines+1] = {
+			left = {
+				text = format("%s: %s", ZONE, currentunit.location),
+				color = DEFAULT_COLOR,
 			},
 		}
 	end
