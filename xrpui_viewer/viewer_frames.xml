@@ -93,18 +93,6 @@
 								<Anchor point="TOPLEFT" relativeKey="$parent.CULabel" relativePoint="BOTTOMLEFT" x="0" y="-58"/>
 							</Anchors>
 						</FontString>
-						<!-- Style Label -->
-						<FontString name="$parentFRLabel" parentKey="FRLabel" inherits="GameFontNormalSmall" text="XRP_FR">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.DELabel" relativePoint="BOTTOMLEFT" x="0" y="-183"/>
-							</Anchors>
-						</FontString>
-						<!-- Status Label -->
-						<FontString name="$parentFCLabel" parentKey="FCLabel" inherits="GameFontNormalSmall" text="XRP_FC">
-							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.FRLabel" relativePoint="LEFT" x="158" y="0"/>
-							</Anchors>
-						</FontString>
 					</Layer>
 				</Layers>
 				<Frames>
@@ -150,20 +138,6 @@
 							<Anchor point="TOPLEFT" relativeKey="$parent.DELabel" relativePoint="BOTTOMLEFT" x="2" y="-5"/>
 						</Anchors>
 					</ScrollFrame>
-					<!-- Style Box -->
-					<EditBox name="$parentFR" parentKey="FR" inherits="FancyOutputBoxTemplate" autoFocus="false">
-						<Size x="147" y="20"/>
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.FRLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
-						</Anchors>
-					</EditBox>
-					<!-- Status Box -->
-					<EditBox name="$parentFC" parentKey="FC" inherits="FancyOutputBoxTemplate" autoFocus="false">
-						<Size x="147" y="20"/>
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.FCLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
-						</Anchors>
-					</EditBox>
 				</Frames>
 			</Frame>
 			<Frame name="$parentBiography" parentKey="Biography" useParentLevel="true" hidden="true">

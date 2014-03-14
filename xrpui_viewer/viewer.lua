@@ -15,7 +15,7 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local supportedfields = { "NA", "NI", "NT", "NH", "AE", "RA", "AH", "AW", "CU", "DE", "AG", "HH", "HB", "MO", "HI", "FR", "FC", "VA" }
+local supportedfields = { "NA", "NI", "NT", "NH", "AE", "RA", "AH", "AW", "CU", "DE", "AG", "HH", "HB", "MO", "HI", "VA" }
 
 local function init()
 	local self = XRP.Viewer
@@ -49,7 +49,7 @@ local function init()
 
 	-- Setup shorthand access for easier looping later.
 	-- Appearance tab
-	for _, field in pairs({"AE", "RA", "AH", "AW", "FR", "FC"}) do
+	for _, field in pairs({"AE", "RA", "AH", "AW"}) do
 		XRP.Viewer[field] = XRP.Viewer.Appearance[field]
 	end
 	-- EditBox is inside ScrollFrame
@@ -76,9 +76,7 @@ function XRP.Viewer:Load(profile)
 	-- entire profile with values, even if they're empty, so we do not need to
 	-- empty anything first.
 	for field, contents in pairs(profile) do
-		if field == "FR" or field == "FC" then
-			self[field]:SetText(tonumber(contents) and XRP_VALUES[field][tonumber(contents)+1] or contents)
-		elseif field == "NI" then
+		if field == "NI" then
 			self[field]:SetText(contents ~= "" and format("\"%s\"", contents) or contents)
 		elseif field == "NA" then
 			self.TitleText:SetText(contents)
