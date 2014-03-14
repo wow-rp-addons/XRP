@@ -15,6 +15,8 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
+local supportedfields = { "NA", "NI", "NT", "NH", "AE", "RA", "AH", "AW", "CU", "DE", "AG", "HH", "HB", "MO", "HI", "FR", "FC", "VA" }
+
 local function init()
 	local self = XRP.Viewer
 
@@ -32,62 +34,56 @@ local function init()
 				SetPortraitTexture(self.portrait, "player")
 				self:SetScript("OnShow", nil)
 			end)
-			self.SupportedFields = { "NA", "NI", "NT", "NH", "AE", "RA", "AH", "AW", "CU", "AG", "HH", "HB", "MO", "HI", "FR", "FC", "VA", "GC", "GR", "GS" }
 			XRP:HookEvent("PROFILE_RECEIVE", function(name)
 				if XRP.Viewer.CurrentTarget == name then
-					XRP.Viewer:Load(XRP.Remote:Get(name, XRP.Viewer.SupportedFields))
+					XRP.Viewer:Get(name)
 				end
 			end)
 		self:UnregisterEvent("ADDON_LOADED")
 		end
 	end)
 
+	self:SetScript("OnHide", function(self)
+		self.CurrentTarget = NONE
+	end)
+
 	-- Setup shorthand access for easier looping later.
 	-- Appearance tab
-	for _, key in pairs({"AE", "RA", "AH", "AW", "FR", "FC"}) do
-		XRP.Viewer[key] = XRP.Viewer.Appearance[key]
+	for _, field in pairs({"AE", "RA", "AH", "AW", "FR", "FC"}) do
+		XRP.Viewer[field] = XRP.Viewer.Appearance[field]
 	end
 	-- EditBox is inside ScrollFrame
-	for _, key in pairs({"CU", "DE"}) do
-		XRP.Viewer[key] = XRP.Viewer.Appearance[key].EditBox
+	for _, field in pairs({"CU", "DE"}) do
+		XRP.Viewer[field] = XRP.Viewer.Appearance[field].EditBox
 	end
 
 	-- Biography tab
-	for _, key in pairs({"AG", "HH", "HB"}) do
-		XRP.Viewer[key] = XRP.Viewer.Biography[key]
+	for _, field in pairs({"AG", "HH", "HB"}) do
+		XRP.Viewer[field] = XRP.Viewer.Biography[field]
 	end
 	-- EditBox is inside ScrollFrame
-	for _, key in pairs({"MO", "HI"}) do
-		XRP.Viewer[key] = XRP.Viewer.Biography[key].EditBox
+	for _, field in pairs({"MO", "HI"}) do
+		XRP.Viewer[field] = XRP.Viewer.Biography[field].EditBox
 	end
 
-	self.CurrentTarget = XRP.Character.Name
+	self.CurrentTarget = NONE
 	self:RegisterEvent("ADDON_LOADED")
 end
-
 
 function XRP.Viewer:Load(profile)
 	-- This does not need to be very smart. SetText() should be mapped to the
 	-- appropriate 'real' function if needed. The Remote module always fills the
 	-- entire profile with values, even if they're empty, so we do not need to
 	-- empty anything first.
-	for _, key in pairs(self.SupportedFields) do
-		if key == "FR" or key == "FC" then
-			if tonumber(profile[key]) ~= nil then
-				self[key]:SetText(XRP_VALUES[key][tonumber(profile[key])+1])
-			else
-				self[key]:SetText(profile[key])
-			end
-		elseif key == "NI" then
-			if profile[key] ~= "" then
-				self[key]:SetText("\""..profile[key].."\"")
-			else
-				self[key]:SetText("")
-			end
-		elseif key == "NA" then
-			self.TitleText:SetText(profile[key])
-		elseif key ~= "GC" and key ~= "GR" and key ~= "GS" then -- Non-visible use.
-			self[key]:SetText(profile[key])
+	for field, contents in pairs(profile) do
+		if field == "FR" or field == "FC" then
+			self[field]:SetText(tonumber(contents) and XRP_VALUES[field][tonumber(contents)+1] or contents)
+		elseif field == "NI" then
+			self[field]:SetText(contents ~= "" and format("\"%s\"", contents) or contents)
+		elseif field == "NA" then
+			self.TitleText:SetText(contents)
+		else
+			self[field]:SetText(contents)
 		end
 	end
 end
@@ -97,18 +93,26 @@ function XRP.Viewer:ViewUnit(unit)
 		unit = "player"
 	end
 	local name = XRP:UnitNameWithRealm(unit)
-	XRP.Remote:CacheUnit(unit)
 	self.CurrentTarget = name
-	self:Load(XRP.Remote:Get(name, XRP.Viewer.SupportedFields))
+	self:Get(name)
 	ShowUIPanel(self)
 	SetPortraitTexture(self.portrait, unit)
 end
 
 function XRP.Viewer:View(name)
+	-- If the realm isn't attached (search for separator '-', as it's invalid
+	-- in an actual name), attach our own realm name. It's probably what was
+	-- intended.
+	name = RP:NameWithRealm(name)
 	self.CurrentTarget = name
-	self:Load(XRP.Remote:Get(name, XRP.Viewer.SupportedFields))
+	self:Get(name)
 	ShowUIPanel(self)
 	SetPortraitToTexture(self.portrait, "Interface\\Icons\\INV_Misc_Book_17")
+end
+
+-- This is a wrapper for Load that allows us to access local supportedfields.
+function XRP.Viewer:Get(name)
+	XRP.Viewer:Load(XRP.Remote:Get(name, supportedfields))
 end
 
 init()
