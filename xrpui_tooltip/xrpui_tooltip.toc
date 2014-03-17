@@ -6,5 +6,5 @@
 ## Dependencies: XRP, XRP_Remote
 ## X-License: GPLv3
 
-XRP_Tooltip.xml
-XRP_Tooltip.lua
+Frames.xml
+Core.lua
