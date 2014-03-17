@@ -18,7 +18,7 @@
 	<!-- Here there be dragons. XML dragons, the most dangerous sort. -->
 	<!-- It's dangerous to go alone, take a syntax highlighter. -->
 	<!-- No, seriously, though. This is the easiest way to get a good UI. -->
-	<Include file="XRP_ViewerTemplates.xml"/>
+	<Include file="FrameTemplates.xml"/>
 	<Frame name="$parentViewer" parentKey="Viewer" toplevel="true" movable="true" parent="XRP" enableMouse="true" inherits="ButtonFrameTemplate" hidden="true">
 		<Layers>
 			<Layer level="OVERLAY">
@@ -30,19 +30,22 @@
 					<Color r="0.5" g="0.5" b="0.5"/>
 				</FontString>
 				<!-- Nickname -->
-				<FontString name="$parentNI" parentKey="NI" inherits="GameFontNormalSmall">
+				<FontString name="$parentNI" parentKey="NI" inherits="GameFontNormalSmall" maxLines="1">
+					<Size x="240"/>
 					<Anchors>
 						<Anchor point="TOP" relativePoint="TOP" x="0" y="-23"/>
 					</Anchors>
 				</FontString>
 				<!-- Title -->
-				<FontString name="$parentNT" parentKey="NT" inherits="GameFontNormalSmall">
+				<FontString name="$parentNT" parentKey="NT" inherits="GameFontNormalSmall" maxLines="1">
+					<Size x="240"/>
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.NI" relativePoint="BOTTOM" x="0" y="-2"/>
 					</Anchors>
 				</FontString>
 				<!-- House/Clan/Tribe -->
-				<FontString name="$parentNH" parentKey="NH" inherits="GameFontNormalSmall">
+				<FontString name="$parentNH" parentKey="NH" inherits="GameFontNormalSmall" maxLines="1">
+					<Size x="240"/>
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.NT" relativePoint="BOTTOM" x="0" y="-2"/>
 					</Anchors>
@@ -57,28 +60,28 @@
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
-						<!-- Eyes Label -->
-						<FontString name="$parentAELabel" parentKey="AELabel" inherits="GameFontNormalSmall" text="XRP_AE">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="12" y="-8"/>
-							</Anchors>
-						</FontString>
 						<!-- Race Label -->
 						<FontString name="$parentRALabel" parentKey="RALabel" inherits="GameFontNormalSmall" text="XRP_RA">
 							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.AELabel" relativePoint="LEFT" x="105" y="0"/>
+								<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="12" y="-8"/>
 							</Anchors>
 						</FontString>
 						<!-- Height Label -->
 						<FontString name="$parentAHLabel" parentKey="AHLabel" inherits="GameFontNormalSmall" text="XRP_AH">
 							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.RALabel" relativePoint="LEFT" x="100" y="0"/>
+								<Anchor point="LEFT" relativeKey="$parent.RALabel" relativePoint="LEFT" x="210" y="0"/>
+							</Anchors>
+						</FontString>
+						<!-- Eyes Label -->
+						<FontString name="$parentAELabel" parentKey="AELabel" inherits="GameFontNormalSmall" text="XRP_AE">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.RALabel" relativePoint="BOTTOMLEFT" x="0" y="-25"/>
 							</Anchors>
 						</FontString>
 						<!-- Weight Label -->
 						<FontString name="$parentAWLabel" parentKey="AWLabel" inherits="GameFontNormalSmall" text="XRP_AW">
 							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.AHLabel" relativePoint="LEFT" x="56" y="0"/>
+								<Anchor point="LEFT" relativeKey="$parent.AELabel" relativePoint="LEFT" x="210" y="0"/>
 							</Anchors>
 						</FontString>
 						<!-- Currently Label -->
@@ -90,36 +93,36 @@
 						<!-- Description Label -->
 						<FontString name="$parentDELabel" parentKey="DELabel" inherits="GameFontNormalSmall" text="XRP_DE">
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.CULabel" relativePoint="BOTTOMLEFT" x="0" y="-58"/>
+								<Anchor point="TOPLEFT" relativeKey="$parent.CULabel" relativePoint="BOTTOMLEFT" x="0" y="-60"/>
 							</Anchors>
 						</FontString>
 					</Layer>
 				</Layers>
 				<Frames>
-					<!-- Eyes Box -->
-					<EditBox name="$parentAE" parentKey="AE" inherits="FancyOutputBoxTemplate" autoFocus="false">
-						<Size x="95" y="20"/>
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.AELabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
-						</Anchors>
-					</EditBox>
 					<!-- Race Box -->
 					<EditBox name="$parentRA" parentKey="RA" inherits="FancyOutputBoxTemplate" autoFocus="false">
-						<Size x="91" y="20"/>
+						<Size x="200" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.RALabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
 						</Anchors>
 					</EditBox>
 					<!-- Height Box -->
 					<EditBox name="$parentAH" parentKey="AH" inherits="FancyOutputBoxTemplate" autoFocus="false">
-						<Size x="45" y="20"/>
+						<Size x="96" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.AHLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
 						</Anchors>
 					</EditBox>
+					<!-- Eyes Box -->
+					<EditBox name="$parentAE" parentKey="AE" inherits="FancyOutputBoxTemplate" autoFocus="false">
+						<Size x="200" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.AELabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
+						</Anchors>
+					</EditBox>
 					<!-- Weight Box -->
 					<EditBox name="$parentAW" parentKey="AW" inherits="FancyOutputBoxTemplate" autoFocus="false">
-						<Size x="45" y="20"/>
+						<Size x="96" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.AWLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
 						</Anchors>
@@ -133,7 +136,7 @@
 					</ScrollFrame>
 					<!-- Description Box -->
 					<ScrollFrame name="$parentDE" parentKey="DE" inherits="LargeOutputScrollFrameTemplate">
-						<Size x="301" y="168"/>
+						<Size x="301" y="163"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.DELabel" relativePoint="BOTTOMLEFT" x="2" y="-5"/>
 						</Anchors>
@@ -147,22 +150,22 @@
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
-						<!-- Age Label -->
-						<FontString name="$parentAGLabel" parentKey="AGLabel" inherits="GameFontNormalSmall" text="XRP_AG">
+						<!-- Home Label -->
+						<FontString name="$parentHHLabel" parentKey="HHLabel" inherits="GameFontNormalSmall" text="XRP_HH">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="12" y="-8"/>
 							</Anchors>
 						</FontString>
-						<!-- Home Label -->
-						<FontString name="$parentHHLabel" parentKey="HHLabel" inherits="GameFontNormalSmall" text="XRP_HH">
+						<!-- Age Label -->
+						<FontString name="$parentAGLabel" parentKey="AGLabel" inherits="GameFontNormalSmall" text="XRP_AG">
 							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.AGLabel" relativePoint="LEFT" x="50" y="0"/>
+								<Anchor point="TOPLEFT" relativeKey="$parent.HHLabel" relativePoint="BOTTOMLEFT" x="0" y="-25"/>
 							</Anchors>
 						</FontString>
 						<!-- Birthplace Label -->
 						<FontString name="$parentHBLabel" parentKey="HBLabel" inherits="GameFontNormalSmall" text="XRP_HB">
 							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.HHLabel" relativePoint="LEFT" x="133" y="0"/>
+								<Anchor point="LEFT" relativeKey="$parent.AGLabel" relativePoint="LEFT" x="106" y="0"/>
 							</Anchors>
 						</FontString>
 						<!-- Motto Label -->
@@ -174,29 +177,29 @@
 						<!-- History Label -->
 						<FontString name="$parentHILabel" parentKey="HILabel" inherits="GameFontNormalSmall" text="XRP_HI">
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.MOLabel" relativePoint="BOTTOMLEFT" x="0" y="-58"/>
+								<Anchor point="TOPLEFT" relativeKey="$parent.MOLabel" relativePoint="BOTTOMLEFT" x="0" y="-60"/>
 							</Anchors>
 						</FontString>
 					</Layer>
 				</Layers>
 				<Frames>
-					<!-- Age Box -->
-					<EditBox name="$parentAG" parentKey="AG" inherits="FancyOutputBoxTemplate" autoFocus="false">
-						<Size x="40" y="20"/>
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.AGLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
-						</Anchors>
-					</EditBox>
 					<!-- Home Box -->
 					<EditBox name="$parentHH" parentKey="HH" inherits="FancyOutputBoxTemplate" autoFocus="false">
-						<Size x="123" y="20"/>
+						<Size x="306" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.HHLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
 						</Anchors>
 					</EditBox>
+					<!-- Age Box -->
+					<EditBox name="$parentAG" parentKey="AG" inherits="FancyOutputBoxTemplate" autoFocus="false">
+						<Size x="96" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.AGLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
+						</Anchors>
+					</EditBox>
 					<!-- Birthplace Box -->
 					<EditBox name="$parentHB" parentKey="HB" inherits="FancyOutputBoxTemplate" autoFocus="false">
-						<Size x="123" y="20"/>
+						<Size x="200" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.HBLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
 						</Anchors>
@@ -210,7 +213,7 @@
 					</ScrollFrame>
 					<!-- History Box -->
 					<ScrollFrame name="$parentHI" parentKey="HI" inherits="LargeOutputScrollFrameTemplate">
-						<Size x="301" y="193"/>
+						<Size x="301" y="163"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.HILabel" relativePoint="BOTTOMLEFT" x="2" y="-5"/>
 						</Anchors>
@@ -265,9 +268,9 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnShow>
-				SetPortraitTexture(self.portrait, "player")
-			</OnShow>
+			<OnLoad>
+				SetPortraitToTexture(self.portrait, "Interface\\Icons\\INV_Misc_Book_17")
+			</OnLoad>
 		</Scripts>
 	</Frame>
 </Ui>

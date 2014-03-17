@@ -44,7 +44,7 @@ local function init()
 	end)
 
 	self:SetScript("OnHide", function(self)
-		self.CurrentTarget = NONE
+		self.CurrentTarget = UNKNOWN
 	end)
 
 	-- Setup shorthand access for easier looping later.
@@ -66,7 +66,7 @@ local function init()
 		XRP.Viewer[field] = XRP.Viewer.Biography[field].EditBox
 	end
 
-	self.CurrentTarget = NONE
+	self.CurrentTarget = UNKNOWN
 	self:RegisterEvent("ADDON_LOADED")
 end
 
@@ -80,6 +80,8 @@ function XRP.Viewer:Load(profile)
 			self[field]:SetText(contents ~= "" and format("\"%s\"", contents) or contents)
 		elseif field == "NA" then
 			self.TitleText:SetText(contents)
+		elseif field == "VA" then
+			self[field]:SetText(contents ~= UNKNOWN.."/"..NONE and contents:gsub(";", ", ") or contents)
 		else
 			self[field]:SetText(contents)
 		end
@@ -93,19 +95,19 @@ function XRP.Viewer:ViewUnit(unit)
 	local name = XRP:UnitNameWithRealm(unit)
 	self.CurrentTarget = name
 	self:Get(name)
-	ShowUIPanel(self)
 	SetPortraitTexture(self.portrait, unit)
+	ShowUIPanel(self)
 end
 
 function XRP.Viewer:View(name)
 	-- If the realm isn't attached (search for separator '-', as it's invalid
 	-- in an actual name), attach our own realm name. It's probably what was
 	-- intended.
-	name = RP:NameWithRealm(name)
+	name = XRP:NameWithRealm(name)
 	self.CurrentTarget = name
 	self:Get(name)
-	ShowUIPanel(self)
 	SetPortraitToTexture(self.portrait, "Interface\\Icons\\INV_Misc_Book_17")
+	ShowUIPanel(self)
 end
 
 -- This is a wrapper for Load that allows us to access local supportedfields.
