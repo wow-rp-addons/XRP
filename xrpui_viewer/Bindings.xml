@@ -15,7 +15,7 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-	<Binding name="XRP_VIEWER" description="View RP profiles." header="XRP">
+	<Binding name="XRP_VIEWER" description="View RP profiles." header="XRP_LABEL">
 		XRP.Viewer:ViewUnit("target");
 	</Binding>
 </Bindings>

@@ -6,5 +6,5 @@
 ## Dependencies: XRP, XRP_Remote
 ## X-License: GPLv3
 
-XRP_Viewer.xml
-XRP_Viewer.lua
+Frames.xml
+Core.lua
