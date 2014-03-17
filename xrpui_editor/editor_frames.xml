@@ -18,7 +18,7 @@
 	<!-- Here there be dragons. XML dragons, the most dangerous sort. -->
 	<!-- It's dangerous to go alone, take a syntax highlighter. -->
 	<!-- No, seriously, though. This is the easiest way to get a good UI. -->
-	<Include file="XRP_EditorTemplates.xml"/>
+	<Include file="FrameTemplates.xml"/>
 	<Frame name="$parentEditor" parentKey="Editor" toplevel="true" movable="true" parent="XRP" enableMouse="true" inherits="ButtonFrameTemplate" hidden="true">
 		<Layers>
 			<Layer level="OVERLAY">

@@ -235,11 +235,9 @@ function XRP.Editor:Load(profile, name)
 	-- This does not need to be very smart. SetText() should be mapped to the
 	-- appropriate 'real' function if needed.
 	for field, value in pairs(profile) do
+		self[field]:SetText(value)
 		if field ~= "FC" and field ~= "FR" then
-			self[field]:SetText(value)
 			self[field]:SetCursorPosition(0)
-		else
-			self[field]:SetText(value)
 		end
 	end
 
