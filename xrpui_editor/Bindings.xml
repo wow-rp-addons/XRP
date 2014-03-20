@@ -15,7 +15,7 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-	<Binding name="XRP_EDITOR" description="Edit your own RP profile." header="XRP_LABEL">
+	<Binding name="XRP_EDITOR" description="Edit your own RP profile." header="XRP">
 		ToggleFrame(XRP.Editor);
 	</Binding>
 </Bindings>
