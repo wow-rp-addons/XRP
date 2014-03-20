@@ -3,6 +3,7 @@
 ## Version: 5.4.7.0
 ## Author: Justin Snelgrove
 ## Notes: Profile editor for XRP.
+## X-Category: Roleplaying
 ## X-License: GPLv3
 ## Dependencies: XRP, XRP_Storage
 

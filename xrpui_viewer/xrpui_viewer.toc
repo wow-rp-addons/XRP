@@ -3,8 +3,9 @@
 ## Version: 5.4.7.0
 ## Author: Justin Snelgrove
 ## Notes: Profile viewer for XRP.
-## Dependencies: XRP, XRP_Remote
+## X-Category: Roleplaying
 ## X-License: GPLv3
+## Dependencies: XRP, XRP_Remote
 
 Frames.xml
 Core.lua
