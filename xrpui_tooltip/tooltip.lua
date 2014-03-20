@@ -34,7 +34,7 @@ local function init()
 				if UnitIsPlayer(unit) then
 					XRP.Tooltip:PlayerUnit(unit)
 				elseif unit == nil then
-					XRP.Tooltip:Show()
+					XRP.Tooltip.TargetFix:Show()
 				end
 			end)
 
@@ -60,7 +60,7 @@ local function init()
 			end)
 
 			hooksecurefunc("UnitFrame_UpdateTooltip", function()
-				XRP.Tooltip:CUFFix:Show()
+				XRP.Tooltip.CUFFix:Show()
 			end)
 
 			self:UnregisterEvent("ADDON_LOADED")
