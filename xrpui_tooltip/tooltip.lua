@@ -266,20 +266,29 @@ function XRP.Tooltip:RefreshPlayer()
 	}
 
 	if profile.NI ~= "" then
+		-- TODO: Graceful truncation (using quotation marks?)
 		lines[#lines+1] = {
 			left = {
-				text = format("|cff6070a0%s: |r\"%.80s\"", XRP_NI, profile.NI),
+				text = format("|cff6070a0%s: |r\"%.70s\"", XRP_NI, profile.NI),
 				color = { r = 0.6, g = 0.7, b = 0.9 },
 			},
 		}
 	end
 
 	if profile.NT ~= "" then
+		local profilestring = profile.NT
+		-- Try to gracefully truncate TRP2's slew of titles.
+		-- TODO: Check more common separators.
+		if #profilestring > 80 and profilestring:find("|", 1, true) then
+			local position = 0
+			while profilestring:find("|", position+1, true) and (profilestring:find("|", position+1, true)) <= 80 do
+				position = (profilestring:find("|", position+1, true))
+			end
+			profilestring = profilestring:sub(1, position - 2)
+		end
 		lines[#lines+1] = {
 			left = {
-				-- TODO: More graceful truncation. TRP2 has lots of titles,
-				-- separated by | for instance.
-				text = format("%.80s", profile.NT),
+				text = format("%.80s", profilestring),
 				color = DEFAULT_COLOR,
 			},
 		}
@@ -318,7 +327,7 @@ function XRP.Tooltip:RefreshPlayer()
 	if profile.CU ~= "" then
 		lines[#lines+1] = {
 			left = {
-				text = format("|cffa08050%s:|r %.80s%s", XRP_CU, profile.CU, profile.CU:len()>80 and CONTINUED or ""),
+				text = format("|cffa08050%s:|r %.70s%s", XRP_CU, profile.CU, profile.CU:len()>70 and CONTINUED or ""),
 				color = { r = 0.9, g = 0.7, b = 0.6},
 			},
 		}
@@ -335,11 +344,11 @@ function XRP.Tooltip:RefreshPlayer()
 		},
 	}
 
-	if profile.FC ~= "0" then
+	if (profile.FR ~= "0" and profile.FR ~= "") or (profile.FC ~= "0" and profile.FC ~= "") then
 		lines[#lines+1] = {
 			left = {
-				text = nil,
-				color = DEFAULT_COLOR,
+				text = format("%.40s", (profile.FR == "0" or profile.FR == "") and " " or tonumber(profile.FR) and XRP_VALUES.FR[tonumber(profile.FR)+1] or profile.FR),
+				color = (profile.FC ~= "0" and profile.FC ~= "") and FC_COLORS[profile.FC == "1" and 1 or 2] or DEFAULT_COLOR,
 			},
 			right = {
 				text = format("%.40s", profile.FC == "0" and "" or tonumber(profile.FC) and XRP_VALUES.FC[tonumber(profile.FC)+1] or profile.FC),
