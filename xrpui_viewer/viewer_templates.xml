@@ -99,6 +99,7 @@
 				<Scripts>
 					<OnTextChanged>
 						self:SetCursorPosition(0);
+						self:GetParent():SetVerticalScroll(0);
 					</OnTextChanged>
 					<OnLoad>
 						self:EnableMouse(false);
