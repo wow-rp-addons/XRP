@@ -102,11 +102,8 @@ end
 XRP_FACTION_COLORS = {
 	Horde = PLAYER_FACTION_COLORS[0],
 	Alliance = PLAYER_FACTION_COLORS[1],
-	Neutral = {
-		r = 1.0,
-		g = 1.0,
-		b = 0.0,
-	},
+--	Neutral = { r = 1.0, g = 1.0, b = 0.0 },
+	Neutral = { r = 0.9, g = 0.7, b = 0.0 },
 }
 
 local FC_COLORS = {
@@ -211,6 +208,8 @@ function XRP.Tooltip:PlayerUnit(unit)
 	currentunit.afk = UnitIsAFK(unit)
 	currentunit.dnd = UnitIsDND(unit)
 	currentunit.pvp = UnitIsPVP(unit)
+	currentunit.canattack = UnitCanAttack(unit, "player")
+	currentunit.canbeattacked = UnitCanAttack("player", unit)
 	currentunit.visible = UnitIsVisible(unit)
 	currentunit.connected = UnitIsConnected(unit)
 	currentunit.location = (not currentunit.visible and currentunit.connected and GameTooltipTextLeft3:GetText()) or nil
@@ -248,12 +247,15 @@ function XRP.Tooltip:RefreshPlayer()
 		-- 		   free-for-all PvP flag).
 		-- 		 - RED (?) for hostile (you+them flagged, same faction,
 		-- 		   free-for-all PvP flag)
-		if currentunit.faction ~= XRP.ToonFaction then
-			-- Orange
+		local colorstring
+		if currentunit.canattack then
+			colorstring = "ffbf4d00"
+		elseif currentunit.canbeattacked or currenunit.faction ~= XRP.ToonFaction then
+			colorstring = "ffe6b300"
 		else
-			-- Green
+			colorstring = "ff009919"
 		end
-		namestring = format("%s |cffff00ff<%s>|r", namestring, PVP)
+		namestring = format("%s |c%s<%s>|r", namestring, colorstring, PVP)
 	end
 	if not currentunit.connected then
 		namestring = format("%s |cff888888<%s>|r", namestring, PLAYER_OFFLINE)
