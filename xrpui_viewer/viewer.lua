@@ -34,7 +34,7 @@ local function init()
 				SetPortraitTexture(self.portrait, "player")
 				self:SetScript("OnShow", nil)
 			end)
-			XRP:HookEvent("PROFILE_RECEIVE", function(name)
+			XRP:HookEvent("REMOTE_RECEIVE", function(name)
 				if XRP.Viewer.CurrentTarget == name then
 					XRP.Viewer:Get(name)
 				end
@@ -75,7 +75,6 @@ function XRP.Viewer:Load(profile)
 	-- appropriate 'real' function if needed. The Remote module always fills the
 	-- entire profile with values, even if they're empty, so we do not need to
 	-- empty anything first.
-	-- TODO: Set cursor position. Maybe do in OnTextChanged?
 	for field, contents in pairs(profile) do
 		if field == "NI" then
 			self[field]:SetText(contents ~= "" and format("\"%s\"", contents) or contents)
