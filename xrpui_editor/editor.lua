@@ -55,27 +55,20 @@ local function init()
 				end
 			end)
 
-			UIDropDownMenu_Initialize(self.FR, function()
-				local info
-				for value, text in pairs(XRP_VALUES.FR) do
-					info = UIDropDownMenu_CreateInfo()
-					info.text = text
-					info.value = tostring(value - 1)
-					info.func = function(self, arg1, arg2, checked)
-						if not checked then
-						UIDropDownMenu_SetSelectedValue(UIDROPDOWNMENU_OPEN_MENU, self.value)
-						end
-					end
-					UIDropDownMenu_AddButton(info)
-				end
-			end)
-
 			UIDropDownMenu_Initialize(self.FC, function()
-				local info
+				local info = UIDropDownMenu_CreateInfo()
+				info.text = XRP_VALUES.FC_EMPTY
+				info.value = "0"
+				info.func = function(self, arg1, arg2, checked)
+					if not checked then
+						UIDropDownMenu_SetSelectedValue(UIDROPDOWNMENU_OPEN_MENU, self.value)
+					end
+				end
+				UIDropDownMenu_AddButton(info)
 				for value, text in pairs(XRP_VALUES.FC) do
 					info = UIDropDownMenu_CreateInfo()
 					info.text = text
-					info.value = tostring(value - 1)
+					info.value = tostring(value)
 					info.func = function(self, arg1, arg2, checked)
 						if not checked then
 							UIDropDownMenu_SetSelectedValue(UIDROPDOWNMENU_OPEN_MENU, self.value)
@@ -85,19 +78,19 @@ local function init()
 				end
 			end)
 
-			XRP:HookEvent("PROFILE_DELETE", function(name)
+			XRP:HookEvent("STORAGE_DELETE", function(name)
 				if XRP.Editor.Profiles:GetText() == name then
 					XRP.Editor:Open("Default")
 				end
 			end)
 
-			XRP:HookEvent("PROFILE_RENAME", function(name, newname)
-				if XRP.Editor.Profiles:GetText() == Name then
+			XRP:HookEvent("STORAGE_RENAME", function(name, newname)
+				if XRP.Editor.Profiles:GetText() == name then
 					XRP.Editor:Open(newname)
 				end
 			end)
 
-			XRP:HookEvent("PROFILE_SAVE", function(name)
+			XRP:HookEvent("STORAGE_SAVE", function(name)
 				if XRP.Editor.Profiles:GetText() == name then
 					XRP.Editor:Open(name)
 				end
@@ -197,7 +190,7 @@ local function init()
 	XRP.Editor["DE"] = XRP.Editor.Appearance["DE"].EditBox
 
 	-- Biography tab
-	for _, field in pairs({"AG", "HH", "HB", "MO",  "FR", "FC"}) do
+	for _, field in pairs({"AG", "HH", "HB", "MO", "FR", "FC"}) do
 		XRP.Editor[field] = XRP.Editor.Biography[field]
 	end
 	-- EditBox is inside ScrollFrame
@@ -207,6 +200,8 @@ end
 local function clearfocus(self)
 	self.NA:SetFocus()
 	self.NA:ClearFocus()
+	self.AG:SetFocus()
+	self.AG:ClearFocus()
 end
 
 function XRP.Editor:Save()
@@ -235,8 +230,10 @@ function XRP.Editor:Load(profile, name)
 	-- This does not need to be very smart. SetText() should be mapped to the
 	-- appropriate 'real' function if needed.
 	for field, value in pairs(profile) do
-		self[field]:SetText(value)
-		if field ~= "FC" and field ~= "FR" then
+		if field == "FC" then
+			self[field]:SetText(value == "" and "0" or value)
+		else
+			self[field]:SetText(value)
 			self[field]:SetCursorPosition(0)
 		end
 	end
