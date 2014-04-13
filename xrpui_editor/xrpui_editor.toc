@@ -7,5 +7,5 @@
 ## X-License: GPLv3
 ## Dependencies: XRP, XRP_Storage
 
-Frames.xml
-Core.lua
+EditorFrames.xml
+Editor.lua

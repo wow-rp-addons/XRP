@@ -261,24 +261,13 @@
 							<Anchor point="TOPLEFT" relativeKey="$parent.HILabel" relativePoint="BOTTOMLEFT" x="2" y="-5"/>
 						</Anchors>
 					</ScrollFrame>
-					<!-- Style Menu -->
-					<Button name="$parentFR" parentKey="FR" inherits="UIDropDownMenuTemplate">
+					<!-- Style Box -->
+					<EditBox name="$parentFR" parentKey="FR" inherits="FancyInputBoxTemplate" autoFocus="false">
+						<Size x="153" y="20"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.FRLabel" relativePoint="BOTTOMLEFT" x="-22" y="0"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.FRLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
 						</Anchors>
-						<Scripts>
-							<OnLoad>
-								UIDropDownMenu_SetWidth(self, 139, 0);
-								function self:SetText(value)
-									UIDropDownMenu_Initialize(self, self.initialize);
-									UIDropDownMenu_SetSelectedValue(self, value);
-								end;
-								function self:GetText()
-									return UIDropDownMenu_GetSelectedValue(self);
-								end;
-							</OnLoad>
-						</Scripts>
-					</Button>
+					</EditBox>
 					<!-- Status Menu -->
 					<Button name="$parentFC" parentKey="FC" inherits="UIDropDownMenuTemplate">
 						<Anchors>
