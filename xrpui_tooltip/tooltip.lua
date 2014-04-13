@@ -38,7 +38,7 @@ local function init()
 				end
 			end)
 
-			XRP:HookEvent("PROFILE_RECEIVE", function(name)
+			XRP:HookEvent("REMOTE_RECEIVE", function(name)
 				local tooltip, unit = GameTooltip:GetUnit()
 				-- Note: This will pointlessly re-render if there are two
 				-- players with the same base name from different realms.
@@ -69,7 +69,7 @@ local function init()
 
 	-- WORKAROUND: GameTooltip:GetUnit() will sometimes return nil, especially
 	-- when custom unit frames call GameTooltip:SetUnit() with something 'odd'
-	-- like targettarget. On the very next frame draw, the tooltip will
+	-- like targettarget. On the very next frame draw, the tooltip will often
 	-- correctly be able to identify such units (typically as mouseover), so
 	-- this will functionally delay the tooltip draw for these cases by one
 	-- frame.
@@ -114,7 +114,7 @@ local FC_COLORS = {
 local DEFAULT_COLOR = {}
 
 local currentunit = {}
-local lines = {}
+local lines
 
 local function rendertooltip()
 	local oldnumlines = GameTooltip:NumLines()
@@ -239,20 +239,15 @@ function XRP.Tooltip:RefreshPlayer()
 		namestring = format("%s |cff994d4d%s|r", namestring, CHAT_FLAG_DND)
 	end
 	if currentunit.pvp then
-		-- TODO: Better coloration:
-		-- 		 - RED for hostile (you+them flagged, opposite faction)
-		-- 		 - YELLOW for hostile (them flagged, opposite faction)
-		-- 		 - GREEN for friendly (them flagged, same faction)
-		-- 		 - YELLOW (?) for hostile (them flagged, same faction,
-		-- 		   free-for-all PvP flag).
-		-- 		 - RED (?) for hostile (you+them flagged, same faction,
-		-- 		   free-for-all PvP flag)
 		local colorstring
 		if currentunit.canattack then
+			-- If they can attack us.
 			colorstring = "ffbf4d00"
-		elseif currentunit.canbeattacked or currenunit.faction ~= XRP.ToonFaction then
+		elseif currentunit.canbeattacked or currentunit.faction ~= XRP.ToonFaction then
+			-- If we can attack them (or is opposite faction, for Sanctuary).
 			colorstring = "ffe6b300"
 		else
+			-- Otherwise, must be friendly.
 			colorstring = "ff009919"
 		end
 		namestring = format("%s |c%s<%s>|r", namestring, colorstring, PVP)
@@ -349,11 +344,11 @@ function XRP.Tooltip:RefreshPlayer()
 	if (profile.FR ~= "0" and profile.FR ~= "") or (profile.FC ~= "0" and profile.FC ~= "") then
 		lines[#lines+1] = {
 			left = {
-				text = format("%.40s", (profile.FR == "0" or profile.FR == "") and " " or tonumber(profile.FR) and XRP_VALUES.FR[tonumber(profile.FR)+1] or profile.FR),
+				text = format("%.40s", (profile.FR == "0" or profile.FR == "") and " " or tonumber(profile.FR) and XRP_VALUES.FR[tonumber(profile.FR)] or profile.FR),
 				color = (profile.FC ~= "0" and profile.FC ~= "") and FC_COLORS[profile.FC == "1" and 1 or 2] or DEFAULT_COLOR,
 			},
 			right = {
-				text = format("%.40s", profile.FC == "0" and "" or tonumber(profile.FC) and XRP_VALUES.FC[tonumber(profile.FC)+1] or profile.FC),
+				text = format("%.40s", profile.FC == "0" and "" or tonumber(profile.FC) and XRP_VALUES.FC[tonumber(profile.FC)] or profile.FC),
 				color = FC_COLORS[profile.FC == "1" and 1 or 2],
 			},
 		}
