@@ -1,0 +1,16 @@
+## Interface: 50400
+## Title: XRP
+## Version: 5.4.7.0
+## Author: Justin Snelgrove
+## Notes: XRP is an extensible RP addon. This contains the core functionality (no user interface).
+## X-Category: Roleplaying
+## X-License: LGPLv3
+## SavedVariablesPerCharacter: xrp_selectedprofile, xrp_profiles, xrp_versions
+## SavedVariables: xrp_cache, xrp_settings
+
+xrp.lua
+strings.lua
+msp.lua
+characters.lua
+profiles.lua
+init.lua
