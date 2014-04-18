@@ -1,0 +1,84 @@
+--[[
+	xrp.profile
+		This table provides access to the currently-selected profile.
+
+	xrp.profile[field]
+		Accessing any field (where the field name is two alphabetical,
+		uppercase characters) will provide access to that field for the
+		currently active profile.
+
+	xrp.profile[field] = "New value."
+		Setting any profile field to a new value in this table will set
+		a temporary override on that field. It will not be saved to the
+		profile storage. This is useful for fields like CU or FC that have
+		rather time-limited meanings. To remove the temporary override,
+		simply set the field's value here to nil (NOT an empty string).
+		Setting it to the same value as the currently-active saved profile
+		will *NOT* remove the override.
+
+	xrp:profile()
+		Calling the profile table as a function will return a copy of the
+		entire currently-active profile (including overridden values). This
+		is not particularly recommended to be used, as just accessing the
+		fields you actually need is more memory and time efficient. Also
+		note this is a COPY. Modifying it will modify neither the overrides
+		nor the saved profile.
+]]
+
+--[[
+	xrp.profiles
+		This table provides access to all saved profiles.
+
+	xrp.profiles[name]
+		Accessing a profile by its name will NOT do anything useful. Due
+		to metatable usage, you'll get an empty table.
+
+	xrp.profiles[name] = <table>
+		Setting a profile by name to a table full of field values will
+		update or add every field in that table to the saved profile. It
+		will *NOT* overwrite the table.
+
+	xrp.profiles[name] = nil
+		Setting a profile by name to nil will delete the profile.
+
+	xrp.profiles:Name()
+		Calling a profile by name as a function will return a full copy of
+		all fields in that profile (in a table).
+	
+	xrp.profiles:Name("newname")
+		Calling an existing profile as a function with a string as an argument
+		will rename that profile to the value of the string.
+
+	xrp.profiles:Name("copyfrom")
+		Calling a non-existant profile as a function with a string as an
+		argument will copy the data from the profile named in the string into
+		the profile called.
+
+	xrp.profiles[name][field]
+		Accessing a profile's field by profile name and field name will
+		return the saved value of that field for that profile.
+
+	xrp.profiles[name][field] = "New value."
+		Setting a profile's field by profile and field names will update
+		that value in the saved profile. Setting the value to "" will remove
+		that field from the named profile.
+
+	xrp:profiles()
+		Calling the profiles table as a function without arguments will
+		return a sorted list of all saved profiles.
+
+	xrp:profiles(name)
+		Calling the profiles table and providing a name (string) of an
+		existing saved profile will activate that profile (i.e., make it
+		visible to others). This will also cause xrp.profile to return
+		the values of this new profile.
+]]
+
+--[[
+	xrp.msp
+
+	This is a from-scratch implementation of MSP (Mary-Sue Protocol) as
+	defined by the reference LibMSP (by Etarna Moonshyne). 99%+ of this is
+	completely original work. There are a few tiny pieces taken directly
+	from LibMSP (for compatibility reasons), such as certain patterns.
+]]
