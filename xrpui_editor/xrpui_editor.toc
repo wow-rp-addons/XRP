@@ -1,11 +1,13 @@
 ## Interface: 50400
-## Title: XRP Editor
+## LoadOnDemand: 1
+## Title: xrp-ui editor
 ## Version: 5.4.7.0
 ## Author: Justin Snelgrove
-## Notes: Profile editor for XRP.
+## Notes: Profile editor for xrp-ui.
 ## X-Category: Roleplaying
 ## X-License: GPLv3
-## Dependencies: XRP, XRP_Storage
+## Dependencies: xrpui
 
-EditorFrames.xml
-Editor.lua
+editor_frames.xml
+editor.lua
+editor_popups.lua
