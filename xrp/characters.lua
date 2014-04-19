@@ -25,8 +25,12 @@ local unitcache = {}
 local charactermt = {
 	__index = function(character, field)
 		-- Any access to a field is treated as an implicit request to fetch
-		-- it (but xrp.msp won't do it if it's fresh).
-		xrp.msp:QueueRequest(character[namekey], field)
+		-- it (but xrp.msp won't do it if it's fresh, and will compile quick,
+		-- successive requests into one go). If the unit table's been used and
+		-- the target is not our faction, don't run a request.
+		if not unitcache[character[namekey]] or (unitcache[character[namekey]] and unitcache[character[namekey]].GF == xrp.toon.fields.GF) then
+			xrp.msp:QueueRequest(character[namekey], field)
+		end
 		if xrp_cache[character[namekey]] and xrp_cache[character[namekey]].fields[field] then
 			return xrp_cache[character[namekey]].fields[field]
 		elseif unitcache[character[namekey]] and unitcache[character[namekey]][field] then
@@ -64,7 +68,7 @@ xrp.characters = setmetatable({}, {
 	__call = function(characters)
 		local out = {}
 		for name, _ in xrp_cache do
-			out[#out+1] = name
+			out[#out + 1] = name
 		end
 	end,
 	__metatable = false,
@@ -73,9 +77,9 @@ xrp.characters = setmetatable({}, {
 xrp.units = setmetatable({}, {
 	__index = function (units, unit)
 		name = xrp:UnitNameWithRealm(unit)
-		if name then
+		if type(name) == "string" then
 			if not metacharacters[name] then
-				metacharacters[name] = setmetatable({ [namekey] = name}, charactermt)
+				metacharacters[name] = setmetatable({ [namekey] = name }, charactermt)
 			end
 			if not unitcache[name] then
 				unitcache[name] = {
@@ -89,8 +93,6 @@ xrp.units = setmetatable({}, {
 					for field, contents in pairs(unitcache[name]) do
 						if not xrp_cache[name].fields[field] then
 							xrp_cache[name].fields[field] = contents
-							xrp_cache[name].time[field] = name == xrp.toon.withrealm and 2147483647 or 0
-							xrp_cache[name].versions[field] = 0
 						end
 					end
 				end

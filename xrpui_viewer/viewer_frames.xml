@@ -18,14 +18,21 @@
 	<!-- Here there be dragons. XML dragons, the most dangerous sort. -->
 	<!-- It's dangerous to go alone, take a syntax highlighter. -->
 	<!-- No, seriously, though. This is the easiest way to get a good UI. -->
-	<Include file="FrameTemplates.xml"/>
-	<Frame name="$parentViewer" parentKey="Viewer" toplevel="true" movable="true" parent="XRP" enableMouse="true" inherits="ButtonFrameTemplate" hidden="true">
+	<Include file="viewer_templates.xml"/>
+	<Frame name="$parent_viewer" parentKey="viewer" toplevel="true" movable="true" parent="xrpui" enableMouse="true" inherits="ButtonFrameTemplate" hidden="true">
 		<Layers>
 			<Layer level="OVERLAY">
 				<!-- Version Information -->
 				<FontString name="$parentVA" parentKey="VA" inherits="GameFontNormalSmall" text="XRP_VERSION">
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" x="8" y="10"/>
+					</Anchors>
+					<Color r="0.5" g="0.5" b="0.5"/>
+				</FontString>
+				<!-- Incoming Information -->
+				<FontString name="$parentXC" parentKey="XC" inherits="GameFontNormalSmall" text="">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-12" y="10"/>
 					</Anchors>
 					<Color r="0.5" g="0.5" b="0.5"/>
 				</FontString>
@@ -61,37 +68,37 @@
 				<Layers>
 					<Layer level="OVERLAY">
 						<!-- Race Label -->
-						<FontString name="$parentRALabel" parentKey="RALabel" inherits="GameFontNormalSmall" text="XRP_RA">
+						<FontString name="$parentRALabel" parentKey="RALabel" inherits="GameFontNormalSmall" text="XRPUI_RA">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="12" y="-8"/>
 							</Anchors>
 						</FontString>
 						<!-- Height Label -->
-						<FontString name="$parentAHLabel" parentKey="AHLabel" inherits="GameFontNormalSmall" text="XRP_AH">
+						<FontString name="$parentAHLabel" parentKey="AHLabel" inherits="GameFontNormalSmall" text="XRPUI_AH">
 							<Anchors>
 								<Anchor point="LEFT" relativeKey="$parent.RALabel" relativePoint="LEFT" x="210" y="0"/>
 							</Anchors>
 						</FontString>
 						<!-- Eyes Label -->
-						<FontString name="$parentAELabel" parentKey="AELabel" inherits="GameFontNormalSmall" text="XRP_AE">
+						<FontString name="$parentAELabel" parentKey="AELabel" inherits="GameFontNormalSmall" text="XRPUI_AE">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.RALabel" relativePoint="BOTTOMLEFT" x="0" y="-25"/>
 							</Anchors>
 						</FontString>
 						<!-- Weight Label -->
-						<FontString name="$parentAWLabel" parentKey="AWLabel" inherits="GameFontNormalSmall" text="XRP_AW">
+						<FontString name="$parentAWLabel" parentKey="AWLabel" inherits="GameFontNormalSmall" text="XRPUI_AW">
 							<Anchors>
 								<Anchor point="LEFT" relativeKey="$parent.AELabel" relativePoint="LEFT" x="210" y="0"/>
 							</Anchors>
 						</FontString>
 						<!-- Currently Label -->
-						<FontString name="$parentCULabel" parentKey="CULabel" inherits="GameFontNormalSmall" text="XRP_CU">
+						<FontString name="$parentCULabel" parentKey="CULabel" inherits="GameFontNormalSmall" text="XRPUI_CU">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.AELabel" relativePoint="BOTTOMLEFT" x="0" y="-25"/>
 							</Anchors>
 						</FontString>
 						<!-- Description Label -->
-						<FontString name="$parentDELabel" parentKey="DELabel" inherits="GameFontNormalSmall" text="XRP_DE">
+						<FontString name="$parentDELabel" parentKey="DELabel" inherits="GameFontNormalSmall" text="XRPUI_DE">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.CULabel" relativePoint="BOTTOMLEFT" x="0" y="-60"/>
 							</Anchors>
@@ -151,31 +158,31 @@
 				<Layers>
 					<Layer level="OVERLAY">
 						<!-- Home Label -->
-						<FontString name="$parentHHLabel" parentKey="HHLabel" inherits="GameFontNormalSmall" text="XRP_HH">
+						<FontString name="$parentHHLabel" parentKey="HHLabel" inherits="GameFontNormalSmall" text="XRPUI_HH">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="12" y="-8"/>
 							</Anchors>
 						</FontString>
 						<!-- Age Label -->
-						<FontString name="$parentAGLabel" parentKey="AGLabel" inherits="GameFontNormalSmall" text="XRP_AG">
+						<FontString name="$parentAGLabel" parentKey="AGLabel" inherits="GameFontNormalSmall" text="XRPUI_AG">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.HHLabel" relativePoint="BOTTOMLEFT" x="0" y="-25"/>
 							</Anchors>
 						</FontString>
 						<!-- Birthplace Label -->
-						<FontString name="$parentHBLabel" parentKey="HBLabel" inherits="GameFontNormalSmall" text="XRP_HB">
+						<FontString name="$parentHBLabel" parentKey="HBLabel" inherits="GameFontNormalSmall" text="XRPUI_HB">
 							<Anchors>
 								<Anchor point="LEFT" relativeKey="$parent.AGLabel" relativePoint="LEFT" x="106" y="0"/>
 							</Anchors>
 						</FontString>
 						<!-- Motto Label -->
-						<FontString name="$parentMOLabel" parentKey="MOLabel" inherits="GameFontNormalSmall" text="XRP_MO">
+						<FontString name="$parentMOLabel" parentKey="MOLabel" inherits="GameFontNormalSmall" text="XRPUI_MO">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.AGLabel" relativePoint="BOTTOMLEFT" x="0" y="-25"/>
 							</Anchors>
 						</FontString>
 						<!-- History Label -->
-						<FontString name="$parentHILabel" parentKey="HILabel" inherits="GameFontNormalSmall" text="XRP_HI">
+						<FontString name="$parentHILabel" parentKey="HILabel" inherits="GameFontNormalSmall" text="XRPUI_HI">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.MOLabel" relativePoint="BOTTOMLEFT" x="0" y="-60"/>
 							</Anchors>
@@ -220,28 +227,6 @@
 					</ScrollFrame>
 				</Frames>
 			</Frame>
-			<!-- Update Button -->
-<!--			<Button name="$parentUpdate" parentKey="Update" inherits="UIPanelButtonTemplate" text="UPDATE">
-				<Size x="96" y="22"/>
-				<Anchors>
-					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-10" y="4"/>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-					</OnClick>
-				</Scripts>
-			</Button>-->
-			<!-- Force Update Button -->
-<!--			<Button name="$parentForceUpdate" parentKey="ForceUpdate" inherits="UIPanelButtonTemplate" text="XRP_VIEWER_FORCEUPDATE">
-				<Size x="96" y="22"/>
-				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.Update" relativePoint="LEFT"/>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-					</OnClick>
-				</Scripts>
-			</Button>-->
 			<Button name="$parentTab1" parentKey="Tab1" inherits="CharacterFrameTabButtonTemplate" id="1" text="Appearance">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="11" y="2"/>
@@ -269,7 +254,7 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				SetPortraitToTexture(self.portrait, "Interface\\Icons\\INV_Misc_Book_17")
+				SetPortraitToTexture(self.portrait, "Interface\\Icons\\INV_Misc_Book_17");
 			</OnLoad>
 		</Scripts>
 	</Frame>

@@ -1,11 +1,11 @@
 ## Interface: 50400
-## Title: XRP Tooltip
+## Title: xrp-ui tooltip
 ## Version: 5.4.7.0
 ## Author: Justin Snelgrove
-## Notes: Mouseover tooltips for XRP.
+## Notes: Mouseover tooltips for xrp-ui.
 ## X-Category: Roleplaying
 ## X-License: GPLv3
-## Dependencies: XRP, XRP_Remote
+## Dependencies: xrpui
 
-DummyFrames.xml
-Tooltip.lua
+tooltip_frames.xml
+tooltip.lua

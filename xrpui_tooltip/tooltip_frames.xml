@@ -15,10 +15,5 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-	<Frame parentKey="Tooltip" hidden="false" parent="XRP">
-		<Frames>
-			<Frame parentKey="TargetFix" hidden="true"/>
-			<Frame parentKey="CUFFix" hidden="true"/>
-		</Frames>
-	</Frame>
+	<Frame parentKey="tooltip" hidden="true" parent="xrpui"/>
 </Ui>

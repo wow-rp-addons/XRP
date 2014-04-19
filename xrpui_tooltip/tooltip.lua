@@ -15,147 +15,58 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local function init()
-	local self = XRP.Tooltip
-	self:RegisterEvent("ADDON_LOADED")
-	self:SetScript("OnEvent", function(self, event, addon)
-		if event == "ADDON_LOADED" and addon == "XRP_Tooltip" then
+--[[XRP_FACTION_COLORS = {
+	Horde = PLAYER_FACTION_COLORS[0], -- e60d12 LIGHT: ff595e
+	Alliance = PLAYER_FACTION_COLORS[1], -- 4a54e8 LIGHT: 96a1ff
+	Neutral = { r = 0.9, g = 0.7, b = 0.0 }, -- e6b300 LIGHT: TODO!
+}]]
 
-			GameTooltip:HookScript("OnTooltipSetUnit", function(self)
-				-- GetUnit() will not return any sort of the non-basic unit
-				-- strings, such as "targettarget", "pettarget", etc. It'll
-				-- only spit out the name in the first parameter, which is
-				-- not something we can use. This mainly causes problems for
-				-- custom unit frames which call GameTooltip:SetUnit() with
-				-- such unit strings. Bizarrely, a split-second later it will
-				-- often properly return a unit string such as "mouseover"
-				-- that we could have used.
-				local unit = select(2, self:GetUnit())
-				if UnitIsPlayer(unit) then
-					XRP.Tooltip:PlayerUnit(unit)
-				elseif unit == nil then
-					XRP.Tooltip.TargetFix:Show()
-				end
-			end)
-
-			XRP:HookEvent("REMOTE_RECEIVE", function(name)
-				local tooltip, unit = GameTooltip:GetUnit()
-				-- Note: This will pointlessly re-render if there are two
-				-- players with the same base name from different realms.
-				-- No harm done, just a few extra CPU cycles.
-				--
-				-- TODO: Check if the off-realm tooltip targets have their
-				-- realms attached. If so, use names with realms by attaching
-				-- a realm name if needed.
-				if tooltip and tooltip == XRP:NameWithoutRealm(name) then
-					XRP.Tooltip:RefreshPlayer()
-					-- If the mouse has already left the unit, the tooltip
-					-- will get stuck visible if we don't do this. It still
-					-- bounces back into visibility if it's partly faded out,
-					-- but it'll just fade again.
-					if not unit or not UnitIsUnit(unit, "mouseover") then
-						GameTooltip:FadeOut()
-					end
-				end
-			end)
-
-			hooksecurefunc("UnitFrame_UpdateTooltip", function()
-				XRP.Tooltip.CUFFix:Show()
-			end)
-
-			self:UnregisterEvent("ADDON_LOADED")
-		end
-	end)
-
-	-- WORKAROUND: GameTooltip:GetUnit() will sometimes return nil, especially
-	-- when custom unit frames call GameTooltip:SetUnit() with something 'odd'
-	-- like targettarget. On the very next frame draw, the tooltip will often
-	-- correctly be able to identify such units (typically as mouseover), so
-	-- this will functionally delay the tooltip draw for these cases by one
-	-- frame.
-	self.TargetFix:SetScript("OnUpdate", function(self, elapsed)
-		self:Hide() -- Hiding stops OnUpdate.
-		local unit = select(2, GameTooltip:GetUnit())
-		if UnitIsPlayer(unit) then
-			XRP.Tooltip:PlayerUnit(unit)
-		end
-	end)
-
-	-- WORKAROUND: Blizzard's compact raid frames reset the colors of the
-	-- first line in the tooltip ... *AFTER* calling SetUnit(). This is
-	-- run by hooking the compact raid frame's tooltip update function, and
-	-- just changes the color back. This can't be done in the hook itself as,
-	-- despite being hooksecurefunc, it will taint the raid frames to do so.
-	self.CUFFix:SetScript("OnUpdate", function(self, elapsed)
-		self:Hide() -- Hiding stops OnUpdate.
-		local unit = select(2, GameTooltip:GetUnit())
-		if UnitIsPlayer(unit) then
-			local faction = UnitFactionGroup(unit)
-			if not faction or type(XRP_FACTION_COLORS[faction]) ~= "table" then
-				faction = "Neutral"
-			end
-			GameTooltipTextLeft1:SetTextColor(XRP_FACTION_COLORS[faction].r or 1.0, XRP_FACTION_COLORS[faction].g or 1.0, XRP_FACTION_COLORS[faction].b or 1.0)
-		end
-	end)
-end
-
-XRP_FACTION_COLORS = {
-	Horde = PLAYER_FACTION_COLORS[0],
-	Alliance = PLAYER_FACTION_COLORS[1],
---	Neutral = { r = 1.0, g = 1.0, b = 0.0 },
-	Neutral = { r = 0.9, g = 0.7, b = 0.0 },
+local faction_colors = {
+	Horde = { dark = "e60d12", light = "ff595e" },
+	Alliance = { dark = "4a54e8", light = "96a1ff" },
+	Neutral = { dark = "e6b300", light = "ffffcc" },
 }
 
-local FC_COLORS = {
-	{ r = 0.6, g = 0.4, b = 0.3 },
-	{ r = 0.4, g = 0.7, b = 0.5 },
+local fccolors = {
+	"99664d",
+	"66b380",
+	--{ r = 0.6, g = 0.4, b = 0.3 }, -- 99664d
+	--{ r = 0.4, g = 0.7, b = 0.5 }, -- 66b380
 }
 
-local DEFAULT_COLOR = {}
+local unknown = {}
 
 local currentunit = {}
 local lines
 
-local function rendertooltip()
-	local oldnumlines = GameTooltip:NumLines()
+local oldnumlines
+local numline
+
+local function xrpui_tooltip_render_line(lefttext, righttext)
+	numline = numline + 1
 	-- This is a bit scary-looking, but it's a sane way to replace tooltip
 	-- lines without needing to completely redo the tooltip from scratch
 	-- (and lose the tooltip's state of what it's looking at if we do).
-	for num, line in pairs(lines) do
-		-- First case: If there's already a line to replace.
-		if num <= oldnumlines then
-			-- Can't have an empty left text line ever -- if a line exists, it
-			-- needs to have a space at minimum to not muck up line spacing.
-			_G["GameTooltipTextLeft"..num]:SetText(line.left.text or " ")
-			_G["GameTooltipTextLeft"..num]:SetTextColor(line.left.color.r or 1.0, line.left.color.g or 1.0, line.left.color.b or 1.0)
-			if line.right and line.right.text then
-				_G["GameTooltipTextRight"..num]:SetText(line.right.text)
-				_G["GameTooltipTextRight"..num]:SetTextColor(line.right.color.r or 1.0, line.right.color.g or 1.0, line.right.color.b or 1.0)
-				_G["GameTooltipTextRight"..num]:Show()
-			else
-				_G["GameTooltipTextRight"..num]:Hide()
-			end
-		-- Second case: If there are no more lines to replace.
+	--
+	-- First case: If there's already a line to replace.
+	if numline <= oldnumlines then
+		-- Can't have an empty left text line ever -- if a line exists, it
+		-- needs to have a space at minimum to not muck up line spacing.
+		_G["GameTooltipTextLeft"..numline]:SetText(lefttext or " ")
+		if righttext then
+			_G["GameTooltipTextRight"..numline]:SetText(righttext)
+			_G["GameTooltipTextRight"..numline]:Show()
 		else
-			if not line.right or not line.right.text then
-				GameTooltip:AddLine(line.left.text or " ", line.left.color.r or 1.0, line.left.color.g or 1.0, line.left.color.b or 1.0)
-			else
-				GameTooltip:AddDoubleLine(line.left.text or " ", line.right.text, line.left.color.r or 1.0, line.left.color.g or 1.0, line.left.color.b or 1.0, line.right.color.r or 1.0, line.right.color.g or 1.0, line.right.color.b or 1.0)
-			end
+			_G["GameTooltipTextRight"..numline]:Hide()
+		end
+	-- Second case: If there are no more lines to replace.
+	else
+		if not righttext then
+			GameTooltip:AddLine(lefttext or "")
+		else
+			GameTooltip:AddDoubleLine(lefttext or " ", righttext)
 		end
 	end
-
-	-- In rare cases (test case: target without RP addon, is PvP flagged) there
-	-- will be some leftover lines at the end of the tooltip. This hides them,
-	-- if they exist.
-	local newnumlines = #lines
-	while newnumlines < oldnumlines do
-		newnumlines = newnumlines + 1
-		_G["GameTooltipTextLeft"..newnumlines]:Hide()
-		_G["GameTooltipTextRight"..newnumlines]:Hide()
-	end
-
-	GameTooltip:Show()
 end
 
 --[[
@@ -195,14 +106,14 @@ end
 		default tooltip, with coloration and some rearrangement.
 ]]
 
-function XRP.Tooltip:PlayerUnit(unit)
+function xrpui.tooltip:PlayerUnit(unit)
 	-- The currentunit table stores, as it says on the tin, the current (well,
 	-- technically last) unit we rendered a tooltip for. This allows for a
 	-- refresh of the tooltip as it fades, rather than only being able to
 	-- refresh if the mouse is still over the unit.
-	currentunit.name = XRP:UnitNameWithRealm(unit)
+	currentunit.name = xrp:UnitNameWithRealm(unit)
 	currentunit.faction = UnitFactionGroup(unit)
-	if not currentunit.faction or type(XRP_FACTION_COLORS[currentunit.faction]) ~= "table" then
+	if not currentunit.faction or type(faction_colors[currentunit.faction]) ~= "table" then
 		currentunit.faction = "Neutral"
 	end
 	currentunit.afk = UnitIsAFK(unit)
@@ -214,156 +125,170 @@ function XRP.Tooltip:PlayerUnit(unit)
 	currentunit.connected = UnitIsConnected(unit)
 	currentunit.location = (not currentunit.visible and currentunit.connected and GameTooltipTextLeft3:GetText()) or nil
 	currentunit.guild = GetGuildInfo(unit)
-	currentunit.pvpname = UnitPVPName(unit) or XRP:NameWithoutRealm(currentunit.name)
+	currentunit.pvpname = UnitPVPName(unit) or xrp:NameWithoutRealm(currentunit.name)
 	currentunit.realm = select(2, UnitName(unit))
 	currentunit.level = UnitLevel(unit)
-	currentunit.race = UnitRace(unit)
+	currentunit.race, currentunit.raceid = UnitRace(unit)
 	currentunit.class, currentunit.classid = UnitClass(unit)
 
-	XRP.Tooltip:RefreshPlayer()
+	xrpui.tooltip:RefreshPlayer(xrp.units[unit])
 end
 
-function XRP.Tooltip:RefreshPlayer()
-	-- Caveat: Getting a tooltip for UNKNOWN fills some fields badly, like NA,
-	-- which will always be "Unknown".
-	--
-	-- TODO: Maybe make a true dummy profile table instead? Or alternately be
-	-- sure to not *require* the presence of fields and use an empty table?
-	local profile = currentunit.visible and XRP.Remote:Get(currentunit.name, "TT") or XRP.Remote:Get(UNKNOWN, "TT")
-
-	lines = {}
-	local namestring = format("%.80s", profile.NA ~= UNKNOWN and profile.NA or XRP:NameWithoutRealm(currentunit.name))
+-- Everything in here is using color pipe escapes because Blizzard will
+-- occasionally interact with the tooltip's text lines' SetColor, and if
+-- we've touched them (i.e., by setting or especially changing them), it will
+-- taint some stuff pretty nastily (i.e., compact raid frames).
+function xrpui.tooltip:RefreshPlayer(character)
+	oldnumlines = GameTooltip:NumLines()
+	numline = 0
+	character = currentunit.visible and character or unknown
+	
+	local namestring = format("|cff%s%.80s", faction_colors[currentunit.faction].dark, character.NA or xrp:NameWithoutRealm(currentunit.name))
 	if currentunit.afk then
-		namestring = format("%s |cff99994d%s|r", namestring, CHAT_FLAG_AFK)
+		namestring = format("%s |cff99994d%s", namestring, CHAT_FLAG_AFK)
 	elseif currentunit.dnd then
-		namestring = format("%s |cff994d4d%s|r", namestring, CHAT_FLAG_DND)
+		namestring = format("%s |cff994d4d%s", namestring, CHAT_FLAG_DND)
 	end
 	if currentunit.pvp then
 		local colorstring
 		if currentunit.canattack then
 			-- If they can attack us.
 			colorstring = "ffbf4d00"
-		elseif currentunit.canbeattacked or currentunit.faction ~= XRP.ToonFaction then
+		elseif currentunit.canbeattacked or currentunit.faction ~= xrp.toon.fields.GF then
 			-- If we can attack them (or is opposite faction, for Sanctuary).
 			colorstring = "ffe6b300"
 		else
 			-- Otherwise, must be friendly.
 			colorstring = "ff009919"
 		end
-		namestring = format("%s |c%s<%s>|r", namestring, colorstring, PVP)
+		namestring = format("%s |c%s<%s>", namestring, colorstring, PVP)
 	end
 	if not currentunit.connected then
-		namestring = format("%s |cff888888<%s>|r", namestring, PLAYER_OFFLINE)
+		namestring = format("%s |cff888888<%s>", namestring, PLAYER_OFFLINE)
 	end
-	lines[#lines+1] = {
-		left = {
-			text = namestring,
-			color = XRP_FACTION_COLORS[currentunit.faction],
-		},
-	}
+	xrpui_tooltip_render_line(namestring)
 
-	if profile.NI ~= "" then
+	if character.NI then
 		-- TODO: Graceful truncation (using quotation marks?)
-		lines[#lines+1] = {
-			left = {
-				text = format("|cff6070a0%s: |r\"%.70s\"", XRP_NI, profile.NI),
-				color = { r = 0.6, g = 0.7, b = 0.9 },
-			},
-		}
+	xrpui_tooltip_render_line(format("|cff6070a0%s: |cff99b3e6\"%.70s\"", XRPUI_NI, character.NI))
 	end
 
-	if profile.NT ~= "" then
-		local profilestring = profile.NT
+	if character.NT then
+		local profilestring = character.NT
 		-- Try to gracefully truncate TRP2's slew of titles.
 		-- TODO: Check more common separators.
 		if #profilestring > 80 and profilestring:find("|", 1, true) then
 			local position = 0
-			while profilestring:find("|", position+1, true) and (profilestring:find("|", position+1, true)) <= 80 do
-				position = (profilestring:find("|", position+1, true))
+			while profilestring:find("|", position + 1, true) and (profilestring:find("|", position + 1, true)) <= 80 do
+				position = (profilestring:find("|", position + 1, true))
 			end
 			profilestring = profilestring:sub(1, position - 2)
 		end
-		lines[#lines+1] = {
-			left = {
-				text = format("%.80s", profilestring),
-				color = DEFAULT_COLOR,
-			},
-		}
+		xrpui_tooltip_render_line(format("%.80s", profilestring))
 	end
 
 	if currentunit.guild then
-		lines[#lines+1] = {
-			left = {
-				text = format("<%s>", currentunit.guild),
-				color = DEFAULT_COLOR,
-			},
-		}
+		xrpui_tooltip_render_line(format("<%s>", currentunit.guild))
 	end
 
 	if currentunit.visible then
-		local pvpnamestring = currentunit.pvpname
+		local pvpnamestring = format("|cff%s%s", faction_colors[currentunit.faction].light, currentunit.pvpname)
 		if currentunit.realm and currentunit.realm ~= "" then
-			pvpnamestring = format("%s (%s)", pvpnamestring, XRP:RealmNameWithSpacing(currentunit.realm))
+			pvpnamestring = format("%s (%s)", pvpnamestring, xrp:RealmNameWithSpacing(currentunit.realm))
 		end
-		lines[#lines+1] = {
-			left = {
-				text = pvpnamestring,
-				color = {
-					r = XRP_FACTION_COLORS[currentunit.faction].r + 0.3,
-					g = XRP_FACTION_COLORS[currentunit.faction].g + 0.3,
-					b = XRP_FACTION_COLORS[currentunit.faction].b + 0.3,
-				},
-			},
-			right = {
-				text = profile.VA ~= UNKNOWN.."/"..NONE and "RP" or nil,
-				color = { r = 0.5, g = 0.5, b = 0.5 },
-			},
-		}
+		xrpui_tooltip_render_line(pvpnamestring, character.VA and "|cff7f7f7fRP" or nil)
 	end
 
-	if profile.CU ~= "" then
-		lines[#lines+1] = {
-			left = {
-				text = format("|cffa08050%s:|r %.70s%s", XRP_CU, profile.CU, profile.CU:len()>70 and CONTINUED or ""),
-				color = { r = 0.9, g = 0.7, b = 0.6},
-			},
-		}
+	if character.CU then
+		xrpui_tooltip_render_line(format("|cffa08050%s:|cffe6b399 %.70s%s", XRPUI_CU, character.CU, character.CU:len()>70 and CONTINUED or ""))
 	end
 
-	local race = profile.RA ~= UNKNOWN and profile.RA or currentunit.race
-	lines[#lines+1] = {
-		left = {
-			-- Note: RAID_CLASS_COLORS[classid].colorStr does *not* have a pipe
-			-- escape in it -- it's just the AARRGGBB string. Some other default
-			-- color strings do, so be sure to check.
-			text = format("%s %d %.40s |c%s%s|r (%s)", LEVEL, currentunit.level, race, RAID_CLASS_COLORS[currentunit.classid].colorStr, currentunit.class, PLAYER),
-			color = DEFAULT_COLOR,
-		},
-	}
+	local race = character.RA or currentunit.race
+	-- Note: RAID_CLASS_COLORS[classid].colorStr does *not* have a pipe
+	-- escape in it -- it's just the AARRGGBB string. Some other default
+	-- color strings do, so be sure to check.
+	xrpui_tooltip_render_line(format("|cffffffff%s %d %.40s |c%s%s|cffffffff (%s)", LEVEL, currentunit.level, race, RAID_CLASS_COLORS[currentunit.classid].colorStr, currentunit.class, PLAYER))
 
-	if (profile.FR ~= "0" and profile.FR ~= "") or (profile.FC ~= "0" and profile.FC ~= "") then
-		lines[#lines+1] = {
-			left = {
-				text = format("%.40s", (profile.FR == "0" or profile.FR == "") and " " or tonumber(profile.FR) and XRP_VALUES.FR[tonumber(profile.FR)] or profile.FR),
-				color = (profile.FC ~= "0" and profile.FC ~= "") and FC_COLORS[profile.FC == "1" and 1 or 2] or DEFAULT_COLOR,
-			},
-			right = {
-				text = format("%.40s", profile.FC == "0" and "" or tonumber(profile.FC) and XRP_VALUES.FC[tonumber(profile.FC)] or profile.FC),
-				color = FC_COLORS[profile.FC == "1" and 1 or 2],
-			},
-		}
+	if (character.FR and character.FR ~= "0") or (character.FC and character.FC ~= "0") then
+		local frline = format("|cff%s%.40s", (character.FC and character.FC ~= "0" and fccolors[character.FC == "1" and 1 or 2]) or "ffffff", (character.FR == "0" or not character.FR) and " " or tonumber(character.FR) and xrpui.values.FR[tonumber(character.FR)] or character.FR)
+		local fcline
+		if character.FC and character.FC ~= "0" then
+			fcline = format("|cff%s%.40s", fccolors[character.FC == "1" and 1 or 2], tonumber(character.FC) and xrpui.values.FC[tonumber(character.FC)] or character.FC)
+		end
+		xrpui_tooltip_render_line(frline, fcline)
 	end
 
 	if not currentunit.visible and currentunit.location then
-		lines[#lines+1] = {
-			left = {
-				-- TODO: Color the Zone: label.
-				text = format("%s: %s", ZONE, currentunit.location),
-				color = DEFAULT_COLOR,
-			},
-		}
+		-- TODO: Color the Zone: label.
+		xrpui_tooltip_render_line(format("%s: %s", ZONE, currentunit.location))
 	end
-	rendertooltip()
+
+	-- In rare cases (test case: target without RP addon, is PvP flagged) there
+	-- will be some leftover lines at the end of the tooltip. This hides them,
+	-- if they exist.
+	while numline < oldnumlines do
+		numline = numline + 1
+		_G["GameTooltipTextLeft"..numline]:Hide()
+		_G["GameTooltipTextRight"..numline]:Hide()
+	end
+
+	GameTooltip:Show()
 end
 
-init()
+xrpui.tooltip:SetScript("OnEvent", function(self, event, addon)
+	if event == "ADDON_LOADED" and addon == "xrpui_tooltip" then
+
+		GameTooltip:HookScript("OnTooltipSetUnit", function(self)
+			-- GetUnit() will not return any sort of the non-basic unit
+			-- strings, such as "targettarget", "pettarget", etc. It'll only
+			-- spit out the name in the first parameter, which is not something
+			-- we can use. This mainly causes problems for custom unit frames
+			-- which call GameTooltip:SetUnit() with such unit strings.
+			-- Bizarrely, a split-second later it will often properly return a
+			-- unit string such as "mouseover" that we could have used.
+			local unit = select(2, self:GetUnit())
+			if UnitIsPlayer(unit) then
+				xrpui.tooltip:PlayerUnit(unit)
+			elseif unit == nil then
+				xrpui.tooltip:Show()
+			end
+		end)
+
+		xrp:HookEvent("MSP_RECEIVE", function(name)
+			local tooltip, unit = GameTooltip:GetUnit()
+			-- Note: This will pointlessly re-render if there are two players
+			-- with the same base name from different realms.  No harm done,
+			-- just a few extra CPU cycles.
+			--
+			-- TODO: Check if the off-realm tooltip targets have their realms
+			-- attached. If so, use names with realms by attaching a realm name
+			-- if needed.
+			if tooltip and tooltip == xrp:NameWithoutRealm(name) then
+				xrpui.tooltip:RefreshPlayer(xrp.characters[name])
+				-- If the mouse has already left the unit, the tooltip will get
+				-- stuck visible if we don't do this. It still bounces back
+				-- into visibility if it's partly faded out, but it'll just
+				-- fade again.
+				if not unit or not UnitIsUnit(unit, "mouseover") then
+					GameTooltip:FadeOut()
+				end
+			end
+		end)
+
+		self:UnregisterEvent("ADDON_LOADED")
+	end
+end)
+xrpui.tooltip:RegisterEvent("ADDON_LOADED")
+
+-- WORKAROUND: GameTooltip:GetUnit() will sometimes return nil, especially when
+-- custom unit frames call GameTooltip:SetUnit() with something 'odd' like
+-- targettarget. On the very next frame draw, the tooltip will often correctly
+-- be able to identify such units (typically as mouseover), so this will
+-- functionally delay the tooltip draw for these cases by at most one frame.
+xrpui.tooltip:SetScript("OnUpdate", function(self, elapsed)
+	self:Hide() -- Hiding stops OnUpdate.
+	local unit = select(2, GameTooltip:GetUnit())
+	if UnitIsPlayer(unit) then
+		xrpui.tooltip:PlayerUnit(unit)
+	end
+end)
