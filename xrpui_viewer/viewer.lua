@@ -15,13 +15,13 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local supportedfields = { "NA", "NI", "NT", "NH", "AE", "RA", "AH", "AW", "CU", "DE", "AG", "HH", "HB", "MO", "HI", "VA" }
+local supportedfields = { NA = true, NI = true, NT = true, NH = true, AE = true, RA = true, AH = true, AW = true, CU = true, DE = true, AG = true, HH = true, HB = true, MO = true, HI = true, VA = true }
 
 local function init()
-	local self = XRP.Viewer
+	local self = xrpui.viewer
 
 	self:SetScript("OnEvent", function(self, event, addon)
-		if event == "ADDON_LOADED" and addon == "XRP_Viewer" then
+		if event == "ADDON_LOADED" and addon == "xrpui_viewer" then
 			XRP_VIEWER_VERSION = GetAddOnMetadata(addon, "Title").."/"..GetAddOnMetadata(addon, "Version")
 			self:SetAttribute("UIPanelLayout-defined", true)
 			self:SetAttribute("UIPanelLayout-enabled", true)
@@ -30,18 +30,30 @@ local function init()
 			self:SetAttribute("UIPanelLayout-whileDead", true)
 			PanelTemplates_SetNumTabs(self, 2)
 			PanelTemplates_SetTab(self, 1)
-			self:SetScript("OnShow", function()
+--[[			self:SetScript("OnShow", function()
 				SetPortraitTexture(self.portrait, "player")
 				self:SetScript("OnShow", nil)
+			end)]]
+			xrp:HookEvent("MSP_RECEIVE", function(name)
+				if xrpui.viewer.CurrentTarget == name then
+					xrpui.viewer:Load(xrp.characters[name])
+					xrpui.viewer.XC:SetText("Received!")
+				end
 			end)
-			XRP:HookEvent("REMOTE_RECEIVE", function(name)
-				if XRP.Viewer.CurrentTarget == name then
-					XRP.Viewer:Get(name)
+			xrp:HookEvent("MSP_RECEIVE_CHUNK", function(name, chunk, totalchunks)
+				if xrpui.viewer.CurrentTarget == name then
+--					print(format("%s: %u/%u", name, chunk, totalchunks or 0))
+					if chunk == totalchunks then
+						xrpui.viewer.XC:SetText("Received!")
+					else
+						xrpui.viewer.XC:SetFormattedText("Receiving: %u of %s...", chunk, totalchunks and tostring(totalchunks) or "??")
+					end
 				end
 			end)
 		self:UnregisterEvent("ADDON_LOADED")
 		end
 	end)
+	self:RegisterEvent("ADDON_LOADED")
 
 	self:SetScript("OnHide", function(self)
 		self.CurrentTarget = UNKNOWN
@@ -49,70 +61,71 @@ local function init()
 
 	-- Setup shorthand access for easier looping later.
 	-- Appearance tab
-	for _, field in pairs({"AE", "RA", "AH", "AW"}) do
-		XRP.Viewer[field] = XRP.Viewer.Appearance[field]
+	for _, field in pairs({ "AE", "RA", "AH", "AW" }) do
+		xrpui.viewer[field] = xrpui.viewer.Appearance[field]
 	end
 	-- EditBox is inside ScrollFrame
-	for _, field in pairs({"CU", "DE"}) do
-		XRP.Viewer[field] = XRP.Viewer.Appearance[field].EditBox
+	for _, field in pairs({ "CU", "DE" }) do
+		xrpui.viewer[field] = xrpui.viewer.Appearance[field].EditBox
 	end
 
 	-- Biography tab
-	for _, field in pairs({"AG", "HH", "HB"}) do
-		XRP.Viewer[field] = XRP.Viewer.Biography[field]
+	for _, field in pairs({ "AG", "HH", "HB" }) do
+		xrpui.viewer[field] = xrpui.viewer.Biography[field]
 	end
 	-- EditBox is inside ScrollFrame
-	for _, field in pairs({"MO", "HI"}) do
-		XRP.Viewer[field] = XRP.Viewer.Biography[field].EditBox
+	for _, field in pairs({ "MO", "HI" }) do
+		xrpui.viewer[field] = xrpui.viewer.Biography[field].EditBox
 	end
 
 	self.CurrentTarget = UNKNOWN
-	self:RegisterEvent("ADDON_LOADED")
 end
 
-function XRP.Viewer:Load(profile)
+function xrpui.viewer:Load(character)
 	-- This does not need to be very smart. SetText() should be mapped to the
 	-- appropriate 'real' function if needed. The Remote module always fills the
 	-- entire profile with values, even if they're empty, so we do not need to
 	-- empty anything first.
-	for field, contents in pairs(profile) do
+	for field, _ in pairs(supportedfields) do
 		if field == "NI" then
-			self[field]:SetText(contents ~= "" and format("\"%s\"", contents) or contents)
+			self[field]:SetText(character[field] and format("\"%s\"", character[field]) or "")
 		elseif field == "NA" then
-			self.TitleText:SetText(contents)
+			self.TitleText:SetText(character[field] or UNKNOWN)
 		elseif field == "VA" then
-			self[field]:SetText(contents ~= UNKNOWN.."/"..NONE and contents:gsub(";", ", ") or contents)
+			self[field]:SetText(character[field] and (character[field]:gsub(";", ", ")) or UNKNOWN.."/"..NONE)
+		elseif field == "AH" then
+			self[field]:SetText(xrp:ConvertHeight(character[field], "user") or "")
+		elseif field == "AW" then
+			self[field]:SetText(xrp:ConvertWeight(character[field], "user") or "")
+		elseif field == "RA" then
+			self[field]:SetText(character[field] or xrpui.values.RA[character.GR] or "")
 		else
-			self[field]:SetText(contents)
+			self[field]:SetText(character[field] or "")
 		end
 	end
+	self.XC:SetText("")
 end
 
-function XRP.Viewer:ViewUnit(unit)
+function xrpui.viewer:ViewUnit(unit)
 	if not UnitIsPlayer(unit) then
 		unit = "player"
 	end
-	local name = XRP:UnitNameWithRealm(unit)
+	local name = xrp:UnitNameWithRealm(unit)
 	self.CurrentTarget = name
-	self:Get(name)
+	self:Load(xrp.units[unit])
 	SetPortraitTexture(self.portrait, unit)
 	ShowUIPanel(self)
 end
 
-function XRP.Viewer:View(name)
+function xrpui.viewer:ViewCharacter(name)
 	-- If the realm isn't attached (search for separator '-', as it's invalid
 	-- in an actual name), attach our own realm name. It's probably what was
 	-- intended.
-	name = XRP:NameWithRealm(name)
+	name = xrp:NameWithRealm(name)
 	self.CurrentTarget = name
-	self:Get(name)
+	self:Load(xrp.characters[name])
 	SetPortraitToTexture(self.portrait, "Interface\\Icons\\INV_Misc_Book_17")
 	ShowUIPanel(self)
-end
-
--- This is a wrapper for Load that allows us to access local supportedfields.
-function XRP.Viewer:Get(name)
-	XRP.Viewer:Load(XRP.Remote:Get(name, supportedfields))
 end
 
 init()

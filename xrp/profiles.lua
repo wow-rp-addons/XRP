@@ -34,7 +34,10 @@ xrp.profile = setmetatable({}, {
 		end
 	end,
 	__newindex = function(profile, field, contents)
-		-- TODO: Field name checking.
+		if xrp.msp.unitfields[field] or xrp.msp.metafields[field] or not field:match("^%u%u$") then
+			return
+		end
+		-- TODO: Merge these two if sections?
 		if type(contents) == "string" and overrides[field] ~= contents then
 			overrides[field] = contents
 			if field == "AH" then
@@ -67,6 +70,9 @@ xrp.profile = setmetatable({}, {
 		for field, contents in pairs(overrides) do
 			out[field] = contents
 		end
+		for field, contents in pairs(converted) do
+			out[field] = contents
+		end
 		for field, contents in pairs(xrp.toon.fields) do
 			out[field] = contents
 		end
@@ -85,13 +91,18 @@ local metaprofiles = {}
 
 local profilemt = {
 	__index = function(profile, field)
+		if not xrp_profiles[profile[namekey]] then
+			xrp_profiles[profile[namekey]] = {}
+		end
 		if xrp_profiles[profile[namekey]][field] then
-			return xrp_profiles[field]
+			return xrp_profiles[profile[namekey]][field]
 		end
 		return nil
 	end,
 	__newindex = function(profile, field, contents)
-		-- TODO: Check field name for proper formatting.
+		if xrp.msp.unitfields[field] or xrp.msp.metafields[field] or not field:match("^%u%u$") then
+			return
+		end
 		local name = profile[namekey]
 		if type(contents) == "string" and contents ~= "" and (not xrp_profiles[name] or xrp_profiles[name][field] ~= contents) then
 			if not xrp_profiles[name] then
@@ -104,16 +115,16 @@ local profilemt = {
 			xrp:FireEvent("PROFILE_FIELD_SAVE", name, field)
 		elseif (contents == "" or not contents) and xrp_profiles[name] and xrp_profiles[name][field] then
 			xrp_profiles[name][field] = nil
-			if next(xrp_profiles[name]) then
-				if name == xrp_selectedprofile then
-					xrp.msp:UpdateField(field)
-				end
-				xrp:FireEvent("PROFILE_FIELD_SAVE", name, field)
-			else
+--			if next(xrp_profiles[name]) then
+			if name == xrp_selectedprofile then
+				xrp.msp:UpdateField(field)
+			end
+			xrp:FireEvent("PROFILE_FIELD_SAVE", name, field)
+--[[			else
 				metaprofiles[name] = nil
 				xrp_profiles[name] = nil
 				xrp:FireEvent("PROFILE_DELETE", name)
-			end
+			end]]
 		end
 	end,
 	__call = function(profile, newname)
@@ -127,6 +138,7 @@ local profilemt = {
 				end
 				return true
 			elseif type(xrp_profiles[name]) == "table" and type(xrp_profiles[newname]) ~= "table" then
+				-- Rename profile to the nonexistant table provided.
 				xrp_profiles[newname] = xrp_profiles[name]
 				xrp_profiles[name] = nil
 				xrp:FireEvent("PROFILE_RENAME", name, newname)
@@ -161,7 +173,15 @@ xrp.profiles = setmetatable({}, {
 			end
 		elseif profile == "" or profile == nil then
 			metaprofiles[name] = nil
-			xrp_profiles[name] = nil
+			if name ~= "Default" then
+				xrp_profiles[name] = nil
+			else
+				-- Wipe fields if profile is Default, but don't delete
+				-- the table.
+				for field, _ in xrp_profiles[name] do
+					xrp_profiles[name][field] = nil
+				end
+			end
 			xrp:FireEvent("PROFILE_DELETE", name)
 		end
 	end,
@@ -169,7 +189,7 @@ xrp.profiles = setmetatable({}, {
 		if not name then
 			local list = {}
 			for name, _ in pairs(xrp_profiles) do
-				list[#list+1] = name
+				list[#list + 1] = name
 			end
 			table.sort(list)
 			return list
@@ -201,9 +221,9 @@ function xrp:Logout()
 	local ttchanges = false
 	for field, _ in pairs(overrides) do
 		xrp_versions[field] = xrp_versions[field] + 1
-		if not ttchanges and xrp.msp.ttfields[field] then
-			ttchanges = true
-		end
+		ttchanges = xrp.msp.ttfields[field] or ttchanges
+--[[		if not ttchanges and xrp.msp.ttfields[field] then
+		end]]
 	end
 	if ttchanges then
 		xrp_versions.TT = xrp_versions.TT + 1

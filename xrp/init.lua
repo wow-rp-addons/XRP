@@ -16,7 +16,7 @@
 	<http://www.gnu.org/licenses/>.
 ]]
 
-xrp:SetScript("OnEvent", function(xrp, event, addon)
+local function xrp_OnEvent(xrp, event, addon)
 	if event == "ADDON_LOADED" and addon == "xrp" then
 		xrp.toon = {}
 		xrp.toon.withrealm = xrp:UnitNameWithRealm("player")
@@ -31,30 +31,31 @@ xrp:SetScript("OnEvent", function(xrp, event, addon)
 			VP = tostring(xrp.msp.protocol),
 		}
 
-		-- TODO: Convert to metatables for defaults.
 		if type(xrp_settings) ~= "table" then
-			xrp_settings = {
-				height = "cm",
-				weight = "kg",
-				loglevel = 6,
-			}
+			xrp_settings = {}
 		end
+
+		xrp.settings = setmetatable(xrp_settings, {
+			__index = {
+				debug = 3,
+				height = "ft",
+				weight = "lb",
+			},
+		})
 
 		if type(xrp_profiles) ~= "table" then
 			xrp_profiles = {
-				Default = {
-					NA = xrp.toon.name,
-					RA = xrp.toon.race,
-				},
+				Default = {},
 			}
+		elseif type(xrp_profiles.Default) ~= "table" then
+			xrp_profiles.Default = {}
 		end
 
-		if type(xrp_profiles.Default) ~= "table" then
-			xrp_profiles.Default = {
+		setmetatable(xrp_profiles.Default, {
+			__index = {
 				NA = xrp.toon.name,
-				RA = xrp.toon.race,
 			}
-		end
+		})
 
 		if type(xrp_selectedprofile) ~= "string" or type(xrp_profiles[xrp_selectedprofile]) ~= "table" then
 			xrp_selectedprofile = "Default"
@@ -62,6 +63,10 @@ xrp:SetScript("OnEvent", function(xrp, event, addon)
 
 		if type(xrp_cache) ~= "table" then
 			xrp_cache = {}
+		end
+
+		if type(xrp_versions) ~= "table" then
+			xrp_versions = {}
 		end
 
 		if not xrp_cache[xrp.toon.withrealm] then
@@ -78,5 +83,6 @@ xrp:SetScript("OnEvent", function(xrp, event, addon)
 		xrp.profiles(xrp_selectedprofile)
 		xrp:UnregisterEvent("PLAYER_LOGIN")
 	end
-end)
+end
+xrp:SetScript("OnEvent", xrp_OnEvent)
 xrp:RegisterEvent("ADDON_LOADED")

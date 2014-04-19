@@ -1,11 +1,12 @@
 ## Interface: 50400
-## Title: XRP Viewer
+## LoadOnDemand: 1
+## Title: xrp-ui viewer
 ## Version: 5.4.7.0
 ## Author: Justin Snelgrove
-## Notes: Profile viewer for XRP.
+## Notes: Profile viewer for xrp-ui.
 ## X-Category: Roleplaying
 ## X-License: GPLv3
-## Dependencies: XRP, XRP_Remote
+## Dependencies: xrpui
 
-ViewerFrames.xml
-Viewer.lua
+viewer_frames.xml
+viewer.lua

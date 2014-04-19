@@ -18,15 +18,20 @@
 
 xrp = CreateFrame("Frame")
 
-function xrp:Console(priority, tag, message)
-	if priority <= 2 and priority <= xrp_settings.loglevel then -- Errors.
-		DEFAULT_CHAT_FRAME:AddMessage(format("|cFFABD473XRP %s: |cFFFF0000(ERROR) |r%s", tag, message))
-	elseif priority <= 4 and priority <= xrp_settings.loglevel then -- Warnings.
-		DEFAULT_CHAT_FRAME:AddMessage(format("|cFFABD473XRP %s: |cFFFFA500(WARNING) |r%s", tag, message))
-	elseif priority <= 6 and priority <= xrp_settings.loglevel then -- Informational.
-		DEFAULT_CHAT_FRAME:AddMessage(format("|cFFABD473XRP %s: |r%s", tag, message))
-	elseif priority <= xrp_settings.loglevel then -- Debug.
-		DEFAULT_CHAT_FRAME:AddMessage(format("|cFFABD473XRP %s: |cFF0000FF(DEBUG) |r%s", tag, message))
+xrp.version = GetAddOnMetadata("xrp", "Version")
+xrp.versionstring = format("%s/%s", GetAddOnMetadata("xrp", "Title"), xrp.version)
+
+function xrp:Debug(priority, message)
+	if priority >= 5 and priority <= xrp.settings.loglevel then -- Debug.
+		DEFAULT_CHAT_FRAME:AddMessage(format("|cFFABD473xrp: |cFF0000FF(DEBUG) |r%s", message))
+	elseif priority == 1 and priority <= xrp.settings.debug then -- Critical.
+		DEFAULT_CHAT_FRAME:AddMessage(format("|cFFABD473xrp:: |cFFFF0000(CRITICAL) |r%s", message))
+	elseif priority == 2 and priority <= xrp.settings.debug then -- Errors.
+		DEFAULT_CHAT_FRAME:AddMessage(format("|cFFABD473xrp: |cFFFF3333(ERROR) |r%s", message))
+	elseif priority == 3 and priority <= xrp.settings.debug then -- Warnings.
+		DEFAULT_CHAT_FRAME:AddMessage(format("|cFFABD473xrp: |cFFFFA500(WARNING) |r%s", message))
+	elseif priority == 4 and priority <= xrp.settings.loglevel then -- Informational.
+		DEFAULT_CHAT_FRAME:AddMessage(format("|cFFABD473xrp: |r%s", message))
 	end
 end
 
@@ -48,11 +53,14 @@ end
 function xrp:NameWithRealm(name)
 	-- Searching for a '-' will indicate if it already has a realm name. '-'
 	-- is not valid in a base name.
-	return not name:find("-", 1, true) and format("%s-%s", name, GetRealmName():gsub("%s+", "")) or name
+	return not name:find("-", 1, true) and format("%s-%s", name, (GetRealmName():gsub("%s+", ""))) or name
 end
 
 -- Dumb version of Ambiguate().
 function xrp:NameWithoutRealm(name)
+	if type(name) ~= "string" then
+		return UNKNOWN
+	end
 	return (name:gsub("-.+", ""))
 end
 
@@ -82,7 +90,7 @@ function xrp:ConvertWeight(weight, units)
 		return weight
 	end
 
-	units = (not units or units == "user") and xrp_settings.weight or units
+	units = (not units or units == "user") and xrp.settings.weight or units
 	if units == "msp" then -- MSP internal format: kg without units as string.
 		return format("%d", math.floor(number + 0.5))
 	elseif units == "kg" then
@@ -121,7 +129,7 @@ function xrp:ConvertHeight(height, units)
 		return height
 	end
 
-	units = (not units or units == "user") and xrp_settings.height or units
+	units = (not units or units == "user") and xrp.settings.height or units
 	if units == "msp" then -- MSP internal format: cm without units as string.
 		return format("%d", number)
 	elseif units == "cm" then
