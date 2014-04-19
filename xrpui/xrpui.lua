@@ -87,8 +87,19 @@ xrpui.values = {
 	FC_EMPTY = "(Status not set)",
 }
 
+-- Sigh, global variable pollution. FrameXML needs it, though -- and at least
+-- we're prefixing with XRPUI_.
+for field, name in pairs(xrpui.fields) do
+	_G["XRPUI_"..field] = name
+end
+
+XRPUI_VERSION = GetAddOnMetadata("xrpui", "Title").."/"..GetAddOnMetadata("xrpui", "Version")
+BINDING_HEADER_XRPUI = GetAddOnMetadata("xrpui", "Title")
+BINDING_NAME_XRPUI_EDITOR = "Toggle RP profile editor"
+BINDING_NAME_XRPUI_VIEWER = "View target's RP profile"
+
 local function loadifneeded(addon)
-	if not IsAddonLoaded(addon) and IsAddOnLoadOnDemand(addon) then
+	if not IsAddOnLoaded(addon) and IsAddOnLoadOnDemand(addon) then
 		local loaded, reason = LoadAddOn(addon)
 		if not loaded then
 			return false
@@ -104,7 +115,7 @@ function xrpui:ToggleEditor()
 	ToggleFrame(xrpui.editor)
 end
 
-function xrpui:ShowViewer(character)
+function xrpui:ShowViewerCharacter(character)
 	if not loadifneeded("xrpui_viewer") then
 		return
 	end

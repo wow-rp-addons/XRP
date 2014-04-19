@@ -18,7 +18,7 @@
 	<Binding name="XRPUI_EDITOR" description="Edit your own RP profile." header="XRPUI">
 		xrpui:ToggleEditor();
 	</Binding>
-	<Binding name="XRPUI_VIEWER" description="View RP profiles." header="XRPUI">
-		xrpui:ShowViewer("target");
+	<Binding name="XRPUI_VIEWER" description="View RP profiles.">
+		xrpui:ShowViewerUnit("target");
 	</Binding>
 </Bindings>
