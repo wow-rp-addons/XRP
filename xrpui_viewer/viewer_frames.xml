@@ -143,7 +143,7 @@
 					</ScrollFrame>
 					<!-- Description Box -->
 					<ScrollFrame name="$parentDE" parentKey="DE" inherits="LargeOutputScrollFrameTemplate">
-						<Size x="301" y="163"/>
+						<Size x="301" y="162"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.DELabel" relativePoint="BOTTOMLEFT" x="2" y="-5"/>
 						</Anchors>
@@ -220,7 +220,7 @@
 					</ScrollFrame>
 					<!-- History Box -->
 					<ScrollFrame name="$parentHI" parentKey="HI" inherits="LargeOutputScrollFrameTemplate">
-						<Size x="301" y="163"/>
+						<Size x="301" y="162"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.HILabel" relativePoint="BOTTOMLEFT" x="2" y="-5"/>
 						</Anchors>
