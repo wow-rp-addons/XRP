@@ -105,7 +105,7 @@ local function xrpui_editor_OnEvent(self, event, addon)
 		self:SetAttribute("UIPanelLayout-whileDead", true)
 		PanelTemplates_SetNumTabs(self, 2)
 		PanelTemplates_SetTab(self, 1)
-		self.TitleText:SetText(GetAddOnMetadata(addon, "Title").."/"..GetAddOnMetadata(addon, "Version"))
+		self.TitleText:SetText(GetAddOnMetadata(addon, "Title"))
 
 		-- Ugh, DropDownMenus. These are a royal pain in the ass to work with,
 		-- but make for a really nice-looking UI. In theory a menuList variable
