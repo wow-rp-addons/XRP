@@ -1,7 +1,7 @@
 ## Interface: 50400
 ## LoadOnDemand: 1
 ## Title: xrp-ui viewer
-## Version: 5.4.7.0
+## Version: 5.4.7.0_git
 ## Author: Justin Snelgrove
 ## Notes: Profile viewer for xrp-ui.
 ## X-Category: Roleplaying

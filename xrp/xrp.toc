@@ -1,6 +1,6 @@
 ## Interface: 50400
 ## Title: xrp
-## Version: 5.4.7.0
+## Version: 5.4.7.0_git
 ## Author: Justin Snelgrove
 ## Notes: xrp is an extensible core for RP profile addons. Enable xrp-ui (or another addon built around xrp) if you want to actually be able to use it.
 ## X-Category: Roleplaying
