@@ -23,7 +23,7 @@
 		<Layers>
 			<Layer level="OVERLAY">
 				<!-- Version Information -->
-				<FontString name="$parentVA" parentKey="VA" inherits="GameFontNormalSmall" text="XRP_VERSION">
+				<FontString name="$parentVA" parentKey="VA" inherits="GameFontNormalSmall" text="">
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" x="8" y="10"/>
 					</Anchors>
@@ -236,6 +236,7 @@
 						PanelTemplates_SetTab(self:GetParent(), 1);
 						self:GetParent().Biography:Hide();
 						self:GetParent().Appearance:Show();
+						PlaySound("igCharacterInfoTab");
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -248,6 +249,7 @@
 						PanelTemplates_SetTab(self:GetParent(), 2);
 						self:GetParent().Appearance:Hide();
 						self:GetParent().Biography:Show();
+						PlaySound("igCharacterInfoTab");
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -256,6 +258,9 @@
 			<OnLoad>
 				SetPortraitToTexture(self.portrait, "Interface\\Icons\\INV_Misc_Book_17");
 			</OnLoad>
+			<OnShow>
+				PlaySound("igCharacterInfoOpen");
+			</OnShow>
 		</Scripts>
 	</Frame>
 </Ui>

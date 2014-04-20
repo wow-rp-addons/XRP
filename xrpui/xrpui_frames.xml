@@ -16,4 +16,51 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 	<Frame name="xrpui" hidden="false" parent="UIParent"/>
+	<Button name="xrpui_minimap" parent="Minimap" enableMouse="true" movable="true" hidden="false">
+		<Size x="31" y="31"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="icon">
+					<Size x="20" y="20"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="6" y="-5"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="dim" hidden="true">
+					<Size x="20" y="20"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="6" y="-5"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="0.4"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture file="Interface\Minimap\MiniMap-TrackingBorder">
+					<Size x="53" y="53"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
+		<Scripts>
+			<OnLoad>
+				xrpui.minimap = self;
+				self:RegisterForClicks("anyUp");
+				self:RegisterForDrag("LeftButton");
+			</OnLoad>
+			<OnMouseDown>
+				xrpui.minimap.dim:Show();
+			</OnMouseDown>
+			<OnMouseUp>
+				xrpui.minimap.dim:Hide();
+			</OnMouseUp>
+		</Scripts>
+		<Frames>
+			<Button name="$parent_menu" parentKey="menu" hidden="true" inherits="UIDropDownMenuTemplate"/>
+		</Frames>
+	</Button>
 </Ui>

@@ -17,52 +17,35 @@
 ]]
 
 local overrides = {}
-local converted = {}
 
 xrp.profile = setmetatable({}, {
 	__index = function(profile, field)
 		if xrp.toon.fields[field] then
 			return xrp.toon.fields[field]
-		elseif converted[field] then
-			return converted[field]
 		elseif overrides[field] then
 			return overrides[field]
 		elseif xrp_profiles[xrp_selectedprofile] and xrp_profiles[xrp_selectedprofile][field] then
-			return xrp_profiles[xrp_selectedprofile][field]
+			if field == "AH" then
+				return xrp:ConvertHeight(xrp_profiles[xrp_selectedprofile][field], "msp")
+			elseif field == "AW" then
+				return xrp:ConvertWeight(xrp_profiles[xrp_selectedprofile][field], "msp")
+			else
+				return xrp_profiles[xrp_selectedprofile][field]
+			end
 		else
 			return nil
 		end
 	end,
 	__newindex = function(profile, field, contents)
-		if xrp.msp.unitfields[field] or xrp.msp.metafields[field] or not field:match("^%u%u$") then
-			return
-		end
-		-- TODO: Merge these two if sections?
-		if type(contents) == "string" and overrides[field] ~= contents then
+		if not xrp.msp.unitfields[field] and not xrp.msp.metafields[field] and field:match("^%u%u$") and overrides[field] ~= contents then
 			overrides[field] = contents
-			if field == "AH" then
-				local AH = xrp:ConvertHeight(contents, "msp")
-				converted.AH = AH == contents and nil or AH
-			elseif field == "AW" then
-				local AW = xrp:ConvertWeight(contents, "msp")
-				converted.AW = AW == contents and nil or AW
-			end
-			xrp.msp:UpdateField(field)
-		elseif contents == nil and overrides[field] then
-			overrides[field] = nil
-			if field == "AH" then
-				converted.AH = nil
-				local AH = xrp:ConvertHeight(xrp.profile.AH, "msp")
-				converted.AH = AH == xrp.profile.AH and nil or AH
-			elseif field == "AW" then
-				converted.AW = nil
-				local AW = xrp:ConvertWeight(xrp.profile.AW, "msp")
-				converted.AW = AW == xrp.profile.AW and nil or AW
-			end
 			xrp.msp:UpdateField(field)
 		end
 	end,
-	__call = function(profile)
+	__call = function(profile, wantname)
+		if wantname then
+			return xrp_selectedprofile
+		end
 		local out = {}
 		for field, contents in pairs(xrp_profiles[xrp_selectedprofile]) do
 			out[field] = contents
@@ -70,12 +53,11 @@ xrp.profile = setmetatable({}, {
 		for field, contents in pairs(overrides) do
 			out[field] = contents
 		end
-		for field, contents in pairs(converted) do
-			out[field] = contents
-		end
 		for field, contents in pairs(xrp.toon.fields) do
 			out[field] = contents
 		end
+		out.AW = out.AW and xrp:ConvertWeight(out.AW, "msp") or nil
+		out.AH = out.AH and xrp:ConvertHeight(out.AH, "msp") or nil
 		return out
 	end,
 	__metatable = false,
@@ -115,21 +97,23 @@ local profilemt = {
 			xrp:FireEvent("PROFILE_FIELD_SAVE", name, field)
 		elseif (contents == "" or not contents) and xrp_profiles[name] and xrp_profiles[name][field] then
 			xrp_profiles[name][field] = nil
---			if next(xrp_profiles[name]) then
 			if name == xrp_selectedprofile then
 				xrp.msp:UpdateField(field)
 			end
 			xrp:FireEvent("PROFILE_FIELD_SAVE", name, field)
---[[			else
-				metaprofiles[name] = nil
-				xrp_profiles[name] = nil
-				xrp:FireEvent("PROFILE_DELETE", name)
-			end]]
 		end
 	end,
 	__call = function(profile, newname)
-		local name = profile[namekey]
-		if type(newname) == "string" then
+		if type(newname) == "number" then
+			local length = 0
+			for field, contents in pairs(xrp_profiles[profile[namekey]]) do
+				length = length + #contents
+			end
+			if length > newname then
+				return length
+			end
+		elseif type(newname) == "string" then
+			local name = profile[namekey]
 			if type(xrp_profiles[name]) ~= "table" and type(xrp_profiles[newname]) == "table" then
 				-- Copy profile into the empty table called.
 				xrp_profiles[name] = {}
@@ -140,11 +124,14 @@ local profilemt = {
 			elseif type(xrp_profiles[name]) == "table" and type(xrp_profiles[newname]) ~= "table" then
 				-- Rename profile to the nonexistant table provided.
 				xrp_profiles[newname] = xrp_profiles[name]
-				xrp_profiles[name] = nil
+				-- Select the new name if this is our active profile.
+				if xrp_selectedprofile == name then
+					xrp.profiles(newname)
+				end
+				xrp.profiles[name] = nil -- Use table access to save Default.
 				xrp:FireEvent("PROFILE_RENAME", name, newname)
 				return true
 			end
-			return false
 		elseif not newname then
 			local profile = {}
 			for field, contents in pairs(xrp_profiles[name]) do
@@ -152,6 +139,7 @@ local profilemt = {
 			end
 			return profile
 		end
+		return false
 	end,
 	__metatable = false,
 }
@@ -178,9 +166,14 @@ xrp.profiles = setmetatable({}, {
 			else
 				-- Wipe fields if profile is Default, but don't delete
 				-- the table.
-				for field, _ in xrp_profiles[name] do
+				for field, _ in pairs(xrp_profiles[name]) do
 					xrp_profiles[name][field] = nil
 				end
+				-- Fill out one default value...
+				xrp_profiles[name].NA = xrp.toon.name
+			end
+			if name == xrp_selectedprofile then
+				xrp.profiles("Default")
 			end
 			xrp:FireEvent("PROFILE_DELETE", name)
 		end
@@ -189,22 +182,16 @@ xrp.profiles = setmetatable({}, {
 		if not name then
 			local list = {}
 			for name, _ in pairs(xrp_profiles) do
-				list[#list + 1] = name
+				list[#list + 1] = name ~= "Default" and name or nil
 			end
 			table.sort(list)
+			table.insert(list, 1, "Default")
 			return list
 		elseif type(name) == "string" and xrp_profiles[name] then
 			xrp_selectedprofile = name
 
-			wipe(converted)
 			wipe(overrides) -- TODO: Should this really wipe the overrides?
 
-			local AH = xrp:ConvertHeight(xrp_profiles[name].AH, "msp")
-			converted.AH = AH == xrp_profiles[name].AH and nil or AH
-			
-			local AW = xrp:ConvertWeight(xrp_profiles[name].AW, "msp")
-			converted.AW = AW == xrp_profiles[name].AW and nil or AW
-			
 			xrp.msp:Update()
 			return true
 		end

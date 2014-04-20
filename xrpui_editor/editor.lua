@@ -17,16 +17,19 @@
 
 local supportedfields = { NA = true, NI = true, NT = true, NH = true, AE = true, RA = true, AH = true, AW = true, CU = true, DE = true, AG = true, HH = true, HB = true, MO = true, HI = true, FR = true, FC = true }
 
-local function clearfocus(self)
+local xrpui_editor_warn6000 = false
+
+local function xrpui_editor_clearfocus(self)
 	self.NA:SetFocus()
 	self.NA:ClearFocus()
 	self.AG:SetFocus()
 	self.AG:ClearFocus()
 end
 
+local xrpui_editor_saving = false
 function xrpui.editor:Save()
-	clearfocus(self)
-	self.Saving = true
+	xrpui_editor_clearfocus(self)
+	xrpui_editor_saving = true
 
 	-- This doesn't need to be smart. GetText() should be mapped to the
 	-- appropriate 'real' function if GetText() isn't already right. Further,
@@ -35,16 +38,28 @@ function xrpui.editor:Save()
 	-- assumed that the field should be left alone, rather than emptied.
 	local name = self.Profiles:GetText()
 	for field, _ in pairs(supportedfields) do
-		xrp.profiles[name][field] = self[field]:GetText()
+		if field == "FC" then -- TODO: Move into xrp/profiles.lua?
+			local fc = self[field]:GetText()
+			xrp.profiles[name][field] = fc ~= "0" and fc or nil
+		else
+			xrp.profiles[name][field] = self[field]:GetText()
+		end
 	end
 
-	self.Saving = false
+	xrpui_editor_saving = false
 
-	-- TODO: Some sort of output?
+	local length = xrp.profiles[name](6000)
+	if length and length > 12000 then
+		StaticPopup_Show("XRPUI_EDITOR_12000")
+	elseif length and not xrpui_editor_warn6000 then
+		xrpui_editor_warn6000 = true
+		StaticPopup_Show("XRPUI_EDITOR_6000")
+	end
+	-- TODO: Some sort of output to confirm the button did something?
 end
 
 function xrpui.editor:Load(name)
-	clearfocus(self)
+	xrpui_editor_clearfocus(self)
 	-- This does not need to be very smart. SetText() should be mapped to the
 	-- appropriate 'real' function if needed.
 	for field, _ in pairs(supportedfields) do
@@ -56,16 +71,18 @@ function xrpui.editor:Load(name)
 		end
 	end
 
-	--TODO: Swap to first tab
+	if self:IsVisible() and not self.Appearance:IsVisible() then
+		PanelTemplates_SetTab(self, 1)
+		self.Biography:Hide()
+		self.Appearance:Show()
+		PlaySound("igCharacterInfoTab")
+	end
 
 	self.Profiles:SetText(name)
 end
 
 local function xrpui_editor_field_save(name, field)
-	if xrpui.editor.Saving then
-		return
-	end
-	if xrpui.editor.Profiles:GetText() == name then
+	if not xrpui_editor_saving and xrpui.editor.Profiles:GetText() == name then
 		if supportedfields[field] then
 			if field == "FC" then
 				xrpui.editor[field]:SetText(tonumber(xrp.profiles[name][field]) and xrp.profiles[name][field] or "0")
@@ -79,7 +96,7 @@ end
 
 local function xrpui_editor_OnEvent(self, event, addon)
 	if event == "ADDON_LOADED" and addon == "xrpui_editor" then
-		XRPUI_EDITOR_VERSION = GetAddOnMetadata(addon, "Title").."/"..GetAddOnMetadata(addon, "Version")
+		
 		-- Initializing the frame into a proper, tabbed UI panel.
 		self:SetAttribute("UIPanelLayout-defined", true)
 		self:SetAttribute("UIPanelLayout-enabled", true)
@@ -88,7 +105,7 @@ local function xrpui_editor_OnEvent(self, event, addon)
 		self:SetAttribute("UIPanelLayout-whileDead", true)
 		PanelTemplates_SetNumTabs(self, 2)
 		PanelTemplates_SetTab(self, 1)
-		self.TitleText:SetText(XRPUI_EDITOR_VERSION)
+		self.TitleText:SetText(GetAddOnMetadata(addon, "Title").."/"..GetAddOnMetadata(addon, "Version"))
 
 		-- Ugh, DropDownMenus. These are a royal pain in the ass to work with,
 		-- but make for a really nice-looking UI. In theory a menuList variable
@@ -157,17 +174,29 @@ end
 xrpui.editor:SetScript("OnEvent", xrpui_editor_OnEvent)
 xrpui.editor:RegisterEvent("ADDON_LOADED")
 
--- Setup shorthand access for easier looping later.
+-- Setup shorthand access.
 -- Appearance tab
-for _, field in pairs({ "NA", "NI", "NT", "NH", "AE", "RA", "AH", "AW", "CU" }) do
+local xrpui_editor_appearance = { "NA", "NI", "NT", "NH", "AE", "RA", "AH", "AW", "CU" }
+for key, field in pairs(xrpui_editor_appearance) do
 	xrpui.editor[field] = xrpui.editor.Appearance[field]
+	xrpui.editor[field].nextEditBox = xrpui.editor.Appearance[xrpui_editor_appearance[key + 1]] or xrpui.editor.Appearance["DE"].EditBox
 end
 -- EditBox is inside ScrollFrame
 xrpui.editor["DE"] = xrpui.editor.Appearance["DE"].EditBox
+xrpui.editor["DE"].nextEditBox = xrpui.editor.Appearance["NA"]
 
 -- Biography tab
-for _, field in pairs({ "AG", "HH", "HB", "MO", "FR", "FC" }) do
+local xrpui_editor_biography = { "AG", "HH", "HB", "MO", "FR", "FC" }
+for key, field in pairs(xrpui_editor_biography) do
 	xrpui.editor[field] = xrpui.editor.Biography[field]
+	if field == "MO" then
+		xrpui.editor[field].nextEditBox = xrpui.editor.Biography["HI"].EditBox
+	elseif field == "FR" then
+		xrpui.editor[field].nextEditBox = xrpui.editor.Biography["AG"]
+	elseif field ~= "FC" then
+		xrpui.editor[field].nextEditBox = xrpui.editor.Biography[xrpui_editor_biography[key + 1]]
+	end
 end
 -- EditBox is inside ScrollFrame
 xrpui.editor["HI"] = xrpui.editor.Biography["HI"].EditBox
+xrpui.editor["HI"].nextEditBox = xrpui.editor.Biography["FR"]
