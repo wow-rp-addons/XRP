@@ -16,6 +16,13 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 	<EditBox name="FancyInputBoxTemplate" inherits="InputBoxTemplate" virtual="true">
+		<Scripts>
+			<OnTabPressed>
+				if (self.nextEditBox) then
+					self.nextEditBox:SetFocus();
+				end
+			</OnTabPressed>
+		</Scripts>
 		<FontString inherits="GameFontWhite"/>
 	</EditBox>
 	<ScrollFrame name="LargeInputScrollFrameTemplate" inherits="UIPanelScrollFrameTemplate" virtual="true">

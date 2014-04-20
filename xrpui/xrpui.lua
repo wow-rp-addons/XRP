@@ -97,6 +97,7 @@ XRPUI_VERSION = GetAddOnMetadata("xrpui", "Title").."/"..GetAddOnMetadata("xrpui
 BINDING_HEADER_XRPUI = GetAddOnMetadata("xrpui", "Title")
 BINDING_NAME_XRPUI_EDITOR = "Toggle RP profile editor"
 BINDING_NAME_XRPUI_VIEWER = "View target's RP profile"
+BINDING_NAME_XRPUI_VIEWER = "Toggle RP profile viewer"
 
 local function loadifneeded(addon)
 	if not IsAddOnLoaded(addon) and IsAddOnLoadOnDemand(addon) then
@@ -115,6 +116,13 @@ function xrpui:ToggleEditor()
 	ToggleFrame(xrpui.editor)
 end
 
+function xrpui:ToggleViewer()
+	if not loadifneeded("xrpui_viewer") then
+		return
+	end
+	ToggleFrame(xrpui.viewer)
+end
+
 function xrpui:ShowViewerCharacter(character)
 	if not loadifneeded("xrpui_viewer") then
 		return
@@ -128,3 +136,15 @@ function xrpui:ShowViewerUnit(unit)
 	end
 	xrpui.viewer:ViewUnit(unit)
 end
+
+local function xrpui_OnEvent(self, event, addon)
+	if event == "ADDON_LOADED" and addon == "xrpui" then
+		if not xrpui_settings then
+			xrpui_settings = {}
+		end
+		self:UnregisterEvent("ADDON_LOADED")
+	end
+end
+
+xrpui:SetScript("OnEvent", xrpui_OnEvent)
+xrpui:RegisterEvent("ADDON_LOADED")

@@ -263,9 +263,9 @@
 					</ScrollFrame>
 					<!-- Style Box -->
 					<EditBox name="$parentFR" parentKey="FR" inherits="FancyInputBoxTemplate" autoFocus="false">
-						<Size x="153" y="20"/>
+						<Size x="148" y="20"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.FRLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.FRLabel" relativePoint="BOTTOMLEFT" x="2" y="-3"/>
 						</Anchors>
 					</EditBox>
 					<!-- Status Menu -->
@@ -291,7 +291,7 @@
 			<!-- Saved Character Profiles -->
 			<Button name="$parentProfiles" parentKey="Profiles" inherits="UIDropDownMenuTemplate">
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-145" y="-27"/>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-175" y="-27"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
@@ -342,6 +342,18 @@
 					</OnClick>
 				</Scripts>
 			</Button>
+			<!-- C Profile Button -->
+			<Button name="$parentCopyProfile" parentKey="CopyProfile" inherits="UIPanelButtonTemplate" text=" C ">
+				<Size x="28" y="28"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.RenameProfile" relativePoint="RIGHT" x="0" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						StaticPopup_Show("XRPUI_EDITOR_COPY");
+					</OnClick>
+				</Scripts>
+			</Button>
 			<!-- Save Button -->
 			<Button name="$parentSave" parentKey="Save" inherits="UIPanelButtonTemplate" text="SAVE">
 				<Size x="96" y="21"/>
@@ -354,19 +366,6 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<!-- Save and Use Button -->
-			<Button name="$parentActivate" parentKey="Activate" inherits="UIPanelButtonTemplate" text="Activate">
-				<Size x="96" y="21"/>
-				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.Save" relativePoint="LEFT"/>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						xrpui.editor:Save();
-						xrp.profiles(xrpui.editor.Profiles:GetText());
-					</OnClick>
-				</Scripts>
-			</Button>
 			<Button name="$parentTab1" parentKey="Tab1" inherits="CharacterFrameTabButtonTemplate" id="1" text="Appearance">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="11" y="2"/>
@@ -376,6 +375,7 @@
 						PanelTemplates_SetTab(self:GetParent(), 1);
 						self:GetParent().Biography:Hide();
 						self:GetParent().Appearance:Show();
+						PlaySound("igCharacterInfoTab");
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -388,6 +388,7 @@
 						PanelTemplates_SetTab(self:GetParent(), 2);
 						self:GetParent().Appearance:Hide();
 						self:GetParent().Biography:Show();
+						PlaySound("igCharacterInfoTab");
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -395,7 +396,11 @@
 		<Scripts>
 			<OnShow>
 				SetPortraitTexture(self.portrait, "player")
+				PlaySound("igCharacterInfoOpen");
 			</OnShow>
+			<OnHide>
+				PlaySound("igCharacterInfoClose");
+			</OnHide>
 		</Scripts>
 	</Frame>
 </Ui>

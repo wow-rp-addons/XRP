@@ -21,4 +21,7 @@
 	<Binding name="XRPUI_VIEWER" description="View RP profiles.">
 		xrpui:ShowViewerUnit("target");
 	</Binding>
+	<Binding name="XRPUI_VIEWER" description="Toggle the profile viewer">
+		xrpui:ToggleViewer();
+	</Binding>
 </Bindings>

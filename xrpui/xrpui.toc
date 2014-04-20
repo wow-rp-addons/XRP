@@ -6,6 +6,8 @@
 ## X-Category: Roleplaying
 ## X-License: GPLv3
 ## Dependencies: xrp
+## SavedVariables: xrpui_settings
 
 xrpui_frames.xml
 xrpui.lua
+minimap.lua

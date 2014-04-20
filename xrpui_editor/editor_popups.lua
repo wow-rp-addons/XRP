@@ -29,23 +29,19 @@ StaticPopupDialogs["XRPUI_EDITOR_ADD"] = {
 		end
 	end,
 	OnAccept = function(self, data, data2)
-		local text = self.editBox:GetText()
-		local var = xrp.profiles[text]
-		xrpui.editor:Load(text)
+		xrpui.editor:Load(self.editBox:GetText())
 	end,
 	enterClicksFirstButton = true,
 	timeout = 0,
 	whileDead = true,
 	hideOnEscape = true,
+	preferredIndex = 3,
 --	sound = ,
 }
 StaticPopupDialogs["XRPUI_EDITOR_DELETE"] = {
 	text = "Are you sure you want to remove this profile?",
 	button1 = NO,
 	button2 = YES,
---	OnShow = function(self, data)
---		self.text = "Are you sure you want to remove \""..xrpui.editor.Profiles:GetText().."\"?"
---	end,
 	OnCancel = function(self, data, data2)
 		xrp.profiles[xrpui.editor.Profiles:GetText()] = nil
 	end,
@@ -53,6 +49,7 @@ StaticPopupDialogs["XRPUI_EDITOR_DELETE"] = {
 	timeout = 0,
 	whileDead = true,
 	hideOnEscape = false,
+	preferredIndex = 3,
 --	sound = ,
 }
 StaticPopupDialogs["XRPUI_EDITOR_RENAME"] = {
@@ -69,13 +66,16 @@ StaticPopupDialogs["XRPUI_EDITOR_RENAME"] = {
 		end
 	end,
 	OnAccept = function(self, data, data2)
+		local profile = xrpui.editor.Profiles:GetText()
 		local text = self.editBox:GetText()
-		xrp.profiles[xrpui.editor.Profiles:GetText()](text)
+		xrp.profiles[profile](text)
+		xrpui.editor:Load(text)
 	end,
 	enterClicksFirstButton = true,
 	timeout = 0,
 	whileDead = true,
 	hideOnEscape = true,
+	preferredIndex = 3,
 --	sound = ,
 }
 StaticPopupDialogs["XRPUI_EDITOR_COPY"] = {
@@ -92,12 +92,37 @@ StaticPopupDialogs["XRPUI_EDITOR_COPY"] = {
 		end
 	end,
 	OnAccept = function(self, data, data2)
+		local profile = xrpui.editor.Profiles:GetText()
 		local text = self.editBox:GetText()
-		xrp.profiles[text](xrpui.editor.Profiles:GetText())
+		xrp.profiles[text](profile)
+		xrpui.editor:Load(text)
 	end,
 	enterClicksFirstButton = true,
 	timeout = 0,
 	whileDead = true,
 	hideOnEscape = true,
+	preferredIndex = 3,
+--	sound = ,
+}
+StaticPopupDialogs["XRPUI_EDITOR_6000"] = {
+	text = "Your combined profile length is above 6000 characters. This may slow loading for others.",
+	button1 = OKAY,
+	showAlert = true,
+	enterClicksFirstButton = true,
+	timeout = 0,
+	whileDead = true,
+	hideOnEscape = true,
+	preferredIndex = 3,
+--	sound = ,
+}
+StaticPopupDialogs["XRPUI_EDITOR_12000"] = {
+	text = "Your combined profile length is above 12000 characters. This may cause SERIOUS PROBLEMS with others reading it. It is strongly recommended that you reduce this.",
+	button1 = OKAY,
+	showAlert = true,
+	enterClicksFirstButton = true,
+	timeout = 0,
+	whileDead = true,
+	hideOnEscape = true,
+	preferredIndex = 3,
 --	sound = ,
 }

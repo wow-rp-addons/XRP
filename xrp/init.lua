@@ -19,7 +19,9 @@
 local function xrp_OnEvent(xrp, event, addon)
 	if event == "ADDON_LOADED" and addon == "xrp" then
 		xrp.toon = {}
-		xrp.toon.withrealm = xrp:UnitNameWithRealm("player")
+		-- DO NOT use xrp:UnitNameWithRealm() here as it will fail on first
+		-- load after login (UnitIsPlayer("player") fails).
+		xrp.toon.withrealm = format("%s-%s", UnitName("player"), GetRealmName():gsub("%s+", ""))
 		xrp.toon.name = xrp:NameWithoutRealm(xrp.toon.withrealm)
 		xrp.toon.fields = { -- NONE of these are localized.
 			GC = (select(2, UnitClass("player"))),
@@ -45,17 +47,18 @@ local function xrp_OnEvent(xrp, event, addon)
 
 		if type(xrp_profiles) ~= "table" then
 			xrp_profiles = {
-				Default = {},
+				Default = {
+					NA = xrp.toon.name,
+				},
 			}
 		elseif type(xrp_profiles.Default) ~= "table" then
-			xrp_profiles.Default = {}
-		end
-
-		setmetatable(xrp_profiles.Default, {
-			__index = {
+			xrp_profiles.Default = {
 				NA = xrp.toon.name,
 			}
-		})
+		elseif not xrp_profiles.Default.NA then
+			xrp_profiles.Default.NA = xrp.toon.name
+		end
+		
 
 		if type(xrp_selectedprofile) ~= "string" or type(xrp_profiles[xrp_selectedprofile]) ~= "table" then
 			xrp_selectedprofile = "Default"
@@ -72,7 +75,6 @@ local function xrp_OnEvent(xrp, event, addon)
 		if not xrp_cache[xrp.toon.withrealm] then
 			xrp_cache[xrp.toon.withrealm] = {
 				fields = {},
-				time = {},
 				versions = {},
 			}
 		end

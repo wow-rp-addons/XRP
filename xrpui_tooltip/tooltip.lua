@@ -15,12 +15,6 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
---[[XRP_FACTION_COLORS = {
-	Horde = PLAYER_FACTION_COLORS[0], -- e60d12 LIGHT: ff595e
-	Alliance = PLAYER_FACTION_COLORS[1], -- 4a54e8 LIGHT: 96a1ff
-	Neutral = { r = 0.9, g = 0.7, b = 0.0 }, -- e6b300 LIGHT: TODO!
-}]]
-
 local faction_colors = {
 	Horde = { dark = "e60d12", light = "ff595e" },
 	Alliance = { dark = "4a54e8", light = "96a1ff" },
@@ -30,29 +24,28 @@ local faction_colors = {
 local fccolors = {
 	"99664d",
 	"66b380",
-	--{ r = 0.6, g = 0.4, b = 0.3 }, -- 99664d
-	--{ r = 0.4, g = 0.7, b = 0.5 }, -- 66b380
 }
 
 local unknown = {}
 
 local currentunit = {}
-local lines
 
 local oldnumlines
 local numline
-
 local function xrpui_tooltip_render_line(lefttext, righttext)
 	numline = numline + 1
 	-- This is a bit scary-looking, but it's a sane way to replace tooltip
 	-- lines without needing to completely redo the tooltip from scratch
 	-- (and lose the tooltip's state of what it's looking at if we do).
 	--
+	-- NOTE: Do not use SetColor. This can taint raid frames and such.
+	--
 	-- First case: If there's already a line to replace.
 	if numline <= oldnumlines then
 		-- Can't have an empty left text line ever -- if a line exists, it
 		-- needs to have a space at minimum to not muck up line spacing.
 		_G["GameTooltipTextLeft"..numline]:SetText(lefttext or " ")
+		_G["GameTooltipTextLeft"..numline]:Show()
 		if righttext then
 			_G["GameTooltipTextRight"..numline]:SetText(righttext)
 			_G["GameTooltipTextRight"..numline]:Show()
@@ -61,10 +54,10 @@ local function xrpui_tooltip_render_line(lefttext, righttext)
 		end
 	-- Second case: If there are no more lines to replace.
 	else
-		if not righttext then
-			GameTooltip:AddLine(lefttext or "")
-		else
+		if righttext then
 			GameTooltip:AddDoubleLine(lefttext or " ", righttext)
+		elseif lefttext then
+			GameTooltip:AddLine(lefttext)
 		end
 	end
 end
@@ -123,6 +116,7 @@ function xrpui.tooltip:PlayerUnit(unit)
 	currentunit.canbeattacked = UnitCanAttack("player", unit)
 	currentunit.visible = UnitIsVisible(unit)
 	currentunit.connected = UnitIsConnected(unit)
+	-- Ew, screen-scraping.
 	currentunit.location = (not currentunit.visible and currentunit.connected and GameTooltipTextLeft3:GetText()) or nil
 	currentunit.guild = GetGuildInfo(unit)
 	currentunit.pvpname = UnitPVPName(unit) or xrp:NameWithoutRealm(currentunit.name)
@@ -153,15 +147,15 @@ function xrpui.tooltip:RefreshPlayer(character)
 		local colorstring
 		if currentunit.canattack then
 			-- If they can attack us.
-			colorstring = "ffbf4d00"
+			colorstring = faction_colors[xrp.toon.fields.GF].light
 		elseif currentunit.canbeattacked or currentunit.faction ~= xrp.toon.fields.GF then
 			-- If we can attack them (or is opposite faction, for Sanctuary).
-			colorstring = "ffe6b300"
+			colorstring = faction_colors["Neutral"].dark
 		else
 			-- Otherwise, must be friendly.
-			colorstring = "ff009919"
+			colorstring = "009919"
 		end
-		namestring = format("%s |c%s<%s>", namestring, colorstring, PVP)
+		namestring = format("%s |cff%s<%s>", namestring, colorstring, PVP)
 	end
 	if not currentunit.connected then
 		namestring = format("%s |cff888888<%s>", namestring, PLAYER_OFFLINE)
@@ -170,7 +164,7 @@ function xrpui.tooltip:RefreshPlayer(character)
 
 	if character.NI then
 		-- TODO: Graceful truncation (using quotation marks?)
-	xrpui_tooltip_render_line(format("|cff6070a0%s: |cff99b3e6\"%.70s\"", XRPUI_NI, character.NI))
+		xrpui_tooltip_render_line(format("|cff6070a0%s: |cff99b3e6\"%.70s\"", XRPUI_NI, character.NI))
 	end
 
 	if character.NT then
@@ -210,6 +204,7 @@ function xrpui.tooltip:RefreshPlayer(character)
 	xrpui_tooltip_render_line(format("|cffffffff%s %d %.40s |c%s%s|cffffffff (%s)", LEVEL, currentunit.level, race, RAID_CLASS_COLORS[currentunit.classid].colorStr, currentunit.class, PLAYER))
 
 	if (character.FR and character.FR ~= "0") or (character.FC and character.FC ~= "0") then
+		-- AAAAAAAAAAAAAAAAAAAAAAAA. The boolean logic.
 		local frline = format("|cff%s%.40s", (character.FC and character.FC ~= "0" and fccolors[character.FC == "1" and 1 or 2]) or "ffffff", (character.FR == "0" or not character.FR) and " " or tonumber(character.FR) and xrpui.values.FR[tonumber(character.FR)] or character.FR)
 		local fcline
 		if character.FC and character.FC ~= "0" then
@@ -256,10 +251,6 @@ xrpui.tooltip:SetScript("OnEvent", function(self, event, addon)
 
 		xrp:HookEvent("MSP_RECEIVE", function(name)
 			local tooltip, unit = GameTooltip:GetUnit()
-			-- Note: This will pointlessly re-render if there are two players
-			-- with the same base name from different realms.  No harm done,
-			-- just a few extra CPU cycles.
-			--
 			-- TODO: Check if the off-realm tooltip targets have their realms
 			-- attached. If so, use names with realms by attaching a realm name
 			-- if needed.

@@ -17,70 +17,6 @@
 
 local supportedfields = { NA = true, NI = true, NT = true, NH = true, AE = true, RA = true, AH = true, AW = true, CU = true, DE = true, AG = true, HH = true, HB = true, MO = true, HI = true, VA = true }
 
-local function init()
-	local self = xrpui.viewer
-
-	self:SetScript("OnEvent", function(self, event, addon)
-		if event == "ADDON_LOADED" and addon == "xrpui_viewer" then
-			XRP_VIEWER_VERSION = GetAddOnMetadata(addon, "Title").."/"..GetAddOnMetadata(addon, "Version")
-			self:SetAttribute("UIPanelLayout-defined", true)
-			self:SetAttribute("UIPanelLayout-enabled", true)
-			self:SetAttribute("UIPanelLayout-area", "left")
-			self:SetAttribute("UIPanelLayout-pushable", 1)
-			self:SetAttribute("UIPanelLayout-whileDead", true)
-			PanelTemplates_SetNumTabs(self, 2)
-			PanelTemplates_SetTab(self, 1)
---[[			self:SetScript("OnShow", function()
-				SetPortraitTexture(self.portrait, "player")
-				self:SetScript("OnShow", nil)
-			end)]]
-			xrp:HookEvent("MSP_RECEIVE", function(name)
-				if xrpui.viewer.CurrentTarget == name then
-					xrpui.viewer:Load(xrp.characters[name])
-					xrpui.viewer.XC:SetText("Received!")
-				end
-			end)
-			xrp:HookEvent("MSP_RECEIVE_CHUNK", function(name, chunk, totalchunks)
-				if xrpui.viewer.CurrentTarget == name then
---					print(format("%s: %u/%u", name, chunk, totalchunks or 0))
-					if chunk == totalchunks then
-						xrpui.viewer.XC:SetText("Received!")
-					else
-						xrpui.viewer.XC:SetFormattedText("Receiving: %u of %s...", chunk, totalchunks and tostring(totalchunks) or "??")
-					end
-				end
-			end)
-		self:UnregisterEvent("ADDON_LOADED")
-		end
-	end)
-	self:RegisterEvent("ADDON_LOADED")
-
-	self:SetScript("OnHide", function(self)
-		self.CurrentTarget = UNKNOWN
-	end)
-
-	-- Setup shorthand access for easier looping later.
-	-- Appearance tab
-	for _, field in pairs({ "AE", "RA", "AH", "AW" }) do
-		xrpui.viewer[field] = xrpui.viewer.Appearance[field]
-	end
-	-- EditBox is inside ScrollFrame
-	for _, field in pairs({ "CU", "DE" }) do
-		xrpui.viewer[field] = xrpui.viewer.Appearance[field].EditBox
-	end
-
-	-- Biography tab
-	for _, field in pairs({ "AG", "HH", "HB" }) do
-		xrpui.viewer[field] = xrpui.viewer.Biography[field]
-	end
-	-- EditBox is inside ScrollFrame
-	for _, field in pairs({ "MO", "HI" }) do
-		xrpui.viewer[field] = xrpui.viewer.Biography[field].EditBox
-	end
-
-	self.CurrentTarget = UNKNOWN
-end
-
 function xrpui.viewer:Load(character)
 	-- This does not need to be very smart. SetText() should be mapped to the
 	-- appropriate 'real' function if needed. The Remote module always fills the
@@ -115,17 +51,82 @@ function xrpui.viewer:ViewUnit(unit)
 	self:Load(xrp.units[unit])
 	SetPortraitTexture(self.portrait, unit)
 	ShowUIPanel(self)
+	if self:IsVisible() and not self.Appearance:IsVisible() then
+		PanelTemplates_SetTab(self, 1)
+		self.Biography:Hide()
+		self.Appearance:Show()
+		PlaySound("igCharacterInfoTab")
+	end
 end
 
 function xrpui.viewer:ViewCharacter(name)
-	-- If the realm isn't attached (search for separator '-', as it's invalid
-	-- in an actual name), attach our own realm name. It's probably what was
-	-- intended.
-	name = xrp:NameWithRealm(name)
+	name = xrp:NameWithRealm(name) -- If there's not a realm, add our realm.
 	self.CurrentTarget = name
 	self:Load(xrp.characters[name])
+	-- TODO: Horde/Alliance emblems instead if GF available.
 	SetPortraitToTexture(self.portrait, "Interface\\Icons\\INV_Misc_Book_17")
 	ShowUIPanel(self)
+	if self:IsVisible() and not self.Appearance:IsVisible() then
+		PanelTemplates_SetTab(self, 1)
+		self.Biography:Hide()
+		self.Appearance:Show()
+		PlaySound("igCharacterInfoTab")
+	end
 end
 
-init()
+xrpui.viewer:SetScript("OnEvent", function(self, event, addon)
+	if event == "ADDON_LOADED" and addon == "xrpui_viewer" then
+		self:SetAttribute("UIPanelLayout-defined", true)
+		self:SetAttribute("UIPanelLayout-enabled", true)
+		self:SetAttribute("UIPanelLayout-area", "left")
+		self:SetAttribute("UIPanelLayout-pushable", 1)
+		self:SetAttribute("UIPanelLayout-whileDead", true)
+		PanelTemplates_SetNumTabs(self, 2)
+		PanelTemplates_SetTab(self, 1)
+
+		xrp:HookEvent("MSP_RECEIVE", function(name)
+			if xrpui.viewer.CurrentTarget == name then
+				xrpui.viewer:Load(xrp.characters[name])
+--				xrpui.viewer.XC:SetText("Received!")
+			end
+		end)
+		xrp:HookEvent("MSP_RECEIVE_CHUNK", function(name, chunk, totalchunks)
+		if xrpui.viewer.CurrentTarget == name then
+				if chunk == totalchunks then
+					xrpui.viewer.XC:SetFormattedText("Received! (%u/%u)", chunk, totalchunks)
+				else
+					xrpui.viewer.XC:SetFormattedText("Receiving... (%u/%s)", chunk, totalchunks and tostring(totalchunks) or "??")
+				end
+			end
+		end)
+	self:UnregisterEvent("ADDON_LOADED")
+	end
+end)
+xrpui.viewer:RegisterEvent("ADDON_LOADED")
+
+xrpui.viewer:SetScript("OnHide", function(self)
+	self.CurrentTarget = UNKNOWN
+	PlaySound("igCharacterInfoClose")
+end)
+
+-- Setup shorthand access for easier looping later.
+-- Appearance tab
+for _, field in pairs({ "AE", "RA", "AH", "AW" }) do
+	xrpui.viewer[field] = xrpui.viewer.Appearance[field]
+end
+-- EditBox is inside ScrollFrame
+for _, field in pairs({ "CU", "DE" }) do
+	xrpui.viewer[field] = xrpui.viewer.Appearance[field].EditBox
+end
+
+-- Biography tab
+for _, field in pairs({ "AG", "HH", "HB" }) do
+	xrpui.viewer[field] = xrpui.viewer.Biography[field]
+end
+-- EditBox is inside ScrollFrame
+for _, field in pairs({ "MO", "HI" }) do
+	xrpui.viewer[field] = xrpui.viewer.Biography[field].EditBox
+end
+
+--TODO: Make local.
+xrpui.viewer.CurrentTarget = UNKNOWN

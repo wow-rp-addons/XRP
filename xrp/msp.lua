@@ -43,9 +43,18 @@ xrp.msp.unitfields = { GC = true, GF = true, GR = true, GS = true, GU = true }
 -- Metadata fields, not to be user-set. XC is an xrp-original.
 xrp.msp.metafields = { VA = true, VP = true, XC = true }
 
--- TODO: Metatable to avoid having to create character tmp_caches in three
--- places.
-local tmp_cache = {}
+local tmp_cache = setmetatable({}, {
+	__index = function(tmp_cache, character)
+		tmp_cache[character] = {
+			nogfields = true,
+			nomsp = true,
+			lastcheck = 0,
+			time = {},
+		}
+		return tmp_cache[character]
+	end,
+})
+	
 local old = false
 local tt = false
 local tttable = { "TT" }
@@ -54,7 +63,7 @@ local queue = {}
 local queuepos = 1
 local queueend = 0
 
--- TODO: Merge into send()
+-- TODO: Merge into send()? Maybe not, if CTL is present...
 local function queuemessage(prefix, message, character)
 	queueend = queueend + 1
 	queue[queueend] = { prefix, message, character }
@@ -148,7 +157,7 @@ local function process(character, cmd)
 		end
 	elseif action == "" then
 		-- Gave us a field.
-		if not xrp_cache[character] and version ~= 0 then
+		if not xrp_cache[character] and ((contents and contents ~= "") or (version ~= 0)) then
 			xrp_cache[character] = {
 				fields = {},
 				versions = {},
@@ -171,11 +180,11 @@ local function process(character, cmd)
 		if xrp_cache[character].fields[field] and (not contents or contents == "") and not xrp.msp.unitfields[field] then
 			-- If it's newly blank, empty it in the cache. Never empty G*.
 			xrp_cache[character].fields[field] = nil
-			xrp_cache[character].versions[field] = version == 0 and nil or version
+			xrp_cache[character].versions[field] = version ~= 0 and version or nil
 			updated = true
 		elseif contents and contents ~= "" then
 			xrp_cache[character].fields[field] = contents
-			xrp_cache[character].versions[field] = version == 0 and nil or version
+			xrp_cache[character].versions[field] = version ~= 0 and version or nil
 			updated = true
 		end
 		-- Save time regardless of contents or version. This prevents querying
@@ -190,16 +199,16 @@ xrp.msp.handlers = {
 		if disabled then
 			return false
 		end
-		if not tmp_cache[character] then
+--[[		if not tmp_cache[character] then
 			tmp_cache[character] = {
 				nogfields = true,
 				time = {},
 			}
-		else
-			-- They definitely have MSP, no need to question it next time.
-			tmp_cache[character].nomsp = nil
-			tmp_cache[character].lastcheck = nil
-		end
+		else]]
+		-- They definitely have MSP, no need to question it next time.
+		tmp_cache[character].nomsp = nil
+		tmp_cache[character].lastcheck = nil
+--		end
 		local out = {}
 		local updated = false
 		local fieldupdated = false
@@ -227,16 +236,16 @@ xrp.msp.handlers = {
 		if disabled then
 			return false
 		end
-		if not tmp_cache[character] then
+--[[		if not tmp_cache[character] then
 			tmp_cache[character] = {
 				nogfields = true,
 				time = {},
 			}
-		else
+		else]]
 			-- They definitely have MSP, no need to question it next time.
-			tmp_cache[character].nomsp = nil
-			tmp_cache[character].lastcheck = nil
-		end
+		tmp_cache[character].nomsp = nil
+		tmp_cache[character].lastcheck = nil
+--		end
 		local incchunks = (msg:match("XC=%d+\1"))
 		if type(incchunks) == "string" then
 			tmp_cache[character].totalchunks = tonumber((incchunks:gsub("XC=(%d+)\1", "%1")))
@@ -253,7 +262,7 @@ xrp.msp.handlers = {
 		if disabled then
 			return false
 		end
-		if tmp_cache[character] and tmp_cache[character].buffer then
+		if tmp_cache[character].buffer then
 			tmp_cache[character].buffer[#tmp_cache[character].buffer + 1] = msg
 			tmp_cache[character].chunks = tmp_cache[character].chunks + 1
 			xrp:FireEvent("MSP_RECEIVE_CHUNK", character, tmp_cache[character].chunks, tmp_cache[character].totalchunks or nil)
@@ -265,7 +274,7 @@ xrp.msp.handlers = {
 		if disabled then
 			return false
 		end
-		if tmp_cache[character] and tmp_cache[character].buffer then
+		if tmp_cache[character].buffer then
 			tmp_cache[character].buffer[#tmp_cache[character].buffer + 1] = msg
 			xrp.msp.handlers["MSP"](character, table.concat(tmp_cache[character].buffer))
 
@@ -307,24 +316,26 @@ function xrp.msp:QueueRequest(character, field)
 	end
 end
 
+local refreshtime = 30
 function xrp.msp:Request(character, fields)
 	if disabled or not character or xrp:NameWithoutRealm(character) == UNKNOWN or character == xrp.toon.withrealm then
 		return false
 	end
 
 	local now = GetTime()
-	if tmp_cache[character] and tmp_cache[character].nomsp and now < (tmp_cache[character].lastcheck + 300) then
+	if tmp_cache[character].nomsp and now < (tmp_cache[character].lastcheck + 300) then
 		return false
-	elseif tmp_cache[character] and tmp_cache[character].nomsp then
+	elseif tmp_cache[character].nomsp then
 		tmp_cache[character].lastcheck = now
-	elseif not tmp_cache[character] then
+	end
+--[[	elseif not tmp_cache[character] then
 		tmp_cache[character] = {
 			nogfields = true,
 			nomsp = true,
 			lastcheck = now,
 			time = {},
 		}
-	end
+	end]]
 
 	if not fields or fields == "TT" then
 		fields = tttable
@@ -359,7 +370,7 @@ function xrp.msp:Request(character, fields)
 
 	local out = {}
 	for _, field in ipairs(fields) do
-		if not xrp_cache[character] or not tmp_cache[character].time[field] or now > tmp_cache[character].time[field] + 30 then
+		if not xrp_cache[character] or not tmp_cache[character].time[field] or now > tmp_cache[character].time[field] + refreshtime then
 			out[#out + 1] = format("?%s%u", field, (xrp_cache[character] and xrp_cache[character].versions[field]) or 0)
 			tmp_cache[character].time[field] = now
 		end
@@ -402,11 +413,24 @@ function xrp.msp:Update()
 			end
 		end
 	else
+		-- First initialization. Check for updates to unitfields (race change,
+		-- sex change, etc.) and metafields (protocol version, addon version,
+		-- etc.). We need to get these right for other xrp users (and anyone
+		-- else who starts caching.
+		for field, _ in pairs(xrp.msp.unitfields) do
+			xrp_versions[field] = new[field] ~= xrp_cache[xrp.toon.withrealm].fields[field] and ((xrp_versions[field] or 0) + 1) or (xrp_versions[field] or 1)
+		end
+		for field, _ in pairs(xrp.msp.metafields) do
+			xrp_versions[field] = new[field] ~= xrp_cache[xrp.toon.withrealm].fields[field] and ((xrp_versions[field] or 0) + 1) or (xrp_versions[field] or 1)
+		end
+		wipe(xrp_cache[xrp.toon.withrealm].fields)
+		wipe(xrp_cache[xrp.toon.withrealm].versions)
 		for field, contents in pairs(new) do
 			xrp_cache[xrp.toon.withrealm].fields[field] = contents
-			xrp_cache[xrp.toon.withrealm].versions[field] = xrp_versions[field]
 		end
-		xrp_cache[xrp.toon.withrealm].versions.TT = xrp_versions.TT
+		for field, version in pairs(xrp_versions) do
+			xrp_cache[xrp.toon.withrealm].versions[field] = version
+		end
 		-- First run, build the tooltip (but don't change its version!).
 		cachett()
 		changes = true
@@ -440,12 +464,8 @@ function xrp.msp:UpdateField(field)
 			end
 			xrp:FireEvent("MSP_UPDATE", field)
 		end
-	else -- First run is a single field update? Shouldn't happen.
-		-- TODO: Add warning output.
-		-- First run, cache the tooltip.
-		cachett()
-		old = xrp.profile()
-		xrp:FireEvent("MSP_UPDATE")
+	else -- First run is a single field update. Shouldn't happen, run full.
+		self:Update()
 	end
 	return true
 end

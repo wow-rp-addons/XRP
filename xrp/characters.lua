@@ -76,7 +76,10 @@ xrp.characters = setmetatable({}, {
 
 xrp.units = setmetatable({}, {
 	__index = function (units, unit)
-		name = xrp:UnitNameWithRealm(unit)
+		if not UnitIsPlayer(unit) then
+			return nil
+		end
+		local name = xrp:UnitNameWithRealm(unit)
 		if type(name) == "string" then
 			if not metacharacters[name] then
 				metacharacters[name] = setmetatable({ [namekey] = name }, charactermt)
