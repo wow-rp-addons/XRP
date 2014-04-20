@@ -15,7 +15,6 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-	<Script file="viewer_templates.lua"/>
 	<EditBox name="FancyOutputBoxTemplate" inherits="InputBoxTemplate" virtual="true">
 		<FontString inherits="GameFontWhite"/>
 		<Scripts>
@@ -88,7 +87,16 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad function="OutputScrollFrame_OnLoad"/>
+			<OnLoad>
+				self.ScrollBar:ClearAllPoints();
+				self.ScrollBar:SetPoint("TOPLEFT", self, "TOPRIGHT", -13, -11);
+				self.ScrollBar:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", -13, 9);
+				_G[self:GetName().."ScrollBarScrollDownButton"]:SetPoint("TOP", self.ScrollBar, "BOTTOM", 0, 4);
+				_G[self:GetName().."ScrollBarScrollUpButton"]:SetPoint("BOTTOM", self.ScrollBar, "TOP", 0, -4);
+				self.ScrollBarHideable = 1;
+				self.ScrollBar:Hide();
+				self.EditBox:SetWidth(self:GetWidth() - 18);
+			</OnLoad>
 		</Scripts>
 		<ScrollChild>
 			<EditBox parentKey="EditBox" multiLine="true" autoFocus="false">
@@ -100,6 +108,11 @@
 					<OnTextChanged>
 						self:SetCursorPosition(0);
 						self:GetParent():SetVerticalScroll(0);
+						if self:GetParent():GetVerticalScrollRange() > 0 then
+							self:GetParent().ScrollBar:Show();
+						else
+							self:GetParent().ScrollBar:Hide();
+						end
 					</OnTextChanged>
 					<OnLoad>
 						self:EnableMouse(false);
