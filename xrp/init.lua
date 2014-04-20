@@ -23,12 +23,13 @@ local function xrp_OnEvent(xrp, event, addon)
 		-- load after login (UnitIsPlayer("player") fails).
 		xrp.toon.withrealm = format("%s-%s", UnitName("player"), GetRealmName():gsub("%s+", ""))
 		xrp.toon.name = xrp:NameWithoutRealm(xrp.toon.withrealm)
+		-- NOTE: UnitGUID("player") doesn't work until PLAYER_LOGIN, so is set
+		-- during that event (below).
 		xrp.toon.fields = { -- NONE of these are localized.
 			GC = (select(2, UnitClass("player"))),
 			GF = (UnitFactionGroup("player")),
 			GR = (select(2, UnitRace("player"))),
 			GS = tostring(UnitSex("player")),
-			GU = UnitGUID("player"),
 			VA = xrp.versionstring,
 			VP = tostring(xrp.msp.protocol),
 		}
@@ -82,6 +83,8 @@ local function xrp_OnEvent(xrp, event, addon)
 		xrp:UnregisterEvent("ADDON_LOADED")
 		xrp:RegisterEvent("PLAYER_LOGIN")
 	elseif event == "PLAYER_LOGIN" then
+		-- UnitGUID("player") doesn't work before first PLAYER_LOGIN.
+		xrp.toon.fields.GU = UnitGUID("player")
 		xrp.profiles(xrp_selectedprofile)
 		xrp:UnregisterEvent("PLAYER_LOGIN")
 	end
