@@ -1,6 +1,6 @@
 ## Interface: 50400
 ## Title: xrp-ui tooltip
-## Version: 5.4.7.0
+## Version: 5.4.7.0_git
 ## Author: Justin Snelgrove
 ## Notes: Mouseover tooltips for xrp-ui.
 ## X-Category: Roleplaying
