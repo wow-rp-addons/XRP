@@ -43,6 +43,14 @@ xrp.msp.unitfields = { GC = true, GF = true, GR = true, GS = true, GU = true }
 -- Metadata fields, not to be user-set. XC is an xrp-original.
 xrp.msp.metafields = { VA = true, VP = true, XC = true }
 
+xrp.msp.fieldtimes = setmetatable({
+	TT = 15,
+	}, {
+	__index = function(times, field)
+		return 45
+	end,
+})
+
 local tmp_cache = setmetatable({}, {
 	__index = function(tmp_cache, character)
 		tmp_cache[character] = {
@@ -54,7 +62,7 @@ local tmp_cache = setmetatable({}, {
 		return tmp_cache[character]
 	end,
 })
-	
+
 local old = false
 local tt = false
 local tttable = { "TT" }
@@ -202,16 +210,9 @@ xrp.msp.handlers = {
 		if disabled then
 			return false
 		end
---[[		if not tmp_cache[character] then
-			tmp_cache[character] = {
-				nogfields = true,
-				time = {},
-			}
-		else]]
 		-- They definitely have MSP, no need to question it next time.
 		tmp_cache[character].nomsp = nil
 		tmp_cache[character].lastcheck = nil
---		end
 		local out = {}
 		local updated = false
 		local fieldupdated = false
@@ -239,16 +240,9 @@ xrp.msp.handlers = {
 		if disabled then
 			return false
 		end
---[[		if not tmp_cache[character] then
-			tmp_cache[character] = {
-				nogfields = true,
-				time = {},
-			}
-		else]]
 			-- They definitely have MSP, no need to question it next time.
 		tmp_cache[character].nomsp = nil
 		tmp_cache[character].lastcheck = nil
---		end
 		local incchunks = (msg:match("XC=%d+\1"))
 		if type(incchunks) == "string" then
 			tmp_cache[character].totalchunks = tonumber((incchunks:gsub("XC=(%d+)\1", "%1")))
@@ -319,7 +313,6 @@ function xrp.msp:QueueRequest(character, field)
 	end
 end
 
-local refreshtime = 30
 function xrp.msp:Request(character, fields)
 	if disabled or not character or xrp:NameWithoutRealm(character) == UNKNOWN or character == xrp.toon.withrealm then
 		return false
@@ -331,14 +324,6 @@ function xrp.msp:Request(character, fields)
 	elseif tmp_cache[character].nomsp then
 		tmp_cache[character].lastcheck = now
 	end
---[[	elseif not tmp_cache[character] then
-		tmp_cache[character] = {
-			nogfields = true,
-			nomsp = true,
-			lastcheck = now,
-			time = {},
-		}
-	end]]
 
 	if not fields or fields == "TT" then
 		fields = tttable
@@ -373,7 +358,7 @@ function xrp.msp:Request(character, fields)
 
 	local out = {}
 	for _, field in ipairs(fields) do
-		if not xrp_cache[character] or not tmp_cache[character].time[field] or now > tmp_cache[character].time[field] + refreshtime then
+		if not xrp_cache[character] or not tmp_cache[character].time[field] or now > tmp_cache[character].time[field] + xrp.msp.fieldtimes[field] then
 			out[#out + 1] = format("?%s%u", field, (xrp_cache[character] and xrp_cache[character].versions[field]) or 0)
 			tmp_cache[character].time[field] = now
 		end
