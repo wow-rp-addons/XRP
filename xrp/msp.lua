@@ -423,8 +423,19 @@ function xrp.msp:Update()
 		for field, _ in pairs(xrp.msp.unitfields) do
 			xrp_versions[field] = new[field] ~= xrp_cache[xrp.toon.withrealm].fields[field] and ((xrp_versions[field] or 0) + 1) or (xrp_versions[field] or 1)
 		end
+		local ttver = false -- Might need to add to unitfields someday.
 		for field, _ in pairs(xrp.msp.metafields) do
-			xrp_versions[field] = new[field] ~= xrp_cache[xrp.toon.withrealm].fields[field] and ((xrp_versions[field] or 0) + 1) or (xrp_versions[field] or 1)
+			if new[field] ~= xrp_cache[xrp.toon.withrealm].fields[field] then
+				xrp_versions[field] = (xrp_versions[field] or 0) + 1
+				if xrp.msp.ttfields[field] then
+					ttver = true
+				end
+			else
+				xrp_versions[field] = xrp_versions[field] or 1
+			end
+		end
+		if ttver then
+			xrp_versions.TT = xrp_versions.TT + 1
 		end
 		wipe(xrp_cache[xrp.toon.withrealm].fields)
 		wipe(xrp_cache[xrp.toon.withrealm].versions)
