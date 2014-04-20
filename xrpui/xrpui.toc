@@ -1,6 +1,6 @@
 ## Interface: 50400
 ## Title: xrp-ui
-## Version: 5.4.7.0
+## Version: 5.4.7.0_git
 ## Author: Justin Snelgrove
 ## Notes: Core of xrp-ui (standard implementation of a UI for xrp). Includes minimap button and keybinds.
 ## X-Category: Roleplaying

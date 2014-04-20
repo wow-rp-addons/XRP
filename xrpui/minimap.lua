@@ -86,6 +86,20 @@ local function xrpui_minimap_menu_status_select(self, status, arg2, checked)
 	ToggleDropDownMenu(nil, nil, xrpui.minimap.menu)
 end
 
+local function xrpui_minimap_menu_settings_height_select(self, height, arg2, checked)
+	if not checked then
+		xrp.settings.height = height
+	end
+	ToggleDropDownMenu(nil, nil, xrpui.minimap.menu)
+end
+
+local function xrpui_minimap_menu_settings_weight_select(self, weight, arg2, checked)
+	if not checked then
+		xrp.settings.weight = weight
+	end
+	ToggleDropDownMenu(nil, nil, xrpui.minimap.menu)
+end
+
 local xrpui_minimap_menulist_profiles = {}
 local xrpui_minimap_menulist_status = {
 	{ text = xrpui.values.FC_EMPTY, checked = false, arg1 = "0", func = xrpui_minimap_menu_status_select},
@@ -99,14 +113,50 @@ end
 local function xrpui_minimap_menulist_viewer(self, arg1, arg2, checked)
 	xrpui:ToggleViewer()
 end
+
+local xrpui_minimap_menulist_settings_height = {
+	{ text = "Centimeters", checked = false, arg1 = "cm", func = xrpui_minimap_menu_settings_height_select, },
+	{ text = "Feet/Inches", checked = false, arg1 = "ft", func = xrpui_minimap_menu_settings_height_select, },
+	{ text = "Meters", checked = false, arg1 = "m", func = xrpui_minimap_menu_settings_height_select, },
+}
+
+local xrpui_minimap_menulist_settings_weight = {
+	{ text = "Kilograms", checked = false, arg1 = "kg", func = xrpui_minimap_menu_settings_weight_select, },
+	{ text = "Pounds", checked = false, arg1 = "lb", func = xrpui_minimap_menu_settings_weight_select, },
+}
+
+local xrpui_minimap_menulist_settings = {
+	{ text = "Height", notCheckable = true, hasArrow = true, menuList = xrpui_minimap_menulist_settings_height, },
+	{ text = "Weight", notCheckable = true, hasArrow = true, menuList = xrpui_minimap_menulist_settings_weight, },
+}
+
 local xrpui_minimap_menulist = {
 	{ text = "xrp-ui", isTitle = true, notCheckable = true, },
 	{ text = "Profiles", notCheckable = true, hasArrow = true, menuList = xrpui_minimap_menulist_profiles, },
 	{ text = "Character status", notCheckable = true, hasArrow = true, menuList = xrpui_minimap_menulist_status, },
 	{ text = "Profile editor", notCheckable = true, func = xrpui_minimap_menulist_editor, },
 	{ text = "Profile viewer", notCheckable = true, func = xrpui_minimap_menulist_viewer, },
+	{ text = "Settings", notCheckable = true, hasArrow = true, menuList = xrpui_minimap_menulist_settings, },
 	{ text = "Cancel", notCheckable = true, },
 }
+
+local function xrpui_minimap_menu_settings_list()
+	local currentweight = xrp.settings.weight
+	local currentheight = xrp.settings.height
+	local currentstatus = xrp.profile.FC or "0"
+	local menu = xrpui_minimap_menulist_settings
+	for _, menuitem in pairs(menu) do
+		if menuitem.text == "Height" then
+			for _, submenuitem in pairs(menuitem.menuList) do
+				submenuitem.checked = currentheight == submenuitem.arg1
+			end
+		elseif menuitem.text == "Weight" then
+			for _, submenuitem in pairs(menuitem.menuList) do
+				submenuitem.checked = currentweight == submenuitem.arg1
+			end
+		end
+	end
+end
 
 local function xrpui_minimap_menu_status_list()
 	local currentstatus = xrp.profile.FC or "0"
@@ -180,6 +230,7 @@ local function xrpui_minimap_OnClick(self, button, down)
 		elseif button == "RightButton" then
 			xrpui_minimap_menu_profiles_list()
 			xrpui_minimap_menu_status_list()
+			xrpui_minimap_menu_settings_list()
 			EasyMenu(xrpui_minimap_menulist, xrpui_minimap_menu, xrpui_minimap, 3, 10, "MENU", nil)
 		end
 	end
