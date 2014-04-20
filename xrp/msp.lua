@@ -94,7 +94,7 @@ local function send(character, data)
 	if type(data) == "table" then
 		data = table.concat(data, "\1")
 	end
---	print(character..": "..data:gsub("\1", "\\1"))
+	--print(character..": "..data:gsub("\1", "\\1"))
 	if data and type(data) == "string" and data ~= "" then
 		if #data <= 255 then
 			queuemessage("MSP", data, character)
@@ -180,12 +180,15 @@ local function process(character, cmd)
 		if xrp_cache[character].fields[field] and (not contents or contents == "") and not xrp.msp.unitfields[field] then
 			-- If it's newly blank, empty it in the cache. Never empty G*.
 			xrp_cache[character].fields[field] = nil
-			xrp_cache[character].versions[field] = version ~= 0 and version or nil
 			updated = true
 		elseif contents and contents ~= "" then
 			xrp_cache[character].fields[field] = contents
-			xrp_cache[character].versions[field] = version ~= 0 and version or nil
 			updated = true
+		end
+		if version ~= 0 then
+			xrp_cache[character].versions[field] = version
+		else
+			xrp_cache[character].versions[field] = nil
 		end
 		-- Save time regardless of contents or version. This prevents querying
 		-- again too soon.
@@ -255,7 +258,7 @@ xrp.msp.handlers = {
 		tmp_cache[character].chunks = 1
 		-- First message = fresh buffer.
 		tmp_cache[character].buffer = { msg }
---		print(msg:gsub("\1", "\\1"))
+		--print(msg:gsub("\1", "\\1"))
 		xrp:FireEvent("MSP_RECEIVE_CHUNK", character, tmp_cache[character].chunks, tmp_cache[character].totalchunks or nil)
 	end,
 	["MSP\2"] = function(character, msg)
@@ -475,7 +478,7 @@ local nextsend = lastburst + 1.00
 local function xrp_msp_OnUpdate(self, elapsed)
 	if next(requestqueue) then
 		for character, fields in pairs(requestqueue) do
-	--		print(character..": "..fields)
+			--print(character..": "..fields)
 			self:Request(character, fields)
 			requestqueue[character] = nil
 		end
