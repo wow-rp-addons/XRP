@@ -17,6 +17,8 @@
 
 local supportedfields = { NA = true, NI = true, NT = true, NH = true, AE = true, RA = true, AH = true, AW = true, CU = true, DE = true, AG = true, HH = true, HB = true, MO = true, HI = true, FR = true, FC = true }
 
+local editor_last_profile = {}
+
 local xrpui_editor_warn9000 = false
 
 local function xrpui_editor_clearfocus(self)
@@ -41,37 +43,48 @@ function xrpui.editor:Save()
 		if field == "FC" then -- TODO: Move into xrp/profiles.lua?
 			local fc = self[field]:GetText()
 			xrp.profiles[name][field] = fc ~= "0" and fc or nil
+			editor_last_profile[field] = fc
 		else
-			xrp.profiles[name][field] = self[field]:GetText()
+			local text = self[field]:GetText()
+			xrp.profiles[name][field] = text
+			editor_last_profile[field] = text
 		end
 	end
 
 	xrpui_editor_saving = false
 
 	local length = xrp.profiles[name](9000)
-	if length and length > 12000 then
-		StaticPopup_Show("XRPUI_EDITOR_12000")
+	if length and length > 16000 then
+		StaticPopup_Show("XRPUI_EDITOR_16000")
 	elseif length and not xrpui_editor_warn9000 then
 		xrpui_editor_warn9000 = true
 		StaticPopup_Show("XRPUI_EDITOR_9000")
 	end
-	-- TODO: Some sort of output to confirm the button did something?
+
+	-- Save and Revert buttons will disable after saving.
+	xrpui.editor:CheckFields()
 end
 
+local editor_loading = false
+local editor_reverting = false
 function xrpui.editor:Load(name)
+	editor_loading = true
 	xrpui_editor_clearfocus(self)
 	-- This does not need to be very smart. SetText() should be mapped to the
 	-- appropriate 'real' function if needed.
+	local profile = xrp.profiles[name]
 	for field, _ in pairs(supportedfields) do
 		if field == "FC" then
-			self[field]:SetText(tonumber(xrp.profiles[name][field]) and xrp.profiles[name][field] or "0")
+			self[field]:SetText(tonumber(profile[field]) and profile[field] or "0")
+			editor_last_profile[field] = (profile[field] or "0")
 		else
-			self[field]:SetText(xrp.profiles[name][field] or "")
+			self[field]:SetText(profile[field] or "")
 			self[field]:SetCursorPosition(0)
+			editor_last_profile[field] = (profile[field] or "")
 		end
 	end
 
-	if self:IsVisible() and not self.Appearance:IsVisible() then
+	if self:IsVisible() and not self.Appearance:IsVisible() and not editor_reverting then
 		PanelTemplates_SetTab(self, 1)
 		self.Biography:Hide()
 		self.Appearance:Show()
@@ -79,6 +92,31 @@ function xrpui.editor:Load(name)
 	end
 
 	self.Profiles:SetText(name)
+	editor_loading = false
+end
+
+function xrpui.editor:Revert()
+	editor_reverting = true
+	self:Load(self.Profiles:GetText());
+	editor_reverting = false
+end
+
+function xrpui.editor:CheckFields()
+	if not editor_loading then -- This will still trigger after loading.
+		local changes = false
+		for field, _ in pairs(supportedfields) do
+			if not changes and xrpui.editor[field]:GetText() ~= (editor_last_profile[field] or "") then
+				changes = true
+			end
+		end
+		if changes then
+			xrpui.editor.SaveButton:Enable()
+			xrpui.editor.RevertButton:Enable()
+		else
+			xrpui.editor.SaveButton:Disable()
+			xrpui.editor.RevertButton:Disable()
+		end
+	end
 end
 
 local function xrpui_editor_field_save(name, field)
@@ -86,9 +124,11 @@ local function xrpui_editor_field_save(name, field)
 		if supportedfields[field] then
 			if field == "FC" then
 				xrpui.editor[field]:SetText(tonumber(xrp.profiles[name][field]) and xrp.profiles[name][field] or "0")
+				editor_last_profile[field] = (profile[field] or "0")
 			else
-				xrpui.editor[field]:SetText(xrp.profiles[name][field])
+				xrpui.editor[field]:SetText(xrp.profiles[name][field] or "")
 				xrpui.editor[field]:SetCursorPosition(0)
+				editor_last_profile[field] = (profile[field] or "")
 			end
 		end
 	end
@@ -137,6 +177,7 @@ local function xrpui_editor_OnEvent(self, event, addon)
 			info.func = function(self, arg1, arg2, checked)
 				if not checked then
 					UIDropDownMenu_SetSelectedValue(UIDROPDOWNMENU_OPEN_MENU, self.value)
+					xrpui.editor:CheckFields()
 				end
 			end
 			UIDropDownMenu_AddButton(info)
@@ -147,6 +188,7 @@ local function xrpui_editor_OnEvent(self, event, addon)
 				info.func = function(self, arg1, arg2, checked)
 					if not checked then
 						UIDropDownMenu_SetSelectedValue(UIDROPDOWNMENU_OPEN_MENU, self.value)
+						xrpui.editor:CheckFields()
 					end
 				end
 				UIDropDownMenu_AddButton(info)
@@ -174,12 +216,15 @@ end
 xrpui.editor:SetScript("OnEvent", xrpui_editor_OnEvent)
 xrpui.editor:RegisterEvent("ADDON_LOADED")
 
--- Setup shorthand access.
+-- Setup shorthand access and other stuff.
 -- Appearance tab
 local xrpui_editor_appearance = { "NA", "NI", "NT", "NH", "AE", "RA", "AH", "AW", "CU" }
 for key, field in pairs(xrpui_editor_appearance) do
 	xrpui.editor[field] = xrpui.editor.Appearance[field]
 	xrpui.editor[field].nextEditBox = xrpui.editor.Appearance[xrpui_editor_appearance[key + 1]] or xrpui.editor.Appearance["DE"].EditBox
+	xrpui.editor[field]:SetScript("OnTextChanged", function(self)
+		xrpui.editor:CheckFields()
+	end)
 end
 -- EditBox is inside ScrollFrame
 xrpui.editor["DE"] = xrpui.editor.Appearance["DE"].EditBox
@@ -195,6 +240,11 @@ for key, field in pairs(xrpui_editor_biography) do
 		xrpui.editor[field].nextEditBox = xrpui.editor.Biography["AG"]
 	elseif field ~= "FC" then
 		xrpui.editor[field].nextEditBox = xrpui.editor.Biography[xrpui_editor_biography[key + 1]]
+	end
+	if field ~= "FC" then
+		xrpui.editor[field]:SetScript("OnTextChanged", function(self)
+			xrpui.editor:CheckFields()
+		end)
 	end
 end
 -- EditBox is inside ScrollFrame

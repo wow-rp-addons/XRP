@@ -115,8 +115,8 @@ StaticPopupDialogs["XRPUI_EDITOR_9000"] = {
 	preferredIndex = 3,
 --	sound = ,
 }
-StaticPopupDialogs["XRPUI_EDITOR_12000"] = {
-	text = "Your combined profile length is above 12000 characters. This may cause SERIOUS PROBLEMS with others reading it. It is strongly recommended that you reduce this.",
+StaticPopupDialogs["XRPUI_EDITOR_16000"] = {
+	text = "Your combined profile length is above 16000 characters. There is a chance of this causing serious problems with others reading it, and it will significantly slow load times for them.",
 	button1 = OKAY,
 	showAlert = true,
 	enterClicksFirstButton = true,

@@ -112,6 +112,7 @@
 					<OnTextChanged>
 						local scrollFrame = self:GetParent();
 						ScrollingEdit_OnTextChanged(self, scrollFrame);
+						xrpui.editor:CheckFields()
 					</OnTextChanged>
 					<OnCursorChanged function="ScrollingEdit_OnCursorChanged"/>
 					<OnUpdate>
