@@ -163,7 +163,7 @@ local function process(character, cmd)
 		tmp_cache[character].time[field] = GetTime()
 	elseif action == "" then
 		-- Gave us a field.
-		if not xrp_cache[character] then
+		if not xrp_cache[character] and (contents ~= "" or version ~= 0) then
 			xrp_cache[character] = {
 				fields = {},
 				versions = {},
@@ -193,7 +193,7 @@ local function process(character, cmd)
 		end
 		if version ~= 0 then
 			xrp_cache[character].versions[field] = version
-		else
+		elseif xrp_cache[character] then
 			xrp_cache[character].versions[field] = nil
 		end
 		-- Save time regardless of contents or version. This prevents querying
@@ -393,7 +393,7 @@ function xrp.msp:Update()
 		for field, _ in pairs(old) do
 			if not new[field] then
 				changes = true
-				xrp_versions[field] = xrp_versions[field] + 1
+				xrp_versions[field] = (xrp_versions[field] or 0) + 1
 				xrp_cache[xrp.toon.withrealm].fields[field] = nil
 				xrp_cache[xrp.toon.withrealm].versions[field] = xrp_versions[field]
 				ttchanges = self.ttfields[field] and true or ttchanges
