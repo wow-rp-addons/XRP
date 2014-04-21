@@ -355,7 +355,7 @@
 				</Scripts>
 			</Button>
 			<!-- Save Button -->
-			<Button name="$parentSave" parentKey="Save" inherits="UIPanelButtonTemplate" text="SAVE">
+			<Button name="$parentSave" parentKey="SaveButton" inherits="UIPanelButtonTemplate" text="SAVE">
 				<Size x="96" y="21"/>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-6" y="4"/>
@@ -363,6 +363,18 @@
 				<Scripts>
 					<OnClick>
 						xrpui.editor:Save();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<!-- Revert Button -->
+			<Button name="$parentRevert" parentKey="RevertButton" inherits="UIPanelButtonTemplate" text="Revert">
+				<Size x="96" y="21"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.SaveButton" relativePoint="LEFT"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						xrpui.editor:Revert();
 					</OnClick>
 				</Scripts>
 			</Button>
