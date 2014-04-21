@@ -97,7 +97,7 @@ XRPUI_VERSION = GetAddOnMetadata("xrpui", "Title").."/"..GetAddOnMetadata("xrpui
 BINDING_HEADER_XRPUI = GetAddOnMetadata("xrpui", "Title")
 BINDING_NAME_XRPUI_EDITOR = "Toggle RP profile editor"
 BINDING_NAME_XRPUI_VIEWER = "View target's RP profile"
-BINDING_NAME_XRPUI_VIEWER = "Toggle RP profile viewer"
+BINDING_NAME_XRPUI_VIEWER_TOGGLE = "Toggle RP profile viewer"
 
 local function loadifneeded(addon)
 	if not IsAddOnLoaded(addon) and IsAddOnLoadOnDemand(addon) then
