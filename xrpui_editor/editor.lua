@@ -17,7 +17,7 @@
 
 local supportedfields = { NA = true, NI = true, NT = true, NH = true, AE = true, RA = true, AH = true, AW = true, CU = true, DE = true, AG = true, HH = true, HB = true, MO = true, HI = true, FR = true, FC = true }
 
-local xrpui_editor_warn6000 = false
+local xrpui_editor_warn9000 = false
 
 local function xrpui_editor_clearfocus(self)
 	self.NA:SetFocus()
@@ -48,12 +48,12 @@ function xrpui.editor:Save()
 
 	xrpui_editor_saving = false
 
-	local length = xrp.profiles[name](6000)
+	local length = xrp.profiles[name](9000)
 	if length and length > 12000 then
 		StaticPopup_Show("XRPUI_EDITOR_12000")
-	elseif length and not xrpui_editor_warn6000 then
-		xrpui_editor_warn6000 = true
-		StaticPopup_Show("XRPUI_EDITOR_6000")
+	elseif length and not xrpui_editor_warn9000 then
+		xrpui_editor_warn9000 = true
+		StaticPopup_Show("XRPUI_EDITOR_9000")
 	end
 	-- TODO: Some sort of output to confirm the button did something?
 end
