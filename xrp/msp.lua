@@ -160,12 +160,10 @@ local function process(character, cmd)
 		end
 	elseif action == "!" then
 		-- Told us we have latest of their field.
-		if xrp_cache[character].fields[field] then
-			tmp_cache[character].time[field] = GetTime()
-		end
+		tmp_cache[character].time[field] = GetTime()
 	elseif action == "" then
 		-- Gave us a field.
-		if not xrp_cache[character] and ((contents and contents ~= "") or (version ~= 0)) then
+		if not xrp_cache[character] then
 			xrp_cache[character] = {
 				fields = {},
 				versions = {},
@@ -185,7 +183,7 @@ local function process(character, cmd)
 				xrp_cache[character].fields[gfield] = xrp.characters[character][gfield]
 			end
 		end
-		if xrp_cache[character].fields[field] and (not contents or contents == "") and not xrp.msp.unitfields[field] then
+		if xrp_cache[character] and xrp_cache[character].fields[field] and (not contents or contents == "") and not xrp.msp.unitfields[field] then
 			-- If it's newly blank, empty it in the cache. Never empty G*.
 			xrp_cache[character].fields[field] = nil
 			updated = true
@@ -244,15 +242,15 @@ xrp.msp.handlers = {
 		tmp_cache[character].nomsp = nil
 		tmp_cache[character].lastcheck = nil
 		local incchunks = (msg:match("XC=%d+\1"))
-		if type(incchunks) == "string" then
+		if incchunks then
 			tmp_cache[character].totalchunks = tonumber((incchunks:gsub("XC=(%d+)\1", "%1")))
 			-- Drop XC if present.
 			msg = msg:gsub(incchunks, "")
 		end
+		--print(msg:gsub("\1", "\\1"))
 		tmp_cache[character].chunks = 1
 		-- First message = fresh buffer.
 		tmp_cache[character].buffer = { msg }
-		--print(msg:gsub("\1", "\\1"))
 		xrp:FireEvent("MSP_RECEIVE_CHUNK", character, tmp_cache[character].chunks, tmp_cache[character].totalchunks or nil)
 	end,
 	["MSP\2"] = function(character, msg)
@@ -364,6 +362,7 @@ function xrp.msp:Request(character, fields)
 		end
 	end
 	if #out > 0 then
+		--print(character..": "..table.concat(out, " "))
 		send(character, out)
 		return true
 	end
@@ -410,7 +409,7 @@ function xrp.msp:Update()
 		end
 		local ttver = false -- Might need to add to unitfields someday.
 		for field, _ in pairs(xrp.msp.metafields) do
-			if new[field] ~= xrp_cache[xrp.toon.withrealm].fields[field] then
+			if new[field] ~= xrp_cache[xrp.toon.withrealm].fields[field] or not xrp_cache[xrp.toon.withrealm].fields[field] then
 				xrp_versions[field] = (xrp_versions[field] or 0) + 1
 				if xrp.msp.ttfields[field] then
 					ttver = true
@@ -420,7 +419,7 @@ function xrp.msp:Update()
 			end
 		end
 		if ttver then
-			xrp_versions.TT = xrp_versions.TT + 1
+			xrp_versions.TT = (xrp_versions.TT or 0) + 1
 		end
 		wipe(xrp_cache[xrp.toon.withrealm].fields)
 		wipe(xrp_cache[xrp.toon.withrealm].versions)

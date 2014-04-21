@@ -161,6 +161,5 @@ function xrp:HookEvent(event, func)
 	if type(events[event]) ~= "table" then
 		events[event] = {}
 	end
---	table.insert(events[event], func)
 	events[event][#events[event]+1] = func
 end
