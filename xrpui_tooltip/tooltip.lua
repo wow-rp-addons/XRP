@@ -62,6 +62,26 @@ local function xrpui_tooltip_render_line(lefttext, righttext)
 	end
 end
 
+local tooltip_known_addons = {
+	["xrp"] = "XRP",
+	["MyRolePlay"] = "MRP",
+	["TotalRP2"] = "TRP2",
+	["GHI"] = "GHI",
+	["Tongues"] = "T",
+}
+
+local function tooltip_parse_VA(VA)
+	local VAshort = ""
+	for addon in VA:gmatch("(%a[^/]+)/[^;]+") do
+		VAshort = VAshort..tooltip_known_addons[addon]..", "
+	end
+	VAshort = (VAshort:gsub(", $", ""))
+	if VAshort:match("^[,%s]*$") then
+		VAshort = "RP"
+	end
+	return VAshort
+end
+
 --[[
 	Tooltip lines ([ ] denotes only if applicable):
 
@@ -137,7 +157,7 @@ function xrpui.tooltip:RefreshPlayer(character)
 	numline = 0
 	character = currentunit.visible and character or unknown
 	
-	local namestring = format("|cff%s%.80s", faction_colors[currentunit.faction].dark, character.NA or xrp:NameWithoutRealm(currentunit.name))
+	local namestring = format("|cff%s%.80s", faction_colors[currentunit.faction].dark, character.NA and (character.NA:gsub("||?c%x%x%x%x%x%x%x%x%s*", "")) or xrp:NameWithoutRealm(currentunit.name))
 	if currentunit.afk then
 		namestring = format("%s |cff99994d%s", namestring, CHAT_FLAG_AFK)
 	elseif currentunit.dnd then
@@ -164,11 +184,11 @@ function xrpui.tooltip:RefreshPlayer(character)
 
 	if character.NI then
 		-- TODO: Graceful truncation (using quotation marks?)
-		xrpui_tooltip_render_line(format("|cff6070a0%s: |cff99b3e6\"%.70s\"", XRPUI_NI, character.NI))
+		xrpui_tooltip_render_line(format("|cff6070a0%s: |cff99b3e6\"%.70s\"", XRPUI_NI, (character.NI:gsub("||?c%x%x%x%x%x%x%x%x%s*", ""))))
 	end
 
 	if character.NT then
-		local profilestring = character.NT
+		local profilestring = (character.NT:gsub("||?c%x%x%x%x%x%x%x%x%s*", ""))
 		-- Try to gracefully truncate TRP2's slew of titles.
 		-- TODO: Check more common separators.
 		if #profilestring > 80 and profilestring:find("|", 1, true) then
@@ -178,7 +198,7 @@ function xrpui.tooltip:RefreshPlayer(character)
 			end
 			profilestring = profilestring:sub(1, position - 2)
 		end
-		xrpui_tooltip_render_line(format("%.80s", profilestring))
+		xrpui_tooltip_render_line(format("|cffcccccc%.80s", profilestring))
 	end
 
 	if currentunit.guild then
@@ -190,14 +210,14 @@ function xrpui.tooltip:RefreshPlayer(character)
 		if currentunit.realm and currentunit.realm ~= "" then
 			pvpnamestring = format("%s (%s)", pvpnamestring, xrp:RealmNameWithSpacing(currentunit.realm))
 		end
-		xrpui_tooltip_render_line(pvpnamestring, character.VA and "|cff7f7f7fRP" or nil)
+		xrpui_tooltip_render_line(pvpnamestring, character.VA and format("|cff7f7f7f%s", tooltip_parse_VA(character.VA)) or nil)
 	end
 
 	if character.CU then
-		xrpui_tooltip_render_line(format("|cffa08050%s:|cffe6b399 %.70s%s", XRPUI_CU, character.CU, character.CU:len()>70 and CONTINUED or ""))
+		xrpui_tooltip_render_line(format("|cffa08050%s:|cffe6b399 %.70s%s", XRPUI_CU, (character.CU:gsub("||?c%x%x%x%x%x%x%x%x%s*", "")), character.CU:len()>70 and CONTINUED or ""))
 	end
 
-	local race = character.RA or currentunit.race
+	local race = character.RA and (character.RA:gsub("||?c%x%x%x%x%x%x%x%x%s*", "")) or currentunit.race
 	-- Note: RAID_CLASS_COLORS[classid].colorStr does *not* have a pipe
 	-- escape in it -- it's just the AARRGGBB string. Some other default
 	-- color strings do, so be sure to check.
@@ -205,17 +225,17 @@ function xrpui.tooltip:RefreshPlayer(character)
 
 	if (character.FR and character.FR ~= "0") or (character.FC and character.FC ~= "0") then
 		-- AAAAAAAAAAAAAAAAAAAAAAAA. The boolean logic.
-		local frline = format("|cff%s%.40s", (character.FC and character.FC ~= "0" and fccolors[character.FC == "1" and 1 or 2]) or "ffffff", (character.FR == "0" or not character.FR) and " " or tonumber(character.FR) and xrpui.values.FR[tonumber(character.FR)] or character.FR)
+		local frline = format("|cff%s%.40s", (character.FC and character.FC ~= "0" and fccolors[character.FC == "1" and 1 or 2]) or "ffffff", (character.FR == "0" or not character.FR) and " " or tonumber(character.FR) and xrpui.values.FR[tonumber(character.FR)] or (character.FR:gsub("||?c%x%x%x%x%x%x%x%x%s*", "")))
 		local fcline
 		if character.FC and character.FC ~= "0" then
-			fcline = format("|cff%s%.40s", fccolors[character.FC == "1" and 1 or 2], tonumber(character.FC) and xrpui.values.FC[tonumber(character.FC)] or character.FC)
+			fcline = format("|cff%s%.40s", fccolors[character.FC == "1" and 1 or 2], tonumber(character.FC) and xrpui.values.FC[tonumber(character.FC)] or (character.FC:gsub("||?c%x%x%x%x%x%x%x%x%s*", "")))
 		end
 		xrpui_tooltip_render_line(frline, fcline)
 	end
 
 	if not currentunit.visible and currentunit.location then
 		-- TODO: Color the Zone: label.
-		xrpui_tooltip_render_line(format("%s: %s", ZONE, currentunit.location))
+		xrpui_tooltip_render_line(format("|cffffeeaa%s: |cffffffff%s", ZONE, currentunit.location))
 	end
 
 	-- In rare cases (test case: target without RP addon, is PvP flagged) there
