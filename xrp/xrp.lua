@@ -92,11 +92,11 @@ function xrp:ConvertWeight(weight, units)
 
 	units = (not units or units == "user") and xrp.settings.weight or units
 	if units == "msp" then -- MSP internal format: kg without units as string.
-		return format("%d", math.floor(number + 0.5))
+		return format("%u", number + 0.5)
 	elseif units == "kg" then
-		return format("%d kg", math.floor(number + 0.5))
+		return format("%u kg", number + 0.5)
 	elseif units == "lb" then
-		return format("%d lbs", math.floor((number * 2.20462) + 0.5))
+		return format("%u lbs", (number * 2.20462) + 0.5)
 	else
 		return weight -- If no unit conversion requested, pass through.
 	end
@@ -133,13 +133,13 @@ function xrp:ConvertHeight(height, units)
 	if units == "msp" then -- MSP internal format: cm without units as string.
 		return format("%d", number)
 	elseif units == "cm" then
-		return format("%d cm", math.floor(number + 0.5))
+		return format("%u cm", number + 0.5)
 	elseif units == "m" then
 		return format("%.2f m", math.floor(number + 0.5) * 0.01) -- Round first.
 	elseif units == "ft" then
-		local inches = math.floor((number / 2.54) + 0.5)
-		local feet = math.floor(inches / 12)
-		return format("%d'%d\"", feet, inches - (feet * 12))
+		local feet, inches = math.modf(number / 30.48)
+		inches = (inches * 12) + 0.5
+		return format("%u'%u\"", feet, inches)
 	else
 		return height
 	end

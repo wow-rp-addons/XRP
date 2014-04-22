@@ -40,8 +40,8 @@ xrp.msp.ttfields = { VP = true, VA = true, NA = true, NH = true, NI = true, NT =
 -- between sessions and can have data on both factions at once).
 xrp.msp.unitfields = { GC = true, GF = true, GR = true, GS = true, GU = true }
 
--- Metadata fields, not to be user-set. XC is an xrp-original.
-xrp.msp.metafields = { VA = true, VP = true, XC = true }
+-- Metadata fields, not to be user-set.
+xrp.msp.metafields = { VA = true, VP = true }
 
 xrp.msp.fieldtimes = setmetatable({
 	TT = 15,
