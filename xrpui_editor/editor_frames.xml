@@ -326,6 +326,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
+						StaticPopupDialogs["XRPUI_EDITOR_DELETE"].text = format("Are you sure you want to remove \"%s\"?", xrpui.editor.Profiles:GetText());
 						StaticPopup_Show("XRPUI_EDITOR_DELETE");
 					</OnClick>
 				</Scripts>
@@ -338,6 +339,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
+						StaticPopupDialogs["XRPUI_EDITOR_RENAME"].text = format("Please enter a new name for \"%s\".", xrpui.editor.Profiles:GetText());
 						StaticPopup_Show("XRPUI_EDITOR_RENAME");
 					</OnClick>
 				</Scripts>
@@ -350,6 +352,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
+						StaticPopupDialogs["XRPUI_EDITOR_COPY"].text = format("Please enter a name for the copy of \"%s\".", xrpui.editor.Profiles:GetText());
 						StaticPopup_Show("XRPUI_EDITOR_COPY");
 					</OnClick>
 				</Scripts>
