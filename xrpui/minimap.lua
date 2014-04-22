@@ -131,7 +131,7 @@ local xrpui_minimap_menulist_settings = {
 }
 
 local xrpui_minimap_menulist = {
-	{ text = "xrp-ui", isTitle = true, notCheckable = true, },
+	{ text = "XRP", isTitle = true, notCheckable = true, },
 	{ text = "Profiles", notCheckable = true, hasArrow = true, menuList = xrpui_minimap_menulist_profiles, },
 	{ text = "Character status", notCheckable = true, hasArrow = true, menuList = xrpui_minimap_menulist_status, },
 	{ text = "Profile editor", notCheckable = true, func = xrpui_minimap_menulist_editor, },
@@ -193,7 +193,7 @@ end
 local function xrpui_minimap_OnEnter(self, motion)
 	if motion then
 		GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT", 30, 4)
-		--GameTooltip:SetText("xrp-ui", 1.0, 1.0, 1.0)
+		--GameTooltip:SetText("XRP", 1.0, 1.0, 1.0)
 		GameTooltip:SetText("Click to:")
 		GameTooltip:AddLine(" ")
 		GameTooltip:AddLine("|TInterface\\Icons\\Ability_Malkorok_BlightofYshaarj_Red:20|t/|TInterface\\Icons\\Ability_Malkorok_BlightofYshaarj_Yellow:20|t: Toggle your status to IC.", nil, nil, nil, true)

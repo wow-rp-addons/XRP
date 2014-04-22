@@ -1,9 +1,9 @@
 ## Interface: 50400
 ## LoadOnDemand: 1
-## Title: xrp-ui editor
+## Title: XRP-UI Editor
 ## Version: 5.4.7.0_git
 ## Author: Justin Snelgrove
-## Notes: Profile editor for xrp-ui.
+## Notes: Provides a profile editor, supporting common fields.
 ## X-Category: Roleplaying
 ## X-License: GPLv3
 ## Dependencies: xrpui

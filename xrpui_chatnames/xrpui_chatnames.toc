@@ -1,8 +1,8 @@
 ## Interface: 50400
-## Title: xrp-ui chatnames
+## Title: XRP-UI Chat Names
 ## Version: 5.4.7.0_git
 ## Author: Justin Snelgrove
-## Notes: Roleplaying names in chat for xrp-ui (may not work with other chat-modifying addons).
+## Notes: Provides roleplaying names for in-game chat. (WARNING: May not work correctly with some/most chat-modifying addons.)
 ## X-Category: Roleplaying
 ## X-License: GPLv3
 ## Dependencies: xrpui

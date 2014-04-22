@@ -62,17 +62,18 @@ local function xrpui_tooltip_render_line(lefttext, righttext)
 	end
 end
 
+-- Use uppercase for keys.
 local tooltip_known_addons = {
-	["xrp"] = "XRP",
-	["MyRolePlay"] = "MRP",
-	["TotalRP2"] = "TRP2",
+	["XRP"] = "XRP",
+	["MYROLEPLAY"] = "MRP",
+	["TOTALRP2"] = "TRP2",
 	["GHI"] = "GHI",
-	["Tongues"] = "T",
+	["TONGUES"] = "T",
 }
 
 local function tooltip_parse_VA(VA)
 	local VAshort = ""
-	for addon in VA:gmatch("(%a[^/]+)/[^;]+") do
+	for addon in VA:upper():gmatch("(%a[^/]+)/[^;]+") do
 		VAshort = VAshort..tooltip_known_addons[addon]..", "
 	end
 	VAshort = (VAshort:gsub(", $", ""))

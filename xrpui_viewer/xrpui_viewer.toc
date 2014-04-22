@@ -1,9 +1,9 @@
 ## Interface: 50400
 ## LoadOnDemand: 1
-## Title: xrp-ui viewer
+## Title: XRP-UI Viewer
 ## Version: 5.4.7.0_git
 ## Author: Justin Snelgrove
-## Notes: Profile viewer for xrp-ui.
+## Notes: Provides a full roleplaying profile viewer, supporting common fields.
 ## X-Category: Roleplaying
 ## X-License: GPLv3
 ## Dependencies: xrpui
