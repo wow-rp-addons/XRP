@@ -100,13 +100,16 @@ BINDING_NAME_XRPUI_VIEWER = "View target's RP profile"
 BINDING_NAME_XRPUI_VIEWER_TOGGLE = "Toggle RP profile viewer"
 
 local function loadifneeded(addon)
-	if not IsAddOnLoaded(addon) and IsAddOnLoadOnDemand(addon) then
+	local isloaded = IsAddOnLoaded(addon)
+	if not isloaded and IsAddOnLoadOnDemand(addon) then
 		local loaded, reason = LoadAddOn(addon)
 		if not loaded then
 			return false
+		else
+			return true
 		end
 	end
-	return true
+	return isloaded
 end
 
 function xrpui:ToggleEditor()
