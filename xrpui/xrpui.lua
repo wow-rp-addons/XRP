@@ -16,7 +16,7 @@
 ]]
 
 -- This is all the localizable data for semi-generic UI fields and features.
--- Any xrp-based addons not also basing themselves on xrp-ui would need to
+-- Any XRP-based addons not also basing themselves on XRP-UI would need to
 -- handle this on their own.
 --
 -- TODO: Implement some localizing.
