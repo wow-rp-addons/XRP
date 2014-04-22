@@ -1,0 +1,11 @@
+## Interface: 50400
+## Title: xrp-ui chatnames
+## Version: 5.4.7.0_git
+## Author: Justin Snelgrove
+## Notes: Roleplaying names in chat for xrp-ui.
+## X-Category: Roleplaying
+## X-License: GPLv3
+## Dependencies: xrpui
+
+chatnames_frames.xml
+chatnames.lua
