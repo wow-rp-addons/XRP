@@ -76,7 +76,7 @@
 						<!-- Height Label -->
 						<FontString name="$parentAHLabel" parentKey="AHLabel" inherits="GameFontNormalSmall" text="XRPUI_AH">
 							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.RALabel" relativePoint="LEFT" x="210" y="0"/>
+								<Anchor point="LEFT" relativeKey="$parent.RALabel" relativePoint="LEFT" x="190" y="0"/>
 							</Anchors>
 						</FontString>
 						<!-- Eyes Label -->
@@ -88,7 +88,7 @@
 						<!-- Weight Label -->
 						<FontString name="$parentAWLabel" parentKey="AWLabel" inherits="GameFontNormalSmall" text="XRPUI_AW">
 							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.AELabel" relativePoint="LEFT" x="210" y="0"/>
+								<Anchor point="LEFT" relativeKey="$parent.AELabel" relativePoint="LEFT" x="190" y="0"/>
 							</Anchors>
 						</FontString>
 						<!-- Currently Label -->
@@ -108,28 +108,28 @@
 				<Frames>
 					<!-- Race Box -->
 					<EditBox name="$parentRA" parentKey="RA" inherits="FancyOutputBoxTemplate" autoFocus="false">
-						<Size x="200" y="20"/>
+						<Size x="180" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.RALabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
 						</Anchors>
 					</EditBox>
 					<!-- Height Box -->
 					<EditBox name="$parentAH" parentKey="AH" inherits="FancyOutputBoxTemplate" autoFocus="false">
-						<Size x="96" y="20"/>
+						<Size x="116" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.AHLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
 						</Anchors>
 					</EditBox>
 					<!-- Eyes Box -->
 					<EditBox name="$parentAE" parentKey="AE" inherits="FancyOutputBoxTemplate" autoFocus="false">
-						<Size x="200" y="20"/>
+						<Size x="180" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.AELabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
 						</Anchors>
 					</EditBox>
 					<!-- Weight Box -->
 					<EditBox name="$parentAW" parentKey="AW" inherits="FancyOutputBoxTemplate" autoFocus="false">
-						<Size x="96" y="20"/>
+						<Size x="116" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.AWLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
 						</Anchors>
