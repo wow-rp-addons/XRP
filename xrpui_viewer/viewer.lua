@@ -87,7 +87,9 @@ xrpui.viewer:SetScript("OnEvent", function(self, event, addon)
 		xrp:HookEvent("MSP_RECEIVE", function(name)
 			if xrpui.viewer.CurrentTarget == name then
 				xrpui.viewer:Load(xrp.characters[name])
---				xrpui.viewer.XC:SetText("Received!")
+				if xrpui.viewer.XC:GetText() == "" then
+					xrpui.viewer.XC:SetText("Received!")
+				end
 			end
 		end)
 		xrp:HookEvent("MSP_RECEIVE_CHUNK", function(name, chunk, totalchunks)
@@ -96,6 +98,13 @@ xrpui.viewer:SetScript("OnEvent", function(self, event, addon)
 					xrpui.viewer.XC:SetFormattedText("Received! (%u/%u)", chunk, totalchunks)
 				else
 					xrpui.viewer.XC:SetFormattedText("Receiving... (%u/%s)", chunk, totalchunks and tostring(totalchunks) or "??")
+				end
+			end
+		end)
+		xrp:HookEvent("MSP_NOCHANGE", function(name)
+			if xrpui.viewer.CurrentTarget == name then
+				if xrpui.viewer.XC:GetText() == "" then
+					xrpui.viewer.XC:SetText("No changes.")
 				end
 			end
 		end)
