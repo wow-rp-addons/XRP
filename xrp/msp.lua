@@ -65,14 +65,13 @@ local tmp_cache = setmetatable({}, {
 
 local old = false
 local tt = false
-local tttable = { "TT" }
 
 local queue = {}
 local queuepos = 1
 local queueend = 0
 
 -- TODO: Merge into send()? Maybe not, if CTL is present...
-local function queuemessage(prefix, message, character)
+local function msp_queuemessage(prefix, message, character)
 	queueend = queueend + 1
 	queue[queueend] = { prefix, message, character }
 	xrp.msp:Show() -- Will fire on next frame draw (i.e., essentially instantly).
@@ -83,7 +82,7 @@ end
 -- example, it is *not* done on the first run, as versions for the next
 -- session are updated on PLAYER_LOGOUT rather than always incrementing by
 -- one.)
-local function cachett()
+local function msp_cachett()
 	local tooltip = {}
 	for field, _ in pairs(xrp.msp.ttfields) do
 		if not xrp.profile[field] then
@@ -98,37 +97,31 @@ local function cachett()
 	return true
 end
 
-local function send(character, data)
-	if type(data) == "table" then
-		data = table.concat(data, "\1")
-	end
+local function msp_send(character, data)
+	data = table.concat(data, "\1")
 	--print(character..": "..data:gsub("\1", "\\1"))
-	if data and type(data) == "string" and data ~= "" then
-		if #data <= 255 then
-			queuemessage("MSP", data, character)
-		else
-			-- XC is most likely to add five or six extra characters, will not
-			-- add less than five, and only adds seven or more if the profile
-			-- is over 25000 characters or so. So let's say six.
-			data = format("XC=%u\1%s", math.ceil((#data + 6) / 255), data)
-			local position = 1
-			queuemessage("MSP\1", data:sub(position, position + 254), character)
+	if #data <= 255 then
+		msp_queuemessage("MSP", data, character)
+	else
+		-- XC is most likely to add five or six extra characters, will not
+		-- add less than five, and only adds seven or more if the profile
+		-- is over 25000 characters or so. So let's say six.
+		data = format("XC=%u\1%s", math.ceil((#data + 6) / 255), data)
+		local position = 1
+		msp_queuemessage("MSP\1", data:sub(position, position + 254), character)
+		position = position + 255
+		while position + 255 <= #data do
+			msp_queuemessage("MSP\2", data:sub(position, position + 254), character)
 			position = position + 255
-			while position + 255 <= #data do
-				queuemessage("MSP\2", data:sub(position, position + 254), character)
-				position = position + 255
-			end
-			queuemessage("MSP\3", data:sub(position), character)
 		end
-		return true
+		msp_queuemessage("MSP\3", data:sub(position), character)
 	end
-	return false
 end
 
 -- This returns TWO values. First is a string, if the MSP command requires
 -- sending a response (i.e., is a query); second is a boolean, if the MSP
 -- command provides an updated field (i.e., is a non-empty response).
-local function process(character, cmd)
+local function msp_process(character, cmd)
 	-- Original LibMSP match string uses %a%a rather than %u%u. According to
 	-- protcol documentation, %u%u would be more correct.
 	local action, field, version, contents = cmd:match("(%p?)(%u%u)(%d*)=?(.*)")
@@ -217,11 +210,11 @@ xrp.msp.handlers = {
 		if msg ~= "" then
 			if msg:find("\1", 1, true) then
 				for cmd in msg:gmatch("([^\1]+)\1*") do
-					out[#out + 1], fieldupdated = process(character, cmd)
+					out[#out + 1], fieldupdated = msp_process(character, cmd)
 					updated = updated or fieldupdated
 				end
 			else
-				out[#out + 1], fieldupdated = process(character, msg)
+				out[#out + 1], fieldupdated = msp_process(character, msg)
 				updated = updated or fieldupdated
 			end
 		end
@@ -229,9 +222,11 @@ xrp.msp.handlers = {
 			-- This only fires if there's actually been any changes to field
 			-- contents.
 			xrp:FireEvent("MSP_RECEIVE", character)
+		else
+			xrp:FireEvent("MSP_NOCHANGE", character)
 		end
 		if #out > 0 then
-			send(character, out)
+			msp_send(character, out)
 		end
 	end,
 	["MSP\1"] = function(character, msg)
@@ -262,7 +257,8 @@ xrp.msp.handlers = {
 			tmp_cache[character].chunks = tmp_cache[character].chunks + 1
 			xrp:FireEvent("MSP_RECEIVE_CHUNK", character, tmp_cache[character].chunks, tmp_cache[character].totalchunks or nil)
 		else
-			--TODO: Raise a warning about no first message.
+			-- TODO: Raise a warning about no first message. Maybe try to
+			-- parse as much as we can anyway?
 		end
 	end,
 	["MSP\3"] = function(character, msg)
@@ -271,14 +267,11 @@ xrp.msp.handlers = {
 		end
 		if tmp_cache[character].buffer then
 			tmp_cache[character].buffer[#tmp_cache[character].buffer + 1] = msg
-			xrp.msp.handlers["MSP"](character, table.concat(tmp_cache[character].buffer))
-
-			-- Fire MSP_RECIEVE_CHUNK even after MSP_UPDATE may be fired by
-			-- the processing -- the processing does not necessarily fire
-			-- MSP_UPDATE if there's no, well, updates. This allows anything
-			-- doing something interesting with the chunk numbers to know that
-			-- it's finished, even if they didn't get an update.
+			-- Fire MSP_RECEIVE_CHUNK before MSP_RECEIVE. MSP_NOCHANGE is
+			-- fired if there's no changes... Not that you'll get multiple
+			-- chunks with no changes.
 			xrp:FireEvent("MSP_RECEIVE_CHUNK", character, tmp_cache[character].chunks + 1, tmp_cache[character].chunks + 1)
+			xrp.msp.handlers["MSP"](character, table.concat(tmp_cache[character].buffer))
 
 			tmp_cache[character].chunks = nil
 			tmp_cache[character].totalchunks = nil
@@ -312,19 +305,23 @@ function xrp.msp:QueueRequest(character, field)
 end
 
 function xrp.msp:Request(character, fields)
-	if disabled or not character or xrp:NameWithoutRealm(character) == UNKNOWN or character == xrp.toon.withrealm then
+	if disabled or xrp:NameWithoutRealm(character) == UNKNOWN then
+		return false
+	elseif character == xrp.toon.withrealm then
+		xrp:FireEvent("MSP_NOCHANGE", character)
 		return false
 	end
 
 	local now = GetTime()
 	if tmp_cache[character].nomsp and now < (tmp_cache[character].lastcheck + 300) then
+		xrp:FireEvent("MSP_NOCHANGE", character)
 		return false
 	elseif tmp_cache[character].nomsp then
 		tmp_cache[character].lastcheck = now
 	end
 
-	if not fields or fields == "TT" then
-		fields = tttable
+	if not fields then
+		fields = { "TT" }
 	elseif type(fields) == "string" then
 		fields = { fields }
 	elseif type(fields) == "table" then
@@ -333,6 +330,7 @@ function xrp.msp:Request(character, fields)
 		local reqtt = false
 		for key = #fields, 1, -1 do -- Backwards... Or else it breaks. BADLY.
 			if fields[key] == "TT" or xrp.msp.ttfields[fields[key]] then
+				-- TODO: Try table[key] = nil.
 				table.remove(fields, key)
 				reqtt = true
 			end
@@ -341,6 +339,7 @@ function xrp.msp:Request(character, fields)
 			fields[#fields + 1] = "TT"
 		end
 	else
+		xrp:FireEvent("MSP_NOCHANGE", character)
 		return false
 	end
 
@@ -363,9 +362,10 @@ function xrp.msp:Request(character, fields)
 	end
 	if #out > 0 then
 		--print(character..": "..table.concat(out, " "))
-		send(character, out)
+		msp_send(character, out)
 		return true
 	end
+	xrp:FireEvent("MSP_NOCHANGE", character)
 	return false
 end
 
@@ -377,7 +377,7 @@ function xrp.msp:Update()
 	local changes = false
 	local ttchanges = false
 	local new = xrp.profile()
-	-- If not old, then its first run and versions can be kept as they stand.
+	-- If not old, then it's first run and versions can be kept as they stand.
 	-- Version updates for overridden fields are handled in PLAYER_LOGOUT so
 	-- we can save a bunch of bandwidth on rarely-changing fields.
 	if old then
@@ -403,11 +403,11 @@ function xrp.msp:Update()
 		-- First initialization. Check for updates to unitfields (race change,
 		-- sex change, etc.) and metafields (protocol version, addon version,
 		-- etc.). We need to get these right for other xrp users (and anyone
-		-- else who starts caching.
+		-- else who starts caching).
 		for field, _ in pairs(xrp.msp.unitfields) do
 			xrp_versions[field] = new[field] ~= xrp_cache[xrp.toon.withrealm].fields[field] and ((xrp_versions[field] or 0) + 1) or (xrp_versions[field] or 1)
 		end
-		local ttver = false -- Might need to add to unitfields someday.
+		local ttver = false
 		for field, _ in pairs(xrp.msp.metafields) do
 			if new[field] ~= xrp_cache[xrp.toon.withrealm].fields[field] or not xrp_cache[xrp.toon.withrealm].fields[field] then
 				xrp_versions[field] = (xrp_versions[field] or 0) + 1
@@ -430,14 +430,14 @@ function xrp.msp:Update()
 			xrp_cache[xrp.toon.withrealm].versions[field] = version
 		end
 		-- First run, build the tooltip (but don't change its version!).
-		cachett()
+		msp_cachett()
 		changes = true
 	end
 	old = new
 	if ttchanges then
 		xrp_versions.TT = (xrp_versions.TT or 0) + 1
 		xrp_cache[xrp.toon.withrealm].versions.TT = xrp_versions.TT
-		cachett()
+		msp_cachett()
 	end
 	if changes then
 		xrp:FireEvent("MSP_UPDATE")
@@ -458,7 +458,7 @@ function xrp.msp:UpdateField(field)
 			if self.ttfields[field] then
 				xrp_versions.TT = (xrp_versions.TT or 0) + 1
 				xrp_cache[xrp.toon.withrealm].versions.TT = xrp_versions.TT
-				cachett()
+				msp_cachett()
 			end
 			xrp:FireEvent("MSP_UPDATE", field)
 		end
@@ -470,7 +470,7 @@ end
 
 local lastburst = GetTime()
 local nextsend = lastburst + 1.00
-local function xrp_msp_OnUpdate(self, elapsed)
+local function msp_OnUpdate(self, elapsed)
 	if next(requestqueue) then
 		for character, fields in pairs(requestqueue) do
 			--print(character..": "..fields)
@@ -501,9 +501,9 @@ local function xrp_msp_OnUpdate(self, elapsed)
 		self:Hide()
 	end
 end
-xrp.msp:SetScript("OnUpdate", xrp_msp_OnUpdate)
+xrp.msp:SetScript("OnUpdate", msp_OnUpdate)
 
-local function xrp_msp_OnEvent(self, event, prefix, message, channel, character)
+local function msp_OnEvent(self, event, prefix, message, channel, character)
 	if event == "CHAT_MSG_ADDON" and self.handlers[prefix] then
 		--print(character..": "..message:gsub("\1", "\\1"))
 		--print("Receiving from: "..character)
@@ -519,5 +519,5 @@ local function xrp_msp_OnEvent(self, event, prefix, message, channel, character)
 		xrp:Logout() -- Defined in profiles.lua.
 	end
 end
-xrp.msp:SetScript("OnEvent", xrp_msp_OnEvent)
+xrp.msp:SetScript("OnEvent", msp_OnEvent)
 xrp.msp:RegisterEvent("ADDON_LOADED")
