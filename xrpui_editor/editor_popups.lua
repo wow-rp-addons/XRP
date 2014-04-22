@@ -39,21 +39,21 @@ StaticPopupDialogs["XRPUI_EDITOR_ADD"] = {
 --	sound = ,
 }
 StaticPopupDialogs["XRPUI_EDITOR_DELETE"] = {
-	text = "Are you sure you want to remove this profile?",
-	button1 = NO,
-	button2 = YES,
-	OnCancel = function(self, data, data2)
+	text = "Are you sure you want to remove \"%s\"?",
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function(self, data, data2)
 		xrp.profiles[xrpui.editor.Profiles:GetText()] = nil
 	end,
-	enterClicksFirstButton = true,
+	enterClicksFirstButton = false,
 	timeout = 0,
 	whileDead = true,
-	hideOnEscape = false,
+	hideOnEscape = true,
 	preferredIndex = 3,
 --	sound = ,
 }
 StaticPopupDialogs["XRPUI_EDITOR_RENAME"] = {
-	text = "Please enter a new name for the profile.",
+	text = "Please enter a new name for \"%s\".",
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	hasEditBox = true,
@@ -79,7 +79,7 @@ StaticPopupDialogs["XRPUI_EDITOR_RENAME"] = {
 --	sound = ,
 }
 StaticPopupDialogs["XRPUI_EDITOR_COPY"] = {
-	text = "Please enter a name for the copied profile.",
+	text = "Please enter a name for the copy of \"%s\".",
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	hasEditBox = true,
