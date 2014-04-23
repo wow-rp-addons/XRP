@@ -21,9 +21,19 @@
 			<OnTextChanged>
 				self:SetCursorPosition(0);
 			</OnTextChanged>
-			<OnLoad>
-				self:EnableMouse(false);
-			</OnLoad>
+			<OnEditFocusGained>
+				self:ClearFocus();
+			</OnEditFocusGained>
+			<OnEnter>
+				local text = self:GetText();
+				if (#text * 6) > self:GetWidth() then
+					GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
+					GameTooltip:SetText(text);
+				end;
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide()
+			</OnLeave>
 		</Scripts>
 	</EditBox>
 	<ScrollFrame name="LargeOutputScrollFrameTemplate" inherits="UIPanelScrollFrameTemplate" virtual="true">
