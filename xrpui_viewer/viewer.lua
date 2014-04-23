@@ -17,6 +17,8 @@
 
 local supportedfields = { NA = true, NI = true, NT = true, NH = true, AE = true, RA = true, AH = true, AW = true, CU = true, DE = true, AG = true, HH = true, HB = true, MO = true, HI = true, VA = true }
 
+local current = UNKNOWN
+
 function xrpui.viewer:Load(character)
 	-- This does not need to be very smart. SetText() should be mapped to the
 	-- appropriate 'real' function if needed. The Remote module always fills the
@@ -39,7 +41,6 @@ function xrpui.viewer:Load(character)
 			self[field]:SetText(character[field] or "")
 		end
 	end
-	self.XC:SetText("")
 end
 
 function xrpui.viewer:ViewUnit(unit)
@@ -47,7 +48,8 @@ function xrpui.viewer:ViewUnit(unit)
 		unit = "player"
 	end
 	local name = xrp:UnitNameWithRealm(unit)
-	self.CurrentTarget = name
+	current = name
+	self.XC:SetText("")
 	self:Load(xrp.units[unit])
 	SetPortraitTexture(self.portrait, unit)
 	ShowUIPanel(self)
@@ -61,7 +63,8 @@ end
 
 function xrpui.viewer:ViewCharacter(name)
 	name = xrp:NameWithRealm(name) -- If there's not a realm, add our realm.
-	self.CurrentTarget = name
+	current = name
+	self.XC:SetText("")
 	self:Load(xrp.characters[name])
 	-- TODO: Horde/Alliance emblems instead if GF available.
 	SetPortraitToTexture(self.portrait, "Interface\\Icons\\INV_Misc_Book_17")
@@ -74,7 +77,37 @@ function xrpui.viewer:ViewCharacter(name)
 	end
 end
 
-xrpui.viewer:SetScript("OnEvent", function(self, event, addon)
+local function msp_receive(name)
+	if current == name then
+		local XC = xrpui.viewer.XC:GetText()
+		xrpui.viewer:Load(xrp.characters[name])
+		if not XC then
+			xrpui.viewer.XC:SetText("Received!")
+		end
+	end
+end
+
+local function msp_receive_chunk(name, chunk, totalchunks)
+	if current == name then
+		if chunk == totalchunks then
+			xrpui.viewer.XC:SetFormattedText("Received! (%u/%u)", chunk, totalchunks)
+		else
+			xrpui.viewer.XC:SetFormattedText("Receiving... (%u/%s)", chunk, totalchunks and tostring(totalchunks) or "??")
+		end
+	end
+end
+
+local function msp_nochange(name)
+	if current == name then
+		local XC = xrpui.viewer.XC:GetText()
+		xrpui.viewer:Load(xrp.characters[name])
+		if not XC then
+			xrpui.viewer.XC:SetText("No changes.")
+		end
+	end
+end
+
+local function viewer_OnEvent(self, event, addon)
 	if event == "ADDON_LOADED" and addon == "xrpui_viewer" then
 		self:SetAttribute("UIPanelLayout-defined", true)
 		self:SetAttribute("UIPanelLayout-enabled", true)
@@ -84,39 +117,22 @@ xrpui.viewer:SetScript("OnEvent", function(self, event, addon)
 		PanelTemplates_SetNumTabs(self, 2)
 		PanelTemplates_SetTab(self, 1)
 
-		xrp:HookEvent("MSP_RECEIVE", function(name)
-			if xrpui.viewer.CurrentTarget == name then
-				xrpui.viewer:Load(xrp.characters[name])
-				if xrpui.viewer.XC:GetText() == "" then
-					xrpui.viewer.XC:SetText("Received!")
-				end
-			end
-		end)
-		xrp:HookEvent("MSP_RECEIVE_CHUNK", function(name, chunk, totalchunks)
-		if xrpui.viewer.CurrentTarget == name then
-				if chunk == totalchunks then
-					xrpui.viewer.XC:SetFormattedText("Received! (%u/%u)", chunk, totalchunks)
-				else
-					xrpui.viewer.XC:SetFormattedText("Receiving... (%u/%s)", chunk, totalchunks and tostring(totalchunks) or "??")
-				end
-			end
-		end)
-		xrp:HookEvent("MSP_NOCHANGE", function(name)
-			if xrpui.viewer.CurrentTarget == name then
-				if xrpui.viewer.XC:GetText() == "" then
-					xrpui.viewer.XC:SetText("No changes.")
-				end
-			end
-		end)
-	self:UnregisterEvent("ADDON_LOADED")
+		xrp:HookEvent("MSP_RECEIVE", msp_receive)
+		xrp:HookEvent("MSP_RECEIVE_CHUNK", msp_receive_chunk)
+		xrp:HookEvent("MSP_NOCHANGE", msp_nochange)
+		self:UnregisterEvent("ADDON_LOADED")
 	end
-end)
+end
+xrpui.viewer:SetScript("OnEvent", viewer_OnEvent)
 xrpui.viewer:RegisterEvent("ADDON_LOADED")
 
-xrpui.viewer:SetScript("OnHide", function(self)
-	self.CurrentTarget = UNKNOWN
+local function viewer_OnHide(self)
+	self.XC:SetText("")
+	current = UNKNOWN
 	PlaySound("igCharacterInfoClose")
-end)
+end
+
+xrpui.viewer:SetScript("OnHide", viewer_OnHide)
 
 -- Setup shorthand access for easier looping later.
 -- Appearance tab
@@ -136,6 +152,3 @@ end
 for _, field in pairs({ "MO", "HI" }) do
 	xrpui.viewer[field] = xrpui.viewer.Biography[field].EditBox
 end
-
---TODO: Make local.
-xrpui.viewer.CurrentTarget = UNKNOWN

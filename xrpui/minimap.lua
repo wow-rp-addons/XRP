@@ -72,79 +72,79 @@ local function onDragStop(self)
 end
 --[[ End LibDBIcon portions. ]]--
 
-local function xrpui_minimap_menu_profiles_select(self, name, arg2, checked)
+local function profiles_select(self, name, arg2, checked)
 	if not checked then
 		xrp.profiles(name)
 	end
 	ToggleDropDownMenu(nil, nil, xrpui.minimap.menu)
 end
 
-local function xrpui_minimap_menu_status_select(self, status, arg2, checked)
+local function status_select(self, status, arg2, checked)
 	if not checked then
 		xrp.profile.FC = status
 	end
 	ToggleDropDownMenu(nil, nil, xrpui.minimap.menu)
 end
 
-local function xrpui_minimap_menu_settings_height_select(self, height, arg2, checked)
+local function height_select(self, height, arg2, checked)
 	if not checked then
-		xrp.settings.height = height
+		xrp_settings.height = height
 	end
 	ToggleDropDownMenu(nil, nil, xrpui.minimap.menu)
 end
 
-local function xrpui_minimap_menu_settings_weight_select(self, weight, arg2, checked)
+local function weight_select(self, weight, arg2, checked)
 	if not checked then
-		xrp.settings.weight = weight
+		xrp_settings.weight = weight
 	end
 	ToggleDropDownMenu(nil, nil, xrpui.minimap.menu)
 end
 
-local xrpui_minimap_menulist_profiles = {}
-local xrpui_minimap_menulist_status = {
-	{ text = xrpui.values.FC_EMPTY, checked = false, arg1 = "0", func = xrpui_minimap_menu_status_select},
+local menulist_profiles = {}
+local menulist_status = {
+	{ text = xrpui.values.FC_EMPTY, checked = false, arg1 = "0", func = status_select },
 }
 for value, text in pairs(xrpui.values.FC) do
-	xrpui_minimap_menulist_status[#xrpui_minimap_menulist_status + 1] = { text = text, checked = false, arg1 = tostring(value), func = xrpui_minimap_menu_status_select, }
+	menulist_status[#menulist_status + 1] = { text = text, checked = false, arg1 = tostring(value), func = status_select, }
 end
-local function xrpui_minimap_menulist_editor(self, arg1, arg2, checked)
+local function menulist_editor(self, arg1, arg2, checked)
 	xrpui:ToggleEditor()
 end
-local function xrpui_minimap_menulist_viewer(self, arg1, arg2, checked)
+local function menulist_viewer(self, arg1, arg2, checked)
 	xrpui:ToggleViewer()
 end
 
-local xrpui_minimap_menulist_settings_height = {
-	{ text = "Centimeters", checked = false, arg1 = "cm", func = xrpui_minimap_menu_settings_height_select, },
-	{ text = "Feet/Inches", checked = false, arg1 = "ft", func = xrpui_minimap_menu_settings_height_select, },
-	{ text = "Meters", checked = false, arg1 = "m", func = xrpui_minimap_menu_settings_height_select, },
+local menulist_height = {
+	{ text = "Centimeters", checked = false, arg1 = "cm", func = height_select, },
+	{ text = "Feet/Inches", checked = false, arg1 = "ft", func = height_select, },
+	{ text = "Meters", checked = false, arg1 = "m", func = height_select, },
 }
 
-local xrpui_minimap_menulist_settings_weight = {
-	{ text = "Kilograms", checked = false, arg1 = "kg", func = xrpui_minimap_menu_settings_weight_select, },
-	{ text = "Pounds", checked = false, arg1 = "lb", func = xrpui_minimap_menu_settings_weight_select, },
+local menulist_weight = {
+	{ text = "Kilograms", checked = false, arg1 = "kg", func = weight_select, },
+	{ text = "Pounds", checked = false, arg1 = "lb", func = weight_select, },
 }
 
-local xrpui_minimap_menulist_settings = {
-	{ text = "Height", notCheckable = true, hasArrow = true, menuList = xrpui_minimap_menulist_settings_height, },
-	{ text = "Weight", notCheckable = true, hasArrow = true, menuList = xrpui_minimap_menulist_settings_weight, },
+local menulist_settings = {
+	{ text = "Height", notCheckable = true, hasArrow = true, menuList = menulist_height, },
+	{ text = "Weight", notCheckable = true, hasArrow = true, menuList = menulist_weight, },
 }
 
-local xrpui_minimap_menulist = {
+local minimap_menulist = {
 	{ text = "XRP", isTitle = true, notCheckable = true, },
-	{ text = "Profiles", notCheckable = true, hasArrow = true, menuList = xrpui_minimap_menulist_profiles, },
-	{ text = "Character status", notCheckable = true, hasArrow = true, menuList = xrpui_minimap_menulist_status, },
-	{ text = "Profile editor", notCheckable = true, func = xrpui_minimap_menulist_editor, },
-	{ text = "Profile viewer", notCheckable = true, func = xrpui_minimap_menulist_viewer, },
-	{ text = "Settings", notCheckable = true, hasArrow = true, menuList = xrpui_minimap_menulist_settings, },
+	{ text = "Profiles", notCheckable = true, hasArrow = true, menuList = menulist_profiles, },
+	{ text = "Character status", notCheckable = true, hasArrow = true, menuList = menulist_status, },
+	{ text = "Profile editor", notCheckable = true, func = menulist_editor, },
+	{ text = "Profile viewer", notCheckable = true, func = menulist_viewer, },
+	{ text = "Settings", notCheckable = true, hasArrow = true, menuList = menulist_settings, },
 	{ text = "Cancel", notCheckable = true, },
 }
 
-local function xrpui_minimap_menu_settings_list()
-	local currentweight = xrp.settings.weight
-	local currentheight = xrp.settings.height
+local function update_settings()
+	local currentweight = xrp_settings.weight
+	local currentheight = xrp_settings.height
 	local currentstatus = xrp.profile.FC or "0"
-	local menu = xrpui_minimap_menulist_settings
+	local menu = menulist_settings
 	for _, menuitem in pairs(menu) do
 		if menuitem.text == "Height" then
 			for _, submenuitem in pairs(menuitem.menuList) do
@@ -158,25 +158,25 @@ local function xrpui_minimap_menu_settings_list()
 	end
 end
 
-local function xrpui_minimap_menu_status_list()
+local function update_status()
 	local currentstatus = xrp.profile.FC or "0"
-	local menu = xrpui_minimap_menulist_status
+	local menu = menulist_status
 	for _, menuitem in pairs(menu) do
 		menuitem.checked = currentstatus == menuitem.arg1
 	end
 end
 
-local function xrpui_minimap_menu_profiles_list()
-	local profilelist = xrp.profiles()
-	local currentprofile = xrp.profile(true)
-	local menu = xrpui_minimap_menulist_profiles
+local function update_profiles()
+	local list = xrp.profiles()
+	local profile = xrp.profile(true)
+	local menu = menulist_profiles
 	wipe(menu)
-	for _, name in pairs(profilelist) do
-		menu[#menu + 1] = { text = name, checked = currentprofile == name, arg1 = name, func = xrpui_minimap_menu_profiles_select, }
+	for _, name in pairs(list) do
+		menu[#menu + 1] = { text = name, checked = profile == name, arg1 = name, func = profiles_select, }
 	end
 end
 
-local function xrpui_minimap_UpdateIcon()
+local function update_icon()
 	if xrp.units.target and xrp.units.target.VA then
 		xrpui.minimap.icon:SetTexture("Interface\\Icons\\INV_Misc_Book_03")
 	else
@@ -190,7 +190,7 @@ local function xrpui_minimap_UpdateIcon()
 	end
 end
 
-local function xrpui_minimap_OnEnter(self, motion)
+local function minimap_OnEnter(self, motion)
 	if motion then
 		GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT", 30, 4)
 		--GameTooltip:SetText("XRP", 1.0, 1.0, 1.0)
@@ -204,13 +204,13 @@ local function xrpui_minimap_OnEnter(self, motion)
 		GameTooltip:Show()
 	end
 end
-xrpui.minimap:SetScript("OnEnter", xrpui_minimap_OnEnter)
+xrpui.minimap:SetScript("OnEnter", minimap_OnEnter)
 xrpui.minimap:SetScript("OnLeave", function(self, motion)
 	GameTooltip:Hide()
 end)
 
 local toggled = false
-local function xrpui_minimap_OnClick(self, button, down)
+local function minimap_OnClick(self, button, down)
 	if not down then
 		if button == "LeftButton" then
 			if xrp.units.target and xrp.units.target.VA then
@@ -228,28 +228,28 @@ local function xrpui_minimap_OnClick(self, button, down)
 				toggled = true
 			end
 		elseif button == "RightButton" then
-			xrpui_minimap_menu_profiles_list()
-			xrpui_minimap_menu_status_list()
-			xrpui_minimap_menu_settings_list()
-			EasyMenu(xrpui_minimap_menulist, xrpui_minimap_menu, xrpui_minimap, 3, 10, "MENU", nil)
+			update_profiles()
+			update_status()
+			update_settings()
+			EasyMenu(minimap_menulist, xrpui_minimap_menu, xrpui_minimap, 3, 10, "MENU", nil)
 		end
 	end
 end
 
-local function xrpui_minimap_OnEvent(self, event, addon)
+local function minimap_OnEvent(self, event, addon)
 	if event == "PLAYER_TARGET_CHANGED" then
-		xrpui_minimap_UpdateIcon()
+		update_icon()
 	elseif event == "ADDON_LOADED" and addon == "xrpui" then
 		self:SetScript("OnDragStart", onDragStart)
 		self:SetScript("OnDragStop", onDragStop)
-		self:SetScript("OnClick", xrpui_minimap_OnClick)
+		self:SetScript("OnClick", minimap_OnClick)
 		updatePosition(self)
-		xrp:HookEvent("MSP_UPDATE", xrpui_minimap_UpdateIcon)
-		xrp:HookEvent("MSP_RECEIVE", xrpui_minimap_UpdateIcon)
+		xrp:HookEvent("MSP_UPDATE", update_icon)
+		xrp:HookEvent("MSP_RECEIVE", update_icon)
 		xrpui.minimap:RegisterEvent("PLAYER_TARGET_CHANGED")
 		self:UnregisterEvent("ADDON_LOADED")
 	end
 end
 
-xrpui.minimap:SetScript("OnEvent", xrpui_minimap_OnEvent)
+xrpui.minimap:SetScript("OnEvent", minimap_OnEvent)
 xrpui.minimap:RegisterEvent("ADDON_LOADED")
