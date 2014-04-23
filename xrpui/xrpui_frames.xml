@@ -20,7 +20,7 @@
 		<Size x="31" y="31"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="icon">
+				<Texture parentKey="icon" file="Interface\Icons\INV_Misc_QuestionMark">
 					<Size x="20" y="20"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="6" y="-5"/>
