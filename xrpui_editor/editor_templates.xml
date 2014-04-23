@@ -15,6 +15,22 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
+	<CheckButton name="TinyEditorCheck" inherits="UICheckButtonTemplate" virtual="true">
+		<Size x="12" y="12"/>
+		<Scripts>
+			<OnEnter>
+				GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
+				GameTooltip:SetText("Use Default if empty.");
+				GameTooltip:Show();
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				xrpui.editor:CheckFields();
+			</OnClick>
+		</Scripts>
+	</CheckButton>
 	<EditBox name="FancyInputBoxTemplate" inherits="InputBoxTemplate" virtual="true">
 		<Scripts>
 			<OnTabPressed>
@@ -112,7 +128,7 @@
 					<OnTextChanged>
 						local scrollFrame = self:GetParent();
 						ScrollingEdit_OnTextChanged(self, scrollFrame);
-						xrpui.editor:CheckFields()
+						xrpui.editor:CheckFields();
 					</OnTextChanged>
 					<OnCursorChanged function="ScrollingEdit_OnCursorChanged"/>
 					<OnUpdate>

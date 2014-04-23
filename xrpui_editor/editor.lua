@@ -18,6 +18,7 @@
 local supportedfields = { NA = true, NI = true, NT = true, NH = true, AE = true, RA = true, AH = true, AW = true, CU = true, DE = true, AG = true, HH = true, HB = true, MO = true, HI = true, FR = true, FC = true }
 
 local last_profile = {}
+local last_defaults = {}
 
 local warn9000 = false
 
@@ -52,6 +53,8 @@ function xrpui.editor:Save()
 			xrp.profiles[name][field] = text
 			last_profile[field] = text
 		end
+		xrp.defaults[name][field] = self.checkboxes[field]:GetChecked() and true or false
+		last_defaults[field] = xrp.defaults[name][field]
 	end
 
 	saving = false
@@ -73,6 +76,7 @@ function xrpui.editor:Load(name)
 	clearfocus(self)
 	-- This does not need to be very smart. SetText() should be mapped to the
 	-- appropriate 'real' function if needed.
+	local isdef = name == "Default"
 	local profile = xrp.profiles[name]
 	for field, _ in pairs(supportedfields) do
 		if field == "FC" then
@@ -82,6 +86,13 @@ function xrpui.editor:Load(name)
 			self[field]:SetText(profile[field] or "")
 			self[field]:SetCursorPosition(0)
 			last_profile[field] = (profile[field] or "")
+		end
+		last_defaults[field] = xrp.defaults[name][field]
+		self.checkboxes[field]:SetChecked(last_defaults[field])
+		if isdef then
+			self.checkboxes[field]:Disable()
+		else
+			self.checkboxes[field]:Enable()
 		end
 	end
 
@@ -106,7 +117,7 @@ function xrpui.editor:CheckFields()
 	if not loading then -- This will still trigger after loading.
 		local changes = false
 		for field, _ in pairs(supportedfields) do
-			if not changes and xrpui.editor[field]:GetText() ~= (last_profile[field] or "") then
+			if not changes and (xrpui.editor[field]:GetText() ~= (last_profile[field] or "") or (xrpui.editor.checkboxes[field]:GetChecked() and true or false) ~= last_defaults[field]) then
 				changes = true
 			end
 		end
@@ -218,6 +229,7 @@ xrpui.editor:SetScript("OnEvent", editor_OnEvent)
 xrpui.editor:RegisterEvent("ADDON_LOADED")
 
 -- Setup shorthand access and other stuff.
+xrpui.editor.checkboxes = {}
 -- Appearance tab
 local appearance = { "NA", "NI", "NT", "NH", "AE", "RA", "AH", "AW", "CU" }
 for key, field in pairs(appearance) do
@@ -226,10 +238,12 @@ for key, field in pairs(appearance) do
 	xrpui.editor[field]:SetScript("OnTextChanged", function(self)
 		xrpui.editor:CheckFields()
 	end)
+	xrpui.editor.checkboxes[field] = xrpui.editor.Appearance[field.."Default"]
 end
 -- EditBox is inside ScrollFrame
 xrpui.editor["DE"] = xrpui.editor.Appearance["DE"].EditBox
 xrpui.editor["DE"].nextEditBox = xrpui.editor.Appearance["NA"]
+xrpui.editor.checkboxes["DE"] = xrpui.editor.Appearance["DEDefault"]
 
 -- Biography tab
 local biography = { "AG", "HH", "HB", "MO", "FR", "FC" }
@@ -247,7 +261,9 @@ for key, field in pairs(biography) do
 			xrpui.editor:CheckFields()
 		end)
 	end
+	xrpui.editor.checkboxes[field] = xrpui.editor.Biography[field.."Default"]
 end
 -- EditBox is inside ScrollFrame
 xrpui.editor["HI"] = xrpui.editor.Biography["HI"].EditBox
 xrpui.editor["HI"].nextEditBox = xrpui.editor.Biography["FR"]
+xrpui.editor.checkboxes["HI"] = xrpui.editor.Biography["HIDefault"]

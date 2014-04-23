@@ -25,23 +25,28 @@ local overrides = {}
 local nk = {}
 
 local profs = {}
+local defs = {}
 
 xrp.profile = setmetatable({}, {
 	__index = function(profile, field)
+		local contents
 		if xrp.toon.fields[field] then
-			return xrp.toon.fields[field]
+			contents = xrp.toon.fields[field]
 		elseif overrides[field] then
-			return overrides[field]
+			contents = overrides[field]
 		elseif xrp_profiles[xrp_selectedprofile] and xrp_profiles[xrp_selectedprofile][field] then
-			if field == "AH" then
-				return xrp:ConvertHeight(xrp_profiles[xrp_selectedprofile][field], "msp")
-			elseif field == "AW" then
-				return xrp:ConvertWeight(xrp_profiles[xrp_selectedprofile][field], "msp")
-			else
-				return xrp_profiles[xrp_selectedprofile][field]
-			end
+			contents = xrp_profiles[xrp_selectedprofile][field]
+		elseif xrp.defaults[xrp_selectedprofile][field] == true and xrp.profiles["Default"][field] then
+			contents = xrp_profiles["Default"][field]
 		else
 			return nil
+		end
+		if field == "AH" then
+			return xrp:ConvertHeight(contents, "msp")
+		elseif field == "AW" then
+			return xrp:ConvertWeight(contents, "msp")
+		else
+			return contents
 		end
 	end,
 	__newindex = function(profile, field, contents)
@@ -55,6 +60,11 @@ xrp.profile = setmetatable({}, {
 			return xrp_selectedprofile
 		end
 		local out = {}
+		for field, contents in pairs(xrp_profiles["Default"]) do
+			if xrp.defaults[xrp_selectedprofile][field] then
+				out[field] = contents
+			end
+		end
 		for field, contents in pairs(xrp_profiles[xrp_selectedprofile]) do
 			out[field] = contents
 		end
@@ -163,6 +173,7 @@ xrp.profiles = setmetatable({}, {
 			profs[name] = nil
 			if name ~= "Default" then
 				xrp_profiles[name] = nil
+				xrp_defaults[name] = nil
 			else
 				-- Wipe fields if profile is Default, but don't delete
 				-- the table.
@@ -196,6 +207,61 @@ xrp.profiles = setmetatable({}, {
 			return true
 		end
 		return false
+	end,
+	__metatable = false,
+})
+
+local defmt = {
+	__index = function(default, field)
+		if default[nk] ~= "Default" and xrp_defaults[default[nk]] and xrp_defaults[default[nk]][field] ~= nil then
+			return xrp_defaults[default[nk]][field]
+		end
+		return true
+	end,
+	__newindex = function(default, field, state)
+		if xrp.msp.unitfields[field] or xrp.msp.metafields[field] or not field:match("^%u%u$") or default[nk] == "Default" then
+			return
+		end
+		if not xrp_defaults[default[nk]] then
+			xrp_defaults[default[nk]] = {}
+		end
+		if state == false then
+			xrp_defaults[default[nk]][field] = state
+		elseif state == true or state == nil then
+			xrp_defaults[default[nk]][field] = nil
+			if not next(xrp_defaults[default[nk]]) then
+				xrp.defaults[default[nk]] = nil
+			end
+		end
+	end,
+	__call = function(default)
+		local out = {}
+		for field, state in pairs(xrp_defaults[default[nk]]) do
+			out[field] = state
+		end
+		return out
+	end,
+	__metatable = false,
+}
+
+xrp.defaults = setmetatable({}, {
+	__index = function(defaults, name)
+		if not defs[name] then
+			defs[name] = setmetatable({ [nk] = name }, defmt)
+		end
+		return defs[name]
+	end,
+	__newindex = function(defaults, name, default)
+		if type(default) == "table" then
+			if not defs[name] then
+				defs[name] = setmetatable({ [nk] = name }, defmt)
+			end
+			for field, default in pairs(default) do
+				defs[name][field] = default
+			end
+		elseif default == "" or default == nil then
+			defs[name] = nil
+		end
 	end,
 	__metatable = false,
 })
