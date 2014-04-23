@@ -19,6 +19,18 @@ local supportedfields = { NA = true, NI = true, NT = true, NH = true, AE = true,
 
 local current = UNKNOWN
 
+local function parse_versions(VA)
+	if not VA then
+		return UNKNOWN.." or "..NONE
+	end
+	local VAshort = ""
+	for addon in VA:gmatch("(%a[^/]+)/[^;]+") do
+		VAshort = VAshort..addon..", "
+	end
+	VAshort = (VAshort:gsub(", $", ""))
+	return VAshort
+end
+
 function xrpui.viewer:Load(character)
 	-- This does not need to be very smart. SetText() should be mapped to the
 	-- appropriate 'real' function if needed. The Remote module always fills the
@@ -30,7 +42,7 @@ function xrpui.viewer:Load(character)
 		elseif field == "NA" then
 			self.TitleText:SetText(character[field] or UNKNOWN)
 		elseif field == "VA" then
-			self[field]:SetText(character[field] and (character[field]:gsub(";", ", ")) or UNKNOWN.."/"..NONE)
+			self["VA"]:SetText(parse_versions(character[field]))
 		elseif field == "AH" then
 			self[field]:SetText(xrp:ConvertHeight(character[field], "user") or "")
 		elseif field == "AW" then
