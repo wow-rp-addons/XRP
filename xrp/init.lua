@@ -54,7 +54,10 @@ local function init_OnEvent(xrp, event, addon)
 		elseif not xrp_profiles.Default.NA then
 			xrp_profiles.Default.NA = xrp.toon.name
 		end
-		
+
+		if type(xrp_defaults) ~= "table" then
+			xrp_defaults = {}
+		end
 
 		if type(xrp_selectedprofile) ~= "string" or type(xrp_profiles[xrp_selectedprofile]) ~= "table" then
 			xrp_selectedprofile = "Default"

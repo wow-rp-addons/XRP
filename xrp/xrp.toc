@@ -5,7 +5,7 @@
 ## Notes: XRP is an extensible roleplaying profile addon.
 ## X-Category: Roleplaying
 ## X-License: LGPLv3
-## SavedVariablesPerCharacter: xrp_profiles, xrp_selectedprofile, xrp_versions
+## SavedVariablesPerCharacter: xrp_defaults, xrp_profiles, xrp_selectedprofile, xrp_versions
 ## SavedVariables: xrp_cache, xrp_settings
 
 xrp.lua
