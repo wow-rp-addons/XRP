@@ -1,6 +1,6 @@
 ## Interface: 50400
 ## Title: XRP-UI
-## Version: 5.4.7.0_git
+## Version: 5.4.7.0_beta1
 ## Author: Justin Snelgrove
 ## Notes: Provides a user interface for XRP. (You really want to enable this.)
 ## X-Category: Roleplaying

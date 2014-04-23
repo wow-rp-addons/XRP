@@ -1,0 +1,15 @@
+5.4.7.0_beta1:
+	- First beta release.
+	- Mostly feature-complete.
+	- Known issues:
+		- Some settings are unavailable.
+		- Tooltip display truncates certain fields.
+		- Viewer fails to fully display some fields if there is too much text
+		  in them.
+		- No localization support yet.
+	- Be aware:
+		- No import from other RP addons (yet).
+		- Memory usage may be higher than some other addons due to storing all
+		  seen profiles in SavedVariables (and re-loading them at start). In
+		  the future, there will be options to control this behaviour more
+		  closely.
