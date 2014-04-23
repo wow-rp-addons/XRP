@@ -100,6 +100,24 @@ local function weight_select(self, weight, arg2, checked)
 	ToggleDropDownMenu(nil, nil, xrpui.minimap.menu)
 end
 
+local function chatnames_select(self, types, arg2, checked)
+	local toggle = checked and true or false
+	if types == "CHAT_MSG_SAY" then
+		xrpui_settings.chatnames["CHAT_MSG_SAY"] = toggle
+	elseif types == "CHAT_MSG_YELL" then
+		xrpui_settings.chatnames["CHAT_MSG_YELL"] = toggle
+	elseif types == "CHAT_MSG_EMOTE" then
+		xrpui_settings.chatnames["CHAT_MSG_EMOTE"] = toggle
+		xrpui_settings.chatnames["CHAT_MSG_TEXT_EMOTE"] = toggle
+	elseif types == "CHAT_MSG_GUILD" then
+		xrpui_settings.chatnames["CHAT_MSG_GUILD"] = toggle
+	elseif types == "CHAT_MSG_WHISPER" then
+		xrpui_settings.chatnames["CHAT_MSG_WHISPER"] = toggle
+		xrpui_settings.chatnames["CHAT_MSG_WHISPER_INFORM"] = toggle
+	end
+	ToggleDropDownMenu(nil, nil, xrpui.minimap.menu)
+end
+
 local menulist_profiles = {}
 local menulist_status = {
 	{ text = xrpui.values.FC_EMPTY, checked = false, arg1 = "0", func = status_select },
@@ -160,9 +178,18 @@ local menulist_weight = {
 	{ text = "Pounds", checked = false, arg1 = "lb", func = weight_select, },
 }
 
+local menulist_chatnames = {
+	{ text = "Say", isNotRadio = true, keepShownOnClick = true, checked = false, arg1 = "CHAT_MSG_SAY", func = chatnames_select, },
+	{ text = "Yell", isNotRadio = true, keepShownOnClick = true, checked = false, arg1 = "CHAT_MSG_YELL", func = chatnames_select, },
+	{ text = "Emote", isNotRadio = true, keepShownOnClick = true, checked = false, arg1 = "CHAT_MSG_EMOTE", func = chatnames_select, },
+	{ text = "Guild", isNotRadio = true, keepShownOnClick = true, checked = false, arg1 = "CHAT_MSG_GUILD", func = chatnames_select, },
+	{ text = "Whisper", isNotRadio = true, keepShownOnClick = true, checked = false, arg1 = "CHAT_MSG_WHISPER", func = chatnames_select, },
+}
+
 local menulist_settings = {
 	{ text = "Height", notCheckable = true, hasArrow = true, menuList = menulist_height, },
 	{ text = "Weight", notCheckable = true, hasArrow = true, menuList = menulist_weight, },
+	{ text = "Chat Names", notCheckable = true, hasArrow = true, menuList = menulist_chatnames, },
 }
 
 local minimap_menulist = {
@@ -189,6 +216,10 @@ local function update_settings()
 		elseif menuitem.text == "Weight" then
 			for _, submenuitem in pairs(menuitem.menuList) do
 				submenuitem.checked = currentweight == submenuitem.arg1
+			end
+		elseif menuitem.text == "Chat Names" then
+			for _, submenuitem in pairs(menuitem.menuList) do
+				submenuitem.checked = xrpui_settings.chatnames[submenuitem.arg1]
 			end
 		end
 	end
