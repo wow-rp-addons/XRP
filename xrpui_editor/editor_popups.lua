@@ -68,8 +68,11 @@ StaticPopupDialogs["XRPUI_EDITOR_RENAME"] = {
 	OnAccept = function(self, data, data2)
 		local profile = xrpui.editor.Profiles:GetText()
 		local text = self.editBox:GetText()
-		xrp.profiles[profile](text)
-		xrpui.editor:Load(text)
+		if not xrp.profiles[profile](text) then
+			StaticPopup_Show("XRPUI_EDITOR_FAIL")
+		else
+			xrpui.editor:Load(text)
+		end
 	end,
 	enterClicksFirstButton = true,
 	timeout = 0,
@@ -94,9 +97,23 @@ StaticPopupDialogs["XRPUI_EDITOR_COPY"] = {
 	OnAccept = function(self, data, data2)
 		local profile = xrpui.editor.Profiles:GetText()
 		local text = self.editBox:GetText()
-		xrp.profiles[text](profile)
-		xrpui.editor:Load(text)
+		if not xrp.profiles[text](profile) then
+			StaticPopup_Show("XRPUI_EDITOR_FAIL")
+		else
+			xrpui.editor:Load(text)
+		end
 	end,
+	enterClicksFirstButton = true,
+	timeout = 0,
+	whileDead = true,
+	hideOnEscape = true,
+	preferredIndex = 3,
+--	sound = ,
+}
+StaticPopupDialogs["XRPUI_EDITOR_FAIL"] = {
+	text = "Something went wrong; a profile with that name may already exist.",
+	button1 = OKAY,
+	showAlert = true,
 	enterClicksFirstButton = true,
 	timeout = 0,
 	whileDead = true,
