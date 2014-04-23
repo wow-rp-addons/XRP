@@ -66,14 +66,19 @@ local tmp_cache = setmetatable({}, {
 local old = false
 local tt = false
 
-local queue = {}
-local queuepos = 1
-local queueend = 0
+local mqueue = {}
+local mqpos = 1
+local mqend = 0
+
+local lastburst = GetTime()
+local nextsend = lastburst + 1.00
+
+local rqueue = {}
 
 -- TODO: Merge into send()? Maybe not, if CTL is present...
-local function msp_queuemessage(prefix, message, character)
-	queueend = queueend + 1
-	queue[queueend] = { prefix, message, character }
+local function qmessage(prefix, message, character)
+	mqend = mqend + 1
+	mqueue[mqend] = { prefix, message, character }
 	xrp.msp:Show() -- Will fire on next frame draw (i.e., essentially instantly).
 end
 
@@ -82,7 +87,7 @@ end
 -- example, it is *not* done on the first run, as versions for the next
 -- session are updated on PLAYER_LOGOUT rather than always incrementing by
 -- one.)
-local function msp_cachett()
+local function cachett()
 	local tooltip = {}
 	for field, _ in pairs(xrp.msp.ttfields) do
 		if not xrp.profile[field] then
@@ -97,24 +102,24 @@ local function msp_cachett()
 	return true
 end
 
-local function msp_send(character, data)
+local function send(character, data)
 	data = table.concat(data, "\1")
 	--print(character..": "..data:gsub("\1", "\\1"))
 	if #data <= 255 then
-		msp_queuemessage("MSP", data, character)
+		qmessage("MSP", data, character)
 	else
 		-- XC is most likely to add five or six extra characters, will not
 		-- add less than five, and only adds seven or more if the profile
 		-- is over 25000 characters or so. So let's say six.
 		data = format("XC=%u\1%s", math.ceil((#data + 6) / 255), data)
 		local position = 1
-		msp_queuemessage("MSP\1", data:sub(position, position + 254), character)
+		qmessage("MSP\1", data:sub(position, position + 254), character)
 		position = position + 255
 		while position + 255 <= #data do
-			msp_queuemessage("MSP\2", data:sub(position, position + 254), character)
+			qmessage("MSP\2", data:sub(position, position + 254), character)
 			position = position + 255
 		end
-		msp_queuemessage("MSP\3", data:sub(position), character)
+		qmessage("MSP\3", data:sub(position), character)
 	end
 end
 
@@ -226,7 +231,7 @@ xrp.msp.handlers = {
 			xrp:FireEvent("MSP_NOCHANGE", character)
 		end
 		if #out > 0 then
-			msp_send(character, out)
+			send(character, out)
 		end
 	end,
 	["MSP\1"] = function(character, msg)
@@ -236,9 +241,9 @@ xrp.msp.handlers = {
 			-- They definitely have MSP, no need to question it next time.
 		tmp_cache[character].nomsp = nil
 		tmp_cache[character].lastcheck = nil
-		local incchunks = (msg:match("XC=%d+\1"))
+		local incchunks = msg:match("XC=%d+\1")
 		if incchunks then
-			tmp_cache[character].totalchunks = tonumber((incchunks:gsub("XC=(%d+)\1", "%1")))
+			tmp_cache[character].totalchunks = tonumber(incchunks:match("XC=(%d+)\1"))
 			-- Drop XC if present.
 			msg = msg:gsub(incchunks, "")
 		end
@@ -267,11 +272,10 @@ xrp.msp.handlers = {
 		end
 		if tmp_cache[character].buffer then
 			tmp_cache[character].buffer[#tmp_cache[character].buffer + 1] = msg
-			-- Fire MSP_RECEIVE_CHUNK before MSP_RECEIVE. MSP_NOCHANGE is
-			-- fired if there's no changes... Not that you'll get multiple
-			-- chunks with no changes.
-			xrp:FireEvent("MSP_RECEIVE_CHUNK", character, tmp_cache[character].chunks + 1, tmp_cache[character].chunks + 1)
 			xrp.msp.handlers["MSP"](character, table.concat(tmp_cache[character].buffer))
+			-- Receive chunk after MSP_RECEIVE would fire. Makes it easier to
+			-- something useful when chunks == totalchunks.
+			xrp:FireEvent("MSP_RECEIVE_CHUNK", character, tmp_cache[character].chunks + 1, tmp_cache[character].chunks + 1)
 
 			tmp_cache[character].chunks = nil
 			tmp_cache[character].totalchunks = nil
@@ -282,16 +286,15 @@ xrp.msp.handlers = {
 	end,
 }
 
-local requestqueue = {}
 function xrp.msp:QueueRequest(character, field)
 	if character == xrp.toon.withrealm then
 		return
 	end
 	local append = true
-	if not requestqueue[character] then
-		requestqueue[character] = {}
+	if not rqueue[character] then
+		rqueue[character] = {}
 	else
-		for _, reqfield in pairs(requestqueue[character]) do
+		for _, reqfield in pairs(rqueue[character]) do
 			if append and reqfield == field then
 				append = false
 			end
@@ -299,7 +302,7 @@ function xrp.msp:QueueRequest(character, field)
 	end
 	if append then
 		--print(character..": "..field)
-		requestqueue[character][#requestqueue[character] + 1] = field
+		rqueue[character][#rqueue[character] + 1] = field
 		xrp.msp:Show()
 	end
 end
@@ -308,7 +311,6 @@ function xrp.msp:Request(character, fields)
 	if disabled or xrp:NameWithoutRealm(character) == UNKNOWN then
 		return false
 	elseif character == xrp.toon.withrealm then
-		xrp:FireEvent("MSP_NOCHANGE", character)
 		return false
 	end
 
@@ -339,7 +341,6 @@ function xrp.msp:Request(character, fields)
 			fields[#fields + 1] = "TT"
 		end
 	else
-		xrp:FireEvent("MSP_NOCHANGE", character)
 		return false
 	end
 
@@ -362,7 +363,7 @@ function xrp.msp:Request(character, fields)
 	end
 	if #out > 0 then
 		--print(character..": "..table.concat(out, " "))
-		msp_send(character, out)
+		send(character, out)
 		return true
 	end
 	xrp:FireEvent("MSP_NOCHANGE", character)
@@ -430,14 +431,14 @@ function xrp.msp:Update()
 			xrp_cache[xrp.toon.withrealm].versions[field] = version
 		end
 		-- First run, build the tooltip (but don't change its version!).
-		msp_cachett()
+		cachett()
 		changes = true
 	end
 	old = new
 	if ttchanges then
 		xrp_versions.TT = (xrp_versions.TT or 0) + 1
 		xrp_cache[xrp.toon.withrealm].versions.TT = xrp_versions.TT
-		msp_cachett()
+		cachett()
 	end
 	if changes then
 		xrp:FireEvent("MSP_UPDATE")
@@ -458,7 +459,7 @@ function xrp.msp:UpdateField(field)
 			if self.ttfields[field] then
 				xrp_versions.TT = (xrp_versions.TT or 0) + 1
 				xrp_cache[xrp.toon.withrealm].versions.TT = xrp_versions.TT
-				msp_cachett()
+				cachett()
 			end
 			xrp:FireEvent("MSP_UPDATE", field)
 		end
@@ -468,18 +469,16 @@ function xrp.msp:UpdateField(field)
 	return true
 end
 
-local lastburst = GetTime()
-local nextsend = lastburst + 1.00
 local function msp_OnUpdate(self, elapsed)
-	if next(requestqueue) then
-		for character, fields in pairs(requestqueue) do
+	if next(rqueue) then
+		for character, fields in pairs(rqueue) do
 			--print(character..": "..fields)
 			self:Request(character, fields)
-			requestqueue[character] = nil
+			rqueue[character] = nil
 		end
 	end
 	local now = GetTime()
-	if nextsend < now and queue[queuepos] then
+	if nextsend < now and mqueue[mqpos] then
 		local out = 0
 		if lastburst + 3 < now then
 			out = out - 300
@@ -487,17 +486,17 @@ local function msp_OnUpdate(self, elapsed)
 			out = out - 300
 			lastburst = now
 		end
-		while (out < 300 and queuepos <= queueend) do
-			SendAddonMessage(queue[queuepos][1], queue[queuepos][2], "WHISPER", queue[queuepos][3])
-			--print("SendAddonMessage(\""..queue[queuepos][1]:gsub("\1", "\\1"):gsub("\2", "\\2"):gsub("\3", "\\3").."\", \""..queue[queuepos][2]:gsub("\1", "\\1").."\", \"WHISPER\", \""..queue[queuepos][3].."\")")
-			--print("Sending to: "..queue[queuepos][3])
-			out = out + #queue[queuepos][2] + 32
-			queue[queuepos] = nil
-			queuepos = queuepos + 1
+		while (out < 300 and mqpos <= mqend) do
+			SendAddonMessage(mqueue[mqpos][1], mqueue[mqpos][2], "WHISPER", mqueue[mqpos][3])
+			--print("SendAddonMessage(\""..mqueue[mqpos][1]:gsub("\1", "\\1"):gsub("\2", "\\2"):gsub("\3", "\\3").."\", \""..mqueue[mqpos][2]:gsub("\1", "\\1").."\", \"WHISPER\", \""..mqueue[mqpos][3].."\")")
+			--print("Sending to: "..mqueue[mqpos][3])
+			out = out + #mqueue[mqpos][2] + 32
+			mqueue[mqpos] = nil
+			mqpos = mqpos + 1
 		end
 		nextsend = now + 0.25
 	end
-	if queuepos > queueend then
+	if mqpos > mqend then
 		self:Hide()
 	end
 end

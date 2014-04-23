@@ -21,20 +21,6 @@ xrp = CreateFrame("Frame")
 xrp.version = GetAddOnMetadata("xrp", "Version")
 xrp.versionstring = format("%s/%s", GetAddOnMetadata("xrp", "Title"), xrp.version)
 
-function xrp:Debug(priority, message)
-	if priority >= 5 and priority <= xrp.settings.loglevel then -- Debug.
-		DEFAULT_CHAT_FRAME:AddMessage(format("|cFFABD473xrp: |cFF0000FF(DEBUG) |r%s", message))
-	elseif priority == 1 and priority <= xrp.settings.debug then -- Critical.
-		DEFAULT_CHAT_FRAME:AddMessage(format("|cFFABD473xrp:: |cFFFF0000(CRITICAL) |r%s", message))
-	elseif priority == 2 and priority <= xrp.settings.debug then -- Errors.
-		DEFAULT_CHAT_FRAME:AddMessage(format("|cFFABD473xrp: |cFFFF3333(ERROR) |r%s", message))
-	elseif priority == 3 and priority <= xrp.settings.debug then -- Warnings.
-		DEFAULT_CHAT_FRAME:AddMessage(format("|cFFABD473xrp: |cFFFFA500(WARNING) |r%s", message))
-	elseif priority == 4 and priority <= xrp.settings.loglevel then -- Informational.
-		DEFAULT_CHAT_FRAME:AddMessage(format("|cFFABD473xrp: |r%s", message))
-	end
-end
-
 function xrp:UnitNameWithRealm(unit)
 	local name, realm = UnitName(unit)
 	local isplayer = UnitIsPlayer(unit)
@@ -90,7 +76,7 @@ function xrp:ConvertWeight(weight, units)
 		return weight
 	end
 
-	units = (not units or units == "user") and xrp.settings.weight or units
+	units = (not units or units == "user") and xrp_settings.weight or units
 	if units == "msp" then -- MSP internal format: kg without units as string.
 		return format("%u", number + 0.5)
 	elseif units == "kg" then
@@ -129,7 +115,7 @@ function xrp:ConvertHeight(height, units)
 		return height
 	end
 
-	units = (not units or units == "user") and xrp.settings.height or units
+	units = (not units or units == "user") and xrp_settings.height or units
 	if units == "msp" then -- MSP internal format: cm without units as string.
 		return format("%d", number)
 	elseif units == "cm" then

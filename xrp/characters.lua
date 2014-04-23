@@ -16,27 +16,27 @@
 	<http://www.gnu.org/licenses/>.
 ]]
 
-local namekey = {}
+local nk = {}
 
-local metacharacters = {}
+local chars = {}
 
-local unitcache = {}
+local gcache = {}
 
-local charactermt = {
+local charmt = {
 	__index = function(character, field)
 		-- Any access to a field is treated as an implicit request to fetch
 		-- it (but xrp.msp won't do it if it's fresh, and will compile quick,
 		-- successive requests into one go). If the unit table's been used and
 		-- the target is not our faction, don't run a request.
-		if not unitcache[character[namekey]] or (unitcache[character[namekey]] and unitcache[character[namekey]].GF == xrp.toon.fields.GF) then
-			xrp.msp:QueueRequest(character[namekey], field)
+		if not gcache[character[nk]] or (gcache[character[nk]] and gcache[character[nk]].GF == xrp.toon.fields.GF) then
+			xrp.msp:QueueRequest(character[nk], field)
 		end
-		if xrp_cache[character[namekey]] and xrp_cache[character[namekey]].fields[field] then
-			return xrp_cache[character[namekey]].fields[field]
-		elseif unitcache[character[namekey]] and unitcache[character[namekey]][field] then
-			return unitcache[character[namekey]][field]
+		if xrp_cache[character[nk]] and xrp_cache[character[nk]].fields[field] then
+			return xrp_cache[character[nk]].fields[field]
+		elseif gcache[character[nk]] and gcache[character[nk]][field] then
+			return gcache[character[nk]][field]
 		elseif field == "NA" then
-			return xrp:NameWithoutRealm(character[namekey])
+			return xrp:NameWithoutRealm(character[nk])
 		end
 		return nil
 	end,
@@ -45,12 +45,12 @@ local charactermt = {
 	__call = function(character, fields)
 		if not fields then
 			local profile = {}
-			for field, contents in pairs(xrp_cache[character[namekey]].fields) do
+			for field, contents in pairs(xrp_cache[character[nk]].fields) do
 				profile[field] = contents
 			end
 			return profile
 		elseif type(fields) == "table" or type(fields) == "string" then
-			xrp.msp:Request(character[namekey], fields)
+			xrp.msp:Request(character[nk], fields)
 		end
 	end,
 	__metatable = false,
@@ -58,10 +58,10 @@ local charactermt = {
 
 xrp.characters = setmetatable({}, {
 	__index = function (characters, name)
-		if not metacharacters[name] then
-			metacharacters[name] = setmetatable({ [namekey] = name }, charactermt)
+		if not chars[name] then
+			chars[name] = setmetatable({ [nk] = name }, charmt)
 		end
-		return metacharacters[name]
+		return chars[name]
 	end,
 	__newindex = function(characters, character, value)
 	end,
@@ -81,11 +81,11 @@ xrp.units = setmetatable({}, {
 		end
 		local name = xrp:UnitNameWithRealm(unit)
 		if type(name) == "string" then
-			if not metacharacters[name] then
-				metacharacters[name] = setmetatable({ [namekey] = name }, charactermt)
+			if not chars[name] then
+				chars[name] = setmetatable({ [nk] = name }, charmt)
 			end
-			if not unitcache[name] then
-				unitcache[name] = {
+			if not gcache[name] then
+				gcache[name] = {
 					GC = (select(2, UnitClass(unit))),
 					GF = (UnitFactionGroup(unit)),
 					GR = (select(2, UnitRace(unit))),
@@ -93,14 +93,14 @@ xrp.units = setmetatable({}, {
 					GU = UnitGUID(unit),
 				}
 				if xrp_cache[name] then
-					for field, contents in pairs(unitcache[name]) do
+					for field, contents in pairs(gcache[name]) do
 						if not xrp_cache[name].fields[field] then
 							xrp_cache[name].fields[field] = contents
 						end
 					end
 				end
 			end
-			return metacharacters[name]
+			return chars[name]
 		end
 		return nil
 	end,

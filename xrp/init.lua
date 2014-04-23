@@ -16,7 +16,7 @@
 	<http://www.gnu.org/licenses/>.
 ]]
 
-local function xrp_OnEvent(xrp, event, addon)
+local function init_OnEvent(xrp, event, addon)
 	if event == "ADDON_LOADED" and addon == "xrp" then
 		xrp.toon = {}
 		-- DO NOT use xrp:UnitNameWithRealm() here as it will fail on first
@@ -35,16 +35,11 @@ local function xrp_OnEvent(xrp, event, addon)
 		}
 
 		if type(xrp_settings) ~= "table" then
-			xrp_settings = {}
-		end
-
-		xrp.settings = setmetatable(xrp_settings, {
-			__index = {
-				debug = 3,
+			xrp_settings = {
 				height = "ft",
 				weight = "lb",
-			},
-		})
+			}
+		end
 
 		if type(xrp_profiles) ~= "table" then
 			xrp_profiles = {
@@ -89,5 +84,5 @@ local function xrp_OnEvent(xrp, event, addon)
 		xrp:UnregisterEvent("PLAYER_LOGIN")
 	end
 end
-xrp:SetScript("OnEvent", xrp_OnEvent)
+xrp:SetScript("OnEvent", init_OnEvent)
 xrp:RegisterEvent("ADDON_LOADED")

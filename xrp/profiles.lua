@@ -18,6 +18,14 @@
 
 local overrides = {}
 
+-- This key is used to hide the name of a profile inside its own metaprofile
+-- table. Someone could probably access it if they iterated through
+-- xrp.profiles.Name, but this is an edge case. The main intent is to prevent
+-- it from being mucked with by accident.
+local nk = {}
+
+local profs = {}
+
 xrp.profile = setmetatable({}, {
 	__index = function(profile, field)
 		if xrp.toon.fields[field] then
@@ -63,21 +71,13 @@ xrp.profile = setmetatable({}, {
 	__metatable = false,
 })
 
--- This key is used to hide the name of a profile inside its own metaprofile
--- table. Someone could probably access it if they iterated through
--- xrp.profiles.Name, but this is an edge case. The main intent is to prevent
--- it from being mucked with by accident.
-local namekey = {}
-
-local metaprofiles = {}
-
-local profilemt = {
+local profmt = {
 	__index = function(profile, field)
-		if not xrp_profiles[profile[namekey]] then
-			xrp_profiles[profile[namekey]] = {}
+		if not xrp_profiles[profile[nk]] then
+			xrp_profiles[profile[nk]] = {}
 		end
-		if xrp_profiles[profile[namekey]][field] then
-			return xrp_profiles[profile[namekey]][field]
+		if xrp_profiles[profile[nk]][field] then
+			return xrp_profiles[profile[nk]][field]
 		end
 		return nil
 	end,
@@ -85,7 +85,7 @@ local profilemt = {
 		if xrp.msp.unitfields[field] or xrp.msp.metafields[field] or not field:match("^%u%u$") then
 			return
 		end
-		local name = profile[namekey]
+		local name = profile[nk]
 		if type(contents) == "string" and contents ~= "" and (not xrp_profiles[name] or xrp_profiles[name][field] ~= contents) then
 			if not xrp_profiles[name] then
 				xrp_profiles[name] = {}
@@ -106,14 +106,14 @@ local profilemt = {
 	__call = function(profile, newname)
 		if type(newname) == "number" then
 			local length = 0
-			for field, contents in pairs(xrp_profiles[profile[namekey]]) do
+			for field, contents in pairs(xrp_profiles[profile[nk]]) do
 				length = length + #contents
 			end
 			if length > newname then
 				return length
 			end
 		elseif type(newname) == "string" then
-			local name = profile[namekey]
+			local name = profile[nk]
 			if type(xrp_profiles[name]) ~= "table" and type(xrp_profiles[newname]) == "table" then
 				-- Copy profile into the empty table called.
 				xrp_profiles[name] = {}
@@ -146,21 +146,21 @@ local profilemt = {
 
 xrp.profiles = setmetatable({}, {
 	__index = function(profiles, name)
-		if not metaprofiles[name] then
-			metaprofiles[name] = setmetatable({ [namekey] = name }, profilemt)
+		if not profs[name] then
+			profs[name] = setmetatable({ [nk] = name }, profmt)
 		end
-		return metaprofiles[name]
+		return profs[name]
 	end,
 	__newindex = function(profiles, name, profile)
 		if type(profile) == "table" then
-			if not metaprofiles[name] then
-				metaprofiles[name] = setmetatable({ [namekey] = name }, profilemt)
+			if not profs[name] then
+				profs[name] = setmetatable({ [nk] = name }, profmt)
 			end
 			for field, contents in pairs(profile) do
-				metaprofiles[name][field] = contents
+				profs[name][field] = contents
 			end
 		elseif profile == "" or profile == nil then
-			metaprofiles[name] = nil
+			profs[name] = nil
 			if name ~= "Default" then
 				xrp_profiles[name] = nil
 			else

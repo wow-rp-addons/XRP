@@ -21,18 +21,18 @@ local faction_colors = {
 	Neutral = { dark = "e6b300", light = "ffffcc" },
 }
 
-local fccolors = {
+local fc_colors = {
 	"99664d",
 	"66b380",
 }
 
 local unknown = {}
 
-local currentunit = {}
+local cu = {}
 
-local oldnumlines
+local oldlines
 local numline
-local function xrpui_tooltip_render_line(lefttext, righttext)
+local function render_line(lefttext, righttext)
 	numline = numline + 1
 	-- This is a bit scary-looking, but it's a sane way to replace tooltip
 	-- lines without needing to completely redo the tooltip from scratch
@@ -41,7 +41,7 @@ local function xrpui_tooltip_render_line(lefttext, righttext)
 	-- NOTE: Do not use SetColor. This can taint raid frames and such.
 	--
 	-- First case: If there's already a line to replace.
-	if numline <= oldnumlines then
+	if numline <= oldlines then
 		-- Can't have an empty left text line ever -- if a line exists, it
 		-- needs to have a space at minimum to not muck up line spacing.
 		_G["GameTooltipTextLeft"..numline]:SetText(lefttext or " ")
@@ -63,7 +63,7 @@ local function xrpui_tooltip_render_line(lefttext, righttext)
 end
 
 -- Use uppercase for keys.
-local tooltip_known_addons = {
+local known_addons = {
 	["XRP"] = "XRP",
 	["MYROLEPLAY"] = "MRP",
 	["TOTALRP2"] = "TRP2",
@@ -74,7 +74,7 @@ local tooltip_known_addons = {
 local function tooltip_parse_VA(VA)
 	local VAshort = ""
 	for addon in VA:upper():gmatch("(%a[^/]+)/[^;]+") do
-		VAshort = VAshort..tooltip_known_addons[addon]..", "
+		VAshort = VAshort..known_addons[addon]..", "
 	end
 	VAshort = (VAshort:gsub(", $", ""))
 	if VAshort:match("^[,%s]*$") then
@@ -121,30 +121,30 @@ end
 ]]
 
 function xrpui.tooltip:PlayerUnit(unit)
-	-- The currentunit table stores, as it says on the tin, the current (well,
+	-- The cu table stores, as it says on the tin, the current (well,
 	-- technically last) unit we rendered a tooltip for. This allows for a
 	-- refresh of the tooltip as it fades, rather than only being able to
 	-- refresh if the mouse is still over the unit.
-	currentunit.name = xrp:UnitNameWithRealm(unit)
-	currentunit.faction = UnitFactionGroup(unit)
-	if not currentunit.faction or type(faction_colors[currentunit.faction]) ~= "table" then
-		currentunit.faction = "Neutral"
+	cu.name = xrp:UnitNameWithRealm(unit)
+	cu.faction = UnitFactionGroup(unit)
+	if not cu.faction or type(faction_colors[cu.faction]) ~= "table" then
+		cu.faction = "Neutral"
 	end
-	currentunit.afk = UnitIsAFK(unit)
-	currentunit.dnd = UnitIsDND(unit)
-	currentunit.pvp = UnitIsPVP(unit)
-	currentunit.canattack = UnitCanAttack(unit, "player")
-	currentunit.canbeattacked = UnitCanAttack("player", unit)
-	currentunit.visible = UnitIsVisible(unit)
-	currentunit.connected = UnitIsConnected(unit)
+	cu.afk = UnitIsAFK(unit)
+	cu.dnd = UnitIsDND(unit)
+	cu.pvp = UnitIsPVP(unit)
+	cu.canattack = UnitCanAttack(unit, "player")
+	cu.canbeattacked = UnitCanAttack("player", unit)
+	cu.visible = UnitIsVisible(unit)
+	cu.connected = UnitIsConnected(unit)
 	-- Ew, screen-scraping.
-	currentunit.location = (not currentunit.visible and currentunit.connected and GameTooltipTextLeft3:GetText()) or nil
-	currentunit.guild = GetGuildInfo(unit)
-	currentunit.pvpname = UnitPVPName(unit) or xrp:NameWithoutRealm(currentunit.name)
-	currentunit.realm = select(2, UnitName(unit))
-	currentunit.level = UnitLevel(unit)
-	currentunit.race, currentunit.raceid = UnitRace(unit)
-	currentunit.class, currentunit.classid = UnitClass(unit)
+	cu.location = (not cu.visible and cu.connected and GameTooltipTextLeft3:GetText()) or nil
+	cu.guild = GetGuildInfo(unit)
+	cu.pvpname = UnitPVPName(unit) or xrp:NameWithoutRealm(cu.name)
+	cu.realm = select(2, UnitName(unit))
+	cu.level = UnitLevel(unit)
+	cu.race, cu.raceid = UnitRace(unit)
+	cu.class, cu.classid = UnitClass(unit)
 
 	xrpui.tooltip:RefreshPlayer(xrp.units[unit])
 end
@@ -154,22 +154,22 @@ end
 -- we've touched them (i.e., by setting or especially changing them), it will
 -- taint some stuff pretty nastily (i.e., compact raid frames).
 function xrpui.tooltip:RefreshPlayer(character)
-	oldnumlines = GameTooltip:NumLines()
+	oldlines = GameTooltip:NumLines()
 	numline = 0
-	character = currentunit.visible and character or unknown
+	character = cu.visible and character or unknown
 	
-	local namestring = format("|cff%s%.80s", faction_colors[currentunit.faction].dark, character.NA and (character.NA:gsub("||?c%x%x%x%x%x%x%x%x%s*", "")) or xrp:NameWithoutRealm(currentunit.name))
-	if currentunit.afk then
+	local namestring = format("|cff%s%.80s", faction_colors[cu.faction].dark, character.NA and (character.NA:gsub("||?c%x%x%x%x%x%x%x%x%s*", "")) or xrp:NameWithoutRealm(cu.name))
+	if cu.afk then
 		namestring = format("%s |cff99994d%s", namestring, CHAT_FLAG_AFK)
-	elseif currentunit.dnd then
+	elseif cu.dnd then
 		namestring = format("%s |cff994d4d%s", namestring, CHAT_FLAG_DND)
 	end
-	if currentunit.pvp then
+	if cu.pvp then
 		local colorstring
-		if currentunit.canattack then
+		if cu.canattack then
 			-- If they can attack us.
 			colorstring = faction_colors[xrp.toon.fields.GF].light
-		elseif currentunit.canbeattacked or currentunit.faction ~= xrp.toon.fields.GF then
+		elseif cu.canbeattacked or cu.faction ~= xrp.toon.fields.GF then
 			-- If we can attack them (or is opposite faction, for Sanctuary).
 			colorstring = faction_colors["Neutral"].dark
 		else
@@ -178,14 +178,14 @@ function xrpui.tooltip:RefreshPlayer(character)
 		end
 		namestring = format("%s |cff%s<%s>", namestring, colorstring, PVP)
 	end
-	if not currentunit.connected then
+	if not cu.connected then
 		namestring = format("%s |cff888888<%s>", namestring, PLAYER_OFFLINE)
 	end
-	xrpui_tooltip_render_line(namestring)
+	render_line(namestring)
 
 	if character.NI then
 		-- TODO: Graceful truncation (using quotation marks?)
-		xrpui_tooltip_render_line(format("|cff6070a0%s: |cff99b3e6\"%.70s\"", XRPUI_NI, (character.NI:gsub("||?c%x%x%x%x%x%x%x%x%s*", ""))))
+		render_line(format("|cff6070a0%s: |cff99b3e6\"%.70s\"", XRPUI_NI, (character.NI:gsub("||?c%x%x%x%x%x%x%x%x%s*", ""))))
 	end
 
 	if character.NT then
@@ -199,50 +199,50 @@ function xrpui.tooltip:RefreshPlayer(character)
 			end
 			profilestring = profilestring:sub(1, position - 2)
 		end
-		xrpui_tooltip_render_line(format("|cffcccccc%.80s", profilestring))
+		render_line(format("|cffcccccc%.80s", profilestring))
 	end
 
-	if currentunit.guild then
-		xrpui_tooltip_render_line(format("<%s>", currentunit.guild))
+	if cu.guild then
+		render_line(format("<%s>", cu.guild))
 	end
 
-	if currentunit.visible then
-		local pvpnamestring = format("|cff%s%s", faction_colors[currentunit.faction].light, currentunit.pvpname)
-		if currentunit.realm and currentunit.realm ~= "" then
-			pvpnamestring = format("%s (%s)", pvpnamestring, xrp:RealmNameWithSpacing(currentunit.realm))
+	if cu.visible then
+		local pvpnamestring = format("|cff%s%s", faction_colors[cu.faction].light, cu.pvpname)
+		if cu.realm and cu.realm ~= "" then
+			pvpnamestring = format("%s (%s)", pvpnamestring, xrp:RealmNameWithSpacing(cu.realm))
 		end
-		xrpui_tooltip_render_line(pvpnamestring, character.VA and format("|cff7f7f7f%s", tooltip_parse_VA(character.VA)) or nil)
+		render_line(pvpnamestring, character.VA and format("|cff7f7f7f%s", tooltip_parse_VA(character.VA)) or nil)
 	end
 
 	if character.CU then
-		xrpui_tooltip_render_line(format("|cffa08050%s:|cffe6b399 %.70s%s", XRPUI_CU, (character.CU:gsub("||?c%x%x%x%x%x%x%x%x%s*", "")), character.CU:len()>70 and CONTINUED or ""))
+		render_line(format("|cffa08050%s:|cffe6b399 %.70s%s", XRPUI_CU, (character.CU:gsub("||?c%x%x%x%x%x%x%x%x%s*", "")), character.CU:len()>70 and CONTINUED or ""))
 	end
 
-	local race = character.RA and (character.RA:gsub("||?c%x%x%x%x%x%x%x%x%s*", "")) or currentunit.race
+	local race = character.RA and (character.RA:gsub("||?c%x%x%x%x%x%x%x%x%s*", "")) or cu.race
 	-- Note: RAID_CLASS_COLORS[classid].colorStr does *not* have a pipe
 	-- escape in it -- it's just the AARRGGBB string. Some other default
 	-- color strings do, so be sure to check.
-	xrpui_tooltip_render_line(format("|cffffffff%s %d %.40s |c%s%s|cffffffff (%s)", LEVEL, currentunit.level, race, RAID_CLASS_COLORS[currentunit.classid].colorStr, currentunit.class, PLAYER))
+	render_line(format("|cffffffff%s %d %.40s |c%s%s|cffffffff (%s)", LEVEL, cu.level, race, RAID_CLASS_COLORS[cu.classid].colorStr, cu.class, PLAYER))
 
 	if (character.FR and character.FR ~= "0") or (character.FC and character.FC ~= "0") then
 		-- AAAAAAAAAAAAAAAAAAAAAAAA. The boolean logic.
-		local frline = format("|cff%s%.40s", (character.FC and character.FC ~= "0" and fccolors[character.FC == "1" and 1 or 2]) or "ffffff", (character.FR == "0" or not character.FR) and " " or tonumber(character.FR) and xrpui.values.FR[tonumber(character.FR)] or (character.FR:gsub("||?c%x%x%x%x%x%x%x%x%s*", "")))
+		local frline = format("|cff%s%.40s", (character.FC and character.FC ~= "0" and fc_colors[character.FC == "1" and 1 or 2]) or "ffffff", (character.FR == "0" or not character.FR) and " " or tonumber(character.FR) and xrpui.values.FR[tonumber(character.FR)] or (character.FR:gsub("||?c%x%x%x%x%x%x%x%x%s*", "")))
 		local fcline
 		if character.FC and character.FC ~= "0" then
-			fcline = format("|cff%s%.40s", fccolors[character.FC == "1" and 1 or 2], tonumber(character.FC) and xrpui.values.FC[tonumber(character.FC)] or (character.FC:gsub("||?c%x%x%x%x%x%x%x%x%s*", "")))
+			fcline = format("|cff%s%.40s", fc_colors[character.FC == "1" and 1 or 2], tonumber(character.FC) and xrpui.values.FC[tonumber(character.FC)] or (character.FC:gsub("||?c%x%x%x%x%x%x%x%x%s*", "")))
 		end
-		xrpui_tooltip_render_line(frline, fcline)
+		render_line(frline, fcline)
 	end
 
-	if not currentunit.visible and currentunit.location then
+	if not cu.visible and cu.location then
 		-- TODO: Color the Zone: label.
-		xrpui_tooltip_render_line(format("|cffffeeaa%s: |cffffffff%s", ZONE, currentunit.location))
+		render_line(format("|cffffeeaa%s: |cffffffff%s", ZONE, cu.location))
 	end
 
 	-- In rare cases (test case: target without RP addon, is PvP flagged) there
 	-- will be some leftover lines at the end of the tooltip. This hides them,
 	-- if they exist.
-	while numline < oldnumlines do
+	while numline < oldlines do
 		numline = numline + 1
 		_G["GameTooltipTextLeft"..numline]:Hide()
 		_G["GameTooltipTextRight"..numline]:Hide()

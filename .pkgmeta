@@ -1,1 +1,9 @@
+move-folders:
+    xrp: xrp
+    xrpui: xrpui
+    xrpui_chatnames: xrpui_chatnames
+    xrpui_editor: xrpui_editor
+    xrpui_tooltip: xrpui_tooltip
+    xrpui_viewer: xrpui_viewer
+manual-changelog: xrp/CHANGELOG.txt
 enable-nolib-creation: no

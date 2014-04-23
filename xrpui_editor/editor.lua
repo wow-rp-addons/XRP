@@ -17,21 +17,24 @@
 
 local supportedfields = { NA = true, NI = true, NT = true, NH = true, AE = true, RA = true, AH = true, AW = true, CU = true, DE = true, AG = true, HH = true, HB = true, MO = true, HI = true, FR = true, FC = true }
 
-local editor_last_profile = {}
+local last_profile = {}
 
-local xrpui_editor_warn9000 = false
+local warn9000 = false
 
-local function xrpui_editor_clearfocus(self)
+local saving = false
+local loading = false
+local reverting = false
+
+local function clearfocus(self)
 	self.NA:SetFocus()
 	self.NA:ClearFocus()
 	self.AG:SetFocus()
 	self.AG:ClearFocus()
 end
 
-local xrpui_editor_saving = false
 function xrpui.editor:Save()
-	xrpui_editor_clearfocus(self)
-	xrpui_editor_saving = true
+	clearfocus(self)
+	saving = true
 
 	-- This doesn't need to be smart. GetText() should be mapped to the
 	-- appropriate 'real' function if GetText() isn't already right. Further,
@@ -43,21 +46,21 @@ function xrpui.editor:Save()
 		if field == "FC" then -- TODO: Move into xrp/profiles.lua?
 			local fc = self[field]:GetText()
 			xrp.profiles[name][field] = fc ~= "0" and fc or nil
-			editor_last_profile[field] = fc
+			last_profile[field] = fc
 		else
 			local text = self[field]:GetText()
 			xrp.profiles[name][field] = text
-			editor_last_profile[field] = text
+			last_profile[field] = text
 		end
 	end
 
-	xrpui_editor_saving = false
+	saving = false
 
 	local length = xrp.profiles[name](9000)
 	if length and length > 16000 then
 		StaticPopup_Show("XRPUI_EDITOR_16000")
-	elseif length and not xrpui_editor_warn9000 then
-		xrpui_editor_warn9000 = true
+	elseif length and not warn9000 then
+		warn9000 = true
 		StaticPopup_Show("XRPUI_EDITOR_9000")
 	end
 
@@ -65,26 +68,24 @@ function xrpui.editor:Save()
 	xrpui.editor:CheckFields()
 end
 
-local editor_loading = false
-local editor_reverting = false
 function xrpui.editor:Load(name)
-	editor_loading = true
-	xrpui_editor_clearfocus(self)
+	loading = true
+	clearfocus(self)
 	-- This does not need to be very smart. SetText() should be mapped to the
 	-- appropriate 'real' function if needed.
 	local profile = xrp.profiles[name]
 	for field, _ in pairs(supportedfields) do
 		if field == "FC" then
 			self[field]:SetText(tonumber(profile[field]) and profile[field] or "0")
-			editor_last_profile[field] = (profile[field] or "0")
+			last_profile[field] = (profile[field] or "0")
 		else
 			self[field]:SetText(profile[field] or "")
 			self[field]:SetCursorPosition(0)
-			editor_last_profile[field] = (profile[field] or "")
+			last_profile[field] = (profile[field] or "")
 		end
 	end
 
-	if self:IsVisible() and not self.Appearance:IsVisible() and not editor_reverting then
+	if self:IsVisible() and not self.Appearance:IsVisible() and not reverting then
 		PanelTemplates_SetTab(self, 1)
 		self.Biography:Hide()
 		self.Appearance:Show()
@@ -92,20 +93,20 @@ function xrpui.editor:Load(name)
 	end
 
 	self.Profiles:SetText(name)
-	editor_loading = false
+	loading = false
 end
 
 function xrpui.editor:Revert()
-	editor_reverting = true
+	reverting = true
 	self:Load(self.Profiles:GetText());
-	editor_reverting = false
+	reverting = false
 end
 
 function xrpui.editor:CheckFields()
-	if not editor_loading then -- This will still trigger after loading.
+	if not loading then -- This will still trigger after loading.
 		local changes = false
 		for field, _ in pairs(supportedfields) do
-			if not changes and xrpui.editor[field]:GetText() ~= (editor_last_profile[field] or "") then
+			if not changes and xrpui.editor[field]:GetText() ~= (last_profile[field] or "") then
 				changes = true
 			end
 		end
@@ -119,22 +120,22 @@ function xrpui.editor:CheckFields()
 	end
 end
 
-local function xrpui_editor_field_save(name, field)
-	if not xrpui_editor_saving and xrpui.editor.Profiles:GetText() == name then
+local function field_save(name, field)
+	if not saving and xrpui.editor.Profiles:GetText() == name then
 		if supportedfields[field] then
 			if field == "FC" then
 				xrpui.editor[field]:SetText(tonumber(xrp.profiles[name][field]) and xrp.profiles[name][field] or "0")
-				editor_last_profile[field] = (profile[field] or "0")
+				last_profile[field] = (profile[field] or "0")
 			else
 				xrpui.editor[field]:SetText(xrp.profiles[name][field] or "")
 				xrpui.editor[field]:SetCursorPosition(0)
-				editor_last_profile[field] = (profile[field] or "")
+				last_profile[field] = (profile[field] or "")
 			end
 		end
 	end
 end
 
-local function xrpui_editor_OnEvent(self, event, addon)
+local function editor_OnEvent(self, event, addon)
 	if event == "ADDON_LOADED" and addon == "xrpui_editor" then
 		
 		-- Initializing the frame into a proper, tabbed UI panel.
@@ -207,21 +208,21 @@ local function xrpui_editor_OnEvent(self, event, addon)
 			end
 		end)
 
-		xrp:HookEvent("PROFILE_FIELD_SAVE", xrpui_editor_field_save)
+		xrp:HookEvent("PROFILE_FIELD_SAVE", field_save)
 
 		self:Load("Default")
 		self:UnregisterEvent("ADDON_LOADED")
 	end
 end
-xrpui.editor:SetScript("OnEvent", xrpui_editor_OnEvent)
+xrpui.editor:SetScript("OnEvent", editor_OnEvent)
 xrpui.editor:RegisterEvent("ADDON_LOADED")
 
 -- Setup shorthand access and other stuff.
 -- Appearance tab
-local xrpui_editor_appearance = { "NA", "NI", "NT", "NH", "AE", "RA", "AH", "AW", "CU" }
-for key, field in pairs(xrpui_editor_appearance) do
+local appearance = { "NA", "NI", "NT", "NH", "AE", "RA", "AH", "AW", "CU" }
+for key, field in pairs(appearance) do
 	xrpui.editor[field] = xrpui.editor.Appearance[field]
-	xrpui.editor[field].nextEditBox = xrpui.editor.Appearance[xrpui_editor_appearance[key + 1]] or xrpui.editor.Appearance["DE"].EditBox
+	xrpui.editor[field].nextEditBox = xrpui.editor.Appearance[appearance[key + 1]] or xrpui.editor.Appearance["DE"].EditBox
 	xrpui.editor[field]:SetScript("OnTextChanged", function(self)
 		xrpui.editor:CheckFields()
 	end)
@@ -231,15 +232,15 @@ xrpui.editor["DE"] = xrpui.editor.Appearance["DE"].EditBox
 xrpui.editor["DE"].nextEditBox = xrpui.editor.Appearance["NA"]
 
 -- Biography tab
-local xrpui_editor_biography = { "AG", "HH", "HB", "MO", "FR", "FC" }
-for key, field in pairs(xrpui_editor_biography) do
+local biography = { "AG", "HH", "HB", "MO", "FR", "FC" }
+for key, field in pairs(biography) do
 	xrpui.editor[field] = xrpui.editor.Biography[field]
 	if field == "MO" then
 		xrpui.editor[field].nextEditBox = xrpui.editor.Biography["HI"].EditBox
 	elseif field == "FR" then
 		xrpui.editor[field].nextEditBox = xrpui.editor.Biography["AG"]
 	elseif field ~= "FC" then
-		xrpui.editor[field].nextEditBox = xrpui.editor.Biography[xrpui_editor_biography[key + 1]]
+		xrpui.editor[field].nextEditBox = xrpui.editor.Biography[biography[key + 1]]
 	end
 	if field ~= "FC" then
 		xrpui.editor[field]:SetScript("OnTextChanged", function(self)

@@ -143,7 +143,9 @@ end
 local function xrpui_OnEvent(self, event, addon)
 	if event == "ADDON_LOADED" and addon == "xrpui" then
 		if not xrpui_settings then
-			xrpui_settings = {}
+			xrpui_settings = {
+				minimap_positon = 225,
+			}
 		end
 		self:UnregisterEvent("ADDON_LOADED")
 	end
