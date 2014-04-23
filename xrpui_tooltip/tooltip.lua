@@ -83,6 +83,36 @@ local function tooltip_parse_VA(VA)
 	return VAshort
 end
 
+local function truncate_lines(text, length, offset, double)
+	offset = offset or 0
+	if double == nil then
+		double = true
+	end
+	local line1 = text
+	local line2
+	if #text > length - offset and text:find(" ", 1, true) then
+		local position = 0
+		local line1pos = 0
+		while text:find(" ", position + 1, true) and (text:find(" ", position + 1, true)) <= (length - offset) do
+			position = (text:find(" ", position + 1, true))
+		end
+		line1 = text:sub(1, position - 1)
+		line1pos = position + 1
+		if double and #text - #line1 > line1pos + offset then
+			while text:find(" ", position + 1, true) and (text:find(" ", position + 1, true)) <= (length - offset + length) do
+				position = (text:find(" ", position + 1, true))
+			end
+			line2 = text:sub(line1pos, position - 1)..CONTINUED
+		elseif double then
+			line2 = text:sub(position + 1)
+		else
+			line1 = line1..CONTINUED
+		end
+	end
+	local line = line1 and line2 and line1.."\n"..line2 or line1
+	return line
+end
+
 --[[
 	Tooltip lines ([ ] denotes only if applicable):
 
@@ -158,7 +188,7 @@ function xrpui.tooltip:RefreshPlayer(character)
 	numline = 0
 	character = cu.visible and character or unknown
 	
-	local namestring = format("|cff%s%.80s", faction_colors[cu.faction].dark, character.NA and (character.NA:gsub("||?c%x%x%x%x%x%x%x%x%s*", "")) or xrp:NameWithoutRealm(cu.name))
+	local namestring = format("|cff%s%s", faction_colors[cu.faction].dark, character.NA and truncate_lines((character.NA:gsub("||?c%x%x%x%x%x%x%x%x%s*", "")), 60, 0, false) or xrp:NameWithoutRealm(cu.name))
 	if cu.afk then
 		namestring = format("%s |cff99994d%s", namestring, CHAT_FLAG_AFK)
 	elseif cu.dnd then
@@ -184,22 +214,11 @@ function xrpui.tooltip:RefreshPlayer(character)
 	render_line(namestring)
 
 	if character.NI then
-		-- TODO: Graceful truncation (using quotation marks?)
-		render_line(format("|cff6070a0%s: |cff99b3e6\"%.70s\"", XRPUI_NI, (character.NI:gsub("||?c%x%x%x%x%x%x%x%x%s*", ""))))
+		render_line(format("|cff6070a0%s: |cff99b3e6\"%s\"", XRPUI_NI, truncate_lines((character.NI:gsub("||?c%x%x%x%x%x%x%x%x%s*", "")), 60, #XRPUI_NI, false)))
 	end
 
 	if character.NT then
-		local profilestring = (character.NT:gsub("||?c%x%x%x%x%x%x%x%x%s*", ""))
-		-- Try to gracefully truncate TRP2's slew of titles.
-		-- TODO: Check more common separators.
-		if #profilestring > 80 and profilestring:find("|", 1, true) then
-			local position = 0
-			while profilestring:find("|", position + 1, true) and (profilestring:find("|", position + 1, true)) <= 80 do
-				position = (profilestring:find("|", position + 1, true))
-			end
-			profilestring = profilestring:sub(1, position - 2)
-		end
-		render_line(format("|cffcccccc%.80s", profilestring))
+		render_line(format("|cffcccccc%s", truncate_lines((character.NT:gsub("||?c%x%x%x%x%x%x%x%x%s*", "")), 60)))
 	end
 
 	if cu.guild then
@@ -215,21 +234,21 @@ function xrpui.tooltip:RefreshPlayer(character)
 	end
 
 	if character.CU then
-		render_line(format("|cffa08050%s:|cffe6b399 %.70s%s", XRPUI_CU, (character.CU:gsub("||?c%x%x%x%x%x%x%x%x%s*", "")), character.CU:len()>70 and CONTINUED or ""))
+		render_line(format("|cffa08050%s:|cffe6b399 %s", XRPUI_CU, truncate_lines((character.CU:gsub("||?c%x%x%x%x%x%x%x%x%s*", "")), 60, #XRPUI_CU)))
 	end
 
 	local race = character.RA and (character.RA:gsub("||?c%x%x%x%x%x%x%x%x%s*", "")) or cu.race
 	-- Note: RAID_CLASS_COLORS[classid].colorStr does *not* have a pipe
 	-- escape in it -- it's just the AARRGGBB string. Some other default
 	-- color strings do, so be sure to check.
-	render_line(format("|cffffffff%s %d %.40s |c%s%s|cffffffff (%s)", LEVEL, cu.level, race, RAID_CLASS_COLORS[cu.classid].colorStr, cu.class, PLAYER))
+	render_line(format("|cffffffff%s %d %s |c%s%s|cffffffff (%s)", LEVEL, cu.level, truncate_lines(race, 40, 0, false), RAID_CLASS_COLORS[cu.classid].colorStr, cu.class, PLAYER))
 
 	if (character.FR and character.FR ~= "0") or (character.FC and character.FC ~= "0") then
 		-- AAAAAAAAAAAAAAAAAAAAAAAA. The boolean logic.
-		local frline = format("|cff%s%.40s", (character.FC and character.FC ~= "0" and fc_colors[character.FC == "1" and 1 or 2]) or "ffffff", (character.FR == "0" or not character.FR) and " " or tonumber(character.FR) and xrpui.values.FR[tonumber(character.FR)] or (character.FR:gsub("||?c%x%x%x%x%x%x%x%x%s*", "")))
+		local frline = format("|cff%s%s", (character.FC and character.FC ~= "0" and fc_colors[character.FC == "1" and 1 or 2]) or "ffffff", truncate_lines((character.FR == "0" or not character.FR) and " " or tonumber(character.FR) and xrpui.values.FR[tonumber(character.FR)] or (character.FR:gsub("||?c%x%x%x%x%x%x%x%x%s*", "")), 40, 0, false))
 		local fcline
 		if character.FC and character.FC ~= "0" then
-			fcline = format("|cff%s%.40s", fc_colors[character.FC == "1" and 1 or 2], tonumber(character.FC) and xrpui.values.FC[tonumber(character.FC)] or (character.FC:gsub("||?c%x%x%x%x%x%x%x%x%s*", "")))
+			fcline = format("|cff%s%s", fc_colors[character.FC == "1" and 1 or 2], truncate_lines(tonumber(character.FC) and xrpui.values.FC[tonumber(character.FC)] or (character.FC:gsub("||?c%x%x%x%x%x%x%x%x%s*", "")), 40, 0, false))
 		end
 		render_line(frline, fcline)
 	end
