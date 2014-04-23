@@ -124,14 +124,23 @@ local profmt = {
 			end
 		elseif type(newname) == "string" then
 			local name = profile[nk]
-			if type(xrp_profiles[name]) ~= "table" and type(xrp_profiles[newname]) == "table" then
+			if (type(xrp_profiles[name]) ~= "table" or (name == "Default" and name ~= newname and (not xrp_profiles["Default (Old)"] or newname == "Default (Old)"))) and type(xrp_profiles[newname]) == "table" then
+				if name == "Default" and newname ~= "Default (Old)" then
+					xrp_profiles["Default (Old)"] = xrp_profiles[name]
+				end
 				-- Copy profile into the empty table called.
 				xrp_profiles[name] = {}
 				for field, contents in pairs(xrp_profiles[newname]) do
 					xrp_profiles[name][field] = contents
 				end
+				if xrp_selectedprofile == name then
+					xrp.profiles(name)
+				end
 				return true
-			elseif type(xrp_profiles[name]) == "table" and type(xrp_profiles[newname]) ~= "table" then
+			elseif type(xrp_profiles[name]) == "table" and (type(xrp_profiles[newname]) ~= "table" or (newname == "Default" and name ~= newname and (not xrp_profiles["Default (Old)"] or name == "Default (Old)"))) then
+				if newname == "Default" and name ~= "Default (Old)" then
+					xrp_profiles["Default (Old)"] = xrp_profiles[newname]
+				end
 				-- Rename profile to the nonexistant table provided.
 				xrp_profiles[newname] = xrp_profiles[name]
 				-- Select the new name if this is our active profile.
