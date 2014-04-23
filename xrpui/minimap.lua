@@ -107,6 +107,41 @@ local menulist_status = {
 for value, text in pairs(xrpui.values.FC) do
 	menulist_status[#menulist_status + 1] = { text = text, checked = false, arg1 = tostring(value), func = status_select, }
 end
+StaticPopupDialogs["XRPUI_CURRENTLY"] = {
+	text = "What are you currently doing?",
+	button1 = ACCEPT,
+	button2 = RESET,
+	button3 = CANCEL,
+	hasEditBox = true,
+	OnShow = function(self, data)
+		self.editBox:SetWidth(self.editBox:GetWidth() + 150)
+		if self.editBox:GetText() == (xrp.profile.CU or "") then
+			self.button1:Disable()
+		end
+	end,
+	EditBoxOnTextChanged = function(self, data)
+		if self:GetText() ~= (xrp.profile.CU or "") then
+			self:GetParent().button1:Enable()
+		else
+			self:GetParent().button1:Disable()
+		end
+	end,
+	OnAccept = function(self, data, data2)
+		xrp.profile.CU = self.editBox:GetText()
+	end,
+	OnCancel = function(self, data, data2)
+		xrp.profile.CU = nil
+	end,
+	enterClicksFirstButton = true,
+	timeout = 0,
+	whileDead = true,
+	hideOnEscape = true,
+	preferredIndex = 3,
+--	sound = ,
+}
+local function menulist_currently(self, arg1, arg2, checked)
+	StaticPopup_Show("XRPUI_CURRENTLY")
+end
 local function menulist_editor(self, arg1, arg2, checked)
 	xrpui:ToggleEditor()
 end
@@ -134,6 +169,7 @@ local minimap_menulist = {
 	{ text = "XRP", isTitle = true, notCheckable = true, },
 	{ text = "Profiles", notCheckable = true, hasArrow = true, menuList = menulist_profiles, },
 	{ text = "Character status", notCheckable = true, hasArrow = true, menuList = menulist_status, },
+	{ text = "Currently...", notCheckable = true, func = menulist_currently, },
 	{ text = "Profile editor", notCheckable = true, func = menulist_editor, },
 	{ text = "Profile viewer", notCheckable = true, func = menulist_viewer, },
 	{ text = "Settings", notCheckable = true, hasArrow = true, menuList = menulist_settings, },
