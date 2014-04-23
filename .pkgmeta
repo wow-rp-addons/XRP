@@ -5,5 +5,7 @@ move-folders:
     xrp/xrpui_tooltip: xrpui_tooltip
     xrp/xrpui_viewer: xrpui_viewer
     xrp/xrp: xrp
-manual-changelog: xrp/CHANGELOG.txt
+ignore:
+    - CHANGELOG-latest.txt
+manual-changelog: CHANGELOG-latest.txt
 enable-nolib-creation: no
