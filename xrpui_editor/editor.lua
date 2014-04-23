@@ -172,6 +172,9 @@ local function editor_OnEvent(self, event, addon)
 				info = UIDropDownMenu_CreateInfo()
 				info.text = value
 				info.value = value
+				if value == "Default" then
+					info.colorCode = "|cffeecc00"
+				end
 				info.func = function(self, arg1, arg2, checked)
 					if not checked then
 						xrpui.editor:Load(self.value)
