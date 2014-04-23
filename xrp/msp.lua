@@ -29,7 +29,18 @@ local disabled = false
 if not msp_RPAddOn then
 	msp_RPAddOn = GetAddOnMetadata("xrp", "Title")
 else
+	StaticPopupDialogs["XRP_MSP_DISABLE"] = {
+		text = format("You are running another RP profile addon (%s). XRP's support for sending and receiving profiles is disabled; to enable it, disable %s and reload your UI.", msp_RPAddOn, msp_RPAddOn),
+		button1 = OKAY,
+		showAlert = true,
+		enterClicksFirstButton = true,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3,
+	}
 	disabled = true
+	StaticPopup_Show("XRP_MSP_DISABLE")
 end
 
 -- Fields in tooltip.
