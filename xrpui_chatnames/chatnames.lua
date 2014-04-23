@@ -145,18 +145,17 @@ end
 
 local function chatnames_OnEvent(self, event, addon)
 	if event == "ADDON_LOADED" and addon == "xrpui_chatnames" then
-		if not xrpui_settings.chatnames then
-			xrpui_settings.chatnames = {}
+		if type(xrpui_settings.chatnames) ~= "table" then
+			xrpui_settings.chatnames = {
+				["CHAT_MSG_SAY"] = true,
+				["CHAT_MSG_YELL"] = true,
+				["CHAT_MSG_EMOTE"] = true,
+				["CHAT_MSG_TEXT_EMOTE"] = true,
+				["CHAT_MSG_GUILD"] = true,
+				["CHAT_MSG_WHISPER"] = true,
+				["CHAT_MSG_WHISPER_INFORM"] = true,
+			}
 		end
-		xrpui_settings.chatnames = {
-			["CHAT_MSG_SAY"] = true,
-			["CHAT_MSG_YELL"] = true,
-			["CHAT_MSG_EMOTE"] = true,
-			["CHAT_MSG_TEXT_EMOTE"] = true,
-			["CHAT_MSG_GUILD"] = true,
-			["CHAT_MSG_WHISPER"] = true,
-			["CHAT_MSG_WHISPER_INFORM"] = true,
-		}
 		ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", filter_error)
 		xrp:HookEvent("MSP_RECEIVE", msp_receive)
 		self:UnregisterEvent("ADDON_LOADED")
