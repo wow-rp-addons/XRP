@@ -80,7 +80,7 @@ function new_GetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg
 		if languages[arg3] == xrp.toon.fields.GF then
 			rp = true
 			filter[arg2] = 1
-		elseif chatname_languages[arg3] == "Neutral" then
+		elseif languages[arg3] == "Neutral" then
 			rp = true
 			filter[arg2] = filter[arg2] or 0
 		end
