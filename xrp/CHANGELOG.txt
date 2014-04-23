@@ -1,3 +1,27 @@
+5.4.7.0_beta2 (2014-04-23):
+	- Viewer:
+		- Long fields can now be read via mouseover.
+		- Addon information now strips version info (for space).
+	- Editor:
+		- New feature: Copy from Default. Checkboxes allow copying field
+		  values for empty fields from the Default profile by, er, default.
+		- Default can now be overwritten via rename or copy (so long as
+		  Default (Old) does not exist or is the source).
+		- Default is colored gold in the drop-down selector to note its
+		  special status.
+		- More warnings are visible when copying/renaming.
+	- UI (Core):
+		- Currently field can now be temporarily overriden (like IC/OOC
+		  status) from the minimap menu.
+		- Chat names can now be enabled/disabled for different types of chat
+		  (i.e., whispers, guild chat, say, etc.).
+	- Tooltip:
+		- Long tooltip fields are more gracefully truncated now, and can wrap
+		  to two lines long for certain fields.
+	- Core:
+		- There is now a loud warning when loading XRP alongside another RP
+		  addon.
+
 5.4.7.0_beta1:
 	- First beta release.
 	- Mostly feature-complete.

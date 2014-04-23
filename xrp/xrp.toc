@@ -1,6 +1,6 @@
 ## Interface: 50400
 ## Title: XRP
-## Version: 5.4.7.0_beta1
+## Version: 5.4.7.0_beta2
 ## Author: Justin Snelgrove
 ## Notes: XRP is an extensible roleplaying profile addon.
 ## X-Category: Roleplaying
