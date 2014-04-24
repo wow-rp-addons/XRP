@@ -401,6 +401,14 @@
 					<OnClick>
 						StaticPopup_Show("XRPUI_EDITOR_ADD");
 					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
+						GameTooltip:SetText("Add");
+						GameTooltip:Show();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
 				</Scripts>
 			</Button>
 			<!-- - Profile Button -->
@@ -414,6 +422,14 @@
 						StaticPopupDialogs["XRPUI_EDITOR_DELETE"].text = format("Are you sure you want to remove \"%s\"?", xrpui.editor.Profiles:GetText());
 						StaticPopup_Show("XRPUI_EDITOR_DELETE");
 					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
+						GameTooltip:SetText("Delete");
+						GameTooltip:Show();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
 				</Scripts>
 			</Button>
 			<!-- R Profile Button -->
@@ -427,6 +443,14 @@
 						StaticPopupDialogs["XRPUI_EDITOR_RENAME"].text = format("Please enter a new name for \"%s\".", xrpui.editor.Profiles:GetText());
 						StaticPopup_Show("XRPUI_EDITOR_RENAME");
 					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
+						GameTooltip:SetText("Rename");
+						GameTooltip:Show();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
 				</Scripts>
 			</Button>
 			<!-- C Profile Button -->
@@ -440,6 +464,14 @@
 						StaticPopupDialogs["XRPUI_EDITOR_COPY"].text = format("Please enter a name for the copy of \"%s\".", xrpui.editor.Profiles:GetText());
 						StaticPopup_Show("XRPUI_EDITOR_COPY");
 					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
+						GameTooltip:SetText("Copy");
+						GameTooltip:Show();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
 				</Scripts>
 			</Button>
 			<!-- Save Button -->
