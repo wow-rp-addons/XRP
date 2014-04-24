@@ -1,3 +1,7 @@
+externals:
+    ChatThrottleLib:
+        url: svn://svn.wowace.com/wow/chatthrottlelib/mainline/trunk
+        tag: latest
 move-folders:
     xrp/xrpui: xrpui
     xrp/xrpui_chatnames: xrpui_chatnames
