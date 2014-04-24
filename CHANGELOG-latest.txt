@@ -9,6 +9,9 @@
 		- Error in xrpui_chatnames when a panda spoke in nom-language or made
 		  a text emote. Thanks for not giving an easy way to determine
 		  faction from GUID, Blizzard.
+		- Fixed a concatenation error in xrpui_tooltip. Better check a value
+		  exists before trying to concat it. (Thanks to Zivala for running
+		  into it.)
 
 	- Other:
 		- Redundant copies of the GNU General Public License have been

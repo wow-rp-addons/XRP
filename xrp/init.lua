@@ -16,8 +16,20 @@
 	<http://www.gnu.org/licenses/>.
 ]]
 
+local addons = {
+	"GHI",
+	"Tongues",
+}
+
 local function init_OnEvent(xrp, event, addon)
 	if event == "ADDON_LOADED" and addon == "xrp" then
+		local fullversion = xrp.versionstring
+		for _, addon in pairs(addons) do
+			local name, title, notes, enabled, loadable, reason = GetAddOnInfo(addon)
+			if enabled or loadable then
+				fullversion = format("%s;%s/%s", fullversion, title, GetAddOnMetadata(name, "Version"))
+			end
+		end
 		xrp.toon = {}
 		-- DO NOT use xrp:UnitNameWithRealm() here as it will fail on first
 		-- load after login (UnitIsPlayer("player") fails).
@@ -30,7 +42,7 @@ local function init_OnEvent(xrp, event, addon)
 			GF = (UnitFactionGroup("player")),
 			GR = (select(2, UnitRace("player"))),
 			GS = tostring(UnitSex("player")),
-			VA = xrp.versionstring,
+			VA = fullversion,
 			VP = tostring(xrp.msp.protocol),
 		}
 
