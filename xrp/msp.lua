@@ -77,22 +77,6 @@ local tmp_cache = setmetatable({}, {
 local old = false
 local tt = false
 
-local mqueue = {}
-local mqpos = 1
-local mqend = 0
-
-local lastburst = GetTime()
-local nextsend = lastburst + 1.00
-
-local rqueue = {}
-
--- TODO: Merge into send()? Maybe not, if CTL is present...
-local function qmessage(prefix, message, character)
-	mqend = mqend + 1
-	mqueue[mqend] = { prefix, message, character }
-	xrp.msp:Show() -- Will fire on next frame draw (i.e., essentially instantly).
-end
-
 -- Caches a tooltip response, but *does not* modify the tooltip version.
 -- That needs to be done, if appropriate, whenever this is called. (For
 -- example, it is *not* done on the first run, as versions for the next
@@ -113,30 +97,31 @@ local function cachett()
 	return true
 end
 
-local function send(character, data)
+local function send(character, data, priority)
 	data = table.concat(data, "\1")
 	--print(character..": "..data:gsub("\1", "\\1"))
 	if #data <= 255 then
-		qmessage("MSP", data, character)
+		ChatThrottleLib:SendAddonMessage(priority, "MSP", data, "WHISPER", character)
 	else
 		-- XC is most likely to add five or six extra characters, will not
 		-- add less than five, and only adds seven or more if the profile
 		-- is over 25000 characters or so. So let's say six.
 		data = format("XC=%u\1%s", math.ceil((#data + 6) / 255), data)
 		local position = 1
-		qmessage("MSP\1", data:sub(position, position + 254), character)
+		ChatThrottleLib:SendAddonMessage(priority, "MSP\1", data, "WHISPER", character)
 		position = position + 255
 		while position + 255 <= #data do
-			qmessage("MSP\2", data:sub(position, position + 254), character)
+			ChatThrottleLib:SendAddonMessage(priority, "MSP\2", data, "WHISPER", character)
 			position = position + 255
 		end
-		qmessage("MSP\3", data:sub(position), character)
+		ChatThrottleLib:SendAddonMessage(priority, "MSP\3", data, "WHISPER", character)
 	end
 end
 
--- This returns TWO values. First is a string, if the MSP command requires
+-- This returns THREE values. First is a string, if the MSP command requires
 -- sending a response (i.e., is a query); second is a boolean, if the MSP
--- command provides an updated field (i.e., is a non-empty response).
+-- command provides an updated field (i.e., is a non-empty response); third
+-- is a boolean, if the MSP command requests a tooltip (higher priority).
 local function msp_process(character, cmd)
 	-- Original LibMSP match string uses %a%a rather than %u%u. According to
 	-- protcol documentation, %u%u would be more correct.
@@ -144,27 +129,27 @@ local function msp_process(character, cmd)
 	local updated = false
 	version = tonumber(version) or 0
 	if not field then
-		return nil, updated
+		return nil, updated, false
 	elseif action == "?" then
 		-- Queried our fields. This should end in returning a string with our
 		-- info for that field. (If it doesn't, it means we're ignoring their
 		-- polite request for some reason.)
 		if (xrp_versions[field] and version == xrp_versions[field]) or (not xrp_versions[field] and version == 0) then
 			-- They already have the latest.
-			return format("!%s%u", field, xrp_versions[field] or 0), updated
+			return format("!%s%u", field, xrp_versions[field] or 0), updated, false
 		elseif field == "TT" then
 			if not tt then -- panic, something went wrong in init.
 				-- TODO: Debug output.
-				return nil, updated
+				return nil, updated, false
 			end
-			return tt, updated
+			return tt, updated, true
 		else
 			if not xrp.profile[field] then
 				-- Field is empty.
-				return format("%s%u", field, xrp_versions[field] or 0), updated
+				return format("%s%u", field, xrp_versions[field] or 0), updated, false
 			else
 				-- Field has content.
-				return format("%s%u=%s", field, xrp_versions[field], xrp.profile[field]), updated
+				return format("%s%u=%s", field, xrp_versions[field], xrp.profile[field]), updated, false
 			end
 		end
 	elseif action == "!" then
@@ -209,7 +194,7 @@ local function msp_process(character, cmd)
 		-- again too soon.
 		tmp_cache[character].time[field] = GetTime()
 	end
-	return nil, updated -- No response needed.
+	return nil, updated, false -- No response needed.
 end
 
 xrp.msp.handlers = {
@@ -223,15 +208,19 @@ xrp.msp.handlers = {
 		local out = {}
 		local updated = false
 		local fieldupdated = false
+		local ttreq = false
+		local ttresp = false
 		if msg ~= "" then
 			if msg:find("\1", 1, true) then
 				for cmd in msg:gmatch("([^\1]+)\1*") do
-					out[#out + 1], fieldupdated = msp_process(character, cmd)
+					out[#out + 1], fieldupdated, ttreq = msp_process(character, cmd)
 					updated = updated or fieldupdated
+					ttresp = ttresp or ttreq
 				end
 			else
-				out[#out + 1], fieldupdated = msp_process(character, msg)
+				out[#out + 1], fieldupdated, ttreq = msp_process(character, msg)
 				updated = updated or fieldupdated
+				ttresp = ttresp or ttreq
 			end
 		end
 		if updated then
@@ -242,7 +231,7 @@ xrp.msp.handlers = {
 			xrp:FireEvent("MSP_NOCHANGE", character)
 		end
 		if #out > 0 then
-			send(character, out)
+			send(character, out, ttresp and "NORMAL" or "BULK")
 		end
 	end,
 	["MSP\1"] = function(character, msg)
@@ -297,15 +286,16 @@ xrp.msp.handlers = {
 	end,
 }
 
+local queue = {}
 function xrp.msp:QueueRequest(character, field)
 	if character == xrp.toon.withrealm then
 		return
 	end
 	local append = true
-	if not rqueue[character] then
-		rqueue[character] = {}
+	if not queue[character] then
+		queue[character] = {}
 	else
-		for _, reqfield in pairs(rqueue[character]) do
+		for _, reqfield in pairs(queue[character]) do
 			if append and reqfield == field then
 				append = false
 			end
@@ -313,7 +303,7 @@ function xrp.msp:QueueRequest(character, field)
 	end
 	if append then
 		--print(character..": "..field)
-		rqueue[character][#rqueue[character] + 1] = field
+		queue[character][#queue[character] + 1] = field
 		xrp.msp:Show()
 	end
 end
@@ -374,7 +364,7 @@ function xrp.msp:Request(character, fields)
 	end
 	if #out > 0 then
 		--print(character..": "..table.concat(out, " "))
-		send(character, out)
+		send(character, out, "ALERT")
 		return true
 	end
 	xrp:FireEvent("MSP_NOCHANGE", character)
@@ -481,35 +471,14 @@ function xrp.msp:UpdateField(field)
 end
 
 local function msp_OnUpdate(self, elapsed)
-	if next(rqueue) then
-		for character, fields in pairs(rqueue) do
+	if next(queue) then
+		for character, fields in pairs(queue) do
 			--print(character..": "..fields)
 			self:Request(character, fields)
-			rqueue[character] = nil
+			queue[character] = nil
 		end
 	end
-	local now = GetTime()
-	if nextsend < now and mqueue[mqpos] then
-		local out = 0
-		if lastburst + 3 < now then
-			out = out - 300
-		elseif lastburst + 13 < now then
-			out = out - 300
-			lastburst = now
-		end
-		while (out < 300 and mqpos <= mqend) do
-			SendAddonMessage(mqueue[mqpos][1], mqueue[mqpos][2], "WHISPER", mqueue[mqpos][3])
-			--print("SendAddonMessage(\""..mqueue[mqpos][1]:gsub("\1", "\\1"):gsub("\2", "\\2"):gsub("\3", "\\3").."\", \""..mqueue[mqpos][2]:gsub("\1", "\\1").."\", \"WHISPER\", \""..mqueue[mqpos][3].."\")")
-			--print("Sending to: "..mqueue[mqpos][3])
-			out = out + #mqueue[mqpos][2] + 32
-			mqueue[mqpos] = nil
-			mqpos = mqpos + 1
-		end
-		nextsend = now + 0.25
-	end
-	if mqpos > mqend then
-		self:Hide()
-	end
+	self:Hide()
 end
 xrp.msp:SetScript("OnUpdate", msp_OnUpdate)
 
@@ -522,6 +491,8 @@ local function msp_OnEvent(self, event, prefix, message, channel, character)
 		for prefix, _ in pairs(self.handlers) do
 			RegisterAddonMessagePrefix(prefix)
 		end
+		ChatThrottleLib.MAX_CPS = 1200 -- up from 800
+		ChatThrottleLib.MIN_FPS = 15 -- down from 20
 		self:UnregisterEvent("ADDON_LOADED")
 		self:RegisterEvent("CHAT_MSG_ADDON")
 		self:RegisterEvent("PLAYER_LOGOUT")
