@@ -138,9 +138,9 @@ local function filter_error(self, event, message)
 	if character == nil or character == "" then
 		return false
 	end
-	local filter = filter[character] == 0
+	local dofilter = filter[character] == 0
 	filter[character] = -1
-	return filter
+	return dofilter
 end
 
 local function chatnames_OnEvent(self, event, addon)
