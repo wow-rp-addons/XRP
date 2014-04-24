@@ -108,13 +108,13 @@ local function send(character, data, priority)
 		-- is over 25000 characters or so. So let's say six.
 		data = format("XC=%u\1%s", math.ceil((#data + 6) / 255), data)
 		local position = 1
-		ChatThrottleLib:SendAddonMessage(priority, "MSP\1", data, "WHISPER", character)
+		ChatThrottleLib:SendAddonMessage(priority, "MSP\1", data:sub(position, position + 254), "WHISPER", character)
 		position = position + 255
 		while position + 255 <= #data do
-			ChatThrottleLib:SendAddonMessage(priority, "MSP\2", data, "WHISPER", character)
+			ChatThrottleLib:SendAddonMessage(priority, "MSP\2", data:sub(position, position + 254), "WHISPER", character)
 			position = position + 255
 		end
-		ChatThrottleLib:SendAddonMessage(priority, "MSP\3", data, "WHISPER", character)
+		ChatThrottleLib:SendAddonMessage(priority, "MSP\3", data:sub(position), "WHISPER", character)
 	end
 end
 
