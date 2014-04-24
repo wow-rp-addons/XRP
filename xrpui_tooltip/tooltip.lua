@@ -74,7 +74,7 @@ local known_addons = {
 local function tooltip_parse_VA(VA)
 	local VAshort = ""
 	for addon in VA:upper():gmatch("(%a[^/]+)/[^;]+") do
-		VAshort = VAshort..known_addons[addon]..", "
+		VAshort = known_addons[addon] and VAshort..known_addons[addon]..", " or VAshort
 	end
 	VAshort = (VAshort:gsub(", $", ""))
 	if VAshort:match("^[,%s]*$") then
