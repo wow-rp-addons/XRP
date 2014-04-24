@@ -10,7 +10,7 @@
 
 xrp.lua
 profiles.lua
-ChatThrottleLib/ChatThrottleLib.xml
+ChatThrottleLib\ChatThrottleLib.xml
 msp.lua
 characters.lua
 init.lua
