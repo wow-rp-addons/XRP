@@ -27,7 +27,7 @@
 				GameTooltip:Hide();
 			</OnLeave>
 			<OnClick>
-				xrpui.editor:CheckFields();
+				xrp.editor:CheckFields();
 			</OnClick>
 		</Scripts>
 	</CheckButton>
@@ -128,7 +128,7 @@
 					<OnTextChanged>
 						local scrollFrame = self:GetParent();
 						ScrollingEdit_OnTextChanged(self, scrollFrame);
-						xrpui.editor:CheckFields();
+						xrp.editor:CheckFields();
 					</OnTextChanged>
 					<OnCursorChanged function="ScrollingEdit_OnCursorChanged"/>
 					<OnUpdate>

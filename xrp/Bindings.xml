@@ -1,4 +1,4 @@
-<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\..\FrameXML\UI.xsd">
+<Bindings>
 <!--
 	© Justin Snelgrove
 
@@ -15,5 +15,13 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-	<Frame parentKey="tooltip" hidden="true" parent="xrpui"/>
-</Ui>
+	<Binding name="XRP_EDITOR" description="Edit your own RP profile." header="XRP">
+		xrp:ToggleEditor();
+	</Binding>
+	<Binding name="XRP_VIEWER" description="View RP profiles.">
+		xrp:ShowViewerUnit("target");
+	</Binding>
+	<Binding name="XRP_VIEWER_TOGGLE" description="Toggle the profile viewer">
+		xrp:ToggleViewer();
+	</Binding>
+</Bindings>

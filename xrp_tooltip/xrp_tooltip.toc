@@ -1,11 +1,10 @@
 ## Interface: 50400
-## Title: XRP (UI): Tooltip
+## Title: XRP: Tooltip
 ## Version: 5.4.7.0_beta3
 ## Author: Justin Snelgrove
 ## Notes: Provides mousover tooltips including roleplaying profile information. (Note: May not work with other tooltip-modifying addons.)
 ## X-Category: Roleplaying
 ## X-License: GPLv3
-## Dependencies: xrpui
+## Dependencies: xrp
 
-tooltip_frames.xml
 tooltip.lua

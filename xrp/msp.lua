@@ -54,13 +54,14 @@ xrp.msp.unitfields = { GC = true, GF = true, GR = true, GS = true, GU = true }
 -- Metadata fields, not to be user-set.
 xrp.msp.metafields = { VA = true, VP = true }
 
-xrp.msp.fieldtimes = setmetatable({
-	TT = 15,
-	}, {
-	__index = function(times, field)
-		return 45
-	end,
-})
+xrp.msp.fieldtimes = setmetatable(
+	{ TT = 15, },
+	{
+		__index = function(times, field)
+			return 45
+		end,
+	}
+)
 
 local tmp_cache = setmetatable({}, {
 	__index = function(tmp_cache, character)
@@ -72,6 +73,7 @@ local tmp_cache = setmetatable({}, {
 		}
 		return tmp_cache[character]
 	end,
+--	__mode = "v", -- TODO: Decide if this is good idea. Probably is not.
 })
 
 local old = false
@@ -165,7 +167,7 @@ local function msp_process(character, cmd)
 			-- What this does is pull the G-fields from the unitcache,
 			-- accessed through xrp.characters, into the actual cache, but
 			-- only if the character has MSP. This keeps the saved cache a
-			-- bit more lightweight. These are queries automatically by our
+			-- bit more lightweight. These are queried automatically by our
 			-- first request to them, so it should either copy the fields
 			-- from the unitcache or just get what they're already set to.
 			--

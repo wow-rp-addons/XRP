@@ -16,6 +16,61 @@
 	<http://www.gnu.org/licenses/>.
 ]]
 
+local default_settings = { __index = {
+	height = "ft",
+	weight = "lb",
+	minimap = 225,
+}}
+
+local default_defaults = { __index = function(default_defaults, field)
+	return true
+end}
+
+local function checksavedvars()
+	if type(xrp_settings) ~= "table" then
+		xrp_settings = {
+			height = "ft",
+			weight = "lb",
+			minimap = 225,
+		}
+	end
+	if type(xrp_settings.defaults) ~= "table" then
+		xrp_settings.defaults = {}
+	end
+
+	if type(xrp_profiles) ~= "table" then
+		xrp_profiles = {}
+	end
+	if type(xrp_profiles.Default) ~= "table" then
+		xrp_profiles.Default = {}
+	end
+	if type(xrp_profiles.Default.NA) ~= "string" then
+		xrp_profiles.Default.NA = xrp.toon.name
+	end
+
+	if type(xrp_defaults) ~= "table" then
+		xrp_defaults = {}
+	end
+
+	if type(xrp_selectedprofile) ~= "string" or type(xrp_profiles[xrp_selectedprofile]) ~= "table" then
+		xrp_selectedprofile = "Default"
+	end
+
+	if type(xrp_cache) ~= "table" then
+		xrp_cache = {}
+	end
+	if not xrp_cache[xrp.toon.withrealm] then
+		xrp_cache[xrp.toon.withrealm] = {
+			fields = {},
+			versions = {},
+		}
+	end
+
+	if type(xrp_versions) ~= "table" then
+		xrp_versions = {}
+	end
+end
+
 local addons = {
 	"GHI",
 	"Tongues",
@@ -30,6 +85,7 @@ local function init_OnEvent(xrp, event, addon)
 				fullversion = format("%s;%s/%s", fullversion, title, GetAddOnMetadata(name, "Version"))
 			end
 		end
+
 		xrp.toon = {}
 		-- DO NOT use xrp:UnitNameWithRealm() here as it will fail on first
 		-- load after login (UnitIsPlayer("player") fails).
@@ -46,52 +102,9 @@ local function init_OnEvent(xrp, event, addon)
 			VP = tostring(xrp.msp.protocol),
 		}
 
-		if type(xrp_settings) ~= "table" then
-			xrp_settings = {
-				height = "ft",
-				weight = "lb",
-			}
-		end
-		if type(xrp_settings.defaults) ~= "table" then
-			xrp_settings.defaults = {}
-		end
-
-		if type(xrp_profiles) ~= "table" then
-			xrp_profiles = {
-				Default = {
-					NA = xrp.toon.name,
-				},
-			}
-		elseif type(xrp_profiles.Default) ~= "table" then
-			xrp_profiles.Default = {
-				NA = xrp.toon.name,
-			}
-		elseif not xrp_profiles.Default.NA then
-			xrp_profiles.Default.NA = xrp.toon.name
-		end
-
-		if type(xrp_defaults) ~= "table" then
-			xrp_defaults = {}
-		end
-
-		if type(xrp_selectedprofile) ~= "string" or type(xrp_profiles[xrp_selectedprofile]) ~= "table" then
-			xrp_selectedprofile = "Default"
-		end
-
-		if type(xrp_cache) ~= "table" then
-			xrp_cache = {}
-		end
-
-		if type(xrp_versions) ~= "table" then
-			xrp_versions = {}
-		end
-
-		if not xrp_cache[xrp.toon.withrealm] then
-			xrp_cache[xrp.toon.withrealm] = {
-				fields = {},
-				versions = {},
-			}
-		end
+		checksavedvars()
+		setmetatable(xrp_settings, default_settings)
+		setmetatable(xrp_settings.defaults, default_defaults)
 
 		xrp:UnregisterEvent("ADDON_LOADED")
 		xrp:RegisterEvent("PLAYER_LOGIN")

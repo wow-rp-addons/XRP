@@ -19,7 +19,7 @@
 	<!-- It's dangerous to go alone, take a syntax highlighter. -->
 	<!-- No, seriously, though. This is the easiest way to get a good UI. -->
 	<Include file="editor_templates.xml"/>
-	<Frame name="$parent_editor" parentKey="editor" toplevel="true" movable="true" parent="xrpui" enableMouse="true" inherits="ButtonFrameTemplate" hidden="true">
+	<Frame name="$parent_editor" parentKey="editor" toplevel="true" movable="true" parent="xrp" enableMouse="true" inherits="ButtonFrameTemplate" hidden="true">
 		<Frames>
 			<Frame name="$parentAppearance" parentKey="Appearance" useParentLevel="true" hidden="false">
 				<Anchors>
@@ -29,61 +29,61 @@
 				<Layers>
 					<Layer level="OVERLAY">
 						<!-- Name Label -->
-						<FontString name="$parentNALabel" parentKey="NALabel" inherits="GameFontNormalSmall" text="XRPUI_NA">
+						<FontString name="$parentNALabel" parentKey="NALabel" inherits="GameFontNormalSmall" text="XRP_NA">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="12" y="-8"/>
 							</Anchors>
 						</FontString>
 						<!-- Nickname Label -->
-						<FontString name="$parentNILabel" parentKey="NILabel" inherits="GameFontNormalSmall" text="XRPUI_NI">
+						<FontString name="$parentNILabel" parentKey="NILabel" inherits="GameFontNormalSmall" text="XRP_NI">
 							<Anchors>
 								<Anchor point="LEFT" relativeKey="$parent.NALabel" relativePoint="LEFT" x="186" y="0"/>
 							</Anchors>
 						</FontString>
 						<!-- Title Label -->
-						<FontString name="$parentNTLabel" parentKey="NTLabel" inherits="GameFontNormalSmall" text="XRPUI_NT">
+						<FontString name="$parentNTLabel" parentKey="NTLabel" inherits="GameFontNormalSmall" text="XRP_NT">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.NALabel" relativePoint="BOTTOMLEFT" x="0" y="-25"/>
 							</Anchors>
 						</FontString>
 						<!-- House/Clan Label -->
-						<FontString name="$parentNHLabel" parentKey="NHLabel" inherits="GameFontNormalSmall" text="XRPUI_NH">
+						<FontString name="$parentNHLabel" parentKey="NHLabel" inherits="GameFontNormalSmall" text="XRP_NH">
 							<Anchors>
 								<Anchor point="LEFT" relativeKey="$parent.NTLabel" relativePoint="LEFT" x="201" y="0"/>
 							</Anchors>
 						</FontString>
 						<!-- Eyes Label -->
-						<FontString name="$parentAELabel" parentKey="AELabel" inherits="GameFontNormalSmall" text="XRPUI_AE">
+						<FontString name="$parentAELabel" parentKey="AELabel" inherits="GameFontNormalSmall" text="XRP_AE">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.NTLabel" relativePoint="BOTTOMLEFT" x="0" y="-25"/>
 							</Anchors>
 						</FontString>
 						<!-- Race Label -->
-						<FontString name="$parentRALabel" parentKey="RALabel" inherits="GameFontNormalSmall" text="XRPUI_RA">
+						<FontString name="$parentRALabel" parentKey="RALabel" inherits="GameFontNormalSmall" text="XRP_RA">
 							<Anchors>
 								<Anchor point="LEFT" relativeKey="$parent.AELabel" relativePoint="LEFT" x="105" y="0"/>
 							</Anchors>
 						</FontString>
 						<!-- Height Label -->
-						<FontString name="$parentAHLabel" parentKey="AHLabel" inherits="GameFontNormalSmall" text="XRPUI_AH">
+						<FontString name="$parentAHLabel" parentKey="AHLabel" inherits="GameFontNormalSmall" text="XRP_AH">
 							<Anchors>
 								<Anchor point="LEFT" relativeKey="$parent.RALabel" relativePoint="LEFT" x="100" y="0"/>
 							</Anchors>
 						</FontString>
 						<!-- Weight Label -->
-						<FontString name="$parentAWLabel" parentKey="AWLabel" inherits="GameFontNormalSmall" text="XRPUI_AW">
+						<FontString name="$parentAWLabel" parentKey="AWLabel" inherits="GameFontNormalSmall" text="XRP_AW">
 							<Anchors>
 								<Anchor point="LEFT" relativeKey="$parent.AHLabel" relativePoint="LEFT" x="56" y="0"/>
 							</Anchors>
 						</FontString>
 						<!-- Currently Label -->
-						<FontString name="$parentCULabel" parentKey="CULabel" inherits="GameFontNormalSmall" text="XRPUI_CU">
+						<FontString name="$parentCULabel" parentKey="CULabel" inherits="GameFontNormalSmall" text="XRP_CU">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.AELabel" relativePoint="BOTTOMLEFT" x="0" y="-25"/>
 							</Anchors>
 						</FontString>
 						<!-- Description Label -->
-						<FontString name="$parentDELabel" parentKey="DELabel" inherits="GameFontNormalSmall" text="XRPUI_DE">
+						<FontString name="$parentDELabel" parentKey="DELabel" inherits="GameFontNormalSmall" text="XRP_DE">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.CULabel" relativePoint="BOTTOMLEFT" x="0" y="-25"/>
 							</Anchors>
@@ -221,43 +221,43 @@
 				<Layers>
 					<Layer level="OVERLAY">
 						<!-- Age Label -->
-						<FontString name="$parentAGLabel" parentKey="AGLabel" inherits="GameFontNormalSmall" text="XRPUI_AG">
+						<FontString name="$parentAGLabel" parentKey="AGLabel" inherits="GameFontNormalSmall" text="XRP_AG">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="12" y="-8"/>
 							</Anchors>
 						</FontString>
 						<!-- Home Label -->
-						<FontString name="$parentHHLabel" parentKey="HHLabel" inherits="GameFontNormalSmall" text="XRPUI_HH">
+						<FontString name="$parentHHLabel" parentKey="HHLabel" inherits="GameFontNormalSmall" text="XRP_HH">
 							<Anchors>
 								<Anchor point="LEFT" relativeKey="$parent.AGLabel" relativePoint="LEFT" x="50" y="0"/>
 							</Anchors>
 						</FontString>
 						<!-- Birthplace Label -->
-						<FontString name="$parentHBLabel" parentKey="HBLabel" inherits="GameFontNormalSmall" text="XRPUI_HB">
+						<FontString name="$parentHBLabel" parentKey="HBLabel" inherits="GameFontNormalSmall" text="XRP_HB">
 							<Anchors>
 								<Anchor point="LEFT" relativeKey="$parent.HHLabel" relativePoint="LEFT" x="133" y="0"/>
 							</Anchors>
 						</FontString>
 						<!-- Motto Label -->
-						<FontString name="$parentMOLabel" parentKey="MOLabel" inherits="GameFontNormalSmall" text="XRPUI_MO">
+						<FontString name="$parentMOLabel" parentKey="MOLabel" inherits="GameFontNormalSmall" text="XRP_MO">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.AGLabel" relativePoint="BOTTOMLEFT" x="0" y="-25"/>
 							</Anchors>
 						</FontString>
 						<!-- History Label -->
-						<FontString name="$parentHILabel" parentKey="HILabel" inherits="GameFontNormalSmall" text="XRPUI_HI">
+						<FontString name="$parentHILabel" parentKey="HILabel" inherits="GameFontNormalSmall" text="XRP_HI">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.MOLabel" relativePoint="BOTTOMLEFT" x="0" y="-25"/>
 							</Anchors>
 						</FontString>
 						<!-- Style Label -->
-						<FontString name="$parentFRLabel" parentKey="FRLabel" inherits="GameFontNormalSmall" text="XRPUI_FR">
+						<FontString name="$parentFRLabel" parentKey="FRLabel" inherits="GameFontNormalSmall" text="XRP_FR">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.HILabel" relativePoint="BOTTOMLEFT" x="0" y="-208"/>
 							</Anchors>
 						</FontString>
 						<!-- Status Label -->
-						<FontString name="$parentFCLabel" parentKey="FCLabel" inherits="GameFontNormalSmall" text="XRPUI_FC">
+						<FontString name="$parentFCLabel" parentKey="FCLabel" inherits="GameFontNormalSmall" text="XRP_FC">
 							<Anchors>
 								<Anchor point="LEFT" relativeKey="$parent.FRLabel" relativePoint="LEFT" x="158" y="0"/>
 							</Anchors>
@@ -388,7 +388,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						StaticPopup_Show("XRPUI_EDITOR_ADD");
+						StaticPopup_Show("XRP_EDITOR_ADD");
 					</OnClick>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
@@ -408,8 +408,8 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						StaticPopupDialogs["XRPUI_EDITOR_DELETE"].text = format("Are you sure you want to remove \"%s\"?", xrpui.editor.Profiles:GetText());
-						StaticPopup_Show("XRPUI_EDITOR_DELETE");
+						StaticPopupDialogs["XRP_EDITOR_DELETE"].text = format("Are you sure you want to remove \"%s\"?", xrp.editor.Profiles:GetText());
+						StaticPopup_Show("XRP_EDITOR_DELETE");
 					</OnClick>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
@@ -429,8 +429,8 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						StaticPopupDialogs["XRPUI_EDITOR_RENAME"].text = format("Please enter a new name for \"%s\".", xrpui.editor.Profiles:GetText());
-						StaticPopup_Show("XRPUI_EDITOR_RENAME");
+						StaticPopupDialogs["XRP_EDITOR_RENAME"].text = format("Please enter a new name for \"%s\".", xrp.editor.Profiles:GetText());
+						StaticPopup_Show("XRP_EDITOR_RENAME");
 					</OnClick>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
@@ -450,8 +450,8 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						StaticPopupDialogs["XRPUI_EDITOR_COPY"].text = format("Please enter a name for the copy of \"%s\".", xrpui.editor.Profiles:GetText());
-						StaticPopup_Show("XRPUI_EDITOR_COPY");
+						StaticPopupDialogs["XRP_EDITOR_COPY"].text = format("Please enter a name for the copy of \"%s\".", xrp.editor.Profiles:GetText());
+						StaticPopup_Show("XRP_EDITOR_COPY");
 					</OnClick>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
@@ -471,7 +471,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						xrpui.editor:Save();
+						xrp.editor:Save();
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -483,7 +483,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						xrpui.editor:Revert();
+						xrp.editor:Revert();
 					</OnClick>
 				</Scripts>
 			</Button>

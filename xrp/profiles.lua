@@ -16,16 +16,12 @@
 	<http://www.gnu.org/licenses/>.
 ]]
 
-local overrides = {}
-
--- This key is used to hide the name of a profile inside its own metaprofile
--- table. Someone could probably access it if they iterated through
--- xrp.profiles.Name, but this is an edge case. The main intent is to prevent
--- it from being mucked with by accident.
+-- This key is used to 'hide' the name of a profile inside its own meta
+-- table. This is obviously accessible, but it just prevents accidental
+-- mucking with.
 local nk = {}
 
-local profs = {}
-local defs = {}
+local overrides = {}
 
 xrp.profile = setmetatable({}, {
 	__index = function(profile, field)
@@ -163,6 +159,8 @@ local profmt = {
 	__metatable = false,
 }
 
+local profs = setmetatable({}, { __mode = "v" })
+
 xrp.profiles = setmetatable({}, {
 	__index = function(profiles, name)
 		if not profs[name] then
@@ -253,6 +251,8 @@ local defmt = {
 	__metatable = false,
 }
 
+local defs = setmetatable({}, { __mode = "v" })
+
 xrp.defaults = setmetatable({}, {
 	__index = function(defaults, name)
 		if not defs[name] then
@@ -284,8 +284,6 @@ function xrp:Logout()
 	for field, _ in pairs(overrides) do
 		xrp_versions[field] = xrp_versions[field] + 1
 		ttchanges = xrp.msp.ttfields[field] or ttchanges
---[[		if not ttchanges and xrp.msp.ttfields[field] then
-		end]]
 	end
 	if ttchanges then
 		xrp_versions.TT = xrp_versions.TT + 1

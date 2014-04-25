@@ -15,6 +15,9 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
+xrp.tooltip = CreateFrame("Frame", nil, xrp)
+xrp.tooltip:Hide()
+
 local faction_colors = {
 	Horde = { dark = "e60d12", light = "ff595e" },
 	Alliance = { dark = "4a54e8", light = "96a1ff" },
@@ -150,7 +153,7 @@ end
 		default tooltip, with coloration and some rearrangement.
 ]]
 
-function xrpui.tooltip:PlayerUnit(unit)
+function xrp.tooltip:PlayerUnit(unit)
 	-- The cu table stores, as it says on the tin, the current (well,
 	-- technically last) unit we rendered a tooltip for. This allows for a
 	-- refresh of the tooltip as it fades, rather than only being able to
@@ -176,14 +179,14 @@ function xrpui.tooltip:PlayerUnit(unit)
 	cu.race, cu.raceid = UnitRace(unit)
 	cu.class, cu.classid = UnitClass(unit)
 
-	xrpui.tooltip:RefreshPlayer(xrp.units[unit])
+	xrp.tooltip:RefreshPlayer(xrp.units[unit])
 end
 
 -- Everything in here is using color pipe escapes because Blizzard will
 -- occasionally interact with the tooltip's text lines' SetColor, and if
 -- we've touched them (i.e., by setting or especially changing them), it will
 -- taint some stuff pretty nastily (i.e., compact raid frames).
-function xrpui.tooltip:RefreshPlayer(character)
+function xrp.tooltip:RefreshPlayer(character)
 	oldlines = GameTooltip:NumLines()
 	numline = 0
 	character = cu.visible and character or unknown
@@ -214,7 +217,7 @@ function xrpui.tooltip:RefreshPlayer(character)
 	render_line(namestring)
 
 	if character.NI then
-		render_line(format("|cff6070a0%s: |cff99b3e6\"%s\"", XRPUI_NI, truncate_lines((character.NI:gsub("||?c%x%x%x%x%x%x%x%x%s*", "")), 60, #XRPUI_NI, false)))
+		render_line(format("|cff6070a0%s: |cff99b3e6\"%s\"", XRP_NI, truncate_lines((character.NI:gsub("||?c%x%x%x%x%x%x%x%x%s*", "")), 60, #XRP_NI, false)))
 	end
 
 	if character.NT then
@@ -234,7 +237,7 @@ function xrpui.tooltip:RefreshPlayer(character)
 	end
 
 	if character.CU then
-		render_line(format("|cffa08050%s:|cffe6b399 %s", XRPUI_CU, truncate_lines((character.CU:gsub("||?c%x%x%x%x%x%x%x%x%s*", "")), 60, #XRPUI_CU)))
+		render_line(format("|cffa08050%s:|cffe6b399 %s", XRP_CU, truncate_lines((character.CU:gsub("||?c%x%x%x%x%x%x%x%x%s*", "")), 60, #XRP_CU)))
 	end
 
 	local race = character.RA and (character.RA:gsub("||?c%x%x%x%x%x%x%x%x%s*", "")) or cu.race
@@ -245,10 +248,10 @@ function xrpui.tooltip:RefreshPlayer(character)
 
 	if (character.FR and character.FR ~= "0") or (character.FC and character.FC ~= "0") then
 		-- AAAAAAAAAAAAAAAAAAAAAAAA. The boolean logic.
-		local frline = format("|cff%s%s", (character.FC and character.FC ~= "0" and fc_colors[character.FC == "1" and 1 or 2]) or "ffffff", truncate_lines((character.FR == "0" or not character.FR) and " " or tonumber(character.FR) and xrpui.values.FR[tonumber(character.FR)] or (character.FR:gsub("||?c%x%x%x%x%x%x%x%x%s*", "")), 40, 0, false))
+		local frline = format("|cff%s%s", (character.FC and character.FC ~= "0" and fc_colors[character.FC == "1" and 1 or 2]) or "ffffff", truncate_lines((character.FR == "0" or not character.FR) and " " or tonumber(character.FR) and xrp.values.FR[tonumber(character.FR)] or (character.FR:gsub("||?c%x%x%x%x%x%x%x%x%s*", "")), 40, 0, false))
 		local fcline
 		if character.FC and character.FC ~= "0" then
-			fcline = format("|cff%s%s", fc_colors[character.FC == "1" and 1 or 2], truncate_lines(tonumber(character.FC) and xrpui.values.FC[tonumber(character.FC)] or (character.FC:gsub("||?c%x%x%x%x%x%x%x%x%s*", "")), 40, 0, false))
+			fcline = format("|cff%s%s", fc_colors[character.FC == "1" and 1 or 2], truncate_lines(tonumber(character.FC) and xrp.values.FC[tonumber(character.FC)] or (character.FC:gsub("||?c%x%x%x%x%x%x%x%x%s*", "")), 40, 0, false))
 		end
 		render_line(frline, fcline)
 	end
@@ -270,8 +273,8 @@ function xrpui.tooltip:RefreshPlayer(character)
 	GameTooltip:Show()
 end
 
-xrpui.tooltip:SetScript("OnEvent", function(self, event, addon)
-	if event == "ADDON_LOADED" and addon == "xrpui_tooltip" then
+xrp.tooltip:SetScript("OnEvent", function(self, event, addon)
+	if event == "ADDON_LOADED" and addon == "xrp_tooltip" then
 
 		GameTooltip:HookScript("OnTooltipSetUnit", function(self)
 			-- GetUnit() will not return any sort of the non-basic unit
@@ -283,9 +286,9 @@ xrpui.tooltip:SetScript("OnEvent", function(self, event, addon)
 			-- unit string such as "mouseover" that we could have used.
 			local unit = select(2, self:GetUnit())
 			if UnitIsPlayer(unit) then
-				xrpui.tooltip:PlayerUnit(unit)
+				xrp.tooltip:PlayerUnit(unit)
 			elseif unit == nil then
-				xrpui.tooltip:Show()
+				xrp.tooltip:Show()
 			end
 		end)
 
@@ -295,7 +298,7 @@ xrpui.tooltip:SetScript("OnEvent", function(self, event, addon)
 			-- attached. If so, use names with realms by attaching a realm name
 			-- if needed.
 			if tooltip and tooltip == xrp:NameWithoutRealm(name) then
-				xrpui.tooltip:RefreshPlayer(xrp.characters[name])
+				xrp.tooltip:RefreshPlayer(xrp.characters[name])
 				-- If the mouse has already left the unit, the tooltip will get
 				-- stuck visible if we don't do this. It still bounces back
 				-- into visibility if it's partly faded out, but it'll just
@@ -309,17 +312,17 @@ xrpui.tooltip:SetScript("OnEvent", function(self, event, addon)
 		self:UnregisterEvent("ADDON_LOADED")
 	end
 end)
-xrpui.tooltip:RegisterEvent("ADDON_LOADED")
+xrp.tooltip:RegisterEvent("ADDON_LOADED")
 
 -- WORKAROUND: GameTooltip:GetUnit() will sometimes return nil, especially when
 -- custom unit frames call GameTooltip:SetUnit() with something 'odd' like
 -- targettarget. On the very next frame draw, the tooltip will often correctly
 -- be able to identify such units (typically as mouseover), so this will
 -- functionally delay the tooltip draw for these cases by at most one frame.
-xrpui.tooltip:SetScript("OnUpdate", function(self, elapsed)
+xrp.tooltip:SetScript("OnUpdate", function(self, elapsed)
 	self:Hide() -- Hiding stops OnUpdate.
 	local unit = select(2, GameTooltip:GetUnit())
 	if UnitIsPlayer(unit) then
-		xrpui.tooltip:PlayerUnit(unit)
+		xrp.tooltip:PlayerUnit(unit)
 	end
 end)

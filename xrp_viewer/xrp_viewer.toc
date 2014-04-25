@@ -1,12 +1,12 @@
 ## Interface: 50400
 ## LoadOnDemand: 1
-## Title: XRP (UI): Viewer
+## Title: XRP: Viewer
 ## Version: 5.4.7.0_beta3
 ## Author: Justin Snelgrove
 ## Notes: Provides a full roleplaying profile viewer, supporting common fields.
 ## X-Category: Roleplaying
 ## X-License: GPLv3
-## Dependencies: xrpui
+## Dependencies: xrp
 
 viewer_frames.xml
 viewer.lua

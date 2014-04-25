@@ -15,6 +15,8 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
+xrp.chatnames = CreateFrame("Frame", nil, xrp)
+
 -- And so it begins...
 local old_GetColoredName = GetColoredName
 
@@ -71,7 +73,7 @@ function new_GetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg
 	if arg12 then
 		_, GC, _, GR, _, _, _ = GetPlayerInfoByGUID(arg12)
 	end
-	if filter[arg2] == -1 or not events[event] or not xrpui_settings.chatnames[event] then
+	if filter[arg2] == -1 or not events[event] or not xrp_settings.chatnames[event] then
 		rp = false
 	elseif filter[arg2] == 1 then
 		rp = true
@@ -144,18 +146,12 @@ local function filter_error(self, event, message)
 end
 
 local function chatnames_OnEvent(self, event, addon)
-	if event == "ADDON_LOADED" and addon == "xrpui_chatnames" then
-		if type(xrpui_settings.chatnames) ~= "table" then
-			xrpui_settings.chatnames = {
-				["CHAT_MSG_SAY"] = true,
-				["CHAT_MSG_YELL"] = true,
-				["CHAT_MSG_EMOTE"] = true,
-				["CHAT_MSG_TEXT_EMOTE"] = true,
-				["CHAT_MSG_GUILD"] = true,
-				["CHAT_MSG_WHISPER"] = true,
-				["CHAT_MSG_WHISPER_INFORM"] = true,
-			}
+	if event == "ADDON_LOADED" and addon == "xrp_chatnames" then
+		if type(xrp_settings.chatnames) ~= "table" then
+			xrp_settings.chatnames = {}
 		end
+		setmetatable(xrp_settings.chatnames, { __index = events})
+
 		ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", filter_error)
 		xrp:HookEvent("MSP_RECEIVE", msp_receive)
 		self:UnregisterEvent("ADDON_LOADED")
@@ -165,5 +161,5 @@ local function chatnames_OnEvent(self, event, addon)
 	end
 end
 
-xrpui.chatnames:SetScript("OnEvent", chatnames_OnEvent)
-xrpui.chatnames:RegisterEvent("ADDON_LOADED")
+xrp.chatnames:SetScript("OnEvent", chatnames_OnEvent)
+xrp.chatnames:RegisterEvent("ADDON_LOADED")

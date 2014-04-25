@@ -31,7 +31,7 @@ local function parse_versions(VA)
 	return VAshort
 end
 
-function xrpui.viewer:Load(character)
+function xrp.viewer:Load(character)
 	-- This does not need to be very smart. SetText() should be mapped to the
 	-- appropriate 'real' function if needed. The Remote module always fills the
 	-- entire profile with values, even if they're empty, so we do not need to
@@ -48,14 +48,14 @@ function xrpui.viewer:Load(character)
 		elseif field == "AW" then
 			self[field]:SetText(xrp:ConvertWeight(character[field], "user") or "")
 		elseif field == "RA" then
-			self[field]:SetText(character[field] or xrpui.values.RA[character.GR] or "")
+			self[field]:SetText(character[field] or xrp.values.RA[character.GR] or "")
 		else
 			self[field]:SetText(character[field] or "")
 		end
 	end
 end
 
-function xrpui.viewer:ViewUnit(unit)
+function xrp.viewer:ViewUnit(unit)
 	if not UnitIsPlayer(unit) then
 		unit = "player"
 	end
@@ -73,7 +73,7 @@ function xrpui.viewer:ViewUnit(unit)
 	end
 end
 
-function xrpui.viewer:ViewCharacter(name)
+function xrp.viewer:ViewCharacter(name)
 	name = xrp:NameWithRealm(name) -- If there's not a realm, add our realm.
 	current = name
 	self.XC:SetText("")
@@ -91,10 +91,10 @@ end
 
 local function msp_receive(name)
 	if current == name then
-		local XC = xrpui.viewer.XC:GetText()
-		xrpui.viewer:Load(xrp.characters[name])
+		local XC = xrp.viewer.XC:GetText()
+		xrp.viewer:Load(xrp.characters[name])
 		if not XC then
-			xrpui.viewer.XC:SetText("Received!")
+			xrp.viewer.XC:SetText("Received!")
 		end
 	end
 end
@@ -102,25 +102,25 @@ end
 local function msp_receive_chunk(name, chunk, totalchunks)
 	if current == name then
 		if chunk == totalchunks then
-			xrpui.viewer.XC:SetFormattedText("Received! (%u/%u)", chunk, totalchunks)
+			xrp.viewer.XC:SetFormattedText("Received! (%u/%u)", chunk, totalchunks)
 		else
-			xrpui.viewer.XC:SetFormattedText("Receiving... (%u/%s)", chunk, totalchunks and tostring(totalchunks) or "??")
+			xrp.viewer.XC:SetFormattedText("Receiving... (%u/%s)", chunk, totalchunks and tostring(totalchunks) or "??")
 		end
 	end
 end
 
 local function msp_nochange(name)
 	if current == name then
-		local XC = xrpui.viewer.XC:GetText()
-		xrpui.viewer:Load(xrp.characters[name])
+		local XC = xrp.viewer.XC:GetText()
+		xrp.viewer:Load(xrp.characters[name])
 		if not XC then
-			xrpui.viewer.XC:SetText("No changes.")
+			xrp.viewer.XC:SetText("No changes.")
 		end
 	end
 end
 
 local function viewer_OnEvent(self, event, addon)
-	if event == "ADDON_LOADED" and addon == "xrpui_viewer" then
+	if event == "ADDON_LOADED" and addon == "xrp_viewer" then
 		self:SetAttribute("UIPanelLayout-defined", true)
 		self:SetAttribute("UIPanelLayout-enabled", true)
 		self:SetAttribute("UIPanelLayout-area", "left")
@@ -135,8 +135,8 @@ local function viewer_OnEvent(self, event, addon)
 		self:UnregisterEvent("ADDON_LOADED")
 	end
 end
-xrpui.viewer:SetScript("OnEvent", viewer_OnEvent)
-xrpui.viewer:RegisterEvent("ADDON_LOADED")
+xrp.viewer:SetScript("OnEvent", viewer_OnEvent)
+xrp.viewer:RegisterEvent("ADDON_LOADED")
 
 local function viewer_OnHide(self)
 	self.XC:SetText("")
@@ -144,23 +144,23 @@ local function viewer_OnHide(self)
 	PlaySound("igCharacterInfoClose")
 end
 
-xrpui.viewer:SetScript("OnHide", viewer_OnHide)
+xrp.viewer:SetScript("OnHide", viewer_OnHide)
 
 -- Setup shorthand access for easier looping later.
 -- Appearance tab
 for _, field in pairs({ "AE", "RA", "AH", "AW" }) do
-	xrpui.viewer[field] = xrpui.viewer.Appearance[field]
+	xrp.viewer[field] = xrp.viewer.Appearance[field]
 end
 -- EditBox is inside ScrollFrame
 for _, field in pairs({ "CU", "DE" }) do
-	xrpui.viewer[field] = xrpui.viewer.Appearance[field].EditBox
+	xrp.viewer[field] = xrp.viewer.Appearance[field].EditBox
 end
 
 -- Biography tab
 for _, field in pairs({ "AG", "HH", "HB" }) do
-	xrpui.viewer[field] = xrpui.viewer.Biography[field]
+	xrp.viewer[field] = xrp.viewer.Biography[field]
 end
 -- EditBox is inside ScrollFrame
 for _, field in pairs({ "MO", "HI" }) do
-	xrpui.viewer[field] = xrpui.viewer.Biography[field].EditBox
+	xrp.viewer[field] = xrp.viewer.Biography[field].EditBox
 end

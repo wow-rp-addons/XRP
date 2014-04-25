@@ -15,7 +15,7 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-	<Frame name="$parent_options" parentKey="options" parent="xrpui">
+	<Frame name="$parent_options" parentKey="options" parent="xrp">
 		<Layers>
 			<Layer level="OVERLAY">
 				<FontString parentKey="Title" inherits="GameFontNormalLarge" text="XRP">
@@ -23,12 +23,12 @@
 						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="15" y="-15"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="AHUnitsLabel" inherits="GameFontNormal" text="XRPUI_AH">
+				<FontString parentKey="AHUnitsLabel" inherits="GameFontNormal" text="XRP_AH">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="AWUnitsLabel" inherits="GameFontNormal" text="XRPUI_AW">
+				<FontString parentKey="AWUnitsLabel" inherits="GameFontNormal" text="XRP_AW">
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.AHUnitsLabel" relativePoint="LEFT" x="250" y="0"/>
 					</Anchors>
@@ -38,87 +38,87 @@
 						<Anchor point="TOPLEFT" relativeKey="$parent.AHUnitsLabel" relativePoint="BOTTOMLEFT" x="0" y="-60"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="NALabel" inherits="GameFontWhite" text="XRPUI_NA">
+				<FontString parentKey="NALabel" inherits="GameFontWhite" text="XRP_NA">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.DefaultsLabel" relativePoint="BOTTOMLEFT" x="24" y="-10"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="NILabel" inherits="GameFontWhite" text="XRPUI_NI">
+				<FontString parentKey="NILabel" inherits="GameFontWhite" text="XRP_NI">
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.NALabel" relativePoint="RIGHT" x="50" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="NTLabel" inherits="GameFontWhite" text="XRPUI_NT">
+				<FontString parentKey="NTLabel" inherits="GameFontWhite" text="XRP_NT">
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.NILabel" relativePoint="RIGHT" x="50" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="NHLabel" inherits="GameFontWhite" text="XRPUI_NH">
+				<FontString parentKey="NHLabel" inherits="GameFontWhite" text="XRP_NH">
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.NTLabel" relativePoint="RIGHT" x="50" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="AELabel" inherits="GameFontWhite" text="XRPUI_AE">
+				<FontString parentKey="AELabel" inherits="GameFontWhite" text="XRP_AE">
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.NHLabel" relativePoint="RIGHT" x="50" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="RALabel" inherits="GameFontWhite" text="XRPUI_RA">
+				<FontString parentKey="RALabel" inherits="GameFontWhite" text="XRP_RA">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.NALabel" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="AHLabel" inherits="GameFontWhite" text="XRPUI_AH">
+				<FontString parentKey="AHLabel" inherits="GameFontWhite" text="XRP_AH">
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.RALabel" relativePoint="RIGHT" x="50" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="AWLabel" inherits="GameFontWhite" text="XRPUI_AW">
+				<FontString parentKey="AWLabel" inherits="GameFontWhite" text="XRP_AW">
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.AHLabel" relativePoint="RIGHT" x="50" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="CULabel" inherits="GameFontWhite" text="XRPUI_CU">
+				<FontString parentKey="CULabel" inherits="GameFontWhite" text="XRP_CU">
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.AWLabel" relativePoint="RIGHT" x="50" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="DELabel" inherits="GameFontWhite" text="XRPUI_DE">
+				<FontString parentKey="DELabel" inherits="GameFontWhite" text="XRP_DE">
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.CULabel" relativePoint="RIGHT" x="50" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="AGLabel" inherits="GameFontWhite" text="XRPUI_AG">
+				<FontString parentKey="AGLabel" inherits="GameFontWhite" text="XRP_AG">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.RALabel" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="HHLabel" inherits="GameFontWhite" text="XRPUI_HH">
+				<FontString parentKey="HHLabel" inherits="GameFontWhite" text="XRP_HH">
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.AGLabel" relativePoint="RIGHT" x="50" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="HBLabel" inherits="GameFontWhite" text="XRPUI_HB">
+				<FontString parentKey="HBLabel" inherits="GameFontWhite" text="XRP_HB">
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.HHLabel" relativePoint="RIGHT" x="50" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="MOLabel" inherits="GameFontWhite" text="XRPUI_MO">
+				<FontString parentKey="MOLabel" inherits="GameFontWhite" text="XRP_MO">
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.HBLabel" relativePoint="RIGHT" x="50" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="HILabel" inherits="GameFontWhite" text="XRPUI_HI">
+				<FontString parentKey="HILabel" inherits="GameFontWhite" text="XRP_HI">
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.MOLabel" relativePoint="RIGHT" x="50" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="FRLabel" inherits="GameFontWhite" text="XRPUI_FR">
+				<FontString parentKey="FRLabel" inherits="GameFontWhite" text="XRP_FR">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.AGLabel" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="FCLabel" inherits="GameFontWhite" text="XRPUI_FC">
+				<FontString parentKey="FCLabel" inherits="GameFontWhite" text="XRP_FC">
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.FRLabel" relativePoint="RIGHT" x="50" y="0"/>
 					</Anchors>

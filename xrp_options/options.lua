@@ -20,53 +20,53 @@ local defaultfields = { "NA", "NI", "NT", "NH", "AE", "RA", "AH", "AW", "CU", "D
 local chattypes = { "CHAT_MSG_SAY", "CHAT_MSG_YELL", "CHAT_MSG_EMOTE", "CHAT_MSG_GUILD", "CHAT_MSG_WHISPER" }
 
 local function options_Okay()
-	xrp_settings.height = UIDropDownMenu_GetSelectedValue(xrpui.options.AHUnits)
-	xrp_settings.weight = UIDropDownMenu_GetSelectedValue(xrpui.options.AWUnits)
+	xrp_settings.height = UIDropDownMenu_GetSelectedValue(xrp.options.AHUnits)
+	xrp_settings.weight = UIDropDownMenu_GetSelectedValue(xrp.options.AWUnits)
 	for _, field in pairs(defaultfields) do
-		xrp_settings.defaults[field] = xrpui.options[field]:GetChecked() and true or false
+		xrp_settings.defaults[field] = xrp.options[field]:GetChecked() and true or false
 	end
 	for _, chat in pairs(chattypes) do
-		xrpui_settings.chatnames[chat] = xrpui.options[chat]:GetChecked() and true or false
+		xrp_settings.chatnames[chat] = xrp.options[chat]:GetChecked() and true or false
 		if chat == "CHAT_MSG_WHISPER" then
-			xrpui_settings.chatnames["CHAT_MSG_WHISPER_INFORM"] = xrpui.options[chat]:GetChecked() and true or false
+			xrp_settings.chatnames["CHAT_MSG_WHISPER_INFORM"] = xrp.options[chat]:GetChecked() and true or false
 		elseif chat == "CHAT_MSG_EMOTE" then
-			xrpui_settings.chatnames["CHAT_MSG_TEXT_EMOTE"] = xrpui.options[chat]:GetChecked() and true or false
+			xrp_settings.chatnames["CHAT_MSG_TEXT_EMOTE"] = xrp.options[chat]:GetChecked() and true or false
 		end
 	end
 end
 
 local function options_Default()
-	UIDropDownMenu_Initialize(xrpui.options.AHUnits, xrpui.options.AHUnits.initialize)
-	UIDropDownMenu_SetSelectedValue(xrpui.options.AHUnits, "ft")
-	UIDropDownMenu_Initialize(xrpui.options.AWUnits, xrpui.options.AWUnits.initialize)
-	UIDropDownMenu_SetSelectedValue(xrpui.options.AWUnits, "lb")
+	UIDropDownMenu_Initialize(xrp.options.AHUnits, xrp.options.AHUnits.initialize)
+	UIDropDownMenu_SetSelectedValue(xrp.options.AHUnits, "ft")
+	UIDropDownMenu_Initialize(xrp.options.AWUnits, xrp.options.AWUnits.initialize)
+	UIDropDownMenu_SetSelectedValue(xrp.options.AWUnits, "lb")
 	for _, field in pairs(defaultfields) do
-		xrpui.options[field]:SetChecked(true)
+		xrp.options[field]:SetChecked(true)
 	end
 	for _, chat in pairs(chattypes) do
-		xrpui.options[chat]:SetChecked(true)
+		xrp.options[chat]:SetChecked(true)
 	end
 end
 
 local function options_Refresh()
-	UIDropDownMenu_Initialize(xrpui.options.AHUnits, xrpui.options.AHUnits.initialize)
-	UIDropDownMenu_SetSelectedValue(xrpui.options.AHUnits, xrp_settings.height)		UIDropDownMenu_Initialize(xrpui.options.AWUnits, xrpui.options.AWUnits.initialize)
-	UIDropDownMenu_SetSelectedValue(xrpui.options.AWUnits, xrp_settings.weight)
+	UIDropDownMenu_Initialize(xrp.options.AHUnits, xrp.options.AHUnits.initialize)
+	UIDropDownMenu_SetSelectedValue(xrp.options.AHUnits, xrp_settings.height)		UIDropDownMenu_Initialize(xrp.options.AWUnits, xrp.options.AWUnits.initialize)
+	UIDropDownMenu_SetSelectedValue(xrp.options.AWUnits, xrp_settings.weight)
 	for _, field in pairs(defaultfields) do
-		xrpui.options[field]:SetChecked(xrp_settings.defaults[field] == nil and true or xrp_settings.defaults[field])
+		xrp.options[field]:SetChecked(xrp_settings.defaults[field] == nil and true or xrp_settings.defaults[field])
 	end
 	for _, chat in pairs(chattypes) do
-		xrpui.options[chat]:SetChecked(xrpui_settings.chatnames[chat] == nil and true or xrpui_settings.chatnames[chat])
+		xrp.options[chat]:SetChecked(xrp_settings.chatnames[chat] == nil and true or xrp_settings.chatnames[chat])
 	end
 end
 
 local function options_OnEvent(self, event, addon)
-	if event == "ADDON_LOADED" and addon == "xrpui_options" then
-		xrpui.options.name = "XRP"
-		xrpui.options.refresh = options_Refresh
-		xrpui.options.okay = options_Okay
-		xrpui.options.default = options_Default
-		InterfaceOptions_AddCategory(xrpui.options)
+	if event == "ADDON_LOADED" and addon == "xrp_options" then
+		xrp.options.name = "XRP"
+		xrp.options.refresh = options_Refresh
+		xrp.options.okay = options_Okay
+		xrp.options.default = options_Default
+		InterfaceOptions_AddCategory(xrp.options)
 
 		UIDropDownMenu_Initialize(self.AHUnits, function()
 			local info
@@ -102,5 +102,5 @@ local function options_OnEvent(self, event, addon)
 		self:UnregisterEvent("ADDON_LOADED")
 	end
 end
-xrpui.options:SetScript("OnEvent", options_OnEvent)
-xrpui.options:RegisterEvent("ADDON_LOADED")
+xrp.options:SetScript("OnEvent", options_OnEvent)
+xrp.options:RegisterEvent("ADDON_LOADED")
