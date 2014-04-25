@@ -234,11 +234,13 @@ local defmt = {
 		if not xrp_defaults[default[nk]] then
 			xrp_defaults[default[nk]] = {}
 		end
-		if state == false or state == true or state == nil then
-			xrp_defaults[default[nk]][field] = state
+		if state == nil or state == xrp_settings.defaults[field] then
+			xrp_defaults[default[nk]][field] = nil
 			if not next(xrp_defaults[default[nk]]) then
 				xrp.defaults[default[nk]] = nil
 			end
+		elseif state == false or state == true then
+			xrp_defaults[default[nk]][field] = state
 		end
 	end,
 	__call = function(default)
