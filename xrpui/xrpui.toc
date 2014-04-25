@@ -1,5 +1,5 @@
 ## Interface: 50400
-## Title: XRP-UI
+## Title: XRP (UI)
 ## Version: 5.4.7.0_beta2
 ## Author: Justin Snelgrove
 ## Notes: Provides a user interface for XRP. (You really want to enable this.)

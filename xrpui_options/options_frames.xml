@@ -1,0 +1,313 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\..\FrameXML\UI.xsd">
+<!--
+	© Justin Snelgrove
+
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+	<Frame name="$parent_options" parentKey="options" parent="xrpui">
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Title" inherits="GameFontNormalLarge" text="XRP">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="15" y="-15"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="AHUnitsLabel" inherits="GameFontNormal" text="XRPUI_AH">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="AWUnitsLabel" inherits="GameFontNormal" text="XRPUI_AW">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.AHUnitsLabel" relativePoint="LEFT" x="250" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="DefaultsLabel" inherits="GameFontNormal" text="Default copying settings:">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.AHUnitsLabel" relativePoint="BOTTOMLEFT" x="0" y="-60"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="NALabel" inherits="GameFontWhite" text="XRPUI_NA">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.DefaultsLabel" relativePoint="BOTTOMLEFT" x="24" y="-10"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="NILabel" inherits="GameFontWhite" text="XRPUI_NI">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.NALabel" relativePoint="RIGHT" x="50" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="NTLabel" inherits="GameFontWhite" text="XRPUI_NT">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.NILabel" relativePoint="RIGHT" x="50" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="NHLabel" inherits="GameFontWhite" text="XRPUI_NH">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.NTLabel" relativePoint="RIGHT" x="50" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="AELabel" inherits="GameFontWhite" text="XRPUI_AE">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.NHLabel" relativePoint="RIGHT" x="50" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="RALabel" inherits="GameFontWhite" text="XRPUI_RA">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.NALabel" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="AHLabel" inherits="GameFontWhite" text="XRPUI_AH">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.RALabel" relativePoint="RIGHT" x="50" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="AWLabel" inherits="GameFontWhite" text="XRPUI_AW">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.AHLabel" relativePoint="RIGHT" x="50" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="CULabel" inherits="GameFontWhite" text="XRPUI_CU">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.AWLabel" relativePoint="RIGHT" x="50" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="DELabel" inherits="GameFontWhite" text="XRPUI_DE">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.CULabel" relativePoint="RIGHT" x="50" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="AGLabel" inherits="GameFontWhite" text="XRPUI_AG">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.RALabel" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="HHLabel" inherits="GameFontWhite" text="XRPUI_HH">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.AGLabel" relativePoint="RIGHT" x="50" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="HBLabel" inherits="GameFontWhite" text="XRPUI_HB">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.HHLabel" relativePoint="RIGHT" x="50" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="MOLabel" inherits="GameFontWhite" text="XRPUI_MO">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.HBLabel" relativePoint="RIGHT" x="50" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="HILabel" inherits="GameFontWhite" text="XRPUI_HI">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.MOLabel" relativePoint="RIGHT" x="50" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="FRLabel" inherits="GameFontWhite" text="XRPUI_FR">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.AGLabel" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="FCLabel" inherits="GameFontWhite" text="XRPUI_FC">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.FRLabel" relativePoint="RIGHT" x="50" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="ChatLabel" inherits="GameFontNormal" text="RP names in chat:">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.DefaultsLabel" relativePoint="BOTTOMLEFT" x="0" y="-145"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="SayLabel" inherits="GameFontWhite" text="Say">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ChatLabel" relativePoint="BOTTOMLEFT" x="24" y="-10"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="YellLabel" inherits="GameFontWhite" text="Yell">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.SayLabel" relativePoint="RIGHT" x="50" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="EmoteLabel" inherits="GameFontWhite" text="Emote">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.YellLabel" relativePoint="RIGHT" x="50" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="GuildLabel" inherits="GameFontWhite" text="Guild">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.EmoteLabel" relativePoint="RIGHT" x="50" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="WhisperLabel" inherits="GameFontWhite" text="Whisper">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.GuildLabel" relativePoint="RIGHT" x="50" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentAHUnits" parentKey="AHUnits" inherits="UIDropDownMenuTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.AHUnitsLabel" relativePoint="BOTTOMLEFT" x="-22" y="-5"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						UIDropDownMenu_SetWidth(self, 200, 0);
+					</OnLoad>
+				</Scripts>
+			</Button>
+			<Button name="$parentAWUnits" parentKey="AWUnits" inherits="UIDropDownMenuTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.AWUnitsLabel" relativePoint="BOTTOMLEFT" x="-22" y="-5"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						UIDropDownMenu_SetWidth(self, 200, 0);
+					</OnLoad>
+				</Scripts>
+			</Button>
+			<CheckButton name="$parentNA" parentKey="NA" inherits="UICheckButtonTemplate">
+				<Size x="24" y="24"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.NALabel" relativePoint="LEFT" x="-4" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentNI" parentKey="NI" inherits="UICheckButtonTemplate">
+				<Size x="24" y="24"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.NILabel" relativePoint="LEFT" x="-4" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentNT" parentKey="NT" inherits="UICheckButtonTemplate">
+				<Size x="24" y="24"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.NTLabel" relativePoint="LEFT" x="-4" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentNH" parentKey="NH" inherits="UICheckButtonTemplate">
+				<Size x="24" y="24"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.NHLabel" relativePoint="LEFT" x="-4" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentAE" parentKey="AE" inherits="UICheckButtonTemplate">
+				<Size x="24" y="24"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.AELabel" relativePoint="LEFT" x="-4" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentRA" parentKey="RA" inherits="UICheckButtonTemplate">
+				<Size x="24" y="24"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.RALabel" relativePoint="LEFT" x="-4" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentAH" parentKey="AH" inherits="UICheckButtonTemplate">
+				<Size x="24" y="24"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.AHLabel" relativePoint="LEFT" x="-4" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentAW" parentKey="AW" inherits="UICheckButtonTemplate">
+				<Size x="24" y="24"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.AWLabel" relativePoint="LEFT" x="-4" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentCU" parentKey="CU" inherits="UICheckButtonTemplate">
+				<Size x="24" y="24"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.CULabel" relativePoint="LEFT" x="-4" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentDE" parentKey="DE" inherits="UICheckButtonTemplate">
+				<Size x="24" y="24"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.DELabel" relativePoint="LEFT" x="-4" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentAG" parentKey="AG" inherits="UICheckButtonTemplate">
+				<Size x="24" y="24"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.AGLabel" relativePoint="LEFT" x="-4" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentHH" parentKey="HH" inherits="UICheckButtonTemplate">
+				<Size x="24" y="24"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.HHLabel" relativePoint="LEFT" x="-4" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentHB" parentKey="HB" inherits="UICheckButtonTemplate">
+				<Size x="24" y="24"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.HBLabel" relativePoint="LEFT" x="-4" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentMO" parentKey="MO" inherits="UICheckButtonTemplate">
+				<Size x="24" y="24"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.MOLabel" relativePoint="LEFT" x="-4" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentHI" parentKey="HI" inherits="UICheckButtonTemplate">
+				<Size x="24" y="24"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.HILabel" relativePoint="LEFT" x="-4" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentFR" parentKey="FR" inherits="UICheckButtonTemplate">
+				<Size x="24" y="24"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.FRLabel" relativePoint="LEFT" x="-4" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentFC" parentKey="FC" inherits="UICheckButtonTemplate">
+				<Size x="24" y="24"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.FCLabel" relativePoint="LEFT" x="-4" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentSay" parentKey="CHAT_MSG_SAY" inherits="UICheckButtonTemplate">
+				<Size x="24" y="24"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.SayLabel" relativePoint="LEFT" x="-4" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentYell" parentKey="CHAT_MSG_YELL" inherits="UICheckButtonTemplate">
+				<Size x="24" y="24"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.YellLabel" relativePoint="LEFT" x="-4" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentEmote" parentKey="CHAT_MSG_EMOTE" inherits="UICheckButtonTemplate">
+				<Size x="24" y="24"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.EmoteLabel" relativePoint="LEFT" x="-4" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentGuild" parentKey="CHAT_MSG_GUILD" inherits="UICheckButtonTemplate">
+				<Size x="24" y="24"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.GuildLabel" relativePoint="LEFT" x="-4" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentWhisper" parentKey="CHAT_MSG_WHISPER" inherits="UICheckButtonTemplate">
+				<Size x="24" y="24"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.WhisperLabel" relativePoint="LEFT" x="-4" y="0"/>
+				</Anchors>
+			</CheckButton>
+		</Frames>
+	</Frame>
+</Ui>

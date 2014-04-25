@@ -52,6 +52,9 @@ local function init_OnEvent(xrp, event, addon)
 				weight = "lb",
 			}
 		end
+		if type(xrp_settings.defaults) ~= "table" then
+			xrp_settings.defaults = {}
+		end
 
 		if type(xrp_profiles) ~= "table" then
 			xrp_profiles = {

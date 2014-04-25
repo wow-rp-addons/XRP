@@ -140,6 +140,13 @@ function xrpui:ShowViewerUnit(unit)
 	xrpui.viewer:ViewUnit(unit)
 end
 
+function xrpui:ShowOptions()
+	if not loadifneeded("xrpui_options") then
+		return
+	end
+	InterfaceOptionsFrame_OpenToCategory(xrpui.options)
+end
+
 local function xrpui_OnEvent(self, event, addon)
 	if event == "ADDON_LOADED" and addon == "xrpui" then
 		if not xrpui_settings then
