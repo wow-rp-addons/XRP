@@ -1,13 +1,12 @@
 ## Interface: 50400
 ## LoadOnDemand: 1
-## Title: XRP (UI): Editor
+## Title: XRP (UI): Options
 ## Version: 5.4.7.0_beta2
 ## Author: Justin Snelgrove
-## Notes: Provides a profile editor, supporting common fields.
+## Notes: Provides an interface options panel for XRP.
 ## X-Category: Roleplaying
 ## X-License: GPLv3
 ## Dependencies: xrpui
 
-editor_frames.xml
-editor.lua
-editor_popups.lua
+options_frames.xml
+options.lua

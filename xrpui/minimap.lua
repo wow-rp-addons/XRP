@@ -86,38 +86,6 @@ local function status_select(self, status, arg2, checked)
 	ToggleDropDownMenu(nil, nil, xrpui.minimap.menu)
 end
 
-local function height_select(self, height, arg2, checked)
-	if not checked then
-		xrp_settings.height = height
-	end
-	ToggleDropDownMenu(nil, nil, xrpui.minimap.menu)
-end
-
-local function weight_select(self, weight, arg2, checked)
-	if not checked then
-		xrp_settings.weight = weight
-	end
-	ToggleDropDownMenu(nil, nil, xrpui.minimap.menu)
-end
-
-local function chatnames_select(self, types, arg2, checked)
-	local toggle = checked and true or false
-	if types == "CHAT_MSG_SAY" then
-		xrpui_settings.chatnames["CHAT_MSG_SAY"] = toggle
-	elseif types == "CHAT_MSG_YELL" then
-		xrpui_settings.chatnames["CHAT_MSG_YELL"] = toggle
-	elseif types == "CHAT_MSG_EMOTE" then
-		xrpui_settings.chatnames["CHAT_MSG_EMOTE"] = toggle
-		xrpui_settings.chatnames["CHAT_MSG_TEXT_EMOTE"] = toggle
-	elseif types == "CHAT_MSG_GUILD" then
-		xrpui_settings.chatnames["CHAT_MSG_GUILD"] = toggle
-	elseif types == "CHAT_MSG_WHISPER" then
-		xrpui_settings.chatnames["CHAT_MSG_WHISPER"] = toggle
-		xrpui_settings.chatnames["CHAT_MSG_WHISPER_INFORM"] = toggle
-	end
-	ToggleDropDownMenu(nil, nil, xrpui.minimap.menu)
-end
-
 local menulist_profiles = {}
 local menulist_status = {
 	{ text = xrpui.values.FC_EMPTY, checked = false, arg1 = "0", func = status_select },
@@ -166,31 +134,9 @@ end
 local function menulist_viewer(self, arg1, arg2, checked)
 	xrpui:ToggleViewer()
 end
-
-local menulist_height = {
-	{ text = "Centimeters", checked = false, arg1 = "cm", func = height_select, },
-	{ text = "Feet/Inches", checked = false, arg1 = "ft", func = height_select, },
-	{ text = "Meters", checked = false, arg1 = "m", func = height_select, },
-}
-
-local menulist_weight = {
-	{ text = "Kilograms", checked = false, arg1 = "kg", func = weight_select, },
-	{ text = "Pounds", checked = false, arg1 = "lb", func = weight_select, },
-}
-
-local menulist_chatnames = {
-	{ text = "Say", isNotRadio = true, keepShownOnClick = true, checked = false, arg1 = "CHAT_MSG_SAY", func = chatnames_select, },
-	{ text = "Yell", isNotRadio = true, keepShownOnClick = true, checked = false, arg1 = "CHAT_MSG_YELL", func = chatnames_select, },
-	{ text = "Emote", isNotRadio = true, keepShownOnClick = true, checked = false, arg1 = "CHAT_MSG_EMOTE", func = chatnames_select, },
-	{ text = "Guild", isNotRadio = true, keepShownOnClick = true, checked = false, arg1 = "CHAT_MSG_GUILD", func = chatnames_select, },
-	{ text = "Whisper", isNotRadio = true, keepShownOnClick = true, checked = false, arg1 = "CHAT_MSG_WHISPER", func = chatnames_select, },
-}
-
-local menulist_settings = {
-	{ text = "Height", notCheckable = true, hasArrow = true, menuList = menulist_height, },
-	{ text = "Weight", notCheckable = true, hasArrow = true, menuList = menulist_weight, },
-	{ text = "Chat Names", notCheckable = true, hasArrow = true, menuList = menulist_chatnames, },
-}
+local function menulist_options(self, arg1, arg2, checked)
+	xrpui:ShowOptions()
+end
 
 local minimap_menulist = {
 	{ text = "XRP", isTitle = true, notCheckable = true, },
@@ -199,31 +145,9 @@ local minimap_menulist = {
 	{ text = "Currently...", notCheckable = true, func = menulist_currently, },
 	{ text = "Profile editor", notCheckable = true, func = menulist_editor, },
 	{ text = "Profile viewer", notCheckable = true, func = menulist_viewer, },
-	{ text = "Settings", notCheckable = true, hasArrow = true, menuList = menulist_settings, },
+	{ text = "Options...", notCheckable = true, func = menulist_options, },
 	{ text = "Cancel", notCheckable = true, },
 }
-
-local function update_settings()
-	local currentweight = xrp_settings.weight
-	local currentheight = xrp_settings.height
-	local currentstatus = xrp.profile.FC or "0"
-	local menu = menulist_settings
-	for _, menuitem in pairs(menu) do
-		if menuitem.text == "Height" then
-			for _, submenuitem in pairs(menuitem.menuList) do
-				submenuitem.checked = currentheight == submenuitem.arg1
-			end
-		elseif menuitem.text == "Weight" then
-			for _, submenuitem in pairs(menuitem.menuList) do
-				submenuitem.checked = currentweight == submenuitem.arg1
-			end
-		elseif menuitem.text == "Chat Names" then
-			for _, submenuitem in pairs(menuitem.menuList) do
-				submenuitem.checked = xrpui_settings.chatnames[submenuitem.arg1]
-			end
-		end
-	end
-end
 
 local function update_status()
 	local currentstatus = xrp.profile.FC or "0"
@@ -297,7 +221,6 @@ local function minimap_OnClick(self, button, down)
 		elseif button == "RightButton" then
 			update_profiles()
 			update_status()
-			update_settings()
 			EasyMenu(minimap_menulist, xrpui_minimap_menu, xrpui_minimap, 3, 10, "MENU", nil)
 		end
 	end

@@ -225,7 +225,7 @@ local defmt = {
 		if default[nk] ~= "Default" and xrp_defaults[default[nk]] and xrp_defaults[default[nk]][field] ~= nil then
 			return xrp_defaults[default[nk]][field]
 		end
-		return true
+		return xrp_settings.defaults[field] == nil and true or xrp_settings.defaults[field]
 	end,
 	__newindex = function(default, field, state)
 		if xrp.msp.unitfields[field] or xrp.msp.metafields[field] or not field:match("^%u%u$") or default[nk] == "Default" then
@@ -234,10 +234,8 @@ local defmt = {
 		if not xrp_defaults[default[nk]] then
 			xrp_defaults[default[nk]] = {}
 		end
-		if state == false then
+		if state == false or state == true or state == nil then
 			xrp_defaults[default[nk]][field] = state
-		elseif state == true or state == nil then
-			xrp_defaults[default[nk]][field] = nil
 			if not next(xrp_defaults[default[nk]]) then
 				xrp.defaults[default[nk]] = nil
 			end
