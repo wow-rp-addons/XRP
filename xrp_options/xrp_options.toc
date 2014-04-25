@@ -1,11 +1,12 @@
 ## Interface: 50400
-## Title: XRP (UI): Options
+## LoadOnDemand: 1
+## Title: XRP: Options
 ## Version: 5.4.7.0_beta3
 ## Author: Justin Snelgrove
 ## Notes: Provides an interface options panel for XRP.
 ## X-Category: Roleplaying
 ## X-License: GPLv3
-## Dependencies: xrpui
+## Dependencies: xrp
 
 options_frames.xml
 options.lua

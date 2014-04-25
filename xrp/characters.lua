@@ -18,9 +18,9 @@
 
 local nk = {}
 
-local chars = {}
+local chars = setmetatable({}, { __mode = "v" })
 
-local gcache = {}
+local gcache = setmetatable({}, { __mode = "v" })
 
 local charmt = {
 	__index = function(character, field)
@@ -35,8 +35,6 @@ local charmt = {
 			return xrp_cache[character[nk]].fields[field]
 		elseif gcache[character[nk]] and gcache[character[nk]][field] then
 			return gcache[character[nk]][field]
-		elseif field == "NA" then
-			return xrp:NameWithoutRealm(character[nk])
 		end
 		return nil
 	end,

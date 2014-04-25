@@ -33,7 +33,7 @@ local function clearfocus(self)
 	self.AG:ClearFocus()
 end
 
-function xrpui.editor:Save()
+function xrp.editor:Save()
 	clearfocus(self)
 	saving = true
 
@@ -61,17 +61,17 @@ function xrpui.editor:Save()
 
 	local length = xrp.profiles[name](9000)
 	if length and length > 16000 then
-		StaticPopup_Show("XRPUI_EDITOR_16000")
+		StaticPopup_Show("XRP_EDITOR_16000")
 	elseif length and not warn9000 then
 		warn9000 = true
-		StaticPopup_Show("XRPUI_EDITOR_9000")
+		StaticPopup_Show("XRP_EDITOR_9000")
 	end
 
 	-- Save and Revert buttons will disable after saving.
-	xrpui.editor:CheckFields()
+	xrp.editor:CheckFields()
 end
 
-function xrpui.editor:Load(name)
+function xrp.editor:Load(name)
 	loading = true
 	clearfocus(self)
 	-- This does not need to be very smart. SetText() should be mapped to the
@@ -107,39 +107,39 @@ function xrpui.editor:Load(name)
 	loading = false
 end
 
-function xrpui.editor:Revert()
+function xrp.editor:Revert()
 	reverting = true
 	self:Load(self.Profiles:GetText());
 	reverting = false
 end
 
-function xrpui.editor:CheckFields()
+function xrp.editor:CheckFields()
 	if not loading then -- This will still trigger after loading.
 		local changes = false
 		for field, _ in pairs(supportedfields) do
-			if not changes and (xrpui.editor[field]:GetText() ~= (last_profile[field] or "") or (xrpui.editor.checkboxes[field]:GetChecked() and true or false) ~= last_defaults[field]) then
+			if not changes and (xrp.editor[field]:GetText() ~= (last_profile[field] or "") or (xrp.editor.checkboxes[field]:GetChecked() and true or false) ~= last_defaults[field]) then
 				changes = true
 			end
 		end
 		if changes then
-			xrpui.editor.SaveButton:Enable()
-			xrpui.editor.RevertButton:Enable()
+			xrp.editor.SaveButton:Enable()
+			xrp.editor.RevertButton:Enable()
 		else
-			xrpui.editor.SaveButton:Disable()
-			xrpui.editor.RevertButton:Disable()
+			xrp.editor.SaveButton:Disable()
+			xrp.editor.RevertButton:Disable()
 		end
 	end
 end
 
 local function field_save(name, field)
-	if not saving and xrpui.editor.Profiles:GetText() == name then
+	if not saving and xrp.editor.Profiles:GetText() == name then
 		if supportedfields[field] then
 			if field == "FC" then
-				xrpui.editor[field]:SetText(tonumber(xrp.profiles[name][field]) and xrp.profiles[name][field] or "0")
+				xrp.editor[field]:SetText(tonumber(xrp.profiles[name][field]) and xrp.profiles[name][field] or "0")
 				last_profile[field] = (profile[field] or "0")
 			else
-				xrpui.editor[field]:SetText(xrp.profiles[name][field] or "")
-				xrpui.editor[field]:SetCursorPosition(0)
+				xrp.editor[field]:SetText(xrp.profiles[name][field] or "")
+				xrp.editor[field]:SetCursorPosition(0)
 				last_profile[field] = (profile[field] or "")
 			end
 		end
@@ -147,7 +147,7 @@ local function field_save(name, field)
 end
 
 local function editor_OnEvent(self, event, addon)
-	if event == "ADDON_LOADED" and addon == "xrpui_editor" then
+	if event == "ADDON_LOADED" and addon == "xrp_editor" then
 		
 		-- Initializing the frame into a proper, tabbed UI panel.
 		self:SetAttribute("UIPanelLayout-defined", true)
@@ -177,7 +177,7 @@ local function editor_OnEvent(self, event, addon)
 				end
 				info.func = function(self, arg1, arg2, checked)
 					if not checked then
-						xrpui.editor:Load(self.value)
+						xrp.editor:Load(self.value)
 						UIDropDownMenu_SetSelectedValue(UIDROPDOWNMENU_OPEN_MENU, self.value)
 					end
 				end
@@ -187,23 +187,23 @@ local function editor_OnEvent(self, event, addon)
 
 		UIDropDownMenu_Initialize(self.FC, function()
 			local info = UIDropDownMenu_CreateInfo()
-			info.text = xrpui.values.FC_EMPTY
+			info.text = xrp.values.FC_EMPTY
 			info.value = "0"
 			info.func = function(self, arg1, arg2, checked)
 				if not checked then
 					UIDropDownMenu_SetSelectedValue(UIDROPDOWNMENU_OPEN_MENU, self.value)
-					xrpui.editor:CheckFields()
+					xrp.editor:CheckFields()
 				end
 			end
 			UIDropDownMenu_AddButton(info)
-			for value, text in pairs(xrpui.values.FC) do
+			for value, text in pairs(xrp.values.FC) do
 				info = UIDropDownMenu_CreateInfo()
 				info.text = text
 				info.value = tostring(value)
 				info.func = function(self, arg1, arg2, checked)
 					if not checked then
 						UIDropDownMenu_SetSelectedValue(UIDROPDOWNMENU_OPEN_MENU, self.value)
-						xrpui.editor:CheckFields()
+						xrp.editor:CheckFields()
 					end
 				end
 				UIDropDownMenu_AddButton(info)
@@ -211,14 +211,14 @@ local function editor_OnEvent(self, event, addon)
 		end)
 
 		xrp:HookEvent("PROFILE_DELETE", function(name)
-			if xrpui.editor.Profiles:GetText() == name then
-				xrpui.editor:Load("Default")
+			if xrp.editor.Profiles:GetText() == name then
+				xrp.editor:Load("Default")
 			end
 		end)
 
 		xrp:HookEvent("PROFILE_RENAME", function(name, newname)
-			if xrpui.editor.Profiles:GetText() == name then
-				xrpui.editor:Load(newname)
+			if xrp.editor.Profiles:GetText() == name then
+				xrp.editor:Load(newname)
 			end
 		end)
 
@@ -228,45 +228,45 @@ local function editor_OnEvent(self, event, addon)
 		self:UnregisterEvent("ADDON_LOADED")
 	end
 end
-xrpui.editor:SetScript("OnEvent", editor_OnEvent)
-xrpui.editor:RegisterEvent("ADDON_LOADED")
+xrp.editor:SetScript("OnEvent", editor_OnEvent)
+xrp.editor:RegisterEvent("ADDON_LOADED")
 
 -- Setup shorthand access and other stuff.
-xrpui.editor.checkboxes = {}
+xrp.editor.checkboxes = {}
 -- Appearance tab
 local appearance = { "NA", "NI", "NT", "NH", "AE", "RA", "AH", "AW", "CU" }
 for key, field in pairs(appearance) do
-	xrpui.editor[field] = xrpui.editor.Appearance[field]
-	xrpui.editor[field].nextEditBox = xrpui.editor.Appearance[appearance[key + 1]] or xrpui.editor.Appearance["DE"].EditBox
-	xrpui.editor[field]:SetScript("OnTextChanged", function(self)
-		xrpui.editor:CheckFields()
+	xrp.editor[field] = xrp.editor.Appearance[field]
+	xrp.editor[field].nextEditBox = xrp.editor.Appearance[appearance[key + 1]] or xrp.editor.Appearance["DE"].EditBox
+	xrp.editor[field]:SetScript("OnTextChanged", function(self)
+		xrp.editor:CheckFields()
 	end)
-	xrpui.editor.checkboxes[field] = xrpui.editor.Appearance[field.."Default"]
+	xrp.editor.checkboxes[field] = xrp.editor.Appearance[field.."Default"]
 end
 -- EditBox is inside ScrollFrame
-xrpui.editor["DE"] = xrpui.editor.Appearance["DE"].EditBox
-xrpui.editor["DE"].nextEditBox = xrpui.editor.Appearance["NA"]
-xrpui.editor.checkboxes["DE"] = xrpui.editor.Appearance["DEDefault"]
+xrp.editor["DE"] = xrp.editor.Appearance["DE"].EditBox
+xrp.editor["DE"].nextEditBox = xrp.editor.Appearance["NA"]
+xrp.editor.checkboxes["DE"] = xrp.editor.Appearance["DEDefault"]
 
 -- Biography tab
 local biography = { "AG", "HH", "HB", "MO", "FR", "FC" }
 for key, field in pairs(biography) do
-	xrpui.editor[field] = xrpui.editor.Biography[field]
+	xrp.editor[field] = xrp.editor.Biography[field]
 	if field == "MO" then
-		xrpui.editor[field].nextEditBox = xrpui.editor.Biography["HI"].EditBox
+		xrp.editor[field].nextEditBox = xrp.editor.Biography["HI"].EditBox
 	elseif field == "FR" then
-		xrpui.editor[field].nextEditBox = xrpui.editor.Biography["AG"]
+		xrp.editor[field].nextEditBox = xrp.editor.Biography["AG"]
 	elseif field ~= "FC" then
-		xrpui.editor[field].nextEditBox = xrpui.editor.Biography[biography[key + 1]]
+		xrp.editor[field].nextEditBox = xrp.editor.Biography[biography[key + 1]]
 	end
 	if field ~= "FC" then
-		xrpui.editor[field]:SetScript("OnTextChanged", function(self)
-			xrpui.editor:CheckFields()
+		xrp.editor[field]:SetScript("OnTextChanged", function(self)
+			xrp.editor:CheckFields()
 		end)
 	end
-	xrpui.editor.checkboxes[field] = xrpui.editor.Biography[field.."Default"]
+	xrp.editor.checkboxes[field] = xrp.editor.Biography[field.."Default"]
 end
 -- EditBox is inside ScrollFrame
-xrpui.editor["HI"] = xrpui.editor.Biography["HI"].EditBox
-xrpui.editor["HI"].nextEditBox = xrpui.editor.Biography["FR"]
-xrpui.editor.checkboxes["HI"] = xrpui.editor.Biography["HIDefault"]
+xrp.editor["HI"] = xrp.editor.Biography["HI"].EditBox
+xrp.editor["HI"].nextEditBox = xrp.editor.Biography["FR"]
+xrp.editor.checkboxes["HI"] = xrp.editor.Biography["HIDefault"]

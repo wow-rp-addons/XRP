@@ -35,7 +35,7 @@ local minimapShapes = {
 }
 
 local function updatePosition(button)
-	local angle = math.rad(xrpui_settings.minimap_position or 225)
+	local angle = math.rad(xrp_settings.minimap or 225)
 	local x, y, q = math.cos(angle), math.sin(angle), 1
 	if x < 0 then q = q + 1 end
 	if y > 0 then q = q + 2 end
@@ -56,7 +56,7 @@ local function onUpdate(self)
 	local px, py = GetCursorPosition()
 	local scale = Minimap:GetEffectiveScale()
 	px, py = px / scale, py / scale
-	xrpui_settings.minimap_position = math.deg(math.atan2(py - my, px - mx)) % 360
+	xrp_settings.minimap = math.deg(math.atan2(py - my, px - mx)) % 360
 	updatePosition(self)
 end
 
@@ -76,24 +76,24 @@ local function profiles_select(self, name, arg2, checked)
 	if not checked then
 		xrp.profiles(name)
 	end
-	ToggleDropDownMenu(nil, nil, xrpui.minimap.menu)
+	ToggleDropDownMenu(nil, nil, xrp.minimap.menu)
 end
 
 local function status_select(self, status, arg2, checked)
 	if not checked then
 		xrp.profile.FC = status
 	end
-	ToggleDropDownMenu(nil, nil, xrpui.minimap.menu)
+	ToggleDropDownMenu(nil, nil, xrp.minimap.menu)
 end
 
 local menulist_profiles = {}
 local menulist_status = {
-	{ text = xrpui.values.FC_EMPTY, checked = false, arg1 = "0", func = status_select },
+	{ text = xrp.values.FC_EMPTY, checked = false, arg1 = "0", func = status_select },
 }
-for value, text in pairs(xrpui.values.FC) do
+for value, text in pairs(xrp.values.FC) do
 	menulist_status[#menulist_status + 1] = { text = text, checked = false, arg1 = tostring(value), func = status_select, }
 end
-StaticPopupDialogs["XRPUI_CURRENTLY"] = {
+StaticPopupDialogs["XRP_CURRENTLY"] = {
 	text = "What are you currently doing?",
 	button1 = ACCEPT,
 	button2 = RESET,
@@ -125,27 +125,15 @@ StaticPopupDialogs["XRPUI_CURRENTLY"] = {
 	preferredIndex = 3,
 --	sound = ,
 }
-local function menulist_currently(self, arg1, arg2, checked)
-	StaticPopup_Show("XRPUI_CURRENTLY")
-end
-local function menulist_editor(self, arg1, arg2, checked)
-	xrpui:ToggleEditor()
-end
-local function menulist_viewer(self, arg1, arg2, checked)
-	xrpui:ToggleViewer()
-end
-local function menulist_options(self, arg1, arg2, checked)
-	InterfaceOptionsFrame_OpenToCategory(xrpui.options)
-end
 
 local minimap_menulist = {
 	{ text = "XRP", isTitle = true, notCheckable = true, },
 	{ text = "Profiles", notCheckable = true, hasArrow = true, menuList = menulist_profiles, },
 	{ text = "Character status", notCheckable = true, hasArrow = true, menuList = menulist_status, },
-	{ text = "Currently...", notCheckable = true, func = menulist_currently, },
-	{ text = "Profile editor", notCheckable = true, func = menulist_editor, },
-	{ text = "Profile viewer", notCheckable = true, func = menulist_viewer, },
-	{ text = "Options...", notCheckable = true, func = menulist_options, },
+	{ text = "Currently...", notCheckable = true, func = function() StaticPopup_Show("XRP_CURRENTLY") end, },
+	{ text = "Profile editor", notCheckable = true, func = function() xrp:ToggleEditor end, },
+	{ text = "Profile viewer", notCheckable = true, func = function() xrp:ToggleViwer() end, },
+	{ text = "Options...", notCheckable = true, func = function() InterfaceOptionsFrame_OpenToCategory(xrp.options) end, },
 	{ text = "Cancel", notCheckable = true, },
 }
 
@@ -169,14 +157,14 @@ end
 
 local function update_icon()
 	if xrp.units.target and xrp.units.target.VA then
-		xrpui.minimap.icon:SetTexture("Interface\\Icons\\INV_Misc_Book_03")
+		xrp.minimap.icon:SetTexture("Interface\\Icons\\INV_Misc_Book_03")
 	else
 		if xrp.profile.FC == "1" then
-			xrpui.minimap.icon:SetTexture("Interface\\Icons\\Ability_Malkorok_BlightofYshaarj_Red")
+			xrp.minimap.icon:SetTexture("Interface\\Icons\\Ability_Malkorok_BlightofYshaarj_Red")
 		elseif not xrp.profile.FC or xrp.profile.FC == "0" then
-			xrpui.minimap.icon:SetTexture("Interface\\Icons\\Ability_Malkorok_BlightofYshaarj_Yellow")
+			xrp.minimap.icon:SetTexture("Interface\\Icons\\Ability_Malkorok_BlightofYshaarj_Yellow")
 		else
-			xrpui.minimap.icon:SetTexture("Interface\\Icons\\Ability_Malkorok_BlightofYshaarj_Green")
+			xrp.minimap.icon:SetTexture("Interface\\Icons\\Ability_Malkorok_BlightofYshaarj_Green")
 		end
 	end
 end
@@ -195,8 +183,8 @@ local function minimap_OnEnter(self, motion)
 		GameTooltip:Show()
 	end
 end
-xrpui.minimap:SetScript("OnEnter", minimap_OnEnter)
-xrpui.minimap:SetScript("OnLeave", function(self, motion)
+xrp.minimap:SetScript("OnEnter", minimap_OnEnter)
+xrp.minimap:SetScript("OnLeave", function(self, motion)
 	GameTooltip:Hide()
 end)
 
@@ -205,7 +193,7 @@ local function minimap_OnClick(self, button, down)
 	if not down then
 		if button == "LeftButton" then
 			if xrp.units.target and xrp.units.target.VA then
-				xrpui:ShowViewerUnit("target")
+				xrp:ShowViewerUnit("target")
 			elseif toggled then
 				xrp.profile.FC = nil
 				toggled = false
@@ -221,7 +209,7 @@ local function minimap_OnClick(self, button, down)
 		elseif button == "RightButton" then
 			update_profiles()
 			update_status()
-			EasyMenu(minimap_menulist, xrpui_minimap_menu, xrpui_minimap, 3, 10, "MENU", nil)
+			EasyMenu(minimap_menulist, xrp_minimap_menu, xrp_minimap, 3, 10, "MENU", nil)
 		end
 	end
 end
@@ -229,17 +217,17 @@ end
 local function minimap_OnEvent(self, event, addon)
 	if event == "PLAYER_TARGET_CHANGED" then
 		update_icon()
-	elseif event == "ADDON_LOADED" and addon == "xrpui" then
+	elseif event == "ADDON_LOADED" and addon == "xrp" then
 		self:SetScript("OnDragStart", onDragStart)
 		self:SetScript("OnDragStop", onDragStop)
 		self:SetScript("OnClick", minimap_OnClick)
 		updatePosition(self)
 		xrp:HookEvent("MSP_UPDATE", update_icon)
 		xrp:HookEvent("MSP_RECEIVE", update_icon)
-		xrpui.minimap:RegisterEvent("PLAYER_TARGET_CHANGED")
+		xrp.minimap:RegisterEvent("PLAYER_TARGET_CHANGED")
 		self:UnregisterEvent("ADDON_LOADED")
 	end
 end
 
-xrpui.minimap:SetScript("OnEvent", minimap_OnEvent)
-xrpui.minimap:RegisterEvent("ADDON_LOADED")
+xrp.minimap:SetScript("OnEvent", minimap_OnEvent)
+xrp.minimap:RegisterEvent("ADDON_LOADED")

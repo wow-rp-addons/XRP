@@ -2,15 +2,18 @@
 ## Title: XRP
 ## Version: 5.4.7.0_beta3
 ## Author: Justin Snelgrove
-## Notes: XRP is an extensible roleplaying profile addon.
+## Notes: XRP is yet another roleplaying profile addon.
 ## X-Category: Roleplaying
 ## X-License: LGPLv3
 ## SavedVariablesPerCharacter: xrp_defaults, xrp_profiles, xrp_selectedprofile, xrp_versions
 ## SavedVariables: xrp_cache, xrp_settings
 
 xrp.lua
+l10n.lua
 profiles.lua
 ChatThrottleLib\ChatThrottleLib.xml
 msp.lua
 characters.lua
+minimap.xml
+minimap.lua
 init.lua
