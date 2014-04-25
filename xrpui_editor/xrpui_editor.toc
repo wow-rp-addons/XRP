@@ -1,7 +1,7 @@
 ## Interface: 50400
 ## LoadOnDemand: 1
 ## Title: XRP (UI): Editor
-## Version: 5.4.7.0_beta2
+## Version: 5.4.7.0_beta3
 ## Author: Justin Snelgrove
 ## Notes: Provides a profile editor, supporting common fields.
 ## X-Category: Roleplaying

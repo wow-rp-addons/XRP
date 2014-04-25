@@ -7,7 +7,10 @@
 
 	- UI:
 		- Add Interface Options panel. This replaces the settings menu on the
-		  minimap. It's still a bit ugly, but it should work just fine.
+		  minimap. It's still a bit ugly, but it should work just fine. Note:
+		  it must be loaded from the minimap icon as things currently stand --
+		  it won't even be loaded until that's done, so you won't just find it
+		  in the Interface options right after starting.
 
 	- Bugfixes:
 		- Error in xrpui_chatnames when a panda spoke in nom-language or made
