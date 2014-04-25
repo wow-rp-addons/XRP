@@ -1,4 +1,4 @@
-5.4.7.0_beta3 (??? (unreleased)):
+5.4.7.0_beta3 (2014-04-24):
 	- Core:
 		- Embed ChatThrottleLib. Looking over my purposes, it's really just a
 		  much more usable solution than write-my-own. Rewriting MSP is one
