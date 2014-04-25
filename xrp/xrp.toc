@@ -4,7 +4,7 @@
 ## Author: Justin Snelgrove
 ## Notes: XRP is yet another roleplaying profile addon.
 ## X-Category: Roleplaying
-## X-License: LGPLv3
+## X-License: GPLv3
 ## SavedVariablesPerCharacter: xrp_defaults, xrp_profiles, xrp_selectedprofile, xrp_versions
 ## SavedVariables: xrp_cache, xrp_settings
 
