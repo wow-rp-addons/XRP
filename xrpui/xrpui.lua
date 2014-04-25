@@ -93,7 +93,6 @@ for field, name in pairs(xrpui.fields) do
 	_G["XRPUI_"..field] = name
 end
 
-XRPUI_VERSION = GetAddOnMetadata("xrpui", "Title").."/"..GetAddOnMetadata("xrpui", "Version")
 BINDING_HEADER_XRPUI = GetAddOnMetadata("xrpui", "Title")
 BINDING_NAME_XRPUI_EDITOR = "Toggle RP profile editor"
 BINDING_NAME_XRPUI_VIEWER = "View target's RP profile"
