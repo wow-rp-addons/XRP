@@ -1,3 +1,30 @@
+5.4.7.0_beta3 (2014-04-24):
+	- Core:
+		- Embed ChatThrottleLib. Looking over my purposes, it's really just a
+		  much more usable solution than write-my-own. Rewriting MSP is one
+		  thing, but rewriting CTL isn't as smart, given how it interacts with
+		  other addons. Yay for de-facto standards?...
+
+	- UI:
+		- Add Interface Options panel. This replaces the settings menu on the
+		  minimap. It's still a bit ugly, but it should work just fine. Note:
+		  it must be loaded from the minimap icon as things currently stand --
+		  it won't even be loaded until that's done, so you won't just find it
+		  in the Interface options right after starting.
+
+	- Bugfixes:
+		- Error in xrpui_chatnames when a panda spoke in nom-language or made
+		  a text emote. Thanks for not giving an easy way to determine
+		  faction from GUID, Blizzard.
+		- Fixed a concatenation error in xrpui_tooltip. Better check a value
+		  exists before trying to concat it. (Thanks to Zivala for running
+		  into it.)
+
+	- Other:
+		- Redundant copies of the GNU General Public License have been
+		  removed. They should be re-added if the xrpui modules are ever
+		  packaged separately from the xrp core.
+
 5.4.7.0_beta2 (2014-04-23):
 	- Viewer:
 		- Long fields can now be read via mouseover.
