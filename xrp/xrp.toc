@@ -10,10 +10,12 @@
 
 xrp.lua
 l10n.lua
-profiles.lua
-ChatThrottleLib\ChatThrottleLib.xml
-msp.lua
-characters.lua
+core\helpers.lua
+core\profiles.lua
+core\defaults.lua
+libs\ChatThrottleLib\ChatThrottleLib.xml
+core\protocol.lua
+core\characters.lua
+loader.lua
 minimap.xml
 minimap.lua
-init.lua

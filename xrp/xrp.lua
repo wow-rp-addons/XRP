@@ -1,4 +1,5 @@
 --[[
+--[[
 	© Justin Snelgrove
 
 	This program is free software: you can redistribute it and/or modify
@@ -20,172 +21,104 @@ xrp = CreateFrame("Frame", nil, UIParent)
 xrp.version = GetAddOnMetadata("xrp", "Version")
 xrp.versionstring = format("%s/%s", GetAddOnMetadata("xrp", "Title"), xrp.version)
 
-function xrp:UnitNameWithRealm(unit)
-	local name, realm = UnitName(unit)
-	local isplayer = UnitIsPlayer(unit)
-	if name ~= nil then
-		if (realm == nil or realm == "") and isplayer then
-			return format("%s-%s", name, GetRealmName():gsub("%s+", ""))
-		elseif realm and isplayer then
-			return format("%s-%s", name, realm)
-		else
-			return name
+local default_settings = { __index = {
+	height = "ft",
+	weight = "lb",
+	minimap = 225,
+}}
+
+local default_defaults = { __index = function(default_defaults, field)
+	return true
+end}
+
+local function checksavedvars()
+	if type(xrp_settings) ~= "table" then
+		xrp_settings = {
+			height = "ft",
+			weight = "lb",
+			minimap = 225,
+		}
+	end
+	if type(xrp_settings.defaults) ~= "table" then
+		xrp_settings.defaults = {}
+	end
+
+	if type(xrp_profiles) ~= "table" then
+		xrp_profiles = {}
+	end
+	if type(xrp_profiles.Default) ~= "table" then
+		xrp_profiles.Default = {}
+	end
+	if type(xrp_profiles.Default.NA) ~= "string" then
+		xrp_profiles.Default.NA = xrp.toon.name
+	end
+
+	if type(xrp_defaults) ~= "table" then
+		xrp_defaults = {}
+	end
+
+	if type(xrp_selectedprofile) ~= "string" or type(xrp_profiles[xrp_selectedprofile]) ~= "table" then
+		xrp_selectedprofile = "Default"
+	end
+
+	if type(xrp_cache) ~= "table" then
+		xrp_cache = {}
+	end
+	if not xrp_cache[xrp.toon.withrealm] then
+		xrp_cache[xrp.toon.withrealm] = {
+			fields = {},
+			versions = {},
+		}
+	end
+
+	if type(xrp_versions) ~= "table" then
+		xrp_versions = {}
+	end
+end
+
+local addons = {
+	"GHI",
+	"Tongues",
+}
+
+local function init_OnEvent(xrp, event, addon)
+	if event == "ADDON_LOADED" and addon == "xrp" then
+		local fullversion = xrp.versionstring
+		for _, addon in pairs(addons) do
+			local name, title, notes, enabled, loadable, reason = GetAddOnInfo(addon)
+			if enabled or loadable then
+				fullversion = format("%s;%s/%s", fullversion, title, GetAddOnMetadata(name, "Version"))
+			end
 		end
-	end
-	return nil
-end
 
-function xrp:NameWithRealm(name)
-	-- Searching for a '-' will indicate if it already has a realm name. '-'
-	-- is not valid in a base name.
-	return not name:find("-", 1, true) and format("%s-%s", name, (GetRealmName():gsub("%s+", ""))) or name
-end
+		xrp.toon = {}
+		-- DO NOT use xrp:UnitNameWithRealm() here as it will fail on first
+		-- load after login (UnitIsPlayer("player") fails).
+		xrp.toon.withrealm = format("%s-%s", UnitName("player"), GetRealmName():gsub("%s+", ""))
+		xrp.toon.name = xrp:NameWithoutRealm(xrp.toon.withrealm)
+		-- NOTE: UnitGUID("player") doesn't work until PLAYER_LOGIN, so is set
+		-- during that event (below).
+		xrp.toon.fields = { -- NONE of these are localized.
+			GC = (select(2, UnitClass("player"))),
+			GF = (UnitFactionGroup("player")),
+			GR = (select(2, UnitRace("player"))),
+			GS = tostring(UnitSex("player")),
+			VA = fullversion,
+			VP = tostring(xrp.msp.protocol),
+		}
 
--- Dumb version of Ambiguate().
-function xrp:NameWithoutRealm(name)
-	if type(name) ~= "string" then
-		return UNKNOWN
-	end
-	return (name:gsub("-.+", ""))
-end
+		checksavedvars()
+		setmetatable(xrp_settings, default_settings)
+		setmetatable(xrp_settings.defaults, default_defaults)
 
-function xrp:RealmNameWithSpacing(name)
-	-- First gsub: spaces lower followed by upper (i.e., Wyrmrest Accord).
-	-- Second gsub: spaces lower followed by digit (i.e., Area 52).
-	-- Third gsub: spaces lower followed by 'of' (i.e., Sisters of Elune).
-	return (name:gsub("(%l)(%u)", "%1 %2"):gsub("(%l)(%d)", "%1 %2"):gsub("(%l)of ", "%1 of "))
-end
-
-function xrp:ConvertWeight(weight, units)
-	if not weight then
-		return nil
-	end
-	local number = tonumber(weight)
-	if not number then
-		-- Match "50kg", "50 kg", "50 kilograms", etc..
-		number = tonumber((weight:lower():gsub("%a*(%d+)%s*kg.*", "%1"))) or tonumber((weight:lower():gsub("%a*(%d+)%s*kilograms?.*", "%1")))
-	end
-	if not number then
-		-- Match "50lbs", "50 lbs", "50 pounds", etc.
-		-- TODO: Should this handle insane corner cases, i.e. "Ib"/"Ibs"?
-		number = ((tonumber((weight:lower():gsub("%a*(%d+)%s*lb.*", "%1"))) or tonumber((weight:lower():gsub("%a*(%d+)%s*pounds?.*", "%1")))) or 0) / 2.20462
-		number = number ~= 0 and number or nil
-	end
-	if not number then
-		return weight
-	end
-
-	units = (not units or units == "user") and xrp_settings.weight or units
-	if units == "msp" then -- MSP internal format: kg without units as string.
-		return format("%u", number + 0.5)
-	elseif units == "kg" then
-		return format("%u kg", number + 0.5)
-	elseif units == "lb" then
-		return format("%u lbs", (number * 2.20462) + 0.5)
-	else
-		return weight -- If no unit conversion requested, pass through.
+		xrp:UnregisterEvent("ADDON_LOADED")
+		xrp:RegisterEvent("PLAYER_LOGIN")
+	elseif event == "PLAYER_LOGIN" then
+		-- UnitGUID("player") doesn't work before first PLAYER_LOGIN.
+		xrp.toon.fields.GU = UnitGUID("player")
+		xrp.profiles(xrp_selectedprofile)
+		xrp:UnregisterEvent("PLAYER_LOGIN")
 	end
 end
-
-function xrp:ConvertHeight(height, units)
-	if not height then
-		return nil
-	end
-	local number = tonumber(height)
-	if number and number <= 10 then
-		number = number * 100
-	end
-	if not number then
-		-- Match "100cm", "100 cm", "100 centimeters", "100 centimetres", etc.
-		number = tonumber((height:lower():gsub("%a*(%d+)%s*cm.*", "%1"))) or tonumber((height:lower():gsub("%a*(%d+)%s*centimetr?er?s?.*", "%1")))
-	end
-	if not number then
-		-- Match "1.05m", "1.05 m", "1.05 meters", "1.05 metres" etc..
-		number = ((tonumber((height:lower():gsub("%a*(%d+%.?%d*)%s*m.*", "%1"))) or tonumber((height:lower():gsub("%a*(%d+%.?%d*)%s*metr?er?s?.*", "%1")))) or 0) * 100
-		number = number ~= 0 and number or nil
-	end
-	if not number then
-		-- Match "4'9", "4'9"", "4 ft 9 in", etc.
-		-- TODO: weight:match() may be a quicker way to get this.
-		number = (((tonumber((height:lower():gsub("%a*(%d+)'%d*.*", "%1"))) or tonumber((height:lower():gsub("%a*(%d+)%s*ft.*", "%1"))) or 0) * 12) + (tonumber((height:lower():gsub("%a*%d+'(%d*).*", "%1"))) or tonumber((height:lower():gsub("%a*%d+%s*ft%.?%s*(%d+)%s*in.*", "%1"))) or 0)) * 2.54
-		number = number ~= 0 and number or nil
-	end
-	if not number then
-		return height
-	end
-
-	units = (not units or units == "user") and xrp_settings.height or units
-	if units == "msp" then -- MSP internal format: cm without units as string.
-		return format("%d", number)
-	elseif units == "cm" then
-		return format("%u cm", number + 0.5)
-	elseif units == "m" then
-		return format("%.2f m", math.floor(number + 0.5) * 0.01) -- Round first.
-	elseif units == "ft" then
-		local feet, inches = math.modf(number / 30.48)
-		inches = (inches * 12) + 0.5
-		return format("%u'%u\"", feet, inches)
-	else
-		return height
-	end
-end
-
-local events = {}
-
-function xrp:FireEvent(event, ...)
-	if type(events[event]) ~= "table" then
-		events[event] = {}
-	end
-	-- TODO: Add in event as argument at start?
-	for _, func in ipairs(events[event]) do
-		func(...)
-	end
-end
-
-function xrp:HookEvent(event, func)
-	if type(events[event]) ~= "table" then
-		events[event] = {}
-	end
-	events[event][#events[event]+1] = func
-end
-
-local function loadifneeded(addon)
-	local isloaded = IsAddOnLoaded(addon)
-	if not isloaded and IsAddOnLoadOnDemand(addon) then
-		local loaded, reason = LoadAddOn(addon)
-		if not loaded then
-			return false
-		else
-			return true
-		end
-	end
-	return isloaded
-end
-
-function xrp:ToggleEditor()
-	if not loadifneeded("xrp_editor") then
-		return
-	end
-	ToggleFrame(xrp.editor)
-end
-
-function xrp:ToggleViewer()
-	if not loadifneeded("xrp_viewer") then
-		return
-	end
-	ToggleFrame(xrp.viewer)
-end
-
-function xrp:ShowViewerCharacter(character)
-	if not loadifneeded("xrp_viewer") then
-		return
-	end
-	xrp.viewer:ViewCharacter(character)
-end
-
-function xrp:ShowViewerUnit(unit)
-	if not loadifneeded("xrp_viewer") then
-		return
-	end
-	xrp.viewer:ViewUnit(unit)
-end
+xrp:SetScript("OnEvent", init_OnEvent)
+xrp:RegisterEvent("ADDON_LOADED")
