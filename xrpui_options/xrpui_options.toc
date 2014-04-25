@@ -1,5 +1,4 @@
 ## Interface: 50400
-## LoadOnDemand: 1
 ## Title: XRP (UI): Options
 ## Version: 5.4.7.0_beta2
 ## Author: Justin Snelgrove

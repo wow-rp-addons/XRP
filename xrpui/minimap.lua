@@ -135,7 +135,7 @@ local function menulist_viewer(self, arg1, arg2, checked)
 	xrpui:ToggleViewer()
 end
 local function menulist_options(self, arg1, arg2, checked)
-	xrpui:ShowOptions()
+	InterfaceOptionsFrame_OpenToCategory(xrpui.options)
 end
 
 local minimap_menulist = {
