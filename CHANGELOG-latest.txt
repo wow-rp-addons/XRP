@@ -5,6 +5,10 @@
 		  thing, but rewriting CTL isn't as smart, given how it interacts with
 		  other addons. Yay for de-facto standards?...
 
+	- UI:
+		- Add Interface Options panel. This replaces the settings menu on the
+		  minimap. It's still a bit ugly, but it should work just fine.
+
 	- Bugfixes:
 		- Error in xrpui_chatnames when a panda spoke in nom-language or made
 		  a text emote. Thanks for not giving an easy way to determine
