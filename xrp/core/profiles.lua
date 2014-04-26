@@ -139,7 +139,7 @@ local profmt = {
 				-- Rename profile to the nonexistant table provided.
 				xrp_profiles[newname] = xrp_profiles[name]
 				-- Select the new name if this is our active profile.
-				if xrp_selectedprofile == name then
+				if xrp_selectedprofile == newname then
 					xrp.profiles(newname)
 				end
 				xrp.profiles[name] = nil -- Use table access to save Default.
