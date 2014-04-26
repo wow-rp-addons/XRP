@@ -16,7 +16,7 @@
 ]]
 
 xrp.tooltip = CreateFrame("Frame", nil, xrp)
-xrp.tooltip:Hide()
+xrp.tooltip:Hide() -- Has an OnUpdate script.
 
 local faction_colors = {
 	Horde = { dark = "e60d12", light = "ff595e" },
@@ -72,6 +72,8 @@ local known_addons = {
 	["TOTALRP2"] = "TRP2",
 	["GHI"] = "GHI",
 	["TONGUES"] = "T",
+	["GNOMETEC_BADGE"] = "GTEC",
+	["FLAGRSP"] = "RSP",
 }
 
 local function tooltip_parse_VA(VA)
@@ -112,8 +114,7 @@ local function truncate_lines(text, length, offset, double)
 			line1 = line1..CONTINUED
 		end
 	end
-	local line = line1 and line2 and line1.."\n"..line2 or line1
-	return line
+	return line1 and line2 and line1.."\n"..line2 or line1
 end
 
 --[[
@@ -257,7 +258,6 @@ function xrp.tooltip:RefreshPlayer(character)
 	end
 
 	if not cu.visible and cu.location then
-		-- TODO: Color the Zone: label.
 		render_line(format("|cffffeeaa%s: |cffffffff%s", ZONE, cu.location))
 	end
 

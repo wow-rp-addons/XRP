@@ -113,7 +113,12 @@ function new_GetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg
 
 	local arg2orig = arg2
 	if rp then
-		arg2 = xrp.characters[arg2].NA
+		local rpname = xrp.characters[arg2].NA
+		if rpname then
+			arg2 = rpname
+		else
+			arg2 = Ambiguate(arg2, "guild")
+		end
 	else
 		arg2 = Ambiguate(arg2, "guild")
 	end
@@ -124,7 +129,7 @@ function new_GetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg
 			if not color then
 				return arg2
 			end
-			return string.format("\124c%s%s\124r", color.colorStr, arg2)
+			return format("\124c%s%s\124r", color.colorStr, arg2)
 		end
 	end
 	return arg2

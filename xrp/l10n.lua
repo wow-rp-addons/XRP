@@ -101,7 +101,26 @@ for field, name in pairs(xrp.fields) do
 	_G["XRP_"..field] = name
 end
 
-BINDING_HEADER_XRP = GetAddOnMetadata("xrp", "Title")
+XRP = GetAddOnMetadata("xrp", "Title")
+
+BINDING_HEADER_XRP = XRP
 BINDING_NAME_XRP_EDITOR = L["Toggle RP profile editor"]
 BINDING_NAME_XRP_VIEWER = L["View target's RP profile"]
 BINDING_NAME_XRP_VIEWER_TOGGLE = L["Toggle RP profile viewer"]
+
+XRP_AUTHOR = format("%s%s:|r %s", "|cff99b3e6", L["Author"], GetAddOnMetadata("xrp", "Author"))
+XRP_VERSION = format("%s%s:|r %s", "|cff99b3e6", GAME_VERSION_LABEL, GetAddOnMetadata("xrp", "Version"))
+XRP_COPYHEADER = L["License/Copyright"]
+XRP_COPYRIGHT = L["(C) 2014 Bor Blasthammer <bor@blasthammer.net>"]
+XRP_LICENSE = L[ [[This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.]] ]

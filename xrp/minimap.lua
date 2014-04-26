@@ -87,12 +87,14 @@ local function status_select(self, status, arg2, checked)
 end
 
 local menulist_profiles = {}
+
 local menulist_status = {
 	{ text = xrp.values.FC_EMPTY, checked = false, arg1 = "0", func = status_select },
 }
 for value, text in pairs(xrp.values.FC) do
 	menulist_status[#menulist_status + 1] = { text = text, checked = false, arg1 = tostring(value), func = status_select, }
 end
+
 StaticPopupDialogs["XRP_CURRENTLY"] = {
 	text = "What are you currently doing?",
 	button1 = ACCEPT,
@@ -131,9 +133,8 @@ local minimap_menulist = {
 	{ text = "Profiles", notCheckable = true, hasArrow = true, menuList = menulist_profiles, },
 	{ text = "Character status", notCheckable = true, hasArrow = true, menuList = menulist_status, },
 	{ text = "Currently...", notCheckable = true, func = function() StaticPopup_Show("XRP_CURRENTLY") end, },
-	{ text = "Profile editor", notCheckable = true, func = function() xrp:ToggleEditor end, },
+	{ text = "Profile editor", notCheckable = true, func = function() xrp:ToggleEditor() end, },
 	{ text = "Profile viewer", notCheckable = true, func = function() xrp:ToggleViwer() end, },
-	{ text = "Options...", notCheckable = true, func = function() InterfaceOptionsFrame_OpenToCategory(xrp.options) end, },
 	{ text = "Cancel", notCheckable = true, },
 }
 
@@ -172,12 +173,11 @@ end
 local function minimap_OnEnter(self, motion)
 	if motion then
 		GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT", 30, 4)
-		--GameTooltip:SetText("XRP", 1.0, 1.0, 1.0)
 		GameTooltip:SetText("Click to:")
 		GameTooltip:AddLine(" ")
-		GameTooltip:AddLine("|TInterface\\Icons\\Ability_Malkorok_BlightofYshaarj_Red:20|t/|TInterface\\Icons\\Ability_Malkorok_BlightofYshaarj_Yellow:20|t: Toggle your status to IC.", nil, nil, nil, true)
-		GameTooltip:AddLine("|TInterface\\Icons\\Ability_Malkorok_BlightofYshaarj_Green:20|t: Toggle your status to OOC.", nil, nil, nil, true)
-		GameTooltip:AddLine("|TInterface\\Icons\\INV_Misc_Book_03:20|t: View your target's profile.", nil, nil, nil, true)
+		GameTooltip:AddLine("|TInterface\\Icons\\Ability_Malkorok_BlightofYshaarj_Red:20|t/|TInterface\\Icons\\Ability_Malkorok_BlightofYshaarj_Yellow:20|t: Toggle your status to IC.")
+		GameTooltip:AddLine("|TInterface\\Icons\\Ability_Malkorok_BlightofYshaarj_Green:20|t: Toggle your status to OOC.")
+		GameTooltip:AddLine("|TInterface\\Icons\\INV_Misc_Book_03:20|t: View your target's profile.")
 		GameTooltip:AddLine(" ")
 		GameTooltip:AddLine("Right click for the menu.")
 		GameTooltip:Show()

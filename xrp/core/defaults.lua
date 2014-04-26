@@ -22,7 +22,7 @@ local nk = {}
 
 local defmt = {
 	__index = function(default, field)
-		if default[nk] ~= "Default" and xrp_defaults[default[nk]] and xrp_defaults[default[nk]][field] then
+		if default[nk] ~= "Default" and xrp_defaults[default[nk]] and xrp_defaults[default[nk]][field] ~= nil then
 			return xrp_defaults[default[nk]][field]
 		end
 		return xrp_settings.defaults[field]
@@ -39,7 +39,7 @@ local defmt = {
 			if not next(xrp_defaults[default[nk]]) then
 				xrp.defaults[default[nk]] = nil
 			end
-		elseif state == false or state == true then
+		elseif state == true or state == false then
 			xrp_defaults[default[nk]][field] = state
 		end
 	end,

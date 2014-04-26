@@ -1,7 +1,7 @@
 ## Interface: 50400
 ## Title: XRP
 ## Version: 5.4.7.0_beta3
-## Author: Justin Snelgrove
+## Author: Bor of Wyrmrest Accord (US)
 ## Notes: XRP is yet another roleplaying profile addon.
 ## X-Category: Roleplaying
 ## X-License: GPLv3
@@ -14,8 +14,9 @@ core\helpers.lua
 core\profiles.lua
 core\defaults.lua
 libs\ChatThrottleLib\ChatThrottleLib.xml
-core\protocol.lua
+core\msp.lua
 core\characters.lua
 loader.lua
 minimap.xml
 minimap.lua
+about.xml

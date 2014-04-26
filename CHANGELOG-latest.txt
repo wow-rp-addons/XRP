@@ -5,3 +5,17 @@
 	- The above-noted reorganization was done to make maintaining and
 	  understanding the structure of the addon simpler. Should be the only
 	  time this happens.
+
+	- About information has been added in Interface Options.
+	- Full options panel is now LoadOnDemand (loaded when accessing the about
+	  panel).
+	- Options item in menu has been removed (access it through the game menu's
+	  Interface selection).
+	- Default default settings is handled more logically -- changing the
+	  defaults in the options *ONLY* changes it for any new profiles. Old
+	  profiles will now retain their settings, regardless of changes to the
+	  defaults.
+	- Localization has been partly implemented (incomplete, and no
+	  translations available).
+	- Memory usage has been optimized ever-so-slightly (some memory will now
+	  be reclaimed during particularly long gaming sessions as possible).

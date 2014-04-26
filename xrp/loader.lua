@@ -30,28 +30,40 @@ end
 
 function xrp:ToggleEditor()
 	if not loadifneeded("xrp_editor") then
-		return
+		return false
 	end
 	ToggleFrame(xrp.editor)
+	return true
 end
 
 function xrp:ToggleViewer()
 	if not loadifneeded("xrp_viewer") then
-		return
+		return false
 	end
 	ToggleFrame(xrp.viewer)
+	return true
 end
 
 function xrp:ShowViewerCharacter(character)
 	if not loadifneeded("xrp_viewer") then
-		return
+		return false
 	end
 	xrp.viewer:ViewCharacter(character)
+	return true
 end
 
 function xrp:ShowViewerUnit(unit)
 	if not loadifneeded("xrp_viewer") then
-		return
+		return false
 	end
 	xrp.viewer:ViewUnit(unit)
+	return true
+end
+
+function xrp:ShowOptions()
+	if not loadifneeded("xrp_options") then
+		return false
+	end
+	InterfaceOptionsFrame_OpenToCategory(xrp.options)
+	return true
 end

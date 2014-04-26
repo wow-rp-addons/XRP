@@ -62,11 +62,12 @@ end
 
 local function options_OnEvent(self, event, addon)
 	if event == "ADDON_LOADED" and addon == "xrp_options" then
-		xrp.options.name = "XRP"
-		xrp.options.refresh = options_Refresh
-		xrp.options.okay = options_Okay
-		xrp.options.default = options_Default
-		InterfaceOptions_AddCategory(xrp.options)
+		self.name = "Options"
+		self.refresh = options_Refresh
+		self.okay = options_Okay
+		self.default = options_Default
+		self.parent = XRP
+		InterfaceOptions_AddCategory(self)
 
 		UIDropDownMenu_Initialize(self.AHUnits, function()
 			local info
@@ -98,6 +99,8 @@ local function options_OnEvent(self, event, addon)
 				UIDropDownMenu_AddButton(info)
 			end
 		end)
+
+		options_Refresh()
 
 		self:UnregisterEvent("ADDON_LOADED")
 	end

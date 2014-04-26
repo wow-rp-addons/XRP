@@ -105,6 +105,7 @@ function xrp.editor:Load(name)
 
 	self.Profiles:SetText(name)
 	loading = false
+	self:CheckFields()
 end
 
 function xrp.editor:Revert()
