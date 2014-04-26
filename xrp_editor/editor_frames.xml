@@ -518,6 +518,7 @@
 			<OnShow>
 				SetPortraitTexture(self.portrait, "player")
 				PlaySound("igCharacterInfoOpen");
+				xrp.editor:CheckFields();
 			</OnShow>
 			<OnHide>
 				PlaySound("igCharacterInfoClose");

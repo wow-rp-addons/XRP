@@ -18,7 +18,7 @@
 	<Frame name="$parent_options" parentKey="options" parent="xrp">
 		<Layers>
 			<Layer level="OVERLAY">
-				<FontString parentKey="Title" inherits="GameFontNormalLarge" text="XRP">
+				<FontString parentKey="Title" inherits="GameFontNormalLarge" text="XRP: Options">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="15" y="-15"/>
 					</Anchors>

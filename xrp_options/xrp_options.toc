@@ -1,8 +1,8 @@
 ## Interface: 50400
 ## LoadOnDemand: 1
 ## Title: XRP: Options
+## Author: Bor of Wyrmrest Accord (US)
 ## Version: 5.4.7.0_beta3
-## Author: Justin Snelgrove
 ## Notes: Provides an interface options panel for XRP.
 ## X-Category: Roleplaying
 ## X-License: GPLv3
