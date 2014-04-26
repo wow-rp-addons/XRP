@@ -119,6 +119,10 @@ function xrp:ConvertHeight(height, units)
 	elseif units == "ft" then
 		local feet, inches = math.modf(number / 30.48)
 		inches = (inches * 12) + 0.5
+		if inches >= 12 then
+			feet = feet + 1
+			inches = 0
+		end
 		return format("%u'%u\"", feet, inches)
 	else
 		return height
