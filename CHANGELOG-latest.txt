@@ -1,21 +1,41 @@
 5.4.7.0_beta4 (2014-04-??):
 	IMPORTANT: ADDON NAMES HAVE CHANGED. YOU **MUST** REMOVE ALL OLD COPIES
-	OF xrp AND xrpui_* FROM YOUR ADDONS FOLDER.
+	OF xrp AND xrpui_* FROM YOUR INTERFACE\ADDONS FOLDER.
 
-	- The above-noted reorganization was done to make maintaining and
-	  understanding the structure of the addon simpler. Should be the only
-	  time this happens.
+	- This reorganization was done to make maintenance easier. While it was
+	  done there were significant changes to the file structure of several
+	  components as well -- even had the addon names not changed, I would
+	  still be recommending removing the old versions.
 
-	- About information has been added in Interface Options.
+	- A couple of settings will be reset to defaults (minimap button position
+	  and names-in-chat selection). Sorry for the inconvenience. (All profile
+	  data, cache data, and other settings are preserved.)
+
+	- Added xrp_import: This addon imports RP profiles from other RP addons,
+	  into XRP. You can enable this along with all other RP addons you make
+	  use of to import everything in one shot (the importer will prompt you to
+	  reload your UI after it's finished -- XRP will be the only RP addon
+	  enabled after the reload).
+
+	- About/copyright information has been added in Interface Options.
+
 	- Full options panel is now LoadOnDemand (loaded when accessing the about
 	  panel).
+
 	- Options item in menu has been removed (access it through the game menu's
 	  Interface selection).
-	- Default default settings is handled more logically -- changing the
-	  defaults in the options *ONLY* changes it for any new profiles. Old
-	  profiles will now retain their settings, regardless of changes to the
-	  defaults.
-	- Localization has been partly implemented (incomplete, and no
-	  translations available).
-	- Memory usage has been optimized ever-so-slightly (some memory will now
-	  be reclaimed during particularly long gaming sessions as possible).
+
+	- Bugfixes:
+
+		- Default text emotes (/dance, /wave, etc.) from players on other
+		  realms no longer produce a "no such player" warning, and now
+		  properly color the name.
+
+		- Secondary addons are now properly added to the version string.
+
+		- Overwriting the currently active profile via rename (only possible
+		  for "Default") now correctly loads/sends to others.
+
+		- Filling fields from default now handles more logically -- setting
+		  the defaults in the Interface Options will now only affect *new*
+		  profiles, and old profiles will keep their settings.

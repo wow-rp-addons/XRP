@@ -86,7 +86,7 @@ local function init_OnEvent(xrp, event, addon)
 		for _, addon in pairs(addons) do
 			local name, title, notes, enabled, loadable, reason = GetAddOnInfo(addon)
 			if enabled or loadable then
-				fullversion = format("%s;%s/%s", fullversion, title, GetAddOnMetadata(name, "Version"))
+				fullversion = format("%s;%s/%s", fullversion, name, GetAddOnMetadata(name, "Version"))
 			end
 		end
 

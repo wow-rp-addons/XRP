@@ -21,7 +21,10 @@ xrp.chatnames = CreateFrame("Frame", nil, xrp)
 local old_GetColoredName = GetColoredName
 
 -- Keys are names with realms. -1 means never use an RP name, 0 means try
--- using an RP name (and filter errors), 1 means always use an RP name.
+-- using an RP name (and filter errors), 1 means always use an RP name. This
+-- tries as hard as it can to keep the amount set to 0 as low as possible. XRP
+-- does not appreciate filtering error messages (particularly since they often
+-- reveal something wrong happening in the code).
 local filter = {}
 
 local languages = {
@@ -36,7 +39,7 @@ local languages = {
 	["Gutterspeak"] = "Horde",
 	["Thalassian"] = "Horde",
 	["Goblin"] = "Horde",
-	["Pandaren"] = "Neutral",
+	["Pandaren"] = "Neutral", -- Yet pandas still can't talk cross-faction...
 }
 
 local races = {
@@ -52,7 +55,7 @@ local races = {
 	["Scourge"] = "Horde",
 	["BloodElf"] = "Horde",
 	["Goblin"] = "Horde",
-	["Pandaren"] = "Neutral",
+	["Pandaren"] = "Neutral", -- They're separate races under-the-hood...
 }
 
 local events = {
@@ -69,22 +72,33 @@ local events = {
 -- leave me any choice.
 function new_GetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14)
 	local rp = false
-	local GC, GR, _
+	local GC, GR, realm, _
 	if arg12 then
-		_, GC, _, GR, _, _, _ = GetPlayerInfoByGUID(arg12)
+		_, GC, _, GR, _, _, realm = GetPlayerInfoByGUID(arg12)
+	end
+	if event == "CHAT_MSG_TEXT_EMOTE" and realm then
+		-- No realm for arg2 in TEXT_EMOTEs. For whatever fucking reason.
+		-- Attach it here... except there isn't a realm for same-realm from
+		-- GetPlayerInfoByGUID. So run it through xrp:NameWithRealm()... After
+		-- removing the possibly-dangling dash, so xrp:NameWithRealm doesn't
+		-- get confused. Got all that? There will be a test.
+		arg2 = xrp:NameWithRealm((format("%s-%s", arg2, realm):gsub("-$", "")))
 	end
 	if filter[arg2] == -1 or not events[event] or not xrp_settings.chatnames[event] then
 		rp = false
 	elseif filter[arg2] == 1 then
 		rp = true
 	elseif event == "CHAT_MSG_SAY" or event == "CHAT_MSG_YELL" then
-		-- Filter faction by language. Except pandas.
+		-- Filter faction by language. Only pandas speaking in nommish won't
+		-- get caught by this.
 		if languages[arg3] == xrp.toon.fields.GF then
 			rp = true
 			filter[arg2] = 1
 		elseif languages[arg3] == "Neutral" then
 			rp = true
 			filter[arg2] = filter[arg2] or 0
+		else -- Not friendly, not neutral, must be enemy.
+			filter[arg2] = -1
 		end
 	elseif event == "CHAT_MSG_EMOTE" then
 		-- Filter faction by "makes some strange gestures.", race.
@@ -93,7 +107,7 @@ function new_GetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg
 			filter[arg2] = 1
 		elseif arg1 == CHAT_EMOTE_UNKNOWN then
 			filter[arg2] = -1
-		else -- Might be a friendly panda, can't guarantee GR.
+		else -- Probably a friendly panda, but can't be positive.
 			rp = true
 			filter[arg2] = 0
 		end
@@ -102,7 +116,7 @@ function new_GetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg
 		if GR and races[GR] == xrp.toon.fields.GF then
 			rp = true
 			filter[arg2] = 1
-		else -- Might be a friendly panda, can't guarantee GR.
+		elseif GR and races[GR] == "Neutral" then -- Panda, might be friendly.
 			rp = true
 			filter[arg2] = 0
 		end
@@ -111,28 +125,26 @@ function new_GetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg
 		filter[arg2] = 1
 	end
 
-	local arg2orig = arg2
+	local rpname
 	if rp then
-		local rpname = xrp.characters[arg2].NA
-		if rpname then
-			arg2 = rpname
-		else
-			arg2 = Ambiguate(arg2, "guild")
+		rpname = xrp.characters[arg2].NA
+		if not rpname then
+			rpname = Ambiguate(arg2, "guild")
 		end
 	else
-		arg2 = Ambiguate(arg2, "guild")
+		rpname = Ambiguate(arg2, "guild")
 	end
-	if GC or (rp and xrp.characters[arg2orig].GC) then
-		GC = GC or xrp.characters[arg2orig].GC
+	if GC or (rp and xrp.characters[arg2].GC) then
+		GC = GC or xrp.characters[arg2].GC
 		if GC then
 			local color = RAID_CLASS_COLORS[GC]
 			if not color then
-				return arg2
+				return rpname
 			end
-			return format("\124c%s%s\124r", color.colorStr, arg2)
+			return format("\124c%s%s\124r", color.colorStr, rpname)
 		end
 	end
-	return arg2
+	return rpname
 end
 
 local function msp_receive(character)
@@ -150,18 +162,28 @@ local function filter_error(self, event, message)
 	return dofilter
 end
 
+local function emotename(self, event, message, sender, ...)
+	-- The other half of attaching the realm name in GetColoredName is to,
+	-- uh, remove it here first. Why? Fuck knows, it's Blizzard and we get
+	-- things like Player-RealmName-RealmName if we don't drop it here from
+	-- the message. ...Which is where the name is, because fuck knows.
+	message = format("%s %s", sender, message:match("^[^%s]*%s+(.*)"))
+	return false, message, sender, ...
+end
+
 local function chatnames_OnEvent(self, event, addon)
 	if event == "ADDON_LOADED" and addon == "xrp_chatnames" then
 		if type(xrp_settings.chatnames) ~= "table" then
 			xrp_settings.chatnames = {}
 		end
 		setmetatable(xrp_settings.chatnames, { __index = events})
-
 		ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", filter_error)
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_TEXT_EMOTE", emotename)
 		xrp:HookEvent("MSP_RECEIVE", msp_receive)
 		self:UnregisterEvent("ADDON_LOADED")
 		self:RegisterEvent("PLAYER_LOGIN")
 	elseif event == "PLAYER_LOGIN" then
+		-- I hate this. Hate hate hate hate hate.
 		GetColoredName = new_GetColoredName
 	end
 end
