@@ -392,7 +392,7 @@
 					</OnClick>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
-						GameTooltip:SetText("Add");
+						GameTooltip:SetText(ADD);
 						GameTooltip:Show();
 					</OnEnter>
 					<OnLeave>
@@ -413,7 +413,7 @@
 					</OnClick>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
-						GameTooltip:SetText("Delete");
+						GameTooltip:SetText(DELETE);
 						GameTooltip:Show();
 					</OnEnter>
 					<OnLeave>

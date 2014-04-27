@@ -129,13 +129,13 @@ StaticPopupDialogs["XRP_CURRENTLY"] = {
 }
 
 local minimap_menulist = {
-	{ text = "XRP", isTitle = true, notCheckable = true, },
+	{ text = XRP, isTitle = true, notCheckable = true, },
 	{ text = "Profiles", notCheckable = true, hasArrow = true, menuList = menulist_profiles, },
-	{ text = "Character status", notCheckable = true, hasArrow = true, menuList = menulist_status, },
-	{ text = "Currently...", notCheckable = true, func = function() StaticPopup_Show("XRP_CURRENTLY") end, },
+	{ text = XRP_FC, notCheckable = true, hasArrow = true, menuList = menulist_status, },
+	{ text = XRP_CU..CONTINUED, notCheckable = true, func = function() StaticPopup_Show("XRP_CURRENTLY") end, },
 	{ text = "Profile editor", notCheckable = true, func = function() xrp:ToggleEditor() end, },
 	{ text = "Profile viewer", notCheckable = true, func = function() xrp:ToggleViwer() end, },
-	{ text = "Cancel", notCheckable = true, },
+	{ text = CANCEL, notCheckable = true, },
 }
 
 local function update_status()

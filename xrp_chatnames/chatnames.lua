@@ -27,6 +27,7 @@ local old_GetColoredName = GetColoredName
 -- reveal something wrong happening in the code).
 local filter = {}
 
+-- Non-localized values for keys and values.
 local languages = {
 	["Common"] = "Alliance",
 	["Dwarvish"] = "Alliance",
@@ -39,9 +40,10 @@ local languages = {
 	["Gutterspeak"] = "Horde",
 	["Thalassian"] = "Horde",
 	["Goblin"] = "Horde",
-	["Pandaren"] = "Neutral", -- Yet pandas still can't talk cross-faction...
+	["Pandaren"] = "Neutral", -- Yet pandas still can't talk cross-faction.
 }
 
+-- Non-localized values for keys and values.
 local races = {
 	["Human"] = "Alliance",
 	["Dwarf"] = "Alliance",
@@ -55,7 +57,7 @@ local races = {
 	["Scourge"] = "Horde",
 	["BloodElf"] = "Horde",
 	["Goblin"] = "Horde",
-	["Pandaren"] = "Neutral", -- They're separate races under-the-hood...
+	["Pandaren"] = "Neutral", -- They're separate races under-the-hood.
 }
 
 local events = {
@@ -70,7 +72,7 @@ local events = {
 
 -- /cry - I don't want to overwrite your functions, Blizzard, but you don't
 -- leave me any choice.
-function new_GetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14)
+local function new_GetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14)
 	local rp = false
 	local GC, GR, realm, _
 	if arg12 then

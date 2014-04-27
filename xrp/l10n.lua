@@ -30,22 +30,22 @@ xrp.L = L
 
 xrp.fields = {
 	-- Biography fields.
-	NA = L["Name"],
+	NA = NAME, -- "Name"
 	NI = L["Nickname"],
 	NT = L["Title"],
 	NH = L["House/Clan/Tribe"],
 	AE = L["Eyes"],
-	RA = L["Race"],
+	RA = RACE, -- "Race"
 	AH = L["Height"],
 	AW = L["Weight"],
 	CU = L["Currently"],
 	DE = L["Description"],
 	-- History fields.
 	AG = L["Age"],
-	HH = L["Home"],
+	HH = HOME, -- "Home"
 	HB = L["Birthplace"],
 	MO = L["Motto"],
-	HI = L["History"],
+	HI = HISTORY, -- "History"
 	-- OOC fields.
 	FR = L["Roleplaying style"],
 	FC = L["Character status"],
@@ -101,7 +101,7 @@ for field, name in pairs(xrp.fields) do
 	_G["XRP_"..field] = name
 end
 
-XRP = GetAddOnMetadata("xrp", "Title")
+XRP = GetAddOnMetadata("xrp", "Title") -- In other words, XRP = "XRP"... Huh.
 
 BINDING_HEADER_XRP = XRP
 BINDING_NAME_XRP_EDITOR = L["Toggle RP profile editor"]
@@ -111,7 +111,7 @@ BINDING_NAME_XRP_VIEWER_TOGGLE = L["Toggle RP profile viewer"]
 XRP_AUTHOR = format("%s%s:|r %s", "|cff99b3e6", L["Author"], GetAddOnMetadata("xrp", "Author"))
 XRP_VERSION = format("%s%s:|r %s", "|cff99b3e6", GAME_VERSION_LABEL, GetAddOnMetadata("xrp", "Version"))
 XRP_COPYHEADER = L["License/Copyright"]
-XRP_COPYRIGHT = L["(C) 2014 Bor Blasthammer <bor@blasthammer.net>"]
+XRP_COPYRIGHT = "(C) 2014 Bor Blasthammer <bor@blasthammer.net>"
 XRP_LICENSE = L[ [[This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
