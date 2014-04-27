@@ -72,7 +72,7 @@ local known_addons = {
 	["TOTALRP2"] = "TRP2",
 	["GHI"] = "GHI",
 	["TONGUES"] = "T",
-	["GNOMETEC_BADGE"] = "GTEC",
+	["GNOMTEC_BADGE"] = "GTEC",
 	["FLAGRSP"] = "RSP",
 }
 

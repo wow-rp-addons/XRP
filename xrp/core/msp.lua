@@ -29,7 +29,7 @@ if not msp_RPAddOn then
 	msp_RPAddOn = GetAddOnMetadata("xrp", "Title")
 else
 	StaticPopupDialogs["XRP_MSP_DISABLE"] = {
-		text = format("You are running another RP profile addon (%s). XRP's support for sending and receiving profiles is disabled; to enable it, disable %s and reload your UI.", msp_RPAddOn, msp_RPAddOn),
+		text = format(xrp.L["You are running another RP profile addon (%s). XRP's support for sending and receiving profiles is disabled; to enable it, disable %s and reload your UI."], msp_RPAddOn, msp_RPAddOn),
 		button1 = OKAY,
 		showAlert = true,
 		enterClicksFirstButton = true,

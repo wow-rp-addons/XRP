@@ -133,7 +133,7 @@ StaticPopupDialogs["XRP_EDITOR_9000"] = {
 --	sound = ,
 }
 StaticPopupDialogs["XRP_EDITOR_16000"] = {
-	text = "Your combined profile length is above 16000 characters. There is a chance of this causing serious problems with others reading it, and it will significantly slow load times for them.",
+	text = "Your combined profile length is above 16000 characters. There is a chance of this causing serious problems with others loading it, and it will significantly increase load times for them.",
 	button1 = OKAY,
 	showAlert = true,
 	enterClicksFirstButton = true,

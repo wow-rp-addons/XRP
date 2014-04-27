@@ -17,12 +17,13 @@
 
 xrp.import = CreateFrame("Frame", nil, xrp)
 
+local L = xrp.L
 
 StaticPopupDialogs["XRP_IMPORT_RELOAD"] = {
-	text = "Available profiles have been imported. You should reload your UI now.",
-	button1 = xrp.L["Reload UI"],
+	text = L["Available profiles have been imported. You should reload your UI now."],
+	button1 = L["Reload UI"],
 	button2 = CANCEL,
-	OnAccept = function(self, data, data2)
+	OnAccept = function()
 		ReloadUI()
 	end,
 	enterClicksFirstButton = true,
@@ -30,7 +31,7 @@ StaticPopupDialogs["XRP_IMPORT_RELOAD"] = {
 	whileDead = true,
 	hideOnEscape = true,
 	preferredIndex = 3,
-	cancels = "XRP_MSP_DISABLE",
+	cancels = "XRP_MSP_DISABLE", -- We know, it's supposed to do that.
 }
 
 -- This is easy. Using a very similar storage format (i.e., MSP fields).
@@ -45,18 +46,18 @@ local function import_MyRolePlay()
 end
 
 local trp2_height = {
-	"Very short",
-	"Short",
-	"Average",
-	"Tall",
-	"Very tall",
+	L["Very short"],
+	SHORT, -- "Short"
+	L["Average"],
+	TALL, -- "Tall"
+	L["Very tall"],
 }
 
 local trp2_weight = {
-	"Overweight",
-	"Regular",
-	"Muscular",
-	"Skinny",
+	L["Overweight"],
+	L["Regular"],
+	L["Muscular"],
+	L["Skinny"],
 }
 
 -- This is a bit more complex. And partly in French.
@@ -70,10 +71,10 @@ local function import_totalRP2()
 	end
 	local DE = ""
 	if profile.Registre and profile.Registre.TraitVisage then
-		DE = format("%sFace: %s\n\n", DE, profile.Registre.TraitVisage)
+		DE = format(L["%sFace: %s\n\n"], DE, profile.Registre.TraitVisage)
 	end
 	if profile.Registre and profile.Registre.Piercing then
-		DE = format("%sPiercings/Tattoos: %s\n\n", DE, profile.Registre.Piercing)
+		DE = format(L["%sPiercings/Tattoos: %s\n\n"], DE, profile.Registre.Piercing)
 	end
 	if profile.Physique and profile.Physique.PhysiqueTexte then
 		DE = format("%s%s", DE, profile.Physique.PhysiqueTexte)
