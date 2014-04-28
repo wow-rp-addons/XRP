@@ -134,7 +134,7 @@ local minimap_menulist = {
 	{ text = XRP_FC, notCheckable = true, hasArrow = true, menuList = menulist_status, },
 	{ text = XRP_CU..CONTINUED, notCheckable = true, func = function() StaticPopup_Show("XRP_CURRENTLY") end, },
 	{ text = "Profile editor", notCheckable = true, func = function() xrp:ToggleEditor() end, },
-	{ text = "Profile viewer", notCheckable = true, func = function() xrp:ToggleViwer() end, },
+	{ text = "Profile viewer", notCheckable = true, func = function() xrp:ToggleViewer() end, },
 	{ text = CANCEL, notCheckable = true, },
 }
 
@@ -209,7 +209,7 @@ local function minimap_OnClick(self, button, down)
 		elseif button == "RightButton" then
 			update_profiles()
 			update_status()
-			EasyMenu(minimap_menulist, xrp_minimap_menu, xrp_minimap, 3, 10, "MENU", nil)
+			EasyMenu(minimap_menulist, xrp.minimap.menu, xrp.minimap, 3, 10, "MENU", nil)
 		end
 	end
 end
