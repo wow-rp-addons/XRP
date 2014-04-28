@@ -176,7 +176,8 @@ function xrp.tooltip:PlayerUnit(unit)
 	cu.guild = GetGuildInfo(unit)
 	cu.pvpname = UnitPVPName(unit) or xrp:NameWithoutRealm(cu.name)
 	cu.realm = select(2, UnitName(unit))
-	cu.level = UnitLevel(unit)
+	local level = UnitLevel(unit)
+	cu.level = level == -1 and "??" or tostring(level)
 	cu.race, cu.raceid = UnitRace(unit)
 	cu.class, cu.classid = UnitClass(unit)
 
@@ -245,7 +246,7 @@ function xrp.tooltip:RefreshPlayer(character)
 	-- Note: RAID_CLASS_COLORS[classid].colorStr does *not* have a pipe
 	-- escape in it -- it's just the AARRGGBB string. Some other default
 	-- color strings do, so be sure to check.
-	render_line(format("|cffffffff%s %d %s |c%s%s|cffffffff (%s)", LEVEL, cu.level, truncate_lines(race, 40, 0, false), RAID_CLASS_COLORS[cu.classid].colorStr, cu.class, PLAYER))
+	render_line(format("|cffffffff%s %s %s |c%s%s|cffffffff (%s)", LEVEL, cu.level, truncate_lines(race, 40, 0, false), RAID_CLASS_COLORS[cu.classid].colorStr, cu.class, PLAYER))
 
 	if (character.FR and character.FR ~= "0") or (character.FC and character.FC ~= "0") then
 		-- AAAAAAAAAAAAAAAAAAAAAAAA. The boolean logic.
