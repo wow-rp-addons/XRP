@@ -1,12 +1,17 @@
 5.4.7.0_beta4 (2014-04-27):
 	IMPORTANT: ADDON NAMES HAVE CHANGED. YOU **MUST** REMOVE ALL OLD COPIES
-	OF xrp AND xrpui_* FROM YOUR INTERFACE\ADDONS FOLDER.
+	OF xrp AND xrpui_* FROM YOUR INTERFACE\ADDONS FOLDER PRIOR TO INSTALLING
+	THE NEW VERSION.
 
 	- This reorganization was done to make maintenance easier. While it was
 	  done there were significant changes to the file structure of several
 	  components as well -- even had the addon names not changed, I would
 	  still be recommending removing the old versions. This will not happen
 	  again prior to 5.4.7.0 final.
+
+	- There is a failsafe for if someone doesn't read the above notice.
+	  There's also a failsafe failsafe so they can't get stuck in a no-choice
+	  loop with the no-choice Reload UI prompt.
 
 	- A couple of settings will be reset to defaults (minimap button position
 	  and names-in-chat selection). Sorry for the inconvenience. (All profile
