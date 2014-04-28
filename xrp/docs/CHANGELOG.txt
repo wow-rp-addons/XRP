@@ -1,3 +1,62 @@
+5.4.7.0_beta4 (2014-04-27):
+	IMPORTANT: ADDON NAMES HAVE CHANGED. YOU **MUST** REMOVE ALL OLD COPIES
+	OF xrp AND xrpui_* FROM YOUR INTERFACE\ADDONS FOLDER.
+
+	- This reorganization was done to make maintenance easier. While it was
+	  done there were significant changes to the file structure of several
+	  components as well -- even had the addon names not changed, I would
+	  still be recommending removing the old versions. This will not happen
+	  again prior to 5.4.7.0 final.
+
+	- A couple of settings will be reset to defaults (minimap button position
+	  and names-in-chat selection). Sorry for the inconvenience. (All profile
+	  data, cache data, and other settings are preserved.)
+
+	- Added xrp_import: This addon imports RP profiles from other RP addons,
+	  into XRP. You can enable this along with all other RP addons you make
+	  use of to import everything in one shot (the importer will prompt you to
+	  reload your UI after it's finished -- XRP will be the only RP addon
+	  enabled after the reload).
+		- Currently supported: MyRolePlay, TotalRP2.
+
+	- About/copyright information has been added in Interface Options.
+
+	- Full options panel is now LoadOnDemand (loaded when accessing the XRP
+	  item in the Interface Options panel).
+
+	- Options item in the minimap menu has been removed. Options should be
+	  accessed through the game menu's Interface Options' AddOns tab.
+
+	- Bugfixes:
+		- Default text emotes (/dance, /wave, etc.) from players on other
+		  realms no longer produce a "no such player" warning, and now
+		  properly color the name.
+
+		- Secondary addons are now properly added to the version string.
+
+		- Overwriting the currently active profile via rename (only possible
+		  for "Default") now correctly loads/sends to others.
+
+		- Filling fields from default now handles more logically -- setting
+		  the defaults in the Interface Options will now only affect *new*
+		  profiles, and old profiles will keep their settings.
+
+	- KNOWN ISSUES:
+		- You may occasionally see "No player named ... is currently player."
+		  messages seemingly at random. This typically occurs if someone has
+		  recently queried your profile, but logged off before receiving. How
+		  to properly deal with these is being considered for the future
+		  (i.e., it shouldn't happen once out of beta, at latest).
+
+		- Chat names don't work with addons such as Prat-3.0. Some other chat
+		  addons (including Prat-3.0, since the author of XRP likes using it)
+		  will be expliticly supported in the future.
+
+		- Other addons cannot interact with XRP like they can some other
+		  profile addons. This will be somewhat fixed (as best as is possible)
+		  in the future by providing a compatibility layer for them to work
+		  with.
+
 5.4.7.0_beta3 (2014-04-24):
 	- Core:
 		- Embed ChatThrottleLib. Looking over my purposes, it's really just a

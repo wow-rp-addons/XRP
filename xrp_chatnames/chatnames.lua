@@ -88,7 +88,7 @@ local function new_GetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg
 	end
 	if filter[arg2] == -1 or not events[event] or not xrp_settings.chatnames[event] then
 		rp = false
-	elseif filter[arg2] == 1 then
+	elseif filter[arg2] == 1 or arg2 == xrp.toon.withrealm then
 		rp = true
 	elseif event == "CHAT_MSG_SAY" or event == "CHAT_MSG_YELL" then
 		-- Filter faction by language. Only pandas speaking in nommish won't
@@ -128,7 +128,9 @@ local function new_GetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg
 	end
 
 	local rpname
-	if rp then
+	if event == "CHAT_MSG_TEXT_EMOTE" and arg2 == xrp.toon.withrealm then
+		rpname = YOU
+	elseif rp then
 		rpname = xrp.characters[arg2].NA
 		if not rpname then
 			rpname = Ambiguate(arg2, "guild")
