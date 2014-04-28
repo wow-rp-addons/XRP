@@ -15,7 +15,7 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-xrp = CreateFrame("Frame", nil, UIParent)
+xrp = CreateFrame("Frame", "xrp", UIParent)
 
 xrp.version = GetAddOnMetadata("xrp", "Version")
 xrp.versionstring = format("%s/%s", GetAddOnMetadata("xrp", "Title"), xrp.version)

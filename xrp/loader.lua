@@ -64,6 +64,6 @@ function xrp:ShowOptions()
 	if not loadifneeded("xrp_options") then
 		return false
 	end
-	InterfaceOptionsFrame_OpenToCategory(xrp.options)
+	InterfaceOptionsFrame_OpenToCategory(xrp.options.core)
 	return true
 end

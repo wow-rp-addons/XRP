@@ -15,7 +15,7 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-	<Frame name="$parent_about" parentKey="about" parent="xrp" hidden="true">
+	<Frame name="$parent_options" parentKey="options" parent="xrp" hidden="true">
 		<Layers>
 			<Layer level="OVERLAY">
 				<FontString parentKey="Title" inherits="GameFontNormalLarge" text="XRP">

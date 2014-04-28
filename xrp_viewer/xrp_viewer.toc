@@ -8,5 +8,5 @@
 ## X-License: GPLv3
 ## Dependencies: xrp
 
-viewer_frames.xml
+viewer.xml
 viewer.lua
