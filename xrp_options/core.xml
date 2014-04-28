@@ -15,10 +15,10 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-	<Frame name="$parent_options" parentKey="options" parent="xrp">
+	<Frame name="$parent_core" parentKey="core" parent="xrp_options">
 		<Layers>
 			<Layer level="OVERLAY">
-				<FontString parentKey="Title" inherits="GameFontNormalLarge" text="XRP: Options">
+				<FontString parentKey="Title" inherits="GameFontNormalLarge" text="XRP: Core options">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="15" y="-15"/>
 					</Anchors>
@@ -121,36 +121,6 @@
 				<FontString parentKey="FCLabel" inherits="GameFontWhite" text="XRP_FC">
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.FRLabel" relativePoint="RIGHT" x="50" y="0"/>
-					</Anchors>
-				</FontString>
-				<FontString parentKey="ChatLabel" inherits="GameFontNormal" text="RP names in chat:">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.DefaultsLabel" relativePoint="BOTTOMLEFT" x="0" y="-145"/>
-					</Anchors>
-				</FontString>
-				<FontString parentKey="SayLabel" inherits="GameFontWhite" text="Say">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.ChatLabel" relativePoint="BOTTOMLEFT" x="24" y="-10"/>
-					</Anchors>
-				</FontString>
-				<FontString parentKey="YellLabel" inherits="GameFontWhite" text="Yell">
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.SayLabel" relativePoint="RIGHT" x="50" y="0"/>
-					</Anchors>
-				</FontString>
-				<FontString parentKey="EmoteLabel" inherits="GameFontWhite" text="Emote">
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.YellLabel" relativePoint="RIGHT" x="50" y="0"/>
-					</Anchors>
-				</FontString>
-				<FontString parentKey="GuildLabel" inherits="GameFontWhite" text="Guild">
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.EmoteLabel" relativePoint="RIGHT" x="50" y="0"/>
-					</Anchors>
-				</FontString>
-				<FontString parentKey="WhisperLabel" inherits="GameFontWhite" text="Whisper">
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.GuildLabel" relativePoint="RIGHT" x="50" y="0"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -276,36 +246,6 @@
 				<Size x="24" y="24"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.FCLabel" relativePoint="LEFT" x="-4" y="0"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="$parentSay" parentKey="CHAT_MSG_SAY" inherits="UICheckButtonTemplate">
-				<Size x="24" y="24"/>
-				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.SayLabel" relativePoint="LEFT" x="-4" y="0"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="$parentYell" parentKey="CHAT_MSG_YELL" inherits="UICheckButtonTemplate">
-				<Size x="24" y="24"/>
-				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.YellLabel" relativePoint="LEFT" x="-4" y="0"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="$parentEmote" parentKey="CHAT_MSG_EMOTE" inherits="UICheckButtonTemplate">
-				<Size x="24" y="24"/>
-				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.EmoteLabel" relativePoint="LEFT" x="-4" y="0"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="$parentGuild" parentKey="CHAT_MSG_GUILD" inherits="UICheckButtonTemplate">
-				<Size x="24" y="24"/>
-				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.GuildLabel" relativePoint="LEFT" x="-4" y="0"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="$parentWhisper" parentKey="CHAT_MSG_WHISPER" inherits="UICheckButtonTemplate">
-				<Size x="24" y="24"/>
-				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.WhisperLabel" relativePoint="LEFT" x="-4" y="0"/>
 				</Anchors>
 			</CheckButton>
 		</Frames>

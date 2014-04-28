@@ -8,5 +8,7 @@
 ## X-License: GPLv3
 ## Dependencies: xrp
 
-options_frames.xml
-options.lua
+core.xml
+core.lua
+chatnames.xml
+chatnames.lua
