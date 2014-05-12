@@ -20,28 +20,33 @@ local core_defaultfields = { "NA", "NI", "NT", "NH", "AE", "RA", "AH", "AW", "CU
 local function core_Okay()
 	xrp_settings.height = UIDropDownMenu_GetSelectedValue(xrp.options.core.AHUnits)
 	xrp_settings.weight = UIDropDownMenu_GetSelectedValue(xrp.options.core.AWUnits)
-	for _, field in pairs(core_defaultfields) do
-		xrp_settings.defaults[field] = xrp.options.core[field]:GetChecked() and true or false
-	end
-end
 
-local function core_Default()
-	UIDropDownMenu_Initialize(xrp.options.core.AHUnits, xrp.options.core.AHUnits.initialize)
-	UIDropDownMenu_SetSelectedValue(xrp.options.core.AHUnits, "ft")
-	UIDropDownMenu_Initialize(xrp.options.core.AWUnits, xrp.options.core.AWUnits.initialize)
-	UIDropDownMenu_SetSelectedValue(xrp.options.core.AWUnits, "lb")
-	for _, field in pairs(core_defaultfields) do
-		xrp.options.core[field]:SetChecked(true)
+	for _, field in ipairs(core_defaultfields) do
+		xrp_settings.defaults[field] = xrp.options.core[field]:GetChecked() and true or false
 	end
 end
 
 local function core_Refresh()
 	UIDropDownMenu_Initialize(xrp.options.core.AHUnits, xrp.options.core.AHUnits.initialize)
-	UIDropDownMenu_SetSelectedValue(xrp.options.core.AHUnits, xrp_settings.height)		UIDropDownMenu_Initialize(xrp.options.core.AWUnits, xrp.options.core.AWUnits.initialize)
+	UIDropDownMenu_SetSelectedValue(xrp.options.core.AHUnits, xrp_settings.height)
+
+	UIDropDownMenu_Initialize(xrp.options.core.AWUnits, xrp.options.core.AWUnits.initialize)
 	UIDropDownMenu_SetSelectedValue(xrp.options.core.AWUnits, xrp_settings.weight)
-	for _, field in pairs(core_defaultfields) do
-		xrp.options.core[field]:SetChecked(xrp_settings.defaults[field] == nil and true or xrp_settings.defaults[field])
+
+	for _, field in ipairs(core_defaultfields) do
+		xrp.options.core[field]:SetChecked(xrp_settings.defaults[field])
 	end
+end
+
+local function core_Default()
+	xrp_settings.height = nil
+	xrp_settings.weight = nil
+
+	for field, setting in pairs(xrp_settings.defaults) do
+		xrp_settings.defaults[field] = nil
+	end
+
+	core_Refresh()
 end
 
 local function core_OnEvent(self, event, addon)
@@ -55,7 +60,7 @@ local function core_OnEvent(self, event, addon)
 
 		UIDropDownMenu_Initialize(self.AHUnits, function()
 			local info
-			for key, text in pairs({ "Centimeters", "Feet/Inches", "Meters" }) do
+			for key, text in ipairs({ "Centimeters", "Feet/Inches", "Meters" }) do
 				local value = key == 1 and "cm" or key == 2 and "ft" or key == 3 and "m"
 				info = UIDropDownMenu_CreateInfo()
 				info.text = text
@@ -70,7 +75,7 @@ local function core_OnEvent(self, event, addon)
 		end)
 		UIDropDownMenu_Initialize(self.AWUnits, function()
 			local info
-			for key, text in pairs({ "Kilograms", "Pounds" }) do
+			for key, text in ipairs({ "Kilograms", "Pounds" }) do
 				local value = key == 1 and "kg" or key == 2 and "lb"
 				info = UIDropDownMenu_CreateInfo()
 				info.text = text
