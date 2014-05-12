@@ -23,12 +23,12 @@ local function parse_versions(VA)
 	if not VA then
 		return UNKNOWN.." or "..NONE
 	end
-	local VAshort = ""
+--[[	local VAshort = ""
 	for addon in VA:gmatch("(%a[^/]+)/[^;]+") do
 		VAshort = VAshort..addon..", "
 	end
-	VAshort = (VAshort:gsub(", $", ""))
-	return VAshort
+	VAshort = (VAshort:gsub(", $", ""))]]
+	return (VA:gsub(";", ", "))
 end
 
 function xrp.viewer:Load(character)

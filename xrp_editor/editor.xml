@@ -20,6 +20,7 @@
 	<!-- No, seriously, though. This is the easiest way to get a good UI. -->
 	<Include file="editor_templates.xml"/>
 	<Frame name="$parent_editor" parentKey="editor" toplevel="true" movable="true" parent="xrp" enableMouse="true" inherits="ButtonFrameTemplate" hidden="true">
+		<Size x="439" y="525"/>
 		<Frames>
 			<Frame name="$parentAppearance" parentKey="Appearance" useParentLevel="true" hidden="false">
 				<Anchors>
@@ -37,7 +38,7 @@
 						<!-- Nickname Label -->
 						<FontString name="$parentNILabel" parentKey="NILabel" inherits="GameFontNormalSmall" text="XRP_NI">
 							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.NALabel" relativePoint="LEFT" x="186" y="0"/>
+								<Anchor point="LEFT" relativeKey="$parent.NALabel" relativePoint="LEFT" x="236" y="0"/>
 							</Anchors>
 						</FontString>
 						<!-- Title Label -->
@@ -49,7 +50,7 @@
 						<!-- House/Clan Label -->
 						<FontString name="$parentNHLabel" parentKey="NHLabel" inherits="GameFontNormalSmall" text="XRP_NH">
 							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.NTLabel" relativePoint="LEFT" x="201" y="0"/>
+								<Anchor point="LEFT" relativeKey="$parent.NTLabel" relativePoint="LEFT" x="251" y="0"/>
 							</Anchors>
 						</FontString>
 						<!-- Eyes Label -->
@@ -61,19 +62,19 @@
 						<!-- Race Label -->
 						<FontString name="$parentRALabel" parentKey="RALabel" inherits="GameFontNormalSmall" text="XRP_RA">
 							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.AELabel" relativePoint="LEFT" x="105" y="0"/>
+								<Anchor point="LEFT" relativeKey="$parent.AELabel" relativePoint="LEFT" x="131" y="0"/>
 							</Anchors>
 						</FontString>
 						<!-- Height Label -->
 						<FontString name="$parentAHLabel" parentKey="AHLabel" inherits="GameFontNormalSmall" text="XRP_AH">
 							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.RALabel" relativePoint="LEFT" x="100" y="0"/>
+								<Anchor point="LEFT" relativeKey="$parent.RALabel" relativePoint="LEFT" x="125" y="0"/>
 							</Anchors>
 						</FontString>
 						<!-- Weight Label -->
 						<FontString name="$parentAWLabel" parentKey="AWLabel" inherits="GameFontNormalSmall" text="XRP_AW">
 							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.AHLabel" relativePoint="LEFT" x="56" y="0"/>
+								<Anchor point="LEFT" relativeKey="$parent.AHLabel" relativePoint="LEFT" x="81" y="0"/>
 							</Anchors>
 						</FontString>
 						<!-- Currently Label -->
@@ -93,7 +94,7 @@
 				<Frames>
 					<!-- Name Box -->
 					<EditBox name="$parentNA" parentKey="NA" inherits="FancyInputBoxTemplate" autoFocus="false">
-						<Size x="176" y="20"/>
+						<Size x="226" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.NALabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
 						</Anchors>
@@ -105,7 +106,7 @@
 					</CheckButton>
 					<!-- Nickname Box -->
 					<EditBox name="$parentNI" parentKey="NI" inherits="FancyInputBoxTemplate" autoFocus="false">
-						<Size x="120" y="20"/>
+						<Size x="171" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.NILabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
 						</Anchors>
@@ -117,7 +118,7 @@
 					</CheckButton>
 					<!-- Title Box -->
 					<EditBox name="$parentNT" parentKey="NT" inherits="FancyInputBoxTemplate" autoFocus="false">
-						<Size x="191" y="20"/>
+						<Size x="241" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.NTLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
 						</Anchors>
@@ -129,7 +130,7 @@
 					</CheckButton>
 					<!-- House/Clan Box -->
 					<EditBox name="$parentNH" parentKey="NH" inherits="FancyInputBoxTemplate" autoFocus="false">
-						<Size x="105" y="20"/>
+						<Size x="156" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.NHLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
 						</Anchors>
@@ -141,7 +142,7 @@
 					</CheckButton>
 					<!-- Eyes Box -->
 					<EditBox name="$parentAE" parentKey="AE" inherits="FancyInputBoxTemplate" autoFocus="false">
-						<Size x="95" y="20"/>
+						<Size x="121" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.AELabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
 						</Anchors>
@@ -153,7 +154,7 @@
 					</CheckButton>
 					<!-- Race Box -->
 					<EditBox name="$parentRA" parentKey="RA" inherits="FancyInputBoxTemplate" autoFocus="false">
-						<Size x="91" y="20"/>
+						<Size x="116" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.RALabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
 						</Anchors>
@@ -165,7 +166,7 @@
 					</CheckButton>
 					<!-- Height Box -->
 					<EditBox name="$parentAH" parentKey="AH" inherits="FancyInputBoxTemplate" autoFocus="false">
-						<Size x="45" y="20"/>
+						<Size x="70" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.AHLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
 						</Anchors>
@@ -177,7 +178,7 @@
 					</CheckButton>
 					<!-- Weight Box -->
 					<EditBox name="$parentAW" parentKey="AW" inherits="FancyInputBoxTemplate" autoFocus="false">
-						<Size x="45" y="20"/>
+						<Size x="70" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.AWLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
 						</Anchors>
@@ -189,7 +190,7 @@
 					</CheckButton>
 					<!-- Currently Box -->
 					<EditBox name="$parentCU" parentKey="CU" inherits="FancyInputBoxTemplate" autoFocus="false">
-						<Size x="306" y="20"/>
+						<Size x="407" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.CULabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
 						</Anchors>
@@ -201,7 +202,7 @@
 					</CheckButton>
 					<!-- Description Box -->
 					<ScrollFrame name="$parentDE" parentKey="DE" inherits="LargeInputScrollFrameTemplate">
-						<Size x="301" y="163"/>
+						<Size x="402" y="264"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.DELabel" relativePoint="BOTTOMLEFT" x="2" y="-5"/>
 						</Anchors>
@@ -229,13 +230,13 @@
 						<!-- Home Label -->
 						<FontString name="$parentHHLabel" parentKey="HHLabel" inherits="GameFontNormalSmall" text="XRP_HH">
 							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.AGLabel" relativePoint="LEFT" x="50" y="0"/>
+								<Anchor point="LEFT" relativeKey="$parent.AGLabel" relativePoint="LEFT" x="75" y="0"/>
 							</Anchors>
 						</FontString>
 						<!-- Birthplace Label -->
 						<FontString name="$parentHBLabel" parentKey="HBLabel" inherits="GameFontNormalSmall" text="XRP_HB">
 							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.HHLabel" relativePoint="LEFT" x="133" y="0"/>
+								<Anchor point="LEFT" relativeKey="$parent.HHLabel" relativePoint="LEFT" x="171" y="0"/>
 							</Anchors>
 						</FontString>
 						<!-- Motto Label -->
@@ -253,13 +254,13 @@
 						<!-- Style Label -->
 						<FontString name="$parentFRLabel" parentKey="FRLabel" inherits="GameFontNormalSmall" text="XRP_FR">
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.HILabel" relativePoint="BOTTOMLEFT" x="0" y="-208"/>
+								<Anchor point="TOPLEFT" relativeKey="$parent.HILabel" relativePoint="BOTTOMLEFT" x="0" y="-309"/>
 							</Anchors>
 						</FontString>
 						<!-- Status Label -->
 						<FontString name="$parentFCLabel" parentKey="FCLabel" inherits="GameFontNormalSmall" text="XRP_FC">
 							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.FRLabel" relativePoint="LEFT" x="158" y="0"/>
+								<Anchor point="LEFT" relativeKey="$parent.FRLabel" relativePoint="LEFT" x="209" y="0"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -267,7 +268,7 @@
 				<Frames>
 					<!-- Age Box -->
 					<EditBox name="$parentAG" parentKey="AG" inherits="FancyInputBoxTemplate" autoFocus="false">
-						<Size x="40" y="20"/>
+						<Size x="65" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.AGLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
 						</Anchors>
@@ -279,7 +280,7 @@
 					</CheckButton>
 					<!-- Home Box -->
 					<EditBox name="$parentHH" parentKey="HH" inherits="FancyInputBoxTemplate" autoFocus="false">
-						<Size x="123" y="20"/>
+						<Size x="161" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.HHLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
 						</Anchors>
@@ -291,7 +292,7 @@
 					</CheckButton>
 					<!-- Birthplace Box -->
 					<EditBox name="$parentHB" parentKey="HB" inherits="FancyInputBoxTemplate" autoFocus="false">
-						<Size x="123" y="20"/>
+						<Size x="161" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.HBLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
 						</Anchors>
@@ -303,7 +304,7 @@
 					</CheckButton>
 					<!-- Motto Box -->
 					<EditBox name="$parentMO" parentKey="MO" inherits="FancyInputBoxTemplate" autoFocus="false">
-						<Size x="306" y="20"/>
+						<Size x="407" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.MOLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
 						</Anchors>
@@ -315,7 +316,7 @@
 					</CheckButton>
 					<!-- History Box -->
 					<ScrollFrame name="$parentHI" parentKey="HI" inherits="LargeInputScrollFrameTemplate">
-						<Size x="301" y="193"/>
+						<Size x="402" y="294"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.HILabel" relativePoint="BOTTOMLEFT" x="2" y="-5"/>
 						</Anchors>
@@ -327,7 +328,7 @@
 					</CheckButton>
 					<!-- Style Box -->
 					<EditBox name="$parentFR" parentKey="FR" inherits="FancyInputBoxTemplate" autoFocus="false">
-						<Size x="148" y="20"/>
+						<Size x="199" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.FRLabel" relativePoint="BOTTOMLEFT" x="2" y="-3"/>
 						</Anchors>
@@ -344,7 +345,7 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								UIDropDownMenu_SetWidth(self, 139, 0);
+								UIDropDownMenu_SetWidth(self, 189, 0);
 								function self:SetText(value)
 									UIDropDownMenu_Initialize(self, self.initialize);
 									UIDropDownMenu_SetSelectedValue(self, value);
@@ -365,7 +366,7 @@
 			<!-- Saved Character Profiles -->
 			<Button name="$parentProfiles" parentKey="Profiles" inherits="UIDropDownMenuTemplate">
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-175" y="-27"/>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-225" y="-27"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>

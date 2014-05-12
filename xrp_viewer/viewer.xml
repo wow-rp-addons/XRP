@@ -20,6 +20,7 @@
 	<!-- No, seriously, though. This is the easiest way to get a good UI. -->
 	<Include file="viewer_templates.xml"/>
 	<Frame name="$parent_viewer" parentKey="viewer" toplevel="true" movable="true" parent="xrp" enableMouse="true" inherits="ButtonFrameTemplate" hidden="true">
+		<Size x="439" y="525"/>
 		<Layers>
 			<Layer level="OVERLAY">
 				<!-- Version Information -->
@@ -38,21 +39,21 @@
 				</FontString>
 				<!-- Nickname -->
 				<FontString name="$parentNI" parentKey="NI" inherits="GameFontNormalSmall" maxLines="1">
-					<Size x="240"/>
+					<Size x="340"/>
 					<Anchors>
 						<Anchor point="TOP" relativePoint="TOP" x="0" y="-23"/>
 					</Anchors>
 				</FontString>
 				<!-- Title -->
 				<FontString name="$parentNT" parentKey="NT" inherits="GameFontNormalSmall" maxLines="1">
-					<Size x="240"/>
+					<Size x="340"/>
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.NI" relativePoint="BOTTOM" x="0" y="-2"/>
 					</Anchors>
 				</FontString>
 				<!-- House/Clan/Tribe -->
 				<FontString name="$parentNH" parentKey="NH" inherits="GameFontNormalSmall" maxLines="1">
-					<Size x="240"/>
+					<Size x="340"/>
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.NT" relativePoint="BOTTOM" x="0" y="-2"/>
 					</Anchors>
@@ -76,7 +77,7 @@
 						<!-- Height Label -->
 						<FontString name="$parentAHLabel" parentKey="AHLabel" inherits="GameFontNormalSmall" text="XRP_AH">
 							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.RALabel" relativePoint="LEFT" x="190" y="0"/>
+								<Anchor point="LEFT" relativeKey="$parent.RALabel" relativePoint="LEFT" x="240" y="0"/>
 							</Anchors>
 						</FontString>
 						<!-- Eyes Label -->
@@ -88,7 +89,7 @@
 						<!-- Weight Label -->
 						<FontString name="$parentAWLabel" parentKey="AWLabel" inherits="GameFontNormalSmall" text="XRP_AW">
 							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.AELabel" relativePoint="LEFT" x="190" y="0"/>
+								<Anchor point="LEFT" relativeKey="$parent.AELabel" relativePoint="LEFT" x="240" y="0"/>
 							</Anchors>
 						</FontString>
 						<!-- Currently Label -->
@@ -108,42 +109,42 @@
 				<Frames>
 					<!-- Race Box -->
 					<EditBox name="$parentRA" parentKey="RA" inherits="FancyOutputBoxTemplate" autoFocus="false">
-						<Size x="180" y="20"/>
+						<Size x="230" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.RALabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
 						</Anchors>
 					</EditBox>
 					<!-- Height Box -->
 					<EditBox name="$parentAH" parentKey="AH" inherits="FancyOutputBoxTemplate" autoFocus="false">
-						<Size x="116" y="20"/>
+						<Size x="167" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.AHLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
 						</Anchors>
 					</EditBox>
 					<!-- Eyes Box -->
 					<EditBox name="$parentAE" parentKey="AE" inherits="FancyOutputBoxTemplate" autoFocus="false">
-						<Size x="180" y="20"/>
+						<Size x="230" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.AELabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
 						</Anchors>
 					</EditBox>
 					<!-- Weight Box -->
 					<EditBox name="$parentAW" parentKey="AW" inherits="FancyOutputBoxTemplate" autoFocus="false">
-						<Size x="116" y="20"/>
+						<Size x="167" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.AWLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
 						</Anchors>
 					</EditBox>
 					<!-- Currently Box -->
 					<ScrollFrame name="$parentCU" parentKey="CU" inherits="LargeOutputScrollFrameTemplate">
-						<Size x="301" y="45"/>
+						<Size x="402" y="45"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.CULabel" relativePoint="BOTTOMLEFT" x="2" y="-5"/>
 						</Anchors>
 					</ScrollFrame>
 					<!-- Description Box -->
 					<ScrollFrame name="$parentDE" parentKey="DE" inherits="LargeOutputScrollFrameTemplate">
-						<Size x="301" y="162"/>
+						<Size x="402" y="263"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.DELabel" relativePoint="BOTTOMLEFT" x="2" y="-5"/>
 						</Anchors>
@@ -172,7 +173,7 @@
 						<!-- Birthplace Label -->
 						<FontString name="$parentHBLabel" parentKey="HBLabel" inherits="GameFontNormalSmall" text="XRP_HB">
 							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.AGLabel" relativePoint="LEFT" x="106" y="0"/>
+								<Anchor point="LEFT" relativeKey="$parent.AGLabel" relativePoint="LEFT" x="156" y="0"/>
 							</Anchors>
 						</FontString>
 						<!-- Motto Label -->
@@ -192,35 +193,35 @@
 				<Frames>
 					<!-- Home Box -->
 					<EditBox name="$parentHH" parentKey="HH" inherits="FancyOutputBoxTemplate" autoFocus="false">
-						<Size x="306" y="20"/>
+						<Size x="407" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.HHLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
 						</Anchors>
 					</EditBox>
 					<!-- Age Box -->
 					<EditBox name="$parentAG" parentKey="AG" inherits="FancyOutputBoxTemplate" autoFocus="false">
-						<Size x="96" y="20"/>
+						<Size x="146" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.AGLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
 						</Anchors>
 					</EditBox>
 					<!-- Birthplace Box -->
 					<EditBox name="$parentHB" parentKey="HB" inherits="FancyOutputBoxTemplate" autoFocus="false">
-						<Size x="200" y="20"/>
+						<Size x="251" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.HBLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
 						</Anchors>
 					</EditBox>
 					<!-- Motto Box -->
 					<ScrollFrame name="$parentMO" parentKey="MO" inherits="LargeOutputScrollFrameTemplate">
-						<Size x="301" y="45"/>
+						<Size x="402" y="45"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.MOLabel" relativePoint="BOTTOMLEFT" x="2" y="-5"/>
 						</Anchors>
 					</ScrollFrame>
 					<!-- History Box -->
 					<ScrollFrame name="$parentHI" parentKey="HI" inherits="LargeOutputScrollFrameTemplate">
-						<Size x="301" y="162"/>
+						<Size x="402" y="263"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.HILabel" relativePoint="BOTTOMLEFT" x="2" y="-5"/>
 						</Anchors>
