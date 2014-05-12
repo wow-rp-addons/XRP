@@ -67,3 +67,19 @@ function xrp:ShowOptions()
 	InterfaceOptionsFrame_OpenToCategory(xrp.options.core)
 	return true
 end
+
+do
+	local name, title, notes, enabled, loadable, reason = GetAddOnInfo("xrp_libmsp")
+	if enabled and loadable and not _G.msp then
+		local msp = setmetatable({}, {
+			__index = function(msp, index)
+				loadifneeded("xrp_libmsp")
+				return _G.msp[index]
+			end,
+			__newindex = function() end,
+			__metatable = false,
+		})
+
+		_G.msp = msp
+	end
+end

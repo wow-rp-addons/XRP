@@ -1,0 +1,11 @@
+## Interface: 50400
+## LoadOnDemand: 1
+## Title: XRP: LibMSP Compat
+## Author: Bor of Wyrmrest Accord (US)
+## Version: 5.4.7.0_beta4
+## Notes: Provides partial compatibility with LibMSP for XRP (enabling some addons which use LibMSP, if present, to interact with XRP). If enabled, this will still only load if its needed.
+## X-Category: Roleplaying
+## X-License: GPLv3
+## Dependencies: xrp
+
+libmsp_compat.lua
