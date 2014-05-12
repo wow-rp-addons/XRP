@@ -15,7 +15,7 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-xrp.import = CreateFrame("Frame", nil, xrp)
+local import = CreateFrame("Frame")
 
 local L = xrp.L
 
@@ -98,7 +98,7 @@ local function import_totalRP2()
 	end
 end
 
-xrp.import:SetScript("OnEvent", function(self, event, addon)
+import:SetScript("OnEvent", function(self, event, addon)
 	if event == "ADDON_LOADED" and addon == "xrp_import" then
 
 		local mrploaded = (select(4, GetAddOnInfo("MyRolePlay")))
@@ -122,4 +122,4 @@ xrp.import:SetScript("OnEvent", function(self, event, addon)
 		self:UnregisterEvent("ADDON_LOADED")
 	end
 end)
-xrp.import:RegisterEvent("ADDON_LOADED")
+import:RegisterEvent("ADDON_LOADED")
