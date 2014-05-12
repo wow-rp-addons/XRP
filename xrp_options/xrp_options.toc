@@ -12,3 +12,5 @@ core.xml
 core.lua
 chatnames.xml
 chatnames.lua
+tooltip.xml
+tooltip.lua

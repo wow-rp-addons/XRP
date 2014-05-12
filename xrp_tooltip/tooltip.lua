@@ -18,10 +18,24 @@
 xrp.tooltip = CreateFrame("Frame", nil, xrp)
 xrp.tooltip:Hide() -- Has an OnUpdate script.
 
+local default_settings = { __index = {
+	reaction = true,
+	guildrank = false,
+	rprace = true,
+	nohostile = false,
+	extraspace = false,
+}}
+
 local faction_colors = {
-	Horde = { dark = "e60d12", light = "ff595e" },
-	Alliance = { dark = "4a54e8", light = "96a1ff" },
-	Neutral = { dark = "e6b300", light = "ffffcc" },
+	Horde = { dark = "e60d12", light = "ff6468" },
+	Alliance = { dark = "4a54e8", light = "868eff" },
+	Neutral = { dark = "e6b300", light = "ffdb5c" },
+}
+
+local reaction_colors = {
+	friendly = "00991a",
+	neutral = "e6b300",
+	hostile = "cc4d38",
 }
 
 local fc_colors = {
@@ -36,6 +50,9 @@ local cu = {}
 local oldlines
 local numline
 local function render_line(lefttext, righttext)
+	if not lefttext and not righttext then
+		return
+	end
 	numline = numline + 1
 	-- This is a bit scary-looking, but it's a sane way to replace tooltip
 	-- lines without needing to completely redo the tooltip from scratch
@@ -76,7 +93,7 @@ local known_addons = {
 	["FLAGRSP"] = "RSP",
 }
 
-local function tooltip_parse_VA(VA)
+local function parse_VA(VA)
 	local VAshort = ""
 	for addon in VA:upper():gmatch("(%a[^/]+)/[^;]+") do
 		VAshort = known_addons[addon] and VAshort..known_addons[addon]..", " or VAshort
@@ -120,13 +137,13 @@ end
 --[[
 	Tooltip lines ([ ] denotes only if applicable):
 
-	Name/Roleplay Name [<Away>|<Busy>] [<PvP>] [<Offline>]
+	Name/Roleplay Name [<Away>|<Busy>|<Offline>]	 [PvP]
 	[Nickname: "RP Nickname"]
 	[RP Title]
-	[<Guild>]
+	[Rank of ][<Guild>]
 	Name with Title [(Realm Name)]					  [RP]
 	[Currently: RP currently doing.]
-	Level 00 Race Class (Player)
+	Level ?? Race Class (Player)
 	[Roleplaying style]					[Character status]
 	[Zone: Current Location]
 
@@ -155,33 +172,40 @@ end
 ]]
 
 function xrp.tooltip:PlayerUnit(unit)
-	-- The cu table stores, as it says on the tin, the current (well,
-	-- technically last) unit we rendered a tooltip for. This allows for a
-	-- refresh of the tooltip as it fades, rather than only being able to
-	-- refresh if the mouse is still over the unit.
 	cu.name = xrp:UnitNameWithRealm(unit)
-	cu.faction = UnitFactionGroup(unit)
-	if not cu.faction or type(faction_colors[cu.faction]) ~= "table" then
-		cu.faction = "Neutral"
-	end
-	cu.afk = UnitIsAFK(unit)
-	cu.dnd = UnitIsDND(unit)
-	cu.pvp = UnitIsPVP(unit)
-	cu.canattack = UnitCanAttack(unit, "player")
-	cu.canbeattacked = UnitCanAttack("player", unit)
-	cu.visible = UnitIsVisible(unit)
-	cu.connected = UnitIsConnected(unit)
-	-- Ew, screen-scraping.
-	cu.location = (not cu.visible and cu.connected and GameTooltipTextLeft3:GetText()) or nil
-	cu.guild = GetGuildInfo(unit)
-	cu.pvpname = UnitPVPName(unit) or xrp:NameWithoutRealm(cu.name)
-	cu.realm = select(2, UnitName(unit))
-	local level = UnitLevel(unit)
-	cu.level = level == -1 and "??" or tostring(level)
-	cu.race, cu.raceid = UnitRace(unit)
-	cu.class, cu.classid = UnitClass(unit)
 
-	xrp.tooltip:RefreshPlayer(xrp.units[unit])
+	local faction = (UnitFactionGroup(unit))
+	if not faction or type(faction_colors[faction]) ~= "table" then
+		faction = "Neutral"
+	end
+
+	local attackme = UnitCanAttack(unit, "player") -- Used two times.
+	local color = xrp_settings.tooltip.reaction and reaction_colors[faction ~= xrp.toon.fields.GF and "hostile" or (faction == xrp.toon.fields.GF and not UnitCanAttack("player", unit) and not attackme and "friendly") or "neutral"] or faction_colors[faction].dark
+
+	local connected = UnitIsConnected(unit)
+	cu.nameformat = "|cff"..color.."%s"..((UnitIsAFK(unit) and " |cff99994d"..CHAT_FLAG_AFK) or (UnitIsDND(unit) and " |cff994d4d"..CHAT_FLAG_DND) or (not connected and " |cff888888<"..PLAYER_OFFLINE..">") or "")
+	local ffa = UnitIsPVPFreeForAll(unit)
+	cu.pvpicon = (UnitIsPVP(unit) or ffa) and ("|TInterface\\TargetingFrame\\UI-PVP-"..((ffa or faction == "Neutral") and "FFA" or faction)..":20:20:4:-2:8:8:0:5:0:5:255:255:255|t") or nil
+
+	local guildname, guildrank, _ = GetGuildInfo(unit)
+	cu.guild = guildname and (xrp_settings.tooltip.guildrank == true and guildrank.." of <"..guildname..">" or "<"..guildname..">") or nil
+
+	local pvpname = UnitPVPName(unit) or xrp:NameWithoutRealm(cu.name)
+	local realm = select(2, UnitName(unit))
+	cu.titlerealm = "|cff"..faction_colors[faction].light..pvpname..(realm and (" ("..xrp:RealmNameWithSpacing(realm)..")") or "")
+
+	cu.race = (UnitRace(unit)) or UnitCreatureType(unit)
+	local level = UnitLevel(unit)
+	local class, classid = UnitClass(unit)
+	-- RAID_CLASS_COLORS is AARRGGBB.
+	cu.info = format("|cffffffff%s %%s |c%s%s|cffffffff (%s)", format(level < 0 and UNIT_LETHAL_LEVEL_TEMPLATE or UNIT_LEVEL_TEMPLATE, level), RAID_CLASS_COLORS[classid].colorStr, class, PLAYER)
+
+	local visible = UnitIsVisible(unit)
+	-- Ew, screen-scraping.
+	local location = not visible and connected and GameTooltipTextLeft3:GetText() or nil
+	cu.location = location and format("|cffffeeaa%s: |cffffffff%s", ZONE, location) or nil
+
+	xrp.tooltip:RefreshPlayer(visible and (not xrp_settings.tooltip.nohostile or (faction == xrp.toon.fields.GF and not attackme)) and xrp.units[unit] or unknown)
 end
 
 -- Everything in here is using color pipe escapes because Blizzard will
@@ -191,32 +215,8 @@ end
 function xrp.tooltip:RefreshPlayer(character)
 	oldlines = GameTooltip:NumLines()
 	numline = 0
-	character = cu.visible and character or unknown
-	
-	local namestring = format("|cff%s%s", faction_colors[cu.faction].dark, character.NA and truncate_lines((character.NA:gsub("||?c%x%x%x%x%x%x%x%x%s*", "")), 60, 0, false) or xrp:NameWithoutRealm(cu.name))
-	if cu.afk then
-		namestring = format("%s |cff99994d%s", namestring, CHAT_FLAG_AFK)
-	elseif cu.dnd then
-		namestring = format("%s |cff994d4d%s", namestring, CHAT_FLAG_DND)
-	end
-	if cu.pvp then
-		local colorstring
-		if cu.canattack then
-			-- If they can attack us.
-			colorstring = faction_colors[xrp.toon.fields.GF].light
-		elseif cu.canbeattacked or cu.faction ~= xrp.toon.fields.GF then
-			-- If we can attack them (or is opposite faction, for Sanctuary).
-			colorstring = faction_colors["Neutral"].dark
-		else
-			-- Otherwise, must be friendly.
-			colorstring = "009919"
-		end
-		namestring = format("%s |cff%s<%s>", namestring, colorstring, PVP)
-	end
-	if not cu.connected then
-		namestring = format("%s |cff888888<%s>", namestring, PLAYER_OFFLINE)
-	end
-	render_line(namestring)
+
+	render_line(format(cu.nameformat, character.NA and truncate_lines((character.NA:gsub("||?c%x%x%x%x%x%x%x%x%s*", "")), 60, 0, false) or xrp:NameWithoutRealm(cu.name)), cu.pvpicon)
 
 	if character.NI then
 		render_line(format("|cff6070a0%s: |cff99b3e6\"%s\"", XRP_NI, truncate_lines((character.NI:gsub("||?c%x%x%x%x%x%x%x%x%s*", "")), 60, #XRP_NI, false)))
@@ -226,27 +226,26 @@ function xrp.tooltip:RefreshPlayer(character)
 		render_line(format("|cffcccccc%s", truncate_lines((character.NT:gsub("||?c%x%x%x%x%x%x%x%x%s*", "")), 60)))
 	end
 
-	if cu.guild then
-		render_line(format("<%s>", cu.guild))
+	if xrp_settings.tooltip.extraspace then
+		render_line(" ")
 	end
 
-	if cu.visible then
-		local pvpnamestring = format("|cff%s%s", faction_colors[cu.faction].light, cu.pvpname)
-		if cu.realm and cu.realm ~= "" then
-			pvpnamestring = format("%s (%s)", pvpnamestring, xrp:RealmNameWithSpacing(cu.realm))
-		end
-		render_line(pvpnamestring, character.VA and format("|cff7f7f7f%s", tooltip_parse_VA(character.VA)) or nil)
+	render_line(cu.guild)
+
+	if character ~= unknown then
+		render_line(cu.titlerealm, character.VA and format("|cff7f7f7f%s", parse_VA(character.VA)) or nil)
 	end
 
 	if character.CU then
 		render_line(format("|cffa08050%s:|cffe6b399 %s", XRP_CU, truncate_lines((character.CU:gsub("||?c%x%x%x%x%x%x%x%x%s*", "")), 60, #XRP_CU)))
 	end
 
-	local race = character.RA and (character.RA:gsub("||?c%x%x%x%x%x%x%x%x%s*", "")) or cu.race
-	-- Note: RAID_CLASS_COLORS[classid].colorStr does *not* have a pipe
-	-- escape in it -- it's just the AARRGGBB string. Some other default
-	-- color strings do, so be sure to check.
-	render_line(format("|cffffffff%s %s %s |c%s%s|cffffffff (%s)", LEVEL, cu.level, truncate_lines(race, 40, 0, false), RAID_CLASS_COLORS[cu.classid].colorStr, cu.class, PLAYER))
+	if xrp_settings.tooltip.extraspace and (cu.guild or character ~= unknown or character.CU) then
+		render_line(" ")
+	end
+
+	local race = character.RA and xrp_settings.tooltip.rprace and (character.RA:gsub("||?c%x%x%x%x%x%x%x%x%s*", "")) or cu.race
+	render_line(format(cu.info, truncate_lines(race, 40, 0, false)))
 
 	if (character.FR and character.FR ~= "0") or (character.FC and character.FC ~= "0") then
 		-- AAAAAAAAAAAAAAAAAAAAAAAA. The boolean logic.
@@ -258,13 +257,66 @@ function xrp.tooltip:RefreshPlayer(character)
 		render_line(frline, fcline)
 	end
 
-	if not cu.visible and cu.location then
-		render_line(format("|cffffeeaa%s: |cffffffff%s", ZONE, cu.location))
-	end
+	render_line(cu.location)
 
 	-- In rare cases (test case: target without RP addon, is PvP flagged) there
 	-- will be some leftover lines at the end of the tooltip. This hides them,
 	-- if they exist.
+	while numline < oldlines do
+		numline = numline + 1
+		_G["GameTooltipTextLeft"..numline]:Hide()
+		_G["GameTooltipTextRight"..numline]:Hide()
+	end
+
+	-- TODO: Show right text 2 if PvP flagged?
+	GameTooltip:Show()
+end
+
+function xrp.tooltip:PetUnit(unit)
+	local name = (UnitName(unit))
+	local faction = (UnitFactionGroup(unit))
+	if not faction or type(faction_colors[faction]) ~= "table" then
+		faction = "Neutral"
+	end
+
+	local attackme = UnitCanAttack(unit, "player") -- Used two times.
+	local color = xrp_settings.tooltip.reaction and reaction_colors[faction ~= xrp.toon.fields.GF and "hostile" or (faction == xrp.toon.fields.GF and not UnitCanAttack("player", unit) and not attackme and "friendly") or "neutral"] or faction_colors[faction].dark
+
+	cu.nameformat = "|cff"..color..name
+	local ffa = UnitIsPVPFreeForAll(unit)
+	cu.pvpicon = (UnitIsPVP(unit) or ffa) and ("|TInterface\\TargetingFrame\\UI-PVP-"..((ffa or faction == "Neutral") and "FFA" or faction)..":20:20:4:-2:8:8:0:5:0:5:255:255:255|t") or nil
+
+	-- I hate how fragile this is.
+	local ownership = GameTooltipTextLeft2:GetText()
+	local realm = ownership:match("^[^%s-]*%-([^%s]-)'s.*")
+	local pettype = ownership:match("^[^%s]+%s*(.*)")
+
+	cu.titlerealm = "|cff"..faction_colors[faction].light..(pettype == "Minion" and UNITNAME_TITLE_MINION or UNITNAME_TITLE_PET)..(realm and " ("..xrp:RealmNameWithSpacing(realm)..")" or "")
+
+	local owner = ownership:match("^([^%s]-)'s.*")
+	if not owner then return end
+	cu.name = xrp:NameWithRealm(owner)
+	local level = UnitLevel(unit)
+	local race = UnitCreatureFamily(unit) or UnitCreatureType(unit)
+	-- Mages, death knights, and warlocks have minions, hunters have pets. Mages
+	-- and death knights only have one pet family each.
+	local classid = (pettype == "Minion" and ((race == "Water Elemental" and "MAGE") or (race == "Ghoul" and "DEATHKNIGHT") or "WARLOCK")) or (pettype == "Pet" and "HUNTER")
+
+	cu.info = format("|cffffffff%s |c%s%s|cffffffff (%s)", format(level < 0 and UNIT_LETHAL_LEVEL_TEMPLATE or UNIT_LEVEL_TEMPLATE, level), RAID_CLASS_COLORS[classid].colorStr, race, PET)
+
+	xrp.tooltip:RefreshPet(UnitIsVisible(unit) and (not xrp_settings.tooltip.nohostile or (faction == xrp.toon.fields.GF and not attackme)) and xrp.characters[cu.name] or unknown)
+end
+
+function xrp.tooltip:RefreshPet(character)
+	oldlines = GameTooltip:NumLines()
+	numline = 0
+
+	render_line(cu.nameformat, cu.pvpicon)
+
+	render_line(format(cu.titlerealm, character.NA and truncate_lines((character.NA:gsub("||?c%x%x%x%x%x%x%x%x%s*", "")), 60, 0, false) or xrp:NameWithoutRealm(cu.name)))
+
+	render_line(cu.info)
+
 	while numline < oldlines do
 		numline = numline + 1
 		_G["GameTooltipTextLeft"..numline]:Hide()
@@ -277,6 +329,11 @@ end
 xrp.tooltip:SetScript("OnEvent", function(self, event, addon)
 	if event == "ADDON_LOADED" and addon == "xrp_tooltip" then
 
+		if type(xrp_settings.tooltip) ~= "table" then
+			xrp_settings.tooltip = {}
+		end
+		setmetatable(xrp_settings.tooltip, default_settings)
+
 		GameTooltip:HookScript("OnTooltipSetUnit", function(self)
 			-- GetUnit() will not return any sort of the non-basic unit
 			-- strings, such as "targettarget", "pettarget", etc. It'll only
@@ -288,11 +345,14 @@ xrp.tooltip:SetScript("OnEvent", function(self, event, addon)
 			local unit = select(2, self:GetUnit())
 			if UnitIsPlayer(unit) then
 				xrp.tooltip:PlayerUnit(unit)
+			elseif UnitIsOtherPlayersPet(unit) or unit and UnitIsUnit("playerpet", unit) then
+				xrp.tooltip:PetUnit(unit)
 			elseif unit == nil then
 				xrp.tooltip:Show()
 			end
 		end)
 
+		-- TODO: Handle pet refreshes if possible.
 		xrp:HookEvent("MSP_RECEIVE", function(name)
 			local tooltip, unit = GameTooltip:GetUnit()
 			-- TODO: Check if the off-realm tooltip targets have their realms
@@ -325,5 +385,7 @@ xrp.tooltip:SetScript("OnUpdate", function(self, elapsed)
 	local unit = select(2, GameTooltip:GetUnit())
 	if UnitIsPlayer(unit) then
 		xrp.tooltip:PlayerUnit(unit)
+	elseif UnitIsOtherPlayersPet(unit) or unit and UnitIsUnit("playerpet", unit) then
+		xrp.tooltip:PetUnit(unit)
 	end
 end)
