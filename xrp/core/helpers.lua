@@ -20,20 +20,25 @@ function xrp:UnitNameWithRealm(unit)
 	local isplayer = UnitIsPlayer(unit)
 	if name ~= nil then
 		if (realm == nil or realm == "") and isplayer then
-			return format("%s-%s", name, GetRealmName():gsub("%s+", ""))
+			return FULL_PLAYER_NAME:format(name, GetRealmName():gsub("%s+", ""))
 		elseif realm and isplayer then
-			return format("%s-%s", name, realm)
-		else
-			return name
+			return FULL_PLAYER_NAME:format(name, realm)
 		end
+		return name
 	end
 	return nil
 end
 
-function xrp:NameWithRealm(name)
-	-- Searching for a '-' will indicate if it already has a realm name. '-'
-	-- is not valid in a base name.
-	return not name:find("-", 1, true) and format("%s-%s", name, (GetRealmName():gsub("%s+", ""))) or name
+function xrp:NameWithRealm(name, realm)
+	if name:find("-", 1, true) then
+		-- Searching for a '-' will indicate if it already has a realm name.
+		return name
+	elseif realm and realm ~= "" then
+		-- If a realm was provided, use it (after stripping spaces).
+		return FULL_PLAYER_NAME:format(name, (realm:gsub("%s+", "")))
+	end
+	-- Fall back to using our own realm (after stripping spaces).
+	return FULL_PLAYER_NAME:format(name, (GetRealmName():gsub("%s+", "")))
 end
 
 -- Dumb version of Ambiguate().
@@ -62,7 +67,6 @@ function xrp:ConvertWeight(weight, units)
 	end
 	if not number then
 		-- Match "50lbs", "50 lbs", "50 pounds", etc.
-		-- TODO: Should this handle insane corner cases, i.e. "Ib"/"Ibs"?
 		number = ((tonumber((weight:lower():gsub("%a*(%d+)%s*lb.*", "%1"))) or tonumber((weight:lower():gsub("%a*(%d+)%s*pounds?.*", "%1")))) or 0) / 2.20462
 		number = number ~= 0 and number or nil
 	end
@@ -101,7 +105,6 @@ function xrp:ConvertHeight(height, units)
 	end
 	if not number then
 		-- Match "4'9", "4'9"", "4 ft 9 in", etc.
-		-- TODO: weight:match() may be a quicker way to get this.
 		number = (((tonumber((height:lower():gsub("%a*(%d+)'%d*.*", "%1"))) or tonumber((height:lower():gsub("%a*(%d+)%s*ft.*", "%1"))) or 0) * 12) + (tonumber((height:lower():gsub("%a*%d+'(%d*).*", "%1"))) or tonumber((height:lower():gsub("%a*%d+%s*ft%.?%s*(%d+)%s*in.*", "%1"))) or 0)) * 2.54
 		number = number ~= 0 and number or nil
 	end
@@ -129,13 +132,34 @@ function xrp:ConvertHeight(height, units)
 	end
 end
 
+function xrp:CacheTidy(timer)
+	if type(timer) ~= "number" or timer <= 0 then
+		timer = xrp_settings.cachetime
+	end
+	if not timer then return false end
+	local now = time()
+	local before = now - timer
+	for character, _ in pairs(xrp_cache) do
+		if not xrp_cache[character].lastreceive then
+			-- Pre-beta5 didn't have this value. Might be able to be dropped
+			-- at some point in the distant future (or just left as a
+			-- safeguard).
+			xrp_cache[character].lastreceive = now
+		elseif xrp_cache[character].lastreceive < before then
+			xrp_cache[character] = nil
+		end
+	end
+	-- Explicitly collect garbage, as there may be a hell of a lot of it.
+	collectgarbage()
+	return true
+end
+
 local events = {}
 
 function xrp:FireEvent(event, ...)
 	if type(events[event]) ~= "table" then
 		events[event] = {}
 	end
-	-- TODO: Add in event as argument at start?
 	for _, func in ipairs(events[event]) do
 		func(...)
 	end
@@ -147,5 +171,3 @@ function xrp:HookEvent(event, func)
 	end
 	events[event][#events[event]+1] = func
 end
-
-
