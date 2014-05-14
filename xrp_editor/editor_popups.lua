@@ -68,7 +68,7 @@ StaticPopupDialogs["XRP_EDITOR_RENAME"] = {
 	OnAccept = function(self, data, data2)
 		local profile = xrp.editor.Profiles:GetText()
 		local text = self.editBox:GetText()
-		if not xrp.profiles[profile](text) then
+		if not xrp.profiles[profile]("rename", text) then
 			StaticPopup_Show("XRP_EDITOR_FAIL")
 		else
 			xrp.editor:Load(text)
@@ -97,7 +97,7 @@ StaticPopupDialogs["XRP_EDITOR_COPY"] = {
 	OnAccept = function(self, data, data2)
 		local profile = xrp.editor.Profiles:GetText()
 		local text = self.editBox:GetText()
-		if not xrp.profiles[text](profile) then
+		if not xrp.profiles[profile]("copy", text) then
 			StaticPopup_Show("XRP_EDITOR_FAIL")
 		else
 			xrp.editor:Load(text)

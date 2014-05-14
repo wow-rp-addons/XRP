@@ -44,7 +44,7 @@ function xrp.editor:Save()
 	-- assumed that the field should be left alone, rather than emptied.
 	local name = self.Profiles:GetText()
 	for field, _ in pairs(supportedfields) do
-		if field == "FC" then -- TODO: Move into xrp/profiles.lua?
+		if field == "FC" then
 			local fc = self[field]:GetText()
 			xrp.profiles[name][field] = fc ~= "0" and fc or nil
 			last_profile[field] = fc
@@ -59,7 +59,7 @@ function xrp.editor:Save()
 
 	saving = false
 
-	local length = xrp.profiles[name](9000)
+	local length = xrp.profiles[name]("length", 9000)
 	if length and length > 16000 then
 		StaticPopup_Show("XRP_EDITOR_16000")
 	elseif length and not warn9000 then
