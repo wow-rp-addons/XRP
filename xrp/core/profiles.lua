@@ -108,45 +108,50 @@ local profmt = {
 			xrp:FireEvent("PROFILE_FIELD_SAVE", name, field)
 		end
 	end,
-	__call = function(profile, newname)
-		if type(newname) == "number" then
+	__call = function(profile, action, argument)
+		if action == "length" and type(argument) == "number" then
 			local length = 0
 			for field, contents in pairs(xrp_profiles[profile[nk]]) do
 				length = length + #contents
 			end
-			if length > newname then
+			if length > argument then
 				return length
 			end
-		elseif type(newname) == "string" then
+		elseif action == "rename" and type(argument) == "string" then
 			local name = profile[nk]
-			if (type(xrp_profiles[name]) ~= "table" or (name == "Default" and name ~= newname and (not xrp_profiles["Default (Old)"] or newname == "Default (Old)"))) and type(xrp_profiles[newname]) == "table" then
-				if name == "Default" and newname ~= "Default (Old)" then
-					xrp_profiles["Default (Old)"] = xrp_profiles[name]
-				end
-				-- Copy profile into the empty table called.
-				xrp_profiles[name] = {}
-				for field, contents in pairs(xrp_profiles[newname]) do
-					xrp_profiles[name][field] = contents
-				end
-				if xrp_selectedprofile == name then
-					xrp.profiles(name)
-				end
-				return true
-			elseif type(xrp_profiles[name]) == "table" and (type(xrp_profiles[newname]) ~= "table" or (newname == "Default" and name ~= newname and (not xrp_profiles["Default (Old)"] or name == "Default (Old)"))) then
-				if newname == "Default" and name ~= "Default (Old)" then
-					xrp_profiles["Default (Old)"] = xrp_profiles[newname]
+			if type(xrp_profiles[name]) == "table" and name ~= "Default" and (type(xrp_profiles[argument]) ~= "table" or (argument == "Default" and name ~= argument and (not xrp_profiles["Default (Old)"] or name == "Default (Old)"))) then
+				if argument == "Default" and name ~= "Default (Old)" then
+					xrp_profiles["Default (Old)"] = xrp_profiles[argument]
 				end
 				-- Rename profile to the nonexistant table provided.
-				xrp_profiles[newname] = xrp_profiles[name]
+				xrp_profiles[argument] = xrp_profiles[name]
 				-- Select the new name if this is our active profile.
-				if xrp_selectedprofile == newname then
-					xrp.profiles(newname)
+				if xrp_selectedprofile == argument then
+					xrp.profiles(argument)
 				end
 				xrp.profiles[name] = nil -- Use table access to save Default.
-				xrp:FireEvent("PROFILE_RENAME", name, newname)
+				xrp:FireEvent("PROFILE_RENAME", name, argument)
 				return true
 			end
-		elseif not newname then
+		elseif action == "copy" and type(argument) == "string" then
+			local name = profile[nk]
+			if type(xrp_profiles[name]) == "table" and (type(xrp_profiles[argument]) ~= "table" or (argument == "Default" and argument ~= name and (not xrp_profiles["Default (Old)"] or name == "Default (Old)"))) then
+				if argument == "Default" and name ~= "Default (Old)" then
+					xrp_profiles["Default (Old)"] = xrp_profiles[argument]
+				end
+				-- Copy profile into the empty table called.
+				xrp_profiles[argument] = {}
+				for field, contents in pairs(xrp_profiles[name]) do
+					xrp_profiles[argument][field] = contents
+				end
+				-- Will only happen if copying over Default.
+				if xrp_selectedprofile == argument then
+					xrp.profiles(argument)
+				end
+				return true
+			end
+		elseif not action then
+			local name = profile[nk]
 			local profile = {}
 			for field, contents in pairs(xrp_profiles[name]) do
 				profile[field] = contents
@@ -206,9 +211,7 @@ xrp.profiles = setmetatable({}, {
 			return list
 		elseif type(name) == "string" and xrp_profiles[name] then
 			xrp_selectedprofile = name
-
 			wipe(overrides) -- TODO: Should this really wipe the overrides?
-
 			xrp.msp:Update()
 			return true
 		end
