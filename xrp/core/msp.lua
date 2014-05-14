@@ -56,23 +56,21 @@ xrp.msp.metafields = { VA = true, VP = true }
 xrp.msp.fieldtimes = setmetatable(
 	{ TT = 15, },
 	{
-		__index = function(times, field)
+		__index = function(self, field)
 			return 45
 		end,
 	}
 )
 
 local tmp_cache = setmetatable({}, {
-	__index = function(tmp_cache, character)
-		tmp_cache[character] = {
-			nogfields = true,
+	__index = function(self, character)
+		self[character] = {
 			nomsp = true,
 			lastcheck = 0,
 			time = {},
 		}
-		return tmp_cache[character]
+		return self[character]
 	end,
---	__mode = "v", -- TODO: Decide if this is good idea. Probably is not.
 })
 
 local old = false
@@ -98,24 +96,44 @@ local function cachett()
 	return true
 end
 
+local filter = setmetatable({}, { __mode = "v" })
+
+local function add_filter(character)
+	filter[character] = GetTime()
+end
+
+local function filter_error(self, event, message)
+	local character = message:match(ERR_CHAT_PLAYER_NOT_FOUND_S:format("(.+)"))
+	if character == nil or character == "" then
+		return false
+	end
+	-- Filter if within 500ms of current time plus home latency. GetNetStats()
+	-- provides value in milliseconds.
+	local dofilter = filter[character] > (GetTime() - 0.500 - ((select(3, GetNetStats())) * 0.001))
+	if not dofilter then
+		filter[character] = nil
+	end
+	return dofilter
+end
+
 local function send(character, data, priority)
 	data = table.concat(data, "\1")
 	--print(character..": "..data:gsub("\1", "\\1"))
 	if #data <= 255 then
-		ChatThrottleLib:SendAddonMessage(priority, "MSP", data, "WHISPER", character)
+		ChatThrottleLib:SendAddonMessage(priority, "MSP", data, "WHISPER", character, nil, add_filter, character)
 	else
 		-- XC is most likely to add five or six extra characters, will not
 		-- add less than five, and only adds seven or more if the profile
 		-- is over 25000 characters or so. So let's say six.
 		data = format("XC=%u\1%s", math.ceil((#data + 6) / 255), data)
 		local position = 1
-		ChatThrottleLib:SendAddonMessage(priority, "MSP\1", data:sub(position, position + 254), "WHISPER", character)
+		ChatThrottleLib:SendAddonMessage(priority, "MSP\1", data:sub(position, position + 254), "WHISPER", character, nil, add_filter, character)
 		position = position + 255
 		while position + 255 <= #data do
-			ChatThrottleLib:SendAddonMessage(priority, "MSP\2", data:sub(position, position + 254), "WHISPER", character)
+			ChatThrottleLib:SendAddonMessage(priority, "MSP\2", data:sub(position, position + 254), "WHISPER", character, nil, add_filter, character)
 			position = position + 255
 		end
-		ChatThrottleLib:SendAddonMessage(priority, "MSP\3", data:sub(position), "WHISPER", character)
+		ChatThrottleLib:SendAddonMessage(priority, "MSP\3", data:sub(position), "WHISPER", character, nil, add_filter, character)
 	end
 end
 
@@ -164,18 +182,16 @@ local function msp_process(character, cmd)
 				versions = {},
 			}
 			-- What this does is pull the G-fields from the unitcache,
-			-- accessed through xrp.characters, into the actual cache, but
+			-- accessed through xrp.cache, into the actual cache, but
 			-- only if the character has MSP. This keeps the saved cache a
-			-- bit more lightweight. These are queried automatically by our
-			-- first request to them, so it should either copy the fields
-			-- from the unitcache or just get what they're already set to.
+			-- bit more lightweight.
 			--
 			-- The G-fields are also put into the saved cache when they're
 			-- initially generated, if the cache table for that character
 			-- exists (indicating MSP support is/was present -- this function
 			-- is the *only* place a character cache table is created).
 			for gfield, _ in pairs(xrp.msp.unitfields) do
-				xrp_cache[character].fields[gfield] = xrp.characters[character][gfield]
+				xrp_cache[character].fields[gfield] = xrp.cache[character][gfield]
 			end
 		end
 		if xrp_cache[character] and xrp_cache[character].fields[field] and (not contents or contents == "") and not xrp.msp.unitfields[field] then
@@ -192,7 +208,8 @@ local function msp_process(character, cmd)
 			xrp_cache[character].versions[field] = nil
 		end
 		-- Save time regardless of contents or version. This prevents querying
-		-- again too soon.
+		-- again too soon. Query time is also set prior to initial send -- so
+		-- timer will count from send OR receive as appropriate.
 		tmp_cache[character].time[field] = GetTime()
 	end
 	return nil, updated, false -- No response needed.
@@ -228,11 +245,16 @@ xrp.msp.handlers = {
 			-- This only fires if there's actually been any changes to field
 			-- contents.
 			xrp:FireEvent("MSP_RECEIVE", character)
-		else
+		elseif #out == 0 then
 			xrp:FireEvent("MSP_NOCHANGE", character)
 		end
 		if #out > 0 then
+			-- Tooltip respones are medium priority, rest are low.
 			send(character, out, ttresp and "NORMAL" or "BULK")
+		end
+		-- Cache timer. Last receive marked for clearing old entries.
+		if xrp_cache[character] then
+			xrp_cache[character].lastreceive = time()
 		end
 	end,
 	["MSP\1"] = function(character, msg)
@@ -310,9 +332,7 @@ function xrp.msp:QueueRequest(character, field)
 end
 
 function xrp.msp:Request(character, fields)
-	if disabled or xrp:NameWithoutRealm(character) == UNKNOWN then
-		return false
-	elseif character == xrp.toon.withrealm then
+	if disabled or character == xrp.toon.withrealm or xrp:NameWithoutRealm(character) == UNKNOWN then
 		return false
 	end
 
@@ -330,7 +350,7 @@ function xrp.msp:Request(character, fields)
 		fields = { fields }
 	elseif type(fields) == "table" then
 		-- No need to strip repeated fields -- the logic below for not querying
-		-- fields too quickly in succession will handle that for us.
+		-- fields repeatedly over a short time will handle that for us.
 		local reqtt = false
 		for key = #fields, 1, -1 do -- Backwards... Or else it breaks. BADLY.
 			if fields[key] == "TT" or xrp.msp.ttfields[fields[key]] then
@@ -346,16 +366,6 @@ function xrp.msp:Request(character, fields)
 		return false
 	end
 
-	-- nogfields = true if we've not sent a request to them yet. Doing this
-	-- automatically prevents us from sometimes sending another request later
-	-- when we receive a probe from them.
-	if tmp_cache[character].nogfields then
-		for field, _ in pairs(xrp.msp.unitfields) do
-			fields[#fields + 1] = field
-		end
-		tmp_cache[character].nogfields = nil
-	end
-
 	local out = {}
 	for _, field in ipairs(fields) do
 		if not xrp_cache[character] or not tmp_cache[character].time[field] or now > tmp_cache[character].time[field] + xrp.msp.fieldtimes[field] then
@@ -365,6 +375,7 @@ function xrp.msp:Request(character, fields)
 	end
 	if #out > 0 then
 		--print(character..": "..table.concat(out, " "))
+		-- Outgoing requests are high-priority.
 		send(character, out, "ALERT")
 		return true
 	end
@@ -432,6 +443,10 @@ function xrp.msp:Update()
 		for field, version in pairs(xrp_versions) do
 			xrp_cache[xrp.toon.withrealm].versions[field] = version
 		end
+		-- If it's our character we never want the cache tidy to wipe it
+		-- out. Do this by setting the wipe timer for 2038.
+		xrp_cache[xrp.toon.withrealm].lastreceive = 2147483647
+
 		-- First run, build the tooltip (but don't change its version!).
 		cachett()
 		changes = true
@@ -492,6 +507,7 @@ local function msp_OnEvent(self, event, prefix, message, channel, character)
 		for prefix, _ in pairs(self.handlers) do
 			RegisterAddonMessagePrefix(prefix)
 		end
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", filter_error)
 		ChatThrottleLib.MAX_CPS = 1200 -- up from 800
 		ChatThrottleLib.MIN_FPS = 15 -- down from 20
 		self:UnregisterEvent("ADDON_LOADED")

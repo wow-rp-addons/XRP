@@ -24,6 +24,8 @@ local default_settings = { __index = {
 	height = "ft",
 	weight = "lb",
 	minimap = 225,
+	cachetime = 604800, -- 7 days
+	cachetidy = true,
 }}
 
 local default_defaults = { __index = function(default_defaults, field)
@@ -114,10 +116,11 @@ local function init_OnEvent(xrp, event, addon)
 		end
 
 		xrp.toon = {}
+		xrp.toon.name = (UnitName("player"))
 		-- DO NOT use xrp:UnitNameWithRealm() here as it will fail on first
-		-- load after login (UnitIsPlayer("player") fails).
-		xrp.toon.withrealm = format("%s-%s", UnitName("player"), GetRealmName():gsub("%s+", ""))
-		xrp.toon.name = xrp:NameWithoutRealm(xrp.toon.withrealm)
+		-- load after login (UnitIsPlayer("player") fails prior to
+		-- PLAYER_LOGIN).
+		xrp.toon.withrealm = xrp:NameWithRealm(xrp.toon.name)
 		-- NOTE: UnitGUID("player") doesn't work until PLAYER_LOGIN, so is set
 		-- during that event (below).
 		xrp.toon.fields = { -- NONE of these are localized.
@@ -140,7 +143,14 @@ local function init_OnEvent(xrp, event, addon)
 		-- UnitGUID("player") doesn't work before first PLAYER_LOGIN.
 		xrp.toon.fields.GU = UnitGUID("player")
 		xrp.profiles(xrp_selectedprofile)
+		if xrp_settings.cachetidy then
+			xrp:CacheTidy()
+		end
 		xrp:UnregisterEvent("PLAYER_LOGIN")
+		xrp:RegisterEvent("NEUTRAL_FACTION_SELECT_RESULT")
+	elseif event == "NEUTRAL_FACTION_SELECT_RESULT" then
+		xrp.toon.fields.GF = (UnitFactionGroup("player"))
+		xrp.msp:Update()
 	end
 end
 xrp:SetScript("OnEvent", init_OnEvent)
