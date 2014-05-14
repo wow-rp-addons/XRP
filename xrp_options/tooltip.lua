@@ -15,7 +15,7 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local tooltip_settings = { "reaction", "guildrank", "rprace", "nohostile", "extraspace" }
+local tooltip_settings = { "reaction", "guildrank", "rprace", "noopfaction", "nohostile", "extraspace" }
 
 local function tooltip_Okay()
 	for _, tt in ipairs(tooltip_settings) do
