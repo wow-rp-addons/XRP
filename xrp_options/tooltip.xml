@@ -38,9 +38,14 @@
 						<Anchor point="TOPLEFT" relativeKey="$parent.guildrankLabel" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="nohostileLabel" inherits="GameFontWhite" text="Hide RP information on hostile targets">
+				<FontString parentKey="noopfactionLabel" inherits="GameFontWhite" text="Hide RP information on opposite faction targets">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.rpraceLabel" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="nohostileLabel" inherits="GameFontWhite" text="Hide RP information on hostile targets">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.noopfactionLabel" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="extraspaceLabel" inherits="GameFontWhite" text="Add extra blank lines">
@@ -67,6 +72,12 @@
 				<Size x="24" y="24"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.rpraceLabel" relativePoint="LEFT" x="-4" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentnoopfaction" parentKey="noopfaction" inherits="UICheckButtonTemplate">
+				<Size x="24" y="24"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.noopfactionLabel" relativePoint="LEFT" x="-4" y="0"/>
 				</Anchors>
 			</CheckButton>
 			<CheckButton name="$parentnohostile" parentKey="nohostile" inherits="UICheckButtonTemplate">
