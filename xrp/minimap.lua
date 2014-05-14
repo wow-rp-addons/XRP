@@ -125,7 +125,6 @@ StaticPopupDialogs["XRP_CURRENTLY"] = {
 	whileDead = true,
 	hideOnEscape = true,
 	preferredIndex = 3,
---	sound = ,
 }
 
 local minimap_menulist = {

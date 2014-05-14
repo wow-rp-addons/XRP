@@ -26,7 +26,7 @@
 			</OnEditFocusGained>
 			<OnEnter>
 				local text = self:GetText();
-				if (#text * 6) > self:GetWidth() then
+				if (#text * 6.25) > self:GetWidth() then
 					GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
 					GameTooltip:SetText(text);
 				end;
