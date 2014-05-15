@@ -36,7 +36,6 @@ StaticPopupDialogs["XRP_EDITOR_ADD"] = {
 	whileDead = true,
 	hideOnEscape = true,
 	preferredIndex = 3,
---	sound = ,
 }
 StaticPopupDialogs["XRP_EDITOR_DELETE"] = {
 	text = "Are you sure you want to remove \"%s\"?",
@@ -50,7 +49,6 @@ StaticPopupDialogs["XRP_EDITOR_DELETE"] = {
 	whileDead = true,
 	hideOnEscape = true,
 	preferredIndex = 3,
---	sound = ,
 }
 StaticPopupDialogs["XRP_EDITOR_RENAME"] = {
 	text = "Please enter a new name for \"%s\".",
@@ -79,7 +77,6 @@ StaticPopupDialogs["XRP_EDITOR_RENAME"] = {
 	whileDead = true,
 	hideOnEscape = true,
 	preferredIndex = 3,
---	sound = ,
 }
 StaticPopupDialogs["XRP_EDITOR_COPY"] = {
 	text = "Please enter a name for the copy of \"%s\".",
@@ -108,7 +105,6 @@ StaticPopupDialogs["XRP_EDITOR_COPY"] = {
 	whileDead = true,
 	hideOnEscape = true,
 	preferredIndex = 3,
---	sound = ,
 }
 StaticPopupDialogs["XRP_EDITOR_FAIL"] = {
 	text = "Something went wrong; a profile with that name may already exist.",
@@ -119,7 +115,6 @@ StaticPopupDialogs["XRP_EDITOR_FAIL"] = {
 	whileDead = true,
 	hideOnEscape = true,
 	preferredIndex = 3,
---	sound = ,
 }
 StaticPopupDialogs["XRP_EDITOR_9000"] = {
 	text = "Your combined profile length is over 9000 characters. This may slow loading for others.",
@@ -130,7 +125,6 @@ StaticPopupDialogs["XRP_EDITOR_9000"] = {
 	whileDead = true,
 	hideOnEscape = true,
 	preferredIndex = 3,
---	sound = ,
 }
 StaticPopupDialogs["XRP_EDITOR_16000"] = {
 	text = "Your combined profile length is above 16000 characters. There is a chance of this causing serious problems with others loading it, and it will significantly increase load times for them.",
@@ -141,5 +135,4 @@ StaticPopupDialogs["XRP_EDITOR_16000"] = {
 	whileDead = true,
 	hideOnEscape = true,
 	preferredIndex = 3,
---	sound = ,
 }
