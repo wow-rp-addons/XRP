@@ -1,63 +1,87 @@
-5.4.7.0_beta4 (2014-04-27):
-	IMPORTANT: ADDON NAMES HAVE CHANGED. YOU **MUST** REMOVE ALL OLD COPIES
-	OF xrp AND xrpui_* FROM YOUR INTERFACE\ADDONS FOLDER PRIOR TO INSTALLING
-	THE NEW VERSION.
+5.4.7.0_beta5 (2014-05-15):
 
-	- This reorganization was done to make maintenance easier. While it was
-	  done there were significant changes to the file structure of several
-	  components as well -- even had the addon names not changed, I would
-	  still be recommending removing the old versions. This will not happen
-	  again prior to 5.4.7.0 final.
+	- If you are upgrading from beta3 or earlier, please remove the old
+	  folders first (xrp and all the xrpui folders) from Interface\AddOns.
 
-	- There is a failsafe for if someone doesn't read the above notice.
-	  There's also a failsafe failsafe so they can't get stuck in a no-choice
-	  loop with the no-choice Reload UI prompt.
+	- PLEASE READ:
 
-	- A couple of settings will be reset to defaults (minimap button position
-	  and names-in-chat selection). Sorry for the inconvenience. (All profile
-	  data, cache data, and other settings are preserved.)
+		- Names in tooltips are now colored by reaction (green/yellow/red)
+		  rather than faction (blue/yellow/red) by default. The old behavior
+		  can be restored in the Interface Options.
 
-	- Added xrp_import: This addon imports RP profiles from other RP addons,
-	  into XRP. You can enable this along with all other RP addons you make
-	  use of to import everything in one shot (the importer will prompt you to
-	  reload your UI after it's finished -- XRP will be the only RP addon
-	  enabled after the reload).
-		- Currently supported: MyRolePlay, TotalRP2.
+		- Colored names in chat channels are no longer always used. To enable
+		  name coloration for any given channel (including say, emotes, yells,
+		  etc.), right click a chat tab, go to "Settings", and tick the class
+		  color box for any or all types.
 
-	- About/copyright information has been added in Interface Options.
+	- Other changes:
 
-	- Full options panel is now LoadOnDemand (loaded when accessing the XRP
-	  item in the Interface Options panel).
+		- The window size of the editor and viewer has been substantially
+		  increased. The height matches that of the spellbook, and the width
+		  has been somewhat increased. The field entry/display has been
+		  appropriately increased to match the new window sizes.
 
-	- Options item in the minimap menu has been removed. Options should be
-	  accessed through the game menu's Interface Options' AddOns tab.
+			- These changes were tested at 1920x1200 with UI scaling set to
+			  lowest. If they cause problems for you at lower resolutions or
+			  different UI scales, please inform the author -- an option to
+			  use the smaller window sizes will likely be added in such a
+			  case.
+
+		- The tooltip module has been substantially upgraded. Among the new
+		  features and changes:
+
+			- New pet tooltips, showing pet type and owner's RP name. Pet
+			  types display the family for Hunters (Wolf, Cat, etc.), the
+			  summon type for Warlocks (Voidwalker, Voidlord, Fel Imp, etc.),
+			  "Undead" for Unholy Death Knight ghouls/geists/skeletons, and
+			  "Elemental" for Frost Mage water elementals.
+
+				- Only permanent pets have these tooltips: temporary pets and
+				  guardians do not. They may be supported in a future version,
+				  but are not currently.
+
+			- PvP indicator has been changed to an icon (Alliance, Horde, or
+			  Free-For-All PvP indicator) at the far right of the first line.
+
+			- Configuration options for fine-tuning certain aspects of the
+			  tooltip are available in the Interface Options.
+
+		- The offline profile cache will now automatically tidy itself up on
+		  every login. By default, it will drop the cache for characters it
+		  hasn't had an update from in seven days.
+
+			- In the Interface Options, you can disable this automated
+			  tidying, or adjust the length of time it will wait before
+			  clearing out a character's cached RP data.
+
+		- A LibMSP compatibility layer has been added. LibMSP Compat provides
+		  an interface for addons expecting to find a traditional MSP
+		  implementation to interact (partially) with XRP. Not all features of
+		  LibMSP are available via this layer, but attempts to use unavailable
+		  features should not produce an error.
+
+			- This compatibility layer is enabled by default, but *WILL NOT*
+			  be loaded unless it is needed and only when it is needed. Unless
+			  you explicitly wish to disable this compatibility, it's
+			  recommended you leave it enabled.
 
 	- Bugfixes:
-		- Default text emotes (/dance, /wave, etc.) from players on other
-		  realms no longer produce a "no such player" warning, and now
-		  properly color the name.
 
-		- Secondary addons are now properly added to the version string.
+		- "Toggle viewer" in minimap menu should now work.
 
-		- Overwriting the currently active profile via rename (only possible
-		  for "Default") now correctly loads/sends to others.
+		- Minimap icon should now play better with minimap addons.
 
-		- Filling fields from default now handles more logically -- setting
-		  the defaults in the Interface Options will now only affect *new*
-		  profiles, and old profiles will keep their settings.
+		- "No changes." appearing in the Viewer should work somewhat more
+		  reliably.
 
 	- KNOWN ISSUES:
-		- You may occasionally see "No player named ... is currently player."
-		  messages seemingly at random. This typically occurs if someone has
-		  recently queried your profile, but logged off before receiving. How
-		  to properly deal with these is being considered for the future
-		  (i.e., it shouldn't happen once out of beta, at latest).
 
-		- Chat names don't work with addons such as Prat-3.0. Some other chat
-		  addons (including Prat-3.0, since the author of XRP likes using it)
-		  will be expliticly supported in the future.
+		- You may VERY RARELY see "No player named ... is currently playing."
+		  at seemingly random times. In general usage, these should no longer
+		  appear at all. If they do, please inform the author, it probably
+		  means that some timing changes need to happen.
 
-		- Other addons cannot interact with XRP like they can some other
-		  profile addons. This will be somewhat fixed (as best as is possible)
-		  in the future by providing a compatibility layer for them to work
-		  with.
+		- Chat names don't work with some addons, such as Prat-3.0. However,
+		  they also work just fine with other addons -- your milage will
+		  almost certainly vary. Some non-working addons may become explicitly
+		  supported in the future.
