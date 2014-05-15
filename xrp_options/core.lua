@@ -24,6 +24,9 @@ local function core_Okay()
 	for _, field in ipairs(core_defaultfields) do
 		xrp_settings.defaults[field] = xrp.options.core[field]:GetChecked() and true or false
 	end
+
+	xrp_settings.cachetime = UIDropDownMenu_GetSelectedValue(xrp.options.core.CacheTime)
+	xrp_settings.cachetidy = xrp.options.core.CacheAuto:GetChecked() and true or false
 end
 
 local function core_Refresh()
@@ -36,6 +39,10 @@ local function core_Refresh()
 	for _, field in ipairs(core_defaultfields) do
 		xrp.options.core[field]:SetChecked(xrp_settings.defaults[field])
 	end
+
+	UIDropDownMenu_Initialize(xrp.options.core.CacheTime, xrp.options.core.CacheTime.initialize)
+	UIDropDownMenu_SetSelectedValue(xrp.options.core.CacheTime, xrp_settings.cachetime)
+	xrp.options.core.CacheAuto:SetChecked(xrp_settings.cachetidy)
 end
 
 local function core_Default()
@@ -45,6 +52,9 @@ local function core_Default()
 	for field, setting in pairs(xrp_settings.defaults) do
 		xrp_settings.defaults[field] = nil
 	end
+
+	xrp_settings.cachetime = nil
+	xrp_settings.cachetidy = nil
 
 	core_Refresh()
 end
@@ -64,7 +74,7 @@ local function core_OnEvent(self, event, addon)
 				local value = key == 1 and "cm" or key == 2 and "ft" or key == 3 and "m"
 				info = UIDropDownMenu_CreateInfo()
 				info.text = text
-				info.value = tostring(value)
+				info.value = value
 				info.func = function(self, arg1, arg2, checked)
 					if not checked then
 						UIDropDownMenu_SetSelectedValue(UIDROPDOWNMENU_OPEN_MENU, self.value)
@@ -79,7 +89,22 @@ local function core_OnEvent(self, event, addon)
 				local value = key == 1 and "kg" or key == 2 and "lb"
 				info = UIDropDownMenu_CreateInfo()
 				info.text = text
-				info.value = tostring(value)
+				info.value = value
+				info.func = function(self, arg1, arg2, checked)
+					if not checked then
+						UIDropDownMenu_SetSelectedValue(UIDROPDOWNMENU_OPEN_MENU, self.value)
+					end
+				end
+				UIDropDownMenu_AddButton(info)
+			end
+		end)
+		UIDropDownMenu_Initialize(self.CacheTime, function()
+			local info
+			for key, text in ipairs({ "1 day", "3 days", "1 week", "2 weeks", "1 month", "3 months" }) do
+				local value = key == 1 and 86400 or key == 2 and 259200 or key == 3 and 604800 or key == 4 and 1209600 or key == 5 and 2419200 or key == 6 and 7257600
+				info = UIDropDownMenu_CreateInfo()
+				info.text = text
+				info.value = value
 				info.func = function(self, arg1, arg2, checked)
 					if not checked then
 						UIDropDownMenu_SetSelectedValue(UIDROPDOWNMENU_OPEN_MENU, self.value)

@@ -20,6 +20,42 @@ xrp = CreateFrame("Frame", "xrp", UIParent)
 xrp.version = GetAddOnMetadata("xrp", "Version")
 xrp.versionstring = format("%s/%s", GetAddOnMetadata("xrp", "Title"), xrp.version)
 
+-- TODO: Put these somewhere else?
+StaticPopupDialogs["XRP_CACHE_CLEAR"] = {
+	text = "Are you sure you wish to empty the profile cache?",
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	OnAccept = function()
+		xrp:CacheTidy(60)
+		StaticPopup_Show("XRP_CACHE_CLEARED")
+	end,
+	enterClicksFirstButton = true,
+	timeout = 0,
+	whileDead = true,
+	hideOnEscape = true,
+	preferredIndex = 3,
+}
+
+StaticPopupDialogs["XRP_CACHE_CLEARED"] = {
+	text = "The cache has been cleared.",
+	button1 = OKAY,
+	enterClicksFirstButton = true,
+	timeout = 0,
+	whileDead = true,
+	hideOnEscape = true,
+	preferredIndex = 3,
+}
+
+StaticPopupDialogs["XRP_CACHE_TIDIED"] = {
+	text = "The cache has been tidied.",
+	button1 = OKAY,
+	enterClicksFirstButton = true,
+	timeout = 0,
+	whileDead = true,
+	hideOnEscape = true,
+	preferredIndex = 3,
+}
+
 local default_settings = { __index = {
 	height = "ft",
 	weight = "lb",
@@ -99,6 +135,7 @@ local function beta3convert()
 			end,
 			timeout = 0,
 			hideOnEscape = false,
+			preferredIndex = 3,
 		}
 		DisableAddOn("xrpui")
 		StaticPopup_Show("XRP_RELOAD_NOW")

@@ -123,6 +123,16 @@
 						<Anchor point="LEFT" relativeKey="$parent.FRLabel" relativePoint="RIGHT" x="50" y="0"/>
 					</Anchors>
 				</FontString>
+				<FontString parentKey="CacheLabel" inherits="GameFontNormal" text="Character cache expiry:">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.DefaultsLabel" relativePoint="BOTTOMLEFT" x="0" y="-140"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="CacheAutoLabel" inherits="GameFontWhite" text="Auto-expire cache">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.CacheLabel" relativePoint="BOTTOMLEFT" x="250" y="-12"/>
+					</Anchors>
+				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -246,6 +256,22 @@
 				<Size x="24" y="24"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.FCLabel" relativePoint="LEFT" x="-4" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<Button name="$parentCacheTime" parentKey="CacheTime" inherits="UIDropDownMenuTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.CacheLabel" relativePoint="BOTTOMLEFT" x="-22" y="-5"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						UIDropDownMenu_SetWidth(self, 200, 0);
+					</OnLoad>
+				</Scripts>
+			</Button>
+			<CheckButton name="$parentCacheAuto" parentKey="CacheAuto" inherits="UICheckButtonTemplate">
+				<Size x="24" y="24"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.CacheAutoLabel" relativePoint="LEFT" x="-4" y="0"/>
 				</Anchors>
 			</CheckButton>
 		</Frames>
