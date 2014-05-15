@@ -106,6 +106,7 @@ XRP = GetAddOnMetadata("xrp", "Title") -- In other words, XRP = "XRP"... Huh.
 BINDING_HEADER_XRP = XRP
 BINDING_NAME_XRP_EDITOR = L["Toggle RP profile editor"]
 BINDING_NAME_XRP_VIEWER = L["View target's RP profile"]
+BINDING_NAME_XRP_VIEWER_MOUSEOVER = L["View mouseover's RP profile"]
 BINDING_NAME_XRP_VIEWER_TOGGLE = L["Toggle RP profile viewer"]
 
 XRP_AUTHOR = format("%s%s:|r %s", "|cff99b3e6", L["Author"], GetAddOnMetadata("xrp", "Author"))
