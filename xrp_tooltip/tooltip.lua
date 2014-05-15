@@ -195,7 +195,8 @@ function xrp.tooltip:PlayerUnit(unit)
 
 	local pvpname = UnitPVPName(unit) or xrp:NameWithoutRealm(cu.name)
 	local realm = select(2, UnitName(unit))
-	cu.titlerealm = "|cff"..faction_colors[faction].light..pvpname..(realm and (" ("..xrp:RealmNameWithSpacing(realm)..")") or "")
+	local visible = UnitIsVisible(unit)
+	cu.titlerealm = visible and "|cff"..faction_colors[faction].light..pvpname..(realm and (" ("..xrp:RealmNameWithSpacing(realm)..")") or "") or nil
 
 	cu.race = (UnitRace(unit)) or UnitCreatureType(unit)
 	local level = UnitLevel(unit)
@@ -203,7 +204,6 @@ function xrp.tooltip:PlayerUnit(unit)
 	-- RAID_CLASS_COLORS is AARRGGBB.
 	cu.info = format("|cffffffff%s %%s |c%s%s|cffffffff (%s)", format(level < 0 and UNIT_LETHAL_LEVEL_TEMPLATE or UNIT_LEVEL_TEMPLATE, level), RAID_CLASS_COLORS[classid].colorStr, class, PLAYER)
 
-	local visible = UnitIsVisible(unit)
 	-- Ew, screen-scraping.
 	local location = not visible and connected and GameTooltipTextLeft3:GetText() or nil
 	cu.location = location and format("|cffffeeaa%s: |cffffffff%s", ZONE, location) or nil
@@ -235,9 +235,7 @@ function xrp.tooltip:RefreshPlayer(character)
 
 	render_line(cu.guild)
 
-	if character ~= unknown then
-		render_line(cu.titlerealm, character.VA and format("|cff7f7f7f%s", parse_VA(character.VA)) or nil)
-	end
+	render_line(cu.titlerealm, character.VA and format("|cff7f7f7f%s", parse_VA(character.VA)) or nil)
 
 	if character.CU then
 		render_line(format("|cffa08050%s:|cffe6b399 %s", XRP_CU, truncate_lines((character.CU:gsub("||?c%x%x%x%x%x%x%x%x%s*", "")), 60, #XRP_CU)))

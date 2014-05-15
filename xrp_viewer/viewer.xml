@@ -39,21 +39,21 @@
 				</FontString>
 				<!-- Nickname -->
 				<FontString name="$parentNI" parentKey="NI" inherits="GameFontNormalSmall" maxLines="1">
-					<Size x="340"/>
+					<Size x="325"/>
 					<Anchors>
 						<Anchor point="TOP" relativePoint="TOP" x="0" y="-23"/>
 					</Anchors>
 				</FontString>
 				<!-- Title -->
 				<FontString name="$parentNT" parentKey="NT" inherits="GameFontNormalSmall" maxLines="1">
-					<Size x="340"/>
+					<Size x="325"/>
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.NI" relativePoint="BOTTOM" x="0" y="-2"/>
 					</Anchors>
 				</FontString>
 				<!-- House/Clan/Tribe -->
 				<FontString name="$parentNH" parentKey="NH" inherits="GameFontNormalSmall" maxLines="1">
-					<Size x="340"/>
+					<Size x="325"/>
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.NT" relativePoint="BOTTOM" x="0" y="-2"/>
 					</Anchors>
