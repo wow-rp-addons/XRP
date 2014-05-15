@@ -50,6 +50,31 @@
 				</FontString>
 			</Layer>
 		</Layers>
+		<Frames>
+			<Button name="$parentCacheClear" parentKey="CacheClear" inherits="UIPanelButtonTemplate" text="Clear Cache">
+				<Size x="96" y="21"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-15" y="15"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						StaticPopup_Show("XRP_CACHE_CLEAR");
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentCacheTidy" parentKey="CacheTidy" inherits="UIPanelButtonTemplate" text="Tidy Cache">
+				<Size x="96" y="21"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.CacheClear" relativePoint="LEFT" x="-15"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						xrp:CacheTidy();
+						StaticPopup_Show("XRP_CACHE_TIDIED");
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
 		<Scripts>
 			<OnLoad>
 				self.name = XRP;
