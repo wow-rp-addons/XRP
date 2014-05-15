@@ -109,7 +109,7 @@ local function filter_error(self, event, message)
 	end
 	-- Filter if within 500ms of current time plus home latency. GetNetStats()
 	-- provides value in milliseconds.
-	local dofilter = filter[character] > (GetTime() - 0.500 - ((select(3, GetNetStats())) * 0.001))
+	local dofilter = filter[character] and filter[character] > (GetTime() - 0.500 - ((select(3, GetNetStats())) * 0.001))
 	if not dofilter then
 		filter[character] = nil
 	end
