@@ -104,10 +104,10 @@ end
 XRP = GetAddOnMetadata("xrp", "Title") -- In other words, XRP = "XRP"... Huh.
 
 BINDING_HEADER_XRP = XRP
-BINDING_NAME_XRP_EDITOR = L["Toggle RP profile editor"]
-BINDING_NAME_XRP_VIEWER = L["View target's RP profile"]
+BINDING_NAME_XRP_EDITOR = L["Open/close RP profile editor"]
+BINDING_NAME_XRP_VIEWER = L["View target's or mouseover's RP profile"]
+BINDING_NAME_XRP_VIEWER_TARGET = L["View target's RP profile"]
 BINDING_NAME_XRP_VIEWER_MOUSEOVER = L["View mouseover's RP profile"]
-BINDING_NAME_XRP_VIEWER_TOGGLE = L["Toggle RP profile viewer"]
 
 XRP_AUTHOR = format("%s%s:|r %s", "|cff99b3e6", L["Author"], GetAddOnMetadata("xrp", "Author"))
 XRP_VERSION = format("%s%s:|r %s", "|cff99b3e6", GAME_VERSION_LABEL, GetAddOnMetadata("xrp", "Version"))
@@ -125,3 +125,6 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.]] ]
+XRP_LICENSE_SHORT = L[ [[License: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.]] ]

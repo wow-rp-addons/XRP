@@ -17,6 +17,7 @@ libs\ChatThrottleLib\ChatThrottleLib.xml
 core\msp.lua
 core\characters.lua
 loader.lua
+commands.lua
 minimap.xml
 minimap.lua
 about.xml
