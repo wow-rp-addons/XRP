@@ -1,80 +1,37 @@
-5.4.7.0_beta5 (2014-05-15):
+5.4.7.0_beta6 (2014-05-16):
 
 	- If you are upgrading from beta3 or earlier, please remove the old
 	  folders first (xrp and all the xrpui folders) from Interface\AddOns.
 
-	- PLEASE READ:
+	- A slash command, /xrp, has been added. Type /xrp or /xrp help to see how
+	  to make use of it.
 
-		- Names in tooltips are now colored by reaction (green/yellow/red)
-		  rather than faction (blue/yellow/red) by default. The old behavior
-		  can be restored in the Interface Options.
+	- An optional indicator for if the character displayed on your tooltip is
+	  targeting you has been added. It can be enabled in the Interface
+	  Options (disabled by default).
 
-		- Colored names in chat channels are no longer always used. To enable
-		  name coloration for any given channel (including say, emotes, yells,
-		  etc.), right click a chat tab, go to "Settings", and tick the class
-		  color box for any or all types.
-
-	- Other changes:
-
-		- The window size of the editor and viewer has been substantially
-		  increased. The height matches that of the spellbook, and the width
-		  has been somewhat increased. The field entry/display has been
-		  appropriately increased to match the new window sizes.
-
-			- These changes were tested at 1920x1200 with UI scaling set to
-			  lowest. If they cause problems for you at lower resolutions or
-			  different UI scales, please inform the author -- an option to
-			  use the smaller window sizes will likely be added in such a
-			  case.
-
-		- The tooltip module has been substantially upgraded. Among the new
-		  features and changes:
-
-			- New pet tooltips, showing pet type and owner's RP name. Pet
-			  types display the family for Hunters (Wolf, Cat, etc.), the
-			  summon type for Warlocks (Voidwalker, Voidlord, Fel Imp, etc.),
-			  "Undead" for Unholy Death Knight ghouls/geists/skeletons, and
-			  "Elemental" for Frost Mage water elementals.
-
-				- Only permanent pets have these tooltips: temporary pets and
-				  guardians do not. They may be supported in a future version,
-				  but are not currently.
-
-			- PvP indicator has been changed to an icon (Alliance, Horde, or
-			  Free-For-All PvP indicator) at the far right of the first line.
-
-			- Configuration options for fine-tuning certain aspects of the
-			  tooltip are available in the Interface Options.
-
-		- The offline profile cache will now automatically tidy itself up on
-		  every login. By default, it will drop the cache for characters it
-		  hasn't had an update from in seven days.
-
-			- In the Interface Options, you can disable this automated
-			  tidying, or adjust the length of time it will wait before
-			  clearing out a character's cached RP data.
-
-		- A LibMSP compatibility layer has been added. LibMSP Compat provides
-		  an interface for addons expecting to find a traditional MSP
-		  implementation to interact (partially) with XRP. Not all features of
-		  LibMSP are available via this layer, but attempts to use unavailable
-		  features should not produce an error.
-
-			- This compatibility layer is enabled by default, but *WILL NOT*
-			  be loaded unless it is needed and only when it is needed. Unless
-			  you explicitly wish to disable this compatibility, it's
-			  recommended you leave it enabled.
+	- Key bindings have been added/modified to allow for viewing mouseover
+	  targets by keybind in addition to targets.
 
 	- Bugfixes:
 
-		- "Toggle viewer" in minimap menu should now work.
+		- An error on sending a whisper to an offline or nonexistant player
+		  has been fixed.
 
-		- Minimap icon should now play better with minimap addons.
-
-		- "No changes." appearing in the Viewer should work somewhat more
-		  reliably.
+		- A possible race condition with sending profile data has been fixed.
+		  This may have a very slight impact on load speed of you tooltip for
+		  others.
 
 	- KNOWN ISSUES:
+
+		- Trying to query a profile from someone while not visible (different
+		  continent, different zone, or successfully stealthed for some time)
+		  may fail, and may cause other sideaffects. This is due to a Blizzard
+		  bug, and a workaround is being developed for the next beta.
+
+			- NOTE: This bug happens with ALL RP addons right now. Some
+			  trigger it more or less often, but all of them are potentially
+			  affected by it. It is NOT an XRP bug.
 
 		- You may VERY RARELY see "No player named ... is currently playing."
 		  at seemingly random times. In general usage, these should no longer
