@@ -20,6 +20,7 @@ xrp.tooltip:Hide() -- Has an OnUpdate script.
 
 local default_settings = { __index = {
 	reaction = true,
+	watching = false,
 	guildrank = false,
 	rprace = true,
 	nohostile = false,
@@ -188,7 +189,9 @@ function xrp.tooltip:PlayerUnit(unit)
 	local connected = UnitIsConnected(unit)
 	cu.nameformat = "|cff"..color.."%s"..((UnitIsAFK(unit) and " |cff99994d"..CHAT_FLAG_AFK) or (UnitIsDND(unit) and " |cff994d4d"..CHAT_FLAG_DND) or (not connected and " |cff888888<"..PLAYER_OFFLINE..">") or "")
 	local ffa = UnitIsPVPFreeForAll(unit)
-	cu.pvpicon = (UnitIsPVP(unit) or ffa) and ("|TInterface\\TargetingFrame\\UI-PVP-"..((ffa or faction == "Neutral") and "FFA" or faction)..":20:20:4:-2:8:8:0:5:0:5:255:255:255|t") or nil
+	local pvpicon = (UnitIsPVP(unit) or ffa) and ("|TInterface\\TargetingFrame\\UI-PVP-"..((ffa or faction == "Neutral") and "FFA" or faction)..":20:20:4:-2:8:8:0:5:0:5:255:255:255|t") or nil
+	local watchicon = (xrp_settings.tooltip.watching and UnitIsUnit("player", unit.."target") and "\124TInterface\\LFGFrame\\BattlenetWorking0:32:32:10:-2\124t") or nil
+	cu.icons = watchicon and pvpicon and watchicon..pvpicon or watchicon or pvpicon
 
 	local guildname, guildrank, _ = GetGuildInfo(unit)
 	cu.guild = guildname and (xrp_settings.tooltip.guildrank == true and guildrank.." of <"..guildname..">" or "<"..guildname..">") or nil
@@ -196,7 +199,8 @@ function xrp.tooltip:PlayerUnit(unit)
 	local pvpname = UnitPVPName(unit) or xrp:NameWithoutRealm(cu.name)
 	local realm = select(2, UnitName(unit))
 	local visible = UnitIsVisible(unit)
-	cu.titlerealm = visible and "|cff"..faction_colors[faction].light..pvpname..(realm and (" ("..xrp:RealmNameWithSpacing(realm)..")") or "") or nil
+	local party = UnitInParty(unit) or UnitInRaid(unit)
+	cu.titlerealm = (visible or party) and "|cff"..faction_colors[faction].light..pvpname..(realm and (" ("..xrp:RealmNameWithSpacing(realm)..")") or "") or nil
 
 	cu.race = (UnitRace(unit)) or UnitCreatureType(unit)
 	local level = UnitLevel(unit)
@@ -208,7 +212,7 @@ function xrp.tooltip:PlayerUnit(unit)
 	local location = not visible and connected and GameTooltipTextLeft3:GetText() or nil
 	cu.location = location and format("|cffffeeaa%s: |cffffffff%s", ZONE, location) or nil
 
-	xrp.tooltip:RefreshPlayer(visible and (not xrp_settings.tooltip.noopfaction or faction == xrp.toon.fields.GF) and (not xrp_settings.tooltip.nohostile or (not attackme or not meattack)) and xrp.units[unit] or unknown)
+	xrp.tooltip:RefreshPlayer((visible or party) and (not xrp_settings.tooltip.noopfaction or faction == xrp.toon.fields.GF) and (not xrp_settings.tooltip.nohostile or (not attackme or not meattack)) and xrp.units[unit] or unknown)
 end
 
 -- Everything in here is using color pipe escapes because Blizzard will
@@ -219,7 +223,7 @@ function xrp.tooltip:RefreshPlayer(character)
 	oldlines = GameTooltip:NumLines()
 	numline = 0
 
-	render_line(format(cu.nameformat, character.NA and truncate_lines((character.NA:gsub("||?c%x%x%x%x%x%x%x%x%s*", "")), 60, 0, false) or xrp:NameWithoutRealm(cu.name)), cu.pvpicon)
+	render_line(format(cu.nameformat, character.NA and truncate_lines((character.NA:gsub("||?c%x%x%x%x%x%x%x%x%s*", "")), 60, 0, false) or xrp:NameWithoutRealm(cu.name)), cu.icons)
 
 	if character.NI then
 		render_line(format("|cff6070a0%s: |cff99b3e6\"%s\"", XRP_NI, truncate_lines((character.NI:gsub("||?c%x%x%x%x%x%x%x%x%s*", "")), 60, #XRP_NI, false)))
@@ -286,7 +290,9 @@ function xrp.tooltip:PetUnit(unit)
 
 	cu.nameformat = "|cff"..color..name
 	local ffa = UnitIsPVPFreeForAll(unit)
-	cu.pvpicon = (UnitIsPVP(unit) or ffa) and ("|TInterface\\TargetingFrame\\UI-PVP-"..((ffa or faction == "Neutral") and "FFA" or faction)..":20:20:4:-2:8:8:0:5:0:5:255:255:255|t") or nil
+	local pvpicon = (UnitIsPVP(unit) or ffa) and ("|TInterface\\TargetingFrame\\UI-PVP-"..((ffa or faction == "Neutral") and "FFA" or faction)..":20:20:4:-2:8:8:0:5:0:5:255:255:255|t") or nil
+	local watchicon = (xrp_settings.tooltip.watching and UnitIsUnit("player", unit.."target") and "\124TInterface\\LFGFrame\\BattlenetWorking0:32:32:10:-2\124t") or nil
+	cu.icons = watchicon and pvpicon and watchicon..pvpicon or watchicon or pvpicon
 
 	-- I hate how fragile this is.
 	local ownership = GameTooltipTextLeft2:GetText()
@@ -309,14 +315,14 @@ function xrp.tooltip:PetUnit(unit)
 
 	cu.info = format("|cffffffff%s |c%s%s|cffffffff (%s)", format(level < 0 and UNIT_LETHAL_LEVEL_TEMPLATE or UNIT_LEVEL_TEMPLATE, level), RAID_CLASS_COLORS[classid].colorStr, race, PET)
 
-	xrp.tooltip:RefreshPet(UnitIsVisible(unit) and (not xrp_settings.tooltip.noopfaction or faction == xrp.toon.fields.GF) and (not xrp_settings.tooltip.nohostile or (not attackme or not meattack)) and xrp.characters[cu.name] or unknown)
+	xrp.tooltip:RefreshPet((UnitIsVisible(unit) or UnitInParty(unit) or UnitInRaid(unit)) and (not xrp_settings.tooltip.noopfaction or faction == xrp.toon.fields.GF) and (not xrp_settings.tooltip.nohostile or (not attackme or not meattack)) and xrp.characters[cu.name] or unknown)
 end
 
 function xrp.tooltip:RefreshPet(character)
 	oldlines = GameTooltip:NumLines()
 	numline = 0
 
-	render_line(cu.nameformat, cu.pvpicon)
+	render_line(cu.nameformat, cu.icons)
 
 	render_line(format(cu.titlerealm, character.NA and truncate_lines((character.NA:gsub("||?c%x%x%x%x%x%x%x%x%s*", "")), 60, 0, false) or xrp:NameWithoutRealm(cu.name)))
 
