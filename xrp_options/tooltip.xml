@@ -28,9 +28,14 @@
 						<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" x="24" y="-10"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="guildrankLabel" inherits="GameFontWhite" text="Show guild rank">
+				<FontString parentKey="watchingLabel" inherits="GameFontWhite" text="Indicate if player is targeting me">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.reactionLabel" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="guildrankLabel" inherits="GameFontWhite" text="Show guild rank">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.watchingLabel" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="rpraceLabel" inherits="GameFontWhite" text="Display roleplay race (instead of in-game race)">
@@ -60,6 +65,12 @@
 				<Size x="24" y="24"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.reactionLabel" relativePoint="LEFT" x="-4" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentwatching" parentKey="watching" inherits="UICheckButtonTemplate">
+				<Size x="24" y="24"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.watchingLabel" relativePoint="LEFT" x="-4" y="0"/>
 				</Anchors>
 			</CheckButton>
 			<CheckButton name="$parentguildrank" parentKey="guildrank" inherits="UICheckButtonTemplate">
