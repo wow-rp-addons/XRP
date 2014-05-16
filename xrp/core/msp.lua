@@ -116,31 +116,35 @@ local function filter_error(self, event, message)
 	return dofilter
 end
 
-local function send(character, data, priority)
+local function send(character, data)
 	data = table.concat(data, "\1")
+	--print("Sending to: "..character)
 	--print(character..": "..data:gsub("\1", "\\1"))
 	if #data <= 255 then
-		ChatThrottleLib:SendAddonMessage(priority, "MSP", data, "WHISPER", character, nil, add_filter, character)
+		ChatThrottleLib:SendAddonMessage("NORMAL", "MSP", data, "WHISPER", character, nil, add_filter, character)
+		--print(character..": Outgoing MSP")
 	else
 		-- XC is most likely to add five or six extra characters, will not
 		-- add less than five, and only adds seven or more if the profile
 		-- is over 25000 characters or so. So let's say six.
 		data = format("XC=%u\1%s", math.ceil((#data + 6) / 255), data)
 		local position = 1
-		ChatThrottleLib:SendAddonMessage(priority, "MSP\1", data:sub(position, position + 254), "WHISPER", character, nil, add_filter, character)
+		ChatThrottleLib:SendAddonMessage("BULK", "MSP\1", data:sub(position, position + 254), "WHISPER", character, nil, add_filter, character)
+		--print(character..": Outgoing MSP\\1")
 		position = position + 255
 		while position + 255 <= #data do
-			ChatThrottleLib:SendAddonMessage(priority, "MSP\2", data:sub(position, position + 254), "WHISPER", character, nil, add_filter, character)
+			ChatThrottleLib:SendAddonMessage("BULK", "MSP\2", data:sub(position, position + 254), "WHISPER", character, nil, add_filter, character)
+			--print(character..": Outgoing MSP\\2")
 			position = position + 255
 		end
-		ChatThrottleLib:SendAddonMessage(priority, "MSP\3", data:sub(position), "WHISPER", character, nil, add_filter, character)
+		ChatThrottleLib:SendAddonMessage("BULK", "MSP\3", data:sub(position), "WHISPER", character, nil, add_filter, character)
+		--print(character..": Outgoing MSP\\3")
 	end
 end
 
--- This returns THREE values. First is a string, if the MSP command requires
+-- This returns two values. First is a string, if the MSP command requires
 -- sending a response (i.e., is a query); second is a boolean, if the MSP
--- command provides an updated field (i.e., is a non-empty response); third
--- is a boolean, if the MSP command requests a tooltip (higher priority).
+-- command provides an updated field (i.e., is a non-empty response).
 local function msp_process(character, cmd)
 	-- Original LibMSP match string uses %a%a rather than %u%u. According to
 	-- protcol documentation, %u%u would be more correct.
@@ -148,27 +152,27 @@ local function msp_process(character, cmd)
 	local updated = false
 	version = tonumber(version) or 0
 	if not field then
-		return nil, updated, false
+		return nil, updated
 	elseif action == "?" then
 		-- Queried our fields. This should end in returning a string with our
 		-- info for that field. (If it doesn't, it means we're ignoring their
 		-- polite request for some reason.)
 		if (xrp_versions[field] and version == xrp_versions[field]) or (not xrp_versions[field] and version == 0) then
 			-- They already have the latest.
-			return format("!%s%u", field, xrp_versions[field] or 0), updated, false
+			return format("!%s%u", field, xrp_versions[field] or 0), updated
 		elseif field == "TT" then
 			if not tt then -- panic, something went wrong in init.
 				-- TODO: Debug output.
-				return nil, updated, false
+				return nil, updated
 			end
-			return tt, updated, true
+			return tt, updated
 		else
 			if not xrp.profile[field] then
 				-- Field is empty.
-				return format("%s%u", field, xrp_versions[field] or 0), updated, false
+				return format("%s%u", field, xrp_versions[field] or 0), updated
 			else
 				-- Field has content.
-				return format("%s%u=%s", field, xrp_versions[field], xrp.profile[field]), updated, false
+				return format("%s%u=%s", field, xrp_versions[field], xrp.profile[field]), updated
 			end
 		end
 	elseif action == "!" then
@@ -212,7 +216,7 @@ local function msp_process(character, cmd)
 		-- timer will count from send OR receive as appropriate.
 		tmp_cache[character].time[field] = GetTime()
 	end
-	return nil, updated, false -- No response needed.
+	return nil, updated -- No response needed.
 end
 
 xrp.msp.handlers = {
@@ -226,19 +230,15 @@ xrp.msp.handlers = {
 		local out = {}
 		local updated = false
 		local fieldupdated = false
-		local ttreq = false
-		local ttresp = false
 		if msg ~= "" then
 			if msg:find("\1", 1, true) then
 				for cmd in msg:gmatch("([^\1]+)\1*") do
-					out[#out + 1], fieldupdated, ttreq = msp_process(character, cmd)
+					out[#out + 1], fieldupdated = msp_process(character, cmd)
 					updated = updated or fieldupdated
-					ttresp = ttresp or ttreq
 				end
 			else
-				out[#out + 1], fieldupdated, ttreq = msp_process(character, msg)
+				out[#out + 1], fieldupdated = msp_process(character, msg)
 				updated = updated or fieldupdated
-				ttresp = ttresp or ttreq
 			end
 		end
 		if updated then
@@ -249,8 +249,7 @@ xrp.msp.handlers = {
 			xrp:FireEvent("MSP_NOCHANGE", character)
 		end
 		if #out > 0 then
-			-- Tooltip respones are medium priority, rest are low.
-			send(character, out, ttresp and "NORMAL" or "BULK")
+			send(character, out)
 		end
 		-- Cache timer. Last receive marked for clearing old entries.
 		if xrp_cache[character] then
@@ -375,8 +374,8 @@ function xrp.msp:Request(character, fields)
 	end
 	if #out > 0 then
 		--print(character..": "..table.concat(out, " "))
-		-- Outgoing requests are high-priority.
-		send(character, out, "ALERT")
+		-- Outgoing requests are higher-priority.
+		send(character, out)
 		return true
 	end
 	xrp:FireEvent("MSP_NOCHANGE", character)
@@ -499,6 +498,7 @@ end
 xrp.msp:SetScript("OnUpdate", msp_OnUpdate)
 
 local function msp_OnEvent(self, event, prefix, message, channel, character)
+	--if event == "CHAT_MSG_ADDON" then print(character..": Incoming "..(prefix:gsub("\1", "\\1"):gsub("\2", "\\2"):gsub("\3", "\\3"))) end
 	if event == "CHAT_MSG_ADDON" and self.handlers[prefix] then
 		--print(character..": "..message:gsub("\1", "\\1"))
 		--print("Receiving from: "..character)
