@@ -142,9 +142,10 @@ local function send(character, data)
 	end
 end
 
--- This returns two values. First is a string, if the MSP command requires
+-- This returns THREE values. First is a string, if the MSP command requires
 -- sending a response (i.e., is a query); second is a boolean, if the MSP
--- command provides an updated field (i.e., is a non-empty response).
+-- command provides an updated field (i.e., is a non-empty response); third
+-- is a boolean, if the MSP command requests a tooltip (higher priority).
 local function msp_process(character, cmd)
 	-- Original LibMSP match string uses %a%a rather than %u%u. According to
 	-- protcol documentation, %u%u would be more correct.
@@ -367,7 +368,7 @@ function xrp.msp:Request(character, fields)
 
 	local out = {}
 	for _, field in ipairs(fields) do
-		if not xrp_cache[character] or not tmp_cache[character].time[field] or now > tmp_cache[character].time[field] + xrp.msp.fieldtimes[field] then
+		if not tmp_cache[character].time[field] or now > tmp_cache[character].time[field] + xrp.msp.fieldtimes[field] then
 			out[#out + 1] = format("?%s%u", field, (xrp_cache[character] and xrp_cache[character].versions[field]) or 0)
 			tmp_cache[character].time[field] = now
 		end
