@@ -206,7 +206,7 @@ function xrp.tooltip:PlayerUnit(unit)
 	local level = UnitLevel(unit)
 	local class, classid = UnitClass(unit)
 	-- RAID_CLASS_COLORS is AARRGGBB.
-	cu.info = format("|cffffffff%s %%s |c%s%s|cffffffff (%s)", format(level < 0 and UNIT_LETHAL_LEVEL_TEMPLATE or UNIT_LEVEL_TEMPLATE, level), RAID_CLASS_COLORS[classid].colorStr, class, PLAYER)
+	cu.info = format("|cffffffff%s %%s |c%s%s|cffffffff (%s)", format(level < 0 and UNIT_LETHAL_LEVEL_TEMPLATE or UNIT_LEVEL_TEMPLATE, level), RAID_CLASS_COLORS[classid].colorStr or "ffffffff", class, PLAYER)
 
 	-- Ew, screen-scraping.
 	local location = not visible and connected and GameTooltipTextLeft3:GetText() or nil
@@ -313,7 +313,7 @@ function xrp.tooltip:PetUnit(unit)
 	-- and death knights only have one pet family each.
 	local classid = (pettype == "Minion" and ((race == "Elemental" and "MAGE") or (race == "Undead" and "DEATHKNIGHT") or "WARLOCK")) or (pettype == "Pet" and "HUNTER")
 
-	cu.info = format("|cffffffff%s |c%s%s|cffffffff (%s)", format(level < 0 and UNIT_LETHAL_LEVEL_TEMPLATE or UNIT_LEVEL_TEMPLATE, level), RAID_CLASS_COLORS[classid].colorStr, race, PET)
+	cu.info = format("|cffffffff%s |c%s%s|cffffffff (%s)", format(level < 0 and UNIT_LETHAL_LEVEL_TEMPLATE or UNIT_LEVEL_TEMPLATE, level), RAID_CLASS_COLORS[classid].colorStr or "ffffffff", race, PET)
 
 	xrp.tooltip:RefreshPet((UnitIsVisible(unit) or UnitInParty(unit) or UnitInRaid(unit)) and (not xrp_settings.tooltip.noopfaction or faction == xrp.toon.fields.GF) and (not xrp_settings.tooltip.nohostile or (not attackme or not meattack)) and xrp.characters[cu.name] or unknown)
 end
