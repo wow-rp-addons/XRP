@@ -18,13 +18,19 @@
 	<Binding name="XRP_EDITOR" description="Edit your own RP profile." header="XRP">
 		xrp:ToggleEditor();
 	</Binding>
-	<Binding name="XRP_VIEWER" description="View targer's RP profiles.">
+	<Binding name="XRP_VIEWER" description="View target's or mouseover's RP profile.">
+		if UnitIsPlayer("target") then
+			xrp:ShowViewerUnit("target");
+		elseif UnitIsPlayer("mouseover") then
+			xrp:ShowViewerUnit("mouseover");
+		else
+			xrp:ShowViewerUnit("player");
+		end;
+	</Binding>
+	<Binding name="XRP_VIEWER_TARGET" description="View target's RP profile.">
 		xrp:ShowViewerUnit("target");
 	</Binding>
 	<Binding name="XRP_VIEWER_MOUSEOVER" description="View mouseover's RP profile.">
 		xrp:ShowViewerUnit("mouseover");
-	</Binding>
-	<Binding name="XRP_VIEWER_TOGGLE" description="Toggle the profile viewer.">
-		xrp:ToggleViewer();
 	</Binding>
 </Bindings>
