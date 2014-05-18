@@ -114,6 +114,30 @@ local function msp_nochange(name)
 	end
 end
 
+local function msp_offline(name)
+	if current == name then
+		if not xrp.viewer.XC:GetText() then
+			xrp.viewer.XC:SetText("Character is offline.")
+		end
+	end
+end
+
+local function msp_norequest(name)
+	if current == name then
+		if not xrp.viewer.XC:GetText() then
+			xrp.viewer.XC:SetText("Too soon for updates.")
+		end
+	end
+end
+
+local function msp_nomsp(name)
+	if current == name then
+		if not xrp.viewer.XC:GetText() then
+			xrp.viewer.XC:SetText("No RP addon appears to be active.")
+		end
+	end
+end
+
 local function viewer_OnEvent(self, event, addon)
 	if event == "ADDON_LOADED" and addon == "xrp_viewer" then
 		self:SetAttribute("UIPanelLayout-defined", true)
@@ -127,6 +151,9 @@ local function viewer_OnEvent(self, event, addon)
 		xrp:HookEvent("MSP_RECEIVE", msp_receive)
 		xrp:HookEvent("MSP_RECEIVE_CHUNK", msp_receive_chunk)
 		xrp:HookEvent("MSP_NOCHANGE", msp_nochange)
+		xrp:HookEvent("MSP_OFFLINE", msp_offline)
+		xrp:HookEvent("MSP_NOREQUEST", msp_norequest)
+		xrp:HookEvent("MSP_NOMSP", msp_nomsp)
 		self:UnregisterEvent("ADDON_LOADED")
 	end
 end
