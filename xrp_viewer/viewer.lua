@@ -23,11 +23,6 @@ local function parse_versions(VA)
 	if not VA then
 		return UNKNOWN.." or "..NONE
 	end
---[[	local VAshort = ""
-	for addon in VA:gmatch("(%a[^/]+)/[^;]+") do
-		VAshort = VAshort..addon..", "
-	end
-	VAshort = (VAshort:gsub(", $", ""))]]
 	return (VA:gsub(";", ", "))
 end
 
@@ -77,8 +72,7 @@ function xrp.viewer:ViewCharacter(name)
 	name = xrp:NameWithRealm(name) -- If there's not a realm, add our realm.
 	current = name
 	self.XC:SetText("")
-	-- Can't guarantee inside area of interest. :| Use cache for now.
-	self:Load(xrp.cache[name])
+	self:Load(xrp.characters[name])
 	-- TODO: Horde/Alliance emblems instead if GF available.
 	SetPortraitToTexture(self.portrait, "Interface\\Icons\\INV_Misc_Book_17")
 	ShowUIPanel(self)

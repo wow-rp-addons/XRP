@@ -53,6 +53,9 @@ xrp.msp.unitfields = { GC = true, GF = true, GR = true, GS = true, GU = true }
 -- Metadata fields, not to be user-set.
 xrp.msp.metafields = { VA = true, VP = true }
 
+-- Dummy fields are used for extra XRP communication, not to be user-exposed.
+xrp.msp.dummyfields = { XC = true, XD = true }
+
 xrp.msp.fieldtimes = setmetatable(
 	{ TT = 15, },
 	{
@@ -65,8 +68,9 @@ xrp.msp.fieldtimes = setmetatable(
 local tmp_cache = setmetatable({}, {
 	__index = function(self, character)
 		self[character] = {
-			nomsp = true,
-			lastcheck = 0,
+			check = 0,
+			lastsend = 0,
+			received = false,
 			time = {},
 		}
 		return self[character]
@@ -85,7 +89,7 @@ local function cachett()
 	local tooltip = {}
 	for field, _ in pairs(xrp.msp.ttfields) do
 		if not xrp.profile[field] then
-			tooltip[#tooltip + 1] = format("%s%u", field, xrp_versions[field])
+			tooltip[#tooltip + 1] = format(not xrp_versions[field] and "%s" or "%s%u", field, xrp_versions[field])
 		else
 			tooltip[#tooltip + 1] = format("%s%u=%s", field, xrp_versions[field], xrp.profile[field])
 		end
@@ -119,7 +123,7 @@ end
 local function send(character, data)
 	data = table.concat(data, "\1")
 	--print("Sending to: "..character)
-	--print(character..": "..data:gsub("\1", "\\1"))
+	--print("Out: "..character..": "..data:gsub("\1", "\\1"))
 	if #data <= 255 then
 		ChatThrottleLib:SendAddonMessage("NORMAL", "MSP", data, "WHISPER", character, nil, add_filter, character)
 		--print(character..": Outgoing MSP")
@@ -140,7 +144,62 @@ local function send(character, data)
 		ChatThrottleLib:SendAddonMessage("BULK", "MSP\3", data:sub(position), "WHISPER", character, nil, add_filter, character)
 		--print(character..": Outgoing MSP\\3")
 	end
+	tmp_cache[character].lastsend = GetTime()
 end
+
+local queuerun = CreateFrame("Frame")
+queuerun:Hide()
+local sendqueue = {}
+
+local dummy = { "?XD" }
+
+local function queuesend(character, data, safe)
+	if sendqueue[character] then
+		for _, request in ipairs(data) do
+			sendqueue[character].data[#sendqueue[character].data + 1] = request
+		end
+		return
+	end
+	local now = GetTime()
+	local unit = Ambiguate(character, "none")
+	if (tmp_cache[character].received and now < tmp_cache[character].lastsend + 45) or UnitInParty(unit) or UnitInRaid(unit) then
+		send(character, data)
+		return
+	elseif safe == 1 or tmp_cache[character].received or now < tmp_cache[character].lastsend + 45 then
+		safe = 0
+		now = now + 0.500 -- One-way safe needs more delay.
+	else
+		safe = 1
+	end
+	send(character, dummy)
+	sendqueue[character] = { data = data, count = safe, queue = now }
+	queuerun:Show()
+end
+
+local counter = 0
+local function queuerun_OnUpdate(self, elapsed)
+	counter = counter + elapsed
+	if counter > 0.250 then
+		counter = 0
+		local now = GetTime()
+		for character, queue in pairs(sendqueue) do
+			if queue.queue <= now and queue.count > 0 then
+				send(character, dummy)
+				queue.count = queue.count - 1
+				queue.queue = now + 0.500
+			elseif queue.queue <= now and queue.count == 0 then
+				send(character, queue.data)
+				sendqueue[character] = nil
+			end
+		end
+		if not next(sendqueue) then
+			counter = 0
+			self:Hide()
+		end
+	end
+end
+
+queuerun:SetScript("OnUpdate", queuerun_OnUpdate)
 
 -- This returns THREE values. First is a string, if the MSP command requires
 -- sending a response (i.e., is a query); second is a boolean, if the MSP
@@ -160,7 +219,7 @@ local function msp_process(character, cmd)
 		-- polite request for some reason.)
 		if (xrp_versions[field] and version == xrp_versions[field]) or (not xrp_versions[field] and version == 0) then
 			-- They already have the latest.
-			return format("!%s%u", field, xrp_versions[field] or 0), updated
+			return format(not xrp_versions[field] and "%s" or "!%s%u", field, xrp_versions[field]), updated
 		elseif field == "TT" then
 			if not tt then -- panic, something went wrong in init.
 				-- TODO: Debug output.
@@ -170,7 +229,7 @@ local function msp_process(character, cmd)
 		else
 			if not xrp.profile[field] then
 				-- Field is empty.
-				return format("%s%u", field, xrp_versions[field] or 0), updated
+				return format(not xrp_versions[field] and "%s" or "%s%u", field, xrp_versions[field]), updated
 			else
 				-- Field has content.
 				return format("%s%u=%s", field, xrp_versions[field], xrp.profile[field]), updated
@@ -226,8 +285,8 @@ xrp.msp.handlers = {
 			return false
 		end
 		-- They definitely have MSP, no need to question it next time.
-		tmp_cache[character].nomsp = nil
-		tmp_cache[character].lastcheck = nil
+		tmp_cache[character].received = true
+		tmp_cache[character].check = nil
 		local out = {}
 		local updated = false
 		local fieldupdated = false
@@ -250,7 +309,7 @@ xrp.msp.handlers = {
 			xrp:FireEvent("MSP_NOCHANGE", character)
 		end
 		if #out > 0 then
-			send(character, out)
+			queuesend(character, out)
 		end
 		-- Cache timer. Last receive marked for clearing old entries.
 		if xrp_cache[character] then
@@ -262,8 +321,8 @@ xrp.msp.handlers = {
 			return false
 		end
 			-- They definitely have MSP, no need to question it next time.
-		tmp_cache[character].nomsp = nil
-		tmp_cache[character].lastcheck = nil
+		tmp_cache[character].received = true
+		tmp_cache[character].check = nil
 		local incchunks = msg:match("XC=%d+\1")
 		if incchunks then
 			tmp_cache[character].totalchunks = tonumber(incchunks:match("XC=(%d+)\1"))
@@ -310,7 +369,8 @@ xrp.msp.handlers = {
 }
 
 local queue = {}
-function xrp.msp:QueueRequest(character, field)
+local safequeue = {}
+function xrp.msp:QueueRequest(character, field, safe)
 	if character == xrp.toon.withrealm then
 		return
 	end
@@ -324,6 +384,7 @@ function xrp.msp:QueueRequest(character, field)
 			end
 		end
 	end
+	safequeue[character] = (not safequeue[character] or safe < safequeue[character]) and safe or safequeue[character]
 	if append then
 		--print(character..": "..field)
 		queue[character][#queue[character] + 1] = field
@@ -331,17 +392,17 @@ function xrp.msp:QueueRequest(character, field)
 	end
 end
 
-function xrp.msp:Request(character, fields)
+function xrp.msp:Request(character, fields, safe)
 	if disabled or character == xrp.toon.withrealm or xrp:NameWithoutRealm(character) == UNKNOWN then
 		return false
 	end
 
 	local now = GetTime()
-	if tmp_cache[character].nomsp and now < (tmp_cache[character].lastcheck + 300) then
+	if not tmp_cache[character].received and now < (tmp_cache[character].check + 300) then
 		xrp:FireEvent("MSP_NOCHANGE", character)
 		return false
-	elseif tmp_cache[character].nomsp then
-		tmp_cache[character].lastcheck = now
+	elseif not tmp_cache[character].received then
+		tmp_cache[character].check = safe == 0 and now or (now - 270)
 	end
 
 	if not fields then
@@ -369,14 +430,17 @@ function xrp.msp:Request(character, fields)
 	local out = {}
 	for _, field in ipairs(fields) do
 		if not tmp_cache[character].time[field] or now > tmp_cache[character].time[field] + xrp.msp.fieldtimes[field] then
-			out[#out + 1] = format("?%s%u", field, (xrp_cache[character] and xrp_cache[character].versions[field]) or 0)
+			out[#out + 1] = format((not xrp_cache[character] or not xrp_cache[character].versions[field]) and "?%s" or "?%s%u", field, xrp_cache[character] and xrp_cache[character].versions[field] or 0)
 			tmp_cache[character].time[field] = now
 		end
 	end
 	if #out > 0 then
 		--print(character..": "..table.concat(out, " "))
-		-- Outgoing requests are higher-priority.
-		send(character, out)
+		if safe == 0 then
+			send(character, out)
+		else
+			queuesend(character, out, safe)
+		end
 		return true
 	end
 	xrp:FireEvent("MSP_NOCHANGE", character)
@@ -490,8 +554,9 @@ local function msp_OnUpdate(self, elapsed)
 	if next(queue) then
 		for character, fields in pairs(queue) do
 			--print(character..": "..fields)
-			self:Request(character, fields)
+			self:Request(character, fields, safequeue[character])
 			queue[character] = nil
+			safequeue[character] = nil
 		end
 	end
 	self:Hide()
@@ -501,7 +566,7 @@ xrp.msp:SetScript("OnUpdate", msp_OnUpdate)
 local function msp_OnEvent(self, event, prefix, message, channel, character)
 	--if event == "CHAT_MSG_ADDON" then print(character..": Incoming "..(prefix:gsub("\1", "\\1"):gsub("\2", "\\2"):gsub("\3", "\\3"))) end
 	if event == "CHAT_MSG_ADDON" and self.handlers[prefix] then
-		--print(character..": "..message:gsub("\1", "\\1"))
+		--print("In: "..character..": "..message:gsub("\1", "\\1"))
 		--print("Receiving from: "..character)
 		self.handlers[prefix](character, message)
 	elseif event == "ADDON_LOADED" and prefix == "xrp" then
