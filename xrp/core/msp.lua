@@ -116,6 +116,8 @@ local function filter_error(self, event, message)
 	local dofilter = filter[character] and filter[character] > (GetTime() - 0.500 - ((select(3, GetNetStats())) * 0.001))
 	if not dofilter then
 		filter[character] = nil
+	else
+		xrp:FireEvent("MSP_OFFLINE", character)
 	end
 	return dofilter
 end
@@ -306,6 +308,7 @@ xrp.msp.handlers = {
 			-- contents.
 			xrp:FireEvent("MSP_RECEIVE", character)
 		elseif #out == 0 then
+			-- If they sent a request, out will have content.
 			xrp:FireEvent("MSP_NOCHANGE", character)
 		end
 		if #out > 0 then
@@ -399,7 +402,7 @@ function xrp.msp:Request(character, fields, safe)
 
 	local now = GetTime()
 	if not tmp_cache[character].received and now < (tmp_cache[character].check + 300) then
-		xrp:FireEvent("MSP_NOCHANGE", character)
+		xrp:FireEvent("MSP_NOMSP", character)
 		return false
 	elseif not tmp_cache[character].received then
 		tmp_cache[character].check = safe == 0 and now or (now - 270)
@@ -443,7 +446,7 @@ function xrp.msp:Request(character, fields, safe)
 		end
 		return true
 	end
-	xrp:FireEvent("MSP_NOCHANGE", character)
+	xrp:FireEvent("MSP_NOREQUEST", character)
 	return false
 end
 
