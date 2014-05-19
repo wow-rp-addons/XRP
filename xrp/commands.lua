@@ -20,26 +20,33 @@ local L = xrp.L
 -- Add a localized version, if applicable.
 SLASH_XRP1, SLASH_XRP2 = "/xrp", L["/xrp"] ~= "/xrp" and L["/xrp"] or nil
 
+-- Cannot define commands in static table, as they make use of each other.
 local xrpcmds = {}
+
+xrpcmds.about = function(args)
+	print("|cffabd473"..XRP.."|r ("..xrp.version..")")
+	print(XRP_AUTHOR)
+	print(XRP_COPYRIGHT)
+	-- Chat frame printing indents newlines in strings, so split lines.
+	for line in XRP_LICENSE_SHORT:gmatch("([^\n]+)") do
+		print(line)
+	end
+	print(" ")
+end
 
 xrpcmds.help = function(args)
 	if args == "about" then
 		print("|cffabd473Usage:|r /xrp about")
-		print("Shows basic information about XRP.")
-		print(" ")
-	elseif args == "view" then
-		print("|cffabd473Usage:|r /xrp view [target|mouseover|Name]")
-		print(" - |cfffff569target:|r View your target's profile.")
-		print(" - |cfffff569target:|r View your mouseover's profile.")
-		print(" - |cfffff569Name:|r View the CACHED copy of the named character. (Will not request any updates).")
+		print("Show basic information about XRP.")
 		print(" ")
 	elseif args == "editor" then
 		print("|cffabd473Usage:|r /xrp editor")
-		print("Toggles the editor open/closed.")
+		print("Toggle the editor open/closed.")
 		print(" ")
-	elseif args == "viewer" then
-		print("|cffabd473Usage:|r /xrp viewer")
-		print("Toggles the viewer open/closed.")
+	elseif args == "profile" then
+		print("|cffabd473Usage:|r /xrp profile [list|<Profile>]")
+		print(" - |cfffff569list:|r List all profiles.")
+		print(" - |cfffff569<Profile>:|r Set current profile to the named profile.")
 		print(" ")
 	elseif args == "status" then
 		print("|cffabd473Usage:|r /xrp status [nil|ooc|ic|lfc|st]")
@@ -49,12 +56,23 @@ xrpcmds.help = function(args)
 		print(" - |cfffff569lfc:|r Set to looking for contact.")
 		print(" - |cfffff569st:|r Set to storyteller.")
 		print(" ")
+	elseif args == "view" then
+		print("|cffabd473Usage:|r /xrp view [target|mouseover|<Character>]")
+		print(" - |cfffff569target:|r View your target's profile.")
+		print(" - |cfffff569target:|r View your mouseover's profile.")
+		print(" - |cfffff569<Character>:|r View the profile of the named character.")
+		print(" ")
+	elseif args == "viewer" then
+		print("|cffabd473Usage:|r /xrp viewer")
+		print("Toggle the viewer open/closed.")
+		print(" ")
 	else
 		print("|cffabd473Usage:|r /xrp command [argument]")
 		print("Use /xrp help [command] for more usage information.")
 		print(" - |cfffff569about:|r Display basic information about XRP.")
 		print(" - |cfffff569editor:|r Toggle the editor.")
 		print(" - |cfffff569help:|r Display this help message.")
+		print(" - |cfffff569profile:|r Set your current profile.")
 		print(" - |cfffff569status:|r Set your character status.")
 		print(" - |cfffff569view:|r View a character's profile.")
 		print(" - |cfffff569viewer:|r Toggle the viewer.")
@@ -62,32 +80,24 @@ xrpcmds.help = function(args)
 	end
 end
 
-xrpcmds.about = function(args)
-	print("|cffabd473"..XRP.."|r ("..xrp.version..")")
-	print(XRP_AUTHOR)
-	print(XRP_COPYRIGHT)
-	print(XRP_LICENSE_SHORT)
-	print(" ")
-end
-
-xrpcmds.view = function(args)
-	if (not args and UnitIsPlayer("target")) or args == "mouseover" then
-		xrp:ShowViewerUnit("target")
-	elseif (not args and UnitIsPlayer("mouseover")) or args == "mouseover" then
-		xrp:ShowViewerUnit("mouseover")
-	elseif type(args) == "string" then
-		xrp:ShowViewerCharacter(args)
-	else
-		xrpcmds.help("view")
-	end
-end
-
 xrpcmds.editor = function(args)
 	xrp:ToggleEditor()
 end
 
-xrpcmds.viewer = function(args)
-	xrp:ToggleViewer()
+xrpcmds.profile = function(args)
+	if args == "list" then
+		for _, profile in ipairs(xrp.profiles()) do
+			print(profile)
+		end
+	elseif type(args) == "string" then
+		if xrp.profiles(args) then
+			print("Set profile to \""..args.."\".")
+		else
+			print("Failed to set profile (does \""..args.."\" exist?).")
+		end
+	else
+		xrpcmds.help("profile")
+	end
 end
 
 xrpcmds.status = function(args)
@@ -106,12 +116,29 @@ xrpcmds.status = function(args)
 	end
 end
 
+xrpcmds.view = function(args)
+	if (not args and UnitIsPlayer("target")) or args == "mouseover" then
+		xrp:ShowViewerUnit("target")
+	elseif (not args and UnitIsPlayer("mouseover")) or args == "mouseover" then
+		xrp:ShowViewerUnit("mouseover")
+	elseif type(args) == "string" then
+		xrp:ShowViewerCharacter(args)
+	else
+		xrpcmds.help("view")
+	end
+end
+
+xrpcmds.viewer = function(args)
+	xrp:ToggleViewer()
+end
+
 xrpcmds.show = xrpcmds.view
-xrpcmds[L["help"]] = xrpcmds.help
 xrpcmds[L["about"]] = xrpcmds.about
-xrpcmds[L["view"]] = xrpcmds.view
-xrpcmds[L["show"]] = xrpcmds.view
+xrpcmds[L["help"]] = xrpcmds.help
 xrpcmds[L["editor"]] = xrpcmds.editor
+xrpcmds[L["profile"]] = xrpcmds.profile
+xrpcmds[L["show"]] = xrpcmds.view
+xrpcmds[L["view"]] = xrpcmds.view
 xrpcmds[L["viewer"]] = xrpcmds.viewer
 
 local xrphandler = function(input, editBox)
