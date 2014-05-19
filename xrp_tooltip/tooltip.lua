@@ -15,9 +15,6 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-xrp.tooltip = CreateFrame("Frame", nil, xrp)
-xrp.tooltip:Hide() -- Has an OnUpdate script.
-
 local default_settings = { __index = {
 	reaction = true,
 	watching = false,
@@ -44,10 +41,6 @@ local fc_colors = {
 	"99664d",
 	"66b380",
 }
-
-local unknown = {}
-
-local cu = {}
 
 local oldlines
 local numline
@@ -137,89 +130,13 @@ local function truncate_lines(text, length, offset, double)
 	return line1 and line2 and line1.."\n"..line2 or line1
 end
 
---[[
-	Tooltip lines ([ ] denotes only if applicable):
-
-	Name/Roleplay Name [<Away>|<Busy>|<Offline>]	 [PvP]
-	[Nickname: "RP Nickname"]
-	[RP Title]
-	[Rank of ][<Guild>]
-	Name with Title [(Realm Name)]					  [RP]
-	[Currently: RP currently doing.]
-	Level ?? Race Class (Player)
-	[Roleplaying style]					[Character status]
-	[Zone: Current Location]
-
-	Notes:
-	  *	Most of the user input fields (i.e., RP fields) are truncated if they
-		are too long. The goal is to have lines no more than ~90 characters,
-		which is generous. The Currently field truncates with an ellipsis, but
-		all others currently hard truncate (since they really shouldn't be
-		long enough to trigger this).
-	  * This doesn't, and probably should never, use line wrapping. It would be
-		great for several of these fields, but is tricky and inconsistent to
-		use, and can cause problems in the default tooltips.
-	  *	"Name/Roleplay Name" is NA field if available, otherwise base name of
-		the character (stripped of server name).
-	  *	"Name with Title" is the in-game name/title, such as "Assistant
-		Professor Smith".
-	  *	"Realm Name" is run through a function that (should) space the name
-		correctly.
-	  *	"Current Location" is rare. It should only show up if the player is
-		far away from you, yet you can still see their tooltip (i.e., raid or
-		party unit frames).
-	  *	When the unit is not visible (out of range), in addition to the added
-		location line, much of the standard information is either unavailable
-		or intentionally stripped. It's only a slight modification of the
-		default tooltip, with coloration and some rearrangement.
-]]
-
-function xrp.tooltip:PlayerUnit(unit)
-	cu.name = xrp:UnitNameWithRealm(unit)
-
-	local faction = (UnitFactionGroup(unit))
-	if not faction or type(faction_colors[faction]) ~= "table" then
-		faction = "Neutral"
-	end
-
-	local attackme = UnitCanAttack(unit, "player") -- Used two times.
-	local meattack = UnitCanAttack("player", unit)
-	local color = xrp_settings.tooltip.reaction and reaction_colors[faction ~= xrp.toon.fields.GF and "hostile" or (faction == xrp.toon.fields.GF and not meattack and not attackme and "friendly") or "neutral"] or faction_colors[faction].dark
-
-	local connected = UnitIsConnected(unit)
-	cu.nameformat = "|cff"..color.."%s"..((UnitIsAFK(unit) and " |cff99994d"..CHAT_FLAG_AFK) or (UnitIsDND(unit) and " |cff994d4d"..CHAT_FLAG_DND) or (not connected and " |cff888888<"..PLAYER_OFFLINE..">") or "")
-	local ffa = UnitIsPVPFreeForAll(unit)
-	local pvpicon = (UnitIsPVP(unit) or ffa) and ("|TInterface\\TargetingFrame\\UI-PVP-"..((ffa or faction == "Neutral") and "FFA" or faction)..":20:20:4:-2:8:8:0:5:0:5:255:255:255|t") or nil
-	local watchicon = (xrp_settings.tooltip.watching and UnitIsUnit("player", unit.."target") and "\124TInterface\\LFGFrame\\BattlenetWorking0:32:32:10:-2\124t") or nil
-	cu.icons = watchicon and pvpicon and watchicon..pvpicon or watchicon or pvpicon
-
-	local guildname, guildrank, _ = GetGuildInfo(unit)
-	cu.guild = guildname and (xrp_settings.tooltip.guildrank == true and guildrank.." of <"..guildname..">" or "<"..guildname..">") or nil
-
-	local pvpname = UnitPVPName(unit) or xrp:NameWithoutRealm(cu.name)
-	local realm = select(2, UnitName(unit))
-	local visible = UnitIsVisible(unit)
-	local party = UnitInParty(unit) or UnitInRaid(unit)
-	cu.titlerealm = (visible or party) and "|cff"..faction_colors[faction].light..pvpname..(realm and realm ~= "" and (" ("..xrp:RealmNameWithSpacing(realm)..")") or "") or nil
-
-	cu.race = (UnitRace(unit)) or UnitCreatureType(unit)
-	local level = UnitLevel(unit)
-	local class, classid = UnitClass(unit)
-	-- RAID_CLASS_COLORS is AARRGGBB.
-	cu.info = format("|cffffffff%s %%s |c%s%s|cffffffff (%s)", format(level < 1 and UNIT_LETHAL_LEVEL_TEMPLATE or UNIT_LEVEL_TEMPLATE, level), RAID_CLASS_COLORS[classid].colorStr or "ffffffff", class, PLAYER)
-
-	-- Ew, screen-scraping.
-	local location = not visible and connected and GameTooltipTextLeft3:GetText() or nil
-	cu.location = location and format("|cffffeeaa%s: |cffffffff%s", ZONE, location) or nil
-
-	xrp.tooltip:RefreshPlayer((visible or party) and (not xrp_settings.tooltip.noopfaction or faction == xrp.toon.fields.GF) and (not xrp_settings.tooltip.nohostile or (not attackme or not meattack)) and xrp.units[unit] or unknown)
-end
-
 -- Everything in here is using color pipe escapes because Blizzard will
--- occasionally interact with the tooltip's text lines' SetColor, and if
--- we've touched them (i.e., by setting or especially changing them), it will
--- taint some stuff pretty nastily (i.e., compact raid frames).
-function xrp.tooltip:RefreshPlayer(character)
+-- occasionally interact with the tooltip's text lines' SetColor, and if we've
+-- touched them (i.e., by setting or especially changing them), it will taint
+-- some stuff pretty nastily (i.e., compact raid frames).
+local cu = {}
+local unknown = {}
+local function tooltip_RenderPlayer(character)
 	oldlines = GameTooltip:NumLines()
 	numline = 0
 
@@ -277,7 +194,64 @@ function xrp.tooltip:RefreshPlayer(character)
 	GameTooltip:Show()
 end
 
-function xrp.tooltip:PetUnit(unit)
+local function tooltip_SetPlayerUnit(unit)
+	cu.name = xrp:UnitNameWithRealm(unit)
+
+	local faction = (UnitFactionGroup(unit))
+	if not faction or type(faction_colors[faction]) ~= "table" then
+		faction = "Neutral"
+	end
+
+	local attackme = UnitCanAttack(unit, "player") -- Used two times.
+	local meattack = UnitCanAttack("player", unit)
+	local color = xrp_settings.tooltip.reaction and reaction_colors[faction ~= xrp.toon.fields.GF and "hostile" or (faction == xrp.toon.fields.GF and not meattack and not attackme and "friendly") or "neutral"] or faction_colors[faction].dark
+
+	local connected = UnitIsConnected(unit)
+	cu.nameformat = "|cff"..color.."%s"..((UnitIsAFK(unit) and " |cff99994d"..CHAT_FLAG_AFK) or (UnitIsDND(unit) and " |cff994d4d"..CHAT_FLAG_DND) or (not connected and " |cff888888<"..PLAYER_OFFLINE..">") or "")
+	local ffa = UnitIsPVPFreeForAll(unit)
+	local pvpicon = (UnitIsPVP(unit) or ffa) and ("|TInterface\\TargetingFrame\\UI-PVP-"..((ffa or faction == "Neutral") and "FFA" or faction)..":20:20:4:-2:8:8:0:5:0:5:255:255:255|t") or nil
+	local watchicon = (xrp_settings.tooltip.watching and UnitIsUnit("player", unit.."target") and "\124TInterface\\LFGFrame\\BattlenetWorking0:32:32:10:-2\124t") or nil
+	cu.icons = watchicon and pvpicon and watchicon..pvpicon or watchicon or pvpicon
+
+	local guildname, guildrank, _ = GetGuildInfo(unit)
+	cu.guild = guildname and (xrp_settings.tooltip.guildrank == true and guildrank.." of <"..guildname..">" or "<"..guildname..">") or nil
+
+	local realm = select(2, UnitName(unit))
+	cu.titlerealm = "|cff"..faction_colors[faction].light..(UnitPVPName(unit) or xrp:NameWithoutRealm(cu.name))..(realm and realm ~= "" and (" ("..xrp:RealmNameWithSpacing(realm)..")") or "") or nil
+
+	cu.race = (UnitRace(unit)) or UnitCreatureType(unit)
+	local level = UnitLevel(unit)
+	local class, classid = UnitClass(unit)
+	-- RAID_CLASS_COLORS is AARRGGBB.
+	cu.info = format("|cffffffff%s %%s |c%s%s|cffffffff (%s)", format(level < 1 and UNIT_LETHAL_LEVEL_TEMPLATE or UNIT_LEVEL_TEMPLATE, level), RAID_CLASS_COLORS[classid].colorStr or "ffffffff", class, PLAYER)
+
+	-- Ew, screen-scraping.
+	local location = not UnitIsVisible(unit) and connected and GameTooltipTextLeft3:GetText() or nil
+	cu.location = location and format("|cffffeeaa%s: |cffffffff%s", ZONE, location) or nil
+
+	tooltip_RenderPlayer((not xrp_settings.tooltip.noopfaction or faction == xrp.toon.fields.GF) and (not xrp_settings.tooltip.nohostile or (not attackme or not meattack)) and xrp.units[unit] or unknown)
+end
+
+local function tooltip_RenderPet(character)
+	oldlines = GameTooltip:NumLines()
+	numline = 0
+
+	render_line(cu.nameformat, cu.icons)
+
+	render_line(format(cu.titlerealm, character.NA and truncate_lines((character.NA:gsub("||?c%x%x%x%x%x%x%x%x%s*", "")), 60, 0, false) or xrp:NameWithoutRealm(cu.name)))
+
+	render_line(cu.info)
+
+	while numline < oldlines do
+		numline = numline + 1
+		_G["GameTooltipTextLeft"..numline]:Hide()
+		_G["GameTooltipTextRight"..numline]:Hide()
+	end
+
+	GameTooltip:Show()
+end
+
+local function tooltip_SetPetUnit(unit)
 	local name = (UnitName(unit))
 	local faction = (UnitFactionGroup(unit))
 	if not faction or type(faction_colors[faction]) ~= "table" then
@@ -301,13 +275,18 @@ function xrp.tooltip:PetUnit(unit)
 
 	cu.titlerealm = "|cff"..faction_colors[faction].light..(pettype == "Minion" and UNITNAME_TITLE_MINION or UNITNAME_TITLE_PET)..(realm and " ("..xrp:RealmNameWithSpacing(realm)..")" or "")
 
+	-- If there's no owner, we can't do anything useful.
 	local owner = ownership:match("^([^%s]-)'s.*")
 	if not owner then return end
+
 	cu.name = xrp:NameWithRealm(owner)
 	local level = UnitLevel(unit)
 	local race = UnitCreatureFamily(unit) or UnitCreatureType(unit)
-	if race == "Ghoul" or race == "Water Elemental" then
+	if race == "Ghoul" or race == "Water Elemental" or not race then
 		race = UnitCreatureType(unit)
+	end
+	if not race then
+		race = UNKNOWN
 	end
 	-- Mages, death knights, and warlocks have minions, hunters have pets. Mages
 	-- and death knights only have one pet family each.
@@ -315,29 +294,50 @@ function xrp.tooltip:PetUnit(unit)
 
 	cu.info = format("|cffffffff%s |c%s%s|cffffffff (%s)", format(level < 1 and UNIT_LETHAL_LEVEL_TEMPLATE or UNIT_LEVEL_TEMPLATE, level), RAID_CLASS_COLORS[classid].colorStr or "ffffffff", race, PET)
 
-	xrp.tooltip:RefreshPet((UnitIsVisible(unit) or UnitInParty(unit) or UnitInRaid(unit)) and (not xrp_settings.tooltip.noopfaction or faction == xrp.toon.fields.GF) and (not xrp_settings.tooltip.nohostile or (not attackme or not meattack)) and xrp.characters[cu.name] or unknown)
+	tooltip_RenderPet((not xrp_settings.tooltip.noopfaction or faction == xrp.toon.fields.GF) and (not xrp_settings.tooltip.nohostile or (not attackme or not meattack)) and xrp.characters[cu.name] or unknown)
 end
 
-function xrp.tooltip:RefreshPet(character)
-	oldlines = GameTooltip:NumLines()
-	numline = 0
+local tooltip = CreateFrame("Frame")
 
-	render_line(cu.nameformat, cu.icons)
-
-	render_line(format(cu.titlerealm, character.NA and truncate_lines((character.NA:gsub("||?c%x%x%x%x%x%x%x%x%s*", "")), 60, 0, false) or xrp:NameWithoutRealm(cu.name)))
-
-	render_line(cu.info)
-
-	while numline < oldlines do
-		numline = numline + 1
-		_G["GameTooltipTextLeft"..numline]:Hide()
-		_G["GameTooltipTextRight"..numline]:Hide()
+local function tooltip_OnTooltipSetUnit(self)
+	-- GetUnit() will not return any sort of the non-basic unit strings, such
+	-- as "targettarget", "pettarget", etc. It'll only spit out the name in the
+	-- first parameter, which is not something we can use. This mainly causes
+	-- problems for custom unit frames which call GameTooltip:SetUnit() with
+	-- such unit strings.  Bizarrely, a split-second later it will often
+	-- properly return a unit string such as "mouseover" that we could have
+	-- used.
+	local unit = select(2, self:GetUnit())
+	if UnitIsPlayer(unit) then
+		tooltip_SetPlayerUnit(unit)
+	elseif UnitIsOtherPlayersPet(unit) or unit and UnitIsUnit("playerpet", unit) then
+		tooltip_SetPetUnit(unit)
+	elseif unit == nil then
+		tooltip:Show()
 	end
-
-	GameTooltip:Show()
 end
 
-xrp.tooltip:SetScript("OnEvent", function(self, event, addon)
+local function tooltip_MSP_RECEIVE(character)
+	local tooltip, unit = GameTooltip:GetUnit()
+	-- Off-realm units DO NOT have realms attached. This could cause
+	-- inappropriate refreshes or, very rarely, a pet tooltip being mucked up
+	-- with a player tooltip.
+	--
+	-- TODO: Fix the possibility for player/pet mix-ups. Try to handle pet
+	-- refreshes somehow.
+	if tooltip and tooltip == xrp:NameWithoutRealm(character) then
+		tooltip_RenderPlayer(unit and xrp.units[unit] or xrp.characters[character])
+		-- If the mouse has already left the unit, the tooltip will get
+		-- stuck visible if we don't do this. It still bounces back
+		-- into visibility if it's partly faded out, but it'll just
+		-- fade again.
+		if not GameTooltip:IsUnit("mouseover") then
+			GameTooltip:FadeOut()
+		end
+	end
+end
+
+local function tooltip_OnEvent(self, event, addon)
 	if event == "ADDON_LOADED" and addon == "xrp_tooltip" then
 
 		if type(xrp_settings.tooltip) ~= "table" then
@@ -345,60 +345,31 @@ xrp.tooltip:SetScript("OnEvent", function(self, event, addon)
 		end
 		setmetatable(xrp_settings.tooltip, default_settings)
 
-		GameTooltip:HookScript("OnTooltipSetUnit", function(self)
-			-- GetUnit() will not return any sort of the non-basic unit
-			-- strings, such as "targettarget", "pettarget", etc. It'll only
-			-- spit out the name in the first parameter, which is not something
-			-- we can use. This mainly causes problems for custom unit frames
-			-- which call GameTooltip:SetUnit() with such unit strings.
-			-- Bizarrely, a split-second later it will often properly return a
-			-- unit string such as "mouseover" that we could have used.
-			local unit = select(2, self:GetUnit())
-			if UnitIsPlayer(unit) then
-				xrp.tooltip:PlayerUnit(unit)
-			elseif UnitIsOtherPlayersPet(unit) or unit and UnitIsUnit("playerpet", unit) then
-				xrp.tooltip:PetUnit(unit)
-			elseif unit == nil then
-				xrp.tooltip:Show()
-			end
-		end)
+		GameTooltip:HookScript("OnTooltipSetUnit", tooltip_OnTooltipSetUnit)
 
-		-- TODO: Handle pet refreshes if possible.
-		xrp:HookEvent("MSP_RECEIVE", function(name)
-			local tooltip, unit = GameTooltip:GetUnit()
-			-- Off-realm units DO NOT have realms attached. This could cause
-			-- inappropriate refreshes or, very rarely, a pet tooltip being
-			-- mucked up with a player tooltip.
-			--
-			-- TODO: Fix the possibility for player/pet mix-ups.
-			if tooltip and tooltip == xrp:NameWithoutRealm(name) then
-				xrp.tooltip:RefreshPlayer(unit and xrp.units[unit] or xrp.characters[name])
-				-- If the mouse has already left the unit, the tooltip will get
-				-- stuck visible if we don't do this. It still bounces back
-				-- into visibility if it's partly faded out, but it'll just
-				-- fade again.
-				if not GameTooltip:IsUnit("mouseover") then
-					GameTooltip:FadeOut()
-				end
-			end
-		end)
+		xrp:HookEvent("MSP_RECEIVE", tooltip_MSP_RECEIVE)
 
 		self:UnregisterEvent("ADDON_LOADED")
 	end
-end)
-xrp.tooltip:RegisterEvent("ADDON_LOADED")
+end
+
+tooltip:SetScript("OnEvent", tooltip_OnEvent)
+tooltip:RegisterEvent("ADDON_LOADED")
 
 -- WORKAROUND: GameTooltip:GetUnit() will sometimes return nil, especially when
 -- custom unit frames call GameTooltip:SetUnit() with something 'odd' like
 -- targettarget. On the very next frame draw, the tooltip will often correctly
 -- be able to identify such units (typically as mouseover), so this will
 -- functionally delay the tooltip draw for these cases by at most one frame.
-xrp.tooltip:SetScript("OnUpdate", function(self, elapsed)
+local function tooltip_OnUpdate(self, elapsed)
 	self:Hide() -- Hiding stops OnUpdate.
 	local unit = select(2, GameTooltip:GetUnit())
 	if UnitIsPlayer(unit) then
-		xrp.tooltip:PlayerUnit(unit)
+		tooltip_SetPlayerUnit(unit)
 	elseif UnitIsOtherPlayersPet(unit) or unit and UnitIsUnit("playerpet", unit) then
-		xrp.tooltip:PetUnit(unit)
+		tooltip_SetPetUnit(unit)
 	end
-end)
+end
+
+tooltip:Hide()
+tooltip:SetScript("OnUpdate", tooltip_OnUpdate)
