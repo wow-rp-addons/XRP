@@ -44,7 +44,7 @@ msp.callback = {
 
 local loadtime = GetTime()
 
-local nk = {} -- Used to character names inside table, to reuse metatables.
+local nk = {} -- Used to hide character names inside table.
 
 local function nonewindex()
 end

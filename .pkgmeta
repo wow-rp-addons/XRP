@@ -3,11 +3,13 @@ externals:
         url: svn://svn.wowace.com/wow/chatthrottlelib/mainline/trunk
         tag: latest
 move-folders:
-    xrp/xrpui: xrpui
-    xrp/xrpui_chatnames: xrpui_chatnames
-    xrp/xrpui_editor: xrpui_editor
-    xrp/xrpui_tooltip: xrpui_tooltip
-    xrp/xrpui_viewer: xrpui_viewer
+    xrp/xrp_chatnames: xrp_chatnames
+    xrp/xrp_editor: xrp_editor
+    xrp/xrp_import: xrp_import
+    xrp/xrp_libmsp: xrp_libmsp
+    xrp/xrp_options: xrp_options
+    xrp/xrp_tooltip: xrp_tooltip
+    xrp/xrp_viewer: xrp_viewer
     xrp/xrp: xrp
 ignore:
     - CHANGELOG-latest.txt
