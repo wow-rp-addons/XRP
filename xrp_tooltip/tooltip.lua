@@ -140,7 +140,7 @@ local function tooltip_RenderPlayer(character)
 	oldlines = GameTooltip:NumLines()
 	numline = 0
 
-	render_line(format(cu.nameformat, character.NA and truncate_lines((character.NA:gsub("||?c%x%x%x%x%x%x%x%x%s*", "")), 60, 0, false) or xrp:NameWithoutRealm(cu.name)), cu.icons)
+	render_line(cu.nameformat:format(character.NA and truncate_lines((character.NA:gsub("||?c%x%x%x%x%x%x%x%x%s*", "")), 60, 0, false) or xrp:NameWithoutRealm(cu.name)), cu.icons)
 
 	if character.NI then
 		render_line(format("|cff6070a0%s: |cff99b3e6\"%s\"", XRP_NI, truncate_lines((character.NI:gsub("||?c%x%x%x%x%x%x%x%x%s*", "")), 60, #XRP_NI, false)))
@@ -167,7 +167,7 @@ local function tooltip_RenderPlayer(character)
 	end
 
 	local race = character.RA and xrp_settings.tooltip.rprace and (character.RA:gsub("||?c%x%x%x%x%x%x%x%x%s*", "")) or cu.race
-	render_line(format(cu.info, truncate_lines(race, 40, 0, false)))
+	render_line(cu.info:format(truncate_lines(race, 40, 0, false)))
 
 	if (character.FR and character.FR ~= "0") or (character.FC and character.FC ~= "0") then
 		-- AAAAAAAAAAAAAAAAAAAAAAAA. The boolean logic.
@@ -223,7 +223,7 @@ local function tooltip_SetPlayerUnit(unit)
 	local level = UnitLevel(unit)
 	local class, classid = UnitClass(unit)
 	-- RAID_CLASS_COLORS is AARRGGBB.
-	cu.info = format("|cffffffff%s %%s |c%s%s|cffffffff (%s)", format(level < 1 and UNIT_LETHAL_LEVEL_TEMPLATE or UNIT_LEVEL_TEMPLATE, level), RAID_CLASS_COLORS[classid].colorStr or "ffffffff", class, PLAYER)
+	cu.info = format("|cffffffff%s %%s |c%s%s|cffffffff (%s)", format(level < 1 and UNIT_LETHAL_LEVEL_TEMPLATE or UNIT_LEVEL_TEMPLATE, level), RAID_CLASS_COLORS[classid] and RAID_CLASS_COLORS[classid].colorStr or "ffffffff", class, PLAYER)
 
 	-- Ew, screen-scraping.
 	local location = not UnitIsVisible(unit) and connected and GameTooltipTextLeft3:GetText() or nil
@@ -238,7 +238,7 @@ local function tooltip_RenderPet(character)
 
 	render_line(cu.nameformat, cu.icons)
 
-	render_line(format(cu.titlerealm, character.NA and truncate_lines((character.NA:gsub("||?c%x%x%x%x%x%x%x%x%s*", "")), 60, 0, false) or xrp:NameWithoutRealm(cu.name)))
+	render_line(cu.titlerealm:format(character.NA and truncate_lines((character.NA:gsub("||?c%x%x%x%x%x%x%x%x%s*", "")), 60, 0, false) or xrp:NameWithoutRealm(cu.name)))
 
 	render_line(cu.info)
 
@@ -270,17 +270,17 @@ local function tooltip_SetPetUnit(unit)
 
 	-- I hate how fragile this is.
 	local ownership = GameTooltipTextLeft2:GetText()
-	local realm = ownership:match("^[^%s-]+%-([^%s]-)'s.*")
-	local pettype = ownership:match("^[^%s]+%s*(.*)")
-
-	cu.titlerealm = "|cff"..faction_colors[faction].light..(pettype == "Minion" and UNITNAME_TITLE_MINION or UNITNAME_TITLE_PET)..(realm and " ("..xrp:RealmNameWithSpacing(realm)..")" or "")
-
-	-- If there's no owner, we can't do anything useful.
-	local owner = ownership:match("^([^%s]-)'s.*")
+	local owner, pettype = ownership:match(UNITNAME_TITLE_PET:format("(.+)")), UNITNAME_TITLE_PET
+	if not owner then
+		owner, pettype = ownership:match(UNITNAME_TITLE_MINION:format("(.+)")), UNITNAME_TITLE_MINION
+	end
+	-- If there's still no owner, we can't do anything useful.
 	if not owner then return end
+	local realm = owner:match(FULL_PLAYER_NAME:format(".+", "(.+)"))
+
+	cu.titlerealm = "|cff"..faction_colors[faction].light..pettype..(realm and realm ~= "" and (" ("..xrp:RealmNameWithSpacing(realm)..")") or "")
 
 	cu.name = xrp:NameWithRealm(owner)
-	local level = UnitLevel(unit)
 	local race = UnitCreatureFamily(unit) or UnitCreatureType(unit)
 	if race == "Ghoul" or race == "Water Elemental" or not race then
 		race = UnitCreatureType(unit)
@@ -290,9 +290,10 @@ local function tooltip_SetPetUnit(unit)
 	end
 	-- Mages, death knights, and warlocks have minions, hunters have pets. Mages
 	-- and death knights only have one pet family each.
-	local classid = (pettype == "Minion" and ((race == "Elemental" and "MAGE") or (race == "Undead" and "DEATHKNIGHT") or "WARLOCK")) or (pettype == "Pet" and "HUNTER")
+	local classid = (pettype == UNITNAME_TITLE_MINION and ((race == "Elemental" and "MAGE") or (race == "Undead" and "DEATHKNIGHT") or "WARLOCK")) or (pettype == UNITNAME_TITLE_PET and "HUNTER")
+	local level = UnitLevel(unit)
 
-	cu.info = format("|cffffffff%s |c%s%s|cffffffff (%s)", format(level < 1 and UNIT_LETHAL_LEVEL_TEMPLATE or UNIT_LEVEL_TEMPLATE, level), RAID_CLASS_COLORS[classid].colorStr or "ffffffff", race, PET)
+	cu.info = format("|cffffffff%s |c%s%s|cffffffff (%s)", format(level < 1 and UNIT_LETHAL_LEVEL_TEMPLATE or UNIT_LEVEL_TEMPLATE, level), RAID_CLASS_COLORS[classid] and RAID_CLASS_COLORS[classid].colorStr or "ffffffff", race, PET)
 
 	tooltip_RenderPet((not xrp_settings.tooltip.noopfaction or faction == xrp.toon.fields.GF) and (not xrp_settings.tooltip.nohostile or (not attackme or not meattack)) and xrp.characters[cu.name] or unknown)
 end
