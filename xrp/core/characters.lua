@@ -157,7 +157,8 @@ xrp.units = setmetatable({}, {
 			-- Half-unsafe not within 100 yards, or are stealthed. We have their
 			-- GUID, but they may not have ours.
 			safe[name] = (IsItemInRange(44212, unit) ~= 1 or IsStealthed()) and 1 or 0
-			request[name] = true
+			-- Don't bother with requests to disconnected units.
+			request[name] = UnitIsConnected(unit) and true or nil
 			return chars[name]
 		end
 		return nil

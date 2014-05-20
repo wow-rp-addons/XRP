@@ -134,7 +134,7 @@ local function send(character, data)
 	tmp_cache[character].lastsend = GetTime()
 end
 
-local function queuesend(character, data, safe)
+local function queuesend(character, data, count)
 	if msprun.send[character] then
 		for _, request in ipairs(data) do
 			msprun.send[character].data[#msprun.send[character].data + 1] = request
@@ -143,17 +143,18 @@ local function queuesend(character, data, safe)
 	end
 	local now = GetTime()
 	local unit = Ambiguate(character, "none")
-	if (tmp_cache[character].received and now < tmp_cache[character].lastsend + 45) or UnitInParty(unit) or UnitInRaid(unit) then
+	if count == 0 or (tmp_cache[character].received and now < tmp_cache[character].lastsend + 45) or UnitInParty(unit) or UnitInRaid(unit) then
 		send(character, data)
 		return
-	elseif safe == 1 or tmp_cache[character].received or now < tmp_cache[character].lastsend + 45 then
-		safe = 0
-		now = now + 0.500 -- One-way safe needs more delay.
+	elseif count == 1 or tmp_cache[character].received or now < tmp_cache[character].lastsend + 45 then
+		count = 0
+		now = now + 1.000 -- One-way safe needs more delay.
 	else
-		safe = 1
+		count = 1
+		now = now + 0.500
 	end
 	send(character, dummy)
-	msprun.send[character] = { data = data, count = safe, queue = now }
+	msprun.send[character] = { data = data, count = count, sendtime = now }
 	msprun:Show()
 end
 
@@ -311,7 +312,7 @@ msprun.handlers = {
 		if tmp_cache[character].buffer then
 			tmp_cache[character].buffer[#tmp_cache[character].buffer + 1] = msg
 			msprun.handlers["MSP"](character, table.concat(tmp_cache[character].buffer))
-			-- Receive chunk after MSP_RECEIVE would fire. Makes it easier to
+			-- RECEIVE_CHUNK after MSP_RECEIVE would fire. Makes it easier to
 			-- something useful when chunks == totalchunks.
 			xrp:FireEvent("MSP_RECEIVE_CHUNK", character, tmp_cache[character].chunks + 1, tmp_cache[character].chunks + 1)
 
@@ -337,13 +338,13 @@ local function msprun_OnUpdate(self, elapsed)
 		if self.timer > 0.250 then
 			self.timer = 0
 			local now = GetTime()
-			for character, queue in pairs(msprun.send) do
-				if queue.queue <= now and queue.count > 0 then
+			for character, message in pairs(msprun.send) do
+				if message.sendtime <= now and message.count > 0 then
 					send(character, dummy)
-					queue.count = queue.count - 1
-					queue.queue = now + 0.500
-				elseif queue.queue <= now and queue.count == 0 then
-					send(character, queue.data)
+					message.count = message.count - 1
+					message.sendtime = now + 0.500
+				elseif message.sendtime <= now and message.count == 0 then
+					send(character, message.data)
 					msprun.send[character] = nil
 				end
 			end
@@ -353,6 +354,7 @@ local function msprun_OnUpdate(self, elapsed)
 	end
 end
 msprun:SetScript("OnUpdate", msprun_OnUpdate)
+msprun:Hide()
 
 local function msprun_OnEvent(self, event, prefix, message, channel, character)
 	--if event == "CHAT_MSG_ADDON" then print(character..": Incoming "..(prefix:gsub("\1", "\\1"):gsub("\2", "\\2"):gsub("\3", "\\3"))) end
@@ -369,10 +371,6 @@ local function msprun_OnEvent(self, event, prefix, message, channel, character)
 		ChatThrottleLib.MIN_FPS = 15 -- down from 20
 		self:UnregisterEvent("ADDON_LOADED")
 		self:RegisterEvent("CHAT_MSG_ADDON")
-		self:RegisterEvent("PLAYER_LOGOUT")
-	elseif event == "PLAYER_LOGOUT" then
-		-- TODO: Move this to xrp.msp:Update() on start instead.
-		xrp:Logout() -- Defined in profiles.lua.
 	end
 end
 msprun:SetScript("OnEvent", msprun_OnEvent)
@@ -384,7 +382,7 @@ xrp.msp = {
 	-- Fields in tooltip.
 	ttfields = { VP = true, VA = true, NA = true, NH = true, NI = true, NT = true, RA = true, FR = true, FC = true, CU = true },
 	-- These fields are (or should) be generated from UnitSomething()
-	-- functions.  GF is an xrp-original, storing non-localized faction (since
+	-- functions. GF is an xrp-original, storing non-localized faction (since
 	-- we cache between sessions and can have data on both factions at once).
 	unitfields = { GC = true, GF = true, GR = true, GS = true, GU = true },
 	-- Metadata fields, not to be user-set.
@@ -482,7 +480,6 @@ function xrp.msp:Request(character, fields, safe)
 	return false
 end
 
--- TODO: use xrp_cache[character] always.
 function xrp.msp:Update()
 	if disabled then
 		return false
@@ -490,71 +487,31 @@ function xrp.msp:Update()
 
 	local changes = false
 	local ttchanges = false
+	local character = xrp.toon.withrealm
 	local new = xrp.profile()
-	-- If not old, then it's first run and versions can be kept as they stand.
-	-- Version updates for overridden fields are handled in PLAYER_LOGOUT so
-	-- we can save a bunch of bandwidth on rarely-changing fields.
-	if old then
-		for field, contents in pairs(new) do
-			if old[field] ~= contents then
-				changes = true
-				xrp_versions[field] = (xrp_versions[field] or 0) + 1
-				xrp_cache[xrp.toon.withrealm].fields[field] = contents
-				xrp_cache[xrp.toon.withrealm].versions[field] = xrp_versions[field]
-				ttchanges = self.ttfields[field] and true or ttchanges
-			end
-		end
-		for field, _ in pairs(old) do
-			if not new[field] then
-				changes = true
-				xrp_versions[field] = (xrp_versions[field] or 0) + 1
-				xrp_cache[xrp.toon.withrealm].fields[field] = nil
-				xrp_cache[xrp.toon.withrealm].versions[field] = xrp_versions[field]
-				ttchanges = self.ttfields[field] and true or ttchanges
-			end
-		end
-	else
-		-- First initialization. Check for updates to unitfields (race change,
-		-- sex change, etc.) and metafields (protocol version, addon version,
-		-- etc.). We need to get these right for other xrp users (and anyone
-		-- else who starts caching).
-		for field, _ in pairs(xrp.msp.unitfields) do
-			xrp_versions[field] = new[field] ~= xrp_cache[xrp.toon.withrealm].fields[field] and ((xrp_versions[field] or 0) + 1) or (xrp_versions[field] or 1)
-		end
-		local ttver = false
-		for field, _ in pairs(xrp.msp.metafields) do
-			if new[field] ~= xrp_cache[xrp.toon.withrealm].fields[field] or not xrp_cache[xrp.toon.withrealm].fields[field] then
-				xrp_versions[field] = (xrp_versions[field] or 0) + 1
-				if xrp.msp.ttfields[field] then
-					ttver = true
-				end
-			else
-				xrp_versions[field] = xrp_versions[field] or 1
-			end
-		end
-		if ttver then
-			xrp_versions.TT = (xrp_versions.TT or 0) + 1
-		end
-		wipe(xrp_cache[xrp.toon.withrealm].fields)
-		wipe(xrp_cache[xrp.toon.withrealm].versions)
-		for field, contents in pairs(new) do
-			xrp_cache[xrp.toon.withrealm].fields[field] = contents
-		end
-		for field, version in pairs(xrp_versions) do
-			xrp_cache[xrp.toon.withrealm].versions[field] = version
-		end
-		-- If it's our character we never want the cache tidy to wipe it
-		-- out. Do this by setting the wipe timer for 2038.
-		xrp_cache[xrp.toon.withrealm].lastreceive = 2147483647
+	local old = xrp_cache[character].fields
 
-		-- First run, build the tooltip (but don't change its version!).
-		cachett()
-		changes = true
+	for field, contents in pairs(new) do
+		if old[field] ~= contents then
+			changes = true
+			xrp_versions[field] = (xrp_versions[field] or 0) + 1
+			xrp_cache[character].fields[field] = contents
+			xrp_cache[character].versions[field] = xrp_versions[field]
+			ttchanges = self.ttfields[field] and true or ttchanges
+		end
 	end
-	old = new
+	for field, _ in pairs(old) do
+		if not new[field] then
+			changes = true
+			xrp_versions[field] = (xrp_versions[field] or 0) + 1
+			xrp_cache[character].fields[field] = nil
+			xrp_cache[character].versions[field] = xrp_versions[field]
+			ttchanges = self.ttfields[field] and true or ttchanges
+		end
+	end
 	if ttchanges then
 		xrp_versions.TT = (xrp_versions.TT or 0) + 1
-		xrp_cache[xrp.toon.withrealm].versions.TT = xrp_versions.TT
+		xrp_cache[character].versions.TT = xrp_versions.TT
 		cachett()
 	end
 	if changes then
@@ -567,21 +524,18 @@ function xrp.msp:UpdateField(field)
 	if disabled then
 		return false
 	end
-	if old then
-		if not old[field] or old[field] ~= xrp.profile[field] then
-			xrp_versions[field] = (xrp_versions[field] or 0) + 1
-			old[field] = xrp.profile[field]
-			xrp_cache[xrp.toon.withrealm].fields[field] = old[field]
-			xrp_cache[xrp.toon.withrealm].versions[field] = xrp_versions[field]
-			if self.ttfields[field] then
-				xrp_versions.TT = (xrp_versions.TT or 0) + 1
-				xrp_cache[xrp.toon.withrealm].versions.TT = xrp_versions.TT
-				cachett()
-			end
-			xrp:FireEvent("MSP_UPDATE", field)
+	local character = xrp.toon.withrealm
+	local old = xrp_cache[character].fields
+	if not old[field] or old[field] ~= xrp.profile[field] then
+		xrp_versions[field] = (xrp_versions[field] or 0) + 1
+		xrp_cache[character].fields[field] = xrp.profile[field]
+		xrp_cache[character].versions[field] = xrp_versions[field]
+		if self.ttfields[field] then
+			xrp_versions.TT = (xrp_versions.TT or 0) + 1
+			xrp_cache[character].versions.TT = xrp_versions.TT
+			cachett()
 		end
-	else -- First run is a single field update. Shouldn't happen, run full.
-		self:Update()
+		xrp:FireEvent("MSP_UPDATE", field)
 	end
 	return true
 end

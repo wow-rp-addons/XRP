@@ -219,18 +219,3 @@ xrp.profiles = setmetatable({}, {
 	end,
 	__metatable = false,
 })
-
-function xrp:Logout()
-	-- Add one to the versions of any overriden fields. This means we can
-	-- just pick them up where we left off next time (leading to lower
-	-- bandwidth usage if the player doesn't change big fields often!),
-	-- rather than incrementing by one on each and every login.
-	local ttchanges = false
-	for field, _ in pairs(overrides) do
-		xrp_versions[field] = xrp_versions[field] + 1
-		ttchanges = xrp.msp.ttfields[field] or ttchanges
-	end
-	if ttchanges then
-		xrp_versions.TT = xrp_versions.TT + 1
-	end
-end
