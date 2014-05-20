@@ -15,18 +15,20 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
+local L = xrp.L
+
 function xrp:UnitNameWithRealm(unit)
 	local name, realm = UnitName(unit)
-	local isplayer = UnitIsPlayer(unit)
-	if name ~= nil then
-		if (realm == nil or realm == "") and isplayer then
-			return FULL_PLAYER_NAME:format(name, GetRealmName():gsub("%s+", ""))
-		elseif realm and isplayer then
-			return FULL_PLAYER_NAME:format(name, realm)
-		end
-		return name
+	if not name then
+		return nil
 	end
-	return nil
+	local isplayer = UnitIsPlayer(unit)
+	if (realm == nil or realm == "") and isplayer then
+		return FULL_PLAYER_NAME:format(name, GetRealmName():gsub("%s+", ""))
+	elseif realm and isplayer then
+		return FULL_PLAYER_NAME:format(name, realm)
+	end
+	return name
 end
 
 function xrp:NameWithRealm(name, realm)
@@ -41,12 +43,12 @@ function xrp:NameWithRealm(name, realm)
 	return FULL_PLAYER_NAME:format(name, (GetRealmName():gsub("%s+", "")))
 end
 
--- Dumb version of Ambiguate().
+-- Dumb version of Ambiguate() which always strips.
 function xrp:NameWithoutRealm(name)
 	if type(name) ~= "string" then
 		return UNKNOWN
 	end
-	return (name:gsub("-.+", ""))
+	return name:match(FULL_PLAYER_NAME:format("(.+)", ".+")) or name
 end
 
 function xrp:RealmNameWithSpacing(name)
@@ -76,11 +78,11 @@ function xrp:ConvertWeight(weight, units)
 
 	units = (not units or units == "user") and xrp_settings.weight or units
 	if units == "msp" then -- MSP internal format: kg without units as string.
-		return format("%u", number + 0.5)
+		return format(L["%u"], number + 0.5)
 	elseif units == "kg" then
-		return format("%u kg", number + 0.5)
+		return format(L["%u kg"], number + 0.5)
 	elseif units == "lb" then
-		return format("%u lbs", (number * 2.20462) + 0.5)
+		return format(L["%u lbs"], (number * 2.20462) + 0.5)
 	else
 		return weight -- If no unit conversion requested, pass through.
 	end
@@ -116,9 +118,9 @@ function xrp:ConvertHeight(height, units)
 	if units == "msp" then -- MSP internal format: cm without units as string.
 		return format("%d", number)
 	elseif units == "cm" then
-		return format("%u cm", number + 0.5)
+		return format(L["%u cm"], number + 0.5)
 	elseif units == "m" then
-		return format("%.2f m", math.floor(number + 0.5) * 0.01) -- Round first.
+		return format(L["%.2f m"], math.floor(number + 0.5) * 0.01) -- Round first.
 	elseif units == "ft" then
 		local feet, inches = math.modf(number / 30.48)
 		inches = (inches * 12) + 0.5
@@ -126,11 +128,46 @@ function xrp:ConvertHeight(height, units)
 			feet = feet + 1
 			inches = 0
 		end
-		return format("%u'%u\"", feet, inches)
+		return format(L["%u'%u\""], feet, inches)
 	else
 		return height
 	end
 end
+
+StaticPopupDialogs["XRP_CACHE_CLEAR"] = {
+	text = L["Are you sure you wish to empty the profile cache?"],
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	OnAccept = function()
+		xrp:CacheTidy(60)
+		StaticPopup_Show("XRP_CACHE_CLEARED")
+	end,
+	enterClicksFirstButton = true,
+	timeout = 0,
+	whileDead = true,
+	hideOnEscape = true,
+	preferredIndex = 3,
+}
+
+StaticPopupDialogs["XRP_CACHE_CLEARED"] = {
+	text = L["The cache has been cleared."],
+	button1 = OKAY,
+	enterClicksFirstButton = true,
+	timeout = 0,
+	whileDead = true,
+	hideOnEscape = true,
+	preferredIndex = 3,
+}
+
+StaticPopupDialogs["XRP_CACHE_TIDIED"] = {
+	text = L["The cache has been tidied."],
+	button1 = OKAY,
+	enterClicksFirstButton = true,
+	timeout = 0,
+	whileDead = true,
+	hideOnEscape = true,
+	preferredIndex = 3,
+}
 
 function xrp:CacheTidy(timer)
 	if type(timer) ~= "number" or timer <= 0 then
@@ -139,13 +176,13 @@ function xrp:CacheTidy(timer)
 	if not timer then return false end
 	local now = time()
 	local before = now - timer
-	for character, _ in pairs(xrp_cache) do
-		if not xrp_cache[character].lastreceive then
+	for character, data in pairs(xrp_cache) do
+		if not data.lastreceive then
 			-- Pre-beta5 didn't have this value. Might be able to be dropped
 			-- at some point in the distant future (or just left as a
 			-- safeguard).
-			xrp_cache[character].lastreceive = now
-		elseif xrp_cache[character].lastreceive < before then
+			data.lastreceive = now
+		elseif data.lastreceive < before then
 			xrp_cache[character] = nil
 		end
 	end
