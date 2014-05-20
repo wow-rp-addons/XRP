@@ -20,7 +20,7 @@ local chatnames = CreateFrame("Frame")
 -- And so it begins...
 local old_GetColoredName = _G.GetColoredName
 
-local events = {
+local default_settings = {
 	["CHAT_MSG_SAY"] = true,
 	["CHAT_MSG_YELL"] = true,
 	["CHAT_MSG_EMOTE"] = true,
@@ -43,7 +43,7 @@ local function new_GetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg
 		arg2 = xrp:NameWithRealm(arg2, (select(7, GetPlayerInfoByGUID(arg12))))
 	end
 
-	local name = rpname and (arg12 and xrp.guids[arg12].NA or xrp.characters[arg2].NA) or Ambiguate(arg2, "guild")
+	local name = rpname and arg12 and xrp.guids[arg12].NA or Ambiguate(arg2, "guild")
 	local chattype = event:sub(10)
 	if chattype:sub(1, 7) == "WHISPER" then
 		chattype = "WHISPER"
@@ -57,18 +57,21 @@ local function new_GetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg
 		if not color or not color.colorStr then
 			return name
 		end
-		return format("\124c%s%s\124r", color.colorStr, name)
+		return format("|c%s%s|r", color.colorStr, name)
 	end
 	return name
 end
 
+local stripname = "^"..CHAT_EMOTE_GET:format(FULL_PLAYER_NAME:format(".-", ".-")).."(.*)$"
 local function emotename(self, event, message, sender, ...)
+	-- TODO: Check for GUID availability?
 	-- The other half of attaching the realm name in GetColoredName is to,
 	-- uh, remove it here first. Why? Fuck knows, it's Blizzard and we get
 	-- things like Player-RealmName-RealmName if we don't drop it here from
 	-- the message. ...Which is where the name is, because fuck knows.
-	if message:match("^[^%s-]+%-[^%s]+%s+.*") then
-		message = format("%s %s", sender, message:match("^[^%s-]+%-[^%s]+%s+(.*)"))
+	local nameless = message:match(stripname)
+	if nameless then
+		message = CHAT_EMOTE_GET:format(sender)..nameless
 	end
 	return false, message, sender, ...
 end
@@ -78,7 +81,7 @@ local function chatnames_OnEvent(self, event, addon)
 		if type(xrp_settings.chatnames) ~= "table" then
 			xrp_settings.chatnames = {}
 		end
-		setmetatable(xrp_settings.chatnames, { __index = events })
+		setmetatable(xrp_settings.chatnames, { __index = default_settings })
 		ChatFrame_AddMessageEventFilter("CHAT_MSG_TEXT_EMOTE", emotename)
 		self:UnregisterEvent("ADDON_LOADED")
 		self:RegisterEvent("PLAYER_LOGIN")
