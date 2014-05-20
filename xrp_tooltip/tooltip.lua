@@ -78,26 +78,33 @@ local function render_line(lefttext, righttext)
 end
 
 -- Use uppercase for keys.
-local known_addons = {
+local profile_addons = {
 	["XRP"] = "XRP",
 	["MYROLEPLAY"] = "MRP",
 	["TOTALRP2"] = "TRP2",
-	["GHI"] = "GHI",
-	["TONGUES"] = "T",
 	["GNOMTEC_BADGE"] = "GTEC",
 	["FLAGRSP"] = "RSP",
+}
+local extra_addons = {
+	["GHI"] = "GHI",
+	["TONGUES"] = "T",
 }
 
 local function parse_VA(VA)
 	local VAshort = ""
+	local hasrp = false
 	for addon in VA:upper():gmatch("(%a[^/]+)/[^;]+") do
-		VAshort = known_addons[addon] and VAshort..known_addons[addon]..", " or VAshort
+		if profile_addons[addon] and not hasrp then
+			VAshort = VAshort..profile_addons[addon]..", "
+			hasrp = true
+		elseif extra_addons[addon]then
+			VAshort = VAshort..extra_addons[addon]..", "
+		end
 	end
-	VAshort = (VAshort:gsub(", $", ""))
-	if VAshort:match("^[,%s]*$") then
-		VAshort = "RP"
+	if not hasrp then
+		VAshort = "RP, "..VAshort
 	end
-	return VAshort
+	return (VAshort:gsub(", $", ""))
 end
 
 local function truncate_lines(text, length, offset, double)
