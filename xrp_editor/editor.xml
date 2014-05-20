@@ -409,7 +409,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						StaticPopupDialogs["XRP_EDITOR_DELETE"].text = format("Are you sure you want to remove \"%s\"?", xrp.editor.Profiles:GetText());
+						StaticPopupDialogs["XRP_EDITOR_DELETE"].text = xrp.L["Are you sure you want to remove \"%s\"?"]:format(xrp.editor.Profiles:GetText());
 						StaticPopup_Show("XRP_EDITOR_DELETE");
 					</OnClick>
 					<OnEnter>
@@ -430,7 +430,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						StaticPopupDialogs["XRP_EDITOR_RENAME"].text = format("Please enter a new name for \"%s\".", xrp.editor.Profiles:GetText());
+						StaticPopupDialogs["XRP_EDITOR_RENAME"].text = xrp.L["Please enter a new name for \"%s\"."]:format(xrp.editor.Profiles:GetText());
 						StaticPopup_Show("XRP_EDITOR_RENAME");
 					</OnClick>
 					<OnEnter>
@@ -451,7 +451,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						StaticPopupDialogs["XRP_EDITOR_COPY"].text = format("Please enter a name for the copy of \"%s\".", xrp.editor.Profiles:GetText());
+						StaticPopupDialogs["XRP_EDITOR_COPY"].text = xrp.L["Please enter a name for the copy of \"%s\"."]:format(xrp.editor.Profiles:GetText());
 						StaticPopup_Show("XRP_EDITOR_COPY");
 					</OnClick>
 					<OnEnter>

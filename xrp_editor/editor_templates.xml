@@ -20,7 +20,7 @@
 		<Scripts>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
-				GameTooltip:SetText("Use Default if empty.");
+				GameTooltip:SetText(xrp.L["Use Default if empty."]);
 				GameTooltip:Show();
 			</OnEnter>
 			<OnLeave>

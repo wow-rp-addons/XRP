@@ -16,6 +16,8 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
+local L = xrp.L
+
 --[[ Begin LibDBIcon portions (by Rabbit) ]]--
 local minimapShapes = {
 	["ROUND"] = {true, true, true, true},
@@ -96,16 +98,16 @@ for value, text in pairs(xrp.values.FC) do
 end
 
 StaticPopupDialogs["XRP_CURRENTLY"] = {
-	text = "What are you currently doing?",
+	text = L["What are you currently doing?"],
 	button1 = ACCEPT,
 	button2 = RESET,
 	button3 = CANCEL,
 	hasEditBox = true,
 	OnShow = function(self, data)
 		self.editBox:SetWidth(self.editBox:GetWidth() + 150)
-		if self.editBox:GetText() == (xrp.profile.CU or "") then
-			self.button1:Disable()
-		end
+		self.editBox:SetText(xrp.profile.CU or "")
+		self.editBox:HighlightText()
+		self.button1:Disable()
 	end,
 	EditBoxOnTextChanged = function(self, data)
 		if self:GetText() ~= (xrp.profile.CU or "") then
@@ -117,7 +119,7 @@ StaticPopupDialogs["XRP_CURRENTLY"] = {
 	OnAccept = function(self, data, data2)
 		xrp.profile.CU = self.editBox:GetText()
 	end,
-	OnCancel = function(self, data, data2)
+	OnCancel = function(self, data, data2) -- Reset button.
 		xrp.profile.CU = nil
 	end,
 	enterClicksFirstButton = true,
@@ -132,8 +134,8 @@ local minimap_menulist = {
 	{ text = "Profiles", notCheckable = true, hasArrow = true, menuList = menulist_profiles, },
 	{ text = XRP_FC, notCheckable = true, hasArrow = true, menuList = menulist_status, },
 	{ text = XRP_CU..CONTINUED, notCheckable = true, func = function() StaticPopup_Show("XRP_CURRENTLY") end, },
-	{ text = "Profile editor", notCheckable = true, func = function() xrp:ToggleEditor() end, },
-	{ text = "Profile viewer", notCheckable = true, func = function() xrp:ToggleViewer() end, },
+	{ text = L["Profile editor"], notCheckable = true, func = function() xrp:ToggleEditor() end, },
+	{ text = L["Profile viewer"], notCheckable = true, func = function() xrp:ToggleViewer() end, },
 	{ text = CANCEL, notCheckable = true, },
 }
 
@@ -159,10 +161,10 @@ local function update_icon()
 	if xrp.units.target and xrp.units.target.VA then
 		xrp.minimap.icon:SetTexture("Interface\\Icons\\INV_Misc_Book_03")
 	else
-		if xrp.profile.FC == "1" then
+		if not xrp.profile.FC or xrp.profile.FC == "0" or xrp.profile.FC == "1" then
 			xrp.minimap.icon:SetTexture("Interface\\Icons\\Ability_Malkorok_BlightofYshaarj_Red")
-		elseif not xrp.profile.FC or xrp.profile.FC == "0" then
-			xrp.minimap.icon:SetTexture("Interface\\Icons\\Ability_Malkorok_BlightofYshaarj_Yellow")
+--		elseif not xrp.profile.FC or xrp.profile.FC == "0" then
+--			xrp.minimap.icon:SetTexture("Interface\\Icons\\Ability_Malkorok_BlightofYshaarj_Yellow")
 		else
 			xrp.minimap.icon:SetTexture("Interface\\Icons\\Ability_Malkorok_BlightofYshaarj_Green")
 		end
@@ -172,13 +174,14 @@ end
 local function minimap_OnEnter(self, motion)
 	if motion then
 		GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT", 30, 4)
-		GameTooltip:SetText("Click to:")
+		GameTooltip:SetText(L["Click to:"])
 		GameTooltip:AddLine(" ")
-		GameTooltip:AddLine("|TInterface\\Icons\\Ability_Malkorok_BlightofYshaarj_Red:20|t/|TInterface\\Icons\\Ability_Malkorok_BlightofYshaarj_Yellow:20|t: Toggle your status to IC.")
-		GameTooltip:AddLine("|TInterface\\Icons\\Ability_Malkorok_BlightofYshaarj_Green:20|t: Toggle your status to OOC.")
-		GameTooltip:AddLine("|TInterface\\Icons\\INV_Misc_Book_03:20|t: View your target's profile.")
+--		GameTooltip:AddLine(format("|TInterface\\Icons\\Ability_Malkorok_BlightofYshaarj_Red:20|t/|TInterface\\Icons\\Ability_Malkorok_BlightofYshaarj_Yellow:20|t: %s", L["Toggle your status to IC."]))
+		GameTooltip:AddLine(format("|TInterface\\Icons\\Ability_Malkorok_BlightofYshaarj_Red:20|t: %s", L["Toggle your status to IC."]))
+		GameTooltip:AddLine(format("|TInterface\\Icons\\Ability_Malkorok_BlightofYshaarj_Green:20|t: %s", L["Toggle your status to OOC."]))
+		GameTooltip:AddLine(format("|TInterface\\Icons\\INV_Misc_Book_03:20|t: %s", L["View your target's profile."]))
 		GameTooltip:AddLine(" ")
-		GameTooltip:AddLine("Right click for the menu.")
+		GameTooltip:AddLine(L["Right click for the menu."])
 		GameTooltip:Show()
 	end
 end
@@ -221,9 +224,10 @@ local function minimap_OnEvent(self, event, addon)
 		self:SetScript("OnDragStop", onDragStop)
 		self:SetScript("OnClick", minimap_OnClick)
 		updatePosition(self)
+		update_icon()
 		xrp:HookEvent("MSP_UPDATE", update_icon)
 		xrp:HookEvent("MSP_RECEIVE", update_icon)
-		xrp.minimap:RegisterEvent("PLAYER_TARGET_CHANGED")
+		self:RegisterEvent("PLAYER_TARGET_CHANGED")
 		self:UnregisterEvent("ADDON_LOADED")
 	end
 end
