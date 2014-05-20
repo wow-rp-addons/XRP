@@ -34,48 +34,54 @@ xrpcmds.about = function(args)
 	print(" ")
 end
 
+local usage = L["|cffabd473Usage:|r %s"]
+local command = L[" - |cfffff569%s:|r %s"]
+
 xrpcmds.help = function(args)
-	if args == "about" then
-		print("|cffabd473Usage:|r /xrp about")
-		print("Show basic information about XRP.")
+	if args == "about" or args == L["about"] then
+		print(usage:format(L["/xrp about"]))
+		print(L["Show basic information about XRP."])
 		print(" ")
-	elseif args == "editor" then
-		print("|cffabd473Usage:|r /xrp editor")
-		print("Toggle the editor open/closed.")
+	elseif args == "editor" or args == L["editor"] then
+		print(usage:format(L["/xrp editor"]))
+		print(L["Toggle the editor open/closed."])
 		print(" ")
-	elseif args == "profile" then
-		print("|cffabd473Usage:|r /xrp profile [list|<Profile>]")
-		print(" - |cfffff569list:|r List all profiles.")
-		print(" - |cfffff569<Profile>:|r Set current profile to the named profile.")
+	elseif args == "profile" or args == L["profile"] then
+		print(usage:format(L["/xrp profile [list|<Profile>]"]))
+		print(command:format(L["list"], L["List all profiles."]))
+		print(command:format(L["<Profile>"], L["Set current profile to the named profile."]))
 		print(" ")
-	elseif args == "status" then
-		print("|cffabd473Usage:|r /xrp status [nil|ooc|ic|lfc|st]")
-		print(" - |cfffff569nil:|r Reset to profile default.")
-		print(" - |cfffff569ooc:|r Set to out-of-character.")
-		print(" - |cfffff569ic:|r Set to in-character.")
-		print(" - |cfffff569lfc:|r Set to looking for contact.")
-		print(" - |cfffff569st:|r Set to storyteller.")
+	elseif args == "status" or args == L["profile"] then
+		print(usage:format(L["/xrp status [nil|ooc|ic|lfc|st]"]))
+		print(command:format(L["nil"], L["Reset to profile default."]))
+		print(command:format(L["ic"], L["Set to out-of-character."]))
+		print(command:format(L["ooc"], L["Set to in-character."]))
+		print(command:format(L["lfc"], L["Set to looking for contact."]))
+		print(command:format(L["st"], L["Set to storyteller."]))
 		print(" ")
-	elseif args == "view" then
-		print("|cffabd473Usage:|r /xrp view [target|mouseover|<Character>]")
-		print(" - |cfffff569target:|r View your target's profile.")
-		print(" - |cfffff569target:|r View your mouseover's profile.")
-		print(" - |cfffff569<Character>:|r View the profile of the named character.")
+	elseif args == "view" or args == "show" or args == L["view"] or args == L["show"] then
+		print(usage:format(L["/xrp view [target|mouseover|<Character>]"]))
+		print(command:format(L["target"], L["View your target's profile."]))
+		print(command:format(L["mouseover"], L["View your mouseover's profile."]))
+		print(command:format(L["<Character>"], L["View the profile of the named character."]))
 		print(" ")
-	elseif args == "viewer" then
-		print("|cffabd473Usage:|r /xrp viewer")
-		print("Toggle the viewer open/closed.")
+	elseif args == "viewer" or args == L["viewer"] then
+		print(usage:format(L["/xrp viewer"]))
+		print(L["Toggle the viewer open/closed."])
 		print(" ")
 	else
-		print("|cffabd473Usage:|r /xrp command [argument]")
-		print("Use /xrp help [command] for more usage information.")
-		print(" - |cfffff569about:|r Display basic information about XRP.")
-		print(" - |cfffff569editor:|r Toggle the editor.")
-		print(" - |cfffff569help:|r Display this help message.")
-		print(" - |cfffff569profile:|r Set your current profile.")
-		print(" - |cfffff569status:|r Set your character status.")
-		print(" - |cfffff569view:|r View a character's profile.")
-		print(" - |cfffff569viewer:|r Toggle the viewer.")
+		print(usage:format(L["/xrp <command> [argument]"]))
+		print(L["Use /xrp help [command] for more usage information."])
+		print(command:format(L["about"], L["Display basic information about XRP."]))
+		print(command:format(L["editor"], L["Toggle the editor."]))
+		print(command:format(L["help"], L["Display this help message."]))
+		print(command:format(L["profile"], L["Set your current profile."]))
+		print(command:format(L["status"], L["Set your character status."]))
+		print(command:format(L["view"], L["View a character's profile."]))
+		print(command:format(L["viewer"], L["Toggle the viewer."]))
+		if L["/xrp"] ~= "/xrp" then
+			print(L["You may also use the English forms of /xrp commands."])
+		end
 		print(" ")
 	end
 end
@@ -85,15 +91,15 @@ xrpcmds.editor = function(args)
 end
 
 xrpcmds.profile = function(args)
-	if args == "list" then
+	if args == "list" or args == L["list"] then
 		for _, profile in ipairs(xrp.profiles()) do
 			print(profile)
 		end
 	elseif type(args) == "string" then
 		if xrp.profiles(args) then
-			print("Set profile to \""..args.."\".")
+			print(L["Set profile to \"%s\"."]:format(args))
 		else
-			print("Failed to set profile (does \""..args.."\" exist?).")
+			print(L["Failed to set profile (does \"%s\" exist?)."]:format(args))
 		end
 	else
 		xrpcmds.help("profile")
@@ -101,15 +107,15 @@ xrpcmds.profile = function(args)
 end
 
 xrpcmds.status = function(args)
-	if args == "nil" then
+	if args == "nil" or args == L["nil"] then
 		xrp.profile.FC = nil
-	elseif args == "ooc" then
+	elseif args == "ooc" or args == L["ooc"] then
 		xrp.profile.FC = "1"
-	elseif args == "ic" then
+	elseif args == "ic" or args == L["ic"] then
 		xrp.profile.FC = "2"
-	elseif args == "lfc" then
+	elseif args == "lfc" or args == L["lfc"] then
 		xrp.profile.FC = "3"
-	elseif args == "st" then
+	elseif args == "st" or args == L["st"] then
 		xrp.profile.FC = "4"
 	else
 		xrpcmds.help("status")
@@ -117,9 +123,9 @@ xrpcmds.status = function(args)
 end
 
 xrpcmds.view = function(args)
-	if (not args and UnitIsPlayer("target")) or args == "mouseover" then
+	if (not args and UnitIsPlayer("target")) or args == "target" or args == L["target"] then
 		xrp:ShowViewerUnit("target")
-	elseif (not args and UnitIsPlayer("mouseover")) or args == "mouseover" then
+	elseif (not args and UnitIsPlayer("mouseover")) or args == "mouseover" or args == L["mouseover"] then
 		xrp:ShowViewerUnit("mouseover")
 	elseif type(args) == "string" then
 		xrp:ShowViewerCharacter(args)

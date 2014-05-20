@@ -15,13 +15,15 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
+local L = xrp.L
+
 local supportedfields = { NA = true, NI = true, NT = true, NH = true, AE = true, RA = true, AH = true, AW = true, CU = true, DE = true, AG = true, HH = true, HB = true, MO = true, HI = true, VA = true }
 
 local current = UNKNOWN
 
 local function parse_versions(VA)
 	if not VA then
-		return UNKNOWN.." or "..NONE
+		return L["%s or %s"]:format(UNKNOWN, NONE)
 	end
 	return (VA:gsub(";", ", "))
 end
@@ -33,7 +35,7 @@ function xrp.viewer:Load(character)
 	-- empty anything first.
 	for field, _ in pairs(supportedfields) do
 		if field == "NI" then
-			self[field]:SetText(character[field] and format("\"%s\"", character[field]) or "")
+			self[field]:SetText(character[field] and L["\"%s\""]:format(character[field]) or "")
 		elseif field == "NA" then
 			self.TitleText:SetText(character[field] or UNKNOWN)
 		elseif field == "VA" then
@@ -89,7 +91,7 @@ local function msp_receive(name)
 		local XC = xrp.viewer.XC:GetText()
 		xrp.viewer:Load(xrp.characters[name])
 		if not XC then
-			xrp.viewer.XC:SetText("Received!")
+			xrp.viewer.XC:SetText(L["Received!"])
 		end
 	end
 end
@@ -97,9 +99,9 @@ end
 local function msp_receive_chunk(name, chunk, totalchunks)
 	if current == name then
 		if chunk == totalchunks then
-			xrp.viewer.XC:SetFormattedText("Received! (%u/%u)", chunk, totalchunks)
+			xrp.viewer.XC:SetFormattedText(L["Received! (%u/%u)"], chunk, totalchunks)
 		else
-			xrp.viewer.XC:SetFormattedText("Receiving... (%u/%s)", chunk, totalchunks and tostring(totalchunks) or "??")
+			xrp.viewer.XC:SetFormattedText(totalchunks and L["Receiving... (%u/%s)"] or L["Receiving... (%u/??)"], chunk, totalchunks)
 		end
 	end
 end
@@ -109,7 +111,7 @@ local function msp_nochange(name)
 		local XC = xrp.viewer.XC:GetText()
 		xrp.viewer:Load(xrp.characters[name])
 		if not XC then
-			xrp.viewer.XC:SetText("No changes.")
+			xrp.viewer.XC:SetText(L["No changes."])
 		end
 	end
 end
@@ -117,7 +119,7 @@ end
 local function msp_offline(name)
 	if current == name then
 		if not xrp.viewer.XC:GetText() then
-			xrp.viewer.XC:SetText("Character is offline.")
+			xrp.viewer.XC:SetText(L["Character is not online."])
 		end
 	end
 end
@@ -125,7 +127,7 @@ end
 local function msp_norequest(name)
 	if current == name then
 		if not xrp.viewer.XC:GetText() then
-			xrp.viewer.XC:SetText("Too soon for updates.")
+			xrp.viewer.XC:SetText(L["Too soon for updates."])
 		end
 	end
 end
@@ -133,7 +135,7 @@ end
 local function msp_nomsp(name)
 	if current == name then
 		if not xrp.viewer.XC:GetText() then
-			xrp.viewer.XC:SetText("No RP addon appears to be active.")
+			xrp.viewer.XC:SetText(L["No RP addon appears to be active."])
 		end
 	end
 end

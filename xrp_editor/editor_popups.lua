@@ -15,8 +15,10 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
+local L = xrp.L
+
 StaticPopupDialogs["XRP_EDITOR_ADD"] = {
-	text = "Please enter a name for the new profile.",
+	text = L["Please enter a name for the new profile."],
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	hasEditBox = true,
@@ -38,7 +40,7 @@ StaticPopupDialogs["XRP_EDITOR_ADD"] = {
 	preferredIndex = 3,
 }
 StaticPopupDialogs["XRP_EDITOR_DELETE"] = {
-	text = "Are you sure you want to remove \"%s\"?",
+	text = L["Are you sure you want to remove \"%s\"?"],
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function(self, data, data2)
@@ -51,7 +53,7 @@ StaticPopupDialogs["XRP_EDITOR_DELETE"] = {
 	preferredIndex = 3,
 }
 StaticPopupDialogs["XRP_EDITOR_RENAME"] = {
-	text = "Please enter a new name for \"%s\".",
+	text = L["Please enter a new name for \"%s\"."],
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	hasEditBox = true,
@@ -79,7 +81,7 @@ StaticPopupDialogs["XRP_EDITOR_RENAME"] = {
 	preferredIndex = 3,
 }
 StaticPopupDialogs["XRP_EDITOR_COPY"] = {
-	text = "Please enter a name for the copy of \"%s\".",
+	text = L["Please enter a name for the copy of \"%s\"."],
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	hasEditBox = true,
@@ -107,7 +109,7 @@ StaticPopupDialogs["XRP_EDITOR_COPY"] = {
 	preferredIndex = 3,
 }
 StaticPopupDialogs["XRP_EDITOR_FAIL"] = {
-	text = "Something went wrong; a profile with that name may already exist.",
+	text = L["Something went wrong; a profile with that name may already exist."],
 	button1 = OKAY,
 	showAlert = true,
 	enterClicksFirstButton = true,
@@ -117,7 +119,7 @@ StaticPopupDialogs["XRP_EDITOR_FAIL"] = {
 	preferredIndex = 3,
 }
 StaticPopupDialogs["XRP_EDITOR_9000"] = {
-	text = "Your combined profile length is over 9000 characters. This may slow loading for others.",
+	text = L["Your combined profile length is over 9000 characters. This may slow loading for others."],
 	button1 = OKAY,
 	showAlert = true,
 	enterClicksFirstButton = true,
@@ -127,7 +129,7 @@ StaticPopupDialogs["XRP_EDITOR_9000"] = {
 	preferredIndex = 3,
 }
 StaticPopupDialogs["XRP_EDITOR_16000"] = {
-	text = "Your combined profile length is above 16000 characters. There is a chance of this causing serious problems with others loading it, and it will significantly increase load times for them.",
+	text = L["Your combined profile length is above 16000 characters. There is a chance of this causing serious problems with others loading it, and it will significantly increase load times for them."],
 	button1 = OKAY,
 	showAlert = true,
 	enterClicksFirstButton = true,
