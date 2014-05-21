@@ -148,10 +148,10 @@ local function queuesend(character, data, count)
 		return
 	elseif count == 1 or tmp_cache[character].received or now < tmp_cache[character].lastsend + 45 then
 		count = 0
-		now = now + 1.000 -- One-way safe needs more delay.
+		now = now + 1.000 + ((select(3, GetNetStats())) * 0.001) -- One-way safe needs more delay.
 	else
 		count = 1
-		now = now + 0.500
+		now = now + 0.500 + ((select(3, GetNetStats())) * 0.001)
 	end
 	send(character, dummy)
 	msprun.send[character] = { data = data, count = count, sendtime = now }
@@ -342,7 +342,7 @@ local function msprun_OnUpdate(self, elapsed)
 				if message.sendtime <= now and message.count > 0 then
 					send(character, dummy)
 					message.count = message.count - 1
-					message.sendtime = now + 0.500
+					message.sendtime = now + 0.500 + ((select(3, GetNetStats())) * 0.001)
 				elseif message.sendtime <= now and message.count == 0 then
 					send(character, message.data)
 					msprun.send[character] = nil
@@ -513,6 +513,8 @@ function xrp.msp:Update()
 		xrp_versions.TT = (xrp_versions.TT or 0) + 1
 		xrp_cache[character].versions.TT = xrp_versions.TT
 		cachett()
+	elseif not tt then
+		cachett()
 	end
 	if changes then
 		xrp:FireEvent("MSP_UPDATE")
@@ -533,6 +535,8 @@ function xrp.msp:UpdateField(field)
 		if self.ttfields[field] then
 			xrp_versions.TT = (xrp_versions.TT or 0) + 1
 			xrp_cache[character].versions.TT = xrp_versions.TT
+			cachett()
+		elseif not tt then
 			cachett()
 		end
 		xrp:FireEvent("MSP_UPDATE", field)
