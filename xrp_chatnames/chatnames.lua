@@ -64,7 +64,9 @@ end
 
 local stripname = "^"..CHAT_EMOTE_GET:format(FULL_PLAYER_NAME:format(".-", ".-")).."(.*)$"
 local function emotename(self, event, message, sender, ...)
-	-- TODO: Check for GUID availability?
+	if not (select(10, ...)) then
+		return false
+	end
 	-- The other half of attaching the realm name in GetColoredName is to,
 	-- uh, remove it here first. Why? Fuck knows, it's Blizzard and we get
 	-- things like Player-RealmName-RealmName if we don't drop it here from
