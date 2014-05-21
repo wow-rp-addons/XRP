@@ -1,42 +1,40 @@
-5.4.7.0_beta6 (2014-05-16):
+5.4.8.0_beta1 (2014-05-20):
 
-	- If you are upgrading from beta3 or earlier, please remove the old
-	  folders first (xrp and all the xrpui folders) from Interface\AddOns.
+	- TO ALL THE ROGUES I'VE LOVED BEFORE:
 
-	- A slash command, /xrp, has been added. Type /xrp or /xrp help to see how
-	  to make use of it.
+		- Your skulking ways are being enabled by this release. Go ahead,
+		  stalk that pretty lady from down the guild roster and never let them
+		  know you're there -- your RP addon is with you.
 
-	- An optional indicator for if the character displayed on your tooltip is
-	  targeting you has been added. It can be enabled in the Interface
-	  Options (disabled by default).
+	- A Blizzard issue causing problems loading profiles while in stealth has
+	  been worked around. This also allows profiles to reliably load at
+	  significant distances (such as from entirely different continents).
 
-	- Key bindings have been added/modified to allow for viewing mouseover
-	  targets by keybind in addition to targets.
+		- There is a chance this loading may fail. If it ever does, please
+		  inform the author with the circumstances of the failure. As much
+		  detail as can be given is helpful.
+
+		- This also may slightly slow the loading of profiles in some
+		  circumstances, possibly up to as much as one second. Sorry, but this
+		  cannot be helped while this workaround is needed.
+
+	- More feedback has been added to the viewer window, including
+	  notifications if the target does not appear to have an active RP addon,
+	  if the target is offline, or if they've been queried recently enough
+	  that we're not asking for changes yet.
+
+	- /xrp profile has been added. This was intended to be in the last
+	  release, but was forgotten.
 
 	- Bugfixes:
 
-		- An error on sending a whisper to an offline or nonexistant player
-		  has been fixed.
+		- The tooltip should now properly display "Level ??", rather than
+		  "Level 0" under rare circumstances.
 
-		- A possible race condition with sending profile data has been fixed.
-		  This may have a very slight impact on load speed of you tooltip for
-		  others.
+		- A rare error involving pets whose family could not be determined
+		  should now be fixed.
 
 	- KNOWN ISSUES:
-
-		- Trying to query a profile from someone while not visible (different
-		  continent, different zone, or successfully stealthed for some time)
-		  may fail, and may cause other sideaffects. This is due to a Blizzard
-		  bug, and a workaround is being developed for the next beta.
-
-			- NOTE: This bug happens with ALL RP addons right now. Some
-			  trigger it more or less often, but all of them are potentially
-			  affected by it. It is NOT an XRP bug.
-
-		- You may VERY RARELY see "No player named ... is currently playing."
-		  at seemingly random times. In general usage, these should no longer
-		  appear at all. If they do, please inform the author, it probably
-		  means that some timing changes need to happen.
 
 		- Chat names don't work with some addons, such as Prat-3.0. However,
 		  they also work just fine with other addons -- your milage will
