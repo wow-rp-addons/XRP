@@ -514,6 +514,10 @@ function xrp.msp:Update()
 		xrp_cache[character].versions.TT = xrp_versions.TT
 		cachett()
 	elseif not tt then
+		-- If it's our character we never want the cache tidy to wipe it out.
+		-- Do this by setting the wipe timer for 2038. This should get run on
+		-- the first update every session
+		xrp_cache[character].lastreceive = 2147483647
 		cachett()
 	end
 	if changes then
