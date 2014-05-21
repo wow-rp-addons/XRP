@@ -1,6 +1,6 @@
 ## Interface: 50400
 ## Title: XRP: Chat Names
-## Version: 5.4.7.0_beta6
+## Version: 5.4.8.0_beta1
 ## Author: Bor of Wyrmrest Accord (US)
 ## Notes: Provides roleplaying names for in-game chat. (WARNING: May not work correctly with some/most chat-modifying addons.)
 ## X-Category: Roleplaying

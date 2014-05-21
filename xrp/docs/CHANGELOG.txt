@@ -1,3 +1,46 @@
+5.4.8.0_beta1 (2014-05-20):
+
+	- TO ALL THE ROGUES I'VE LOVED BEFORE:
+
+		- Your skulking ways are being enabled by this release. Go ahead,
+		  stalk that pretty lady from down the guild roster and never let them
+		  know you're there -- your RP addon is with you.
+
+	- A Blizzard issue causing problems loading profiles while in stealth has
+	  been worked around. This also allows profiles to reliably load at
+	  significant distances (such as from entirely different continents).
+
+		- There is a chance this loading may fail. If it ever does, please
+		  inform the author with the circumstances of the failure. As much
+		  detail as can be given is helpful.
+
+		- This also may slightly slow the loading of profiles in some
+		  circumstances, possibly up to as much as one second. Sorry, but this
+		  cannot be helped while this workaround is needed.
+
+	- More feedback has been added to the viewer window, including
+	  notifications if the target does not appear to have an active RP addon,
+	  if the target is offline, or if they've been queried recently enough
+	  that we're not asking for changes yet.
+
+	- /xrp profile has been added. This was intended to be in the last
+	  release, but was forgotten.
+
+	- Bugfixes:
+
+		- The tooltip should now properly display "Level ??", rather than
+		  "Level 0" under rare circumstances.
+
+		- A rare error involving pets whose family could not be determined
+		  should now be fixed.
+
+	- KNOWN ISSUES:
+
+		- Chat names don't work with some addons, such as Prat-3.0. However,
+		  they also work just fine with other addons -- your milage will
+		  almost certainly vary. Some non-working addons may become explicitly
+		  supported in the future.
+
 5.4.7.0_beta6 (2014-05-16):
 
 	- If you are upgrading from beta3 or earlier, please remove the old
