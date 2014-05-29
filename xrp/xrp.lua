@@ -28,9 +28,11 @@ local default_settings = { __index = {
 	cachetidy = true,
 }}
 
-local default_defaults = { __index = function(default_defaults, field)
-	return true
-end}
+local default_defaults = {
+	__index = function(self, field)
+		return true
+	end,
+}
 
 local function checksavedvars()
 	if type(xrp_settings) ~= "table" then

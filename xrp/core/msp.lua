@@ -36,7 +36,7 @@ else
 end
 
 -- Cached tooltip response; previous profile copy.
-local tt, old
+local tt
 -- Dummy workaround request.
 local dummy = { "?XD" }
 -- Filtered "No such..." errors.
@@ -358,7 +358,8 @@ msprun:Hide()
 
 local function msprun_OnEvent(self, event, prefix, message, channel, character)
 	--if event == "CHAT_MSG_ADDON" then print(character..": Incoming "..(prefix:gsub("\1", "\\1"):gsub("\2", "\\2"):gsub("\3", "\\3"))) end
-	if event == "CHAT_MSG_ADDON" and self.handlers[prefix] then
+	-- message ~= "XD" filters dummy responses early.
+	if event == "CHAT_MSG_ADDON" and self.handlers[prefix] and message ~= "XD" then
 		--print("In: "..character..": "..message:gsub("\1", "\\1"))
 		--print("Receiving from: "..character)
 		self.handlers[prefix](character, message)
