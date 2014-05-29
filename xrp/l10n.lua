@@ -49,7 +49,7 @@ xrp.fields = {
 	-- OOC fields.
 	FR = L["Roleplaying style"],
 	FC = L["Character status"],
-	-- Addon fields.
+	-- Metadata fields.
 	VA = L["Addon version"],
 	VP = L["Protocol version"],
 	-- Hidden fields.
@@ -58,12 +58,13 @@ xrp.fields = {
 	GR = L["Toon race"],
 	GS = L["Toon gender"],
 	GU = L["Toon GUID"],
-	-- Metadata fields.
+	-- Dummy fields.
 	XC = L["MSP chunks"],
+	XD = L["Dummy field"],
 }
 
 xrp.values = {
-	RA = {
+	RA = { -- TODO: Rename to GR?
 		Dwarf = L["Dwarf"],
 		Draenei = L["Draenei"],
 		Gnome = L["Gnome"],
@@ -78,6 +79,7 @@ xrp.values = {
 		Troll = L["Troll"],
 		Pandaren = L["Pandaren"],
 	},
+	-- TODO: [0], [1], etc. formatting.
 	FR = {
 		L["Normal roleplayer"],
 		L["Casual roleplayer"],
@@ -97,6 +99,7 @@ xrp.values = {
 
 -- Sigh, global variable pollution. FrameXML needs it, though -- and at least
 -- we're prefixing with XRP_.
+-- TODO: Do in ADDON_LOADED?
 for field, name in pairs(xrp.fields) do
 	_G["XRP_"..field] = name
 end

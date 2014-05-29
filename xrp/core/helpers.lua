@@ -58,6 +58,8 @@ function xrp:RealmNameWithSpacing(name)
 	return (name:gsub("(%l)(%u)", "%1 %2"):gsub("(%l)(%d)", "%1 %2"):gsub("(%l)of ", "%1 of "))
 end
 
+local mspunits = "%u"
+
 function xrp:ConvertWeight(weight, units)
 	if not weight then
 		return nil
@@ -78,11 +80,11 @@ function xrp:ConvertWeight(weight, units)
 
 	units = (not units or units == "user") and xrp_settings.weight or units
 	if units == "msp" then -- MSP internal format: kg without units as string.
-		return format(L["%u"], number + 0.5)
+		return mspunits:format(number + 0.5)
 	elseif units == "kg" then
-		return format(L["%u kg"], number + 0.5)
+		return L["%u kg"]:format(number + 0.5)
 	elseif units == "lb" then
-		return format(L["%u lbs"], (number * 2.20462) + 0.5)
+		return L["%u lbs"]:format((number * 2.20462) + 0.5)
 	else
 		return weight -- If no unit conversion requested, pass through.
 	end
@@ -116,11 +118,11 @@ function xrp:ConvertHeight(height, units)
 
 	units = (not units or units == "user") and xrp_settings.height or units
 	if units == "msp" then -- MSP internal format: cm without units as string.
-		return format("%d", number)
+		return mspunits:format(number)
 	elseif units == "cm" then
-		return format(L["%u cm"], number + 0.5)
+		return L["%u cm"]:format(number + 0.5)
 	elseif units == "m" then
-		return format(L["%.2f m"], math.floor(number + 0.5) * 0.01) -- Round first.
+		return L["%.2f m"]:format(math.floor(number + 0.5) * 0.01) -- Round first.
 	elseif units == "ft" then
 		local feet, inches = math.modf(number / 30.48)
 		inches = (inches * 12) + 0.5
@@ -128,7 +130,7 @@ function xrp:ConvertHeight(height, units)
 			feet = feet + 1
 			inches = 0
 		end
-		return format(L["%u'%u\""], feet, inches)
+		return L["%u'%u\""]:format(feet, inches)
 	else
 		return height
 	end
