@@ -131,7 +131,7 @@ StaticPopupDialogs["XRP_CURRENTLY"] = {
 
 local minimap_menulist = {
 	{ text = XRP, isTitle = true, notCheckable = true, },
-	{ text = "Profiles", notCheckable = true, hasArrow = true, menuList = menulist_profiles, },
+	{ text = L["Profiles"], notCheckable = true, hasArrow = true, menuList = menulist_profiles, },
 	{ text = XRP_FC, notCheckable = true, hasArrow = true, menuList = menulist_status, },
 	{ text = XRP_CU..CONTINUED, notCheckable = true, func = function() StaticPopup_Show("XRP_CURRENTLY") end, },
 	{ text = L["Profile editor"], notCheckable = true, func = function() xrp:ToggleEditor() end, },

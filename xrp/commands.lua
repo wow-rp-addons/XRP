@@ -51,7 +51,7 @@ xrpcmds.help = function(args)
 		print(command:format(L["list"], L["List all profiles."]))
 		print(command:format(L["<Profile>"], L["Set current profile to the named profile."]))
 		print(" ")
-	elseif args == "status" or args == L["profile"] then
+	elseif args == "status" or args == L["status"] then
 		print(usage:format(L["/xrp status [nil|ooc|ic|lfc|st]"]))
 		print(command:format(L["nil"], L["Reset to profile default."]))
 		print(command:format(L["ic"], L["Set to out-of-character."]))
@@ -92,9 +92,11 @@ end
 
 xrpcmds.profile = function(args)
 	if args == "list" or args == L["list"] then
+		print("Profiles:")
 		for _, profile in ipairs(xrp.profiles()) do
 			print(profile)
 		end
+		print(" ")
 	elseif type(args) == "string" then
 		if xrp.profiles(args) then
 			print(L["Set profile to \"%s\"."]:format(args))
