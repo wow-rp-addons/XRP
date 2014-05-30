@@ -115,13 +115,19 @@ local function init_OnEvent(xrp, event, addon)
 		setmetatable(xrp_settings, default_settings)
 		setmetatable(xrp_settings.defaults, default_defaults)
 
-		-- This is horrible as all hell. It modifies the default interface
-		-- in a way that doesn't quite preserve functionality, but it's either
-		-- this or taint the interface to high hell and back if the user dares
-		-- to ever press "Cancel" in the interface options.
-		InterfaceOptionsFrameCancel:Hide()
-		InterfaceOptionsFrameOkay:SetAllPoints(InterfaceOptionsFrameCancel)
-		InterfaceOptionsFrameCancel:SetScript(function() InterfaceOptionsFrameOkay:Click() end)
+		-- This is kinda terrifying, but it fixes some major UI tainting when
+		-- the user presses "Cancel" in the Interface Options (in and out of
+		-- combat).
+		_G.CompactUnitFrames_CancelChanges = function(self)
+			InterfaceOptionsPanel_Cancel(self)
+			-- Disabling the reload makes it more obvious what happens when
+			-- changes don't 'really' cancel.
+			--RestoreRaidProfileFromCopy()
+			CompactUnitFrameProfiles_UpdateCurrentPanel()
+			-- This function (from original) can't be run without tainting
+			-- everything.
+			--CompactUnitFrameProfiles_ApplyCurrentSettings()
+		end
 
 		xrp:UnregisterEvent("ADDON_LOADED")
 		xrp:RegisterEvent("PLAYER_LOGIN")
