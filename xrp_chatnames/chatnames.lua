@@ -77,7 +77,7 @@ local function new_GetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg
 
 	-- RP name in channels is from case-insensitive NAME, not the number.
 	if event == "CHAT_MSG_CHANNEL" and type(arg9) == "string" then
-		event = event.."_"..arg9:upper()
+		event = event.."_"..arg9:match("^([^%s]+).*"):upper()
 	end
 
 	local rpname = false
@@ -116,6 +116,12 @@ local function emotename(self, event, message, sender, ...)
 	return false, message, sender, ...
 end
 
+local function chatnames_UnitPopup(self)
+	if self.value == "XRP_VIEWPROFILE" then
+		xrp:ShowViewerCharacter(xrp:NameWithRealm(UIDROPDOWNMENU_INIT_MENU.name))
+	end
+end
+
 local chatnames = CreateFrame("Frame")
 local function chatnames_OnEvent(self, event, addon)
 	if event == "ADDON_LOADED" and addon == "xrp_chatnames" then
@@ -131,6 +137,9 @@ local function chatnames_OnEvent(self, event, addon)
 		end
 		setmetatable(xrp_settings.chatnames, settingsmt)
 		ChatFrame_AddMessageEventFilter("CHAT_MSG_TEXT_EMOTE", emotename)
+		UnitPopupButtons["XRP_VIEWPROFILE"] = { text = xrp.L["RP Profile"], dist = 0 }
+		table.insert(UnitPopupMenus["FRIEND"], 4, "XRP_VIEWPROFILE")
+		hooksecurefunc("UnitPopup_OnClick", chatnames_UnitPopup)
 		self:UnregisterEvent("ADDON_LOADED")
 		self:RegisterEvent("PLAYER_LOGIN")
 	elseif event == "PLAYER_LOGIN" then
