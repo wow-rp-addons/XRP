@@ -115,6 +115,14 @@ local function init_OnEvent(xrp, event, addon)
 		setmetatable(xrp_settings, default_settings)
 		setmetatable(xrp_settings.defaults, default_defaults)
 
+		-- This is horrible as all hell. It modifies the default interface
+		-- in a way that doesn't quite preserve functionality, but it's either
+		-- this or taint the interface to high hell and back if the user dares
+		-- to ever press "Cancel" in the interface options.
+		InterfaceOptionsFrameCancel:Hide()
+		InterfaceOptionsFrameOkay:SetAllPoints(InterfaceOptionsFrameCancel)
+		InterfaceOptionsFrameCancel:SetScript(function() InterfaceOptionsFrameOkay:Click() end)
+
 		xrp:UnregisterEvent("ADDON_LOADED")
 		xrp:RegisterEvent("PLAYER_LOGIN")
 	elseif event == "PLAYER_LOGIN" then
