@@ -37,9 +37,9 @@ function xrp.viewer:Load(character)
 		if field == "NI" then
 			self[field]:SetText(character[field] and L["\"%s\""]:format(character[field]) or "")
 		elseif field == "NA" then
-			self.TitleText:SetText(character[field] or UNKNOWN)
+			self.TitleText:SetText(character[field] or Ambiguate(current, "none") or UNKNOWN)
 		elseif field == "VA" then
-			self["VA"]:SetText(parse_versions(character[field]))
+			self[field]:SetText(parse_versions(character[field]))
 		elseif field == "AH" then
 			self[field]:SetText(xrp:ConvertHeight(character[field], "user") or "")
 		elseif field == "AW" then
