@@ -43,14 +43,34 @@
 						<Anchor point="LEFT" relativeKey="$parent.YellLabel" relativePoint="RIGHT" x="50" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="GuildLabel" inherits="GameFontWhite" text="Guild">
+				<FontString parentKey="WhisperLabel" inherits="GameFontWhite" text="Whisper">
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.EmoteLabel" relativePoint="RIGHT" x="50" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="WhisperLabel" inherits="GameFontWhite" text="Whisper">
+				<FontString parentKey="GuildLabel" inherits="GameFontWhite" text="Guild">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.SayLabel" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="PartyLabel" inherits="GameFontWhite" text="Party">
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.GuildLabel" relativePoint="RIGHT" x="50" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="RaidLabel" inherits="GameFontWhite" text="Raid">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.PartyLabel" relativePoint="RIGHT" x="50" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="InstanceLabel" inherits="GameFontWhite" text="Instance">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.RaidLabel" relativePoint="RIGHT" x="50" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="ChannelLabel" inherits="GameFontWhite" text="Channels">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.GuildLabel" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -86,6 +106,41 @@
 					<Anchor point="RIGHT" relativeKey="$parent.WhisperLabel" relativePoint="LEFT" x="-4" y="0"/>
 				</Anchors>
 			</CheckButton>
+			<CheckButton name="$parentParty" parentKey="CHAT_MSG_PARTY" inherits="UICheckButtonTemplate">
+				<Size x="24" y="24"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.PartyLabel" relativePoint="LEFT" x="-4" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentRaid" parentKey="CHAT_MSG_RAID" inherits="UICheckButtonTemplate">
+				<Size x="24" y="24"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.RaidLabel" relativePoint="LEFT" x="-4" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentInstance" parentKey="CHAT_MSG_INSTANCE" inherits="UICheckButtonTemplate">
+				<Size x="24" y="24"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.InstanceLabel" relativePoint="LEFT" x="-4" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentChannel" parentKey="CHAT_MSG_CHANNEL" inherits="UICheckButtonTemplate">
+				<Size x="24" y="24"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.ChannelLabel" relativePoint="LEFT" x="-4" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<Button name="$parentChannelButton" parentKey="CHANNEL_BUTTON">
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.ChannelLabel" relativePoint="RIGHT" x="4" y="0"/>
+				</Anchors>
+				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
+				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+			</Button>
+			<Button name="$parentChannelMenu" parentKey="CHANNEL_MENU" hidden="true" inherits="UIDropDownMenuTemplate"/>
 		</Frames>
 	</Frame>
 </Ui>
