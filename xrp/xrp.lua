@@ -84,30 +84,6 @@ local addons = {
 	"Tongues",
 }
 
--- Remove before final.
-local function beta3convert()
-	local uiname, uititle, uinotes, uienabled, uiloadable, uireason = GetAddOnInfo("xrpui")
-	if uienabled and not xrp_settings.beta3convert then
-		xrp_settings.beta3convert = true
-		StaticPopupDialogs["XRP_RELOAD_NOW"] = {
-			text = "You need to reload your UI. (Also you should remove all the xrpui_ folders from your Interface\\Addons folder.)",
-			button1 = "Please Reload!",
-			button2 = "Reload, I guess.",
-			OnAccept = function()
-				ReloadUI()
-			end,
-			OnCancel = function()
-				ReloadUI()
-			end,
-			timeout = 0,
-			hideOnEscape = false,
-			preferredIndex = 3,
-		}
-		DisableAddOn("xrpui")
-		StaticPopup_Show("XRP_RELOAD_NOW")
-	end
-end
-
 local function init_OnEvent(xrp, event, addon)
 	if event == "ADDON_LOADED" and addon == "xrp" then
 		local fullversion = xrp.versionstring
@@ -142,7 +118,6 @@ local function init_OnEvent(xrp, event, addon)
 		xrp:UnregisterEvent("ADDON_LOADED")
 		xrp:RegisterEvent("PLAYER_LOGIN")
 	elseif event == "PLAYER_LOGIN" then
-		beta3convert()
 		-- UnitGUID("player") doesn't work before first PLAYER_LOGIN.
 		xrp.toon.fields.GU = UnitGUID("player")
 		xrp.profiles(xrp_selectedprofile)
