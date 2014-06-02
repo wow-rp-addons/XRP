@@ -61,16 +61,18 @@ end
 
 local function core_OnEvent(self, event, addon)
 	if event == "ADDON_LOADED" and addon == "xrp_options" then
-		self.name = "Core"
+		local L = xrp.L
+		self.name = L["Core"]
 		self.refresh = core_Refresh
 		self.okay = core_Okay
 		self.default = core_Default
 		self.parent = XRP
 		InterfaceOptions_AddCategory(self)
 
+		-- TODO: Sort values in first two menus (post-localization).
 		UIDropDownMenu_Initialize(self.AHUnits, function()
 			local info
-			for key, text in ipairs({ "Centimeters", "Feet/Inches", "Meters" }) do
+			for key, text in ipairs({ L["Centimeters"], L["Feet/Inches"], L["Meters"] }) do
 				local value = key == 1 and "cm" or key == 2 and "ft" or key == 3 and "m"
 				info = UIDropDownMenu_CreateInfo()
 				info.text = text
@@ -85,7 +87,7 @@ local function core_OnEvent(self, event, addon)
 		end)
 		UIDropDownMenu_Initialize(self.AWUnits, function()
 			local info
-			for key, text in ipairs({ "Kilograms", "Pounds" }) do
+			for key, text in ipairs({ L["Kilograms"], L["Pounds"] }) do
 				local value = key == 1 and "kg" or key == 2 and "lb"
 				info = UIDropDownMenu_CreateInfo()
 				info.text = text
@@ -100,7 +102,7 @@ local function core_OnEvent(self, event, addon)
 		end)
 		UIDropDownMenu_Initialize(self.CacheTime, function()
 			local info
-			for key, text in ipairs({ "1 day", "3 days", "1 week", "2 weeks", "1 month", "3 months" }) do
+			for key, text in ipairs({ L["1 day"], L["3 days"], L["1 week"], L["2 weeks"], L["1 month"], L["3 months"] }) do
 				local value = key == 1 and 86400 or key == 2 and 259200 or key == 3 and 604800 or key == 4 and 1209600 or key == 5 and 2419200 or key == 6 and 7257600
 				info = UIDropDownMenu_CreateInfo()
 				info.text = text

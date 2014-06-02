@@ -8,6 +8,7 @@
 ## X-License: GPLv3
 ## Dependencies: xrp
 
+strings.lua
 core.xml
 core.lua
 chatnames.xml

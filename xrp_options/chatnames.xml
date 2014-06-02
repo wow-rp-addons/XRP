@@ -18,57 +18,57 @@
 	<Frame name="$parent_chatnames" parentKey="chatnames" parent="xrp_options">
 		<Layers>
 			<Layer level="OVERLAY">
-				<FontString parentKey="Title" inherits="GameFontNormalLarge" text="XRP: Chat names options">
+				<FontString parentKey="Title" inherits="GameFontNormalLarge" text="XRP_OPTIONS_CHAT_TITLE">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="15" y="-15"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="ChatLabel" inherits="GameFontNormal" text="RP names in chat:">
+				<FontString parentKey="ChatLabel" inherits="GameFontNormal" text="XRP_OPTIONS_CHAT_LABEL">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="SayLabel" inherits="GameFontWhite" text="Say">
+				<FontString parentKey="SayLabel" inherits="GameFontWhite" text="CHAT_MSG_SAY">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.ChatLabel" relativePoint="BOTTOMLEFT" x="24" y="-10"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="YellLabel" inherits="GameFontWhite" text="Yell">
+				<FontString parentKey="YellLabel" inherits="GameFontWhite" text="CHAT_MSG_YELL">
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.SayLabel" relativePoint="RIGHT" x="50" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="EmoteLabel" inherits="GameFontWhite" text="Emote">
+				<FontString parentKey="EmoteLabel" inherits="GameFontWhite" text="CHAT_MSG_EMOTE">
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.YellLabel" relativePoint="RIGHT" x="50" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="WhisperLabel" inherits="GameFontWhite" text="Whisper">
+				<FontString parentKey="WhisperLabel" inherits="GameFontWhite" text="CHAT_MSG_WHISPER_INFORM">
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.EmoteLabel" relativePoint="RIGHT" x="50" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="GuildLabel" inherits="GameFontWhite" text="Guild">
+				<FontString parentKey="GuildLabel" inherits="GameFontWhite" text="CHAT_MSG_GUILD">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.SayLabel" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="PartyLabel" inherits="GameFontWhite" text="Party">
+				<FontString parentKey="PartyLabel" inherits="GameFontWhite" text="CHAT_MSG_RAID">
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.GuildLabel" relativePoint="RIGHT" x="50" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="RaidLabel" inherits="GameFontWhite" text="Raid">
+				<FontString parentKey="RaidLabel" inherits="GameFontWhite" text="CHAT_MSG_RAID">
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.PartyLabel" relativePoint="RIGHT" x="50" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="InstanceLabel" inherits="GameFontWhite" text="Instance">
+				<FontString parentKey="InstanceLabel" inherits="GameFontWhite" text="INSTANCE_CHAT_MESSAGE">
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.RaidLabel" relativePoint="RIGHT" x="50" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="ChannelLabel" inherits="GameFontWhite" text="Channels">
+				<FontString parentKey="ChannelLabel" inherits="GameFontWhite" text="CHAT_MSG_CHANNEL_LIST">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.GuildLabel" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
 					</Anchors>

@@ -18,42 +18,42 @@
 	<Frame name="$parent_tooltip" parentKey="tooltip" parent="xrp_options">
 		<Layers>
 			<Layer level="OVERLAY">
-				<FontString parentKey="Title" inherits="GameFontNormalLarge" text="XRP: Tooltip options">
+				<FontString parentKey="Title" inherits="GameFontNormalLarge" text="XRP_OPTIONS_TOOLTIP_TITLE">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="15" y="-15"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="reactionLabel" inherits="GameFontWhite" text="Use reaction color for names (instead of faction colors)">
+				<FontString parentKey="reactionLabel" inherits="GameFontWhite" text="XRP_OPTIONS_TOOLTIP_REACTION">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" x="24" y="-10"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="watchingLabel" inherits="GameFontWhite" text="Indicate if player is targeting me">
+				<FontString parentKey="watchingLabel" inherits="GameFontWhite" text="XRP_OPTIONS_TOOLTIP_WATCHING">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.reactionLabel" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="guildrankLabel" inherits="GameFontWhite" text="Show guild rank">
+				<FontString parentKey="guildrankLabel" inherits="GameFontWhite" text="XRP_OPTIONS_TOOLTIP_GUILDRANK">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.watchingLabel" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="rpraceLabel" inherits="GameFontWhite" text="Display roleplay race (instead of in-game race)">
+				<FontString parentKey="rpraceLabel" inherits="GameFontWhite" text="XRP_OPTIONS_TOOLTIP_RPRACE">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.guildrankLabel" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="noopfactionLabel" inherits="GameFontWhite" text="Hide RP information on opposite faction targets">
+				<FontString parentKey="noopfactionLabel" inherits="GameFontWhite" text="XRP_OPTIONS_TOOLTIP_NOOPFACTION">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.rpraceLabel" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="nohostileLabel" inherits="GameFontWhite" text="Hide RP information on hostile targets">
+				<FontString parentKey="nohostileLabel" inherits="GameFontWhite" text="XRP_OPTIONS_TOOLTIP_NOHOSTILE">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.noopfactionLabel" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="extraspaceLabel" inherits="GameFontWhite" text="Add extra blank lines">
+				<FontString parentKey="extraspaceLabel" inherits="GameFontWhite" text="XRP_OPTIONS_TOOLTIP_EXTRASPACE">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.nohostileLabel" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
 					</Anchors>
