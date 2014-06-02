@@ -82,8 +82,11 @@ local function profiles_select(self, name, arg2, checked)
 end
 
 local function status_select(self, status, arg2, checked)
-	if not checked then
+	local FC = xrp.profiles[xrp_selectedprofile].FC or (xrp.defaults[xrp_selectedprofile].FC and xrp.profiles["Default"].FC)
+	if not checked and status ~= FC then
 		xrp.profile.FC = status
+	elseif not checked then
+		xrp.profile.FC = nil
 	end
 	ToggleDropDownMenu(nil, nil, xrp.minimap.menu)
 end
@@ -93,7 +96,7 @@ local menulist_profiles = {}
 local menulist_status = {
 	{ text = xrp.values.FC_EMPTY, checked = false, arg1 = "0", func = status_select },
 }
-for value, text in pairs(xrp.values.FC) do
+for value, text in ipairs(xrp.values.FC) do
 	menulist_status[#menulist_status + 1] = { text = text, checked = false, arg1 = tostring(value), func = status_select, }
 end
 
@@ -141,18 +144,16 @@ local minimap_menulist = {
 
 local function update_status()
 	local currentstatus = xrp.profile.FC or "0"
-	local menu = menulist_status
-	for _, menuitem in pairs(menu) do
+	for _, menuitem in ipairs(menulist_status) do
 		menuitem.checked = currentstatus == menuitem.arg1
 	end
 end
 
 local function update_profiles()
-	local list = xrp.profiles()
 	local profile = xrp.profile(true)
 	local menu = menulist_profiles
 	wipe(menu)
-	for _, name in pairs(list) do
+	for _, name in ipairs(xrp.profiles()) do
 		menu[#menu + 1] = { text = name, checked = profile == name, arg1 = name, func = profiles_select, }
 	end
 end
@@ -163,8 +164,6 @@ local function update_icon()
 	else
 		if not xrp.profile.FC or xrp.profile.FC == "0" or xrp.profile.FC == "1" then
 			xrp.minimap.icon:SetTexture("Interface\\Icons\\Ability_Malkorok_BlightofYshaarj_Red")
---		elseif not xrp.profile.FC or xrp.profile.FC == "0" then
---			xrp.minimap.icon:SetTexture("Interface\\Icons\\Ability_Malkorok_BlightofYshaarj_Yellow")
 		else
 			xrp.minimap.icon:SetTexture("Interface\\Icons\\Ability_Malkorok_BlightofYshaarj_Green")
 		end
@@ -176,7 +175,6 @@ local function minimap_OnEnter(self, motion)
 		GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT", 30, 4)
 		GameTooltip:SetText(L["Click to:"])
 		GameTooltip:AddLine(" ")
---		GameTooltip:AddLine(format("|TInterface\\Icons\\Ability_Malkorok_BlightofYshaarj_Red:20|t/|TInterface\\Icons\\Ability_Malkorok_BlightofYshaarj_Yellow:20|t: %s", L["Toggle your status to IC."]))
 		GameTooltip:AddLine(format("|TInterface\\Icons\\Ability_Malkorok_BlightofYshaarj_Red:20|t: %s", L["Toggle your status to IC."]))
 		GameTooltip:AddLine(format("|TInterface\\Icons\\Ability_Malkorok_BlightofYshaarj_Green:20|t: %s", L["Toggle your status to OOC."]))
 		GameTooltip:AddLine(format("|TInterface\\Icons\\INV_Misc_Book_03:20|t: %s", L["View your target's profile."]))
@@ -190,23 +188,21 @@ xrp.minimap:SetScript("OnLeave", function(self, motion)
 	GameTooltip:Hide()
 end)
 
-local toggled = false
 local function minimap_OnClick(self, button, down)
 	if not down then
 		if button == "LeftButton" then
 			if xrp.units.target and xrp.units.target.VA then
 				xrp:ShowViewerUnit("target")
-			elseif toggled then
-				xrp.profile.FC = nil
-				toggled = false
 			else
 				local FC = xrp.profile.FC
-				if FC ~= "1" and FC ~= "0" and FC then
+				local FCprof = xrp.profiles[xrp_selectedprofile].FC or (xrp.defaults[xrp_selectedprofile].FC and xrp.profiles["Default"].FC)
+				if FC == FCprof and FC and FC ~= "1" and FC ~= "0" then
 					xrp.profile.FC = "1"
-				else
+				elseif FC == FCprof then
 					xrp.profile.FC = "2"
+				else
+					xrp.profile.FC = nil
 				end
-				toggled = true
 			end
 		elseif button == "RightButton" then
 			update_profiles()
