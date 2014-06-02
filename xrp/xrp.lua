@@ -17,6 +17,17 @@
 
 xrp = CreateFrame("Frame", "xrp", UIParent)
 
+xrp.L = setmetatable({}, {
+	__index = function(self, key)
+		return key
+	end,
+	__newindex = function(self, key, value)
+	end,
+	__call = function(self, arg1)
+	end,
+	__metatable = false,
+})
+
 xrp.version = GetAddOnMetadata("xrp", "Version")
 xrp.versionstring = format("%s/%s", GetAddOnMetadata("xrp", "Title"), xrp.version)
 
@@ -87,7 +98,7 @@ local addons = {
 local function init_OnEvent(xrp, event, addon)
 	if event == "ADDON_LOADED" and addon == "xrp" then
 		local fullversion = xrp.versionstring
-		for _, addon in pairs(addons) do
+		for _, addon in ipairs(addons) do
 			local name, title, notes, enabled, loadable, reason = GetAddOnInfo(addon)
 			if enabled or loadable then
 				fullversion = format("%s;%s/%s", fullversion, name, GetAddOnMetadata(name, "Version"))

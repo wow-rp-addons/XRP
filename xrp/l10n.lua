@@ -15,56 +15,54 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local L = setmetatable({}, {
-	__index = function(L, key)
-		return key
-	end,
-	__newindex = function(L, key, value)
-	end,
-	__call = function(L, arg1)
-	end,
-	__metatable = false,
-})
+local L = xrp.L
 
-xrp.L = L
+-- Some of these are defined in the global WoW strings (i.e., "Home" or
+-- "History"), but the contexts are such that the localization might not
+-- always match. "Name" and "Race" are used in their in-game contexts.
 
-xrp.fields = {
-	-- Biography fields.
-	NA = NAME, -- "Name"
-	NI = L["Nickname"],
-	NT = L["Title"],
-	NH = L["House/Clan/Tribe"],
-	AE = L["Eyes"],
-	RA = RACE, -- "Race"
-	AH = L["Height"],
-	AW = L["Weight"],
-	CU = L["Currently"],
-	DE = L["Description"],
-	-- History fields.
-	AG = L["Age"],
-	HH = HOME, -- "Home"
-	HB = L["Birthplace"],
-	MO = L["Motto"],
-	HI = HISTORY, -- "History"
-	-- OOC fields.
-	FR = L["Roleplaying style"],
-	FC = L["Character status"],
-	-- Metadata fields.
-	VA = L["Addon version"],
-	VP = L["Protocol version"],
-	-- Hidden fields.
-	GC = L["Toon class"],
-	GF = L["Toon faction"],
-	GR = L["Toon race"],
-	GS = L["Toon gender"],
-	GU = L["Toon GUID"],
-	-- Dummy fields.
-	XC = L["MSP chunks"],
-	XD = L["Dummy field"],
-}
+XRP_APPEARANCE = L["Appearance"]
+-- Appearance fields.
+XRP_NA = NAME -- "Name"
+XRP_NI = L["Nickname"]
+XRP_NT = L["Title"]
+XRP_NH = L["House/Clan/Tribe"]
+XRP_AE = L["Eyes"]
+XRP_RA = RACE -- "Race"
+XRP_AH = L["Height"]
+XRP_AW = L["Weight"]
+XRP_CU = L["Currently"]
+XRP_DE = L["Description"]
+
+XRP_BIOGRAPHY = L["Biography"]
+-- Biography fields.
+XRP_AG = L["Age"]
+XRP_HH = L["Home"]
+XRP_HB = L["Birthplace"]
+XRP_MO = L["Motto"]
+XRP_HI = L["History"]
+
+-- OOC fields.
+XRP_FR = L["Roleplaying style"]
+XRP_FC = L["Character status"]
+
+-- Metadata fields.
+XRP_VA = L["Addon version"]
+XRP_VP = L["Protocol version"]
+
+-- Toon fields.
+XRP_GC = L["Toon class"]
+XRP_GF = L["Toon faction"]
+XRP_GR = L["Toon race"]
+XRP_GS = L["Toon gender"]
+XRP_GU = L["Toon GUID"]
+
+-- Dummy fields.
+XRP_XC = L["MSP chunks"]
+XRP_XD = L["Dummy field"]
 
 xrp.values = {
-	RA = { -- TODO: Rename to GR?
+	GR = {
 		Dwarf = L["Dwarf"],
 		Draenei = L["Draenei"],
 		Gnome = L["Gnome"],
@@ -79,7 +77,7 @@ xrp.values = {
 		Troll = L["Troll"],
 		Pandaren = L["Pandaren"],
 	},
-	-- TODO: [0], [1], etc. formatting.
+	-- TODO: ["0"], ["1"], etc. formatting.
 	FR = {
 		L["Normal roleplayer"],
 		L["Casual roleplayer"],
@@ -97,13 +95,6 @@ xrp.values = {
 	FC_EMPTY = L["(Status not set)"],
 }
 
--- Sigh, global variable pollution. FrameXML needs it, though -- and at least
--- we're prefixing with XRP_.
--- TODO: Do in ADDON_LOADED?
-for field, name in pairs(xrp.fields) do
-	_G["XRP_"..field] = name
-end
-
 XRP = GetAddOnMetadata("xrp", "Title") -- In other words, XRP = "XRP"... Huh.
 
 BINDING_HEADER_XRP = XRP
@@ -112,10 +103,15 @@ BINDING_NAME_XRP_VIEWER = L["View target's or mouseover's RP profile"]
 BINDING_NAME_XRP_VIEWER_TARGET = L["View target's RP profile"]
 BINDING_NAME_XRP_VIEWER_MOUSEOVER = L["View mouseover's RP profile"]
 
-XRP_AUTHOR = format("%s%s:|r %s", "|cff99b3e6", L["Author"], GetAddOnMetadata("xrp", "Author"))
-XRP_VERSION = format("%s%s:|r %s", "|cff99b3e6", GAME_VERSION_LABEL, GetAddOnMetadata("xrp", "Version"))
+local info = "|cff99b3e6%s:|r %s"
+XRP_AUTHOR = info:format(L["Author"], GetAddOnMetadata("xrp", "Author"))
+XRP_VERSION = info:format(GAME_VERSION_LABEL, GetAddOnMetadata("xrp", "Version"))
 XRP_COPYHEADER = L["License/Copyright"]
+
+-- Copyright line should not be localized.
 XRP_COPYRIGHT = "(C) 2014 Bor Blasthammer <bor@blasthammer.net>"
+
+-- These two should, ideally, be taken from FSF translations.
 XRP_LICENSE = L[ [[This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
