@@ -38,18 +38,19 @@ StaticPopupDialogs["XRP_IMPORT_RELOAD"] = {
 local function import_MyRolePlay()
 	for name, profile in pairs(mrpSaved.Profiles) do
 		for field, value in pairs(profile) do
-			if not xrp.msp.unitfields[field] and not xrp.msp.metafields[field] then
+			if not xrp.msp.unitfields[field] and not xrp.msp.metafields[field] and not xrp.msp.dummyfields[field] then
 				xrp.profiles["MRP-"..name][field] = value ~= "" and value or nil
 			end
 		end
 	end
 end
 
+-- These values should be taken from TotalRP2 when localizing.
 local trp2_height = {
 	L["Very short"],
-	SHORT, -- "Short"
+	L["Short"],
 	L["Average"],
-	TALL, -- "Tall"
+	L["Tall"],
 	L["Very tall"],
 }
 
