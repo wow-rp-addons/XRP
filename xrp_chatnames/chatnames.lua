@@ -27,8 +27,6 @@ local default_settings = {
 	["CHAT_MSG_PARTY"] = false, -- CHAT_MSG_PARTY_LEADER
 	["CHAT_MSG_RAID"] = false, -- CHAT_MSG_RAID_LEADER
 	["CHAT_MSG_INSTANCE"] = false, -- CHAT_MSG_INSTANCE_LEADER
-	["CHAT_MSG_CHANNEL"] = false, -- Default for standard/custom channels.
-	["CHAT_MSG_CHANNEL_TRADE"] = false, -- Trade is high volume.
 }
 
 local linked = {
@@ -49,9 +47,6 @@ local settingsmt = {
 			return default_settings[chattype]
 		elseif linked[chattype] then
 			return self[linked[chattype]]
-		elseif chattype:sub(1, 17) == "CHAT_MSG_CHANNEL_" then
-			-- Underscore at end avoids infinite recursion.
-			return self.CHAT_MSG_CHANNEL
 		else
 			return false
 		end
