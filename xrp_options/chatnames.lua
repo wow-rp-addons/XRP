@@ -78,14 +78,13 @@ end
 local function chatnames_OnEvent(self, event, addon)
 	if event == "ADDON_LOADED" and addon == "xrp_options" then
 
-		self.name = "Chat Names"
-		self.refresh = chatnames_Refresh
-		self.okay = chatnames_Okay
-		self.default = chatnames_Default
-		self.parent = XRP
-		self.CHANNEL_BUTTON:SetScript("OnClick", chatnames_ChannelButton_OnClick)
-
 		if (select(4, GetAddOnInfo("xrp_chatnames"))) then
+			self.name = xrp.L["Chat Names"]
+			self.refresh = chatnames_Refresh
+			self.okay = chatnames_Okay
+			self.default = chatnames_Default
+			self.parent = XRP
+			self.CHANNEL_BUTTON:SetScript("OnClick", chatnames_ChannelButton_OnClick)
 			InterfaceOptions_AddCategory(self)
 			chatnames_Refresh()
 		end

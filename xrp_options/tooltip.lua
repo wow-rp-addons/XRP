@@ -39,15 +39,12 @@ end
 
 local function tooltip_OnEvent(self, event, addon)
 	if event == "ADDON_LOADED" and addon == "xrp_options" then
-
-		local name, title, notes, enabled, loadable, reason = GetAddOnInfo("xrp_tooltip")
-		self.name = "Tooltip"
-		self.refresh = tooltip_Refresh
-		self.okay = tooltip_Okay
-		self.default = tooltip_Default
-		self.parent = XRP
-
-		if enabled then
+		if (select(4, GetAddOnInfo("xrp_tooltip"))) then
+			self.name = xrp.L["Tooltip"]
+			self.refresh = tooltip_Refresh
+			self.okay = tooltip_Okay
+			self.default = tooltip_Default
+			self.parent = XRP
 			InterfaceOptions_AddCategory(self)
 			tooltip_Refresh()
 		end

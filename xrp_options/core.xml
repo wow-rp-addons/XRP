@@ -18,7 +18,7 @@
 	<Frame name="$parent_core" parentKey="core" parent="xrp_options">
 		<Layers>
 			<Layer level="OVERLAY">
-				<FontString parentKey="Title" inherits="GameFontNormalLarge" text="XRP: Core options">
+				<FontString parentKey="Title" inherits="GameFontNormalLarge" text="XRP_OPTIONS_CORE_TITLE">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="15" y="-15"/>
 					</Anchors>
@@ -33,7 +33,7 @@
 						<Anchor point="LEFT" relativeKey="$parent.AHUnitsLabel" relativePoint="LEFT" x="250" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="DefaultsLabel" inherits="GameFontNormal" text="Default copying settings:">
+				<FontString parentKey="DefaultsLabel" inherits="GameFontNormal" text="XRP_OPTIONS_CORE_DEFAULTS">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.AHUnitsLabel" relativePoint="BOTTOMLEFT" x="0" y="-60"/>
 					</Anchors>
@@ -123,12 +123,12 @@
 						<Anchor point="LEFT" relativeKey="$parent.FRLabel" relativePoint="RIGHT" x="50" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="CacheLabel" inherits="GameFontNormal" text="Character cache expiry:">
+				<FontString parentKey="CacheLabel" inherits="GameFontNormal" text="XRP_OPTIONS_CORE_CACHE">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.DefaultsLabel" relativePoint="BOTTOMLEFT" x="0" y="-140"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="CacheAutoLabel" inherits="GameFontWhite" text="Auto-expire cache">
+				<FontString parentKey="CacheAutoLabel" inherits="GameFontWhite" text="XRP_OPTIONS_CORE_CACHEAUTO">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.CacheLabel" relativePoint="BOTTOMLEFT" x="250" y="-12"/>
 					</Anchors>
