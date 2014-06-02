@@ -1,3 +1,50 @@
+5.4.8.0_beta2 (2014-06-02):
+
+	- Chatnames:
+
+		- Default settings have changed (for new installations only). Only
+		  say, yell, and emotes will have RP names by default.
+
+		- New types of chat are supported, including party, raid, instance,
+		  and world/custom channels. These may be enabled/disabled (on a
+		  per-channel basis for world/custom channels) in the interface
+		  options.
+
+		- A menu item is now added when right-clicking on a name in chat,
+		  allowing quick access to view that character's profile.
+
+	- Bugfixes:
+
+		- A workaround has been implemented to stop the default raid frames
+		  from being severely tainted by any addon using the interface options
+		  system (including XRP).
+
+			- This workaround has the minor drawback of changes made to a raid
+			  profile not being automatically cancelled and restored to
+			  previous settings when the interface options cancel button is
+			  pressed.
+
+		- A runaway pattern match would sometimes gobble up half of an emote
+		  if targeting an off-realm player. Its hunger has been satiated.
+
+		- Some issues that would occasionally cause the viewer's receiving
+		  feedback to show incorrect statuses have been fixed.
+
+		- An issue that could cause abnormal inflation of field version
+		  numbers in rare cases has been fixed.
+
+		- The minimap status toggles (both click and menu) should now behave
+		  somewhat more predictably and usefully.
+
+	- KNOWN ISSUES:
+
+		- There are likely compatibility issues with the chat names and
+		  tooltip portions of XRP when used in combination with some other
+		  addons which modify those same things. Compatibility problems will
+		  fixed as possible, but these components have been (and will continue
+		  to be) primarily designed around the default tooltip and chat
+		  windows.
+
 5.4.8.0_beta1 (2014-05-20):
 
 	- TO ALL THE ROGUES I'VE LOVED BEFORE:
