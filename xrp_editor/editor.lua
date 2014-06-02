@@ -169,7 +169,7 @@ local function editor_OnEvent(self, event, addon)
 		-- their values in code, or it does funny things.
 		UIDropDownMenu_Initialize(self.Profiles, function()
 			local info
-			for _, value in pairs(xrp.profiles()) do
+			for _, value in ipairs(xrp.profiles()) do
 				info = UIDropDownMenu_CreateInfo()
 				info.text = value
 				info.value = value
@@ -197,7 +197,7 @@ local function editor_OnEvent(self, event, addon)
 				end
 			end
 			UIDropDownMenu_AddButton(info)
-			for value, text in pairs(xrp.values.FC) do
+			for value, text in ipairs(xrp.values.FC) do
 				info = UIDropDownMenu_CreateInfo()
 				info.text = text
 				info.value = tostring(value)
@@ -232,42 +232,44 @@ end
 xrp.editor:SetScript("OnEvent", editor_OnEvent)
 xrp.editor:RegisterEvent("ADDON_LOADED")
 
--- Setup shorthand access and other stuff.
-xrp.editor.checkboxes = {}
--- Appearance tab
-local appearance = { "NA", "NI", "NT", "NH", "AE", "RA", "AH", "AW", "CU" }
-for key, field in pairs(appearance) do
-	xrp.editor[field] = xrp.editor.Appearance[field]
-	xrp.editor[field].nextEditBox = xrp.editor.Appearance[appearance[key + 1]] or xrp.editor.Appearance["DE"].EditBox
-	xrp.editor[field]:SetScript("OnTextChanged", function(self)
-		xrp.editor:CheckFields()
-	end)
-	xrp.editor.checkboxes[field] = xrp.editor.Appearance[field.."Default"]
-end
--- EditBox is inside ScrollFrame
-xrp.editor["DE"] = xrp.editor.Appearance["DE"].EditBox
-xrp.editor["DE"].nextEditBox = xrp.editor.Appearance["NA"]
-xrp.editor.checkboxes["DE"] = xrp.editor.Appearance["DEDefault"]
-
--- Biography tab
-local biography = { "AG", "HH", "HB", "MO", "FR", "FC" }
-for key, field in pairs(biography) do
-	xrp.editor[field] = xrp.editor.Biography[field]
-	if field == "MO" then
-		xrp.editor[field].nextEditBox = xrp.editor.Biography["HI"].EditBox
-	elseif field == "FR" then
-		xrp.editor[field].nextEditBox = xrp.editor.Biography["AG"]
-	elseif field ~= "FC" then
-		xrp.editor[field].nextEditBox = xrp.editor.Biography[biography[key + 1]]
-	end
-	if field ~= "FC" then
+do
+	-- Setup shorthand access and other stuff.
+	xrp.editor.checkboxes = {}
+	-- Appearance tab
+	local appearance = { "NA", "NI", "NT", "NH", "AE", "RA", "AH", "AW", "CU" }
+	for key, field in ipairs(appearance) do
+		xrp.editor[field] = xrp.editor.Appearance[field]
+		xrp.editor[field].nextEditBox = xrp.editor.Appearance[appearance[key + 1]] or xrp.editor.Appearance["DE"].EditBox
 		xrp.editor[field]:SetScript("OnTextChanged", function(self)
 			xrp.editor:CheckFields()
 		end)
+		xrp.editor.checkboxes[field] = xrp.editor.Appearance[field.."Default"]
 	end
-	xrp.editor.checkboxes[field] = xrp.editor.Biography[field.."Default"]
+	-- EditBox is inside ScrollFrame
+	xrp.editor["DE"] = xrp.editor.Appearance["DE"].EditBox
+	xrp.editor["DE"].nextEditBox = xrp.editor.Appearance["NA"]
+	xrp.editor.checkboxes["DE"] = xrp.editor.Appearance["DEDefault"]
+
+	-- Biography tab
+	local biography = { "AG", "HH", "HB", "MO", "FR", "FC" }
+	for key, field in ipairs(biography) do
+		xrp.editor[field] = xrp.editor.Biography[field]
+		if field == "MO" then
+			xrp.editor[field].nextEditBox = xrp.editor.Biography["HI"].EditBox
+		elseif field == "FR" then
+			xrp.editor[field].nextEditBox = xrp.editor.Biography["AG"]
+		elseif field ~= "FC" then
+			xrp.editor[field].nextEditBox = xrp.editor.Biography[biography[key + 1]]
+		end
+		if field ~= "FC" then
+			xrp.editor[field]:SetScript("OnTextChanged", function(self)
+				xrp.editor:CheckFields()
+			end)
+		end
+		xrp.editor.checkboxes[field] = xrp.editor.Biography[field.."Default"]
+	end
+	-- EditBox is inside ScrollFrame
+	xrp.editor["HI"] = xrp.editor.Biography["HI"].EditBox
+	xrp.editor["HI"].nextEditBox = xrp.editor.Biography["FR"]
+	xrp.editor.checkboxes["HI"] = xrp.editor.Biography["HIDefault"]
 end
--- EditBox is inside ScrollFrame
-xrp.editor["HI"] = xrp.editor.Biography["HI"].EditBox
-xrp.editor["HI"].nextEditBox = xrp.editor.Biography["FR"]
-xrp.editor.checkboxes["HI"] = xrp.editor.Biography["HIDefault"]
