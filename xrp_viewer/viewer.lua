@@ -170,21 +170,27 @@ end
 
 xrp.viewer:SetScript("OnHide", viewer_OnHide)
 
--- Setup shorthand access for easier looping later.
--- Appearance tab
-for _, field in pairs({ "AE", "RA", "AH", "AW" }) do
-	xrp.viewer[field] = xrp.viewer.Appearance[field]
-end
--- EditBox is inside ScrollFrame
-for _, field in pairs({ "CU", "DE" }) do
-	xrp.viewer[field] = xrp.viewer.Appearance[field].EditBox
-end
+do
+	-- Setup shorthand access for easier looping later.
+	-- Appearance tab
+	local appearance = { "AE", "RA", "AH", "AW" }
+	local appearancescroll = { "CU", "DE" }
+	for _, field in ipairs(appearance) do
+		xrp.viewer[field] = xrp.viewer.Appearance[field]
+	end
+	-- EditBox is inside ScrollFrame
+	for _, field in ipairs(appearancescroll) do
+		xrp.viewer[field] = xrp.viewer.Appearance[field].EditBox
+	end
 
--- Biography tab
-for _, field in pairs({ "AG", "HH", "HB" }) do
-	xrp.viewer[field] = xrp.viewer.Biography[field]
-end
--- EditBox is inside ScrollFrame
-for _, field in pairs({ "MO", "HI" }) do
-	xrp.viewer[field] = xrp.viewer.Biography[field].EditBox
+	local biography = { "AG", "HH", "HB" }
+	local biographyscroll = { "MO", "HI" }
+	-- Biography tab
+	for _, field in ipairs(biography) do
+		xrp.viewer[field] = xrp.viewer.Biography[field]
+	end
+	-- EditBox is inside ScrollFrame
+	for _, field in ipairs(biographyscroll) do
+		xrp.viewer[field] = xrp.viewer.Biography[field].EditBox
+	end
 end
