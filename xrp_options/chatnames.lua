@@ -15,7 +15,7 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local chatnames_types = { "CHAT_MSG_SAY", "CHAT_MSG_YELL", "CHAT_MSG_EMOTE", "CHAT_MSG_GUILD", "CHAT_MSG_WHISPER", "CHAT_MSG_PARTY", "CHAT_MSG_RAID", "CHAT_MSG_INSTANCE", "CHAT_MSG_CHANNEL" }
+local chatnames_types = { "CHAT_MSG_SAY", "CHAT_MSG_YELL", "CHAT_MSG_EMOTE", "CHAT_MSG_GUILD", "CHAT_MSG_WHISPER", "CHAT_MSG_PARTY", "CHAT_MSG_RAID", "CHAT_MSG_INSTANCE" }
 
 local channel_menu = {}
 local channel_list = {}
@@ -72,7 +72,7 @@ local function chatnames_Default()
 end
 
 local function chatnames_ChannelButton_OnClick(self, button, down)
-	EasyMenu(channel_menu, self:GetParent().CHANNEL_MENU, self, 3, 10, "MENU", nil)
+	EasyMenu(channel_menu, self:GetParent().CHANNEL_MENU, self, 2, 4, "MENU", nil)
 end
 
 local function chatnames_OnEvent(self, event, addon)
