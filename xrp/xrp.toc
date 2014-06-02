@@ -9,7 +9,7 @@
 ## SavedVariables: xrp_cache, xrp_settings
 
 xrp.lua
-l10n.lua
+strings.lua
 core\helpers.lua
 core\profiles.lua
 core\defaults.lua
