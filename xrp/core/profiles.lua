@@ -45,7 +45,7 @@ xrp.profile = setmetatable({}, {
 		end
 	end,
 	__newindex = function(profile, field, contents)
-		if not xrp.msp.unitfields[field] and not xrp.msp.metafields[field] and field:match("^%u%u$") and overrides[field] ~= contents then
+		if not xrp.msp.unitfields[field] and not xrp.msp.metafields[field] and not xrp.msp.dummyfields[field] and field:match("^%u%u$") and overrides[field] ~= contents then
 			overrides[field] = contents
 			xrp.msp:UpdateField(field)
 		end
@@ -87,7 +87,7 @@ local profmt = {
 		return nil
 	end,
 	__newindex = function(profile, field, contents)
-		if xrp.msp.unitfields[field] or xrp.msp.metafields[field] or not field:match("^%u%u$") then
+		if xrp.msp.unitfields[field] or xrp.msp.metafields[field] or xrp.msp.dummyfields[field] or not field:match("^%u%u$") then
 			return
 		end
 		local name = profile[nk]

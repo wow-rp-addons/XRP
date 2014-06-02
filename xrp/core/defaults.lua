@@ -28,7 +28,7 @@ local defmt = {
 		return xrp_settings.defaults[field]
 	end,
 	__newindex = function(default, field, state)
-		if xrp.msp.unitfields[field] or xrp.msp.metafields[field] or not field:match("^%u%u$") or default[nk] == "Default" then
+		if xrp.msp.unitfields[field] or xrp.msp.metafields[field] or xrp.msp.dummyfields[field] or not field:match("^%u%u$") or default[nk] == "Default" then
 			return
 		end
 		if not xrp_defaults[default[nk]] then
