@@ -45,7 +45,7 @@ function xrp.viewer:Load(character)
 		elseif field == "AW" then
 			self[field]:SetText(xrp:ConvertWeight(character[field], "user") or "")
 		elseif field == "RA" then
-			self[field]:SetText(character[field] or xrp.values.RA[character.GR] or "")
+			self[field]:SetText(character[field] or xrp.values.GR[character.GR] or "")
 		else
 			self[field]:SetText(character[field] or "")
 		end

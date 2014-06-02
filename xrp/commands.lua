@@ -23,8 +23,9 @@ SLASH_XRP1, SLASH_XRP2 = "/xrp", L["/xrp"] ~= "/xrp" and L["/xrp"] or nil
 -- Cannot define commands in static table, as they make use of each other.
 local xrpcmds = {}
 
+local header = "|cffabd473%s|r %s"
 xrpcmds.about = function(args)
-	print("|cffabd473"..XRP.."|r ("..xrp.version..")")
+	print(header:format(XRP, "("..xrp.version..")"))
 	print(XRP_AUTHOR)
 	print(XRP_COPYRIGHT)
 	-- Chat frame printing indents newlines in strings, so split lines.
@@ -34,8 +35,8 @@ xrpcmds.about = function(args)
 	print(" ")
 end
 
-local usage = L["|cffabd473Usage:|r %s"]
-local command = L[" - |cfffff569%s:|r %s"]
+local usage = header:format(L["Usage:"], "%s")
+local command = " - |cfffff569%s:|r %s"
 
 xrpcmds.help = function(args)
 	if args == "about" or args == L["about"] then
@@ -92,7 +93,7 @@ end
 
 xrpcmds.profile = function(args)
 	if args == "list" or args == L["list"] then
-		print("Profiles:")
+		print(L["Profiles:"])
 		for _, profile in ipairs(xrp.profiles()) do
 			print(profile)
 		end

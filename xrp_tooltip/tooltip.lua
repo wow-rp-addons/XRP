@@ -84,6 +84,7 @@ local profile_addons = {
 	["TOTALRP2"] = "TRP2",
 	["GNOMTEC_BADGE"] = "GTEC",
 	["FLAGRSP"] = "RSP",
+	["FLAGRSP2"] = "RSP2",
 }
 local extra_addons = {
 	["GHI"] = "GHI",
@@ -288,8 +289,9 @@ local function tooltip_SetPetUnit(unit)
 	cu.titlerealm = "|cff"..faction_colors[faction].light..pettype..(realm and realm ~= "" and (" ("..xrp:RealmNameWithSpacing(realm)..")") or "")
 
 	cu.name = xrp:NameWithRealm(owner)
+	local L = xrp.L
 	local race = UnitCreatureFamily(unit) or UnitCreatureType(unit)
-	if race == "Ghoul" or race == "Water Elemental" or not race then
+	if race == L["Ghoul"] or race == L["Water Elemental"] or not race then
 		race = UnitCreatureType(unit)
 	end
 	if not race then
@@ -297,7 +299,7 @@ local function tooltip_SetPetUnit(unit)
 	end
 	-- Mages, death knights, and warlocks have minions, hunters have pets. Mages
 	-- and death knights only have one pet family each.
-	local classid = (pettype == UNITNAME_TITLE_MINION and ((race == "Elemental" and "MAGE") or (race == "Undead" and "DEATHKNIGHT") or "WARLOCK")) or (pettype == UNITNAME_TITLE_PET and "HUNTER")
+	local classid = (pettype == UNITNAME_TITLE_MINION and ((race == L["Elemental"] and "MAGE") or (race == L["Undead"] and "DEATHKNIGHT") or "WARLOCK")) or (pettype == UNITNAME_TITLE_PET and "HUNTER")
 	local level = UnitLevel(unit)
 
 	cu.info = format("|cffffffff%s |c%s%s|cffffffff (%s)", format(level < 1 and UNIT_LETHAL_LEVEL_TEMPLATE or UNIT_LEVEL_TEMPLATE, level), RAID_CLASS_COLORS[classid] and RAID_CLASS_COLORS[classid].colorStr or "ffffffff", race, PET)
