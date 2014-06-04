@@ -263,7 +263,7 @@ local function tooltip_SetPetUnit(unit)
 	local name = (UnitName(unit))
 	local faction = (UnitFactionGroup(unit))
 	if not faction or type(faction_colors[faction]) ~= "table" then
-		faction = "Neutral"
+		faction = UnitIsUnit(unit, "playerpet") and xrp.toon.fields.GF or "Neutral"
 	end
 
 	local attackme = UnitCanAttack(unit, "player") -- Used two times.
