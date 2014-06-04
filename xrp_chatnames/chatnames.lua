@@ -71,7 +71,7 @@ local function new_GetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg
 	end
 
 	-- RP name in channels is from case-insensitive NAME, not the number.
-	if event == "CHAT_MSG_CHANNEL" and type(arg9) == "string" then
+	if event == "CHAT_MSG_CHANNEL" and type(arg9) == "string" and arg9:match("^[^%s]+.*") then
 		event = event.."_"..arg9:match("^([^%s]+).*"):upper()
 	end
 
