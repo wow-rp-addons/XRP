@@ -35,7 +35,7 @@ else
 	StaticPopup_Show("XRP_MSP_DISABLE")
 end
 
--- Cached tooltip response; previous profile copy.
+-- Cached tooltip response.
 local tt
 -- Dummy workaround request.
 local dummy = { "?XD" }
@@ -66,7 +66,7 @@ msprun.send, msprun.safe, msprun.request = {}, {}, {}
 -- example, it is *not* done on the first run, as versions for the next
 -- session are updated on PLAYER_LOGOUT rather than always incrementing by
 -- one.)
-local function cachett()
+local function msp_CacheTT()
 	local tooltip = {}
 	for field, _ in pairs(xrp.msp.ttfields) do
 		if not xrp.profile[field] then
@@ -81,7 +81,7 @@ local function cachett()
 	return true
 end
 
-local function filter_error(self, event, message)
+local function msp_FilterErrors(self, event, message)
 	local character = message:match(ERR_CHAT_PLAYER_NOT_FOUND_S:format("(.+)"))
 	if character == nil or character == "" then
 		return false
@@ -103,16 +103,16 @@ local function filter_error(self, event, message)
 	return dofilter
 end
 
-local function add_filter(character)
+local function msp_AddFilter(character)
 	filter[character] = GetTime()
 end
 
-local function send(character, data)
+local function msp_Send(character, data)
 	data = table.concat(data, "\1")
 	--print("Sending to: "..character)
 	--print("Out: "..character..": "..data:gsub("\1", "\\1"))
 	if #data <= 255 then
-		ChatThrottleLib:SendAddonMessage("NORMAL", "MSP", data, "WHISPER", character, nil, add_filter, character)
+		ChatThrottleLib:SendAddonMessage("NORMAL", "MSP", data, "WHISPER", character, nil, msp_AddFilter, character)
 		--print(character..": Outgoing MSP")
 	else
 		-- XC is most likely to add five or six extra characters, will not
@@ -120,21 +120,21 @@ local function send(character, data)
 		-- is over 25000 characters or so. So let's say six.
 		data = format("XC=%u\1%s", math.ceil((#data + 6) / 255), data)
 		local position = 1
-		ChatThrottleLib:SendAddonMessage("BULK", "MSP\1", data:sub(position, position + 254), "WHISPER", character, nil, add_filter, character)
+		ChatThrottleLib:SendAddonMessage("BULK", "MSP\1", data:sub(position, position + 254), "WHISPER", character, nil, msp_AddFilter, character)
 		--print(character..": Outgoing MSP\\1")
 		position = position + 255
 		while position + 255 <= #data do
-			ChatThrottleLib:SendAddonMessage("BULK", "MSP\2", data:sub(position, position + 254), "WHISPER", character, nil, add_filter, character)
+			ChatThrottleLib:SendAddonMessage("BULK", "MSP\2", data:sub(position, position + 254), "WHISPER", character, nil, msp_AddFilter, character)
 			--print(character..": Outgoing MSP\\2")
 			position = position + 255
 		end
-		ChatThrottleLib:SendAddonMessage("BULK", "MSP\3", data:sub(position), "WHISPER", character, nil, add_filter, character)
+		ChatThrottleLib:SendAddonMessage("BULK", "MSP\3", data:sub(position), "WHISPER", character, nil, msp_AddFilter, character)
 		--print(character..": Outgoing MSP\\3")
 	end
 	tmp_cache[character].lastsend = GetTime()
 end
 
-local function queuesend(character, data, count)
+local function msp_QueueSend(character, data, count)
 	if msprun.send[character] then
 		for _, request in ipairs(data) do
 			msprun.send[character].data[#msprun.send[character].data + 1] = request
@@ -144,7 +144,7 @@ local function queuesend(character, data, count)
 	local now = GetTime()
 	local unit = Ambiguate(character, "none")
 	if count == 0 or (tmp_cache[character].received and now < tmp_cache[character].lastsend + 45) or UnitInParty(unit) or UnitInRaid(unit) then
-		send(character, data)
+		msp_Send(character, data)
 		return
 	elseif count == 1 or tmp_cache[character].received or now < tmp_cache[character].lastsend + 45 then
 		count = 0
@@ -153,7 +153,7 @@ local function queuesend(character, data, count)
 		count = 1
 		now = now + 0.500 + ((select(3, GetNetStats())) * 0.001)
 	end
-	send(character, dummy)
+	msp_Send(character, dummy)
 	msprun.send[character] = { data = data, count = count, sendtime = now }
 	msprun:Show()
 end
@@ -162,7 +162,7 @@ end
 -- sending a response (i.e., is a query); second is a boolean, if the MSP
 -- command provides an updated field (i.e., is a non-empty response); third
 -- is a boolean, if the MSP command requests a tooltip (higher priority).
-local function msp_process(character, cmd)
+local function msp_Process(character, cmd)
 	-- Original LibMSP match string uses %a%a rather than %u%u. According to
 	-- protcol documentation, %u%u would be more correct.
 	local action, field, version, contents = cmd:match("(%p?)(%u%u)(%d*)=?(.*)")
@@ -249,11 +249,11 @@ msprun.handlers = {
 		if msg ~= "" then
 			if msg:find("\1", 1, true) then
 				for cmd in msg:gmatch("([^\1]+)\1*") do
-					out[#out + 1], fieldupdated = msp_process(character, cmd)
+					out[#out + 1], fieldupdated = msp_Process(character, cmd)
 					updated = updated or fieldupdated
 				end
 			else
-				out[#out + 1], fieldupdated = msp_process(character, msg)
+				out[#out + 1], fieldupdated = msp_Process(character, msg)
 				updated = updated or fieldupdated
 			end
 		end
@@ -266,7 +266,7 @@ msprun.handlers = {
 			xrp:FireEvent("MSP_NOCHANGE", character)
 		end
 		if #out > 0 then
-			queuesend(character, out)
+			msp_QueueSend(character, out)
 		end
 		-- Cache timer. Last receive marked for clearing old entries.
 		if xrp_cache[character] then
@@ -340,11 +340,11 @@ local function msprun_OnUpdate(self, elapsed)
 			local now = GetTime()
 			for character, message in pairs(msprun.send) do
 				if message.sendtime <= now and message.count > 0 then
-					send(character, dummy)
+					msp_Send(character, dummy)
 					message.count = message.count - 1
 					message.sendtime = now + 0.500 + ((select(3, GetNetStats())) * 0.001)
 				elseif message.sendtime <= now and message.count == 0 then
-					send(character, message.data)
+					msp_Send(character, message.data)
 					msprun.send[character] = nil
 				end
 			end
@@ -367,7 +367,7 @@ local function msprun_OnEvent(self, event, prefix, message, channel, character)
 		for prefix, _ in pairs(self.handlers) do
 			RegisterAddonMessagePrefix(prefix)
 		end
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", filter_error)
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", msp_FilterErrors)
 		ChatThrottleLib.MAX_CPS = 1200 -- up from 800
 		ChatThrottleLib.MIN_FPS = 15 -- down from 20
 		self:UnregisterEvent("ADDON_LOADED")
@@ -471,9 +471,9 @@ function xrp.msp:Request(character, fields, safe)
 	if #out > 0 then
 		--print(character..": "..table.concat(out, " "))
 		if safe == 0 then
-			send(character, out)
+			msp_Send(character, out)
 		else
-			queuesend(character, out, safe or 2)
+			msp_QueueSend(character, out, safe or 2)
 		end
 		return true
 	end
@@ -513,13 +513,13 @@ function xrp.msp:Update()
 	if ttchanges then
 		xrp_versions.TT = (xrp_versions.TT or 0) + 1
 		xrp_cache[character].versions.TT = xrp_versions.TT
-		cachett()
+		msp_CacheTT()
 	elseif not tt then
 		-- If it's our character we never want the cache tidy to wipe it out.
 		-- Do this by setting the wipe timer for 2038. This should get run on
 		-- the first update every session
 		xrp_cache[character].lastreceive = 2147483647
-		cachett()
+		msp_CacheTT()
 	end
 	if changes then
 		xrp:FireEvent("MSP_UPDATE")
@@ -540,9 +540,9 @@ function xrp.msp:UpdateField(field)
 		if self.ttfields[field] then
 			xrp_versions.TT = (xrp_versions.TT or 0) + 1
 			xrp_cache[character].versions.TT = xrp_versions.TT
-			cachett()
+			msp_CacheTT()
 		elseif not tt then
-			cachett()
+			msp_CacheTT()
 		end
 		xrp:FireEvent("MSP_UPDATE", field)
 	end

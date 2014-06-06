@@ -21,7 +21,7 @@ local supportedfields = { NA = true, NI = true, NT = true, NH = true, AE = true,
 
 local current = UNKNOWN
 
-local function parse_versions(VA)
+local function viewer_ParseVA(VA)
 	if not VA then
 		return L["%s or %s"]:format(UNKNOWN, NONE)
 	end
@@ -39,7 +39,7 @@ function xrp.viewer:Load(character)
 		elseif field == "NA" then
 			self.TitleText:SetText(character[field] or Ambiguate(current, "none") or UNKNOWN)
 		elseif field == "VA" then
-			self[field]:SetText(parse_versions(character[field]))
+			self[field]:SetText(viewer_ParseVA(character[field]))
 		elseif field == "AH" then
 			self[field]:SetText(xrp:ConvertHeight(character[field], "user") or "")
 		elseif field == "AW" then
@@ -86,7 +86,7 @@ function xrp.viewer:ViewCharacter(name)
 	end
 end
 
-local function msp_receive(name)
+local function viewer_MSP_RECEIVE(name)
 	if current == name then
 		local XC = xrp.viewer.XC:GetText()
 		xrp.viewer:Load(xrp.characters[name])
@@ -96,7 +96,7 @@ local function msp_receive(name)
 	end
 end
 
-local function msp_receive_chunk(name, chunk, totalchunks)
+local function viewer_MSP_RECEIVE_CHUNK(name, chunk, totalchunks)
 	if current == name then
 		if chunk == totalchunks then
 			xrp.viewer.XC:SetFormattedText(L["Received! (%u/%u)"], chunk, totalchunks)
@@ -106,7 +106,7 @@ local function msp_receive_chunk(name, chunk, totalchunks)
 	end
 end
 
-local function msp_nochange(name)
+local function viewer_MSP_NOCHANGE(name)
 	if current == name then
 		local XC = xrp.viewer.XC:GetText()
 		xrp.viewer:Load(xrp.characters[name])
@@ -116,15 +116,15 @@ local function msp_nochange(name)
 	end
 end
 
-local function msp_offline(name)
+local function viewer_MSP_OFFLINE(name)
 	if current == name then
 		if not xrp.viewer.XC:GetText() then
-			xrp.viewer.XC:SetText(L["Character is not online."])
+			xrp.viewer.XC:SetText(xrp.cache[name].GF ~= xrp.toon.fields.GF and L["Character is opposite faction."] or L["Character is not online."])
 		end
 	end
 end
 
-local function msp_norequest(name)
+local function viewer_MSP_NOREQUEST(name)
 	if current == name then
 		if not xrp.viewer.XC:GetText() then
 			xrp.viewer.XC:SetText(L["Too soon for updates."])
@@ -132,7 +132,7 @@ local function msp_norequest(name)
 	end
 end
 
-local function msp_nomsp(name)
+local function viewer_MSP_NOMSP(name)
 	if current == name then
 		if not xrp.viewer.XC:GetText() then
 			xrp.viewer.XC:SetText(L["No RP addon appears to be active."])
@@ -150,12 +150,12 @@ local function viewer_OnEvent(self, event, addon)
 		PanelTemplates_SetNumTabs(self, 2)
 		PanelTemplates_SetTab(self, 1)
 
-		xrp:HookEvent("MSP_RECEIVE", msp_receive)
-		xrp:HookEvent("MSP_RECEIVE_CHUNK", msp_receive_chunk)
-		xrp:HookEvent("MSP_NOCHANGE", msp_nochange)
-		xrp:HookEvent("MSP_OFFLINE", msp_offline)
-		xrp:HookEvent("MSP_NOREQUEST", msp_norequest)
-		xrp:HookEvent("MSP_NOMSP", msp_nomsp)
+		xrp:HookEvent("MSP_RECEIVE", viewer_MSP_RECEIVE)
+		xrp:HookEvent("MSP_RECEIVE_CHUNK", viewer_MSP_RECEIVE_CHUNK)
+		xrp:HookEvent("MSP_NOCHANGE", viewer_MSP_NOCHANGE)
+		xrp:HookEvent("MSP_OFFLINE", viewer_MSP_OFFLINE)
+		xrp:HookEvent("MSP_NOREQUEST", viewer_MSP_NOREQUEST)
+		xrp:HookEvent("MSP_NOMSP", viewer_MSP_NOMSP)
 		self:UnregisterEvent("ADDON_LOADED")
 	end
 end
