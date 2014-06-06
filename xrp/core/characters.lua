@@ -141,7 +141,7 @@ xrp.units = setmetatable({}, {
 					GS = tostring(UnitSex(unit)),
 					GU = UnitGUID(unit),
 				}
-				if xrp_cache[name] then
+				if xrp_cache[name] and name ~= xrp.toon.withrealm then
 					for field, contents in pairs(gcache[name]) do
 						-- We DO want to overwrite these, to account for race,
 						-- faction, or sex changes.
@@ -150,7 +150,7 @@ xrp.units = setmetatable({}, {
 				end
 			elseif not gcache[name].GF then -- GUID won't always get faction.
 				gcache[name].GF = (UnitFactionGroup(unit))
-				if xrp_cache[name] then
+				if xrp_cache[name] and name ~= xrp.toon.withrealm then
 					xrp_cache[name].fields.GF = gcache[name].GF
 				end
 			end
@@ -209,7 +209,7 @@ xrp.guids = setmetatable({}, {
 					GS = sex,
 					GU = guid,
 				}
-				if xrp_cache[name] then
+				if xrp_cache[name] and name ~= xrp.toon.withrealm then
 					for field, contents in pairs(gcache[name]) do
 						-- We DO want to overwrite these, to account for race,
 						-- faction, or sex changes.
