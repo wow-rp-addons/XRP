@@ -26,7 +26,7 @@ local saving = false
 local loading = false
 local reverting = false
 
-local function clearfocus(self)
+local function editor_ClearFocus(self)
 	self.NA:SetFocus()
 	self.NA:ClearFocus()
 	self.AG:SetFocus()
@@ -34,7 +34,7 @@ local function clearfocus(self)
 end
 
 function xrp.editor:Save()
-	clearfocus(self)
+	editor_ClearFocus(self)
 	saving = true
 
 	-- This doesn't need to be smart. GetText() should be mapped to the
@@ -73,7 +73,7 @@ end
 
 function xrp.editor:Load(name)
 	loading = true
-	clearfocus(self)
+	editor_ClearFocus(self)
 	-- This does not need to be very smart. SetText() should be mapped to the
 	-- appropriate 'real' function if needed.
 	local isdef = name == "Default"
@@ -132,7 +132,7 @@ function xrp.editor:CheckFields()
 	end
 end
 
-local function field_save(name, field)
+local function editor_PROFILE_FIELD_SAVE(name, field)
 	if not saving and xrp.editor.Profiles:GetText() == name then
 		if supportedfields[field] then
 			if field == "FC" then
@@ -223,7 +223,7 @@ local function editor_OnEvent(self, event, addon)
 			end
 		end)
 
-		xrp:HookEvent("PROFILE_FIELD_SAVE", field_save)
+		xrp:HookEvent("PROFILE_FIELD_SAVE", editor_PROFILE_FIELD_SAVE)
 
 		self:Load("Default")
 		self:UnregisterEvent("ADDON_LOADED")
