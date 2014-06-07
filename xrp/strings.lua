@@ -95,7 +95,7 @@ xrp.values = {
 	FC_EMPTY = L["(Status not set)"],
 }
 
-XRP = GetAddOnMetadata("xrp", "Title") -- In other words, XRP = "XRP"... Huh.
+XRP = "XRP"
 
 BINDING_HEADER_XRP = XRP
 BINDING_NAME_XRP_EDITOR = L["Open/close RP profile editor"]
