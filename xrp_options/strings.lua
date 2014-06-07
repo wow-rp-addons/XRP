@@ -28,7 +28,6 @@ if (select(4, GetAddOnInfo("xrp_chatnames"))) then
 end
 
 if (select(4, GetAddOnInfo("xrp_tooltip"))) then
-	xrp.options.loadtooltip = true
 	XRP_OPTIONS_TOOLTIP_TITLE = L["XRP: Tooltip Options"]
 	XRP_OPTIONS_TOOLTIP_REACTION = L["Color names by friend/foe (green/red)"]
 	XRP_OPTIONS_TOOLTIP_WATCHING = L["Show indicator if player is targeting me"]

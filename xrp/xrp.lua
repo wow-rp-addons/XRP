@@ -29,15 +29,14 @@ xrp.L = setmetatable({}, {
 })
 
 xrp.version = GetAddOnMetadata("xrp", "Version")
-xrp.versionstring = format("%s/%s", GetAddOnMetadata("xrp", "Title"), xrp.version)
 
-local default_settings = { __index = {
+local default_settings = {
 	height = "ft",
 	weight = "lb",
 	minimap = 225,
 	cachetime = 604800, -- 7 days
 	cachetidy = true,
-}}
+}
 
 local default_defaults = {
 	__index = function(self, field)
@@ -47,11 +46,7 @@ local default_defaults = {
 
 local function checksavedvars()
 	if type(xrp_settings) ~= "table" then
-		xrp_settings = {
-			height = "ft",
-			weight = "lb",
-			minimap = 225,
-		}
+		xrp_settings = {}
 	end
 	if type(xrp_settings.defaults) ~= "table" then
 		xrp_settings.defaults = {}
@@ -97,11 +92,11 @@ local addons = {
 
 local function init_OnEvent(xrp, event, addon)
 	if event == "ADDON_LOADED" and addon == "xrp" then
-		local fullversion = xrp.versionstring
+		local fullversion = format("%s/%s", GetAddOnMetadata("xrp", "Title"), xrp.version)
 		for _, addon in ipairs(addons) do
 			local name, title, notes, enabled, loadable, reason = GetAddOnInfo(addon)
 			if enabled or loadable then
-				fullversion = format("%s;%s/%s", fullversion, name, GetAddOnMetadata(name, "Version"))
+				fullversion = fullversion..";"..format("%s/%s", name, GetAddOnMetadata(name, "Version"))
 			end
 		end
 
@@ -123,7 +118,7 @@ local function init_OnEvent(xrp, event, addon)
 		}
 
 		checksavedvars()
-		setmetatable(xrp_settings, default_settings)
+		setmetatable(xrp_settings, { __index = default_settings })
 		setmetatable(xrp_settings.defaults, default_defaults)
 
 		-- This is kinda terrifying, but it fixes some major UI tainting when
@@ -145,7 +140,7 @@ local function init_OnEvent(xrp, event, addon)
 	elseif event == "PLAYER_LOGIN" then
 		-- UnitGUID("player") doesn't work before first PLAYER_LOGIN.
 		xrp.toon.fields.GU = UnitGUID("player")
-		xrp.profiles(xrp_selectedprofile)
+		xrp.msp:Update()
 		if xrp_settings.cachetidy then
 			xrp:CacheTidy()
 		end
@@ -153,7 +148,7 @@ local function init_OnEvent(xrp, event, addon)
 		xrp:RegisterEvent("NEUTRAL_FACTION_SELECT_RESULT")
 	elseif event == "NEUTRAL_FACTION_SELECT_RESULT" then
 		xrp.toon.fields.GF = (UnitFactionGroup("player"))
-		xrp.msp:Update()
+		xrp.msp:UpdateField("GF")
 	end
 end
 xrp:SetScript("OnEvent", init_OnEvent)
