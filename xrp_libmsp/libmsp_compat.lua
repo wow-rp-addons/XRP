@@ -46,8 +46,7 @@ local loadtime = GetTime()
 
 local nk = {} -- Used to hide character names inside table.
 
-local function nonewindex()
-end
+local nonewindex = function() end
 
 local mspchars = setmetatable({}, { __mode = "v", __metatable = false, })
 
