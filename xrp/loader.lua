@@ -15,7 +15,7 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local function loadifneeded(addon)
+local function loader_LoadIfNeeded(addon)
 	local isloaded = IsAddOnLoaded(addon)
 	if not isloaded and IsAddOnLoadOnDemand(addon) then
 		local loaded, reason = LoadAddOn(addon)
@@ -29,7 +29,7 @@ local function loadifneeded(addon)
 end
 
 function xrp:ToggleEditor()
-	if not loadifneeded("xrp_editor") then
+	if not loader_LoadIfNeeded("xrp_editor") then
 		return false
 	end
 	ToggleFrame(xrp.editor)
@@ -37,7 +37,7 @@ function xrp:ToggleEditor()
 end
 
 function xrp:ToggleViewer()
-	if not loadifneeded("xrp_viewer") then
+	if not loader_LoadIfNeeded("xrp_viewer") then
 		return false
 	end
 	ToggleFrame(xrp.viewer)
@@ -45,7 +45,7 @@ function xrp:ToggleViewer()
 end
 
 function xrp:ShowViewerCharacter(character)
-	if not loadifneeded("xrp_viewer") then
+	if not loader_LoadIfNeeded("xrp_viewer") then
 		return false
 	end
 	xrp.viewer:ViewCharacter(character)
@@ -53,7 +53,7 @@ function xrp:ShowViewerCharacter(character)
 end
 
 function xrp:ShowViewerUnit(unit)
-	if not loadifneeded("xrp_viewer") then
+	if not loader_LoadIfNeeded("xrp_viewer") then
 		return false
 	end
 	xrp.viewer:ViewUnit(unit)
@@ -61,7 +61,7 @@ function xrp:ShowViewerUnit(unit)
 end
 
 function xrp:ShowOptions()
-	if not loadifneeded("xrp_options") then
+	if not loader_LoadIfNeeded("xrp_options") then
 		return false
 	end
 	InterfaceOptionsFrame_OpenToCategory(xrp.options.core)
@@ -73,7 +73,7 @@ do
 	if enabled and loadable and not _G.msp then
 		local msp = setmetatable({}, {
 			__index = function(msp, index)
-				loadifneeded("xrp_libmsp")
+				loader_LoadIfNeeded("xrp_libmsp")
 				return _G.msp[index]
 			end,
 			__newindex = function() end,

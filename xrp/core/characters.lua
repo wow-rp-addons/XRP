@@ -19,6 +19,8 @@ local nk = {}
 
 local weak = { __mode = "v", __metatable = false, }
 
+local nonewindex = function() end
+
 local clear = CreateFrame("Frame")
 clear:Hide()
 
@@ -86,8 +88,7 @@ local charsmt = {
 		end
 		return nil
 	end,
-	__newindex = function(self, field, value)
-	end,
+	__newindex = nonewindex,
 	__call = function(self, request)
 		if not request then
 			local profile = {}
@@ -114,8 +115,7 @@ xrp.characters = setmetatable({}, {
 		request[name] = true
 		return chars[name]
 	end,
-	__newindex = function(self, character, fields)
-	end,
+	__newindex = nonewindex,
 	__metatable = false,
 })
 
@@ -163,8 +163,7 @@ xrp.units = setmetatable({}, {
 		end
 		return nil
 	end,
-	__newindex = function(self, unit, fields)
-	end,
+	__newindex = nonewindex,
 	__metatable = false,
 })
 
@@ -204,7 +203,7 @@ xrp.guids = setmetatable({}, {
 			if not gcache[name] then
 				gcache[name] = {
 					GC = class,
-					GF = faction or nil,
+					GF = faction,
 					GR = race,
 					GS = sex,
 					GU = guid,
@@ -223,8 +222,7 @@ xrp.guids = setmetatable({}, {
 		end
 		return nil
 	end,
-	__newindex = function(self, unit, fields)
-	end,
+	__newindex = nonewindex,
 	__metatable = false,
 })
 
@@ -239,8 +237,7 @@ xrp.cache = setmetatable({}, {
 		end
 		return chars[name]
 	end,
-	__newindex = function(self, character, fields)
-	end,
+	__newindex = nonewindex,
 	__call = function(self)
 		local out = {}
 		for name, _ in xrp_cache do

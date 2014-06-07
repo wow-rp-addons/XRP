@@ -99,7 +99,7 @@ local function import_totalRP2()
 	end
 end
 
-import:SetScript("OnEvent", function(self, event, addon)
+local function import_OnEvent(self, event, addon)
 	if event == "ADDON_LOADED" and addon == "xrp_import" then
 
 		local mrploaded = (select(4, GetAddOnInfo("MyRolePlay")))
@@ -122,5 +122,6 @@ import:SetScript("OnEvent", function(self, event, addon)
 
 		self:UnregisterEvent("ADDON_LOADED")
 	end
-end)
+end
+import:SetScript("OnEvent", import_OnEvent)
 import:RegisterEvent("ADDON_LOADED")
