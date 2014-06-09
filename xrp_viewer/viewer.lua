@@ -101,7 +101,7 @@ local function viewer_MSP_RECEIVE_CHUNK(name, chunk, totalchunks)
 		if chunk == totalchunks then
 			xrp.viewer.XC:SetFormattedText(L["Received! (%u/%u)"], chunk, totalchunks)
 		else
-			xrp.viewer.XC:SetFormattedText(totalchunks and L["Receiving... (%u/%s)"] or L["Receiving... (%u/??)"], chunk, totalchunks)
+			xrp.viewer.XC:SetFormattedText(totalchunks and L["Receiving... (%u/%u)"] or L["Receiving... (%u/??)"], chunk, totalchunks)
 		end
 	end
 end

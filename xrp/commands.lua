@@ -24,6 +24,9 @@ SLASH_XRP1, SLASH_XRP2 = "/xrp", L["/xrp"] ~= "/xrp" and L["/xrp"] or nil
 local xrpcmds = {}
 
 local header = "|cffabd473%s|r %s"
+local usage = header:format(L["Usage:"], "%s")
+local command = " - |cfffff569%s:|r %s"
+
 xrpcmds.about = function(args)
 	print(header:format(XRP, "("..xrp.version..")"))
 	print(XRP_AUTHOR)
@@ -35,23 +38,17 @@ xrpcmds.about = function(args)
 	print(" ")
 end
 
-local usage = header:format(L["Usage:"], "%s")
-local command = " - |cfffff569%s:|r %s"
-
 xrpcmds.help = function(args)
 	if args == "about" or args == L["about"] then
 		print(usage:format(L["/xrp about"]))
 		print(L["Show basic information about XRP."])
-		print(" ")
 	elseif args == "editor" or args == L["editor"] then
 		print(usage:format(L["/xrp editor"]))
 		print(L["Toggle the editor open/closed."])
-		print(" ")
 	elseif args == "profile" or args == L["profile"] then
 		print(usage:format(L["/xrp profile [list|<Profile>]"]))
 		print(command:format(L["list"], L["List all profiles."]))
 		print(command:format(L["<Profile>"], L["Set current profile to the named profile."]))
-		print(" ")
 	elseif args == "status" or args == L["status"] then
 		print(usage:format(L["/xrp status [nil|ooc|ic|lfc|st]"]))
 		print(command:format(L["nil"], L["Reset to profile default."]))
@@ -59,17 +56,14 @@ xrpcmds.help = function(args)
 		print(command:format(L["ooc"], L["Set to in-character."]))
 		print(command:format(L["lfc"], L["Set to looking for contact."]))
 		print(command:format(L["st"], L["Set to storyteller."]))
-		print(" ")
 	elseif args == "view" or args == "show" or args == L["view"] or args == L["show"] then
 		print(usage:format(L["/xrp view [target|mouseover|<Character>]"]))
 		print(command:format(L["target"], L["View your target's profile."]))
 		print(command:format(L["mouseover"], L["View your mouseover's profile."]))
 		print(command:format(L["<Character>"], L["View the profile of the named character."]))
-		print(" ")
 	elseif args == "viewer" or args == L["viewer"] then
 		print(usage:format(L["/xrp viewer"]))
 		print(L["Toggle the viewer open/closed."])
-		print(" ")
 	else
 		print(usage:format(L["/xrp <command> [argument]"]))
 		print(L["Use /xrp help [command] for more usage information."])
@@ -83,7 +77,6 @@ xrpcmds.help = function(args)
 		if L["/xrp"] ~= "/xrp" then
 			print(L["You may also use the English forms of /xrp commands."])
 		end
-		print(" ")
 	end
 end
 
@@ -97,7 +90,6 @@ xrpcmds.profile = function(args)
 		for _, profile in ipairs(xrp.profiles()) do
 			print(profile)
 		end
-		print(" ")
 	elseif type(args) == "string" then
 		if xrp.profiles(args) then
 			print(L["Set profile to \"%s\"."]:format(args))
