@@ -19,18 +19,15 @@ local L = xrp.L
 
 function xrp:UnitNameWithRealm(unit)
 	local name, realm = UnitName(unit)
-	if not name then
+	if not name or name == "" then
 		return nil
+	elseif not UnitIsPlayer(unit) then
+		return name
 	end
-	local isplayer = UnitIsPlayer(unit)
-	if (realm == nil or realm == "") and isplayer then
-		return FULL_PLAYER_NAME:format(name, GetRealmName():gsub("%s+", ""))
-	elseif realm and isplayer then
-		return FULL_PLAYER_NAME:format(name, realm)
-	end
-	return name
+	return self:NameWithRealm(name, realm)
 end
 
+-- TODO: Match on FULL_PLAYER_NAME for first section.
 function xrp:NameWithRealm(name, realm)
 	if name:find("-", 1, true) then
 		-- Searching for a '-' will indicate if it already has a realm name.
@@ -55,10 +52,31 @@ function xrp:RealmNameWithSpacing(name)
 	-- First gsub: spaces lower followed by upper (i.e., Wyrmrest Accord).
 	-- Second gsub: spaces lower followed by digit (i.e., Area 52).
 	-- Third gsub: spaces lower followed by 'of' (i.e., Sisters of Elune).
+	-- TODO: Non-English.
+	-- "(%l)der "
+	-- "(%l)von "
+	-- "(%l)des "
+	-- "(%l)ewige "
+	-- "(%l)du "
+	-- "eé"
+	-- ... Lots for non-English. Should handle some other way?...
 	return (name:gsub("(%l)(%u)", "%1 %2"):gsub("(%l)(%d)", "%1 %2"):gsub("(%l)of ", "%1 of "))
 end
 
-local mspunits = "%u"
+function xrp:StripEscapes(text)
+	if type(text) ~= "string" then
+		return nil
+	end
+	return (text:gsub("||", "|"):gsub("|n", ""):gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|r", ""):gsub("|H.-|h(.-)|h", "%1"):gsub("|T.-|t", ""):gsub("|K.-|k.-|k", ""):gsub("|", "||"):match("^%s*(.-)%s*$"))
+end
+
+function xrp:StripPunctuation(text)
+	if type(text) ~= "string" then
+		return nil
+	end
+	-- All punctuation and whitespace except !'"? is stripped from start/end.
+	return (text:match("^[%`%~%@%#%$%%%^%&%*%-%_%=%+%[%{%]%}%\\%|%;%:%,%<%.%>%/%s]*(.-)[%`%~%@%#%$%%%^%&%*%-%_%=%+%[%{%]%}%\\%|%;%:%,%<%.%>%/%s]*$")) or text
+end
 
 function xrp:ConvertWeight(weight, units)
 	if not weight then
@@ -80,7 +98,7 @@ function xrp:ConvertWeight(weight, units)
 
 	units = (not units or units == "user") and xrp_settings.weight or units
 	if units == "msp" then -- MSP internal format: kg without units as string.
-		return mspunits:format(number + 0.5)
+		return ("%u"):format(number + 0.5)
 	elseif units == "kg" then
 		return L["%u kg"]:format(number + 0.5)
 	elseif units == "lb" then
@@ -118,7 +136,7 @@ function xrp:ConvertHeight(height, units)
 
 	units = (not units or units == "user") and xrp_settings.height or units
 	if units == "msp" then -- MSP internal format: cm without units as string.
-		return mspunits:format(number)
+		return ("%u"):format(number)
 	elseif units == "cm" then
 		return L["%u cm"]:format(number + 0.5)
 	elseif units == "m" then
@@ -175,7 +193,9 @@ function xrp:CacheTidy(timer)
 	if type(timer) ~= "number" or timer <= 0 then
 		timer = xrp_settings.cachetime
 	end
-	if not timer then return false end
+	if not timer or type(timer) ~= "number" or timer <= 0 then
+		return false
+	end
 	local now = time()
 	local before = now - timer
 	for character, data in pairs(xrp_cache) do
@@ -208,5 +228,5 @@ function xrp:HookEvent(event, func)
 	if type(events[event]) ~= "table" then
 		events[event] = {}
 	end
-	events[event][#events[event]+1] = func
+	events[event][#events[event] + 1] = func
 end

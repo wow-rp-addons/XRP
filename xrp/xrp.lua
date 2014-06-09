@@ -15,6 +15,14 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
+local default_settings = {
+	height = "ft",
+	weight = "lb",
+	minimap = 225,
+	cachetime = 604800, -- 7 days
+	cachetidy = true,
+}
+
 xrp = CreateFrame("Frame", "xrp", UIParent)
 
 xrp.L = setmetatable({}, {
@@ -29,20 +37,6 @@ xrp.L = setmetatable({}, {
 })
 
 xrp.version = GetAddOnMetadata("xrp", "Version")
-
-local default_settings = {
-	height = "ft",
-	weight = "lb",
-	minimap = 225,
-	cachetime = 604800, -- 7 days
-	cachetidy = true,
-}
-
-local default_defaults = {
-	__index = function(self, field)
-		return true
-	end,
-}
 
 local function checksavedvars()
 	if type(xrp_settings) ~= "table" then
@@ -73,7 +67,7 @@ local function checksavedvars()
 	if type(xrp_cache) ~= "table" then
 		xrp_cache = {}
 	end
-	if not xrp_cache[xrp.toon.withrealm] then
+	if type(xrp_cache[xrp.toon.withrealm]) then
 		xrp_cache[xrp.toon.withrealm] = {
 			fields = {},
 			versions = {},
@@ -85,18 +79,18 @@ local function checksavedvars()
 	end
 end
 
-local addons = {
-	"GHI",
-	"Tongues",
-}
-
-local function init_OnEvent(xrp, event, addon)
+local function xrp_OnEvent(xrp, event, addon)
 	if event == "ADDON_LOADED" and addon == "xrp" then
-		local fullversion = format("%s/%s", GetAddOnMetadata("xrp", "Title"), xrp.version)
+		local addons = {
+			"GHI",
+			"Tongues",
+		}
+		local addonstring = "%s/%s"
+		local fullversion = addonstring:format(GetAddOnMetadata("xrp", "Title"), xrp.version)
 		for _, addon in ipairs(addons) do
 			local name, title, notes, enabled, loadable, reason = GetAddOnInfo(addon)
 			if enabled or loadable then
-				fullversion = fullversion..";"..format("%s/%s", name, GetAddOnMetadata(name, "Version"))
+				fullversion = fullversion..";"..addonstring:format(name, GetAddOnMetadata(name, "Version"))
 			end
 		end
 
@@ -119,7 +113,7 @@ local function init_OnEvent(xrp, event, addon)
 
 		checksavedvars()
 		setmetatable(xrp_settings, { __index = default_settings })
-		setmetatable(xrp_settings.defaults, default_defaults)
+		setmetatable(xrp_settings.defaults, { __index = function() return true end })
 
 		-- This is kinda terrifying, but it fixes some major UI tainting when
 		-- the user presses "Cancel" in the Interface Options (in and out of
@@ -151,5 +145,5 @@ local function init_OnEvent(xrp, event, addon)
 		xrp.msp:UpdateField("GF")
 	end
 end
-xrp:SetScript("OnEvent", init_OnEvent)
+xrp:SetScript("OnEvent", xrp_OnEvent)
 xrp:RegisterEvent("ADDON_LOADED")
