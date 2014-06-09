@@ -15,7 +15,7 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local default_settings = { __index = {
+local default_settings = {
 	reaction = true,
 	watching = false,
 	guildrank = false,
@@ -23,59 +23,24 @@ local default_settings = { __index = {
 	nohostile = false,
 	noopfaction = false,
 	extraspace = false,
-}}
+}
 
 local faction_colors = {
-	Horde = { dark = "e60d12", light = "ff6468" },
-	Alliance = { dark = "4a54e8", light = "868eff" },
-	Neutral = { dark = "e6b300", light = "ffdb5c" },
+	Horde = { dark = "ffe60d12", light = "ffff6468" },
+	Alliance = { dark = "ff4a54e8", light = "ff868eff" },
+	Neutral = { dark = "ffe6b300", light = "ffffdb5c" },
 }
 
 local reaction_colors = {
-	friendly = "00991a",
-	neutral = "e6b300",
-	hostile = "cc4d38",
+	friendly = "ff00991a",
+	neutral = "ffe6b300",
+	hostile = "ffcc4d38",
 }
 
 local fc_colors = {
-	"99664d",
-	"66b380",
+	"ff99664d",
+	"ff66b380",
 }
-
-local oldlines
-local numline
-local function render_line(lefttext, righttext)
-	if not lefttext and not righttext then
-		return
-	end
-	numline = numline + 1
-	-- This is a bit scary-looking, but it's a sane way to replace tooltip
-	-- lines without needing to completely redo the tooltip from scratch
-	-- (and lose the tooltip's state of what it's looking at if we do).
-	--
-	-- NOTE: Do not use SetColor. This can taint raid frames and such.
-	--
-	-- First case: If there's already a line to replace.
-	if numline <= oldlines then
-		-- Can't have an empty left text line ever -- if a line exists, it
-		-- needs to have a space at minimum to not muck up line spacing.
-		_G["GameTooltipTextLeft"..numline]:SetText(lefttext or " ")
-		_G["GameTooltipTextLeft"..numline]:Show()
-		if righttext then
-			_G["GameTooltipTextRight"..numline]:SetText(righttext)
-			_G["GameTooltipTextRight"..numline]:Show()
-		else
-			_G["GameTooltipTextRight"..numline]:Hide()
-		end
-	-- Second case: If there are no more lines to replace.
-	else
-		if righttext then
-			GameTooltip:AddDoubleLine(lefttext or " ", righttext)
-		elseif lefttext then
-			GameTooltip:AddLine(lefttext)
-		end
-	end
-end
 
 -- Use uppercase for keys.
 local profile_addons = {
@@ -91,7 +56,42 @@ local extra_addons = {
 	["TONGUES"] = "T",
 }
 
-local function parse_VA(VA)
+local oldlines
+local numline
+local function tooltip_RenderLine(left, right)
+	if not left and not right then
+		return
+	end
+	numline = numline + 1
+	-- This is a bit scary-looking, but it's a sane way to replace tooltip
+	-- lines without needing to completely redo the tooltip from scratch
+	-- (and lose the tooltip's state of what it's looking at if we do).
+	--
+	-- First case: If there's already a line to replace.
+	if numline <= oldlines then
+		-- Can't have an empty left text line ever -- if a line exists, it
+		-- needs to have a space at minimum to not muck up line spacing.
+		_G["GameTooltipTextLeft"..numline]:SetText(left or " ")
+		_G["GameTooltipTextLeft"..numline]:SetTextColor(1, 1, 1)
+		_G["GameTooltipTextLeft"..numline]:Show()
+		if right then
+			_G["GameTooltipTextRight"..numline]:SetText(right)
+			_G["GameTooltipTextRight"..numline]:SetTextColor(1, 1, 1)
+			_G["GameTooltipTextRight"..numline]:Show()
+		else
+			_G["GameTooltipTextRight"..numline]:Hide()
+		end
+	-- Second case: If there are no more lines to replace.
+	else
+		if right then
+			GameTooltip:AddDoubleLine(left or " ", right, 1, 1, 1, 1, 1, 1)
+		elseif left then
+			GameTooltip:AddLine(left, 1, 1, 1)
+		end
+	end
+end
+
+local function tooltip_ParseVA(VA)
 	local VAshort = ""
 	local hasrp = false
 	for addon in VA:upper():gmatch("(%a[^/]+)/[^;]+") do
@@ -108,7 +108,7 @@ local function parse_VA(VA)
 	return (VAshort:gsub(", $", ""))
 end
 
-local function truncate_lines(text, length, offset, double)
+local function tooltip_Truncate(text, length, offset, double)
 	offset = offset or 0
 	if double == nil then
 		double = true
@@ -148,46 +148,46 @@ local function tooltip_RenderPlayer(character)
 	oldlines = GameTooltip:NumLines()
 	numline = 0
 
-	render_line(cu.nameformat:format(character.NA and truncate_lines((character.NA:gsub("||?c%x%x%x%x%x%x%x%x%s*", "")), 60, 0, false) or xrp:NameWithoutRealm(cu.name)), cu.icons)
+	tooltip_RenderLine(cu.nameformat:format(character.NA and tooltip_Truncate(xrp:StripEscapes(character.NA), 60, 0, false) or xrp:NameWithoutRealm(cu.name)), cu.icons)
 
 	if character.NI then
-		render_line(format("|cff6070a0%s: |cff99b3e6\"%s\"", XRP_NI, truncate_lines((character.NI:gsub("||?c%x%x%x%x%x%x%x%x%s*", "")), 60, #XRP_NI, false)))
+		tooltip_RenderLine(format("|cff6070a0%s:|r |cff99b3e6\"%s\"|r", XRP_NI, tooltip_Truncate(xrp:StripEscapes(character.NI), 60, #XRP_NI, false)))
 	end
 
 	if character.NT then
-		render_line(format("|cffcccccc%s", truncate_lines((character.NT:gsub("||?c%x%x%x%x%x%x%x%x%s*", "")), 60)))
+		tooltip_RenderLine(format("|cffcccccc%s|r", tooltip_Truncate(xrp:StripEscapes(character.NT), 60)))
 	end
 
 	if xrp_settings.tooltip.extraspace then
-		render_line(" ")
+		tooltip_RenderLine(" ")
 	end
 
-	render_line(cu.guild)
+	tooltip_RenderLine(cu.guild)
 
-	render_line(cu.titlerealm, character.VA and format("|cff7f7f7f%s", parse_VA(character.VA)) or nil)
+	tooltip_RenderLine(cu.titlerealm, character.VA and format("|cff7f7f7f%s|r", tooltip_ParseVA(character.VA)) or nil)
 
 	if character.CU then
-		render_line(format("|cffa08050%s:|cffe6b399 %s", XRP_CU, truncate_lines((character.CU:gsub("||?c%x%x%x%x%x%x%x%x%s*", "")), 60, #XRP_CU)))
+		tooltip_RenderLine(format("|cffa08050%s:|r |cffe6b399%s|r", XRP_CU, tooltip_Truncate(xrp:StripEscapes(character.CU), 60, #XRP_CU)))
 	end
 
-	if xrp_settings.tooltip.extraspace and (cu.guild or character ~= unknown or character.CU) then
-		render_line(" ")
+	if xrp_settings.tooltip.extraspace then
+		tooltip_RenderLine(" ")
 	end
 
-	local race = character.RA and xrp_settings.tooltip.rprace and (character.RA:gsub("||?c%x%x%x%x%x%x%x%x%s*", "")) or cu.race
-	render_line(cu.info:format(truncate_lines(race, 40, 0, false)))
+	local race = character.RA and xrp_settings.tooltip.rprace and xrp:StripEscapes(character.RA) or cu.race
+	tooltip_RenderLine(cu.info:format(tooltip_Truncate(race, 40, 0, false)))
 
 	if (character.FR and character.FR ~= "0") or (character.FC and character.FC ~= "0") then
 		-- AAAAAAAAAAAAAAAAAAAAAAAA. The boolean logic.
-		local frline = format("|cff%s%s", (character.FC and character.FC ~= "0" and fc_colors[character.FC == "1" and 1 or 2]) or "ffffff", truncate_lines((character.FR == "0" or not character.FR) and " " or tonumber(character.FR) and xrp.values.FR[tonumber(character.FR)] or (character.FR:gsub("||?c%x%x%x%x%x%x%x%x%s*", "")), 40, 0, false))
+		local frline = format("|c%s%s|r", (character.FC and character.FC ~= "0" and fc_colors[character.FC == "1" and 1 or 2]) or "ffffffff", tooltip_Truncate((character.FR == "0" or not character.FR) and " " or tonumber(character.FR) and xrp.values.FR[tonumber(character.FR)] or xrp:StripEscapes(character.FR), 40, 0, false))
 		local fcline
 		if character.FC and character.FC ~= "0" then
-			fcline = format("|cff%s%s", fc_colors[character.FC == "1" and 1 or 2], truncate_lines(tonumber(character.FC) and xrp.values.FC[tonumber(character.FC)] or (character.FC:gsub("||?c%x%x%x%x%x%x%x%x%s*", "")), 40, 0, false))
+			fcline = format("|c%s%s|r", fc_colors[character.FC == "1" and 1 or 2], tooltip_Truncate(tonumber(character.FC) and xrp.values.FC[tonumber(character.FC)] or xrp:StripEscapes(character.FC), 40, 0, false))
 		end
-		render_line(frline, fcline)
+		tooltip_RenderLine(frline, fcline)
 	end
 
-	render_line(cu.location)
+	tooltip_RenderLine(cu.location)
 
 	-- In rare cases (test case: target without RP addon, is PvP flagged) there
 	-- will be some leftover lines at the end of the tooltip. This hides them,
@@ -198,7 +198,11 @@ local function tooltip_RenderPlayer(character)
 		_G["GameTooltipTextRight"..numline]:Hide()
 	end
 
-	-- TODO: Show right text 2 if PvP flagged?
+	if cu.icons and not GameTooltipTextRight2:IsVisible() then
+		GameTooltipTextRight2:SetText(" ")
+		GameTooltipTextRight2:Show()
+	end
+
 	GameTooltip:Show()
 end
 
@@ -210,50 +214,58 @@ local function tooltip_SetPlayerUnit(unit)
 		faction = "Neutral"
 	end
 
-	local attackme = UnitCanAttack(unit, "player") -- Used two times.
+	local attackme = UnitCanAttack(unit, "player")
 	local meattack = UnitCanAttack("player", unit)
-	local color = xrp_settings.tooltip.reaction and reaction_colors[faction ~= xrp.toon.fields.GF and "hostile" or (faction == xrp.toon.fields.GF and not meattack and not attackme and "friendly") or "neutral"] or faction_colors[faction].dark
+	local color = xrp_settings.tooltip.reaction and reaction_colors[(meattack and attackme and "hostile") or (faction == xrp.toon.fields.GF and not attackme and not meattack and "friendly") or ((faction == xrp.toon.fields.GF or faction == "Neutral") and "neutral") or "hostile"] or faction_colors[faction].dark
 
 	local connected = UnitIsConnected(unit)
-	cu.nameformat = "|cff"..color.."%s"..((UnitIsAFK(unit) and " |cff99994d"..CHAT_FLAG_AFK) or (UnitIsDND(unit) and " |cff994d4d"..CHAT_FLAG_DND) or (not connected and " |cff888888<"..PLAYER_OFFLINE..">") or "")
+	-- Can only ever be one of AFK, DND, or offline.
+	cu.nameformat = "|c"..color.."%s|r"..((UnitIsAFK(unit) and " |cff99994d"..CHAT_FLAG_AFK.."|r") or (UnitIsDND(unit) and " |cff994d4d"..CHAT_FLAG_DND.."|r") or (not connected and " |cff888888<"..PLAYER_OFFLINE..">|r") or "")
+
+	local watchicon = (xrp_settings.tooltip.watching and UnitIsUnit("player", unit.."target") and "|TInterface\\LFGFrame\\BattlenetWorking0:32:32:10:-2|t") or nil
 	local ffa = UnitIsPVPFreeForAll(unit)
 	local pvpicon = (UnitIsPVP(unit) or ffa) and ("|TInterface\\TargetingFrame\\UI-PVP-"..((ffa or faction == "Neutral") and "FFA" or faction)..":20:20:4:-2:8:8:0:5:0:5:255:255:255|t") or nil
-	local watchicon = (xrp_settings.tooltip.watching and UnitIsUnit("player", unit.."target") and "\124TInterface\\LFGFrame\\BattlenetWorking0:32:32:10:-2\124t") or nil
 	cu.icons = watchicon and pvpicon and watchicon..pvpicon or watchicon or pvpicon
 
 	local guildname, guildrank, _ = GetGuildInfo(unit)
 	cu.guild = guildname and (xrp_settings.tooltip.guildrank == true and guildrank.." of <"..guildname..">" or "<"..guildname..">") or nil
 
 	local realm = select(2, UnitName(unit))
-	cu.titlerealm = "|cff"..faction_colors[faction].light..(UnitPVPName(unit) or xrp:NameWithoutRealm(cu.name))..(realm and realm ~= "" and (" ("..xrp:RealmNameWithSpacing(realm)..")") or "") or nil
+	cu.titlerealm = "|c"..faction_colors[faction].light..(UnitPVPName(unit) or xrp:NameWithoutRealm(cu.name))..(realm and realm ~= "" and (" ("..xrp:RealmNameWithSpacing(realm)..")|r") or "|r") or nil
 
 	cu.race = (UnitRace(unit)) or UnitCreatureType(unit)
 	local level = UnitLevel(unit)
 	local class, classid = UnitClass(unit)
 	-- RAID_CLASS_COLORS is AARRGGBB.
-	cu.info = format("|cffffffff%s %%s |c%s%s|cffffffff (%s)", format(level < 1 and UNIT_LETHAL_LEVEL_TEMPLATE or UNIT_LEVEL_TEMPLATE, level), RAID_CLASS_COLORS[classid] and RAID_CLASS_COLORS[classid].colorStr or "ffffffff", class, PLAYER)
+	cu.info = format("%s %%s |c%s%s|r (%s)", (level < 1 and UNIT_LETHAL_LEVEL_TEMPLATE or UNIT_LEVEL_TEMPLATE):format(level), RAID_CLASS_COLORS[classid] and RAID_CLASS_COLORS[classid].colorStr or "ffffffff", class, PLAYER)
 
 	-- Ew, screen-scraping.
 	local location = not UnitIsVisible(unit) and connected and GameTooltipTextLeft3:GetText() or nil
-	cu.location = location and format("|cffffeeaa%s: |cffffffff%s", ZONE, location) or nil
+	cu.location = location and format("|cffffeeaa%s:|r %s", ZONE, location) or nil
 
-	tooltip_RenderPlayer((not xrp_settings.tooltip.noopfaction or faction == xrp.toon.fields.GF) and (not xrp_settings.tooltip.nohostile or (not attackme or not meattack)) and xrp.units[unit] or unknown)
+	cu.type = "player"
+	tooltip_RenderPlayer((not xrp_settings.tooltip.noopfaction or (faction == xrp.toon.fields.GF or faction == "Neutral")) and (not xrp_settings.tooltip.nohostile or (not attackme or not meattack)) and xrp.units[unit] or unknown)
 end
 
 local function tooltip_RenderPet(character)
 	oldlines = GameTooltip:NumLines()
 	numline = 0
 
-	render_line(cu.nameformat, cu.icons)
+	tooltip_RenderLine(cu.nameformat, cu.icons)
 
-	render_line(cu.titlerealm:format(character.NA and truncate_lines((character.NA:gsub("||?c%x%x%x%x%x%x%x%x%s*", "")), 60, 0, false) or xrp:NameWithoutRealm(cu.name)))
+	tooltip_RenderLine(cu.titlerealm:format(character.NA and tooltip_Truncate(xrp:StripEscapes(character.NA), 60, 0, false) or xrp:NameWithoutRealm(cu.name)))
 
-	render_line(cu.info)
+	tooltip_RenderLine(cu.info)
 
 	while numline < oldlines do
 		numline = numline + 1
 		_G["GameTooltipTextLeft"..numline]:Hide()
 		_G["GameTooltipTextRight"..numline]:Hide()
+	end
+
+	if cu.icons and not GameTooltipTextRight2:IsVisible() then
+		GameTooltipTextRight2:SetText(" ")
+		GameTooltipTextRight2:Show()
 	end
 
 	GameTooltip:Show()
@@ -266,14 +278,14 @@ local function tooltip_SetPetUnit(unit)
 		faction = UnitIsUnit(unit, "playerpet") and xrp.toon.fields.GF or "Neutral"
 	end
 
-	local attackme = UnitCanAttack(unit, "player") -- Used two times.
+	local attackme = UnitCanAttack(unit, "player")
 	local meattack = UnitCanAttack("player", unit)
-	local color = xrp_settings.tooltip.reaction and reaction_colors[faction ~= xrp.toon.fields.GF and "hostile" or (faction == xrp.toon.fields.GF and not meattack and not attackme and "friendly") or "neutral"] or faction_colors[faction].dark
+	local color = xrp_settings.tooltip.reaction and reaction_colors[(meattack and attackme and "hostile") or (faction == xrp.toon.fields.GF and not attackme and not meattack and "friendly") or ((faction == xrp.toon.fields.GF or faction == "Neutral") and "neutral") or "hostile"] or faction_colors[faction].dark
 
-	cu.nameformat = "|cff"..color..name
+	cu.nameformat = "|c"..color..name.."|r"
 	local ffa = UnitIsPVPFreeForAll(unit)
 	local pvpicon = (UnitIsPVP(unit) or ffa) and ("|TInterface\\TargetingFrame\\UI-PVP-"..((ffa or faction == "Neutral") and "FFA" or faction)..":20:20:4:-2:8:8:0:5:0:5:255:255:255|t") or nil
-	local watchicon = (xrp_settings.tooltip.watching and UnitIsUnit("player", unit.."target") and "\124TInterface\\LFGFrame\\BattlenetWorking0:32:32:10:-2\124t") or nil
+	local watchicon = (xrp_settings.tooltip.watching and UnitIsUnit("player", unit.."target") and "|TInterface\\LFGFrame\\BattlenetWorking0:32:32:10:-2|t") or nil
 	cu.icons = watchicon and pvpicon and watchicon..pvpicon or watchicon or pvpicon
 
 	-- I hate how fragile this is.
@@ -286,15 +298,14 @@ local function tooltip_SetPetUnit(unit)
 	if not owner then return end
 	local realm = owner:match(FULL_PLAYER_NAME:format(".+", "(.+)"))
 
-	cu.titlerealm = "|cff"..faction_colors[faction].light..pettype..(realm and realm ~= "" and (" ("..xrp:RealmNameWithSpacing(realm)..")") or "")
+	cu.titlerealm = "|c"..faction_colors[faction].light..pettype..(realm and realm ~= "" and (" ("..xrp:RealmNameWithSpacing(realm)..")|r") or "|r")
 
 	cu.name = xrp:NameWithRealm(owner)
 	local L = xrp.L
 	local race = UnitCreatureFamily(unit) or UnitCreatureType(unit)
-	if race == L["Ghoul"] or race == L["Water Elemental"] or not race then
+	if race == L["Ghoul"] or race == L["Water Elemental"] then
 		race = UnitCreatureType(unit)
-	end
-	if not race then
+	elseif not race then
 		race = UNKNOWN
 	end
 	-- Mages, death knights, and warlocks have minions, hunters have pets. Mages
@@ -302,9 +313,10 @@ local function tooltip_SetPetUnit(unit)
 	local classid = (pettype == UNITNAME_TITLE_MINION and ((race == L["Elemental"] and "MAGE") or (race == L["Undead"] and "DEATHKNIGHT") or "WARLOCK")) or (pettype == UNITNAME_TITLE_PET and "HUNTER")
 	local level = UnitLevel(unit)
 
-	cu.info = format("|cffffffff%s |c%s%s|cffffffff (%s)", format(level < 1 and UNIT_LETHAL_LEVEL_TEMPLATE or UNIT_LEVEL_TEMPLATE, level), RAID_CLASS_COLORS[classid] and RAID_CLASS_COLORS[classid].colorStr or "ffffffff", race, PET)
+	cu.info = format("%s |c%s%s|r (%s)", (level < 1 and UNIT_LETHAL_LEVEL_TEMPLATE or UNIT_LEVEL_TEMPLATE):format(level), RAID_CLASS_COLORS[classid] and RAID_CLASS_COLORS[classid].colorStr or "ffffffff", race, PET)
 
-	tooltip_RenderPet((not xrp_settings.tooltip.noopfaction or faction == xrp.toon.fields.GF) and (not xrp_settings.tooltip.nohostile or (not attackme or not meattack)) and xrp.characters[cu.name] or unknown)
+	cu.type = "pet"
+	tooltip_RenderPet((not xrp_settings.tooltip.noopfaction or (faction == xrp.toon.fields.GF or faction == "Neutral")) and (not xrp_settings.tooltip.nohostile or (not attackme or not meattack)) and xrp.characters[cu.name] or unknown)
 end
 
 local tooltip = CreateFrame("Frame")
@@ -317,6 +329,7 @@ local function tooltip_OnTooltipSetUnit(self)
 	-- such unit strings.  Bizarrely, a split-second later it will often
 	-- properly return a unit string such as "mouseover" that we could have
 	-- used.
+	cu.type = nil
 	local unit = select(2, self:GetUnit())
 	if UnitIsPlayer(unit) then
 		tooltip_SetPlayerUnit(unit)
@@ -329,21 +342,19 @@ end
 
 local function tooltip_MSP_RECEIVE(character)
 	local tooltip, unit = GameTooltip:GetUnit()
-	-- Off-realm units DO NOT have realms attached. This could cause
-	-- inappropriate refreshes or, very rarely, a pet tooltip being mucked up
-	-- with a player tooltip.
-	--
-	-- TODO: Fix the possibility for player/pet mix-ups. Try to handle pet
-	-- refreshes somehow.
-	if tooltip and tooltip == xrp:NameWithoutRealm(character) then
+	if tooltip and cu.type == "player" and character == cu.name then
 		tooltip_RenderPlayer(unit and xrp.units[unit] or xrp.characters[character])
-		-- If the mouse has already left the unit, the tooltip will get
-		-- stuck visible if we don't do this. It still bounces back
-		-- into visibility if it's partly faded out, but it'll just
-		-- fade again.
-		if not GameTooltip:IsUnit("mouseover") then
-			GameTooltip:FadeOut()
-		end
+	elseif tooltip and cu.type == "pet" and character == cu.name then
+		tooltip_RenderPet(xrp.characters[character])
+	else
+		return
+	end
+	-- If the mouse has already left the unit, the tooltip will get
+	-- stuck visible if we don't do this. It still bounces back
+	-- into visibility if it's partly faded out, but it'll just
+	-- fade again.
+	if not GameTooltip:IsUnit("mouseover") then
+		GameTooltip:FadeOut()
 	end
 end
 
@@ -353,7 +364,7 @@ local function tooltip_OnEvent(self, event, addon)
 		if type(xrp_settings.tooltip) ~= "table" then
 			xrp_settings.tooltip = {}
 		end
-		setmetatable(xrp_settings.tooltip, default_settings)
+		setmetatable(xrp_settings.tooltip, { __index = default_settings })
 
 		GameTooltip:HookScript("OnTooltipSetUnit", tooltip_OnTooltipSetUnit)
 
