@@ -17,6 +17,8 @@
 
 local L = xrp.L
 
+XRP = "XRP"
+
 -- Some of these are defined in the global WoW strings (i.e., "Home" or
 -- "History"), but the contexts are such that the localization might not
 -- always match. "Name" and "Race" are used in their in-game contexts.
@@ -94,8 +96,6 @@ xrp.values = {
 	},
 	FC_EMPTY = L["(Status not set)"],
 }
-
-XRP = "XRP"
 
 BINDING_HEADER_XRP = XRP
 BINDING_NAME_XRP_EDITOR = L["Open/close RP profile editor"]
