@@ -16,7 +16,7 @@
 ]]
 
 -- And so it begins...
-local old_GetColoredName = _G.GetColoredName
+local Blizzard_GetColoredName = _G.GetColoredName
 
 local default_settings = {
 	["CHAT_MSG_SAY"] = true,
@@ -55,8 +55,7 @@ local settingsmt = {
 
 -- /cry - I don't want to overwrite your functions, Blizzard, but you don't
 -- leave me any choice.
-local function new_GetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14)
-
+local function chatnames_GetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14)
 	if event == "CHAT_MSG_TEXT_EMOTE" and arg12 then
 		-- No realm for arg2 in TEXT_EMOTEs. For whatever fucking reason.
 		-- Attach it here, falling back to our own realm.
@@ -71,7 +70,7 @@ local function new_GetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg
 	end
 
 	-- RP name in channels is from case-insensitive NAME, not the number.
-	if event == "CHAT_MSG_CHANNEL" and type(arg9) == "string" and arg9:match("^[^%s]+.*") then
+	if event == "CHAT_MSG_CHANNEL" and type(arg9) == "string" and arg9:find("^[^%s]+.*") then
 		event = event.."_"..arg9:match("^([^%s]+).*"):upper()
 	end
 
@@ -79,7 +78,7 @@ local function new_GetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg
 	if xrp_settings.chatnames[event] then
 		rpname = true
 	end
-	local name = rpname and arg12 and xrp.guids[arg12].NA or Ambiguate(arg2, "guild")
+	local name = rpname and arg12 and xrp:StripPunctuation(xrp:StripEscapes(xrp.guids[arg12].NA)) or Ambiguate(arg2, "guild")
 
 	local info = ChatTypeInfo[chattype]
 	if info and info.colorNameByClass and arg12 then
@@ -87,13 +86,13 @@ local function new_GetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg
 		if not color or not color.colorStr then
 			return name
 		end
-		return format("|c%s%s|r", color.colorStr, name)
+		return ("|c%s%s|r"):format(color.colorStr, name)
 	end
 	return name
 end
 
 local stripname = "^"..CHAT_EMOTE_GET:format(FULL_PLAYER_NAME:format("%s", ".-")).."(.*)"
-local function emotename(self, event, message, sender, ...)
+local function chatnames_TextEmote(self, event, message, sender, ...)
 	-- Availability of GUID for restoring the realm. Bail out if we won't be
 	-- able to recover the realm name later.
 	if not (select(10, ...)) then
@@ -131,7 +130,7 @@ local function chatnames_OnEvent(self, event, addon)
 			end
 		end
 		setmetatable(xrp_settings.chatnames, settingsmt)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_TEXT_EMOTE", emotename)
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_TEXT_EMOTE", chatnames_TextEmote)
 		UnitPopupButtons["XRP_VIEWPROFILE"] = { text = xrp.L["RP Profile"], dist = 0 }
 		table.insert(UnitPopupMenus["FRIEND"], 4, "XRP_VIEWPROFILE")
 		hooksecurefunc("UnitPopup_OnClick", chatnames_UnitPopup)
@@ -139,7 +138,7 @@ local function chatnames_OnEvent(self, event, addon)
 		self:RegisterEvent("PLAYER_LOGIN")
 	elseif event == "PLAYER_LOGIN" then
 		-- I hate this. Hate hate hate hate hate.
-		_G.GetColoredName = new_GetColoredName
+		_G.GetColoredName = chatnames_GetColoredName
 		self:UnregisterEvent("PLAYER_LOGIN")
 	end
 end
