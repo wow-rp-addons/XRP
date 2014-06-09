@@ -36,53 +36,51 @@ local minimapShapes = {
 	["TRICORNER-BOTTOMRIGHT"] = {true, true, true, false},
 }
 
-local function updatePosition(button)
+local function minimap_UpdatePosition(button)
 	local angle = math.rad(xrp_settings.minimap or 225)
 	local x, y, q = math.cos(angle), math.sin(angle), 1
 	if x < 0 then q = q + 1 end
 	if y > 0 then q = q + 2 end
-	local minimapShape = GetMinimapShape and GetMinimapShape() or "ROUND"
-	local quadTable = minimapShapes[minimapShape]
-	if quadTable[q] then
+	if minimapShapes[GetMinimapShape and GetMinimapShape() or "ROUND"][q] then
 		x, y = x*80, y*80
 	else
-		local diagRadius = 103.13708498985 --math.sqrt(2*(80)^2)-10
-		x = math.max(-80, math.min(x*diagRadius, 80))
-		y = math.max(-80, math.min(y*diagRadius, 80))
+		-- 103.13708498985 = math.sqrt(2*(80)^2)-10
+		x = math.max(-80, math.min(x*103.13708498985, 80))
+		y = math.max(-80, math.min(y*103.13708498985, 80))
 	end
 	button:SetPoint("CENTER", Minimap, "CENTER", x, y)
 end
 
-local function onUpdate(self)
+local function minimap_OnUpdate(self)
 	local mx, my = Minimap:GetCenter()
 	local px, py = GetCursorPosition()
 	local scale = Minimap:GetEffectiveScale()
 	px, py = px / scale, py / scale
 	xrp_settings.minimap = math.deg(math.atan2(py - my, px - mx)) % 360
-	updatePosition(self)
+	minimap_UpdatePosition(self)
 end
 
-local function onDragStart(self)
+local function minimap_OnDragStart(self)
 	self:LockHighlight()
 	self.dim:Hide()
-	self:SetScript("OnUpdate", onUpdate)
+	self:SetScript("OnUpdate", minimap_OnUpdate)
 end
 
-local function onDragStop(self)
+local function minimap_OnDragStop(self)
 	self:SetScript("OnUpdate", nil)
 	self:UnlockHighlight()
 end
 --[[ End LibDBIcon portions. ]]--
 
-local function profiles_select(self, name, arg2, checked)
+local function minimap_ProfileSelect(self, name, arg2, checked)
 	if not checked then
 		xrp.profiles(name)
 	end
 	ToggleDropDownMenu(nil, nil, xrp.minimap.menu)
 end
 
-local function status_select(self, status, arg2, checked)
-	local FC = xrp.profiles[xrp_selectedprofile].FC or (xrp.defaults[xrp_selectedprofile].FC and xrp.profiles["Default"].FC)
+local function minimap_StatusSelect(self, status, arg2, checked)
+	local FC = xrp.selected.FC
 	if not checked and status ~= FC then
 		xrp.profile.FC = status
 	elseif not checked then
@@ -94,10 +92,10 @@ end
 local menulist_profiles = {}
 
 local menulist_status = {
-	{ text = xrp.values.FC_EMPTY, checked = false, arg1 = "0", func = status_select },
+	{ text = xrp.values.FC_EMPTY, checked = false, arg1 = "0", func = minimap_StatusSelect },
 }
 for value, text in ipairs(xrp.values.FC) do
-	menulist_status[#menulist_status + 1] = { text = text, checked = false, arg1 = tostring(value), func = status_select, }
+	menulist_status[#menulist_status + 1] = { text = text, checked = false, arg1 = tostring(value), func = minimap_StatusSelect, }
 end
 
 StaticPopupDialogs["XRP_CURRENTLY"] = {
@@ -111,6 +109,9 @@ StaticPopupDialogs["XRP_CURRENTLY"] = {
 		self.editBox:SetText(xrp.profile.CU or "")
 		self.editBox:HighlightText()
 		self.button1:Disable()
+		if xrp.profile.CU == xrp.selected.CU then
+			self.button2:Disable()
+		end
 	end,
 	EditBoxOnTextChanged = function(self, data)
 		if self:GetText() ~= (xrp.profile.CU or "") then
@@ -142,23 +143,7 @@ local minimap_menulist = {
 	{ text = CANCEL, notCheckable = true, },
 }
 
-local function update_status()
-	local currentstatus = xrp.profile.FC or "0"
-	for _, menuitem in ipairs(menulist_status) do
-		menuitem.checked = currentstatus == menuitem.arg1
-	end
-end
-
-local function update_profiles()
-	local profile = xrp.profile(true)
-	local menu = menulist_profiles
-	wipe(menu)
-	for _, name in ipairs(xrp.profiles()) do
-		menu[#menu + 1] = { text = name, checked = profile == name, arg1 = name, func = profiles_select, }
-	end
-end
-
-local function update_icon()
+local function minimap_UpdateIcon()
 	if xrp.units.target and xrp.units.target.VA then
 		xrp.minimap.icon:SetTexture("Interface\\Icons\\INV_Misc_Book_03")
 	else
@@ -166,6 +151,37 @@ local function update_icon()
 			xrp.minimap.icon:SetTexture("Interface\\Icons\\Ability_Malkorok_BlightofYshaarj_Red")
 		else
 			xrp.minimap.icon:SetTexture("Interface\\Icons\\Ability_Malkorok_BlightofYshaarj_Green")
+		end
+	end
+end
+
+local function minimap_OnClick(self, button, down)
+	if not down then
+		if button == "LeftButton" then
+			if xrp.units.target and xrp.units.target.VA then
+				xrp:ShowViewerUnit("target")
+			else
+				local FC = xrp.profile.FC
+				if FC ~= xrp.selected.FC then
+					xrp.profile.FC = nil
+				elseif FC and FC ~= "1" and FC ~= "0" then
+					xrp.profile.FC = "1"
+				else
+					xrp.profile.FC = "2"
+				end
+			end
+		elseif button == "RightButton" then
+			local FC = xrp.profile.FC or "0"
+			for _, item in ipairs(menulist_status) do
+				item.checked = FC == item.arg1
+			end
+
+			wipe(menulist_profiles)
+			for _, name in ipairs(xrp.profiles()) do
+				menulist_profiles[#menulist_profiles + 1] = { text = name, checked = xrp_selectedprofile == name, arg1 = name, func = minimap_ProfileSelect, }
+			end
+
+			EasyMenu(minimap_menulist, xrp.minimap.menu, xrp.minimap, 3, 10, "MENU", nil)
 		end
 	end
 end
@@ -188,41 +204,17 @@ xrp.minimap:SetScript("OnLeave", function(self, motion)
 	GameTooltip:Hide()
 end)
 
-local function minimap_OnClick(self, button, down)
-	if not down then
-		if button == "LeftButton" then
-			if xrp.units.target and xrp.units.target.VA then
-				xrp:ShowViewerUnit("target")
-			else
-				local FC = xrp.profile.FC
-				local FCprof = xrp.profiles[xrp_selectedprofile].FC or (xrp.defaults[xrp_selectedprofile].FC and xrp.profiles["Default"].FC)
-				if FC == FCprof and FC and FC ~= "1" and FC ~= "0" then
-					xrp.profile.FC = "1"
-				elseif FC == FCprof then
-					xrp.profile.FC = "2"
-				else
-					xrp.profile.FC = nil
-				end
-			end
-		elseif button == "RightButton" then
-			update_profiles()
-			update_status()
-			EasyMenu(minimap_menulist, xrp.minimap.menu, xrp.minimap, 3, 10, "MENU", nil)
-		end
-	end
-end
-
 local function minimap_OnEvent(self, event, addon)
 	if event == "PLAYER_TARGET_CHANGED" then
-		update_icon()
+		minimap_UpdateIcon()
 	elseif event == "ADDON_LOADED" and addon == "xrp" then
-		self:SetScript("OnDragStart", onDragStart)
-		self:SetScript("OnDragStop", onDragStop)
+		self:SetScript("OnDragStart", minimap_OnDragStart)
+		self:SetScript("OnDragStop", minimap_OnDragStop)
 		self:SetScript("OnClick", minimap_OnClick)
-		updatePosition(self)
-		update_icon()
-		xrp:HookEvent("MSP_UPDATE", update_icon)
-		xrp:HookEvent("MSP_RECEIVE", update_icon)
+		minimap_UpdatePosition(self)
+		minimap_UpdateIcon()
+		xrp:HookEvent("MSP_UPDATE", minimap_UpdateIcon)
+		xrp:HookEvent("MSP_RECEIVE", minimap_UpdateIcon)
 		self:RegisterEvent("PLAYER_TARGET_CHANGED")
 		self:UnregisterEvent("ADDON_LOADED")
 	end
