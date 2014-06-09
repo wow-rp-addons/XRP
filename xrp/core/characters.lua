@@ -90,15 +90,11 @@ local charsmt = {
 	end,
 	__newindex = nonewindex,
 	__call = function(self, request)
-		if not request then
-			local profile = {}
-			for field, contents in pairs(xrp_cache[self[nk]].fields) do
-				profile[field] = contents
-			end
-			return profile
-		elseif type(request) == "table" or type(request) == "string" then
-			xrp.msp:Request(self[nk], request)
+		local profile = {}
+		for field, contents in pairs(xrp_cache[self[nk]].fields) do
+			profile[field] = contents
 		end
+		return profile
 	end,
 	__metatable = false,
 }
@@ -119,7 +115,6 @@ xrp.characters = setmetatable({}, {
 	__metatable = false,
 })
 
--- TODO: Use UnitGUID()/GetPlayerInfoByGUID()?
 xrp.units = setmetatable({}, {
 	__index = function (self, unit)
 		if not UnitIsPlayer(unit) then
@@ -134,12 +129,14 @@ xrp.units = setmetatable({}, {
 			-- create minor confusion if someone changes faction, race, sex,
 			-- or GUID while we're still logged in. Unlikely, but possible.
 			if not gcache[name] then
+				local GU = UnitGUID(unit)
+				local class, GC, race, GR, GS = GetPlayerInfoByGUID(GU)
 				gcache[name] = {
-					GC = (select(2, UnitClass(unit))),
-					GF = (UnitFactionGroup(unit)),
-					GR = (select(2, UnitRace(unit))),
-					GS = tostring(UnitSex(unit)),
-					GU = UnitGUID(unit),
+					GC = GC,
+					GF = UnitFactionGroup(unit),
+					GR = GR,
+					GS = GS,
+					GU = GU,
 				}
 				if xrp_cache[name] and name ~= xrp.toon.withrealm then
 					for field, contents in pairs(gcache[name]) do
@@ -149,7 +146,7 @@ xrp.units = setmetatable({}, {
 					end
 				end
 			elseif not gcache[name].GF then -- GUID won't always get faction.
-				gcache[name].GF = (UnitFactionGroup(unit))
+				gcache[name].GF = UnitFactionGroup(unit)
 				if xrp_cache[name] and name ~= xrp.toon.withrealm then
 					xrp_cache[name].fields.GF = gcache[name].GF
 				end
@@ -184,14 +181,13 @@ local race_faction = {
 }
 
 xrp.guids = setmetatable({}, {
-	__index = function (self, guid)
+	__index = function (self, GU)
 		-- This will return nil if the GUID hasn't been seen by the client yet
 		-- in the session.
-		local _, class, _, race, sex, name, realm = GetPlayerInfoByGUID(guid)
+		local class, GC, race, GR, GS, name, realm = GetPlayerInfoByGUID(GU)
 		if not name or name == "" then
 			return nil
 		end
-		local faction = race_faction[race] or nil
 		name = xrp:NameWithRealm(name, realm)
 		if type(name) == "string" then
 			if not chars[name] then
@@ -202,11 +198,11 @@ xrp.guids = setmetatable({}, {
 			-- or GUID while we're still logged in. Unlikely, but possible.
 			if not gcache[name] then
 				gcache[name] = {
-					GC = class,
-					GF = faction,
-					GR = race,
-					GS = sex,
-					GU = guid,
+					GC = GC,
+					GF = race_faction[GR],
+					GR = GR,
+					GS = GS,
+					GU = GU,
 				}
 				if xrp_cache[name] and name ~= xrp.toon.withrealm then
 					for field, contents in pairs(gcache[name]) do

@@ -22,8 +22,9 @@ local nk = {}
 
 local overrides = {}
 
+-- Current public profile (includes overrides).
 xrp.profile = setmetatable({}, {
-	__index = function(profile, field)
+	__index = function(self, field)
 		local contents
 		if xrp.toon.fields[field] then
 			contents = xrp.toon.fields[field]
@@ -31,7 +32,7 @@ xrp.profile = setmetatable({}, {
 			contents = overrides[field]
 		elseif xrp_profiles[xrp_selectedprofile] and xrp_profiles[xrp_selectedprofile][field] then
 			contents = xrp_profiles[xrp_selectedprofile][field]
-		elseif xrp.defaults[xrp_selectedprofile][field] == true and xrp.profiles["Default"][field] then
+		elseif xrp.defaults[xrp_selectedprofile][field] == true and xrp_profiles["Default"][field] then
 			contents = xrp_profiles["Default"][field]
 		else
 			return nil
@@ -44,16 +45,13 @@ xrp.profile = setmetatable({}, {
 			return contents
 		end
 	end,
-	__newindex = function(profile, field, contents)
+	__newindex = function(self, field, contents)
 		if not xrp.msp.unitfields[field] and not xrp.msp.metafields[field] and not xrp.msp.dummyfields[field] and field:match("^%u%u$") and overrides[field] ~= contents then
 			overrides[field] = contents
 			xrp.msp:UpdateField(field)
 		end
 	end,
-	__call = function(profile, wantname)
-		if wantname then
-			return xrp_selectedprofile
-		end
+	__call = function(self)
 		local out = {}
 		for field, contents in pairs(xrp_profiles["Default"]) do
 			if xrp.defaults[xrp_selectedprofile][field] then
@@ -76,21 +74,63 @@ xrp.profile = setmetatable({}, {
 	__metatable = false,
 })
 
-local profmt = {
-	__index = function(profile, field)
-		if not xrp_profiles[profile[nk]] then
-			xrp_profiles[profile[nk]] = {}
+-- Current selected profile (no overrides).
+xrp.selected = setmetatable({}, {
+	__index = function(self, field)
+		local contents
+		if xrp.toon.fields[field] then
+			contents = xrp.toon.fields[field]
+		elseif xrp_profiles[xrp_selectedprofile] and xrp_profiles[xrp_selectedprofile][field] then
+			contents = xrp_profiles[xrp_selectedprofile][field]
+		elseif xrp.defaults[xrp_selectedprofile][field] == true and xrp_profiles["Default"][field] then
+			contents = xrp_profiles["Default"][field]
+		else
+			return nil
 		end
-		if xrp_profiles[profile[nk]][field] then
-			return xrp_profiles[profile[nk]][field]
+		if field == "AH" then
+			return xrp:ConvertHeight(contents, "msp")
+		elseif field == "AW" then
+			return xrp:ConvertWeight(contents, "msp")
+		else
+			return contents
+		end
+	end,
+	__newindex = function() end,
+	__call = function(self)
+		local out = {}
+		for field, contents in pairs(xrp_profiles["Default"]) do
+			if xrp.defaults[xrp_selectedprofile][field] then
+				out[field] = contents
+			end
+		end
+		for field, contents in pairs(xrp_profiles[xrp_selectedprofile]) do
+			out[field] = contents
+		end
+		for field, contents in pairs(xrp.toon.fields) do
+			out[field] = contents
+		end
+		out.AW = out.AW and xrp:ConvertWeight(out.AW, "msp") or nil
+		out.AH = out.AH and xrp:ConvertHeight(out.AH, "msp") or nil
+		return out
+	end,
+	__metatable = false,
+})
+
+local profmt = {
+	__index = function(self, field)
+		if not xrp_profiles[self[nk]] then
+			xrp_profiles[self[nk]] = {}
+		end
+		if xrp_profiles[self[nk]][field] then
+			return xrp_profiles[self[nk]][field]
 		end
 		return nil
 	end,
-	__newindex = function(profile, field, contents)
+	__newindex = function(self, field, contents)
 		if xrp.msp.unitfields[field] or xrp.msp.metafields[field] or xrp.msp.dummyfields[field] or not field:match("^%u%u$") then
 			return
 		end
-		local name = profile[nk]
+		local name = self[nk]
 		if type(contents) == "string" and contents ~= "" and (not xrp_profiles[name] or xrp_profiles[name][field] ~= contents) then
 			if not xrp_profiles[name] then
 				xrp_profiles[name] = {}
@@ -108,17 +148,19 @@ local profmt = {
 			xrp:FireEvent("PROFILE_FIELD_SAVE", name, field)
 		end
 	end,
-	__call = function(profile, action, argument)
-		if action == "length" and type(argument) == "number" then
+	__call = function(self, action, argument)
+		if not xrp_profiles[self[nk]] then
+			return false
+		elseif action == "length" and type(argument) == "number" then
 			local length = 0
-			for field, contents in pairs(xrp_profiles[profile[nk]]) do
+			for field, contents in pairs(xrp_profiles[self[nk]]) do
 				length = length + #contents
 			end
 			if length > argument then
 				return length
 			end
 		elseif action == "rename" and type(argument) == "string" then
-			local name = profile[nk]
+			local name = self[nk]
 			if type(xrp_profiles[name]) == "table" and name ~= "Default" and (type(xrp_profiles[argument]) ~= "table" or (argument == "Default" and name ~= argument and (not xrp_profiles["Default (Old)"] or name == "Default (Old)"))) then
 				if argument == "Default" and name ~= "Default (Old)" then
 					xrp_profiles["Default (Old)"] = xrp_profiles[argument]
@@ -134,7 +176,7 @@ local profmt = {
 				return true
 			end
 		elseif action == "copy" and type(argument) == "string" then
-			local name = profile[nk]
+			local name = self[nk]
 			if type(xrp_profiles[name]) == "table" and (type(xrp_profiles[argument]) ~= "table" or (argument == "Default" and argument ~= name and (not xrp_profiles["Default (Old)"] or name == "Default (Old)"))) then
 				if argument == "Default" and name ~= "Default (Old)" then
 					xrp_profiles["Default (Old)"] = xrp_profiles[argument]
@@ -151,7 +193,7 @@ local profmt = {
 				return true
 			end
 		elseif not action then
-			local name = profile[nk]
+			local name = self[nk]
 			local profile = {}
 			for field, contents in pairs(xrp_profiles[name]) do
 				profile[field] = contents
@@ -166,13 +208,13 @@ local profmt = {
 local profs = setmetatable({}, { __mode = "v" })
 
 xrp.profiles = setmetatable({}, {
-	__index = function(profiles, name)
+	__index = function(self, name)
 		if not profs[name] then
 			profs[name] = setmetatable({ [nk] = name }, profmt)
 		end
 		return profs[name]
 	end,
-	__newindex = function(profiles, name, profile)
+	__newindex = function(self, name, profile)
 		if type(profile) == "table" then
 			if not profs[name] then
 				profs[name] = setmetatable({ [nk] = name }, profmt)
@@ -200,7 +242,7 @@ xrp.profiles = setmetatable({}, {
 			xrp:FireEvent("PROFILE_DELETE", name)
 		end
 	end,
-	__call = function(profiles, name)
+	__call = function(self, name)
 		if not name then
 			local list = {}
 			for name, _ in pairs(xrp_profiles) do
@@ -211,7 +253,7 @@ xrp.profiles = setmetatable({}, {
 			return list
 		elseif type(name) == "string" and xrp_profiles[name] then
 			xrp_selectedprofile = name
-			wipe(overrides) -- TODO: Should this really wipe the overrides?
+			wipe(overrides)
 			xrp.msp:Update()
 			return true
 		end
