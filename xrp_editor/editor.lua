@@ -17,14 +17,12 @@
 
 local supportedfields = { NA = true, NI = true, NT = true, NH = true, AE = true, RA = true, AH = true, AW = true, CU = true, DE = true, AG = true, HH = true, HB = true, MO = true, HI = true, FR = true, FC = true }
 
-local last_profile = {}
-local last_defaults = {}
+-- TODO: Use xrp.profiles and xrp.defaults instead?
+local last_profile, last_defaults = {}, {}
 
 local warn9000 = false
 
-local saving = false
-local loading = false
-local reverting = false
+local saving, loading, reverting = false, false, false
 
 local function editor_ClearFocus(self)
 	self.NA:SetFocus()
@@ -68,7 +66,7 @@ function xrp.editor:Save()
 	end
 
 	-- Save and Revert buttons will disable after saving.
-	xrp.editor:CheckFields()
+	self:CheckFields()
 end
 
 function xrp.editor:Load(name)
@@ -118,16 +116,16 @@ function xrp.editor:CheckFields()
 	if not loading then -- This will still trigger after loading.
 		local changes = false
 		for field, _ in pairs(supportedfields) do
-			if not changes and (xrp.editor[field]:GetText() ~= (last_profile[field] or "") or (xrp.editor.checkboxes[field]:GetChecked() and true or false) ~= last_defaults[field]) then
+			if not changes and (self[field]:GetText() ~= (last_profile[field] or "") or (self.checkboxes[field]:GetChecked() and true or false) ~= last_defaults[field]) then
 				changes = true
 			end
 		end
 		if changes then
-			xrp.editor.SaveButton:Enable()
-			xrp.editor.RevertButton:Enable()
+			self.SaveButton:Enable()
+			self.RevertButton:Enable()
 		else
-			xrp.editor.SaveButton:Disable()
-			xrp.editor.RevertButton:Disable()
+			self.SaveButton:Disable()
+			self.RevertButton:Disable()
 		end
 	end
 end
