@@ -67,7 +67,7 @@ local function checksavedvars()
 	if type(xrp_cache) ~= "table" then
 		xrp_cache = {}
 	end
-	if type(xrp_cache[xrp.toon.withrealm]) then
+	if type(xrp_cache[xrp.toon.withrealm]) ~= "table" then
 		xrp_cache[xrp.toon.withrealm] = {
 			fields = {},
 			versions = {},
@@ -118,7 +118,7 @@ local function xrp_OnEvent(xrp, event, addon)
 		-- This is kinda terrifying, but it fixes some major UI tainting when
 		-- the user presses "Cancel" in the Interface Options (in and out of
 		-- combat).
-		_G.CompactUnitFrames_CancelChanges = function(self)
+		_G.CompactUnitFrameProfiles_CancelChanges = function(self)
 			InterfaceOptionsPanel_Cancel(self)
 			-- Disabling the reload makes it more obvious what happens when
 			-- changes don't 'really' cancel.
