@@ -38,6 +38,9 @@
 					self.nextEditBox:SetFocus();
 				end
 			</OnTabPressed>
+			<OnTextChanged>
+				xrp.editor:CheckFields();
+			</OnTextChanged>
 		</Scripts>
 		<FontString inherits="GameFontWhite"/>
 	</EditBox>
@@ -126,8 +129,7 @@
 						end
 					</OnTabPressed>
 					<OnTextChanged>
-						local scrollFrame = self:GetParent();
-						ScrollingEdit_OnTextChanged(self, scrollFrame);
+						ScrollingEdit_OnTextChanged(self, self:GetParent());
 						xrp.editor:CheckFields();
 					</OnTextChanged>
 					<OnCursorChanged function="ScrollingEdit_OnCursorChanged"/>
