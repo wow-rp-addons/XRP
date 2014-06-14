@@ -19,7 +19,7 @@
 	<!-- It's dangerous to go alone, take a syntax highlighter. -->
 	<!-- No, seriously, though. This is the easiest way to get a good UI. -->
 	<Include file="editor_templates.xml"/>
-	<Frame name="$parent_editor" parentKey="editor" toplevel="true" movable="true" parent="xrp" enableMouse="true" inherits="ButtonFrameTemplate" hidden="true">
+	<Frame name="xrp_editor" toplevel="true" movable="true" parent="UIParent" enableMouse="true" inherits="ButtonFrameTemplate" hidden="true">
 		<Size x="439" y="525"/>
 		<Frames>
 			<Frame name="$parentAppearance" parentKey="Appearance" useParentLevel="true" hidden="false">
@@ -435,7 +435,7 @@
 					</OnClick>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
-						GameTooltip:SetText("Rename");
+						GameTooltip:SetText(xrp.L["Rename"]);
 						GameTooltip:Show();
 					</OnEnter>
 					<OnLeave>
@@ -456,7 +456,7 @@
 					</OnClick>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
-						GameTooltip:SetText("Copy");
+						GameTooltip:SetText(xrp.L["Copy"]);
 						GameTooltip:Show();
 					</OnEnter>
 					<OnLeave>
@@ -516,10 +516,21 @@
 			</Button>
 		</Frames>
 		<Scripts>
+			<OnLoad>
+				xrp.editor = self;
+				self:SetAttribute("UIPanelLayout-defined", true);
+				self:SetAttribute("UIPanelLayout-enabled", true);
+				self:SetAttribute("UIPanelLayout-area", "left");
+				self:SetAttribute("UIPanelLayout-pushable", 2);
+				self:SetAttribute("UIPanelLayout-whileDead", true);
+				PanelTemplates_SetNumTabs(self, 2);
+				PanelTemplates_SetTab(self, 1);
+				self.TitleText:SetText(GetAddOnMetadata("xrp_editor", "Title"));
+			</OnLoad>
 			<OnShow>
-				SetPortraitTexture(self.portrait, "player")
+				SetPortraitTexture(self.portrait, "player");
 				PlaySound("igCharacterInfoOpen");
-				xrp.editor:CheckFields();
+				self:CheckFields();
 			</OnShow>
 			<OnHide>
 				PlaySound("igCharacterInfoClose");
