@@ -16,45 +16,40 @@
 ]]
 
 local L = xrp.L
-
-local supportedfields = { NA = true, NI = true, NT = true, NH = true, AE = true, RA = true, AH = true, AW = true, CU = true, DE = true, AG = true, HH = true, HB = true, MO = true, HI = true, VA = true }
-
 local current = UNKNOWN
 
-local function viewer_ParseVA(VA)
-	if not VA then
-		return L["%s or %s"]:format(UNKNOWN, NONE)
-	end
-	return (VA:gsub(";", ", "))
-end
+do
+	local supportedfields = { NA = true, NI = true, NT = true, NH = true, AE = true, RA = true, AH = true, AW = true, CU = true, DE = true, AG = true, HH = true, HB = true, MO = true, HI = true, VA = true }
 
-function xrp.viewer:Load(character)
-	-- This does not need to be very smart. SetText() should be mapped to the
-	-- appropriate 'real' function if needed. The Remote module always fills the
-	-- entire profile with values, even if they're empty, so we do not need to
-	-- empty anything first.
-	for field, _ in pairs(supportedfields) do
-		if field == "NI" then
-			self[field]:SetText(character[field] and L["\"%s\""]:format(character[field]) or "")
-		elseif field == "NA" then
-			self.TitleText:SetText(character[field] or Ambiguate(current, "none") or UNKNOWN)
-		elseif field == "VA" then
-			self[field]:SetText(viewer_ParseVA(character[field]))
-		elseif field == "AH" then
-			self[field]:SetText(xrp:ConvertHeight(character[field], "user") or "")
-		elseif field == "AW" then
-			self[field]:SetText(xrp:ConvertWeight(character[field], "user") or "")
-		elseif field == "RA" then
-			self[field]:SetText(character[field] or xrp.values.GR[character.GR] or "")
-		else
-			self[field]:SetText(character[field] or "")
+	function xrp.viewer:Load(character)
+		-- This does not need to be very smart. SetText() should be mapped to
+		-- the appropriate 'real' function if needed. However, the character
+		-- tables will return nil on an empty value, so watch for that.
+		for field, _ in pairs(supportedfields) do
+			if field == "NI" then
+				local NI = character[field]
+				self[field]:SetText(NI and L["\"%s\""]:format(xrp:StripEscapes(NI)) or "")
+			elseif field == "NA" then
+				self.TitleText:SetText(xrp:StripEscapes(character[field]) or Ambiguate(current, "none") or UNKNOWN)
+			elseif field == "VA" then
+				local VA = character[field]
+				self[field]:SetText(VA and xrp:StripEscapes(VA:gsub(";", ", ")) or ("%s/%s"):format(UNKNOWN, NONE))
+			elseif field == "AH" then
+				self[field]:SetText(xrp:ConvertHeight(xrp:StripEscapes(character[field]), "user") or "")
+			elseif field == "AW" then
+				self[field]:SetText(xrp:ConvertWeight(xrp:StripEscapes(character[field]), "user") or "")
+			elseif field == "RA" then
+				self[field]:SetText(xrp:StripEscapes(character[field]) or xrp.values.GR[character.GR] or "")
+			else
+				self[field]:SetText(xrp:StripEscapes(character[field]) or "")
+			end
 		end
 	end
 end
 
 function xrp.viewer:ViewUnit(unit)
-	if not UnitIsPlayer(unit) then
-		unit = "player"
+	if not xrp.units[unit] then
+		return
 	end
 	local name = xrp:UnitNameWithRealm(unit)
 	current = name
@@ -71,6 +66,9 @@ function xrp.viewer:ViewUnit(unit)
 end
 
 function xrp.viewer:ViewCharacter(name)
+	if type(name) ~= "string" or name == "" then
+		return
+	end
 	name = xrp:NameWithRealm(name) -- If there's not a realm, add our realm.
 	current = name
 	self.XC:SetText("")
@@ -86,7 +84,7 @@ function xrp.viewer:ViewCharacter(name)
 	end
 end
 
-local function viewer_MSP_RECEIVE(name)
+xrp:HookEvent("MSP_RECEIVE", function(name)
 	if current == name then
 		local XC = xrp.viewer.XC:GetText()
 		xrp.viewer:Load(xrp.characters[name])
@@ -94,9 +92,17 @@ local function viewer_MSP_RECEIVE(name)
 			xrp.viewer.XC:SetText(L["Received!"])
 		end
 	end
-end
+end)
 
-local function viewer_MSP_RECEIVE_CHUNK(name, chunk, totalchunks)
+xrp:HookEvent("MSP_NOCHANGE", function(name)
+	if current == name then
+		if not xrp.viewer.XC:GetText() then
+			xrp.viewer.XC:SetText(L["No changes."])
+		end
+	end
+end)
+
+xrp:HookEvent("MSP_CHUNK", function(name, chunk, totalchunks)
 	if current == name then
 		if chunk == totalchunks then
 			xrp.viewer.XC:SetFormattedText(L["Received! (%u/%u)"], chunk, totalchunks)
@@ -104,93 +110,44 @@ local function viewer_MSP_RECEIVE_CHUNK(name, chunk, totalchunks)
 			xrp.viewer.XC:SetFormattedText(totalchunks and L["Receiving... (%u/%u)"] or L["Receiving... (%u/??)"], chunk, totalchunks)
 		end
 	end
-end
+end)
 
-local function viewer_MSP_NOCHANGE(name)
-	if current == name then
-		local XC = xrp.viewer.XC:GetText()
-		xrp.viewer:Load(xrp.characters[name])
-		if not XC then
-			xrp.viewer.XC:SetText(L["No changes."])
-		end
-	end
-end
-
-local function viewer_MSP_OFFLINE(name)
+xrp:HookEvent("MSP_FAIL", function(name, reason)
 	if current == name then
 		if not xrp.viewer.XC:GetText() then
-			xrp.viewer.XC:SetText(xrp.cache[name].GF ~= xrp.toon.fields.GF and L["Character is opposite faction."] or L["Character is not online."])
+			if reason == "offline" then
+				xrp.viewer.XC:SetText(L["Character is not online."])
+			elseif reason == "faction" then
+				xrp.viewer.XC:SetText(L["Character is opposite faction."])
+			elseif reason == "nomsp" then
+				xrp.viewer.XC:SetText(L["No RP addon appears to be active."])
+			elseif reason == "time" then
+				xrp.viewer.XC:SetText(L["Too soon for updates."])
+			end
 		end
 	end
-end
+end)
 
-local function viewer_MSP_NOREQUEST(name)
-	if current == name then
-		if not xrp.viewer.XC:GetText() then
-			xrp.viewer.XC:SetText(L["Too soon for updates."])
-		end
-	end
-end
-
-local function viewer_MSP_NOMSP(name)
-	if current == name then
-		if not xrp.viewer.XC:GetText() then
-			xrp.viewer.XC:SetText(L["No RP addon appears to be active."])
-		end
-	end
-end
-
-local function viewer_OnEvent(self, event, addon)
-	if event == "ADDON_LOADED" and addon == "xrp_viewer" then
-		self:SetAttribute("UIPanelLayout-defined", true)
-		self:SetAttribute("UIPanelLayout-enabled", true)
-		self:SetAttribute("UIPanelLayout-area", "left")
-		self:SetAttribute("UIPanelLayout-pushable", 1)
-		self:SetAttribute("UIPanelLayout-whileDead", true)
-		PanelTemplates_SetNumTabs(self, 2)
-		PanelTemplates_SetTab(self, 1)
-
-		xrp:HookEvent("MSP_RECEIVE", viewer_MSP_RECEIVE)
-		xrp:HookEvent("MSP_RECEIVE_CHUNK", viewer_MSP_RECEIVE_CHUNK)
-		xrp:HookEvent("MSP_NOCHANGE", viewer_MSP_NOCHANGE)
-		xrp:HookEvent("MSP_OFFLINE", viewer_MSP_OFFLINE)
-		xrp:HookEvent("MSP_NOREQUEST", viewer_MSP_NOREQUEST)
-		xrp:HookEvent("MSP_NOMSP", viewer_MSP_NOMSP)
-		self:UnregisterEvent("ADDON_LOADED")
-	end
-end
-xrp.viewer:SetScript("OnEvent", viewer_OnEvent)
-xrp.viewer:RegisterEvent("ADDON_LOADED")
-
-local function viewer_OnHide(self)
+xrp.viewer:SetScript("OnHide", function(self)
 	self.XC:SetText("")
 	current = UNKNOWN
 	PlaySound("igCharacterInfoClose")
+end)
+
+-- Setup shorthand access for easier looping later.
+-- Appearance tab
+for _, field in ipairs({ "AE", "RA", "AH", "AW" }) do
+	xrp.viewer[field] = xrp.viewer.Appearance[field]
 end
-
-xrp.viewer:SetScript("OnHide", viewer_OnHide)
-
-do
-	-- Setup shorthand access for easier looping later.
-	-- Appearance tab
-	local appearance = { "AE", "RA", "AH", "AW" }
-	local appearancescroll = { "CU", "DE" }
-	for _, field in ipairs(appearance) do
-		xrp.viewer[field] = xrp.viewer.Appearance[field]
-	end
-	-- EditBox is inside ScrollFrame
-	for _, field in ipairs(appearancescroll) do
-		xrp.viewer[field] = xrp.viewer.Appearance[field].EditBox
-	end
-
-	local biography = { "AG", "HH", "HB" }
-	local biographyscroll = { "MO", "HI" }
-	-- Biography tab
-	for _, field in ipairs(biography) do
-		xrp.viewer[field] = xrp.viewer.Biography[field]
-	end
-	-- EditBox is inside ScrollFrame
-	for _, field in ipairs(biographyscroll) do
-		xrp.viewer[field] = xrp.viewer.Biography[field].EditBox
-	end
+-- EditBox is inside ScrollFrame
+for _, field in ipairs({ "CU", "DE" }) do
+	xrp.viewer[field] = xrp.viewer.Appearance[field].EditBox
+end
+-- Biography tab
+for _, field in ipairs({ "AG", "HH", "HB" }) do
+	xrp.viewer[field] = xrp.viewer.Biography[field]
+end
+-- EditBox is inside ScrollFrame
+for _, field in ipairs({ "MO", "HI" }) do
+	xrp.viewer[field] = xrp.viewer.Biography[field].EditBox
 end
