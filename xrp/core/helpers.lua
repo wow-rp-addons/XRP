@@ -96,7 +96,7 @@ function xrp:ConvertWeight(weight, units)
 		return weight
 	end
 
-	units = (not units or units == "user") and xrp_settings.weight or units
+	units = (not units or units == "user") and xrp.settings.weight or units
 	if units == "msp" then -- MSP internal format: kg without units as string.
 		return ("%u"):format(number + 0.5)
 	elseif units == "kg" then
@@ -134,7 +134,7 @@ function xrp:ConvertHeight(height, units)
 		return height
 	end
 
-	units = (not units or units == "user") and xrp_settings.height or units
+	units = (not units or units == "user") and xrp.settings.height or units
 	if units == "msp" then -- MSP internal format: cm without units as string.
 		return ("%u"):format(number)
 	elseif units == "cm" then
@@ -152,81 +152,4 @@ function xrp:ConvertHeight(height, units)
 	else
 		return height
 	end
-end
-
-StaticPopupDialogs["XRP_CACHE_CLEAR"] = {
-	text = L["Are you sure you wish to empty the profile cache?"],
-	button1 = ACCEPT,
-	button2 = CANCEL,
-	OnAccept = function()
-		xrp:CacheTidy(60)
-		StaticPopup_Show("XRP_CACHE_CLEARED")
-	end,
-	enterClicksFirstButton = true,
-	timeout = 0,
-	whileDead = true,
-	hideOnEscape = true,
-	preferredIndex = 3,
-}
-
-StaticPopupDialogs["XRP_CACHE_CLEARED"] = {
-	text = L["The cache has been cleared."],
-	button1 = OKAY,
-	enterClicksFirstButton = true,
-	timeout = 0,
-	whileDead = true,
-	hideOnEscape = true,
-	preferredIndex = 3,
-}
-
-StaticPopupDialogs["XRP_CACHE_TIDIED"] = {
-	text = L["The cache has been tidied."],
-	button1 = OKAY,
-	enterClicksFirstButton = true,
-	timeout = 0,
-	whileDead = true,
-	hideOnEscape = true,
-	preferredIndex = 3,
-}
-
-function xrp:CacheTidy(timer)
-	if type(timer) ~= "number" or timer <= 0 then
-		timer = xrp_settings.cachetime
-	end
-	if not timer or type(timer) ~= "number" or timer <= 0 then
-		return false
-	end
-	local now = time()
-	local before = now - timer
-	for character, data in pairs(xrp_cache) do
-		if not data.lastreceive then
-			-- Pre-beta5 didn't have this value. Might be able to be dropped
-			-- at some point in the distant future (or just left as a
-			-- safeguard).
-			data.lastreceive = now
-		elseif data.lastreceive < before then
-			xrp_cache[character] = nil
-		end
-	end
-	-- Explicitly collect garbage, as there may be a hell of a lot of it.
-	collectgarbage()
-	return true
-end
-
-local events = {}
-
-function xrp:FireEvent(event, ...)
-	if type(events[event]) ~= "table" then
-		events[event] = {}
-	end
-	for _, func in ipairs(events[event]) do
-		func(...)
-	end
-end
-
-function xrp:HookEvent(event, func)
-	if type(events[event]) ~= "table" then
-		events[event] = {}
-	end
-	events[event][#events[event] + 1] = func
 end
