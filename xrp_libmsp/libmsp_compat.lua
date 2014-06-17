@@ -33,10 +33,10 @@ msp.protocolversion = xrp.msp.protocol
 -- same as LibMSP's callbacks.
 msp.callback = {
 	received = setmetatable({}, {
-		__index = function(received, key)
+		__index = function(self, key)
 			return nil
 		end,
-		__newindex = function(received, key, func)
+		__newindex = function(self, key, func)
 			xrp:HookEvent("MSP_RECEIVE", func)
 		end,
 	})
@@ -48,19 +48,19 @@ local nk = {} -- Used to hide character names inside table.
 
 local nonewindex = function() end
 
-local mspchars = setmetatable({}, { __mode = "v", __metatable = false, })
+local mspchars = setmetatable({}, { __mode = "v" })
 
 local fieldmt = {
-	__index = function(fieldt, field)
-		return xrp_cache[fieldt[nk]] and xrp_cache[fieldt[nk]].fields[field] or ""
+	__index = function(self, field)
+		return xrp_cache[self[nk]] and xrp_cache[self[nk]].fields[field] or ""
 	end,
 	__newindex = nonewindex,
 	__metatable = false,
 }
 
 local vermt = {
-	__index = function(vert, field)
-		return xrp_cache[vert[nk]] and xrp_cache[vert[nk]].versions[field] or nil
+	__index = function(self, field)
+		return xrp_cache[self[nk]] and xrp_cache[self[nk]].versions[field] or nil
 	end,
 	__newindex = nonewindex,
 	__metatable = false,
@@ -84,7 +84,7 @@ local emptychar = setmetatable({
 }, emptymt)
 
 msp.char = setmetatable({}, {
-	__index = function (char, character)
+	__index = function (self, character)
 		local name = xrp:NameWithRealm(character) -- For pre-5.4.7 addons.
 		if xrp_cache[name] then
 			mspchars[name] = { field = setmetatable({ [nk] = name }, fieldmt), ver = setmetatable({ [nk] = name }, vermt), time = timetable, }
@@ -97,14 +97,14 @@ msp.char = setmetatable({}, {
 })
 
 msp.my = setmetatable({}, {
-	__index = function(my, field)
+	__index = function(self, field)
 		-- Return currently active profile field (incl. overrides).
-		return xrp.profile[field]
+		return xrp.current[field]
 	end,
-	__newindex = function(my, field, contents)
+	__newindex = function(self, field, contents)
 		-- Sets a temporary override. Removes if empty string (unlike normal
-		-- xrp.profile overrides allowing explicitly empty).
-		xrp.profile[field] = contents ~= "" and contents or nil
+		-- xrp.current overrides allowing explicitly empty).
+		xrp.current[field] = contents ~= "" and contents or nil
 	end,
 	__metatable = false,
 })
@@ -112,7 +112,7 @@ msp.my = setmetatable({}, {
 -- Allows reading versions, but will not allow modifying them. XRP handles
 -- that entirely automatically.
 msp.myver = setmetatable({}, {
-	__index = function(myver, field)
+	__index = function(self, field)
 		if xrp_versions[field] then
 			return xrp_versions[field]
 		end
@@ -123,8 +123,7 @@ msp.myver = setmetatable({}, {
 })
 
 function msp:Request(character, fields)
-	local name = xrp:NameWithRealm(character)
-	xrp.msp:Request(name, fields)
+	xrp.msp:Request(xrp:NameWithRealm(character), fields)
 end
 
 -- Used by GHI... Working with the cache since GHI expects values to be
