@@ -20,35 +20,39 @@
 -- mucking with.
 local nk = {}
 
+local L = xrp.L
+
 local defmt = {
-	__index = function(default, field)
-		if default[nk] ~= "Default" and xrp_defaults[default[nk]] and xrp_defaults[default[nk]][field] ~= nil then
-			return xrp_defaults[default[nk]][field]
-		end
-		return xrp_settings.defaults[field]
+	__index = function(self, field)
+		local profile = self[nk]
+		return field:find("^%u%u$") and (profile ~= L["Default"] and xrp_defaults[profile] and xrp_defaults[name][field] or xrp.settings.defaults[field])
 	end,
-	__newindex = function(default, field, state)
-		if xrp.msp.unitfields[field] or xrp.msp.metafields[field] or xrp.msp.dummyfields[field] or not field:match("^%u%u$") or default[nk] == "Default" then
+	__newindex = function(self, field, state)
+		local profile = self[nk]
+		if xrp.msp.unitfields[field] or xrp.msp.metafields[field] or xrp.msp.dummyfields[field] or not field:find("^%u%u$") or profile == L["Default"] then
 			return
 		end
-		if not xrp_defaults[default[nk]] then
-			xrp_defaults[default[nk]] = {}
+		if not xrp_defaults[profile] then
+			xrp_defaults[profile] = {}
 		end
 		if state == nil then
-			xrp_defaults[default[nk]][field] = nil
-			if not next(xrp_defaults[default[nk]]) then
-				xrp.defaults[default[nk]] = nil
+			xrp_defaults[profile][field] = nil
+			if not next(xrp_defaults[profile]) then
+				xrp.defaults[profile] = nil
 			end
 		elseif state == true or state == false then
-			xrp_defaults[default[nk]][field] = state
+			xrp_defaults[profile][field] = state
 		end
 	end,
-	__call = function(default)
+	__call = function(self)
 		local out = {}
-		for field, state in pairs(xrp_defaults[default[nk]]) do
-			out[field] = state
+		if xrp_defaults[self[nk]] then
+			for field, state in pairs(xrp_defaults[self[nk]]) do
+				out[field] = state
+			end
+			return out
 		end
-		return out
+		return nil
 	end,
 	__metatable = false,
 }
@@ -56,13 +60,13 @@ local defmt = {
 local defs = setmetatable({}, { __mode = "v" })
 
 xrp.defaults = setmetatable({}, {
-	__index = function(defaults, name)
+	__index = function(self, name)
 		if not defs[name] then
 			defs[name] = setmetatable({ [nk] = name }, defmt)
 		end
 		return defs[name]
 	end,
-	__newindex = function(defaults, name, default)
+	__newindex = function(self, name, default)
 		if type(default) == "table" then
 			if not defs[name] then
 				defs[name] = setmetatable({ [nk] = name }, defmt)
@@ -72,6 +76,7 @@ xrp.defaults = setmetatable({}, {
 			end
 		elseif default == nil then
 			defs[name] = nil
+			xrp_defaults[name] = nil
 		end
 	end,
 	__metatable = false,
