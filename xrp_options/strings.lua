@@ -23,7 +23,7 @@ XRP_OPTIONS_CORE_CACHE = L["Character profile cache expiry:"]
 XRP_OPTIONS_CORE_CACHEAUTO = L["Prune cache on login"]
 
 if (select(4, GetAddOnInfo("xrp_chatnames"))) then
-	XRP_OPTIONS_CHAT_TITLE = L["XRP: Chatnames Options"]
+	XRP_OPTIONS_CHAT_TITLE = L["XRP: Chat Names Options"]
 	XRP_OPTIONS_CHAT_LABEL = L["Use roleplay names in the following:"]
 end
 
