@@ -15,37 +15,39 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local core_defaultfields = { "NA", "NI", "NT", "NH", "AE", "RA", "AH", "AW", "CU", "DE", "AG", "HH", "HB", "MO", "HI", "FR", "FC" }
+do
+	local core_defaultfields = { "NA", "NI", "NT", "NH", "AE", "RA", "AH", "AW", "CU", "DE", "AG", "HH", "HB", "MO", "HI", "FR", "FC" }
 
-local function core_Okay()
-	xrp_settings.height = UIDropDownMenu_GetSelectedValue(xrp.options.core.AHUnits)
-	xrp_settings.weight = UIDropDownMenu_GetSelectedValue(xrp.options.core.AWUnits)
+	function xrp.options.core:okay()
+		xrp_settings.height = UIDropDownMenu_GetSelectedValue(self.AHUnits)
+		xrp_settings.weight = UIDropDownMenu_GetSelectedValue(self.AWUnits)
 
-	for _, field in ipairs(core_defaultfields) do
-		xrp_settings.defaults[field] = xrp.options.core[field]:GetChecked() and true or false
+		for _, field in ipairs(core_defaultfields) do
+			xrp_settings.defaults[field] = self[field]:GetChecked() and true or false
+		end
+
+		xrp_settings.cachetime = UIDropDownMenu_GetSelectedValue(self.CacheTime)
+		xrp_settings.cachetidy = self.CacheAuto:GetChecked() and true or false
 	end
 
-	xrp_settings.cachetime = UIDropDownMenu_GetSelectedValue(xrp.options.core.CacheTime)
-	xrp_settings.cachetidy = xrp.options.core.CacheAuto:GetChecked() and true or false
-end
+	function xrp.options.core:refresh()
+		UIDropDownMenu_Initialize(self.AHUnits, self.AHUnits.initialize)
+		UIDropDownMenu_SetSelectedValue(self.AHUnits, xrp_settings.height)
 
-local function core_Refresh()
-	UIDropDownMenu_Initialize(xrp.options.core.AHUnits, xrp.options.core.AHUnits.initialize)
-	UIDropDownMenu_SetSelectedValue(xrp.options.core.AHUnits, xrp_settings.height)
+		UIDropDownMenu_Initialize(self.AWUnits, self.AWUnits.initialize)
+		UIDropDownMenu_SetSelectedValue(self.AWUnits, xrp_settings.weight)
 
-	UIDropDownMenu_Initialize(xrp.options.core.AWUnits, xrp.options.core.AWUnits.initialize)
-	UIDropDownMenu_SetSelectedValue(xrp.options.core.AWUnits, xrp_settings.weight)
+		for _, field in ipairs(core_defaultfields) do
+			self[field]:SetChecked(xrp_settings.defaults[field])
+		end
 
-	for _, field in ipairs(core_defaultfields) do
-		xrp.options.core[field]:SetChecked(xrp_settings.defaults[field])
+		UIDropDownMenu_Initialize(self.CacheTime, self.CacheTime.initialize)
+		UIDropDownMenu_SetSelectedValue(self.CacheTime, xrp_settings.cachetime)
+		self.CacheAuto:SetChecked(xrp_settings.cachetidy)
 	end
-
-	UIDropDownMenu_Initialize(xrp.options.core.CacheTime, xrp.options.core.CacheTime.initialize)
-	UIDropDownMenu_SetSelectedValue(xrp.options.core.CacheTime, xrp_settings.cachetime)
-	xrp.options.core.CacheAuto:SetChecked(xrp_settings.cachetidy)
 end
 
-local function core_Default()
+function xrp.options.core:default()
 	xrp_settings.height = nil
 	xrp_settings.weight = nil
 
@@ -56,70 +58,64 @@ local function core_Default()
 	xrp_settings.cachetime = nil
 	xrp_settings.cachetidy = nil
 
-	core_Refresh()
+	self:refresh()
 end
 
-local function core_OnEvent(self, event, addon)
-	if event == "ADDON_LOADED" and addon == "xrp_options" then
-		local L = xrp.L
-		self.name = L["Core"]
-		self.refresh = core_Refresh
-		self.okay = core_Okay
-		self.default = core_Default
-		self.parent = XRP
-		InterfaceOptions_AddCategory(self)
+xrp.options.core.parent = XRP
 
-		-- TODO: Sort values in first two menus (post-localization).
-		UIDropDownMenu_Initialize(self.AHUnits, function()
-			local info
-			for key, text in ipairs({ L["Centimeters"], L["Feet/Inches"], L["Meters"] }) do
-				local value = key == 1 and "cm" or key == 2 and "ft" or key == 3 and "m"
-				info = UIDropDownMenu_CreateInfo()
+local L = xrp.L
+xrp.options.core.name = L["Core"]
+InterfaceOptions_AddCategory(xrp.options.core)
+
+do
+	local infofunc = function(self, arg1, arg2, checked)
+		if not checked then
+			UIDropDownMenu_SetSelectedValue(UIDROPDOWNMENU_OPEN_MENU, self.value)
+		end
+	end
+
+	-- TODO: Sort values in first two menus (post-localization).
+	do
+		local heights = { L["Centimeters"], L["Feet/Inches"], L["Meters"] }
+		UIDropDownMenu_Initialize(xrp.options.core.AHUnits, function()
+			for key, text in ipairs(heights) do
+				local info = UIDropDownMenu_CreateInfo()
 				info.text = text
-				info.value = value
-				info.func = function(self, arg1, arg2, checked)
-					if not checked then
-						UIDropDownMenu_SetSelectedValue(UIDROPDOWNMENU_OPEN_MENU, self.value)
-					end
-				end
+				info.value = key == 1 and "cm" or key == 2 and "ft" or key == 3 and "m"
+				info.func = infofunc
 				UIDropDownMenu_AddButton(info)
 			end
 		end)
-		UIDropDownMenu_Initialize(self.AWUnits, function()
-			local info
-			for key, text in ipairs({ L["Kilograms"], L["Pounds"] }) do
-				local value = key == 1 and "kg" or key == 2 and "lb"
-				info = UIDropDownMenu_CreateInfo()
+	end
+
+	do
+		local weights = { L["Kilograms"], L["Pounds"] }
+		UIDropDownMenu_Initialize(xrp.options.core.AWUnits, function()
+			for key, text in ipairs(weights) do
+				local info = UIDropDownMenu_CreateInfo()
 				info.text = text
-				info.value = value
-				info.func = function(self, arg1, arg2, checked)
-					if not checked then
-						UIDropDownMenu_SetSelectedValue(UIDROPDOWNMENU_OPEN_MENU, self.value)
-					end
-				end
+				info.value = key == 1 and "kg" or key == 2 and "lb"
+				info.func = infofunc
 				UIDropDownMenu_AddButton(info)
 			end
 		end)
-		UIDropDownMenu_Initialize(self.CacheTime, function()
-			local info
-			for key, text in ipairs({ L["1 day"], L["3 days"], L["1 week"], L["2 weeks"], L["1 month"], L["3 months"] }) do
-				local value = key == 1 and 86400 or key == 2 and 259200 or key == 3 and 604800 or key == 4 and 1209600 or key == 5 and 2419200 or key == 6 and 7257600
-				info = UIDropDownMenu_CreateInfo()
+	end
+
+	do
+		local times = { L["1 day"], L["3 days"], L["7 days"], L["10 days"], L["2 weeks"], L["1 month"], L["3 months"] }
+		local seconds = { 86400, 259200, 604800, 864000, 1209600, 2419200, 7257600 }
+		UIDropDownMenu_Initialize(xrp.options.core.CacheTime, function()
+			for key, text in ipairs(times) do
+				local info = UIDropDownMenu_CreateInfo()
 				info.text = text
-				info.value = value
-				info.func = function(self, arg1, arg2, checked)
-					if not checked then
-						UIDropDownMenu_SetSelectedValue(UIDROPDOWNMENU_OPEN_MENU, self.value)
-					end
-				end
+				info.value = seconds[key]
+				info.func = infofunc
 				UIDropDownMenu_AddButton(info)
 			end
 		end)
-
-		core_Refresh()
-
-		self:UnregisterEvent("ADDON_LOADED")
 	end
 end
-xrp.options.core:SetScript("OnEvent", core_OnEvent)
-xrp.options.core:RegisterEvent("ADDON_LOADED")
+
+xrp:HookLoad(function()
+	xrp.options.core:refresh()
+end)
