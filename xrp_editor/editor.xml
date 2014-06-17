@@ -30,61 +30,61 @@
 				<Layers>
 					<Layer level="OVERLAY">
 						<!-- Name Label -->
-						<FontString name="$parentNALabel" parentKey="NALabel" inherits="GameFontNormalSmall" text="XRP_NA">
+						<FontString parentKey="NALabel" inherits="GameFontNormalSmall" text="XRP_NA">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="12" y="-8"/>
 							</Anchors>
 						</FontString>
 						<!-- Nickname Label -->
-						<FontString name="$parentNILabel" parentKey="NILabel" inherits="GameFontNormalSmall" text="XRP_NI">
+						<FontString parentKey="NILabel" inherits="GameFontNormalSmall" text="XRP_NI">
 							<Anchors>
 								<Anchor point="LEFT" relativeKey="$parent.NALabel" relativePoint="LEFT" x="236" y="0"/>
 							</Anchors>
 						</FontString>
 						<!-- Title Label -->
-						<FontString name="$parentNTLabel" parentKey="NTLabel" inherits="GameFontNormalSmall" text="XRP_NT">
+						<FontString parentKey="NTLabel" inherits="GameFontNormalSmall" text="XRP_NT">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.NALabel" relativePoint="BOTTOMLEFT" x="0" y="-25"/>
 							</Anchors>
 						</FontString>
 						<!-- House/Clan Label -->
-						<FontString name="$parentNHLabel" parentKey="NHLabel" inherits="GameFontNormalSmall" text="XRP_NH">
+						<FontString parentKey="NHLabel" inherits="GameFontNormalSmall" text="XRP_NH">
 							<Anchors>
 								<Anchor point="LEFT" relativeKey="$parent.NTLabel" relativePoint="LEFT" x="251" y="0"/>
 							</Anchors>
 						</FontString>
 						<!-- Eyes Label -->
-						<FontString name="$parentAELabel" parentKey="AELabel" inherits="GameFontNormalSmall" text="XRP_AE">
+						<FontString parentKey="AELabel" inherits="GameFontNormalSmall" text="XRP_AE">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.NTLabel" relativePoint="BOTTOMLEFT" x="0" y="-25"/>
 							</Anchors>
 						</FontString>
 						<!-- Race Label -->
-						<FontString name="$parentRALabel" parentKey="RALabel" inherits="GameFontNormalSmall" text="XRP_RA">
+						<FontString parentKey="RALabel" inherits="GameFontNormalSmall" text="XRP_RA">
 							<Anchors>
 								<Anchor point="LEFT" relativeKey="$parent.AELabel" relativePoint="LEFT" x="131" y="0"/>
 							</Anchors>
 						</FontString>
 						<!-- Height Label -->
-						<FontString name="$parentAHLabel" parentKey="AHLabel" inherits="GameFontNormalSmall" text="XRP_AH">
+						<FontString parentKey="AHLabel" inherits="GameFontNormalSmall" text="XRP_AH">
 							<Anchors>
 								<Anchor point="LEFT" relativeKey="$parent.RALabel" relativePoint="LEFT" x="125" y="0"/>
 							</Anchors>
 						</FontString>
 						<!-- Weight Label -->
-						<FontString name="$parentAWLabel" parentKey="AWLabel" inherits="GameFontNormalSmall" text="XRP_AW">
+						<FontString parentKey="AWLabel" inherits="GameFontNormalSmall" text="XRP_AW">
 							<Anchors>
 								<Anchor point="LEFT" relativeKey="$parent.AHLabel" relativePoint="LEFT" x="81" y="0"/>
 							</Anchors>
 						</FontString>
 						<!-- Currently Label -->
-						<FontString name="$parentCULabel" parentKey="CULabel" inherits="GameFontNormalSmall" text="XRP_CU">
+						<FontString parentKey="CULabel" inherits="GameFontNormalSmall" text="XRP_CU">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.AELabel" relativePoint="BOTTOMLEFT" x="0" y="-25"/>
 							</Anchors>
 						</FontString>
 						<!-- Description Label -->
-						<FontString name="$parentDELabel" parentKey="DELabel" inherits="GameFontNormalSmall" text="XRP_DE">
+						<FontString parentKey="DELabel" inherits="GameFontNormalSmall" text="XRP_DE">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.CULabel" relativePoint="BOTTOMLEFT" x="0" y="-25"/>
 							</Anchors>
@@ -222,43 +222,43 @@
 				<Layers>
 					<Layer level="OVERLAY">
 						<!-- Age Label -->
-						<FontString name="$parentAGLabel" parentKey="AGLabel" inherits="GameFontNormalSmall" text="XRP_AG">
+						<FontString parentKey="AGLabel" inherits="GameFontNormalSmall" text="XRP_AG">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="12" y="-8"/>
 							</Anchors>
 						</FontString>
 						<!-- Home Label -->
-						<FontString name="$parentHHLabel" parentKey="HHLabel" inherits="GameFontNormalSmall" text="XRP_HH">
+						<FontString parentKey="HHLabel" inherits="GameFontNormalSmall" text="XRP_HH">
 							<Anchors>
 								<Anchor point="LEFT" relativeKey="$parent.AGLabel" relativePoint="LEFT" x="75" y="0"/>
 							</Anchors>
 						</FontString>
 						<!-- Birthplace Label -->
-						<FontString name="$parentHBLabel" parentKey="HBLabel" inherits="GameFontNormalSmall" text="XRP_HB">
+						<FontString parentKey="HBLabel" inherits="GameFontNormalSmall" text="XRP_HB">
 							<Anchors>
 								<Anchor point="LEFT" relativeKey="$parent.HHLabel" relativePoint="LEFT" x="171" y="0"/>
 							</Anchors>
 						</FontString>
 						<!-- Motto Label -->
-						<FontString name="$parentMOLabel" parentKey="MOLabel" inherits="GameFontNormalSmall" text="XRP_MO">
+						<FontString parentKey="MOLabel" inherits="GameFontNormalSmall" text="XRP_MO">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.AGLabel" relativePoint="BOTTOMLEFT" x="0" y="-25"/>
 							</Anchors>
 						</FontString>
 						<!-- History Label -->
-						<FontString name="$parentHILabel" parentKey="HILabel" inherits="GameFontNormalSmall" text="XRP_HI">
+						<FontString parentKey="HILabel" inherits="GameFontNormalSmall" text="XRP_HI">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.MOLabel" relativePoint="BOTTOMLEFT" x="0" y="-25"/>
 							</Anchors>
 						</FontString>
 						<!-- Style Label -->
-						<FontString name="$parentFRLabel" parentKey="FRLabel" inherits="GameFontNormalSmall" text="XRP_FR">
+						<FontString parentKey="FRLabel" inherits="GameFontNormalSmall" text="XRP_FR">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.HILabel" relativePoint="BOTTOMLEFT" x="0" y="-309"/>
 							</Anchors>
 						</FontString>
 						<!-- Status Label -->
-						<FontString name="$parentFCLabel" parentKey="FCLabel" inherits="GameFontNormalSmall" text="XRP_FC">
+						<FontString parentKey="FCLabel" inherits="GameFontNormalSmall" text="XRP_FC">
 							<Anchors>
 								<Anchor point="LEFT" relativeKey="$parent.FRLabel" relativePoint="LEFT" x="209" y="0"/>
 							</Anchors>
