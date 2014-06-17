@@ -21,16 +21,16 @@ XRP = "XRP"
 
 -- Some of these are defined in the global WoW strings (i.e., "Home" or
 -- "History"), but the contexts are such that the localization might not
--- always match. "Name" and "Race" are used in their in-game contexts.
+-- always match.
 
 XRP_APPEARANCE = L["Appearance"]
 -- Appearance fields.
-XRP_NA = NAME -- "Name"
+XRP_NA = L["Name"]
 XRP_NI = L["Nickname"]
 XRP_NT = L["Title"]
 XRP_NH = L["House/Clan/Tribe"]
 XRP_AE = L["Eyes"]
-XRP_RA = RACE -- "Race"
+XRP_RA = L["Race"]
 XRP_AH = L["Height"]
 XRP_AW = L["Weight"]
 XRP_CU = L["Currently"]
@@ -103,9 +103,11 @@ BINDING_NAME_XRP_VIEWER = L["View target's or mouseover's RP profile"]
 BINDING_NAME_XRP_VIEWER_TARGET = L["View target's RP profile"]
 BINDING_NAME_XRP_VIEWER_MOUSEOVER = L["View mouseover's RP profile"]
 
-local info = "|cff99b3e6%s:|r %s"
-XRP_AUTHOR = info:format(L["Author"], GetAddOnMetadata("xrp", "Author"))
-XRP_VERSION = info:format(GAME_VERSION_LABEL, GetAddOnMetadata("xrp", "Version"))
+do
+	local info = "|cff99b3e6%s:|r %s"
+	XRP_AUTHOR = info:format(L["Author"], GetAddOnMetadata("xrp", "Author"))
+	XRP_VERSION = info:format(GAME_VERSION_LABEL, GetAddOnMetadata("xrp", "Version"))
+end
 XRP_COPYHEADER = L["License/Copyright"]
 
 -- Copyright line should not be localized.

@@ -32,7 +32,7 @@ function xrp:ToggleEditor()
 	if not loader_LoadIfNeeded("xrp_editor") then
 		return false
 	end
-	ToggleFrame(xrp.editor)
+	ToggleFrame(self.editor)
 	return true
 end
 
@@ -40,7 +40,7 @@ function xrp:ToggleViewer()
 	if not loader_LoadIfNeeded("xrp_viewer") then
 		return false
 	end
-	ToggleFrame(xrp.viewer)
+	ToggleFrame(self.viewer)
 	return true
 end
 
@@ -48,7 +48,7 @@ function xrp:ShowViewerCharacter(character)
 	if not loader_LoadIfNeeded("xrp_viewer") then
 		return false
 	end
-	xrp.viewer:ViewCharacter(character)
+	self.viewer:ViewCharacter(character)
 	return true
 end
 
@@ -56,7 +56,7 @@ function xrp:ShowViewerUnit(unit)
 	if not loader_LoadIfNeeded("xrp_viewer") then
 		return false
 	end
-	xrp.viewer:ViewUnit(unit)
+	self.viewer:ViewUnit(unit)
 	return true
 end
 
@@ -64,22 +64,20 @@ function xrp:ShowOptions()
 	if not loader_LoadIfNeeded("xrp_options") then
 		return false
 	end
-	InterfaceOptionsFrame_OpenToCategory(xrp.options.core)
+	InterfaceOptionsFrame_OpenToCategory(self.options.core)
 	return true
 end
 
-do
-	local name, title, notes, enabled, loadable, reason = GetAddOnInfo("xrp_libmsp")
-	if enabled and loadable and not _G.msp then
-		local msp = setmetatable({}, {
-			__index = function(msp, index)
-				loader_LoadIfNeeded("xrp_libmsp")
-				return _G.msp[index]
-			end,
-			__newindex = function() end,
-			__metatable = false,
-		})
-
-		_G.msp = msp
-	end
+local name, title, notes, enabled, loadable, reason = GetAddOnInfo("xrp_libmsp")
+if enabled and loadable and not msp then
+	msp = setmetatable({}, {
+		__index = function(self, index)
+			if not loader_LoadIfNeeded("xrp_libmsp") then
+				return nil
+			end
+			return _G.msp[index]
+		end,
+		__newindex = function() end,
+		__metatable = false,
+	})
 end
