@@ -15,8 +15,6 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local import = CreateFrame("Frame")
-
 local L = xrp.L
 
 StaticPopupDialogs["XRP_IMPORT_RELOAD"] = {
@@ -45,61 +43,64 @@ local function import_MyRolePlay()
 	end
 end
 
--- These values should be taken from TotalRP2 when localizing.
-local trp2_height = {
-	L["Very short"],
-	L["Short"],
-	L["Average"],
-	L["Tall"],
-	L["Very tall"],
-}
+local import_totalRP2
+do
+	-- These values should be taken from TotalRP2 when localizing.
+	local trp2_height = {
+		L["Very short"],
+		L["Short"],
+		L["Average"],
+		L["Tall"],
+		L["Very tall"],
+	}
+	local trp2_weight = {
+		L["Overweight"],
+		L["Regular"],
+		L["Muscular"],
+		L["Skinny"],
+	}
 
-local trp2_weight = {
-	L["Overweight"],
-	L["Regular"],
-	L["Muscular"],
-	L["Skinny"],
-}
-
--- This is a bit more complex. And partly in French.
-local function import_totalRP2()
-	local realm = GetRealmName()
-	local player = (UnitName("player"))
-	local profile = TRP2_Module_PlayerInfo[realm][player]
-	if profile.Actu then
-		xrp.profiles["TRP2"].CU = profile.Actu.ActuTexte
-		xrp.profiles["TRP2"].FC = tostring(profile.Actu.StatutRP)
-	end
-	local DE = ""
-	if profile.Registre and profile.Registre.TraitVisage then
-		DE = format(L["%sFace: %s\n\n"], DE, profile.Registre.TraitVisage)
-	end
-	if profile.Registre and profile.Registre.Piercing then
-		DE = format(L["%sPiercings/Tattoos: %s\n\n"], DE, profile.Registre.Piercing)
-	end
-	if profile.Physique and profile.Physique.PhysiqueTexte then
-		DE = format("%s%s", DE, profile.Physique.PhysiqueTexte)
-	end
-	xrp.profiles["TRP2"].DE = DE ~= "" and DE:match("^(.-)\n?\n?$") or nil
-	if profile.Histoire then
-		xrp.profiles["TRP2"].HI = profile.Histoire.HistoireTexte
-	end
-	if profile.Registre then
-		local NA = format("%s %s", profile.Registre.Prenom or player, profile.Registre.Nom or ""):match("^%s*(.-)%s*$")
-		xrp.profiles["TRP2"].NA = NA ~= "" and NA or nil
-		xrp.profiles["TRP2"].RA = profile.Registre.RacePerso
-		xrp.profiles["TRP2"].AE = profile.Registre.YeuxVisage
-		local NT = format("%s | %s | %s", profile.Registre.ClassePerso or "", profile.Registre.Titre or "", profile.Registre.TitreComplet or ""):match("^[%s|]*(.-)[%s|]*$")
-		xrp.profiles["TRP2"].NT = NT ~= "" and NT or nil
-		xrp.profiles["TRP2"].AG = profile.Registre.Age
-		xrp.profiles["TRP2"].HH = profile.Registre.Habitation
-		xrp.profiles["TRP2"].HB = profile.Registre.Origine
-		xrp.profiles["TRP2"].AH = trp2_height[profile.Registre.Taille or 3]
-		xrp.profiles["TRP2"].AW = trp2_weight[profile.Registre.Silhouette or 2]
+	-- This is a bit more complex. And partly in French.
+	function import_totalRP2()
+		local realm = GetRealmName()
+		local player = (UnitName("player"))
+		local profile = TRP2_Module_PlayerInfo[realm][player]
+		if profile.Actu then
+			xrp.profiles["TRP2"].CU = profile.Actu.ActuTexte
+			xrp.profiles["TRP2"].FC = tostring(profile.Actu.StatutRP)
+		end
+		local DE = ""
+		if profile.Registre and profile.Registre.TraitVisage then
+			DE = L["%sFace: %s\n\n"]:format(DE, profile.Registre.TraitVisage)
+		end
+		if profile.Registre and profile.Registre.Piercing then
+			DE = L["%sPiercings/Tattoos: %s\n\n"]:format(DE, profile.Registre.Piercing)
+		end
+		if profile.Physique and profile.Physique.PhysiqueTexte then
+			DE = ("%s%s"):format(DE, profile.Physique.PhysiqueTexte)
+		end
+		xrp.profiles["TRP2"].DE = DE ~= "" and DE:match("^(.-)\n?\n?$") or nil
+		if profile.Histoire then
+			xrp.profiles["TRP2"].HI = profile.Histoire.HistoireTexte
+		end
+		if profile.Registre then
+			local NA = ("%s %s"):format(profile.Registre.Prenom or player, profile.Registre.Nom or ""):match("^%s*(.-)%s*$")
+			xrp.profiles["TRP2"].NA = NA ~= "" and NA or nil
+			xrp.profiles["TRP2"].RA = profile.Registre.RacePerso
+			xrp.profiles["TRP2"].AE = profile.Registre.YeuxVisage
+			local NT = ("%s | %s | %s"):format(profile.Registre.ClassePerso or "", profile.Registre.Titre or "", profile.Registre.TitreComplet or ""):match("^[%s|]*(.-)[%s|]*$")
+			xrp.profiles["TRP2"].NT = NT ~= "" and NT or nil
+			xrp.profiles["TRP2"].AG = profile.Registre.Age
+			xrp.profiles["TRP2"].HH = profile.Registre.Habitation
+			xrp.profiles["TRP2"].HB = profile.Registre.Origine
+			xrp.profiles["TRP2"].AH = trp2_height[profile.Registre.Taille or 3]
+			xrp.profiles["TRP2"].AW = trp2_weight[profile.Registre.Silhouette or 2]
+		end
 	end
 end
 
-local function import_OnEvent(self, event, addon)
+local import = CreateFrame("Frame")
+import:SetScript("OnEvent", function(self, event, addon)
 	if event == "ADDON_LOADED" and addon == "xrp_import" then
 
 		local mrploaded = (select(4, GetAddOnInfo("MyRolePlay")))
@@ -120,8 +121,8 @@ local function import_OnEvent(self, event, addon)
 			StaticPopup_Show("XRP_IMPORT_RELOAD")
 		end
 
-		self:UnregisterEvent("ADDON_LOADED")
+		self:UnregisterAllEvents()
+		self:SetScript("OnEvent", nil)
 	end
-end
-import:SetScript("OnEvent", import_OnEvent)
+end)
 import:RegisterEvent("ADDON_LOADED")
