@@ -15,47 +15,62 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
--- And so it begins...
-local Blizzard_GetColoredName = _G.GetColoredName
+local settings
+do
+	local default_settings = {
+		emotebraced = false,
+		["CHAT_MSG_SAY"] = true,
+		["CHAT_MSG_YELL"] = true,
+		["CHAT_MSG_EMOTE"] = true, -- CHAT_MSG_TEXT_EMOTE.
+		["CHAT_MSG_GUILD"] = false, -- CHAT_MSG_OFFICER.
+		["CHAT_MSG_WHISPER"] = false, -- CHAT_MSG_WHISPER_INFORM, CHAT_MSG_AFK, CHAT_MSG_DND
+		["CHAT_MSG_PARTY"] = false, -- CHAT_MSG_PARTY_LEADER
+		["CHAT_MSG_RAID"] = false, -- CHAT_MSG_RAID_LEADER
+		["CHAT_MSG_INSTANCE"] = false, -- CHAT_MSG_INSTANCE_LEADER
+	}
 
-local default_settings = {
-	["CHAT_MSG_SAY"] = true,
-	["CHAT_MSG_YELL"] = true,
-	["CHAT_MSG_EMOTE"] = true, -- CHAT_MSG_TEXT_EMOTE.
-	["CHAT_MSG_GUILD"] = false, -- CHAT_MSG_OFFICER.
-	["CHAT_MSG_WHISPER"] = false, -- CHAT_MSG_WHISPER_INFORM, CHAT_MSG_AFK, CHAT_MSG_DND
-	["CHAT_MSG_PARTY"] = false, -- CHAT_MSG_PARTY_LEADER
-	["CHAT_MSG_RAID"] = false, -- CHAT_MSG_RAID_LEADER
-	["CHAT_MSG_INSTANCE"] = false, -- CHAT_MSG_INSTANCE_LEADER
-}
+	local linked = {
+		["CHAT_MSG_TEXT_EMOTE"] = "CHAT_MSG_EMOTE",
+		["CHAT_MSG_OFFICER"] = "CHAT_MSG_GUILD",
+		["CHAT_MSG_WHISPER_INFORM"] = "CHAT_MSG_WHISPER",
+		["CHAT_MSG_AFK"] = "CHAT_MSG_WHISPER",
+		["CHAT_MSG_DND"] = "CHAT_MSG_WHISPER",
+		["CHAT_MSG_PARTY_LEADER"] = "CHAT_MSG_PARTY",
+		["CHAT_MSG_RAID_LEADER"] = "CHAT_MSG_RAID",
+		["CHAT_MSG_INSTANCE_LEADER"] = "CHAT_MSG_INSTANCE",
+	}
 
-local linked = {
-	["CHAT_MSG_TEXT_EMOTE"] = "CHAT_MSG_EMOTE",
-	["CHAT_MSG_OFFICER"] = "CHAT_MSG_GUILD",
-	["CHAT_MSG_WHISPER_INFORM"] = "CHAT_MSG_WHISPER",
-	["CHAT_MSG_AFK"] = "CHAT_MSG_WHISPER",
-	["CHAT_MSG_DND"] = "CHAT_MSG_WHISPER",
-	["CHAT_MSG_PARTY_LEADER"] = "CHAT_MSG_PARTY",
-	["CHAT_MSG_RAID_LEADER"] = "CHAT_MSG_RAID",
-	["CHAT_MSG_INSTANCE_LEADER"] = "CHAT_MSG_INSTANCE",
-}
+	local settingsmt = {
+		__index = function(self, chattype)
+			-- This won't get triggered if the user's set a custom setting.
+			if default_settings[chattype] ~= nil then
+				return default_settings[chattype]
+			elseif linked[chattype] then
+				return self[linked[chattype]]
+			else
+				return false
+			end
+		end,
+	}
 
-local settingsmt = {
-	__index = function(self, chattype)
-		-- This won't get triggered if the user's set a custom setting.
-		if default_settings[chattype] ~= nil then
-			return default_settings[chattype]
-		elseif linked[chattype] then
-			return self[linked[chattype]]
+	xrp:HookLoad(function()
+		if type(xrp.settings.chatnames) ~= "table" then
+			xrp.settings.chatnames = {}
 		else
-			return false
+			-- Pre-5.4.8.0_beta2 conversion.
+			for _, chattype in ipairs({ "CHAT_MSG_TEXT_EMOTE", "CHAT_MSG_WHISPER_INFORM" }) do
+				if xrp.settings.chatnames[chattype] ~= nil then
+					xrp.settings.chatnames[chattype] = nil
+				end
+			end
 		end
-	end,
-}
+		settings = setmetatable(xrp.settings.chatnames, settingsmt)
+	end)
+end
 
 -- /cry - I don't want to overwrite your functions, Blizzard, but you don't
 -- leave me any choice.
-local function chatnames_GetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14)
+function GetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14)
 	if event == "CHAT_MSG_TEXT_EMOTE" and arg12 then
 		-- No realm for arg2 in TEXT_EMOTEs. For whatever fucking reason.
 		-- Attach it here, falling back to our own realm.
@@ -66,81 +81,52 @@ local function chatnames_GetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg
 	if chattype:sub(1, 7) == "WHISPER" then
 		chattype = "WHISPER"
 	elseif chattype:sub(1, 7) == "CHANNEL" then
+		-- TODO: Check type of arg8.
 		chattype = "CHANNEL"..arg8
 	end
 
 	-- RP name in channels is from case-insensitive NAME, not the number.
 	if event == "CHAT_MSG_CHANNEL" and type(arg9) == "string" and arg9:find("^[^%s]+.*") then
+		-- The match() strips trims names like "General - Stormwind City" down
+		-- to just "General".
 		event = event.."_"..arg9:match("^([^%s]+).*"):upper()
 	end
 
-	local rpname = false
-	if xrp_settings.chatnames[event] then
-		rpname = true
-	end
-	local name = rpname and arg12 and xrp:StripPunctuation(xrp:StripEscapes(xrp.guids[arg12].NA)) or Ambiguate(arg2, "guild")
+	local name = settings[event] and arg12 and xrp:StripPunctuation(xrp:StripEscapes(xrp.guids[arg12].NA)) or Ambiguate(arg2, "guild")
+	local nameformat = (event == "CHAT_MSG_EMOTE" or event == "CHAT_MSG_TEXT_EMOTE") and settings.emotebraced and "[%s]" or "%s"
 
 	local info = ChatTypeInfo[chattype]
 	if info and info.colorNameByClass and arg12 then
 		local color = RAID_CLASS_COLORS[xrp.guids[arg12].GC]
-		if not color or not color.colorStr then
-			return name
+		if color and color.colorStr then
+			return nameformat:format(("|c%s%s|r"):format(color.colorStr, name))
 		end
-		return ("|c%s%s|r"):format(color.colorStr, name)
 	end
-	return name
+	return nameformat:format(name)
 end
 
-local stripname = "^"..CHAT_EMOTE_GET:format(FULL_PLAYER_NAME:format("%s", ".-")).."(.*)"
-local function chatnames_TextEmote(self, event, message, sender, ...)
+ChatFrame_AddMessageEventFilter("CHAT_MSG_TEXT_EMOTE", function(self, event, message, sender, ...)
 	-- Availability of GUID for restoring the realm. Bail out if we won't be
 	-- able to recover the realm name later.
 	if not (select(10, ...)) then
 		return false
 	end
 
-	-- The other half of attaching the realm name in GetColoredName is to,
-	-- uh, remove it here first. Why? Fuck knows, it's Blizzard and we get
-	-- things like Player-RealmName-RealmName if we don't drop it here from
-	-- the message. ...Which is where the name is, because fuck knows.
-	local nameless = message:match(stripname:format(sender))
+	-- The other half of attaching the realm name in GetColoredName is to, uh,
+	-- remove it here first. Why? Fuck knows, it's Blizzard and we get things
+	-- like Player-RealmName-RealmName if we don't drop it here from the
+	-- message. ...Which is where the name is, because fuck knows.
+	local nameless = message:match(("^"..CHAT_EMOTE_GET:format(FULL_PLAYER_NAME:format("%s", ".-")).."(.*)"):format(sender))
 	if nameless then
 		message = CHAT_EMOTE_GET:format(sender)..nameless
 	end
 	return false, message, sender, ...
-end
+end)
 
-local function chatnames_UnitPopup(self)
+UnitPopupButtons["XRP_VIEWPROFILE"] = { text = xrp.L["RP Profile"], dist = 0 }
+table.insert(UnitPopupMenus["FRIEND"], 4, "XRP_VIEWPROFILE")
+hooksecurefunc("UnitPopup_OnClick", function(self)
 	if self.value == "XRP_VIEWPROFILE" then
 		xrp:ShowViewerCharacter(xrp:NameWithRealm(UIDROPDOWNMENU_INIT_MENU.name))
 	end
-end
-
-local chatnames = CreateFrame("Frame")
-local function chatnames_OnEvent(self, event, addon)
-	if event == "ADDON_LOADED" and addon == "xrp_chatnames" then
-		if type(xrp_settings.chatnames) ~= "table" then
-			xrp_settings.chatnames = {}
-		else
-			-- Pre-5.4.8.0_beta2 conversion.
-			for _, chattype in ipairs({ "CHAT_MSG_TEXT_EMOTE", "CHAT_MSG_WHISPER_INFORM" }) do
-				if xrp_settings.chatnames[chattype] ~= nil then
-					xrp_settings.chatnames[chattype] = nil
-				end
-			end
-		end
-		setmetatable(xrp_settings.chatnames, settingsmt)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_TEXT_EMOTE", chatnames_TextEmote)
-		UnitPopupButtons["XRP_VIEWPROFILE"] = { text = xrp.L["RP Profile"], dist = 0 }
-		table.insert(UnitPopupMenus["FRIEND"], 4, "XRP_VIEWPROFILE")
-		hooksecurefunc("UnitPopup_OnClick", chatnames_UnitPopup)
-		self:UnregisterEvent("ADDON_LOADED")
-		self:RegisterEvent("PLAYER_LOGIN")
-	elseif event == "PLAYER_LOGIN" then
-		-- I hate this. Hate hate hate hate hate.
-		_G.GetColoredName = chatnames_GetColoredName
-		self:UnregisterEvent("PLAYER_LOGIN")
-	end
-end
-chatnames:SetScript("OnEvent", chatnames_OnEvent)
-chatnames:RegisterEvent("ADDON_LOADED")
+end)
