@@ -20,7 +20,7 @@
 		<Scripts>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
-				GameTooltip:SetText(xrp.L["Use Default if empty."]);
+				GameTooltip:SetText(xrp.L["Use value from \"Default\" if empty."]);
 				GameTooltip:Show();
 			</OnEnter>
 			<OnLeave>
@@ -36,7 +36,7 @@
 			<OnTabPressed>
 				if (self.nextEditBox) then
 					self.nextEditBox:SetFocus();
-				end
+				end;
 			</OnTabPressed>
 			<OnTextChanged>
 				xrp.editor:CheckFields();
@@ -126,7 +126,7 @@
 					<OnTabPressed>
 						if (self.nextEditBox) then
 							self.nextEditBox:SetFocus();
-						end
+						end;
 					</OnTabPressed>
 					<OnTextChanged>
 						ScrollingEdit_OnTextChanged(self, self:GetParent());
