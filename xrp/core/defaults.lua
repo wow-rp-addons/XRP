@@ -25,7 +25,7 @@ local L = xrp.L
 local defmt = {
 	__index = function(self, field)
 		local profile = self[nk]
-		return field:find("^%u%u$") and (profile ~= L["Default"] and xrp_defaults[profile] and xrp_defaults[name][field] or xrp.settings.defaults[field])
+		return field:find("^%u%u$") and (profile ~= L["Default"] and xrp_defaults[profile] and xrp_defaults[profile][field] or xrp.settings.defaults[field])
 	end,
 	__newindex = function(self, field, state)
 		local profile = self[nk]
