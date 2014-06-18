@@ -26,13 +26,7 @@ do
 			-- profile code will assume an empty string means an empty field.
 			local name = self.Profiles:GetText()
 			for field, _ in pairs(supportedfields) do
-				if field == "FC" then
-					local fc = self[field]:GetText()
-					xrp.profiles[name][field] = fc ~= "0" and fc or nil
-				else
-					local text = self[field]:GetText()
-					xrp.profiles[name][field] = text
-				end
+				xrp.profiles[name][field] = self[field]:GetText()
 				xrp.defaults[name][field] = self.checkboxes[field]:GetChecked() and true or false
 			end
 			local length = xrp.profiles[name]("length", 9000)
@@ -57,10 +51,8 @@ do
 			local profile = xrp.profiles[name]
 			local defaults = xrp.defaults[name]
 			for field, _ in pairs(supportedfields) do
-				if field == "FC" then
-					self[field]:SetText(tonumber(profile[field]) and profile[field] or "0")
-				else
-					self[field]:SetText(profile[field] or "")
+				self[field]:SetText(profile[field] or "")
+				if field ~= "FC" then
 					self[field]:SetCursorPosition(0)
 				end
 				self.checkboxes[field]:SetChecked(defaults[field])
@@ -163,9 +155,8 @@ do
 	end
 
 	UIDropDownMenu_Initialize(xrp.editor.Profiles, function()
-		local info
 		for _, value in ipairs(xrp.profiles()) do
-			info = UIDropDownMenu_CreateInfo()
+			local info = UIDropDownMenu_CreateInfo()
 			info.text = value
 			info.value = value
 			if value == xrp.L["Default"] then
@@ -185,16 +176,12 @@ do
 		end
 	end
 
+	local FC = xrp.values.FC
 	UIDropDownMenu_Initialize(xrp.editor.FC, function()
-		local info = UIDropDownMenu_CreateInfo()
-		info.text = xrp.values.FC_EMPTY
-		info.value = "0"
-		info.func = infofunc
-		UIDropDownMenu_AddButton(info)
-		for value, text in ipairs(xrp.values.FC) do
-			info = UIDropDownMenu_CreateInfo()
-			info.text = text
-			info.value = tostring(value)
+		for i = 0, #FC, 1 do
+			local info = UIDropDownMenu_CreateInfo()
+			info.text = FC[i]
+			info.value = i == 0 and "" or tostring(i)
 			info.func = infofunc
 			UIDropDownMenu_AddButton(info)
 		end

@@ -121,9 +121,9 @@ do
 			ToggleDropDownMenu(nil, nil, xrp.minimap.menu)
 		end
 
-		menulist_status[#menulist_status + 1] = { text = xrp.values.FC_EMPTY, checked = false, arg1 = "0", func = minimap_StatusSelect }
-		for value, text in ipairs(xrp.values.FC) do
-			menulist_status[#menulist_status + 1] = { text = text, checked = false, arg1 = tostring(value), func = minimap_StatusSelect, }
+		local FC = xrp.values.FC
+		for i = 0, #FC, 1 do
+			menulist_status[#menulist_status + 1] = { text = FC[i], checked = false, arg1 = tostring(i), func = minimap_StatusSelect, }
 		end
 	end
 
