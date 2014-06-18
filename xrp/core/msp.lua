@@ -88,7 +88,7 @@ do
 			local now = GetTime()
 			-- Filter if within 500ms of current time plus home latency.
 			-- GetNetStats() provides value in milliseconds.
-			local dofilter = filter[character] and filter[character] > (now - 0.500 - ((select(3, GetNetStats())) * 0.001)) or false
+			local dofilter = filter[character] and filter[character] > (now - 0.750 - ((select(3, GetNetStats())) * 0.001)) or false
 			if not dofilter then
 				filter[character] = nil
 			else
