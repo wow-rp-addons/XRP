@@ -51,13 +51,12 @@ function xrp.viewer:ViewUnit(unit)
 	if not xrp.units[unit] then
 		return
 	end
-	local name = xrp:UnitNameWithRealm(unit)
-	current = name
+	current = xrp:UnitNameWithRealm(unit)
 	self.XC:SetText("")
 	self:Load(xrp.units[unit])
 	SetPortraitTexture(self.portrait, unit)
 	ShowUIPanel(self)
-	if self:IsVisible() and not self.Appearance:IsVisible() then
+	if not self.Appearance:IsVisible() then
 		PanelTemplates_SetTab(self, 1)
 		self.Biography:Hide()
 		self.Appearance:Show()
@@ -73,10 +72,18 @@ function xrp.viewer:ViewCharacter(name)
 	current = name
 	self.XC:SetText("")
 	self:Load(xrp.characters[name])
-	-- TODO: Horde/Alliance emblems instead if GF available.
-	SetPortraitToTexture(self.portrait, "Interface\\Icons\\INV_Misc_Book_17")
+	do
+		local GF = xrp.characters[name].GF
+		if GF and GF == "Alliance" then
+			SetPortraitToTexture(self.portrait, "Interface\\Icons\\INV_BannerPVP_02")
+		elseif GF and GF == "Horde" then
+			SetPortraitToTexture(self.portrait, "Interface\\Icons\\INV_BannerPVP_01")
+		else
+			SetPortraitToTexture(self.portrait, "Interface\\Icons\\INV_Misc_Book_17")
+		end
+	end
 	ShowUIPanel(self)
-	if self:IsVisible() and not self.Appearance:IsVisible() then
+	if not self.Appearance:IsVisible() then
 		PanelTemplates_SetTab(self, 1)
 		self.Biography:Hide()
 		self.Appearance:Show()
@@ -86,19 +93,14 @@ end
 
 xrp:HookEvent("MSP_RECEIVE", function(name)
 	if current == name then
-		local XC = xrp.viewer.XC:GetText()
 		xrp.viewer:Load(xrp.characters[name])
-		if not XC then
-			xrp.viewer.XC:SetText(L["Received!"])
-		end
+		xrp.viewer.XC:SetText(L["Received!"])
 	end
 end)
 
 xrp:HookEvent("MSP_NOCHANGE", function(name)
 	if current == name then
-		if not xrp.viewer.XC:GetText() then
-			xrp.viewer.XC:SetText(L["No changes."])
-		end
+		xrp.viewer.XC:SetText(L["No changes."])
 	end
 end)
 
