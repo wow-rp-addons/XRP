@@ -79,22 +79,21 @@ xrp.values = {
 		Troll = L["Troll"],
 		Pandaren = L["Pandaren"],
 	},
-	-- TODO: ["0"], ["1"], etc. formatting.
 	FR = {
-		L["Normal roleplayer"],
-		L["Casual roleplayer"],
-		L["Full-time roleplayer"],
-		L["Beginner roleplayer"],
-		L["Mature roleplayer"], -- This isn't standard (?) but is used sometimes.
+		[0] = L["(None)"],
+		[1] = L["Normal roleplayer"],
+		[2] = L["Casual roleplayer"],
+		[3] = L["Full-time roleplayer"],
+		[4] = L["Beginner roleplayer"],
+		[5] = L["Mature roleplayer"], -- This isn't standard (?) but is used sometimes.
 	},
-	FR_EMPTY = L["(Style not set)"],
 	FC = {
-		L["Out of character"],
-		L["In character"],
-		L["Looking for contact"],
-		L["Storyteller"],
+		[0] = L["(None)"],
+		[1] = L["Out of character"],
+		[2] = L["In character"],
+		[3] = L["Looking for contact"],
+		[4] = L["Storyteller"],
 	},
-	FC_EMPTY = L["(Status not set)"],
 }
 
 BINDING_HEADER_XRP = XRP
