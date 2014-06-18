@@ -81,8 +81,7 @@ function GetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, a
 	if chattype:sub(1, 7) == "WHISPER" then
 		chattype = "WHISPER"
 	elseif chattype:sub(1, 7) == "CHANNEL" then
-		-- TODO: Check type of arg8.
-		chattype = "CHANNEL"..arg8
+		chattype = ("CHANNEL%u"):format(arg8)
 	end
 
 	-- RP name in channels is from case-insensitive NAME, not the number.

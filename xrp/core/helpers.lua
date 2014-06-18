@@ -27,16 +27,13 @@ function xrp:UnitNameWithRealm(unit)
 	return self:NameWithRealm(name, realm)
 end
 
--- TODO: Match on FULL_PLAYER_NAME for first section.
 function xrp:NameWithRealm(name, realm)
-	if name:find("-", 1, true) then
-		-- Searching for a '-' will indicate if it already has a realm name.
+	if name:find(FULL_PLAYER_NAME:format(".+", ".+")) then
 		return name
 	elseif realm and realm ~= "" then
-		-- If a realm was provided, use it (after stripping spaces).
+		-- If a realm was provided, use it.
 		return FULL_PLAYER_NAME:format(name, (realm:gsub("%s+", "")))
 	end
-	-- Fall back to using our own realm (after stripping spaces).
 	return FULL_PLAYER_NAME:format(name, (GetRealmName():gsub("%s+", "")))
 end
 
@@ -67,6 +64,9 @@ function xrp:StripEscapes(text)
 	if type(text) ~= "string" then
 		return nil
 	end
+	-- This fully removes all color escapes, newline escapes, texture escapes,
+	-- and most types of link and chat link escapes. Other UI escape sequences
+	-- are escaped themselves to not render on display (|| instead of |).
 	return (text:gsub("||", "|"):gsub("|n", ""):gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|r", ""):gsub("|H.-|h(.-)|h", "%1"):gsub("|T.-|t", ""):gsub("|K.-|k.-|k", ""):gsub("|", "||"):match("^%s*(.-)%s*$"))
 end
 
@@ -74,7 +74,7 @@ function xrp:StripPunctuation(text)
 	if type(text) ~= "string" then
 		return nil
 	end
-	-- All punctuation and whitespace except !'"? is stripped from start/end.
+	-- Most punctuation and all whitespace is stripped from start/end.
 	return (text:match("^[%`%~%@%#%$%%%^%&%*%-%_%=%+%[%{%]%}%\\%|%;%:%,%<%.%>%/%s]*(.-)[%`%~%@%#%$%%%^%&%*%-%_%=%+%[%{%]%}%\\%|%;%:%,%<%.%>%/%s]*$")) or text
 end
 
