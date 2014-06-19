@@ -346,6 +346,9 @@ do
 				elseif contents and contents ~= "" then
 					xrp_cache[character].fields[field] = contents
 					updated = true
+					if field == "VA" then
+						xrp:UpdateVersion(contents:match("^XRP/([^;]+)"))
+					end
 				end
 				if version ~= 0 then
 					xrp_cache[character].versions[field] = version

@@ -58,12 +58,11 @@ do
 end
 
 do
-	local loaded = false
 	local onload = {}
 	function xrp:HookLoad(func)
 		if type(func) ~= "function" then
 			return false
-		elseif loaded then
+		elseif not onload then
 			func()
 		else
 			onload[#onload + 1] = func
@@ -79,6 +78,43 @@ do
 			onunload[#onunload + 1] = func
 		end
 		return true
+	end
+
+	local function xrp_CompareVersion(new_version, old_version)
+		local new_major, new_minor, new_patch, new_rev, new_addon, new_reltype, new_relrev = new_version:match("(%d+)%.(%d+)%.(%d+)(%l?)%.(%d+)%_?(%l*)(%d*)")
+		local old_major, old_minor, old_patch, old_rev, old_addon, old_reltype, old_relrev = old_version:match("(%d+)%.(%d+)%.(%d+)(%l?)%.(%d+)%_?(%l*)(%d*)")
+
+		new_reltype = (new_reltype == "alpha" and 1) or (new_reltype == "beta" and 2) or (new_reltype == "rc" and 3) or 4
+		old_reltype = (old_reltype == "alpha" and 1) or (old_reltype == "beta" and 2) or (old_reltype == "rc" and 3) or 4
+
+		local new_wow = (tonumber(new_major) * 1000000) + (tonumber(new_minor) * 10000) + (tonumber(new_patch) * 100) + ((new_rev and new_rev:lower():byte() or 96) - 96)
+		local old_wow = (tonumber(old_major) * 1000000) + (tonumber(old_minor) * 10000) + (tonumber(old_patch) * 100) + ((old_rev and old_rev:lower():byte() or 96) - 96)
+
+		if new_wow < old_wow then
+			return -1
+		elseif new_reltype < old_reltype and new_wow > old_wow then
+			return 0
+		elseif new_wow > old_wow then
+			return 1
+		end
+
+		local new_xrp = (tonumber(new_addon) * 10000) + (new_reltype * 100) + (tonumber(new_relrev) or 0)
+		local old_xrp = (tonumber(old_addon) * 10000) + (old_reltype * 100) + (tonumber(old_relrev) or 0)
+
+		if new_xrp < old_xrp then
+			return -1
+		elseif new_reltype < old_reltype and new_xrp > old_xrp then
+			return 0
+		else
+			return 1
+		end
+	end
+
+	function xrp:UpdateVersion(version)
+		if not version or version == self.version or version == self.settings.newversion then return end
+		if xrp_CompareVersion(version, self.settings.newversion or self.version) >= 0 then
+			self.settings.newversion = version
+		end
 	end
 
 	local init = CreateFrame("Frame")
@@ -111,7 +147,6 @@ do
 				func()
 			end
 			onload = nil
-			loaded = true
 
 			self:UnregisterEvent("ADDON_LOADED")
 			self:RegisterEvent("PLAYER_LOGIN")
@@ -126,6 +161,18 @@ do
 
 			if xrp.settings.cachetidy then
 				xrp:CacheTidy()
+			end
+
+			if xrp.settings.newversion then
+				local update = xrp_CompareVersion(xrp.settings.newversion, xrp.version)
+				local now = time()
+				if update == 1 and (not xrp.settings.versionwarning or xrp.settings.versionwarning < now - 86400) then
+					print(xrp.L["There is a new version of |cffabd473XRP|r available. You should update to %s as soon as possible."]:format(xrp.settings.newversion))
+					xrp.settings.versionwarning = now
+				elseif update == -1 then
+					xrp.settings.newversion = nil
+					xrp.settings.versionwarning = nil
+				end
 			end
 
 			self:UnregisterEvent("PLAYER_LOGIN")
