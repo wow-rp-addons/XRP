@@ -73,6 +73,16 @@
 						<Anchor point="TOPLEFT" relativeKey="$parent.GuildLabel" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
 					</Anchors>
 				</FontString>
+				<FontString parentKey="MiscLabel" inherits="GameFontNormal" text="XRP_OPTIONS_CHAT_MISC">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ChatLabel" relativePoint="BOTTOMLEFT" x="0" y="-100"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="emotebracedLabel" inherits="GameFontWhite" text="XRP_OPTIONS_CHAT_EMOTEBRACED">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.MiscLabel" relativePoint="BOTTOMLEFT" x="24" y="-10"/>
+					</Anchors>
+				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -135,6 +145,12 @@
 				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 			</Button>
 			<Button name="$parentChannelMenu" parentKey="CHANNEL_MENU" hidden="true" inherits="UIDropDownMenuTemplate"/>
+			<CheckButton name="$parentemotebraced" parentKey="emotebraced" inherits="UICheckButtonTemplate">
+				<Size x="24" y="24"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.emotebracedLabel" relativePoint="LEFT" x="-4" y="0"/>
+				</Anchors>
+			</CheckButton>
 		</Frames>
 	</Frame>
 </Ui>

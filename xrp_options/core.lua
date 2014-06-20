@@ -29,6 +29,8 @@ do
 
 		settings.cachetime = UIDropDownMenu_GetSelectedValue(self.CacheTime)
 		settings.cachetidy = self.CacheAuto:GetChecked() and true or false
+
+		settings.hideminimaptt = self.HideMinimapTT:GetChecked() and true or false
 	end
 
 	function xrp.options.core:refresh()
@@ -45,6 +47,8 @@ do
 		UIDropDownMenu_Initialize(self.CacheTime, self.CacheTime.initialize)
 		UIDropDownMenu_SetSelectedValue(self.CacheTime, settings.cachetime)
 		self.CacheAuto:SetChecked(settings.cachetidy)
+
+		self.HideMinimapTT:SetChecked(settings.hideminimaptt)
 	end
 end
 
@@ -58,6 +62,8 @@ function xrp.options.core:default()
 
 	settings.cachetime = nil
 	settings.cachetidy = nil
+
+	settings.hideminimaptt = nil
 
 	self:refresh()
 end

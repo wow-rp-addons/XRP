@@ -35,7 +35,7 @@
 				</FontString>
 				<FontString parentKey="DefaultsLabel" inherits="GameFontNormal" text="XRP_OPTIONS_CORE_DEFAULTS">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.AHUnitsLabel" relativePoint="BOTTOMLEFT" x="0" y="-60"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.AHUnitsLabel" relativePoint="BOTTOMLEFT" x="0" y="-50"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="NALabel" inherits="GameFontWhite" text="XRP_NA">
@@ -131,6 +131,16 @@
 				<FontString parentKey="CacheAutoLabel" inherits="GameFontWhite" text="XRP_OPTIONS_CORE_CACHEAUTO">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.CacheLabel" relativePoint="BOTTOMLEFT" x="250" y="-12"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="MiscLabel" inherits="GameFontNormal" text="XRP_OPTIONS_CORE_MISC">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.CacheLabel" relativePoint="BOTTOMLEFT" x="0" y="-50"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="HideMinimapTTLabel" inherits="GameFontWhite" text="XRP_OPTIONS_CORE_HIDEMINIMAPTT">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.MiscLabel" relativePoint="BOTTOMLEFT" x="24" y="-10"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -272,6 +282,12 @@
 				<Size x="24" y="24"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.CacheAutoLabel" relativePoint="LEFT" x="-4" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentHideMinimapTT" parentKey="HideMinimapTT" inherits="UICheckButtonTemplate">
+				<Size x="24" y="24"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.HideMinimapTTLabel" relativePoint="LEFT" x="-4" y="0"/>
 				</Anchors>
 			</CheckButton>
 		</Frames>
