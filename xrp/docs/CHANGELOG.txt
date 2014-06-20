@@ -1,3 +1,60 @@
+5.4.8.0_rc1 (2014-06-20):
+
+	- A large amount of code cleanups and, in some cases, rewrites have been
+	  done. This may have introduced minor bugs, however this release has been
+	  fairly thoroughly tested (but only by one person).
+
+	- Temporary field overrides (such as character status or currently changed
+	  from minimap menu) should now persist for five minutes after logout
+	  (including UI reloads). This will not happen on game client or computer
+	  crashes, but should work properly with disconnects.
+
+	- If there is a newer version of XRP available than you're currently
+	  running, you will be warned at login once per 24 hours that you should
+	  update. This should only notify you of releases of the same or higher
+	  release quality (alpha/beta/rc/stable) -- if you run stable, you won't
+	  be warned if there's a new beta version, for example.
+
+	- Default save time for cached profiles has been increased to 10 days
+	  (from 7 days). This helps in cases of once-a-week RP events having
+	  profiles wiped before they come around again.
+
+	- Viewer:
+
+		- UI escape sequences are stripped prior to display. This includes
+		  color codes and similar, to make display consistent.
+
+	- Tooltip:
+
+		- Reaction coloring has changed slightly. This should handle issues
+		  with neutral/non-factioned players/pets a bit better (such as arises
+		  with the Ordos Censer).
+
+		- UI escape sequences (such as color codes) are more thoroughly
+		  stripped from display values now. This prevents some odd subversions
+		  of the tooltip display.
+
+	- Chat names:
+
+		- Most punctuation characters are now stripped from the start and end
+		  of names to reduce distraction in some people's distracting
+		  formatting styles. Potentially-legitimate punctuation has been
+		  allowed to remain intact (such as brackets, quotation marks, etc.).
+
+	- Bugfixes:
+
+		- An issue that sometimes caused inflation of version stats for
+		  certain fields (most commonly toon gender) has been fixed.
+
+		- An issue with the Ordos PvP Censer causing incorrect pet tooltip
+		  displays for one's own pet has been fixed.
+
+		- An issue which could rarely cause a Lua error when changing zones
+		  has been fixed.
+
+		- Pet tooltips will correctly refresh if RP information about their
+		  owner is received.
+
 5.4.8.0_beta2 (2014-06-02):
 
 	- Chatnames:
