@@ -83,7 +83,6 @@
 			</OnLoad>
 			<OnShow>
 				xrp:ShowOptions();
-				self:SetScript("OnShow", nil);
 			</OnShow>
 		</Scripts>
 	</Frame>
