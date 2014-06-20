@@ -17,11 +17,10 @@
 ]]
 
 local L = xrp.L
+local settings
+xrp:HookLoad(function() settings = xrp.settings end)
 
 do
-	local settings
-	xrp:HookLoad(function() settings = xrp.settings end)
-
 	local minimap_UpdatePosition
 	do
 		local minimapShapes = {
@@ -138,6 +137,14 @@ do
 		{ text = CANCEL, notCheckable = true, },
 	}
 
+	-- Reverse order or indexes would change.
+	if not select(4, GetAddOnInfo("xrp_viewer")) then
+		table.remove(minimap_menulist, 6)
+	end
+	if not select(4, GetAddOnInfo("xrp_editor")) then
+		table.remove(minimap_menulist, 5)
+	end
+
 	do
 		local function minimap_ProfileSelect(self, name, arg2, checked)
 			if not checked then
@@ -181,7 +188,7 @@ do
 end
 
 xrp.minimap:SetScript("OnEnter", function(self, motion)
-	if motion then
+	if motion and not settings.hideminimaptt then
 		GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT", 30, 4)
 		GameTooltip:SetText(L["Click to:"])
 		GameTooltip:AddLine(" ")
