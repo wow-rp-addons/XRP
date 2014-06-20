@@ -203,10 +203,23 @@ do
 		hideminimaptt = false,
 	}
 	xrp:HookLoad(function()
-		for _, t in ipairs({ "xrp_settings", "xrp_cache", "xrp_defaults", "xrp_overrides", "xrp_profiles", "xrp_versions" }) do
-			if type(_G[t]) ~= "table" then
-				_G[t] = {}
-			end
+		if type(xrp_settings) ~= "table" then
+			xrp_settings = {}
+		end
+		if type(xrp_cache) ~= "table" then
+			xrp_cache = {}
+		end
+		if type(xrp_defaults) ~= "table" then
+			xrp_defaults = {}
+		end
+		if type(xrp_overrides) ~= "table" then
+			xrp_overrides = {}
+		end
+		if type(xrp_profiles) ~= "table" then
+			xrp_profiles = {}
+		end
+		if type(xrp_versions) ~= "table" then
+			xrp_versions = {}
 		end
 
 		do
@@ -230,6 +243,9 @@ do
 		end
 
 		xrp.settings = setmetatable(xrp_settings, { __index = default_settings })
+		if type(xrp.settings.defaults) ~= "table" then
+			xrp.settings.defaults = {}
+		end
 		setmetatable(xrp.settings.defaults, { __index = function() return true end })
 	end)
 end
