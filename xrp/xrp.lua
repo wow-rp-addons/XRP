@@ -198,8 +198,9 @@ do
 		height = "ft",
 		weight = "lb",
 		minimap = 225,
-		cachetime = 604800, -- 7 days
+		cachetime = 864000, -- 10 days
 		cachetidy = true,
+		hideminimaptt = false,
 	}
 	xrp:HookLoad(function()
 		for _, t in ipairs({ "xrp_settings", "xrp_cache", "xrp_defaults", "xrp_overrides", "xrp_profiles", "xrp_versions" }) do

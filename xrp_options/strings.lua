@@ -21,10 +21,14 @@ XRP_OPTIONS_CORE_TITLE = L["XRP: Core Options"]
 XRP_OPTIONS_CORE_DEFAULTS = L["For new profiles, copy from \"Default\" for:"]
 XRP_OPTIONS_CORE_CACHE = L["Character profile cache expiry:"]
 XRP_OPTIONS_CORE_CACHEAUTO = L["Prune cache on login"]
+XRP_OPTIONS_CORE_MISC = L["Miscellaneous:"]
+XRP_OPTIONS_CORE_HIDEMINIMAPTT = L["Hide help tooltip on minimap icon"]
 
 if (select(4, GetAddOnInfo("xrp_chatnames"))) then
 	XRP_OPTIONS_CHAT_TITLE = L["XRP: Chat Names Options"]
 	XRP_OPTIONS_CHAT_LABEL = L["Use roleplay names in the following:"]
+	XRP_OPTIONS_CHAT_MISC = L["Miscellaneous:"]
+	XRP_OPTIONS_CHAT_EMOTEBRACED = L["Add square brackets around character names in emotes"]
 end
 
 if (select(4, GetAddOnInfo("xrp_tooltip"))) then
