@@ -86,7 +86,7 @@ do
 				return false
 			end
 			local now = GetTime()
-			-- Filter if within 500ms of current time plus home latency.
+			-- Filter if within 750ms of current time plus home latency.
 			-- GetNetStats() provides value in milliseconds.
 			local dofilter = filter[character] and filter[character] > (now - 0.750 - ((select(3, GetNetStats())) * 0.001)) or false
 			if not dofilter then
@@ -112,7 +112,7 @@ do
 		--print("Sending to: "..character)
 		--print("Out: "..character..": "..data:gsub("\1", "\\1"))
 		if #data <= 255 then
-			ChatThrottleLib:SendAddonMessage("NORMAL", "MSP", data, "WHISPER", character, nil, msp_AddFilter, character)
+			ChatThrottleLib:SendAddonMessage("NORMAL", "MSP", data, "WHISPER", character, "MSP-"..character, msp_AddFilter, character)
 			--print(character..": Outgoing MSP")
 		else
 			-- XC is most likely to add five or six extra characters, will not
@@ -120,15 +120,15 @@ do
 			-- is over 25000 characters or so. So let's say six.
 			data = ("XC=%u\1%s"):format(math.ceil((#data + 6) / 255), data)
 			local position = 1
-			ChatThrottleLib:SendAddonMessage("BULK", "MSP\1", data:sub(position, position + 254), "WHISPER", character, nil, msp_AddFilter, character)
+			ChatThrottleLib:SendAddonMessage("BULK", "MSP\1", data:sub(position, position + 254), "WHISPER", character, "MSP-"..character, msp_AddFilter, character)
 			--print(character..": Outgoing MSP\\1")
 			position = position + 255
 			while position + 255 <= #data do
-				ChatThrottleLib:SendAddonMessage("BULK", "MSP\2", data:sub(position, position + 254), "WHISPER", character, nil, msp_AddFilter, character)
+				ChatThrottleLib:SendAddonMessage("BULK", "MSP\2", data:sub(position, position + 254), "WHISPER", character, "MSP-"..character, msp_AddFilter, character)
 				--print(character..": Outgoing MSP\\2")
 				position = position + 255
 			end
-			ChatThrottleLib:SendAddonMessage("BULK", "MSP\3", data:sub(position), "WHISPER", character, nil, msp_AddFilter, character)
+			ChatThrottleLib:SendAddonMessage("BULK", "MSP\3", data:sub(position), "WHISPER", character, "MSP-"..character, msp_AddFilter, character)
 			--print(character..": Outgoing MSP\\3")
 		end
 		tmp_cache[character].lastsend = GetTime()
