@@ -1,3 +1,10 @@
+5.4.8.0_rc2 (2014-06-20):
+
+	- Bugfixes:
+
+		- A serious bug that could end up in message order being scrambled has
+		  been fixed. It occurred more with longer profiles.
+
 5.4.8.0_rc1 (2014-06-20):
 
 	- A large amount of code cleanups and, in some cases, rewrites have been

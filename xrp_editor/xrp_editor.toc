@@ -2,7 +2,7 @@
 ## LoadOnDemand: 1
 ## Title: XRP: Editor
 ## Author: Bor of Wyrmrest Accord (US)
-## Version: 5.4.8.0_rc1
+## Version: 5.4.8.0_rc2
 ## Notes: Provides a profile editor, supporting common fields.
 ## X-Category: Roleplaying
 ## X-License: GPLv3
