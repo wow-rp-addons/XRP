@@ -18,27 +18,27 @@ if not (select(4, GetAddOnInfo("xrp_tooltip"))) then
 	return
 end
 
+local settings
 do
 	local tooltip_settings = { "reaction", "watching", "guildrank", "rprace", "noopfaction", "nohostile", "extraspace" }
 
-	function xrp.options.tooltip.okay()
+	function xrp.options.tooltip:okay()
 		for _, tt in ipairs(tooltip_settings) do
-			xrp_settings.tooltip[tt] = self[tt]:GetChecked() and true or false
+			settings[tt] = self[tt]:GetChecked() and true or false
 		end
 	end
 
 	function xrp.options.tooltip:refresh()
 		for _, tt in ipairs(tooltip_settings) do
-			self[tt]:SetChecked(xrp_settings.tooltip[tt])
+			self[tt]:SetChecked(settings[tt])
 		end
 	end
 end
 
 function xrp.options.tooltip:default()
-	for tt, setting in pairs(xrp_settings.tooltip) do
-		xrp_settings.tooltip[tt] = nil
+	for tt, setting in pairs(settings) do
+		settings[tt] = nil
 	end
-
 	self:refresh()
 end
 
@@ -47,5 +47,6 @@ xrp.options.tooltip.name = xrp.L["Tooltip"]
 InterfaceOptions_AddCategory(xrp.options.tooltip)
 
 xrp:HookLoad(function()
+	settings = xrp.settings.tooltip
 	xrp.options.tooltip:refresh()
 end)

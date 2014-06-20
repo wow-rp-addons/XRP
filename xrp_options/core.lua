@@ -15,48 +15,49 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
+local settings
 do
 	local core_defaultfields = { "NA", "NI", "NT", "NH", "AE", "RA", "AH", "AW", "CU", "DE", "AG", "HH", "HB", "MO", "HI", "FR", "FC" }
 
 	function xrp.options.core:okay()
-		xrp_settings.height = UIDropDownMenu_GetSelectedValue(self.AHUnits)
-		xrp_settings.weight = UIDropDownMenu_GetSelectedValue(self.AWUnits)
+		settings.height = UIDropDownMenu_GetSelectedValue(self.AHUnits)
+		settings.weight = UIDropDownMenu_GetSelectedValue(self.AWUnits)
 
 		for _, field in ipairs(core_defaultfields) do
-			xrp_settings.defaults[field] = self[field]:GetChecked() and true or false
+			settings.defaults[field] = self[field]:GetChecked() and true or false
 		end
 
-		xrp_settings.cachetime = UIDropDownMenu_GetSelectedValue(self.CacheTime)
-		xrp_settings.cachetidy = self.CacheAuto:GetChecked() and true or false
+		settings.cachetime = UIDropDownMenu_GetSelectedValue(self.CacheTime)
+		settings.cachetidy = self.CacheAuto:GetChecked() and true or false
 	end
 
 	function xrp.options.core:refresh()
 		UIDropDownMenu_Initialize(self.AHUnits, self.AHUnits.initialize)
-		UIDropDownMenu_SetSelectedValue(self.AHUnits, xrp_settings.height)
+		UIDropDownMenu_SetSelectedValue(self.AHUnits, settings.height)
 
 		UIDropDownMenu_Initialize(self.AWUnits, self.AWUnits.initialize)
-		UIDropDownMenu_SetSelectedValue(self.AWUnits, xrp_settings.weight)
+		UIDropDownMenu_SetSelectedValue(self.AWUnits, settings.weight)
 
 		for _, field in ipairs(core_defaultfields) do
-			self[field]:SetChecked(xrp_settings.defaults[field])
+			self[field]:SetChecked(settings.defaults[field])
 		end
 
 		UIDropDownMenu_Initialize(self.CacheTime, self.CacheTime.initialize)
-		UIDropDownMenu_SetSelectedValue(self.CacheTime, xrp_settings.cachetime)
-		self.CacheAuto:SetChecked(xrp_settings.cachetidy)
+		UIDropDownMenu_SetSelectedValue(self.CacheTime, settings.cachetime)
+		self.CacheAuto:SetChecked(settings.cachetidy)
 	end
 end
 
 function xrp.options.core:default()
-	xrp_settings.height = nil
-	xrp_settings.weight = nil
+	settings.height = nil
+	settings.weight = nil
 
-	for field, setting in pairs(xrp_settings.defaults) do
-		xrp_settings.defaults[field] = nil
+	for field, setting in pairs(settings.defaults) do
+		settings.defaults[field] = nil
 	end
 
-	xrp_settings.cachetime = nil
-	xrp_settings.cachetidy = nil
+	settings.cachetime = nil
+	settings.cachetidy = nil
 
 	self:refresh()
 end
@@ -74,14 +75,14 @@ do
 		end
 	end
 
-	-- TODO: Sort values in first two menus (post-localization).
 	do
 		local heights = { L["Centimeters"], L["Feet/Inches"], L["Meters"] }
+		table.sort(heights)
 		UIDropDownMenu_Initialize(xrp.options.core.AHUnits, function()
-			for key, text in ipairs(heights) do
+			for _, text in ipairs(heights) do
 				local info = UIDropDownMenu_CreateInfo()
 				info.text = text
-				info.value = key == 1 and "cm" or key == 2 and "ft" or key == 3 and "m"
+				info.value = text == L["Centimeters"] and "cm" or text == L["Feet/Inches"] and "ft" or text == L["Meters"] and "m"
 				info.func = infofunc
 				UIDropDownMenu_AddButton(info)
 			end
@@ -90,11 +91,12 @@ do
 
 	do
 		local weights = { L["Kilograms"], L["Pounds"] }
+		table.sort(weights)
 		UIDropDownMenu_Initialize(xrp.options.core.AWUnits, function()
-			for key, text in ipairs(weights) do
+			for _, text in ipairs(weights) do
 				local info = UIDropDownMenu_CreateInfo()
 				info.text = text
-				info.value = key == 1 and "kg" or key == 2 and "lb"
+				info.value = text == L["Kilograms"] and "kg" or text == L["Pounds"] and "lb"
 				info.func = infofunc
 				UIDropDownMenu_AddButton(info)
 			end
@@ -117,5 +119,6 @@ do
 end
 
 xrp:HookLoad(function()
+	settings = xrp.settings
 	xrp.options.core:refresh()
 end)

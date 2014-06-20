@@ -18,18 +18,17 @@ if not (select(4, GetAddOnInfo("xrp_chatnames"))) then
 	return
 end
 
+local settings
 do
 	local channel_menu = {}
 	xrp.options.chatnames.CHANNEL_BUTTON:SetScript("OnClick", function(self, button, down)
 		EasyMenu(channel_menu, self:GetParent().CHANNEL_MENU, self, 2, 4, "MENU", nil)
 	end)
 
-	-- TODO: Get rid of channel_list if possible (UpdateChannelSetting).
-	local channel_list = {}
 	local chatnames_UpdateChannels
 	do
-		local function chatnames_UpdateChannelSetting(self, arg1, arg2, checked)
-			channel_list[arg1].checked = not checked
+		local function chatnames_UpdateChannelSetting(self, name, index, checked)
+			channel_menu[index].checked = checked
 		end
 
 		local function chatnames_Channels(...)
@@ -44,11 +43,10 @@ do
 
 		function chatnames_UpdateChannels()
 			wipe(channel_menu)
-			wipe(channel_list)
 			for _, name in ipairs(chatnames_Channels(GetChannelList())) do
 				local channel = "CHAT_MSG_CHANNEL_"..name:upper()
-				channel_menu[#channel_menu + 1] = { text = name, arg1 = channel, isNotRadio = true, checked = xrp_settings.chatnames[channel], func = chatnames_UpdateChannelSetting }
-				channel_list[channel] = channel_menu[#channel_menu]
+				local index = #channel_menu + 1
+				channel_menu[index] = { text = name, arg1 = channel, arg2 = index, isNotRadio = true, checked = settings[channel], func = chatnames_UpdateChannelSetting, keepShownOnClick = true, }
 			end
 			channel_menu[#channel_menu + 1] = { text = CLOSE, notCheckable = true }
 		end
@@ -58,18 +56,18 @@ do
 		local chatnames_types = { "CHAT_MSG_SAY", "CHAT_MSG_YELL", "CHAT_MSG_EMOTE", "CHAT_MSG_GUILD", "CHAT_MSG_WHISPER", "CHAT_MSG_PARTY", "CHAT_MSG_RAID", "CHAT_MSG_INSTANCE" }
 		function xrp.options.chatnames:okay()
 			for _, chattype in ipairs(chatnames_types) do
-				xrp_settings.chatnames[chattype] = xrp.options.chatnames[chattype]:GetChecked() and true or false
+				settings[chattype] = self[chattype]:GetChecked() and true or false
 			end
-			for chattype, menu in pairs(channel_list) do
+			for _, menu in pairs(channel_menu) do
 				if menu.text ~= CLOSE then
-					xrp_settings.chatnames[chattype] = menu.checked
+					settings[menu.arg1] = menu.checked
 				end
 			end
 		end
 
 		function xrp.options.chatnames:refresh()
 			for _, chat in ipairs(chatnames_types) do
-				xrp.options.chatnames[chat]:SetChecked(xrp_settings.chatnames[chat])
+				self[chat]:SetChecked(settings[chat])
 			end
 			chatnames_UpdateChannels()
 		end
@@ -77,8 +75,8 @@ do
 end
 
 function xrp.options.chatnames:default()
-	for chat, _ in pairs(xrp_settings.chatnames) do
-		xrp_settings.chatnames[chat] = nil
+	for chat, _ in pairs(settings) do
+		settings[chat] = nil
 	end
 	self:refresh()
 end
@@ -88,5 +86,6 @@ xrp.options.chatnames.name = xrp.L["Chat Names"]
 InterfaceOptions_AddCategory(xrp.options.chatnames)
 
 xrp:HookLoad(function()
+	settings = xrp.settings.chatnames
 	xrp.options.chatnames:refresh()
 end)
