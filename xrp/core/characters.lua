@@ -138,7 +138,7 @@ xrp.units = setmetatable({}, {
 					GC = GC,
 					GF = UnitFactionGroup(unit),
 					GR = GR,
-					GS = GS,
+					GS = tostring(GS),
 					GU = GU,
 				}
 				if xrp_cache[name] and name ~= xrp.toon.withrealm then
