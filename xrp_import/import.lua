@@ -67,7 +67,7 @@ do
 		local profile = TRP2_Module_PlayerInfo[realm][player]
 		if profile.Actu then
 			xrp.profiles["TRP2"].CU = profile.Actu.ActuTexte
-			xrp.profiles["TRP2"].FC = tostring(profile.Actu.StatutRP)
+			xrp.profiles["TRP2"].FC = profile.Actu.StatutRP and tostring(profile.Actu.StatutRP) or nil
 		end
 		local DE = ""
 		if profile.Registre and profile.Registre.TraitVisage then
