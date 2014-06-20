@@ -92,7 +92,7 @@ local charsmt = {
 		return nil
 	end,
 	__newindex = nonewindex,
-	__call = function(self, request)
+	__call = function(self)
 		local profile = {}
 		for field, contents in pairs(xrp_cache[self[nk]].fields) do
 			profile[field] = contents
