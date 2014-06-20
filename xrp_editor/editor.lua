@@ -29,10 +29,10 @@ do
 				xrp.profiles[name][field] = self[field]:GetText()
 				xrp.defaults[name][field] = self.checkboxes[field]:GetChecked() and true or false
 			end
-			local length = xrp.profiles[name]("length", 9000)
-			if length and length > 16000 then
+			local length = xrp.profiles[name]("length")
+			if length > 16000 then
 				StaticPopup_Show("XRP_EDITOR_16000")
-			elseif length and not warn9000 then
+			elseif length > 9000 and not warn9000 then
 				warn9000 = true
 				StaticPopup_Show("XRP_EDITOR_9000")
 			end

@@ -162,14 +162,12 @@ local profmt = {
 	__call = function(self, action, argument)
 		if not xrp_profiles[self[nk]] then
 			return false
-		elseif action == "length" and type(argument) == "number" then
+		elseif action == "length" then
 			local length = 0
 			for field, contents in pairs(xrp_profiles[self[nk]]) do
 				length = length + #contents
 			end
-			if length > argument then
-				return length
-			end
+			return length
 		elseif action == "rename" and type(argument) == "string" then
 			local name = self[nk]
 			if type(xrp_profiles[name]) == "table" and name ~= L["Default"] and (type(xrp_profiles[argument]) ~= "table" or (argument == L["Default"] and name ~= argument and (not xrp_profiles[L["Default (Old)"]] or name == L["Default (Old)"]))) then
@@ -178,6 +176,9 @@ local profmt = {
 				end
 				-- Rename profile to the nonexistant table provided.
 				xrp_profiles[argument] = xrp_profiles[name]
+				if argument ~= L["Default"] then
+					xrp_defaults[argument] = xrp_defaults[name]
+				end
 				-- Select the new name if this is our active profile.
 				if xrp_selectedprofile == argument then
 					xrp.profiles(argument)
@@ -196,9 +197,15 @@ local profmt = {
 				for field, contents in pairs(xrp_profiles[name]) do
 					xrp_profiles[argument][field] = contents
 				end
+				if argument ~= L["Default"] then
+					xrp_defaults[argument] = {}
+					for field, setting in pairs(xrp_defaults[name]) do
+						xrp_defaults[argument][field] = setting
+					end
+				end
 				-- Will only happen if copying over Default.
 				if xrp_selectedprofile == argument then
-					xrp.profiles(argument)
+					xrp.msp:Update()
 				end
 				return true
 			end
@@ -232,7 +239,7 @@ xrp.profiles = setmetatable({}, {
 			for field, contents in pairs(profile) do
 				profs[name][field] = contents
 			end
-		elseif profile == "" or profile == nil then
+		elseif profile == nil then
 			profs[name] = nil
 			if name ~= L["Default"] then
 				xrp_profiles[name] = nil

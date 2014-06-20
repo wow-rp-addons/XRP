@@ -25,11 +25,14 @@ local L = xrp.L
 local defmt = {
 	__index = function(self, field)
 		local profile = self[nk]
-		return field:find("^%u%u$") and (profile ~= L["Default"] and xrp_defaults[profile] and xrp_defaults[profile][field] or xrp.settings.defaults[field])
+		if profile ~= L["Default"] and xrp_defaults[profile] and xrp_defaults[profile][field] ~= nil then
+			return xrp_defaults[profile][field]
+		end
+		return xrp.settings.defaults[field]
 	end,
 	__newindex = function(self, field, state)
 		local profile = self[nk]
-		if xrp.msp.unitfields[field] or xrp.msp.metafields[field] or xrp.msp.dummyfields[field] or not field:find("^%u%u$") or profile == L["Default"] then
+		if profile == L["Default"] or xrp.msp.unitfields[field] or xrp.msp.metafields[field] or xrp.msp.dummyfields[field] or not field:find("^%u%u$") then
 			return
 		end
 		if not xrp_defaults[profile] then
