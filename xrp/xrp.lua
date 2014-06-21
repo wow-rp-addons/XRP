@@ -167,8 +167,15 @@ do
 				local update = xrp_CompareVersion(xrp.settings.newversion, xrp.version)
 				local now = time()
 				if update == 1 and (not xrp.settings.versionwarning or xrp.settings.versionwarning < now - 86400) then
-					print(xrp.L["There is a new version of |cffabd473XRP|r available. You should update to %s as soon as possible."]:format(xrp.settings.newversion))
-					xrp.settings.versionwarning = now
+					local timer = 0
+					self:SetScript("OnUpdate", function(self, elapsed)
+						timer = timer + elapsed
+						if timer > 8 then
+							print(xrp.L["There is a new version of |cffabd473XRP|r available. You should update to %s as soon as possible."]:format(xrp.settings.newversion))
+							xrp.settings.versionwarning = now
+							self:SetScript("OnUpdate", nil)
+						end
+					end)
 				elseif update == -1 then
 					xrp.settings.newversion = nil
 					xrp.settings.versionwarning = nil
@@ -243,10 +250,10 @@ do
 		end
 
 		xrp.settings = setmetatable(xrp_settings, { __index = default_settings })
-		if type(xrp.settings.defaults) ~= "table" then
-			xrp.settings.defaults = {}
+		-- Pre-rc3 cleanup.
+		if type(xrp.settings.defaults == "table") then
+			xrp.settings.defaults = nil
 		end
-		setmetatable(xrp.settings.defaults, { __index = function() return true end })
 	end)
 end
 
