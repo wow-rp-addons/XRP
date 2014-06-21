@@ -99,7 +99,7 @@ xrp:HookEvent("MSP_RECEIVE", function(name)
 end)
 
 xrp:HookEvent("MSP_NOCHANGE", function(name)
-	if current == name then
+	if current == name and not xrp.viewer.XC:GetText() then
 		xrp.viewer.XC:SetText(L["No changes."])
 	end
 end)
@@ -115,17 +115,15 @@ xrp:HookEvent("MSP_CHUNK", function(name, chunk, totalchunks)
 end)
 
 xrp:HookEvent("MSP_FAIL", function(name, reason)
-	if current == name then
-		if not xrp.viewer.XC:GetText() then
-			if reason == "offline" then
-				xrp.viewer.XC:SetText(L["Character is not online."])
-			elseif reason == "faction" then
-				xrp.viewer.XC:SetText(L["Character is opposite faction."])
-			elseif reason == "nomsp" then
-				xrp.viewer.XC:SetText(L["No RP addon appears to be active."])
-			elseif reason == "time" then
-				xrp.viewer.XC:SetText(L["Too soon for updates."])
-			end
+	if current == name and not xrp.viewer.XC:GetText() then
+		if reason == "offline" then
+			xrp.viewer.XC:SetText(L["Character is not online."])
+		elseif reason == "faction" then
+			xrp.viewer.XC:SetText(L["Character is opposite faction."])
+		elseif reason == "nomsp" then
+			xrp.viewer.XC:SetText(L["No RP addon appears to be active."])
+		elseif reason == "time" then
+			xrp.viewer.XC:SetText(L["Too soon for updates."])
 		end
 	end
 end)
