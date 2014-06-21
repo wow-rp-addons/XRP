@@ -330,7 +330,7 @@ StaticPopupDialogs["XRP_CACHE_CLEARED"] = {
 	preferredIndex = 3,
 }
 StaticPopupDialogs["XRP_CACHE_TIDIED"] = {
-	text = L["The cache has been tidied."],
+	text = L["Old entries have been pruned from the cache."],
 	button1 = OKAY,
 	enterClicksFirstButton = true,
 	timeout = 0,
