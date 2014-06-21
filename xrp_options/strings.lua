@@ -21,8 +21,9 @@ XRP_OPTIONS_CORE_TITLE = L["XRP: Core Options"]
 XRP_OPTIONS_CORE_DEFAULTS = L["For new profiles, copy from \"Default\" for:"]
 XRP_OPTIONS_CORE_CACHE = L["Character profile cache expiry:"]
 XRP_OPTIONS_CORE_CACHEAUTO = L["Prune cache on login"]
-XRP_OPTIONS_CORE_MISC = L["Miscellaneous:"]
+XRP_OPTIONS_CORE_MINIMAP = L["Minimap icon:"]
 XRP_OPTIONS_CORE_HIDEMINIMAPTT = L["Hide help tooltip on minimap icon"]
+XRP_OPTIONS_CORE_MINIMAPDETACHED = L["Detach minimap icon from minimap"]
 
 if (select(4, GetAddOnInfo("xrp_chatnames"))) then
 	XRP_OPTIONS_CHAT_TITLE = L["XRP: Chat Names Options"]

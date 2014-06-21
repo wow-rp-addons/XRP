@@ -208,6 +208,9 @@ do
 		cachetime = 864000, -- 10 days
 		cachetidy = true,
 		hideminimaptt = false,
+		minimapdetached = false,
+		minimapx = 0,
+		minimapy = 0,
 	}
 	xrp:HookLoad(function()
 		if type(xrp_settings) ~= "table" then
