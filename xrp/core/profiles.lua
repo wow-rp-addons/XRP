@@ -176,7 +176,7 @@ local profmt = {
 				end
 				-- Rename profile to the nonexistant table provided.
 				xrp_profiles[argument] = xrp_profiles[name]
-				if argument ~= L["Default"] then
+				if xrp_defaults[name] then
 					xrp_defaults[argument] = xrp_defaults[name]
 				end
 				-- Select the new name if this is our active profile.
@@ -197,7 +197,7 @@ local profmt = {
 				for field, contents in pairs(xrp_profiles[name]) do
 					xrp_profiles[argument][field] = contents
 				end
-				if argument ~= L["Default"] then
+				if xrp_defaults[name] then
 					xrp_defaults[argument] = {}
 					for field, setting in pairs(xrp_defaults[name]) do
 						xrp_defaults[argument][field] = setting

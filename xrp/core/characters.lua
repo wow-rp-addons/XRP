@@ -210,7 +210,7 @@ do
 						GC = GC,
 						GF = race_faction[GR],
 						GR = GR,
-						GS = GS,
+						GS = tostring(GS),
 						GU = GU,
 					}
 					if xrp_cache[name] and name ~= xrp.toon.withrealm then

@@ -28,7 +28,7 @@ local defmt = {
 		if profile ~= L["Default"] and xrp_defaults[profile] and xrp_defaults[profile][field] ~= nil then
 			return xrp_defaults[profile][field]
 		end
-		return xrp.settings.defaults[field]
+		return true
 	end,
 	__newindex = function(self, field, state)
 		local profile = self[nk]
@@ -38,13 +38,11 @@ local defmt = {
 		if not xrp_defaults[profile] then
 			xrp_defaults[profile] = {}
 		end
-		if state == nil then
-			xrp_defaults[profile][field] = nil
-			if not next(xrp_defaults[profile]) then
-				xrp.defaults[profile] = nil
-			end
-		elseif state == true or state == false then
+		if state ~= xrp_defaults[profile][field] then
 			xrp_defaults[profile][field] = state
+			if profile == xrp_selectedprofile then
+				xrp.msp:UpdateField(field)
+			end
 		end
 	end,
 	__call = function(self)
