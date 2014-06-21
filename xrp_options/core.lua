@@ -16,57 +16,54 @@
 ]]
 
 local settings
-do
-	local core_defaultfields = { "NA", "NI", "NT", "NH", "AE", "RA", "AH", "AW", "CU", "DE", "AG", "HH", "HB", "MO", "HI", "FR", "FC" }
+function xrp.options.core:okay()
+	settings.height = UIDropDownMenu_GetSelectedValue(self.AHUnits)
+	settings.weight = UIDropDownMenu_GetSelectedValue(self.AWUnits)
 
-	function xrp.options.core:okay()
-		settings.height = UIDropDownMenu_GetSelectedValue(self.AHUnits)
-		settings.weight = UIDropDownMenu_GetSelectedValue(self.AWUnits)
+	settings.cachetime = UIDropDownMenu_GetSelectedValue(self.CacheTime)
+	settings.cachetidy = self.CacheAuto:GetChecked() and true or false
 
-		for _, field in ipairs(core_defaultfields) do
-			settings.defaults[field] = self[field]:GetChecked() and true or false
-		end
+	settings.hideminimaptt = self.HideMinimapTT:GetChecked() and true or false
+	settings.minimapdetached = self.MinimapDetached:GetChecked() and true or false
+	xrp.minimap:SetDetached(settings.minimapdetached)
+end
 
-		settings.cachetime = UIDropDownMenu_GetSelectedValue(self.CacheTime)
-		settings.cachetidy = self.CacheAuto:GetChecked() and true or false
+function xrp.options.core:refresh()
+	UIDropDownMenu_Initialize(self.AHUnits, self.AHUnits.initialize)
+	UIDropDownMenu_SetSelectedValue(self.AHUnits, settings.height)
 
-		settings.hideminimaptt = self.HideMinimapTT:GetChecked() and true or false
-	end
+	UIDropDownMenu_Initialize(self.AWUnits, self.AWUnits.initialize)
+	UIDropDownMenu_SetSelectedValue(self.AWUnits, settings.weight)
 
-	function xrp.options.core:refresh()
-		UIDropDownMenu_Initialize(self.AHUnits, self.AHUnits.initialize)
-		UIDropDownMenu_SetSelectedValue(self.AHUnits, settings.height)
+	UIDropDownMenu_Initialize(self.CacheTime, self.CacheTime.initialize)
+	UIDropDownMenu_SetSelectedValue(self.CacheTime, settings.cachetime)
+	self.CacheAuto:SetChecked(settings.cachetidy)
 
-		UIDropDownMenu_Initialize(self.AWUnits, self.AWUnits.initialize)
-		UIDropDownMenu_SetSelectedValue(self.AWUnits, settings.weight)
-
-		for _, field in ipairs(core_defaultfields) do
-			self[field]:SetChecked(settings.defaults[field])
-		end
-
-		UIDropDownMenu_Initialize(self.CacheTime, self.CacheTime.initialize)
-		UIDropDownMenu_SetSelectedValue(self.CacheTime, settings.cachetime)
-		self.CacheAuto:SetChecked(settings.cachetidy)
-
-		self.HideMinimapTT:SetChecked(settings.hideminimaptt)
-	end
+	self.HideMinimapTT:SetChecked(settings.hideminimaptt)
+	self.MinimapDetached:SetChecked(settings.minimapdetached)
+	self.Lock:SetEnabled(self.MinimapDetached:GetChecked())
+	self.Lock:SetText(xrp.minimap.locked and UNLOCK or LOCK)
 end
 
 function xrp.options.core:default()
 	settings.height = nil
 	settings.weight = nil
 
-	for field, setting in pairs(settings.defaults) do
-		settings.defaults[field] = nil
-	end
-
 	settings.cachetime = nil
 	settings.cachetidy = nil
 
 	settings.hideminimaptt = nil
+	settings.minimapdetached = nil
+	xrp.minimap:SetDetached(settings.minimapdetached)
 
 	self:refresh()
 end
+
+xrp.options.core.MinimapDetached:SetScript("PostClick", function(self, button, down)
+	local lock = self:GetParent().Lock
+	lock:SetEnabled(self:GetChecked())
+	lock:SetText(xrp.minimap.locked and UNLOCK or LOCK)
+end)
 
 xrp.options.core.parent = XRP
 
