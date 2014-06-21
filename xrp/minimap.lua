@@ -98,24 +98,26 @@ do
 	end
 
 	do
-		local initalized = false
+		local detached = nil
 		function xrp.minimap:SetDetached(detach)
+			local modified = detached ~= detach
 			if detach and self:GetParent() ~= UIParent then
 				-- Set scripts for free-form moving.
 				self:SetScript("OnDragStart", minimap_OnDragStartDetached)
 				self:SetScript("OnDragStop", minimap_OnDragStopDetached)
 				self:SetParent(UIParent)
 				self.locked = false
-			elseif not detach and (self:GetParent() ~= Minimap or not initialized) then
+				detached = true
+			elseif not detach and (self:GetParent() ~= Minimap or detached == nil) then
 				-- Set script for minimap-attached moving.
 				self:SetScript("OnDragStart", minimap_OnDragStart)
 				self:SetScript("OnDragStop", minimap_OnDragStop)
 				self:SetParent(Minimap)
-				initialized = true
+				detached = false
 			end
-			if detach then
+			if detach and modified then
 				minimap_UpdatePositionDetached(self)
-			elseif not detach then
+			elseif not detach and modified then
 				minimap_UpdatePosition(self)
 			end
 		end
@@ -221,6 +223,7 @@ do
 				elseif button == "RightButton" then
 					if settings.minimapdetached and not self.locked then
 						self.locked = true
+						GameTooltip:Hide()
 					else
 						local FC = xrp.current.FC or "0"
 						for _, item in ipairs(menulist_status) do
@@ -258,7 +261,7 @@ xrp.minimap:SetScript("OnEnter", function(self, motion)
 end)
 
 xrp.minimap:SetScript("OnLeave", function(self, motion)
-	if not settings.hideminimaptt then
+	if not settings.hideminimaptt or (settings.minimapdetached and not self.locked) then
 		GameTooltip:Hide()
 	end
 	self.dim:Hide()
