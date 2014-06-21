@@ -130,4 +130,4 @@ This is free software: you are free to change and redistribute it.
 There is NO WARRANTY, to the extent permitted by law.]] ]
 
 XRP_CLEAR_CACHE = L["Clear Cache"]
-XRP_TIDY_CACHE = L["Tidy Cache"]
+XRP_TIDY_CACHE = L["Prune Cache"]

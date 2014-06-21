@@ -53,7 +53,7 @@
 						<Anchor point="TOPLEFT" relativeKey="$parent.SayLabel" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="PartyLabel" inherits="GameFontWhite" text="CHAT_MSG_RAID">
+				<FontString parentKey="PartyLabel" inherits="GameFontWhite" text="CHAT_MSG_PARTY">
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.GuildLabel" relativePoint="RIGHT" x="50" y="0"/>
 					</Anchors>
