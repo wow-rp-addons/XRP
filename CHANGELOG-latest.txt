@@ -1,6 +1,27 @@
-5.4.8.0_rc2 (2014-06-20):
+5.4.8.0_rc3 (2014-06-21):
+
+	- The minimap icon can now be detached from the minimap and moved
+	  independently. This option is found in the interface options panel -- be
+	  warned, you may need to reload your UI (/reload) after changing the
+	  setting for it to work entirely correctly, particularly in conjunction
+	  with some minimap-modifying addons.
+
+	- The default defaults settings which were confusing and ultimately
+	  unnecessary have been removed. Inheritance from the Default profile is
+	  now solely set per-profile in the editor.
+
+	- The interface options panel can now be quickly accessed through the
+	  minimap button.
+
+	- The new version warning will now print a few seconds after login, making
+	  it less likely to get lost in addon loading spam.
 
 	- Bugfixes:
 
-		- A serious bug that could end up in message order being scrambled has
-		  been fixed. It occurred more with longer profiles.
+		- A minor bug that caused some issues when copying a profile in some
+		  circumstances has been fixed. (Thanks, Zan.)
+
+		- A few minor formatting errors have been fixed.
+
+		- A rarely-occurring oddity with the TRP2 profile importer has been
+		  fixed.
