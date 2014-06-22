@@ -98,7 +98,7 @@ function xrp:ConvertWeight(weight, units)
 
 	units = (not units or units == "user") and xrp.settings.weight or units
 	if units == "msp" then -- MSP internal format: kg without units as string.
-		return ("%u"):format(number + 0.5)
+		return ("%.1f"):format(number)
 	elseif units == "kg" then
 		return L["%u kg"]:format(number + 0.5)
 	elseif units == "lb" then
