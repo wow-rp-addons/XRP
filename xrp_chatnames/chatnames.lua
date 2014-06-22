@@ -129,3 +129,18 @@ hooksecurefunc("UnitPopup_OnClick", function(self)
 		xrp:ShowViewerCharacter(xrp:NameWithRealm(UIDROPDOWNMENU_INIT_MENU.name))
 	end
 end)
+
+hooksecurefunc("ChatEdit_ParseText", function(line, send)
+	if send == 1 then
+		local text = line:GetText()
+		if text:find("%%xt") then
+			text = text:gsub("%%xt", xrp.units.target and (xrp.units.target.NA or "%%t") or xrp.L["nobody"])
+		end
+		if text:find("%%xf") then
+			text = text:gsub("%%xf", xrp.units.focus and (xrp.units.focus.NA or "%%f") or xrp.L["nobody"])
+		end
+		if text ~= line:GetText() then
+			line:SetText(text)
+		end
+	end
+end)
