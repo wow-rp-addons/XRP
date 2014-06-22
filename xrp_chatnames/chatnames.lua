@@ -92,7 +92,7 @@ function GetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, a
 	end
 
 	local name = settings[event] and arg12 and xrp:StripPunctuation(xrp:StripEscapes(xrp.guids[arg12].NA)) or Ambiguate(arg2, "guild")
-	local nameformat = (event == "CHAT_MSG_EMOTE" or event == "CHAT_MSG_TEXT_EMOTE") and settings.emotebraced and "[%s]" or "%s"
+	local nameformat = ((event == "CHAT_MSG_EMOTE" or event == "CHAT_MSG_TEXT_EMOTE") and settings.emotebraced and "[%s]" or "%s")..(event == "CHAT_MSG_EMOTE" and arg9 or "")
 
 	local info = ChatTypeInfo[chattype]
 	if info and info.colorNameByClass and arg12 then
@@ -114,12 +114,26 @@ ChatFrame_AddMessageEventFilter("CHAT_MSG_TEXT_EMOTE", function(self, event, mes
 	-- The other half of attaching the realm name in GetColoredName is to, uh,
 	-- remove it here first. Why? Fuck knows, it's Blizzard and we get things
 	-- like Player-RealmName-RealmName if we don't drop it here from the
-	-- message. ...Which is where the name is, because fuck knows.
+	-- message. ...Which is where the realm name is, because fuck knows.
 	local nameless = message:match(("^"..CHAT_EMOTE_GET:format(FULL_PLAYER_NAME:format("%s", ".-")).."(.*)"):format(sender))
 	if nameless then
 		message = CHAT_EMOTE_GET:format(sender)..nameless
 	end
 	return false, message, sender, ...
+end)
+
+-- This hooks and runs at login to try and be the very last filter run as often
+-- as possible. We don't want to be mucking with things in this kinda way
+-- before other addons if at all possible.
+xrp:HookLogin(function()
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_EMOTE", function(self, event, message, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, ...)
+		if message:sub(0, 1) == "'" then
+			-- arg9 isn't used for CHAT_MSG_EMOTE.
+			arg9 = message:match("('[^%s]*).*")
+			message = message:match("'[^%s]*%s*(.*)")
+		end
+		return false, message, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, ...
+	end)
 end)
 
 UnitPopupButtons["XRP_VIEWPROFILE"] = { text = xrp.L["RP Profile"], dist = 0 }
