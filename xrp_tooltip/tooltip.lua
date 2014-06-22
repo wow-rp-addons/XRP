@@ -144,14 +144,14 @@ do
 
 		if cu.type == "player" then
 
-			tooltip_RenderLine(cu.nameformat:format(character.NA and tooltip_Truncate(xrp:StripEscapes(character.NA), 60, 0, false) or xrp:NameWithoutRealm(cu.name)), cu.icons)
+			tooltip_RenderLine(cu.nameformat:format(character.NA and tooltip_Truncate(xrp:StripEscapes(character.NA), 65, 0, false) or xrp:NameWithoutRealm(cu.name)), cu.icons)
 
 			if character.NI then
-				tooltip_RenderLine(("|cff6070a0%s:|r |cff99b3e6\"%s\"|r"):format(XRP_NI, tooltip_Truncate(xrp:StripEscapes(character.NI), 60, #XRP_NI, false)))
+				tooltip_RenderLine(("|cff6070a0%s:|r |cff99b3e6\"%s\"|r"):format(XRP_NI, tooltip_Truncate(xrp:StripEscapes(character.NI), 70, #XRP_NI, false)))
 			end
 
 			if character.NT then
-				tooltip_RenderLine(("|cffcccccc%s|r"):format(tooltip_Truncate(xrp:StripEscapes(character.NT), 60)))
+				tooltip_RenderLine(("|cffcccccc%s|r"):format(tooltip_Truncate(xrp:StripEscapes(character.NT), 70)))
 			end
 
 			if settings.extraspace then
@@ -163,7 +163,7 @@ do
 			tooltip_RenderLine(cu.titlerealm, character.VA and ("|cff7f7f7f%s|r"):format(tooltip_ParseVA(character.VA)) or nil)
 
 			if character.CU then
-				tooltip_RenderLine(("|cffa08050%s:|r |cffe6b399%s|r"):format(XRP_CU, tooltip_Truncate(xrp:StripEscapes(character.CU), 60, #XRP_CU)))
+				tooltip_RenderLine(("|cffa08050%s:|r |cffe6b399%s|r"):format(XRP_CU, tooltip_Truncate(xrp:StripEscapes(character.CU), 70, #XRP_CU)))
 			end
 
 			if settings.extraspace then
