@@ -23,7 +23,7 @@ xrp:HookLoad(function()
 	end
 end)
 
-xrp:HookUnload(function()
+xrp:HookLogout(function()
 	if next(xrp_overrides) then
 		xrp_overrides.logout = time()
 	end

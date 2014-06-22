@@ -70,12 +70,24 @@ do
 		return true
 	end
 
-	local onunload = {}
-	function xrp:HookUnload(func)
+	local onlogin = {}
+	function xrp:HookLogin(func)
+		if type(func) ~= "function" then
+			return false
+		elseif not onlogin then
+			func()
+		else
+			onlogin[#onlogin + 1] = func
+		end
+		return true
+	end
+
+	local onlogout = {}
+	function xrp:HookLogout(func)
 		if type(func) ~= "function" then
 			return false
 		else
-			onunload[#onunload + 1] = func
+			onlogout[#onlogout + 1] = func
 		end
 		return true
 	end
@@ -182,13 +194,18 @@ do
 				end
 			end
 
+			for _, func in ipairs(onlogin) do
+				func()
+			end
+			onlogin = nil
+
 			self:UnregisterEvent("PLAYER_LOGIN")
 			if fields.GF == "Neutral" then
 				self:RegisterEvent("NEUTRAL_FACTION_SELECT_RESULT")
 			end
 			self:RegisterEvent("PLAYER_LOGOUT")
 		elseif event == "PLAYER_LOGOUT" then
-			for _, func in ipairs(onunload) do
+			for _, func in ipairs(onlogout) do
 				func()
 			end
 		elseif event == "NEUTRAL_FACTION_SELECT_RESULT" then
