@@ -53,6 +53,7 @@ do
 					x = math.max(-80, math.min(x*103.13708498985, 80))
 					y = math.max(-80, math.min(y*103.13708498985, 80))
 				end
+				self:ClearAllPoints()
 				self:SetPoint("CENTER", Minimap, "CENTER", x, y)
 			end
 		end
@@ -79,7 +80,8 @@ do
 	end
 
 	local function minimap_UpdatePositionDetached(self)
-		self:SetPoint("CENTER", self:GetParent(), "CENTER", settings.minimapx, settings.minimapy)
+		self:ClearAllPoints()
+		self:SetPoint(settings.minimappoint, self:GetParent(), settings.minimappoint, settings.minimapx, settings.minimapy)
 	end
 
 	local function minimap_OnDragStartDetached(self)
@@ -92,7 +94,7 @@ do
 	local function minimap_OnDragStopDetached(self)
 		if not self.locked then
 			self:StopMovingOrSizing()
-			settings.minimapx, settings.minimapy = select(4, self:GetPoint("CENTER"))
+			settings.minimappoint, settings.minimapx, settings.minimapy = select(3, self:GetPoint())
 		end
 		self:UnlockHighlight()
 	end
@@ -100,25 +102,31 @@ do
 	do
 		local detached = nil
 		function xrp.minimap:SetDetached(detach)
-			local modified = detached ~= detach
-			if detach and self:GetParent() ~= UIParent then
+			if detach == detached then
+				return
+			elseif detach then
 				-- Set scripts for free-form moving.
 				self:SetScript("OnDragStart", minimap_OnDragStartDetached)
 				self:SetScript("OnDragStop", minimap_OnDragStopDetached)
 				self:SetParent(UIParent)
+				self:Show()
+				minimap_UpdatePositionDetached(self)
 				self.locked = false
+				if detached ~= nil then
+					print(L["The |cffabd473XRP|r button has been detached from the minimap and is unlocked. You may need to reload your UI (/reload), but note doing so will lock the button's position."])
+				end
 				detached = true
-			elseif not detach and (self:GetParent() ~= Minimap or detached == nil) then
+			else
 				-- Set script for minimap-attached moving.
 				self:SetScript("OnDragStart", minimap_OnDragStart)
 				self:SetScript("OnDragStop", minimap_OnDragStop)
 				self:SetParent(Minimap)
-				detached = false
-			end
-			if detach and modified then
-				minimap_UpdatePositionDetached(self)
-			elseif not detach and modified then
+				self:Show()
 				minimap_UpdatePosition(self)
+				if detached ~= nil then
+					print(L["The |cffabd473XRP|r button has been attached to the minimap. You may need to reload your UI (/reload)."])
+				end
+				detached = false
 			end
 		end
 	end
@@ -128,28 +136,23 @@ do
 	local function minimap_UpdateIcon()
 		if xrp.units.target and xrp.units.target.VA then
 			xrp.minimap.icon:SetTexture("Interface\\Icons\\INV_Misc_Book_03")
+		elseif not xrp.current.FC or xrp.current.FC == "0" or xrp.current.FC == "1" then
+			xrp.minimap.icon:SetTexture("Interface\\Icons\\Ability_Malkorok_BlightofYshaarj_Red")
 		else
-			if not xrp.current.FC or xrp.current.FC == "0" or xrp.current.FC == "1" then
-				xrp.minimap.icon:SetTexture("Interface\\Icons\\Ability_Malkorok_BlightofYshaarj_Red")
-			else
-				xrp.minimap.icon:SetTexture("Interface\\Icons\\Ability_Malkorok_BlightofYshaarj_Green")
-			end
+			xrp.minimap.icon:SetTexture("Interface\\Icons\\Ability_Malkorok_BlightofYshaarj_Green")
 		end
 	end
 
 	xrp:HookEvent("MSP_UPDATE", minimap_UpdateIcon)
 	xrp:HookEvent("MSP_RECEIVE", minimap_UpdateIcon)
 
-	xrp.minimap:SetScript("OnEvent", function(self, event, addon)
-		if event == "ADDON_LOADED" and addon == "xrp" then
-			self:SetDontSavePosition()
-			self:SetDetached(xrp.settings.minimapdetached)
-			self.locked = true
-			minimap_UpdateIcon()
-			self:UnregisterAllEvents()
-			self:SetScript("OnEvent", minimap_UpdateIcon)
-			self:RegisterEvent("PLAYER_TARGET_CHANGED")
-		end
+	xrp:HookLoad(function()
+		settings = xrp.settings
+		xrp.minimap:SetDetached(settings.minimapdetached)
+		xrp.minimap.locked = true
+		minimap_UpdateIcon()
+		xrp.minimap:SetScript("OnEvent", minimap_UpdateIcon)
+		xrp.minimap:RegisterEvent("PLAYER_TARGET_CHANGED")
 	end)
 	xrp.minimap:RegisterEvent("ADDON_LOADED")
 end

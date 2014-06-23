@@ -15,7 +15,7 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-	<Button name="LibDBIcon10_XRP" parent="Minimap" enableMouse="true" movable="true" hidden="false">
+	<Button name="LibDBIcon10_XRP" parent="UIParent" enableMouse="true" movable="true" hidden="false">
 		<Size x="31" y="31"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -50,6 +50,7 @@
 				xrp.minimap = self;
 				self:RegisterForClicks("anyUp");
 				self:RegisterForDrag("LeftButton");
+				self:SetDontSavePosition();
 			</OnLoad>
 			<OnMouseDown>
 				xrp.minimap.dim:Show();

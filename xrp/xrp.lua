@@ -228,6 +228,7 @@ do
 		minimapdetached = false,
 		minimapx = 0,
 		minimapy = 0,
+		minimappoint = "CENTER",
 	}
 	xrp:HookLoad(function()
 		if type(xrp_settings) ~= "table" then
