@@ -1,3 +1,40 @@
+5.4.8.0_rc4 (2014-06-23):
+
+	- In chat messages, %xt will now be replaced by your target's RP name (if
+	  available; %t otherwise), and %xf will do the same for your focus's RP
+	  name. If you do not have a target/focus, the word "nobody" will be used
+	  instead.
+
+	- The profile importer now informs the user if there are no supported RP
+	  addons enabled, along with a hint of how to properly import profiles.
+
+	- Bugfixes:
+
+		- Precision for outgoing weight conversion has been increased to 3
+		  significant digits (matching the three significant digits used in
+		  height).
+
+		- Height/weight conversion has been adjusted to be more forgiving of
+		  extra whitespace. (Thanks, Forge.)
+
+		- The maximum tooltip width has been slightly increased for most
+		  lines.
+
+		- The detachment of the minimap button should (?) work better with
+		  some minimap-modifying addons now.
+
+		- The label for the party chat option in the chat names configuration
+		  now properly reads "Party" instead of "Raid".
+
+		- Toggling the minimap icon from attached to detached or vice-versa
+		  now properly warns that you may need to reload your UI.
+
+		- A minor oddity with the import from MyRolePlay involving custom
+		  IC/OOC statuses has been fixed (custom statuses are now imported as
+		  "In character").
+
+		- A few minor clarifications have been made to some text strings.
+
 5.4.8.0_rc3 (2014-06-21):
 
 	- The minimap icon can now be detached from the minimap and moved

@@ -2,7 +2,7 @@
 ## LoadOnDemand: 1
 ## Title: XRP: Viewer
 ## Author: Bor of Wyrmrest Accord (US)
-## Version: 5.4.8.0_rc3
+## Version: 5.4.8.0_rc4
 ## Notes: Provides a full roleplaying profile viewer, supporting common fields.
 ## X-Category: Roleplaying
 ## X-License: GPLv3
