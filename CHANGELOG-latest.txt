@@ -1,27 +1,36 @@
-5.4.8.0_rc3 (2014-06-21):
+5.4.8.0_rc4 (2014-06-23):
 
-	- The minimap icon can now be detached from the minimap and moved
-	  independently. This option is found in the interface options panel -- be
-	  warned, you may need to reload your UI (/reload) after changing the
-	  setting for it to work entirely correctly, particularly in conjunction
-	  with some minimap-modifying addons.
+	- In chat messages, %xt will now be replaced by your target's RP name (if
+	  available; %t otherwise), and %xf will do the same for your focus's RP
+	  name. If you do not have a target/focus, the word "nobody" will be used
+	  instead.
 
-	- The default defaults settings which were confusing and ultimately
-	  unnecessary have been removed. Inheritance from the Default profile is
-	  now solely set per-profile in the editor.
-
-	- The interface options panel can now be quickly accessed through the
-	  minimap button.
-
-	- The new version warning will now print a few seconds after login, making
-	  it less likely to get lost in addon loading spam.
+	- The profile importer now informs the user if there are no supported RP
+	  addons enabled, along with a hint of how to properly import profiles.
 
 	- Bugfixes:
 
-		- A minor bug that caused some issues when copying a profile in some
-		  circumstances has been fixed. (Thanks, Zan.)
+		- Precision for outgoing weight conversion has been increased to 3
+		  significant digits (matching the three significant digits used in
+		  height).
 
-		- A few minor formatting errors have been fixed.
+		- Height/weight conversion has been adjusted to be more forgiving of
+		  extra whitespace. (Thanks, Forge.)
 
-		- A rarely-occurring oddity with the TRP2 profile importer has been
-		  fixed.
+		- The maximum tooltip width has been slightly increased for most
+		  lines.
+
+		- The detachment of the minimap button should (?) work better with
+		  some minimap-modifying addons now.
+
+		- The label for the party chat option in the chat names configuration
+		  now properly reads "Party" instead of "Raid".
+
+		- Toggling the minimap icon from attached to detached or vice-versa
+		  now properly warns that you may need to reload your UI.
+
+		- A minor oddity with the import from MyRolePlay involving custom
+		  IC/OOC statuses has been fixed (custom statuses are now imported as
+		  "In character").
+
+		- A few minor clarifications have been made to some text strings.
