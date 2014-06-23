@@ -85,11 +85,11 @@ function xrp:ConvertWeight(weight, units)
 	local number = tonumber(weight)
 	if not number then
 		-- Match "50kg", "50 kg", "50 kilograms", etc..
-		number = tonumber((weight:lower():gsub("%a*(%d+)%s*kg.*", "%1"))) or tonumber((weight:lower():gsub("%a*(%d+)%s*kilograms?.*", "%1")))
+		number = tonumber(weight:lower():match("^%s*(%d+)%s*kg")) or tonumber(weight:lower():match("^%s*(%d+)%s*kilo"))
 	end
 	if not number then
 		-- Match "50lbs", "50 lbs", "50 pounds", etc.
-		number = ((tonumber((weight:lower():gsub("%a*(%d+)%s*lb.*", "%1"))) or tonumber((weight:lower():gsub("%a*(%d+)%s*pounds?.*", "%1")))) or 0) / 2.20462
+		number = ((tonumber(weight:lower():match("^%s*(%d+)%s*lb")) or tonumber(weight:lower():match("^%s*(%d+)%s*pound"))) or 0) / 2.20462
 		number = number ~= 0 and number or nil
 	end
 	if not number then
@@ -98,13 +98,13 @@ function xrp:ConvertWeight(weight, units)
 
 	units = (not units or units == "user") and xrp.settings.weight or units
 	if units == "msp" then -- MSP internal format: kg without units as string.
-		return ("%.1f"):format(number)
+		return ("%.1f"):format(number + 0.05)
 	elseif units == "kg" then
 		return L["%u kg"]:format(number + 0.5)
 	elseif units == "lb" then
 		return L["%u lbs"]:format((number * 2.20462) + 0.5)
 	else
-		return weight -- If no unit conversion requested, pass through.
+		return weight
 	end
 end
 
@@ -118,17 +118,23 @@ function xrp:ConvertHeight(height, units)
 	end
 	if not number then
 		-- Match "100cm", "100 cm", "100 centimeters", "100 centimetres", etc.
-		number = tonumber((height:lower():gsub("%a*(%d+)%s*cm.*", "%1"))) or tonumber((height:lower():gsub("%a*(%d+)%s*centimetr?er?s?.*", "%1")))
+		number = tonumber(height:lower():match("^%s*(%d+)%s*cm")) or tonumber(height:lower():match("^%s*(%d+)%s*centimet"))
 	end
 	if not number then
 		-- Match "1.05m", "1.05 m", "1.05 meters", "1.05 metres" etc..
-		number = ((tonumber((height:lower():gsub("%a*(%d+%.?%d*)%s*m.*", "%1"))) or tonumber((height:lower():gsub("%a*(%d+%.?%d*)%s*metr?er?s?.*", "%1")))) or 0) * 100
+		number = (tonumber(height:lower():match("^%s*(%d+%.?%d*)%s*m")) or 0) * 100
 		number = number ~= 0 and number or nil
 	end
 	if not number then
 		-- Match "4'9", "4'9"", "4 ft 9 in", etc.
-		number = (((tonumber((height:lower():gsub("%a*(%d+)'%d*.*", "%1"))) or tonumber((height:lower():gsub("%a*(%d+)%s*ft.*", "%1"))) or 0) * 12) + (tonumber((height:lower():gsub("%a*%d+'(%d*).*", "%1"))) or tonumber((height:lower():gsub("%a*%d+%s*ft%.?%s*(%d+)%s*in.*", "%1"))) or 0)) * 2.54
-		number = number ~= 0 and number or nil
+		local feet, inches = height:lower():match("^%s*(%d+)%s*'%s*(%d*)")
+		if not feet then
+			feet, inches = height:lower():match("^%s*(%d+)%s*ft%.?%s*(%d*)")
+		end
+		if not feet then
+			feet, inches = height:lower():match("^%s*(%d+)%s*feet%s*(%d*)")
+		end
+		number = feet and (((tonumber(feet) * 12) + (tonumber(inches) or 0)) * 2.54) or nil
 	end
 	if not number then
 		return height
