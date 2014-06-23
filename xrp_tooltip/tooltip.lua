@@ -174,10 +174,10 @@ do
 
 			if (character.FR and character.FR ~= "0") or (character.FC and character.FC ~= "0") then
 				-- AAAAAAAAAAAAAAAAAAAAAAAA. The boolean logic.
-				local frline = ("|c%s%s|r"):format((character.FC and character.FC ~= "0" and character.FC == "1" and "ff99664d" or "ff66b380") or "ffffffff", tooltip_Truncate((character.FR == "0" or not character.FR) and " " or tonumber(character.FR) and xrp.values.FR[tonumber(character.FR)] or xrp:StripEscapes(character.FR), 40, 0, false))
+				local frline = ("|c%s%s|r"):format((character.FC and character.FC ~= "0" and character.FC == "1" and "ff99664d" or "ff66b380") or "ffffffff", tooltip_Truncate((character.FR == "0" or not character.FR) and " " or tonumber(character.FR) and xrp.values.FR[tonumber(character.FR)] or xrp:StripEscapes(character.FR), 35, 0, false))
 				local fcline
 				if character.FC and character.FC ~= "0" then
-					fcline = ("|c%s%s|r"):format(character.FC == "1" and "ff99664d" or "ff66b380", tooltip_Truncate(tonumber(character.FC) and xrp.values.FC[tonumber(character.FC)] or xrp:StripEscapes(character.FC), 40, 0, false))
+					fcline = ("|c%s%s|r"):format(character.FC == "1" and "ff99664d" or "ff66b380", tooltip_Truncate(tonumber(character.FC) and xrp.values.FC[tonumber(character.FC)] or xrp:StripEscapes(character.FC), 35, 0, false))
 				end
 				tooltip_RenderLine(frline, fcline)
 			end
@@ -197,7 +197,7 @@ do
 			_G[gttr:format(numline)]:Hide()
 		end
 
-		if cu.icons and (cu.type == "pet" or not (character.NI or character.NT or character.guild) or not character.VA)  then
+		if cu.icons and (cu.type == "pet" or not (character.NI or character.NT or cu.guild) or not character.VA)  then
 			GameTooltipTextRight2:SetText(" ")
 			GameTooltipTextRight2:Show()
 		end
