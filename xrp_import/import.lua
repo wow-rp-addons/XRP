@@ -32,11 +32,25 @@ StaticPopupDialogs["XRP_IMPORT_RELOAD"] = {
 	cancels = "XRP_MSP_DISABLE", -- We know, it's supposed to do that.
 }
 
+StaticPopupDialogs["XRP_IMPORT_FAILED"] = {
+	text = L["No supported RP addons found to import from. You should log out and re-enable XRP: Import along with MyRolePlay and/or TotalRP2 if you wish to import profiles."],
+	button1 = OKAY,
+	showAlert = true,
+	enterClicksFirstButton = true,
+	timeout = 0,
+	whileDead = true,
+	hideOnEscape = true,
+	preferredIndex = 3,
+}
+
 -- This is easy. Using a very similar storage format (i.e., MSP fields).
 local function import_MyRolePlay()
 	for name, profile in pairs(mrpSaved.Profiles) do
 		for field, value in pairs(profile) do
 			if not xrp.msp.unitfields[field] and not xrp.msp.metafields[field] and not xrp.msp.dummyfields[field] then
+				if field == "FC" and not tonumber(value) and value ~= "" then
+					value = "2"
+				end
 				xrp.profiles["MRP-"..name][field] = value ~= "" and value or nil
 			end
 		end
@@ -119,6 +133,8 @@ import:SetScript("OnEvent", function(self, event, addon)
 
 		if mrploaded or trp2loaded then
 			StaticPopup_Show("XRP_IMPORT_RELOAD")
+		else
+			StaticPopup_Show("XRP_IMPORT_FAILED")
 		end
 
 		self:UnregisterAllEvents()
