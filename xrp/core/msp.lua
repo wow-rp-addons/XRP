@@ -146,7 +146,7 @@ msprun.send, msprun.safe, msprun.request = {}, {}, {}
 msprun.dummy = { "?XD" }
 
 local function msp_QueueSend(character, data, count)
-	if msprun.send[character] then
+	if msprun.send[character] and table.concat(msprun.send[character].data) ~= table.concat(data) then
 		for _, request in ipairs(data) do
 			msprun.send[character].data[#msprun.send[character].data + 1] = request
 		end
