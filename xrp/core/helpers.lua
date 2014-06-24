@@ -74,8 +74,15 @@ function xrp:StripPunctuation(text)
 	if type(text) ~= "string" then
 		return nil
 	end
-	-- Most punctuation and all whitespace is stripped from start/end.
-	return (text:match("^[%`%~%@%#%$%%%^%&%*%-%_%=%+%[%{%]%}%\\%|%;%:%,%<%.%>%/%s]*(.-)[%`%~%@%#%$%%%^%&%*%-%_%=%+%[%{%]%}%\\%|%;%:%,%<%.%>%/%s]*$")) or text
+	-- Most punctuation and all whitespace is stripped from start/end; any
+	-- punctuation in the middle is left as-is.
+	--
+	-- Punctuation stripped: `~@#$%^&*-_=+[{]}\|;:,<.>/
+	-- Notable exceptions:
+	--		start: (
+	--		end: ?!)
+	--		start/end: '"
+	return (text:match("^[%`%~%!%@%#%$%%%^%&%*%)%-%_%=%+%[%{%]%}%\\%|%;%:%,%<%.%>%/%?%s]*(.-)[%`%~%@%#%$%%%^%&%*%(%-%_%=%+%[%{%]%}%\\%|%;%:%,%<%.%>%/%s]*$")) or text
 end
 
 function xrp:ConvertWeight(weight, units)
