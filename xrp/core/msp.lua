@@ -112,7 +112,7 @@ do
 		--print("Sending to: "..character)
 		--print("Out: "..character..": "..data:gsub("\1", "\\1"))
 		if #data <= 255 then
-			ChatThrottleLib:SendAddonMessage("NORMAL", "MSP", data, "WHISPER", character, "MSP-"..character, msp_AddFilter, character)
+			ChatThrottleLib:SendAddonMessage("BULK", "MSP", data, "WHISPER", character, "MSP-"..character, msp_AddFilter, character)
 			--print(character..": Outgoing MSP")
 		else
 			-- XC is most likely to add five or six extra characters, will not
