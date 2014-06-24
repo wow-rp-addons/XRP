@@ -573,6 +573,9 @@ if not disabled then
 			--print("In: "..character..": "..message:gsub("\1", "\\1"))
 			--print("Receiving from: "..character)
 			self.handlers[prefix](character, message)
+		elseif prefix == "MSP" and message == "XD" and self.send[character] then
+			-- Reduce dummy count to zero, since we got a response to the dummy.
+			self.send[character].count = 0
 		end
 	end)
 	msprun:RegisterEvent("CHAT_MSG_ADDON")
