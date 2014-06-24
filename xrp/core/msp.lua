@@ -73,7 +73,16 @@ local tmp_cache = setmetatable({}, {
 	end,
 })
 
-local msp_Send
+-- OnUpdate/OnEvent frame.
+local msprun = CreateFrame("Frame")
+-- OnUpdate timer.
+msprun.timer = 0
+-- OnUpdate last run
+msprun.lastrun = GetTime()
+-- Sending message queue; send queue safety; requested field queue
+msprun.send, msprun.safe, msprun.request = {}, {}, {}
+
+local msp_Send, msp_Dummy
 do
 	local msp_AddFilter
 	do
@@ -82,7 +91,7 @@ do
 
 		ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", function(self, event, message)
 			local character = message:match(ERR_CHAT_PLAYER_NOT_FOUND_S:format("(.+)"))
-			if character == nil or character == "" then
+			if not character or character == "" then
 				return false
 			end
 			local now = GetTime()
@@ -98,6 +107,7 @@ do
 				if tmp_cache[character].nextcheck then
 					tmp_cache[character].nextcheck = now + 30
 				end
+				msprun.send[character] = nil
 				xrp:FireEvent("MSP_FAIL", character, xrp.cache[character].GF ~= xrp.toon.fields.GF and "faction" or "offline")
 			end
 			return dofilter
@@ -112,7 +122,7 @@ do
 		--print("Sending to: "..character)
 		--print("Out: "..character..": "..data:gsub("\1", "\\1"))
 		if #data <= 255 then
-			ChatThrottleLib:SendAddonMessage("BULK", "MSP", data, "WHISPER", character, "MSP-"..character, msp_AddFilter, character)
+			ChatThrottleLib:SendAddonMessage("NORMAL", "MSP", data, "WHISPER", character, "MSP-"..character, msp_AddFilter, character)
 			--print(character..": Outgoing MSP")
 		else
 			-- XC is most likely to add five or six extra characters, will not
@@ -133,20 +143,22 @@ do
 		end
 		tmp_cache[character].lastsend = GetTime()
 	end
+
+	local function msp_DummyFilter(character)
+		msp_AddFilter(character)
+		if msprun.send[character] then
+			msprun.send[character].sendtime = GetTime() + msprun.send[character].delay
+		end
+	end
+
+	function msp_Dummy(character)
+		ChatThrottleLib:SendAddonMessage("ALERT", "MSP", "?XD", "WHISPER", character, "MSP-"..character, msp_DummyFilter, character)
+		tmp_cache[character].lastsend = GetTime()
+	end
 end
 
--- OnUpdate/OnEvent frame.
-local msprun = CreateFrame("Frame")
--- OnUpdate timer.
-msprun.timer = 0
--- Sending message queue; send queue safety; requested field queue
-msprun.send, msprun.safe, msprun.request = {}, {}, {}
-
--- Dummy workaround request.
-msprun.dummy = { "?XD" }
-
 local function msp_QueueSend(character, data, count)
-	if msprun.send[character] and table.concat(msprun.send[character].data) ~= table.concat(data) then
+	if msprun.send[character] then
 		for _, request in ipairs(data) do
 			msprun.send[character].data[#msprun.send[character].data + 1] = request
 		end
@@ -157,15 +169,10 @@ local function msp_QueueSend(character, data, count)
 	if count == 0 or (tmp_cache[character].received and now < tmp_cache[character].lastsend + 45) or UnitInParty(unit) or UnitInRaid(unit) then
 		msp_Send(character, data)
 		return
-	elseif count == 1 or tmp_cache[character].received or now < tmp_cache[character].lastsend + 45 then
-		count = 0
-		now = now + 1.000 + ((select(3, GetNetStats())) * 0.001) -- One-way safe needs more delay.
-	else
-		count = 1
-		now = now + 0.500 + ((select(3, GetNetStats())) * 0.001)
 	end
-	msp_Send(character, msprun.dummy)
-	msprun.send[character] = { data = data, count = count, sendtime = now }
+	local delay = (count == 1 or tmp_cache[character].received or now < tmp_cache[character].lastsend + 45) and (1.000 + ((select(3, GetNetStats())) * 0.001)) or (0.500 + ((select(3, GetNetStats())) * 0.001))
+	msp_Dummy(character)
+	msprun.send[character] = { data = data, count = count - 1, delay = delay, sendtime = now + delay }
 	msprun:Show()
 end
 
@@ -263,11 +270,11 @@ msprun:SetScript("OnUpdate", function(self, elapsed)
 			self.timer = 0
 			local now = GetTime()
 			for character, message in pairs(self.send) do
-				if message.sendtime <= now and message.count > 0 then
-					msp_Send(character, self.dummy)
+				if message.sendtime and message.sendtime <= now and message.count > 0 then
+					msp_Dummy(character)
 					message.count = message.count - 1
-					message.sendtime = now + 0.500 + ((select(3, GetNetStats())) * 0.001)
-				elseif message.sendtime <= now and message.count == 0 then
+					message.sendtime = nil
+				elseif message.sendtime and message.sendtime <= now and message.count == 0 then
 					msp_Send(character, message.data)
 					self.send[character] = nil
 				end
@@ -282,86 +289,102 @@ do
 	-- Cached tooltip response.
 	local tt
 	do
-		-- This returns two values. First is a string, if the MSP command
-		-- requires sending a response (i.e., is a query); second is a boolean,
-		-- if the MSP command provides an updated field (i.e., is a non-empty
-		-- response).
-		local function msp_Process(character, cmd)
-			-- Original LibMSP match string uses %a%a rather than %u%u.
-			-- According to protcol documentation, %u%u would be more correct.
-			local action, field, version, contents = cmd:match("(%p?)(%u%u)(%d*)=?(.*)")
-			local updated = false
-			version = tonumber(version) or 0
-			if not field then
-				return nil, updated
-			elseif action == "?" then
-				-- Queried our fields. This should end in returning a string
-				-- with our info for that field. (If it doesn't, it means we're
-				-- ignoring their polite request for some reason.)
-				if (xrp_versions[field] and version == xrp_versions[field]) or (not xrp_versions[field] and version == 0) then
-					-- They already have the latest.
-					return (not xrp_versions[field] and "%s" or "!%s%u"):format(field, xrp_versions[field]), updated
-				elseif field == "TT" then
-					if not tt then -- panic, something went wrong in init.
-						xrp.msp:Update()
+		local msp_Process
+		do
+			local req_timer = setmetatable({}, {
+				__index = function(self, character)
+					self[character] = {}
+					return self[character]
+				end,
+				__mode = "v",
+			})
+			-- This returns two values. First is a string, if the MSP command
+			-- requires sending a response (i.e., is a query); second is a boolean,
+			-- if the MSP command provides an updated field (i.e., is a non-empty
+			-- response).
+			local function msp_Process(character, cmd)
+				-- Original LibMSP match string uses %a%a rather than %u%u.
+				-- According to protcol documentation, %u%u would be more
+				-- correct.
+				local action, field, version, contents = cmd:match("(%p?)(%u%u)(%d*)=?(.*)")
+				version = tonumber(version) or 0
+				if not field then
+					return nil, false
+				elseif action == "?" then
+					local now = GetTime()
+					-- Queried our fields. This should end in returning a
+					-- string with our info for that field. (If it doesn't, it
+					-- means we're ignoring their request, probably because
+					-- they're spamming it at us.)
+					if req_timer[character][field] and req_timer[character][field] > now - 5 then
+						req_timer[character][field] = now
+						return nil, false
 					end
-					return tt, updated
-				else
-					if not xrp.current[field] then
+					req_timer[character][field] = now
+					if (xrp_versions[field] and version == xrp_versions[field]) or (not xrp_versions[field] and version == 0) then
+						-- They already have the latest.
+						return (not xrp_versions[field] and "%s" or "!%s%u"):format(field, xrp_versions[field]), false
+					elseif field == "TT" then
+						if not tt then -- panic, something went wrong in init.
+							xrp.msp:Update()
+						end
+						return tt, false
+					elseif not xrp.current[field] then
 						-- Field is empty.
-						return (not xrp_versions[field] and "%s" or "%s%u"):format(field, xrp_versions[field]), updated
-					else
-						-- Field has content.
-						return ("%s%u=%s"):format(field, xrp_versions[field], xrp.current[field]), updated
+						return (not xrp_versions[field] and "%s" or "%s%u"):format(field, xrp_versions[field]), false
 					end
-				end
-			elseif action == "!" then
-				-- Told us we have latest of their field.
-				tmp_cache[character].time[field] = GetTime()
-			elseif action == "" then
-				-- Gave us a field.
-				if not xrp_cache[character] and (contents ~= "" or version ~= 0) then
-					xrp_cache[character] = {
-						fields = {},
-						versions = {},
-					}
-					-- What this does is pull the G-fields from the unitcache,
-					-- accessed through xrp.cache, into the actual cache, but
-					-- only if the character has MSP. This keeps the saved
-					-- cache a bit more lightweight.
-					--
-					-- The G-fields are also put into the saved cache when
-					-- they're initially generated, if the cache table for that
-					-- character exists (indicating MSP support is/was present
-					-- -- this function is the *only* place a character cache
-					-- table is created).
-					for gfield, _ in pairs(xrp.msp.unitfields) do
-						xrp_cache[character].fields[gfield] = xrp.cache[character][gfield]
+					-- Field has content.
+					return ("%s%u=%s"):format(field, xrp_versions[field], xrp.current[field]), false
+				elseif action == "!" then
+					-- Told us we have latest of their field.
+					tmp_cache[character].time[field] = GetTime()
+					return nil, false
+				elseif action == "" then
+					-- Gave us a field.
+					if not xrp_cache[character] and (contents ~= "" or version ~= 0) then
+						xrp_cache[character] = {
+							fields = {},
+							versions = {},
+						}
+						-- What this does is pull the G-fields from the unitcache,
+						-- accessed through xrp.cache, into the actual cache, but
+						-- only if the character has MSP. This keeps the saved
+						-- cache a bit more lightweight.
+						--
+						-- The G-fields are also put into the saved cache when
+						-- they're initially generated, if the cache table for that
+						-- character exists (indicating MSP support is/was present
+						-- -- this function is the *only* place a character cache
+						-- table is created).
+						for gfield, _ in pairs(xrp.msp.unitfields) do
+							xrp_cache[character].fields[gfield] = xrp.cache[character][gfield]
+						end
 					end
-				end
-				if xrp_cache[character] and xrp_cache[character].fields[field] and (not contents or contents == "") and not xrp.msp.unitfields[field] then
-					-- If it's newly blank, empty it in the cache. Never empty G*.
-					xrp_cache[character].fields[field] = nil
-					updated = true
-				elseif contents and contents ~= "" then
-					xrp_cache[character].fields[field] = contents
-					updated = true
-					if field == "VA" then
-						xrp:UpdateVersion(contents:match("^XRP/([^;]+)"))
+					local updated = false
+					if xrp_cache[character] and xrp_cache[character].fields[field] and (not contents or contents == "") and not xrp.msp.unitfields[field] then
+						-- If it's newly blank, empty it in the cache. Never empty G*.
+						xrp_cache[character].fields[field] = nil
+						updated = true
+					elseif contents and contents ~= "" then
+						xrp_cache[character].fields[field] = contents
+						updated = true
+						if field == "VA" then
+							xrp:UpdateVersion(contents:match("^XRP/([^;]+)"))
+						end
 					end
+					if version ~= 0 then
+						xrp_cache[character].versions[field] = version
+					elseif xrp_cache[character] then
+						xrp_cache[character].versions[field] = nil
+					end
+					-- Save time regardless of contents or version. This prevents
+					-- querying again too soon. Query time is also set prior to
+					-- initial send -- so timer will count from send OR receive as
+					-- appropriate.
+					tmp_cache[character].time[field] = GetTime()
+					return nil, updated -- No response needed.
 				end
-				if version ~= 0 then
-					xrp_cache[character].versions[field] = version
-				elseif xrp_cache[character] then
-					xrp_cache[character].versions[field] = nil
-				end
-				-- Save time regardless of contents or version. This prevents
-				-- querying again too soon. Query time is also set prior to
-				-- initial send -- so timer will count from send OR receive as
-				-- appropriate.
-				tmp_cache[character].time[field] = GetTime()
 			end
-			return nil, updated -- No response needed.
 		end
 
 		msprun.handlers = {
