@@ -16,7 +16,7 @@
 ]]
 
 xrp:HookLoad(function()
-	if not xrp_overrides.logout or xrp_overrides.logout + 300 < time() then
+	if not xrp_overrides.logout or xrp_overrides.logout + 600 < time() then
 		wipe(xrp_overrides)
 	else
 		xrp_overrides.logout = nil
