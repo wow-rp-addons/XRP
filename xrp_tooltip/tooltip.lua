@@ -162,12 +162,12 @@ do
 
 			tooltip_RenderLine(cu.titlerealm, character.VA and ("|cff7f7f7f%s|r"):format(tooltip_ParseVA(character.VA)) or nil)
 
-			if character.CU then
-				tooltip_RenderLine(("|cffa08050%s:|r |cffe6b399%s|r"):format(XRP_CU, tooltip_Truncate(xrp:StripEscapes(character.CU), 70, #XRP_CU)))
-			end
-
 			if settings.extraspace then
 				tooltip_RenderLine(" ")
+			end
+
+			if character.CU then
+				tooltip_RenderLine(("|cffa08050%s:|r |cffe6b399%s|r"):format(XRP_CU, tooltip_Truncate(xrp:StripEscapes(character.CU), 70, #XRP_CU)))
 			end
 
 			tooltip_RenderLine(cu.info:format(tooltip_Truncate(character.RA and settings.rprace and xrp:StripEscapes(character.RA) or cu.race, 40, 0, false)))
