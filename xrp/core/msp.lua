@@ -76,9 +76,7 @@ local tmp_cache = setmetatable({}, {
 -- OnUpdate/OnEvent frame.
 local msprun = CreateFrame("Frame")
 -- OnUpdate timer.
-msprun.timer = 0
--- OnUpdate last run
-msprun.lastrun = GetTime()
+msprun.timer = 0.08
 -- Sending message queue; send queue safety; requested field queue
 msprun.send, msprun.safe, msprun.request = {}, {}, {}
 
@@ -122,7 +120,7 @@ do
 		--print("Sending to: "..character)
 		--print("Out: "..character..": "..data:gsub("\1", "\\1"))
 		if #data <= 255 then
-			ChatThrottleLib:SendAddonMessage("NORMAL", "MSP", data, "WHISPER", character, "MSP-"..character, msp_AddFilter, character)
+			ChatThrottleLib:SendAddonMessage("NORMAL", "MSP", data, "WHISPER", character, "XRP-"..character, msp_AddFilter, character)
 			--print(character..": Outgoing MSP")
 		else
 			-- XC is most likely to add five or six extra characters, will not
@@ -130,29 +128,31 @@ do
 			-- is over 25000 characters or so. So let's say six.
 			data = ("XC=%u\1%s"):format(math.ceil((#data + 6) / 255), data)
 			local position = 1
-			ChatThrottleLib:SendAddonMessage("BULK", "MSP\1", data:sub(position, position + 254), "WHISPER", character, "MSP-"..character, msp_AddFilter, character)
+			ChatThrottleLib:SendAddonMessage("BULK", "MSP\1", data:sub(position, position + 254), "WHISPER", character, "XRP-"..character, msp_AddFilter, character)
 			--print(character..": Outgoing MSP\\1")
 			position = position + 255
 			while position + 255 <= #data do
-				ChatThrottleLib:SendAddonMessage("BULK", "MSP\2", data:sub(position, position + 254), "WHISPER", character, "MSP-"..character, msp_AddFilter, character)
+				ChatThrottleLib:SendAddonMessage("BULK", "MSP\2", data:sub(position, position + 254), "WHISPER", character, "XRP-"..character, msp_AddFilter, character)
 				--print(character..": Outgoing MSP\\2")
 				position = position + 255
 			end
-			ChatThrottleLib:SendAddonMessage("BULK", "MSP\3", data:sub(position), "WHISPER", character, "MSP-"..character, msp_AddFilter, character)
+			ChatThrottleLib:SendAddonMessage("BULK", "MSP\3", data:sub(position), "WHISPER", character, "XRP-"..character, msp_AddFilter, character)
 			--print(character..": Outgoing MSP\\3")
 		end
 		tmp_cache[character].lastsend = GetTime()
 	end
 
 	local function msp_DummyFilter(character)
+		--print("dummy sent")
 		msp_AddFilter(character)
 		if msprun.send[character] then
+			--print("queuing next message")
 			msprun.send[character].sendtime = GetTime() + msprun.send[character].delay
 		end
 	end
 
 	function msp_Dummy(character)
-		ChatThrottleLib:SendAddonMessage("ALERT", "MSP", "?XD", "WHISPER", character, "MSP-"..character, msp_DummyFilter, character)
+		ChatThrottleLib:SendAddonMessage("ALERT", "MSP", "?XD", "WHISPER", character, "XRP-"..character, msp_DummyFilter, character)
 		tmp_cache[character].lastsend = GetTime()
 	end
 end
@@ -171,8 +171,8 @@ local function msp_QueueSend(character, data, count)
 		return
 	end
 	local delay = (count == 1 or tmp_cache[character].received or now < tmp_cache[character].lastsend + 45) and (1.000 + ((select(3, GetNetStats())) * 0.001)) or (0.500 + ((select(3, GetNetStats())) * 0.001))
+	msprun.send[character] = { data = data, count = (count or 2) - 1, delay = delay, sendtime = now + delay }
 	msp_Dummy(character)
-	msprun.send[character] = { data = data, count = count - 1, delay = delay, sendtime = now + delay }
 	msprun:Show()
 end
 
@@ -255,8 +255,11 @@ function xrp.msp:Request(character, fields, safe)
 	return false
 end
 
-msprun:Hide()
-msprun:SetScript("OnUpdate", function(self, elapsed)
+function msprun:OnUpdate(elapsed)
+	self.timer = self.timer + elapsed
+	if self.timer < 0.08 then return end
+	self.timer = 0
+	-- This exhausts itself every time it's run. One and done.
 	if next(self.request) then
 		for character, fields in pairs(self.request) do
 			--print(character..": "..fields)
@@ -264,26 +267,29 @@ msprun:SetScript("OnUpdate", function(self, elapsed)
 			self.request[character] = nil
 			self.safe[character] = nil
 		end
-	elseif next(self.send) then
-		self.timer = self.timer + elapsed
-		if self.timer > 0.250 then
-			self.timer = 0
+	end
+	-- This might need to keep running repeatedly.
+	if next(self.send) then
+		for character, message in pairs(self.send) do
 			local now = GetTime()
-			for character, message in pairs(self.send) do
-				if message.sendtime and message.sendtime <= now and message.count > 0 then
-					msp_Dummy(character)
-					message.count = message.count - 1
-					message.sendtime = nil
-				elseif message.sendtime and message.sendtime <= now and message.count == 0 then
-					msp_Send(character, message.data)
-					self.send[character] = nil
-				end
+			if message.sendtime and message.sendtime <= now and message.count > 0 then
+				message.count = message.count - 1
+				message.sendtime = nil
+				msp_Dummy(character)
+			elseif message.sendtime and message.sendtime <= now then
+				msp_Send(character, message.data)
+				self.send[character] = nil
 			end
 		end
 	else
+		-- Only if there's nothing left in the send queue.
 		self:Hide()
+		-- Run first framedraw on next show.
+		self.timer = 0.08
 	end
-end)
+end
+msprun:Hide()
+msprun:SetScript("OnUpdate", msprun.OnUpdate)
 
 do
 	-- Cached tooltip response.
@@ -302,14 +308,14 @@ do
 			-- requires sending a response (i.e., is a query); second is a boolean,
 			-- if the MSP command provides an updated field (i.e., is a non-empty
 			-- response).
-			local function msp_Process(character, cmd)
+			function msp_Process(character, command)
 				-- Original LibMSP match string uses %a%a rather than %u%u.
 				-- According to protcol documentation, %u%u would be more
 				-- correct.
-				local action, field, version, contents = cmd:match("(%p?)(%u%u)(%d*)=?(.*)")
+				local action, field, version, contents = command:match("(%p?)(%u%u)(%d*)=?(.*)")
 				version = tonumber(version) or 0
 				if not field then
-					return nil, false
+					return nil, false, nil
 				elseif action == "?" then
 					local now = GetTime()
 					-- Queried our fields. This should end in returning a
@@ -318,27 +324,27 @@ do
 					-- they're spamming it at us.)
 					if req_timer[character][field] and req_timer[character][field] > now - 5 then
 						req_timer[character][field] = now
-						return nil, false
+						return nil, false, nil
 					end
 					req_timer[character][field] = now
 					if (xrp_versions[field] and version == xrp_versions[field]) or (not xrp_versions[field] and version == 0) then
 						-- They already have the latest.
-						return (not xrp_versions[field] and "%s" or "!%s%u"):format(field, xrp_versions[field]), false
+						return (not xrp_versions[field] and "%s" or "!%s%u"):format(field, xrp_versions[field]), false, nil
 					elseif field == "TT" then
 						if not tt then -- panic, something went wrong in init.
 							xrp.msp:Update()
 						end
-						return tt, false
+						return tt, false, nil
 					elseif not xrp.current[field] then
 						-- Field is empty.
-						return (not xrp_versions[field] and "%s" or "%s%u"):format(field, xrp_versions[field]), false
+						return (not xrp_versions[field] and "%s" or "%s%u"):format(field, xrp_versions[field]), false, nil
 					end
 					-- Field has content.
-					return ("%s%u=%s"):format(field, xrp_versions[field], xrp.current[field]), false
+					return ("%s%u=%s"):format(field, xrp_versions[field], xrp.current[field]), false, nil
 				elseif action == "!" then
 					-- Told us we have latest of their field.
 					tmp_cache[character].time[field] = GetTime()
-					return nil, false
+					return nil, false, nil
 				elseif action == "" then
 					-- Gave us a field.
 					if not xrp_cache[character] and (contents ~= "" or version ~= 0) then
@@ -382,7 +388,7 @@ do
 					-- initial send -- so timer will count from send OR receive as
 					-- appropriate.
 					tmp_cache[character].time[field] = GetTime()
-					return nil, updated -- No response needed.
+					return nil, updated, field -- No response needed.
 				end
 			end
 		end
@@ -398,16 +404,9 @@ do
 				local out = {}
 				local updated = false
 				local fieldupdated = false
-				if msg ~= "" then
-					if msg:find("\1", 1, true) then
-						for cmd in msg:gmatch("([^\1]+)\1*") do
-							out[#out + 1], fieldupdated = msp_Process(character, cmd)
-							updated = updated or fieldupdated
-						end
-					else
-						out[#out + 1], fieldupdated = msp_Process(character, msg)
-						updated = updated or fieldupdated
-					end
+				for command in msg:gmatch("([^\1]+)\1*") do
+					out[#out + 1], fieldupdated = msp_Process(character, command)
+					updated = updated or fieldupdated
 				end
 				if updated then
 					-- This only fires if there's actually been any changes to
@@ -566,19 +565,96 @@ if not disabled then
 	for prefix, _ in pairs(msprun.handlers) do
 		RegisterAddonMessagePrefix(prefix)
 	end
+
 	msprun:SetScript("OnEvent", function(self, event, prefix, message, channel, character)
 		--if event == "CHAT_MSG_ADDON" then print(character..": Incoming "..(prefix:gsub("\1", "\\1"):gsub("\2", "\\2"):gsub("\3", "\\3"))) end
 		-- message ~= "XD" filters dummy responses early.
-		if self.handlers[prefix] and message ~= "XD" then
+		if self.handlers[prefix] then
 			--print("In: "..character..": "..message:gsub("\1", "\\1"))
 			--print("Receiving from: "..character)
-			self.handlers[prefix](character, message)
-		elseif prefix == "MSP" and message == "XD" and self.send[character] then
-			-- Reduce dummy count to zero, since we got a response to the dummy.
-			self.send[character].count = 0
+			if message ~= "XD" then
+				self.handlers[prefix](character, message)
+			else
+				tmp_cache[character].received = true
+				tmp_cache[character].nextcheck = nil
+			end
+			if self.send[character] then
+				-- Reduce dummy count, since we got a successful message.
+				-- Reducing below zero is fine, condtionals check for < 1,
+				-- not == 0.
+				self.send[character].count = self.send[character].count - 1
+			end
 		end
 	end)
 	msprun:RegisterEvent("CHAT_MSG_ADDON")
 	ChatThrottleLib.MAX_CPS = 1200 -- up from 800
 	ChatThrottleLib.MIN_FPS = 15 -- down from 20
+end
+
+do
+	local function msp_CreateFSFrame()
+		local frame = CreateFrame("Frame")
+		local now = GetTime()
+		frame.lastdraw = now
+		frame.lastmsp = now
+		frame.lastctl = now
+		frame:SetScript("OnShow", function(self)
+			local now = GetTime()
+			self.lastdraw = now
+			self.lastmsp = now
+			self.lastctl = now
+		end)
+		frame:SetScript("OnUpdate", function(self, elapsed)
+			self.lastdraw = self.lastdraw + elapsed
+		end)
+		frame:SetScript("OnEvent", function(self, event)
+			local now = GetTime()
+			--print(now..": "..event)
+			if self.lastdraw < now - 5 then
+				--print("No framedraw for 5+ seconds.")
+				-- No framedraw for 5+ seconds.
+				if msprun:IsVisible() then
+					--print("Running MSP OnUpdate!")
+					msprun.OnUpdate(msprun, now - self.lastmsp)
+					self.lastmsp = now
+				end
+				if ChatThrottleLib.Frame:IsVisible() then
+					--print("Running CTL OnUpdate!")
+					local minfps = ChatThrottleLib.MIN_FPS
+					ChatThrottleLib.MIN_FPS = 0
+					ChatThrottleLib.OnUpdate(ChatThrottleLib.Frame, now - self.lastctl)
+					ChatThrottleLib.MIN_FPS = minfps
+					self.lastctl = now
+				end
+			end
+		end)
+		return frame
+	end
+	local fsframe
+	local function msp_CheckFullscreen()
+		if GetCVar("gxWindow") == "0" then
+			-- Is true fullscreen.
+			fsframe = fsframe or msp_CreateFSFrame()
+			fsframe:Show()
+			fsframe:RegisterEvent("CHAT_MSG_ADDON")
+			fsframe:RegisterEvent("CHAT_MSG_CHANNEL")
+			fsframe:RegisterEvent("CHAT_MSG_GUILD")
+			fsframe:RegisterEvent("CHAT_MSG_SAY")
+			fsframe:RegisterEvent("CHAT_MSG_EMOTE")
+			fsframe:RegisterEvent("GUILD_ROSTER_UPDATE")
+			fsframe:RegisterEvent("GUILD_TRADESKILL_UPDATE")
+			fsframe:RegisterEvent("GUILD_RANKS_UPDATE")
+			fsframe:RegisterEvent("PLAYER_GUILD_UPDATE")
+			fsframe:RegisterEvent("COMPANION_UPDATE")
+			-- This would be nice to use, but actually having it happening
+			-- in-combat would be huge overhead.
+			--fsframe:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+		elseif fsframe then
+			-- Is not true fullscreen.
+			fsframe:Hide()
+			fsframe:UnregisterAllEvents()
+		end
+	end
+	hooksecurefunc("RestartGx", msp_CheckFullscreen)
+	msp_CheckFullscreen()
 end
