@@ -215,7 +215,7 @@ do
 					else
 						local FC, FCnil = xrp.current.FC, xrp.selected.FC
 						local IC, ICnil = FC ~= nil and FC ~= "1" and FC ~= "0", FCnil ~= nil and FCnil ~= "1" and FCnil ~= "0"
-						if FC ~= xrp.selected.FC and IC ~= ICnil then
+						if FC ~= FCnil and IC ~= ICnil then
 							xrp.current.FC = nil
 						elseif IC then
 							xrp.current.FC = "1"
@@ -271,7 +271,7 @@ xrp.minimap:SetScript("OnLeave", function(self, motion)
 end)
 
 StaticPopupDialogs["XRP_CURRENTLY"] = {
-	text = L["What are you currently doing?"],
+	text = L["What are you currently doing?\n(This will reset ten minutes after logout.)"],
 	button1 = ACCEPT,
 	button2 = RESET,
 	button3 = CANCEL,
