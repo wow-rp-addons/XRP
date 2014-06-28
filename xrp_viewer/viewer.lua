@@ -19,32 +19,50 @@ local L = xrp.L
 local current = UNKNOWN
 
 do
-	local supportedfields = { NA = true, NI = true, NT = true, NH = true, AE = true, RA = true, AH = true, AW = true, CU = true, DE = true, AG = true, HH = true, HB = true, MO = true, HI = true, VA = true }
+	-- This will request fields in the order listed.
+	local display = {
+		"VA", "NA", "NH", "NI", "NT", "RA", "CU", -- In TT.
+		"AE", "AH", "AW", "AG", "HH", "HB", "MO", -- Not in TT.
+		"DE", "HI", -- High-bandwidth.
+	}
 
-	function xrp.viewer:Load(character)
+	function xrp.viewer:SetField(field, contents, character)
 		-- This does not need to be very smart. SetText() should be mapped to
 		-- the appropriate 'real' function if needed. However, the character
 		-- tables will return nil on an empty value, so watch for that.
-		for field, _ in pairs(supportedfields) do
-			if field == "NI" then
-				local NI = character[field]
-				self[field]:SetText(NI and L["\"%s\""]:format(xrp:StripEscapes(NI)) or "")
-			elseif field == "NA" then
-				self.TitleText:SetText(xrp:StripEscapes(character[field]) or Ambiguate(current, "none") or UNKNOWN)
-			elseif field == "VA" then
-				local VA = character[field]
-				self[field]:SetText(VA and xrp:StripEscapes(VA:gsub(";", ", ")) or ("%s/%s"):format(UNKNOWN, NONE))
-			elseif field == "AH" then
-				self[field]:SetText(xrp:ConvertHeight(xrp:StripEscapes(character[field]), "user") or "")
-			elseif field == "AW" then
-				self[field]:SetText(xrp:ConvertWeight(xrp:StripEscapes(character[field]), "user") or "")
-			elseif field == "RA" then
-				self[field]:SetText(xrp:StripEscapes(character[field]) or xrp.values.GR[character.GR] or "")
-			else
-				self[field]:SetText(xrp:StripEscapes(character[field]) or "")
-			end
+		if field == "NI" then
+			self[field]:SetText(contents and L["\"%s\""]:format(xrp:StripEscapes(contents)) or "")
+		elseif field == "NA" then
+			self.TitleText:SetText(xrp:StripEscapes(contents) or Ambiguate(current, "none") or UNKNOWN)
+		elseif field == "VA" then
+			self[field]:SetText(contents and xrp:StripEscapes(contents:gsub(";", ", ")) or ("%s/%s"):format(UNKNOWN, NONE))
+		elseif field == "AH" then
+			self[field]:SetText(xrp:ConvertHeight(xrp:StripEscapes(contents), "user") or "")
+		elseif field == "AW" then
+			self[field]:SetText(xrp:ConvertWeight(xrp:StripEscapes(contents), "user") or "")
+		elseif field == "RA" then
+			self[field]:SetText(xrp:StripEscapes(contents) or xrp.values.GR[character.GR] or "")
+		else
+			self[field]:SetText(xrp:StripEscapes(contents) or "")
 		end
 	end
+
+	function xrp.viewer:Load(character)
+		for _, field in ipairs(display) do
+			self:SetField(field, character[field], character)
+		end
+	end
+
+	local supported = {}
+	for _, field in ipairs(display) do
+		supported[field] = true
+	end
+	xrp:HookEvent("MSP_FIELD", function(name, field)
+		if current == name and supported[field] then
+			--print("Trying to set: "..field.." for "..name..".")
+			xrp.viewer:SetField(field, xrp.cache[name][field], xrp.cache[name])
+		end
+	end)
 end
 
 function xrp.viewer:ViewUnit(unit)
