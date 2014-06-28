@@ -229,7 +229,8 @@ function xrp.msp:Request(character, fields, safe)
 			end
 		end
 		if reqtt then
-			fields[#fields + 1] = "TT"
+			-- Want TT at start of response.
+			table.insert(fields, 1, "TT")
 		end
 	else
 		return false
@@ -394,7 +395,7 @@ do
 		end
 
 		msprun.handlers = {
-			["MSP"] = function (character, msg)
+			["MSP"] = function (character, message)
 				if disabled then
 					return false
 				end
@@ -404,7 +405,7 @@ do
 				local out = {}
 				local updated = false
 				local fieldupdated = false
-				for command in msg:gmatch("([^\1]+)\1*") do
+				for command in message:gmatch("([^\1]+)\1*") do
 					out[#out + 1], fieldupdated = msp_Process(character, command)
 					updated = updated or fieldupdated
 				end
@@ -424,41 +425,66 @@ do
 					xrp_cache[character].lastreceive = time()
 				end
 			end,
-			["MSP\1"] = function(character, msg)
+			["MSP\1"] = function(character, message)
 				if disabled then
 					return false
 				end
 				-- They definitely have MSP, no need to question it next time.
 				tmp_cache[character].received = true
 				tmp_cache[character].nextcheck = nil
-				local incchunks = msg:match("XC=%d+\1")
-				if incchunks then
-					tmp_cache[character].totalchunks = tonumber(incchunks:match("XC=(%d+)\1"))
+				local totalchunks = tonumber(message:match("^XC=(%d+)\1"))
+				if totalchunks then
+					tmp_cache[character].totalchunks = totalchunks
 					-- Drop XC if present.
-					msg = msg:gsub(incchunks, "")
+					message = message:match(("^XC=%d\1(.*)"):format(totalchunks))
 				end
-				--print(msg:gsub("\1", "\\1"))
+				for command in message:gmatch("([^\1]+)\1") do
+					if command:find("^[^%?]") then
+						local _, updated, field = msp_Process(character, command)
+						if updated then
+							--print(character..": "..field)
+							xrp:FireEvent("MSP_FIELD", character, field)
+						end
+						message = message:gsub(command:gsub("(%W)","%%%1").."\1", "")
+					end
+				end
+				--print(message:gsub("\1", "\\1"))
 				tmp_cache[character].chunks = 1
 				-- First message = fresh buffer.
-				tmp_cache[character].buffer = { msg }
+				tmp_cache[character].buffer = { message }
 				xrp:FireEvent("MSP_CHUNK", character, tmp_cache[character].chunks, tmp_cache[character].totalchunks or nil)
 			end,
-			["MSP\2"] = function(character, msg)
+			["MSP\2"] = function(character, message)
 				if disabled then
 					return false
 				end
 				if tmp_cache[character].buffer then
-					tmp_cache[character].buffer[#tmp_cache[character].buffer + 1] = msg
+					if message:find("\1", 1, true) then
+						message = table.concat(tmp_cache[character].buffer)..message
+						for command in message:gmatch("([^\1]+)\1") do
+							if command:find("^[^%?]") then
+								local _, updated, field = msp_Process(character, command)
+								if updated then
+									--print(character..": "..field)
+									xrp:FireEvent("MSP_FIELD", character, field)
+								end
+								message = message:gsub(command:gsub("(%W)","%%%1").."\1", "")
+							end
+						end
+						tmp_cache[character].buffer = { message }
+					else
+						tmp_cache[character].buffer[#tmp_cache[character].buffer + 1] = message
+					end
 					tmp_cache[character].chunks = tmp_cache[character].chunks + 1
 					xrp:FireEvent("MSP_CHUNK", character, tmp_cache[character].chunks, tmp_cache[character].totalchunks or nil)
 				end
 			end,
-			["MSP\3"] = function(character, msg)
+			["MSP\3"] = function(character, message)
 				if disabled then
 					return false
 				end
 				if tmp_cache[character].buffer then
-					tmp_cache[character].buffer[#tmp_cache[character].buffer + 1] = msg
+					tmp_cache[character].buffer[#tmp_cache[character].buffer + 1] = message
 					msprun.handlers["MSP"](character, table.concat(tmp_cache[character].buffer))
 					-- MSP_CHUNK after MSP_RECEIVE would fire. Makes it easier
 					-- to something useful when chunks == totalchunks.
