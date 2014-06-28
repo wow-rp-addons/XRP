@@ -14,6 +14,7 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
+
 local settings
 do
 	local default_settings = {
@@ -84,20 +85,20 @@ do
 		}
 
 		function tooltip_ParseVA(VA)
-			local VAshort = ""
+			local VAshort = {}
 			local hasrp = false
-			for addon in VA:upper():gmatch("(%a[^/]+)/[^;]+") do
+			for addon in VA:upper():gmatch("([^/;]+)/[^/;]+") do
 				if profile_addons[addon] and not hasrp then
-					VAshort = VAshort..profile_addons[addon]..", "
+					VAshort[#VAshort + 1] = profile_addons[addon]
 					hasrp = true
 				elseif extra_addons[addon]then
-					VAshort = VAshort..extra_addons[addon]..", "
+					VAshort[#VAshort + 1] = extra_addons[addon]
 				end
 			end
 			if not hasrp then
-				VAshort = "RP, "..VAshort
+				table.insert(VAshort, 1, "RP")
 			end
-			return (VAshort:gsub(", $", ""))
+			return table.concat(VAshort, ", ")
 		end
 	end
 
@@ -173,11 +174,12 @@ do
 			tooltip_RenderLine(cu.info:format(tooltip_Truncate(character.RA and settings.rprace and xrp:StripEscapes(character.RA) or cu.race, 40, 0, false)))
 
 			if (character.FR and character.FR ~= "0") or (character.FC and character.FC ~= "0") then
+				local color = character.FC and character.FC ~= "0" and (character.FC == "1" and "ff99664d" or "ff66b380") or "ffffffff"
 				-- AAAAAAAAAAAAAAAAAAAAAAAA. The boolean logic.
-				local frline = ("|c%s%s|r"):format((character.FC and character.FC ~= "0" and character.FC == "1" and "ff99664d" or "ff66b380") or "ffffffff", tooltip_Truncate((character.FR == "0" or not character.FR) and " " or tonumber(character.FR) and xrp.values.FR[tonumber(character.FR)] or xrp:StripEscapes(character.FR), 35, 0, false))
+				local frline = ("|c%s%s|r"):format(color, tooltip_Truncate((character.FR == "0" or not character.FR) and " " or tonumber(character.FR) and xrp.values.FR[tonumber(character.FR)] or xrp:StripEscapes(character.FR), 35, 0, false))
 				local fcline
 				if character.FC and character.FC ~= "0" then
-					fcline = ("|c%s%s|r"):format(character.FC == "1" and "ff99664d" or "ff66b380", tooltip_Truncate(tonumber(character.FC) and xrp.values.FC[tonumber(character.FC)] or xrp:StripEscapes(character.FC), 35, 0, false))
+					fcline = ("|c%s%s|r"):format(color, tooltip_Truncate(tonumber(character.FC) and xrp.values.FC[tonumber(character.FC)] or xrp:StripEscapes(character.FC), 35, 0, false))
 				end
 				tooltip_RenderLine(frline, fcline)
 			end
@@ -197,7 +199,7 @@ do
 			_G[gttr:format(numline)]:Hide()
 		end
 
-		if cu.icons and (cu.type == "pet" or not (character.NI or character.NT or cu.guild) or not character.VA)  then
+		if cu.icons and (cu.type == "pet" or character.NI or character.NT or cu.guild or not character.VA) then
 			GameTooltipTextRight2:SetText(" ")
 			GameTooltipTextRight2:Show()
 		end
