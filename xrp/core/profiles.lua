@@ -149,12 +149,12 @@ local profmt = {
 				xrp_profiles[name] = {}
 			end
 			xrp_profiles[name][field] = contents
-			if name == xrp_selectedprofile then
+			if name == xrp_selectedprofile or (name == L["Default"] and xrp.defaults[xrp_selectedprofile][field] == true) then
 				xrp.msp:UpdateField(field)
 			end
 		elseif (contents == "" or not contents) and xrp_profiles[name] and xrp_profiles[name][field] then
 			xrp_profiles[name][field] = nil
-			if name == xrp_selectedprofile then
+			if name == xrp_selectedprofile or (name == L["Default"] and xrp.defaults[xrp_selectedprofile][field] == true) then
 				xrp.msp:UpdateField(field)
 			end
 		end
