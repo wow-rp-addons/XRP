@@ -45,7 +45,7 @@ function xrp:NameWithoutRealm(name)
 	return name:match(FULL_PLAYER_NAME:format("(.+)", ".+")) or name
 end
 
-function xrp:RealmNameWithSpacing(name)
+function xrp:RealmNameWithSpacing(realm)
 	-- First gsub: spaces lower followed by upper (i.e., Wyrmrest Accord).
 	-- Second gsub: spaces lower followed by digit (i.e., Area 52).
 	-- Third gsub: spaces lower followed by 'of' (i.e., Sisters of Elune).
@@ -57,7 +57,7 @@ function xrp:RealmNameWithSpacing(name)
 	-- "(%l)du "
 	-- "eé"
 	-- ... Lots for non-English. Should handle some other way?...
-	return (name:gsub("(%l)(%u)", "%1 %2"):gsub("(%l)(%d)", "%1 %2"):gsub("(%l)of ", "%1 of "))
+	return (realm:gsub("(%l)(%u)", "%1 %2"):gsub("(%l)(%d)", "%1 %2"):gsub("(%l)of ", "%1 of "))
 end
 
 function xrp:StripEscapes(text)
