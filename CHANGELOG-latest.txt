@@ -1,36 +1,46 @@
-5.4.8.0_rc4 (2014-06-23):
+5.4.8.0_rc5 (2014-06-29):
 
-	- In chat messages, %xt will now be replaced by your target's RP name (if
-	  available; %t otherwise), and %xf will do the same for your focus's RP
-	  name. If you do not have a target/focus, the word "nobody" will be used
-	  instead.
+	- Overridden field timeout has been increased to 10 minutes after logout
+	  (up from 5).
 
-	- The profile importer now informs the user if there are no supported RP
-	  addons enabled, along with a hint of how to properly import profiles.
+	- Extra spacing option for tooltip has been adjusted to grouping in a
+	  3-2-3 format, rather than 3-3-2 ("Currently:" has been moved to the
+	  bottom group).
+
+	- Profiles will now progressively load (i.e., as they are recieved) in the
+	  viewer. Short fields (such as height, weight, home, etc.) should be
+	  loaded prior to long fields (description/history) for long profiles.
+
+		- Note: This will often be imperceptible for profiles below roughly
+		  4000 characters.
+
+	- Outgoing bandwidth limits have been slightly adjusted. Profile sends
+	  from XRP should be slightly faster now.
+
+		- In the extremely unlikely event that this causes issues with
+		  disconnects -- but note it was thoroughly tested and no disconnects
+		  could be triggered -- please inform the author.
 
 	- Bugfixes:
 
-		- Precision for outgoing weight conversion has been increased to 3
-		  significant digits (matching the three significant digits used in
-		  height).
+		- Use of %xt and %xf should no longer improperly print "nobody" when
+		  used on NPC or other non-player targets.
 
-		- Height/weight conversion has been adjusted to be more forgiving of
-		  extra whitespace. (Thanks, Forge.)
+		- An issue where the Blizzard stealth/range issue workaround could
+		  send messages out-of-order in high-bandwidth circumstances has been
+		  fixed.
 
-		- The maximum tooltip width has been slightly increased for most
-		  lines.
+		- An issue where being alt-tabbed in true fullscreen mode (not
+		  Fullscreen (Windowed)) caused profiles to not be sent to others has
+		  been mitigated. However, it's still not ideal to run true fullscreen
+		  with RP addons, if you spend lots of time tabbed out.
 
-		- The detachment of the minimap button should (?) work better with
-		  some minimap-modifying addons now.
+		- An issue where bugs in other addons could trigger higher outgoing
+		  bandwidth usage in XRP has been mitigated.
 
-		- The label for the party chat option in the chat names configuration
-		  now properly reads "Party" instead of "Raid".
+		- Minor optimizations have been made to the protocol and workaround
+		  implementations; these should slightly improve reliability and
+		  response times in some cases.
 
-		- Toggling the minimap icon from attached to detached or vice-versa
-		  now properly warns that you may need to reload your UI.
-
-		- A minor oddity with the import from MyRolePlay involving custom
-		  IC/OOC statuses has been fixed (custom statuses are now imported as
-		  "In character").
-
-		- A few minor clarifications have been made to some text strings.
+		- The active profile is now always updated properly when a field it
+		  inherits from default is modified in the default profile.
