@@ -118,7 +118,7 @@ do
 	function msp_Send(character, data)
 		data = table.concat(data, "\1")
 		--print("Sending to: "..character)
-		--print("Out: "..character..": "..data:gsub("\1", "\\1"))
+		--print(GetTime()..": Out: "..character..": "..data:gsub("\1", "\\1"))
 		if #data <= 255 then
 			ChatThrottleLib:SendAddonMessage("NORMAL", "MSP", data, "WHISPER", character, "XRP-"..character, msp_AddFilter, character)
 			--print(character..": Outgoing MSP")
@@ -162,6 +162,9 @@ local function msp_QueueSend(character, data, count)
 		for _, request in ipairs(data) do
 			msprun.send[character].data[#msprun.send[character].data + 1] = request
 		end
+		if count and count - 1 < msprun.send[character].count then
+			msprun.send[character].count = count - 1
+		end
 		return
 	end
 	local now = GetTime()
@@ -177,9 +180,8 @@ local function msp_QueueSend(character, data, count)
 end
 
 function xrp.msp:QueueRequest(character, field, safe)
-	if disabled or character == xrp.toon.withrealm or xrp:NameWithoutRealm(character) == UNKNOWN then
-		return false
-	end
+	if disabled or character == xrp.toon.withrealm or xrp:NameWithoutRealm(character) == UNKNOWN then return false end
+
 	local append = true
 	if not msprun.request[character] then
 		msprun.request[character] = {}
@@ -201,9 +203,7 @@ function xrp.msp:QueueRequest(character, field, safe)
 end
 
 function xrp.msp:Request(character, fields, safe)
-	if disabled or character == xrp.toon.withrealm or xrp:NameWithoutRealm(character) == UNKNOWN then
-		return false
-	end
+	if disabled or character == xrp.toon.withrealm or xrp:NameWithoutRealm(character) == UNKNOWN then return false end
 
 	local now = GetTime()
 	if not tmp_cache[character].received and now < tmp_cache[character].nextcheck then
@@ -316,32 +316,32 @@ do
 				local action, field, version, contents = command:match("(%p?)(%u%u)(%d*)=?(.*)")
 				version = tonumber(version) or 0
 				if not field then
-					return nil, false, nil
+					return nil, nil, nil
 				elseif action == "?" then
 					local now = GetTime()
 					-- Queried our fields. This should end in returning a
 					-- string with our info for that field. (If it doesn't, it
 					-- means we're ignoring their request, probably because
 					-- they're spamming it at us.)
-					if req_timer[character][field] and req_timer[character][field] > now - 5 then
+					if req_timer[character][field] and req_timer[character][field] > now - 10 then
 						req_timer[character][field] = now
-						return nil, false, nil
+						return nil, nil, nil
 					end
 					req_timer[character][field] = now
 					if (xrp_versions[field] and version == xrp_versions[field]) or (not xrp_versions[field] and version == 0) then
 						-- They already have the latest.
-						return (not xrp_versions[field] and "%s" or "!%s%u"):format(field, xrp_versions[field]), false, nil
+						return (not xrp_versions[field] and "%s" or "!%s%u"):format(field, xrp_versions[field]), nil, nil
 					elseif field == "TT" then
 						if not tt then -- panic, something went wrong in init.
 							xrp.msp:Update()
 						end
-						return tt, false, nil
+						return tt, nil, nil
 					elseif not xrp.current[field] then
 						-- Field is empty.
-						return (not xrp_versions[field] and "%s" or "%s%u"):format(field, xrp_versions[field]), false, nil
+						return (not xrp_versions[field] and "%s" or "%s%u"):format(field, xrp_versions[field]), nil, nil
 					end
 					-- Field has content.
-					return ("%s%u=%s"):format(field, xrp_versions[field], xrp.current[field]), false, nil
+					return ("%s%u=%s"):format(field, xrp_versions[field], xrp.current[field]), nil, nil
 				elseif action == "!" then
 					-- Told us we have latest of their field.
 					tmp_cache[character].time[field] = GetTime()
@@ -396,25 +396,23 @@ do
 
 		msprun.handlers = {
 			["MSP"] = function (character, message)
-				if disabled then
-					return false
-				end
+				if disabled then return end
 				-- They definitely have MSP, no need to question it next time.
 				tmp_cache[character].received = true
 				tmp_cache[character].nextcheck = nil
 				local out = {}
-				local updated = false
-				local fieldupdated = false
+				local updated
 				for command in message:gmatch("([^\1]+)\1*") do
+					local fieldupdated
 					out[#out + 1], fieldupdated = msp_Process(character, command)
 					updated = updated or fieldupdated
 				end
-				if updated then
+				if updated or tmp_cache[character].fieldupdated then
 					-- This only fires if there's actually been any changes to
 					-- field contents.
 					xrp:FireEvent("MSP_RECEIVE", character)
-				elseif #out == 0 then
-					-- If they sent a request, out will have content.
+					tmp_cache[character].fieldupdated = nil
+				elseif updated == false then -- nil if only requests.
 					xrp:FireEvent("MSP_NOCHANGE", character)
 				end
 				if #out > 0 then
@@ -426,9 +424,7 @@ do
 				end
 			end,
 			["MSP\1"] = function(character, message)
-				if disabled then
-					return false
-				end
+				if disabled then return end
 				-- They definitely have MSP, no need to question it next time.
 				tmp_cache[character].received = true
 				tmp_cache[character].nextcheck = nil
@@ -436,14 +432,17 @@ do
 				if totalchunks then
 					tmp_cache[character].totalchunks = totalchunks
 					-- Drop XC if present.
-					message = message:match(("^XC=%d\1(.*)"):format(totalchunks))
+					message = message:gsub(("XC=%d\1"):format(totalchunks), "")
 				end
+				-- This only does partial processing -- queries (i.e., ?NA) are
+				-- processed after full reception.
 				for command in message:gmatch("([^\1]+)\1") do
 					if command:find("^[^%?]") then
 						local _, updated, field = msp_Process(character, command)
 						if updated then
 							--print(character..": "..field)
 							xrp:FireEvent("MSP_FIELD", character, field)
+							tmp_cache[character].fieldupdated = true
 						end
 						message = message:gsub(command:gsub("(%W)","%%%1").."\1", "")
 					end
@@ -451,49 +450,63 @@ do
 				--print(message:gsub("\1", "\\1"))
 				tmp_cache[character].chunks = 1
 				-- First message = fresh buffer.
-				tmp_cache[character].buffer = { message }
+				tmp_cache[character].buffer = message
 				xrp:FireEvent("MSP_CHUNK", character, tmp_cache[character].chunks, tmp_cache[character].totalchunks or nil)
 			end,
 			["MSP\2"] = function(character, message)
-				if disabled then
-					return false
+				if disabled then return end
+				-- If we don't have a buffer (i.e., no prior received message),
+				-- still try to process as many full commands as we can.
+				if not tmp_cache[character].buffer then
+					message = message:match("^.-\1(.+)$")
+					if not message then return end
+					tmp_cache[character].buffer = ""
 				end
-				if tmp_cache[character].buffer then
-					if message:find("\1", 1, true) then
-						message = table.concat(tmp_cache[character].buffer)..message
-						for command in message:gmatch("([^\1]+)\1") do
-							if command:find("^[^%?]") then
-								local _, updated, field = msp_Process(character, command)
-								if updated then
-									--print(character..": "..field)
-									xrp:FireEvent("MSP_FIELD", character, field)
-								end
-								message = message:gsub(command:gsub("(%W)","%%%1").."\1", "")
+				if message:find("\1", 1, true) then
+					message = type(tmp_cache[character].buffer) == "string" and (tmp_cache[character].buffer..message) or (table.concat(tmp_cache[character].buffer)..message)
+					for command in message:gmatch("([^\1]+)\1") do
+						if command:find("^[^%?]") then
+							local _, updated, field = msp_Process(character, command)
+							if updated then
+								--print(character..": "..field)
+								xrp:FireEvent("MSP_FIELD", character, field)
+								tmp_cache[character].fieldupdated = true
 							end
+							message = message:gsub(command:gsub("(%W)","%%%1").."\1", "")
 						end
-						tmp_cache[character].buffer = { message }
+					end
+					tmp_cache[character].buffer = message
+				else
+					if type(tmp_cache[character].buffer) == "string" then
+						tmp_cache[character].buffer = { tmp_cache[character].buffer, message }
 					else
 						tmp_cache[character].buffer[#tmp_cache[character].buffer + 1] = message
 					end
-					tmp_cache[character].chunks = tmp_cache[character].chunks + 1
-					xrp:FireEvent("MSP_CHUNK", character, tmp_cache[character].chunks, tmp_cache[character].totalchunks or nil)
 				end
+				tmp_cache[character].chunks = (tmp_cache[character].chunks or 0) + 1
+				xrp:FireEvent("MSP_CHUNK", character, tmp_cache[character].chunks, tmp_cache[character].totalchunks or nil)
 			end,
 			["MSP\3"] = function(character, message)
-				if disabled then
-					return false
+				if disabled then return end
+				-- If we don't have a buffer (i.e., no prior received message),
+				-- still try to process as many full commands as we can.
+				if not tmp_cache[character].buffer then
+					message = message:match("^.-\1(.+)$")
+					if not message then return end
+					tmp_cache[character].buffer = ""
 				end
-				if tmp_cache[character].buffer then
-					tmp_cache[character].buffer[#tmp_cache[character].buffer + 1] = message
-					msprun.handlers["MSP"](character, table.concat(tmp_cache[character].buffer))
-					-- MSP_CHUNK after MSP_RECEIVE would fire. Makes it easier
-					-- to something useful when chunks == totalchunks.
-					xrp:FireEvent("MSP_CHUNK", character, tmp_cache[character].chunks + 1, tmp_cache[character].chunks + 1)
+				if type(tmp_cache[character].buffer) == "string" then
+					msprun.handlers["MSP"](character, tmp_cache[character].buffer..message)
+				else
+					msprun.handlers["MSP"](character, table.concat(tmp_cache[character].buffer)..message)
+				end
+				-- MSP_CHUNK after MSP_RECEIVE would fire. Makes it easier
+				-- to do something useful when chunks == totalchunks.
+				xrp:FireEvent("MSP_CHUNK", character, (tmp_cache[character].chunks or 0) + 1, (tmp_cache[character].chunks or 0) + 1)
 
-					tmp_cache[character].chunks = nil
-					tmp_cache[character].totalchunks = nil
-					tmp_cache[character].buffer = nil
-				end
+				tmp_cache[character].chunks = nil
+				tmp_cache[character].totalchunks = nil
+				tmp_cache[character].buffer = nil
 			end,
 		}
 	end
@@ -517,9 +530,7 @@ do
 		end
 
 		function xrp.msp:Update()
-			if disabled then
-				return false
-			end
+			if disabled then return false end
 
 			local changes = false
 			local ttchanges = false
@@ -558,14 +569,13 @@ do
 			end
 			if changes then
 				xrp:FireEvent("MSP_UPDATE")
+				return true
 			end
-			return true
+			return false
 		end
 
 		function xrp.msp:UpdateField(field)
-			if disabled then
-				return false
-			end
+			if disabled then return false end
 			local character = xrp.toon.withrealm
 			local old = xrp_cache[character].fields
 			if not old[field] or old[field] ~= xrp.current[field] then
@@ -581,8 +591,9 @@ do
 					msp_CacheTT()
 				end
 				xrp:FireEvent("MSP_UPDATE", field)
+				return true
 			end
-			return true
+			return false
 		end
 	end
 end
@@ -594,26 +605,26 @@ if not disabled then
 
 	msprun:SetScript("OnEvent", function(self, event, prefix, message, channel, character)
 		--if event == "CHAT_MSG_ADDON" then print(character..": Incoming "..(prefix:gsub("\1", "\\1"):gsub("\2", "\\2"):gsub("\3", "\\3"))) end
-		-- message ~= "XD" filters dummy responses early.
 		if self.handlers[prefix] then
-			--print("In: "..character..": "..message:gsub("\1", "\\1"))
+			--print(GetTime()..": In: "..character..": "..message:gsub("\1", "\\1"))
 			--print("Receiving from: "..character)
+			if self.send[character] and not tmp_cache[character].received then
+				-- Reduce dummy count, since we got a successful message.
+				-- Reducing below zero is fine, condtionals check for < 1,
+				-- not == 0.
+				self.send[character].count = self.send[character].count - 1
+			end
 			if message ~= "XD" then
 				self.handlers[prefix](character, message)
 			else
 				tmp_cache[character].received = true
 				tmp_cache[character].nextcheck = nil
 			end
-			if self.send[character] then
-				-- Reduce dummy count, since we got a successful message.
-				-- Reducing below zero is fine, condtionals check for < 1,
-				-- not == 0.
-				self.send[character].count = self.send[character].count - 1
-			end
 		end
 	end)
 	msprun:RegisterEvent("CHAT_MSG_ADDON")
 	ChatThrottleLib.MAX_CPS = 1200 -- up from 800
+	ChatThrottleLib.BURST = 6000 -- up from 4000
 	ChatThrottleLib.MIN_FPS = 15 -- down from 20
 end
 
@@ -640,12 +651,15 @@ do
 				--print("No framedraw for 5+ seconds.")
 				-- No framedraw for 5+ seconds.
 				if msprun:IsVisible() then
-					--print("Running MSP OnUpdate!")
+					--print(now..": Running MSP OnUpdate!")
 					msprun.OnUpdate(msprun, now - self.lastmsp)
 					self.lastmsp = now
 				end
 				if ChatThrottleLib.Frame:IsVisible() then
-					--print("Running CTL OnUpdate!")
+					--print(now..": Running CTL OnUpdate!")
+					-- Temporarily setting MIN_FPS to zero since... Well, no
+					-- framedraws are happening, but it's not because the
+					-- system is bogged down.
 					local minfps = ChatThrottleLib.MIN_FPS
 					ChatThrottleLib.MIN_FPS = 0
 					ChatThrottleLib.OnUpdate(ChatThrottleLib.Frame, now - self.lastctl)
