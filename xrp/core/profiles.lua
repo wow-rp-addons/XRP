@@ -258,7 +258,7 @@ xrp.profiles = setmetatable({}, {
 			end
 		end
 	end,
-	__call = function(self, name)
+	__call = function(self, name, keepoverrides)
 		if not name then
 			local list = {}
 			for name, _ in pairs(xrp_profiles) do
@@ -269,7 +269,9 @@ xrp.profiles = setmetatable({}, {
 			return list
 		elseif type(name) == "string" and xrp_profiles[name] then
 			xrp_selectedprofile = name
-			wipe(xrp_overrides)
+			if not keepoverrides then
+				wipe(xrp_overrides)
+			end
 			xrp.msp:Update()
 			return true
 		end
