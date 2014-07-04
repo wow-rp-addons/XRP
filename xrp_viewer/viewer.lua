@@ -111,7 +111,6 @@ end
 
 xrp:HookEvent("MSP_RECEIVE", function(name)
 	if current == name then
-		xrp.viewer:Load(xrp.characters[name])
 		xrp.viewer.XC:SetText(L["Received!"])
 	end
 end)
