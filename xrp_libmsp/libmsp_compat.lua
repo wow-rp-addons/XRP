@@ -52,7 +52,7 @@ local mspchars = setmetatable({}, { __mode = "v" })
 
 local fieldmt = {
 	__index = function(self, field)
-		return xrp_cache[self[nk]] and xrp_cache[self[nk]].fields[field] or ""
+		return xrp_cache[self[nk]].fields[field] or ""
 	end,
 	__newindex = nonewindex,
 	__metatable = false,
@@ -60,7 +60,7 @@ local fieldmt = {
 
 local vermt = {
 	__index = function(self, field)
-		return xrp_cache[self[nk]] and xrp_cache[self[nk]].versions[field] or nil
+		return xrp_cache[self[nk]].versions[field]
 	end,
 	__newindex = nonewindex,
 	__metatable = false,
@@ -123,7 +123,14 @@ msp.myver = setmetatable({}, {
 })
 
 function msp:Request(character, fields)
-	xrp.msp:Request(xrp:NameWithRealm(character), fields)
+	if not fields or fields == "" then
+		fields = { "TT" }
+	elseif type(fields) == "string" then
+		fields = { fields }
+	elseif type(fields) ~= "table" then
+		return false
+	end
+	return xrp.msp:Request(xrp:NameWithRealm(character), fields)
 end
 
 -- Used by GHI... Working with the cache since GHI expects values to be
