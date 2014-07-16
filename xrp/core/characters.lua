@@ -15,60 +15,16 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local safe, request
-do
-	local clear = CreateFrame("Frame")
-
-	safe = setmetatable({}, {
-		__index = function(self, character)
-			return 2
-		end,
-		__newindex = function(self, character, safelevel)
-			rawset(self, character, safelevel)
-			clear:Show() -- Resets every framedraw.
-		end,
-		__mode = "v",
-	})
-
-	request = setmetatable({}, {
-		__index = function(self, character)
-			return false
-		end,
-		__newindex = function(self, character, nocache)
-			rawset(self, character, nocache and true or false)
-			clear:Show() -- Resets every framedraw.
-		end,
-		__mode = "v",
-	})
-
-	clear:Hide()
-	clear:SetScript("OnUpdate", function(self, elapsed)
-		wipe(safe)
-		wipe(request)
-		self:Hide()
-	end)
-
-	clear:SetScript("OnEvent", function(self, event)
-		if event == "PLAYER_LOGIN" then
-			IsItemInRange(44212, "player")
-			self:UnregisterAllEvents()
-			self:SetScript("OnEvent", nil)
-		end
-	end)
-	clear:RegisterEvent("PLAYER_LOGIN")
-end
-
-local chars, gcache
-do
-	local weak = { __mode = "v" }
-
-	chars = setmetatable({}, weak)
-	gcache = setmetatable({}, weak)
-end
+-- This makes sure the client has the item data cached to allow range checking.
+xrp:HookLogin(function()
+	IsItemInRange(44212, "player")
+end)
 
 local nonewindex = function() end
+local weak = { __mode = "v" }
+local gcache = setmetatable({}, weak)
 
-local nk = {}
+local nk, rk, sk = {}, {}, {}
 
 local charsmt = {
 	__index = function(self, field)
@@ -84,9 +40,10 @@ local charsmt = {
 		if gcache[name] and gcache[name][field] then
 			return gcache[name][field]
 		end
-		if request[name] and (not gcache[name] or not gcache[name].GF or gcache[name].GF == xrp.toon.fields.GF) then
-			xrp.msp:QueueRequest(name, field, safe[name])
-		elseif request[name] and gcache[name] and gcache[name].GF ~= xrp.toon.fields.GF then
+		local request = self[rk]
+		if request and (not gcache[name] or not gcache[name].GF or gcache[name].GF == xrp.toon.fields.GF) then
+			xrp.msp:QueueRequest(name, field, self[sk])
+		elseif request and gcache[name] and gcache[name].GF ~= xrp.toon.fields.GF and gcache[name].GF ~= "Neutral" then
 			xrp:FireEvent("MSP_FAIL", name, "faction")
 		end
 		if xrp_cache[name] and xrp_cache[name].fields[field] then
@@ -104,36 +61,36 @@ local charsmt = {
 	end,
 	__metatable = false,
 }
-
-xrp.characters = setmetatable({}, {
-	__index = function(self, name)
-		if not name or name == "" then
-			return nil
-		end
-		name = xrp:NameWithRealm(name)
-		if not chars[name] then
-			chars[name] = setmetatable({ [nk] = name }, charsmt)
-		end
-		request[name] = true
-		return chars[name]
-	end,
-	__newindex = nonewindex,
-	__metatable = false,
-})
-
-xrp.units = setmetatable({}, {
-	__index = function (self, unit)
-		if not UnitIsPlayer(unit) then
-			return nil
-		end
-		local name = xrp:UnitNameWithRealm(unit)
-		if type(name) == "string" then
-			if not chars[name] then
-				chars[name] = setmetatable({ [nk] = name }, charsmt)
+do
+	local chars = setmetatable({}, weak)
+	xrp.characters = setmetatable({}, {
+		__index = function(self, name)
+			if not name or name == "" then
+				return nil
 			end
-			-- These values will only update once per session. This could
-			-- create minor confusion if someone changes faction, race, sex,
-			-- or GUID while we're still logged in. Unlikely, but possible.
+			name = xrp:NameWithRealm(name)
+			if not chars[name] then
+				chars[name] = setmetatable({ [nk] = name, [rk] = true, [sk] = 2 }, charsmt)
+			end
+			return chars[name]
+		end,
+		__newindex = nonewindex,
+		__metatable = false,
+	})
+end
+
+do
+	local chars = setmetatable({}, weak)
+	xrp.units = setmetatable({}, {
+		__index = function (self, unit)
+			local name = xrp:UnitNameWithRealm(unit)
+			if not UnitIsPlayer(unit) or not name then
+				return nil
+			end
+			-- These values may only update once per session (varying with
+			-- garbage collection). This could create minor confusion if
+			-- someone changes faction, race, sex, or GUID while we're still
+			-- logged in. Unlikely, but possible.
 			if not gcache[name] then
 				local GU = UnitGUID(unit)
 				local class, GC, race, GR, GS = GetPlayerInfoByGUID(GU)
@@ -157,23 +114,26 @@ xrp.units = setmetatable({}, {
 					xrp_cache[name].fields.GF = gcache[name].GF
 				end
 			end
+			-- Don't bother with requests to disconnected units.
+			local request = UnitIsConnected(unit) == 1
+			if not request then
+				xrp:FireEvent("MSP_FAIL", name, "offline")
+			end
 			-- Half-unsafe if we're not within 100 yards, or we are stealthed.
 			-- We have their GUID, but they may not have ours.
-			safe[name] = (IsItemInRange(44212, unit) ~= 1 or IsStealthed()) and 1 or 0
-			-- Don't bother with requests to disconnected units.
-			if not UnitIsConnected(unit) then
-				request[name] = nil
-				xrp:FireEvent("MSP_FAIL", name, "offline")
+			local safe = (IsItemInRange(44212, unit) ~= 1 or IsStealthed()) and 1 or 0
+			if not chars[name] then
+				chars[name] = setmetatable({ [nk] = name, [rk] = request, [sk] = safe }, charsmt)
 			else
-				request[name] = true
+				chars[name][rk] = request
+				chars[name][sk] = safe
 			end
 			return chars[name]
-		end
-		return nil
-	end,
-	__newindex = nonewindex,
-	__metatable = false,
-})
+		end,
+		__newindex = nonewindex,
+		__metatable = false,
+	})
+end
 
 do
 	local race_faction = {
@@ -189,70 +149,71 @@ do
 		Scourge = "Horde",
 		BloodElf = "Horde",
 		Goblin = "Horde",
-		Pandaren = false, -- Can't tell faction.
+		Pandaren = nil, -- Can't tell faction.
 	}
 
+	local chars = setmetatable({}, weak)
 	xrp.guids = setmetatable({}, {
 		__index = function (self, GU)
-			-- This will return nil if the GUID hasn't been seen by the client yet
-			-- in the session.
+			-- This will return nil if the GUID hasn't been seen by the client
+			-- yet in the session.
 			local class, GC, race, GR, GS, name, realm = GetPlayerInfoByGUID(GU)
+			name = xrp:NameWithRealm(name, realm)
 			if not name or name == "" then
 				return nil
 			end
-			name = xrp:NameWithRealm(name, realm)
-			if type(name) == "string" then
-				if not chars[name] then
-					chars[name] = setmetatable({ [nk] = name }, charsmt)
-				end
-				-- These values will only update once per session. This could
-				-- create minor confusion if someone changes faction, race, sex,
-				-- or GUID while we're still logged in. Unlikely, but possible.
-				if not gcache[name] then
-					gcache[name] = {
-						GC = GC,
-						GF = race_faction[GR],
-						GR = GR,
-						GS = tostring(GS),
-						GU = GU,
-					}
-					if xrp_cache[name] and name ~= xrp.toon.withrealm then
-						for field, contents in pairs(gcache[name]) do
-							-- We DO want to overwrite these, to account for race,
-							-- faction, or sex changes.
-							xrp_cache[name].fields[field] = contents
-						end
+			-- These values may only update once per session (varying with
+			-- garbage collection). This could create minor confusion if
+			-- someone changes faction, race, sex, or GUID while we're still
+			-- logged in. Unlikely, but possible.
+			if not gcache[name] then
+				gcache[name] = {
+					GC = GC,
+					GF = race_faction[GR],
+					GR = GR,
+					GS = tostring(GS),
+					GU = GU,
+				}
+				if xrp_cache[name] and name ~= xrp.toon.withrealm then
+					for field, contents in pairs(gcache[name]) do
+						-- We DO want to overwrite these, to account for race,
+						-- faction, or sex changes.
+						xrp_cache[name].fields[field] = contents
 					end
 				end
-				safe[name] = 1 -- We have their GUID, they may not have ours.
-				request[name] = true
-				return chars[name]
 			end
-			return nil
+			if not chars[name] then
+				chars[name] = setmetatable({ [nk] = name, [rk] = true, [sk] = 1 }, charsmt)
+			end
+			return chars[name]
 		end,
 		__newindex = nonewindex,
 		__metatable = false,
 	})
 end
 
-xrp.cache = setmetatable({}, {
-	__index = function(self, name)
-		if not name or name == "" then
-			return nil
-		end
-		name = xrp:NameWithRealm(name)
-		if not chars[name] then
-			chars[name] = setmetatable({ [nk] = name }, charsmt)
-		end
-		return chars[name]
-	end,
-	__newindex = nonewindex,
-	__call = function(self)
-		local out = {}
-		for name, _ in xrp_cache do
-			out[#out + 1] = name
-		end
-		return out
-	end,
-	__metatable = false,
-})
+do
+	local chars = setmetatable({}, weak)
+	xrp.cache = setmetatable({}, {
+		__index = function(self, name)
+			if not name or name == "" then
+				return nil
+			end
+			name = xrp:NameWithRealm(name)
+			if not chars[name] then
+				chars[name] = setmetatable({ [nk] = name, [rk] = false }, charsmt)
+			end
+			return chars[name]
+		end,
+		__newindex = nonewindex,
+		__call = function(self)
+			local out = {}
+			for name, _ in pairs(xrp_cache) do
+				out[#out + 1] = name
+			end
+			table.sort(out)
+			return out
+		end,
+		__metatable = false,
+	})
+end
