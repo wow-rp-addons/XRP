@@ -38,10 +38,10 @@ xrp.current = setmetatable({}, {
 			contents = xrp.toon.fields[field]
 		elseif xrp_overrides[field] then
 			contents = xrp_overrides[field]
-		elseif xrp_profiles[xrp_selectedprofile] and xrp_profiles[xrp_selectedprofile][field] then
-			contents = xrp_profiles[xrp_selectedprofile][field]
-		elseif xrp.defaults[xrp_selectedprofile][field] == true and xrp_profiles[L["Default"]][field] then
-			contents = xrp_profiles[L["Default"]][field]
+		elseif xrp_profiles[xrp_selectedprofile].fields[field] then
+			contents = xrp_profiles[xrp_selectedprofile].fields[field]
+		elseif xrp.defaults[xrp_selectedprofile][field] == true and xrp_profiles[L["Default"]].fields[field] then
+			contents = xrp_profiles[L["Default"]].fields[field]
 		else
 			return nil
 		end
@@ -54,19 +54,20 @@ xrp.current = setmetatable({}, {
 		end
 	end,
 	__newindex = function(self, field, contents)
-		if not xrp.msp.unitfields[field] and not xrp.msp.metafields[field] and not xrp.msp.dummyfields[field] and field:find("^%u%u$") and xrp_overrides[field] ~= contents then
-			xrp_overrides[field] = contents
-			xrp.msp:UpdateField(field)
+		if xrp_overrides[field] == contents or xrp.msp.unitfields[field] or xrp.msp.metafields[field] or xrp.msp.dummyfields[field] or not field:find("^%u%u$") then
+			return
 		end
+		xrp_overrides[field] = contents
+		xrp.msp:UpdateField(field)
 	end,
 	__call = function(self)
 		local out = {}
-		for field, contents in pairs(xrp_profiles[L["Default"]]) do
+		for field, contents in pairs(xrp_profiles[L["Default"]].fields) do
 			if xrp.defaults[xrp_selectedprofile][field] then
 				out[field] = contents
 			end
 		end
-		for field, contents in pairs(xrp_profiles[xrp_selectedprofile]) do
+		for field, contents in pairs(xrp_profiles[xrp_selectedprofile].fields) do
 			out[field] = contents
 		end
 		for field, contents in pairs(xrp_overrides) do
@@ -88,10 +89,10 @@ xrp.selected = setmetatable({}, {
 		local contents
 		if xrp.toon.fields[field] then
 			contents = xrp.toon.fields[field]
-		elseif xrp_profiles[xrp_selectedprofile] and xrp_profiles[xrp_selectedprofile][field] then
-			contents = xrp_profiles[xrp_selectedprofile][field]
-		elseif xrp.defaults[xrp_selectedprofile][field] == true and xrp_profiles[L["Default"]][field] then
-			contents = xrp_profiles[L["Default"]][field]
+		elseif xrp_profiles[xrp_selectedprofile].fields[field] then
+			contents = xrp_profiles[xrp_selectedprofile].fields[field]
+		elseif xrp.defaults[xrp_selectedprofile][field] == true and xrp_profiles[L["Default"]].fields[field] then
+			contents = xrp_profiles[L["Default"]].fields[field]
 		else
 			return nil
 		end
@@ -103,15 +104,15 @@ xrp.selected = setmetatable({}, {
 			return contents
 		end
 	end,
-	__newindex = function() end,
+	__newindex = nonewindex,
 	__call = function(self)
 		local out = {}
-		for field, contents in pairs(xrp_profiles[L["Default"]]) do
+		for field, contents in pairs(xrp_profiles[L["Default"]].fields) do
 			if xrp.defaults[xrp_selectedprofile][field] then
 				out[field] = contents
 			end
 		end
-		for field, contents in pairs(xrp_profiles[xrp_selectedprofile]) do
+		for field, contents in pairs(xrp_profiles[xrp_selectedprofile].fields) do
 			out[field] = contents
 		end
 		for field, contents in pairs(xrp.toon.fields) do
@@ -124,158 +125,194 @@ xrp.selected = setmetatable({}, {
 	__metatable = false,
 })
 
--- This key is used to 'hide' the name of a profile inside its own meta
--- table. This is obviously accessible, but it just prevents accidental
--- mucking with.
+local nonewindex = function() end
+
 local nk = {}
 
-local profmt = {
-	__index = function(self, field)
-		if not xrp_profiles[self[nk]] then
-			xrp_profiles[self[nk]] = {}
-		end
-		if xrp_profiles[self[nk]][field] then
-			return xrp_profiles[self[nk]][field]
-		end
-		return nil
-	end,
-	__newindex = function(self, field, contents)
-		if xrp.msp.unitfields[field] or xrp.msp.metafields[field] or xrp.msp.dummyfields[field] or not field:find("^%u%u$") then
-			return
-		end
-		local name = self[nk]
-		if type(contents) == "string" and contents ~= "" and (not xrp_profiles[name] or xrp_profiles[name][field] ~= contents) then
-			if not xrp_profiles[name] then
-				xrp_profiles[name] = {}
-			end
-			xrp_profiles[name][field] = contents
-			if name == xrp_selectedprofile or (name == L["Default"] and xrp.defaults[xrp_selectedprofile][field] == true) then
-				xrp.msp:UpdateField(field)
-			end
-		elseif (contents == "" or not contents) and xrp_profiles[name] and xrp_profiles[name][field] then
-			xrp_profiles[name][field] = nil
-			if name == xrp_selectedprofile or (name == L["Default"] and xrp.defaults[xrp_selectedprofile][field] == true) then
-				xrp.msp:UpdateField(field)
-			end
-		end
-	end,
-	__call = function(self, action, argument)
-		if not xrp_profiles[self[nk]] then
-			return false
-		elseif action == "length" then
-			local length = 0
-			for field, contents in pairs(xrp_profiles[self[nk]]) do
-				length = length + #contents
-			end
-			return length
-		elseif action == "rename" and type(argument) == "string" then
-			local name = self[nk]
-			if type(xrp_profiles[name]) == "table" and name ~= L["Default"] and (type(xrp_profiles[argument]) ~= "table" or (argument == L["Default"] and name ~= argument and (not xrp_profiles[L["Default (Old)"]] or name == L["Default (Old)"]))) then
-				if argument == L["Default"] and name ~= L["Default (Old)"] then
-					xrp_profiles[L["Default (Old)"]] = xrp_profiles[argument]
-				end
-				-- Rename profile to the nonexistant table provided.
-				xrp_profiles[argument] = xrp_profiles[name]
-				if xrp_defaults[name] then
-					xrp_defaults[argument] = xrp_defaults[name]
-				end
-				-- Select the new name if this is our active profile.
-				if xrp_selectedprofile == argument then
-					xrp.profiles(argument)
-				end
-				xrp.profiles[name] = nil -- Use table access to save Default.
-				return true
-			end
-		elseif action == "copy" and type(argument) == "string" then
-			local name = self[nk]
-			if type(xrp_profiles[name]) == "table" and (type(xrp_profiles[argument]) ~= "table" or (argument == L["Default"] and argument ~= name and (not xrp_profiles[L["Default (Old)"]] or name == L["Default (Old)"]))) then
-				if argument == L["Default"] and name ~= L["Default (Old)"] then
-					xrp_profiles[L["Default (Old)"]] = xrp_profiles[argument]
-				end
-				-- Copy profile into the empty table called.
-				xrp_profiles[argument] = {}
-				for field, contents in pairs(xrp_profiles[name]) do
-					xrp_profiles[argument][field] = contents
-				end
-				if xrp_defaults[name] then
-					xrp_defaults[argument] = {}
-					for field, setting in pairs(xrp_defaults[name]) do
-						xrp_defaults[argument][field] = setting
-					end
-				end
-				-- Will only happen if copying over Default.
-				if xrp_selectedprofile == argument then
-					xrp.msp:Update()
-				end
-				return true
-			end
-		elseif not action then
-			local name = self[nk]
-			local profile = {}
-			for field, contents in pairs(xrp_profiles[name]) do
-				profile[field] = contents
-			end
-			return profile
-		end
-		return false
-	end,
-	__metatable = false,
-}
-
 local profs = setmetatable({}, { __mode = "v" })
+local defs = setmetatable({}, { __mode = "v" })
 
-xrp.profiles = setmetatable({}, {
-	__index = function(self, name)
-		if not profs[name] then
-			profs[name] = setmetatable({ [nk] = name }, profmt)
-		end
-		return profs[name]
-	end,
-	__newindex = function(self, name, profile)
-		if type(profile) == "table" then
+do
+	local profmt = {
+		__index = function(self, field)
+			local name = self[nk]
+			return xrp_profiles[name].fields[field] or nil
+		end,
+		__newindex = function(self, field, contents)
+			if xrp.msp.unitfields[field] or xrp.msp.metafields[field] or xrp.msp.dummyfields[field] or not field:find("^%u%u$") then
+				return
+			end
+			local name = self[nk]
+			if type(contents) == "string" and contents ~= "" and xrp_profiles[name] and xrp_profiles[name].fields[field] ~= contents then
+				xrp_profiles[name].fields[field] = contents
+				if name == xrp_selectedprofile or (name == L["Default"] and xrp.defaults[xrp_selectedprofile][field] == true) then
+					xrp.msp:UpdateField(field)
+				end
+			elseif (not contents or contents == "") and xrp_profiles[name] and xrp_profiles[name].fields[field] ~= nil then
+				xrp_profiles[name].fields[field] = nil
+				if name == xrp_selectedprofile or (name == L["Default"] and xrp.defaults[xrp_selectedprofile][field] == true) then
+					xrp.msp:UpdateField(field)
+				end
+			end
+		end,
+		__call = function(self, action, argument)
+			if not xrp_profiles[self[nk]] then
+				return false
+			elseif action == "length" then
+				local length = 0
+				for field, contents in pairs(xrp_profiles[self[nk]].fields) do
+					length = length + #contents
+				end
+				return length
+			elseif action == "rename" and type(argument) == "string" then
+				local name = self[nk]
+				if type(xrp_profiles[name]) == "table" and name ~= L["Default"] and (type(xrp_profiles[argument]) ~= "table" or (argument == L["Default"] and name ~= argument and (not xrp_profiles[L["Default (Old)"]] or name == L["Default (Old)"]))) then
+					if argument == L["Default"] and name ~= L["Default (Old)"] then
+						xrp_profiles[L["Default (Old)"]] = xrp_profiles[argument]
+					end
+					-- Rename profile to the nonexistant table provided.
+					xrp_profiles[argument] = xrp_profiles[name]
+					-- Select the new name if this is our active profile.
+					if xrp_selectedprofile == argument then
+						xrp.profiles(argument)
+					end
+					xrp.profiles[name] = nil -- Use table access to save Default.
+					return true
+				end
+			elseif action == "copy" and type(argument) == "string" then
+				local name = self[nk]
+				if type(xrp_profiles[name]) == "table" and (type(xrp_profiles[argument]) ~= "table" or (argument == L["Default"] and argument ~= name and (not xrp_profiles[L["Default (Old)"]] or name == L["Default (Old)"]))) then
+					if argument == L["Default"] and name ~= L["Default (Old)"] then
+						xrp_profiles[L["Default (Old)"]] = xrp_profiles[argument]
+					end
+					-- Copy profile into the empty table called.
+					xrp_profiles[argument] = {
+						fields = {},
+						defaults = {},
+					}
+					for field, contents in pairs(xrp_profiles[name].fields) do
+						xrp_profiles[argument].fields[field] = contents
+					end
+					for field, setting in pairs(xrp_profiles[name].defauls) do
+						xrp_profiles[argument].defaults[field] = setting
+					end
+					-- Will only happen if copying over Default.
+					if xrp_selectedprofile == argument then
+						xrp.msp:Update()
+					end
+					return true
+				end
+			elseif not action then
+				local name = self[nk]
+				local profile = {}
+				for field, contents in pairs(xrp_profiles[name].fields) do
+					profile[field] = contents
+				end
+				return profile
+			end
+			return false
+		end,
+		__metatable = false,
+	}
+
+	xrp.profiles = setmetatable({}, {
+		__index = function(self, name)
+			if not xrp_profiles[name] then
+				xrp_profiles[name] = {
+					fields = {},
+					defaults = {},
+				}
+			end
 			if not profs[name] then
 				profs[name] = setmetatable({ [nk] = name }, profmt)
 			end
-			for field, contents in pairs(profile) do
-				profs[name][field] = contents
-			end
-		elseif profile == nil then
-			profs[name] = nil
-			if name ~= L["Default"] then
-				xrp_profiles[name] = nil
-				xrp.defaults[name] = nil
-			else
-				-- Wipe fields if profile is Default, but don't delete
-				-- the table.
-				for field, _ in pairs(xrp_profiles[name]) do
-					xrp_profiles[name][field] = nil
+			return profs[name]
+		end,
+		__newindex = function(self, name, profile)
+			if type(profile) == "table" then
+				if not profs[name] then
+					profs[name] = setmetatable({ [nk] = name }, profmt)
 				end
-				-- Fill out one default value...
-				xrp_profiles[name].NA = xrp.toon.name
+				for field, contents in pairs(profile) do
+					profs[name][field] = contents
+				end
+			elseif profile == nil then
+				if name ~= L["Default"] then
+					xrp_profiles[name] = nil
+					profs[name] = nil
+					defs[name] = nil
+				else
+					-- New, almost-blank profile if Default.
+					xrp_profiles[name] = {
+						fields = {
+							NA = xrp.toon.name,
+						},
+					}
+				end
+				if name == xrp_selectedprofile then
+					xrp.profiles(L["Default"])
+				end
 			end
-			if name == xrp_selectedprofile then
-				xrp.profiles(L["Default"])
+		end,
+		__call = function(self, name, keepoverrides)
+			if not name then
+				local list = {}
+				for name, _ in pairs(xrp_profiles) do
+					list[#list + 1] = name ~= L["Default"] and name or nil
+				end
+				table.sort(list)
+				table.insert(list, 1, L["Default"])
+				return list
+			elseif type(name) == "string" and xrp_profiles[name] then
+				xrp_selectedprofile = name
+				if not keepoverrides then
+					wipe(xrp_overrides)
+				end
+				xrp.msp:Update()
+				return true
 			end
-		end
-	end,
-	__call = function(self, name, keepoverrides)
-		if not name then
-			local list = {}
-			for name, _ in pairs(xrp_profiles) do
-				list[#list + 1] = name ~= L["Default"] and name or nil
+			return false
+		end,
+		__metatable = false,
+	})
+end
+
+do
+	local defmt = {
+		__index = function(self, field)
+			local profile = self[nk]
+			if profile == L["Default"] or not xrp_profiles[profile] then
+				return false
+			elseif xrp_profiles[profile].defaults[field] ~= nil then
+				return xrp_profiles[profile].defaults[field]
 			end
-			table.sort(list)
-			table.insert(list, 1, L["Default"])
-			return list
-		elseif type(name) == "string" and xrp_profiles[name] then
-			xrp_selectedprofile = name
-			if not keepoverrides then
-				wipe(xrp_overrides)
-			end
-			xrp.msp:Update()
 			return true
-		end
-		return false
-	end,
-	__metatable = false,
-})
+		end,
+		__newindex = function(self, field, state)
+			local profile = self[nk]
+			if profile == L["Default"] or not xrp_profiles[profile] or xrp.msp.unitfields[field] or xrp.msp.metafields[field] or xrp.msp.dummyfields[field] or not field:find("^%u%u$") then
+				return
+			end
+			if state ~= xrp_profiles[profile].defaults[field] then
+				xrp_profiles[profile].defaults[field] = state
+				if profile == xrp_selectedprofile then
+					xrp.msp:UpdateField(field)
+				end
+			end
+		end,
+		__metatable = false,
+	}
+
+	xrp.defaults = setmetatable({}, {
+		__index = function(self, name)
+			if not xrp_profiles[name] then
+				return nil
+			elseif not defs[name] then
+				defs[name] = setmetatable({ [nk] = name }, defmt)
+			end
+			return defs[name]
+		end,
+		__newindex = nonewindex,
+		__metatable = false,
+	})
+end
