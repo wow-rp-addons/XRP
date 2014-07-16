@@ -57,9 +57,9 @@ do
 				end
 				self.checkboxes[field]:SetChecked(defaults[field])
 				if isdef then
-					self.checkboxes[field]:Disable()
+					self.checkboxes[field]:Hide()
 				else
-					self.checkboxes[field]:Enable()
+					self.checkboxes[field]:Show()
 				end
 			end
 
@@ -80,6 +80,7 @@ do
 			reverting = false
 		end
 	end
+
 	function xrp.editor:CheckFields()
 		local changes = false
 		local profile = xrp.profiles[self.Profiles:GetText()]

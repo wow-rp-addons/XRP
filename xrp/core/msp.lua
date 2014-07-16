@@ -82,7 +82,7 @@ do
 					msp.cache[character].nextcheck = now + 30
 				end
 				msp.send[character] = nil
-				xrp:FireEvent("MSP_FAIL", character, xrp.cache[character].GF ~= xrp.toon.fields.GF and "faction" or "offline")
+				xrp:FireEvent("MSP_FAIL", character, xrp.cache[character].GF and xrp.cache[character].GF ~= xrp.toon.fields.GF and "faction" or "offline")
 			end
 			return dofilter
 		end)
@@ -448,7 +448,6 @@ if not disabled then
 	end)
 	msp:RegisterEvent("CHAT_MSG_ADDON")
 	ChatThrottleLib.MAX_CPS = 1200 -- up from 800
-	ChatThrottleLib.BURST = 6000 -- up from 4000
 	ChatThrottleLib.MIN_FPS = 15 -- down from 20
 end
 

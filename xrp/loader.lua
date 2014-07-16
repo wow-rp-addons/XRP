@@ -69,9 +69,9 @@ function xrp:ShowOptions()
 	return true
 end
 
-local name, title, notes, enabled, loadable, reason = GetAddOnInfo("xrp_libmsp")
-if enabled and loadable and not msp then
-	msp = setmetatable({}, {
+local enabled, loadable = select(4, GetAddOnInfo("xrp_libmsp"))
+if enabled and loadable and not _G.msp then
+	local msp = setmetatable({}, {
 		__index = function(self, index)
 			if not loader_LoadIfNeeded("xrp_libmsp") then
 				return nil
@@ -81,4 +81,5 @@ if enabled and loadable and not msp then
 		__newindex = function() end,
 		__metatable = false,
 	})
+	_G.msp = msp
 end

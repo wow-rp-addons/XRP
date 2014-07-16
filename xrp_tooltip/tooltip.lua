@@ -254,8 +254,11 @@ do
 		end
 
 		do
-			local realm = select(2, UnitName(unit))
-			cu.titlerealm = "|c"..faction_colors[faction].light..(UnitPVPName(unit) or xrp:NameWithoutRealm(cu.name))..(realm and realm ~= "" and (" ("..xrp:RealmNameWithSpacing(realm)..")|r") or "|r")
+			local realm = cu.name:match(FULL_PLAYER_NAME:format(".+", "(.+)"))
+			if realm == xrp.toon.withrealm:match(FULL_PLAYER_NAME:format(".+", "(.+)")) then
+				realm = nil
+			end
+			cu.titlerealm = "|c"..faction_colors[faction].light..(UnitPVPName(unit) or xrp:NameWithoutRealm(cu.name))..(realm and (" ("..xrp:RealmNameWithSpacing(realm)..")|r") or "|r")
 		end
 
 		cu.race = UnitRace(unit) or UnitCreatureType(unit)
@@ -323,7 +326,6 @@ do
 			local level = UnitLevel(unit)
 
 			cu.info = ("%s |c%s%s|r (%s)"):format((level < 1 and UNIT_LETHAL_LEVEL_TEMPLATE or UNIT_LEVEL_TEMPLATE):format(level), RAID_CLASS_COLORS[classid] and RAID_CLASS_COLORS[classid].colorStr or "ffffffff", race, PET)
-
 		end
 
 		cu.type = "pet"

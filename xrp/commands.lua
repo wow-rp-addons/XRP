@@ -22,9 +22,6 @@ local xrpcmds = {}
 
 do
 	local header = "|cffabd473%s|r %s"
-	local usage = header:format(L["Usage:"], "%s")
-	local command = " - |cfffff569%s:|r %s"
-
 	xrpcmds.about = function(args)
 		print(header:format(XRP, "("..xrp.version..")"))
 		print(XRP_AUTHOR)
@@ -35,6 +32,8 @@ do
 		end
 	end
 
+	local usage = header:format(L["Usage:"], "%s")
+	local command = " - |cfffff569%s:|r %s"
 	xrpcmds.help = function(args)
 		if args == "about" or args == L["about"] then
 			print(usage:format(L["/xrp about"]))
