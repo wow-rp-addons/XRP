@@ -113,7 +113,7 @@ do
 		local new_xrp = (tonumber(new_addon) * 10000) + (new_reltype * 100) + (tonumber(new_relrev) or 0)
 		local old_xrp = (tonumber(old_addon) * 10000) + (old_reltype * 100) + (tonumber(old_relrev) or 0)
 
-		if new_xrp < old_xrp then
+		if new_xrp <= old_xrp then
 			return -1
 		elseif new_reltype < old_reltype and new_xrp > old_xrp then
 			return 0
@@ -231,15 +231,15 @@ do
 		minimappoint = "CENTER",
 	}
 	xrp:HookLoad(function()
+		-- Account-wide.
 		if type(xrp_settings) ~= "table" then
 			xrp_settings = {}
 		end
 		if type(xrp_cache) ~= "table" then
 			xrp_cache = {}
 		end
-		if type(xrp_defaults) ~= "table" then
-			xrp_defaults = {}
-		end
+
+		-- Character-specific.
 		if type(xrp_overrides) ~= "table" then
 			xrp_overrides = {}
 		end
@@ -250,13 +250,28 @@ do
 			xrp_versions = {}
 		end
 
+		-- Pre-5.4.8.0_rc6.
+		if xrp_defaults ~= nil then
+			for profile, contents in pairs(xrp_profiles) do
+				if type(contents) == "table" then
+					xrp_profiles[profile] = {
+						fields = contents,
+						defaults = xrp_defaults[profile] or {},
+					}
+				end
+			end
+			xrp_defaults = nil
+		end
+
 		do
 			local L = xrp.L
 			if type(xrp_profiles[L["Default"]]) ~= "table" then
-				xrp_profiles[L["Default"]] = {}
+				xrp_profiles[L["Default"]] = {
+					fields = {},
+				}
 			end
-			if type(xrp_profiles[L["Default"]].NA) ~= "string" then
-				xrp_profiles[L["Default"]].NA = xrp.toon.name
+			if type(xrp_profiles[L["Default"]].fields.NA) ~= "string" then
+				xrp_profiles[L["Default"]].fields.NA = xrp.toon.name
 			end
 			if type(xrp_selectedprofile) ~= "string" or type(xrp_profiles[xrp_selectedprofile]) ~= "table" then
 				xrp_selectedprofile = L["Default"]
@@ -271,7 +286,7 @@ do
 		end
 
 		xrp.settings = setmetatable(xrp_settings, { __index = default_settings })
-		-- Pre-rc3 cleanup.
+		-- Pre-5.4.8.0_rc3.
 		if type(xrp.settings.defaults == "table") then
 			xrp.settings.defaults = nil
 		end
@@ -281,17 +296,15 @@ end
 function xrp:CacheTidy(timer)
 	if type(timer) ~= "number" or timer < 60 then
 		timer = xrp.settings.cachetime
-	end
-	if not timer or type(timer) ~= "number" or timer < 60 then
-		return false
+		if type(timer) ~= "number" or timer < 60 then
+			return false
+		end
 	end
 	local now = time()
 	local before = now - timer
 	for character, data in pairs(xrp_cache) do
 		if not data.lastreceive then
-			-- Pre-beta5 didn't have this value. Might be able to be dropped
-			-- at some point in the distant future (or just left as a
-			-- safeguard).
+			-- Pre-5.4.8.0_beta5.
 			data.lastreceive = now
 		elseif data.lastreceive < before then
 			xrp_cache[character] = nil
@@ -304,9 +317,9 @@ end
 
 -- This is kinda terrifying, but it fixes some major UI tainting when the user
 -- presses "Cancel" in the Interface Options (out of combat). The drawback is
--- that any changes made aren't actually cancelled (they're not saved, but
--- they're still active). Still, this is better than having the Cancel button
--- completely taint the raid frames.
+-- that any changes made to the default compact raid frames aren't actually
+-- cancelled (they're not saved, but they're still active). Still, this is
+-- better than having the Cancel button completely taint the raid frames.
 function CompactUnitFrameProfiles_CancelChanges(self)
 	InterfaceOptionsPanel_Cancel(self)
 
@@ -321,7 +334,6 @@ function CompactUnitFrameProfiles_CancelChanges(self)
 	-- called if there's any addon with an Interface Options panel.
 	--CompactUnitFrameProfiles_ApplyCurrentSettings()
 end
-
 
 local L = xrp.L
 StaticPopupDialogs["XRP_CACHE_CLEAR"] = {
