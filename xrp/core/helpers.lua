@@ -28,7 +28,9 @@ function xrp:UnitNameWithRealm(unit)
 end
 
 function xrp:NameWithRealm(name, realm)
-	if name:find(FULL_PLAYER_NAME:format(".+", ".+")) then
+	if not name or name == "" then
+		return nil
+	elseif name:find(FULL_PLAYER_NAME:format(".+", ".+")) then
 		return name
 	elseif realm and realm ~= "" then
 		-- If a realm was provided, use it.
@@ -82,7 +84,8 @@ function xrp:StripPunctuation(text)
 	--		start: (
 	--		end: ?!)
 	--		start/end: '"
-	return (text:match("^[%`%~%!%@%#%$%%%^%&%*%)%-%_%=%+%[%{%]%}%\\%|%;%:%,%<%.%>%/%?%s]*(.-)[%`%~%@%#%$%%%^%&%*%(%-%_%=%+%[%{%]%}%\\%|%;%:%,%<%.%>%/%s]*$")) or text
+	local stripped = text:match("^[%`%~%!%@%#%$%%%^%&%*%)%-%_%=%+%[%{%]%}%\\%|%;%:%,%<%.%>%/%?%s]*(.-)[%`%~%@%#%$%%%^%&%*%(%-%_%=%+%[%{%]%}%\\%|%;%:%,%<%.%>%/%s]*$")
+	return stripped ~= "" and stripped or text
 end
 
 function xrp:ConvertWeight(weight, units)
