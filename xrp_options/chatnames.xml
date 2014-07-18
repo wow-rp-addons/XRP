@@ -128,7 +128,7 @@
 					<Anchor point="RIGHT" relativeKey="$parent.RaidLabel" relativePoint="LEFT" x="-4" y="0"/>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="$parentInstance" parentKey="CHAT_MSG_INSTANCE" inherits="UICheckButtonTemplate">
+			<CheckButton name="$parentInstance" parentKey="CHAT_MSG_INSTANCE_CHAT" inherits="UICheckButtonTemplate">
 				<Size x="24" y="24"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.InstanceLabel" relativePoint="LEFT" x="-4" y="0"/>
