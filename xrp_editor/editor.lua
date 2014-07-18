@@ -16,7 +16,7 @@
 ]]
 
 do
-	local supportedfields = { NA = true, NI = true, NT = true, NH = true, AE = true, RA = true, AH = true, AW = true, CU = true, DE = true, AG = true, HH = true, HB = true, MO = true, HI = true, FR = true, FC = true }
+	local supported = { NA = true, NI = true, NT = true, NH = true, AE = true, RA = true, AH = true, AW = true, CU = true, DE = true, AG = true, HH = true, HB = true, MO = true, HI = true, FR = true, FC = true }
 	do
 		local warn9000 = false
 		function xrp.editor:Save()
@@ -25,9 +25,9 @@ do
 			-- appropriate 'real' function if GetText() isn't already right. The
 			-- profile code will assume an empty string means an empty field.
 			local name = self.Profiles:GetText()
-			for field, _ in pairs(supportedfields) do
+			for field, _ in pairs(supported) do
 				xrp.profiles[name][field] = self[field]:GetText()
-				xrp.defaults[name][field] = self.checkboxes[field]:GetChecked() and true or false
+				xrp.defaults[name][field] = self.checkboxes[field]:GetChecked() == 1
 			end
 			local length = xrp.profiles[name]("length")
 			if length > 16000 then
@@ -50,7 +50,7 @@ do
 			local isdef = name == xrp.L["Default"]
 			local profile = xrp.profiles[name]
 			local defaults = xrp.defaults[name]
-			for field, _ in pairs(supportedfields) do
+			for field, _ in pairs(supported) do
 				self[field]:SetText(profile[field] or "")
 				if field ~= "FC" then
 					self[field]:SetCursorPosition(0)
@@ -85,8 +85,8 @@ do
 		local changes = false
 		local profile = xrp.profiles[self.Profiles:GetText()]
 		local defaults = xrp.defaults[self.Profiles:GetText()]
-		for field, _ in pairs(supportedfields) do
-			if not changes and (self[field]:GetText() ~= (profile[field] or "") or (self.checkboxes[field]:GetChecked() and true or false) ~= defaults[field]) then
+		for field, _ in pairs(supported) do
+			if not changes and (self[field]:GetText() ~= (profile[field] or "") or (self.checkboxes[field]:GetChecked() == 1) ~= defaults[field]) then
 				changes = true
 			end
 		end

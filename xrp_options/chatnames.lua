@@ -56,7 +56,7 @@ do
 		local chatnames_types = { "CHAT_MSG_SAY", "CHAT_MSG_YELL", "CHAT_MSG_EMOTE", "CHAT_MSG_GUILD", "CHAT_MSG_WHISPER", "CHAT_MSG_PARTY", "CHAT_MSG_RAID", "CHAT_MSG_INSTANCE_CHAT", "emotebraced" }
 		function xrp.options.chatnames:okay()
 			for _, chattype in ipairs(chatnames_types) do
-				settings[chattype] = self[chattype]:GetChecked() and true or false
+				settings[chattype] = self[chattype]:GetChecked() == 1
 			end
 			for _, menu in pairs(channel_menu) do
 				if menu.text ~= CLOSE then

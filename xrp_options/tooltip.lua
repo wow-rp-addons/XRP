@@ -24,7 +24,7 @@ do
 
 	function xrp.options.tooltip:okay()
 		for _, tt in ipairs(tooltip_settings) do
-			settings[tt] = self[tt]:GetChecked() and true or false
+			settings[tt] = self[tt]:GetChecked() == 1
 		end
 	end
 

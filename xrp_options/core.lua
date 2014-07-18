@@ -21,10 +21,10 @@ function xrp.options.core:okay()
 	settings.weight = UIDropDownMenu_GetSelectedValue(self.AWUnits)
 
 	settings.cachetime = UIDropDownMenu_GetSelectedValue(self.CacheTime)
-	settings.cachetidy = self.CacheAuto:GetChecked() and true or false
+	settings.cachetidy = self.CacheAuto:GetChecked() == 1
 
-	settings.hideminimaptt = self.HideMinimapTT:GetChecked() and true or false
-	settings.minimapdetached = self.MinimapDetached:GetChecked() and true or false
+	settings.hideminimaptt = self.HideMinimapTT:GetChecked() == 1
+	settings.minimapdetached = self.MinimapDetached:GetChecked() == 1
 	xrp.minimap:SetDetached(settings.minimapdetached)
 end
 
