@@ -47,7 +47,7 @@ StaticPopupDialogs["XRP_IMPORT_FAILED"] = {
 local function import_MyRolePlay()
 	for name, profile in pairs(mrpSaved.Profiles) do
 		for field, value in pairs(profile) do
-			if not xrp.msp.unitfields[field] and not xrp.msp.metafields[field] and not xrp.msp.dummyfields[field] then
+			if not xrp.fields.unit[field] and not xrp.fields.meta[field] and not xrp.fields.dummy[field] and field:find("^%u%u$") then
 				if field == "FC" and not tonumber(value) and value ~= "" then
 					value = "2"
 				end
