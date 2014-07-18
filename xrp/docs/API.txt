@@ -116,7 +116,8 @@ used to manipulate data from XRP in helpful ways.
 
 xrp:UnitNameWithRealm(unit):
 	arguments: unit (unitID/string)
-	returns: Unit name with attached realm name, including same-realm.
+	returns: Unit name with attached realm name, including same-realm. nil is
+		returned if unit is not a player or the name cannot be determined.
 
 xrp:NameWithRealm(name, realm):
 	arguments: name (string), realm (string, optional)
@@ -133,7 +134,8 @@ xrp:NameWithoutRealm(name)
 xrp:RealmNameWithSpacing(realm)
 	arguments: realm (string)
 	returns: Realm name with proper spacing. Currently only supports
-		English-named realms.
+		English-named realms. (Examples: WyrmrestAccord -> Wyrmrest Accord,
+		Area52 -> Area 52, SistersofElune -> Sisters of Elune.)
 
 xrp:StripEscapes(text)
 	arguments: text (string)
