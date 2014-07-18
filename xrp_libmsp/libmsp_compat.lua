@@ -27,7 +27,7 @@
 
 local msp = {}
 msp.version = 8 -- Let's just say we're 8. It's common enough.
-msp.protocolversion = xrp.msp.protocol
+msp.protocolversion = xrp.msp
 
 -- Passes the function into xrp:HookEvent. Arguments for fired events are the
 -- same as LibMSP's callbacks.
@@ -130,14 +130,14 @@ function msp:Request(character, fields)
 	elseif type(fields) ~= "table" then
 		return false
 	end
-	return xrp.msp:Request(xrp:NameWithRealm(character), fields)
+	return xrp:Request(xrp:NameWithRealm(character), fields)
 end
 
 -- Used by GHI... Working with the cache since GHI expects values to be
 -- present if we know about someone. Real weird, since this is all-but-
 -- explicitly noted as an internal LibMSP function in the library...
 function msp:PlayerKnownAbout(character)
-	return xrp_cache[character] and true or false
+	return xrp_cache[character] ~= nil
 end
 
 -- Dummy function. Updates are processed as they're set in XRP. Benefits of

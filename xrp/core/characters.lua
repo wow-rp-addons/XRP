@@ -28,12 +28,12 @@ local nk, rk, sk = {}, {}, {}
 
 local charsmt = {
 	__index = function(self, field)
-		if xrp.msp.dummyfields[field] or not field:find("^%u%u$") then
+		if xrp.fields.dummy[field] or not field:find("^%u%u$") then
 			return nil
 		end
 		local name = self[nk]
 		-- Any access to a field is treated as an implicit request to fetch
-		-- it (but xrp.msp won't do it if it's fresh, and will compile quick,
+		-- it (but msp won't do it if it's fresh, and will compile quick,
 		-- successive requests into one go). Also try avoiding requests when
 		-- we absolutely know they will fail. Never request data we already
 		-- have, and know is good.
@@ -42,7 +42,7 @@ local charsmt = {
 		end
 		local request = self[rk]
 		if request and (not gcache[name] or not gcache[name].GF or gcache[name].GF == xrp.toon.fields.GF) then
-			xrp.msp:QueueRequest(name, field, self[sk])
+			xrp:QueueRequest(name, field, self[sk])
 		elseif request and gcache[name] and gcache[name].GF ~= xrp.toon.fields.GF and gcache[name].GF ~= "Neutral" then
 			xrp:FireEvent("MSP_FAIL", name, "faction")
 		end
