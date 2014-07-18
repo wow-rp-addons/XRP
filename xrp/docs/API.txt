@@ -1,6 +1,13 @@
 This document provides a brief outline of the API provided by XRP, allowing
 other addons to interact with RP profile data.
 
+Please note that certain parts of the API are not currently hardened against
+stupidity, as they're mostly internally used. If you give them the wrong
+argument types, they can produce Lua errors or behave in unexpected ways. The
+character lookup tables and profile interaction tables are hardened against
+most types of stupidity, however, and should need less caution when being
+interacted with.
+
 Looking up other characters
 ===========================
 
@@ -46,12 +53,55 @@ roleplay name, GC for toon class, HI for character history, etc.), but pairs()
 may not be used on them currently. If you absolutely require a full dump of
 all available fields for a character, you may call the profile as a function,
 but this is strongly discouraged. Supporting a specific set of fields and
-indexing each of the individually is recommended.
+indexing each of them individually is recommended.
 
 Reacting to incoming profile data
 =================================
 
-Information on xrp:HookEvent() here.
+Incoming profile data is provided in several ways, but all is hooked through
+the use of xrp:HookEvent(). This function takes two arguments: the first is
+the name of the event you wish to hook (listed later), and the second is the
+function to call with the event-specific arguments when the event occurs.
+There is no way to unhook an event currently (though this may be added later).
+
+Events:
+
+All of the following events provide a first argument of the name with realm
+of the character for whom the event is firing.
+
+	- MSP_RECEIVE: Fires when a complete profile, including updated data, has
+	  been received and processed. Any new data is immediately available
+	  through any of the character tables.
+
+	- MSP_NOCHANGE: Fires when a receive is completed which provides no
+	  updated profile data for a character.
+
+	- MSP_FIELD: Fires when a new or updated field is received (including
+	  incomplete receives -- this fires as data is incoming). This provides
+	  a second argument with the name of the MSP field which has just been
+	  updated. This is likely to fire multiple times in quick succession as
+	  each newly-updated field is processed.
+
+	- MSP_CHUNK: Fires when a profile data chunk is received. This does not
+	  indicate any field processing has taken place, simply that data is
+	  currently incoming. It provides one or two additional arguments: the
+	  first is the incoming chunk number (counting from the first message
+	  received in that batch), and the second is, only if available, the
+	  total number of expected incoming chunks.
+
+	- MSP_FAIL: Fires when profile data is not being requested or cannot be
+	  received for a number of reasons. It provides an extra argument which
+	  indicates the reason for the failure, which can be any of the following:
+		- faction: Indicates the character is not on the same faction.
+		- offline: Indicates the character is offline.
+		- nomsp: Indicates the character likely does not have an MSP-enabled
+		  addon active.
+		- time: Indicates no request is being sent due to having recently
+		  requested all the fields.
+
+In general, MSP_RECEIVE and MSP_FIELD are the most useful events to hook, as
+the other events are mainly only useful if you are implementing a full viewer
+to replace xrp_viewer.
 
 Reading and writing profile data
 ================================
