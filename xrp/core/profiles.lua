@@ -37,7 +37,7 @@ xrp.current = setmetatable({}, {
 		if xrp.toon.fields[field] then
 			contents = xrp.toon.fields[field]
 		elseif xrp_overrides[field] then
-			contents = xrp_overrides[field]
+			contents = xrp_overrides[field] ~= "" and xrp_overrides[field] or nil
 		elseif xrp_profiles[xrp_selectedprofile].fields[field] then
 			contents = xrp_profiles[xrp_selectedprofile].fields[field]
 		elseif xrp.defaults[xrp_selectedprofile][field] == true and xrp_profiles[L["Default"]].fields[field] then
@@ -54,11 +54,11 @@ xrp.current = setmetatable({}, {
 		end
 	end,
 	__newindex = function(self, field, contents)
-		if xrp_overrides[field] == contents or xrp.msp.unitfields[field] or xrp.msp.metafields[field] or xrp.msp.dummyfields[field] or not field:find("^%u%u$") then
+		if xrp_overrides[field] == contents or xrp.fields.unit[field] or xrp.fields.meta[field] or xrp.fields.dummy[field] or not field:find("^%u%u$") then
 			return
 		end
 		xrp_overrides[field] = contents
-		xrp.msp:UpdateField(field)
+		xrp:UpdateField(field)
 	end,
 	__call = function(self)
 		local out = {}
@@ -71,7 +71,7 @@ xrp.current = setmetatable({}, {
 			out[field] = contents
 		end
 		for field, contents in pairs(xrp_overrides) do
-			out[field] = contents
+			out[field] = contents ~= "" and contents or nil
 		end
 		for field, contents in pairs(xrp.toon.fields) do
 			out[field] = contents
@@ -139,19 +139,19 @@ do
 			return xrp_profiles[name].fields[field] or nil
 		end,
 		__newindex = function(self, field, contents)
-			if xrp.msp.unitfields[field] or xrp.msp.metafields[field] or xrp.msp.dummyfields[field] or not field:find("^%u%u$") then
+			if xrp.fields.unit[field] or xrp.fields.meta[field] or xrp.fields.dummy[field] or not field:find("^%u%u$") then
 				return
 			end
 			local name = self[nk]
 			if type(contents) == "string" and contents ~= "" and xrp_profiles[name] and xrp_profiles[name].fields[field] ~= contents then
 				xrp_profiles[name].fields[field] = contents
 				if name == xrp_selectedprofile or (name == L["Default"] and xrp.defaults[xrp_selectedprofile][field] == true) then
-					xrp.msp:UpdateField(field)
+					xrp:UpdateField(field)
 				end
 			elseif (not contents or contents == "") and xrp_profiles[name] and xrp_profiles[name].fields[field] ~= nil then
 				xrp_profiles[name].fields[field] = nil
 				if name == xrp_selectedprofile or (name == L["Default"] and xrp.defaults[xrp_selectedprofile][field] == true) then
-					xrp.msp:UpdateField(field)
+					xrp:UpdateField(field)
 				end
 			end
 		end,
@@ -193,12 +193,12 @@ do
 					for field, contents in pairs(xrp_profiles[name].fields) do
 						xrp_profiles[argument].fields[field] = contents
 					end
-					for field, setting in pairs(xrp_profiles[name].defauls) do
+					for field, setting in pairs(xrp_profiles[name].defaults) do
 						xrp_profiles[argument].defaults[field] = setting
 					end
 					-- Will only happen if copying over Default.
 					if xrp_selectedprofile == argument then
-						xrp.msp:Update()
+						xrp:Update()
 					end
 					return true
 				end
@@ -268,7 +268,7 @@ do
 				if not keepoverrides then
 					wipe(xrp_overrides)
 				end
-				xrp.msp:Update()
+				xrp:Update()
 				return true
 			end
 			return false
@@ -290,13 +290,13 @@ do
 		end,
 		__newindex = function(self, field, state)
 			local profile = self[nk]
-			if profile == L["Default"] or not xrp_profiles[profile] or xrp.msp.unitfields[field] or xrp.msp.metafields[field] or xrp.msp.dummyfields[field] or not field:find("^%u%u$") then
+			if profile == L["Default"] or not xrp_profiles[profile] or xrp.fields.unit[field] or xrp.fields.meta[field] or xrp.fields.dummy[field] or not field:find("^%u%u$") then
 				return
 			end
 			if state ~= xrp_profiles[profile].defaults[field] then
 				xrp_profiles[profile].defaults[field] = state
 				if profile == xrp_selectedprofile then
-					xrp.msp:UpdateField(field)
+					xrp:UpdateField(field)
 				end
 			end
 		end,

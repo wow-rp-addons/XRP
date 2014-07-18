@@ -37,7 +37,7 @@ end
 
 -- This is the core of the MSP send/recieve implementation. The API is nothing
 -- like LibMSP and is not public, despite using the same table name. The
--- (minimal) public API is contained in xrp.msp. In general even that shouldn't
+-- (minimal) public API is contained in xrp. In general even that shouldn't
 -- be interacted with.
 local msp = CreateFrame("Frame")
 -- OnUpdate timer.
@@ -60,7 +60,7 @@ msp.cache = setmetatable({}, {
 do
 	local msp_AddFilter
 	do
-		-- Filtered "No such..." errors.
+		-- Filter "No such..." errors.
 		local filter = setmetatable({}, { __mode = "v" })
 
 		ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", function(self, event, message)
@@ -71,18 +71,21 @@ do
 			local now = GetTime()
 			-- Filter if within 1000ms of current time plus home latency.
 			-- GetNetStats() provides value in milliseconds.
-			local dofilter = filter[character] > (now - 1.000 - ((select(3, GetNetStats())) * 0.001)) or false
+			local dofilter = filter[character] > (now - 1.000 - ((select(3, GetNetStats())) * 0.001))
 			if not dofilter then
 				filter[character] = nil
 			else
+				-- If they're not offline, they're opposite faction. Same error
+				-- for both.
+				local offline = not (xrp.cache[character].GF and xrp.cache[character].GF ~= xrp.toon.fields.GF)
 				-- 30 second timer between checks for offline characters. Try
 				-- to not query offline characters higher up the chain as well,
 				-- remember.
-				if msp.cache[character].nextcheck then
+				if msp.cache[character].nextcheck and offline then
 					msp.cache[character].nextcheck = now + 30
 				end
 				msp.send[character] = nil
-				xrp:FireEvent("MSP_FAIL", character, xrp.cache[character].GF and xrp.cache[character].GF ~= xrp.toon.fields.GF and "faction" or "offline")
+				xrp:FireEvent("MSP_FAIL", character, offline and "offline" or "faction")
 			end
 			return dofilter
 		end)
@@ -130,6 +133,7 @@ do
 	end
 
 	function msp:Dummy(character, response)
+		--print(GetTime()..": Out: "..character..": "..(response and "XD" or "?XD"))
 		ChatThrottleLib:SendAddonMessage("ALERT", "MSP", response and "XD" or "?XD", "WHISPER", character, "XRP-"..character, response and msp_AddFilter or msp_DummyFilter, character)
 		self.cache[character].lastsend = GetTime()
 	end
@@ -146,6 +150,7 @@ function msp:QueueSend(character, data, count)
 		return
 	end
 	local now = GetTime()
+	-- Names as units are odd -- same realm MUST NOT have realm attached.
 	local unit = Ambiguate(character, "none")
 	if count == 0 or (self.cache[character].received and now < self.cache[character].lastsend + 60) or UnitInParty(unit) or UnitInRaid(unit) then
 		self:Send(character, data)
@@ -165,7 +170,7 @@ function msp:OnUpdate(elapsed)
 	if next(self.request) then
 		for character, fields in pairs(self.request) do
 			--print(character..": "..fields)
-			xrp.msp:Request(character, fields, self.safe[character])
+			xrp:Request(character, fields, self.safe[character])
 			self.request[character] = nil
 			self.safe[character] = nil
 		end
@@ -195,18 +200,18 @@ msp:SetScript("OnUpdate", msp.OnUpdate)
 
 -- Caches a tooltip response, but *does not* modify the tooltip version. That
 -- needs to be done, if appropriate, whenever this is called.
-function msp:CacheTT()
-	local tooltip = {}
-	for field, _ in pairs(xrp.msp.ttfields) do
-		if not xrp.current[field] then
-			tooltip[#tooltip + 1] = (not xrp_versions[field] and "%s" or "%s%u"):format(field, xrp_versions[field])
-		else
-			tooltip[#tooltip + 1] = ("%s%u=%s"):format(field, xrp_versions[field], xrp.current[field])
+do
+	-- This sets the field order to a xrp_viewer-ideal incoming order.
+	local tt = { "VP", "VA", "NA", "NH", "NI", "NT", "RA", "CU", "FR", "FC" }
+	function msp:CacheTT()
+		local tooltip = {}
+		for _, field in ipairs(tt) do
+			tooltip[#tooltip + 1] = (not xrp.current[field] and (not xrp_versions[field] and "%s" or "%s%u") or "%s%u=%s"):format(field, xrp_versions[field], xrp.current[field])
 		end
+		tooltip[#tooltip + 1] = ("TT%u"):format(xrp_versions.TT)
+		self.tt = table.concat(tooltip, "\1")
+		--print((self.tt:gsub("\1", "\\1")))
 	end
-	tooltip[#tooltip + 1] = ("TT%u"):format(xrp_versions.TT)
-	self.tt = table.concat(tooltip, "\1")
-	--print((self.tt:gsub("\1", "\\1")))
 end
 
 do
@@ -244,7 +249,7 @@ do
 				return (not xrp_versions[field] and "%s" or "!%s%u"):format(field, xrp_versions[field])
 			elseif field == "TT" then
 				if not self.tt then -- Panic, something went wrong in init.
-					xrp.msp:Update() -- ...but try to fix it.
+					xrp:Update() -- ...but try to fix it.
 				end
 				return self.tt
 			elseif not xrp.current[field] then
@@ -275,12 +280,12 @@ do
 				-- exists (indicating MSP support is/was present -- this
 				-- function is the *only* place a character cache table is
 				-- created).
-				for gfield, _ in pairs(xrp.msp.unitfields) do
+				for gfield, _ in pairs(xrp.fields.unit) do
 					xrp_cache[character].fields[gfield] = xrp.cache[character][gfield]
 				end
 			end
 			local updated = false
-			if xrp_cache[character] and xrp_cache[character].fields[field] and contents == "" and not xrp.msp.unitfields[field] then
+			if xrp_cache[character] and xrp_cache[character].fields[field] and contents == "" and not xrp.fields.unit[field] then
 				-- If it's newly blank, empty it in the cache. Never
 				-- empty G*.
 				xrp_cache[character].fields[field] = nil
@@ -344,7 +349,8 @@ msp.handlers = {
 			message = message:gsub(("XC=%d\1"):format(totalchunks), "")
 		end
 		-- This only does partial processing -- queries (i.e., ?NA) are
-		-- processed after full reception.
+		-- processed only after full reception. Most times that sort of mixed
+		-- message won't even exist, but XRP can produce it sometimes.
 		for command in message:gmatch("([^\1]+)\1") do
 			if command:find("^[^%?]") then
 				self:Process(character, command)
@@ -392,11 +398,7 @@ msp.handlers = {
 			if not message then return end
 			self.cache[character].buffer = ""
 		end
-		if type(self.cache[character].buffer) == "string" then
-			self.handlers["MSP"](self, character, self.cache[character].buffer..message)
-		else
-			self.handlers["MSP"](self, character, table.concat(self.cache[character].buffer)..message)
-		end
+		self.handlers["MSP"](self, character, type(self.cache[character].buffer) == "string" and (self.cache[character].buffer..message) or (table.concat(self.cache[character].buffer)..message))
 		-- MSP_CHUNK after MSP_RECEIVE would fire. Makes it easier to
 		-- do something useful when chunks == totalchunks.
 		xrp:FireEvent("MSP_CHUNK", character, (self.cache[character].chunks or 0) + 1, (self.cache[character].chunks or 0) + 1)
@@ -417,6 +419,9 @@ if not disabled then
 			--print(GetTime()..": In: "..character..": "..message:gsub("\1", "\\1"))
 			--print("Receiving from: "..character)
 
+			self.cache[character].received = true
+			self.cache[character].nextcheck = nil
+
 			-- Dummy messages, requests and responses, are handled quickly,
 			-- rather than running full processing on them. This also cuts out
 			-- the attempts to send dummy requests when receiving a dummy
@@ -426,12 +431,8 @@ if not disabled then
 				if self.send[character] and not self.cache[character].received then
 					self.send[character].count = self.send[character].count - 1
 				end
-				self.cache[character].received = true
-				self.cache[character].nextcheck = nil
 				self:Dummy(character, true)
 			elseif message == "XD" then
-				self.cache[character].received = true
-				self.cache[character].nextcheck = nil
 				if self.send[character] then
 					self.send[character].sendtime = GetTime()
 					self.send[character].count = 0
@@ -440,8 +441,6 @@ if not disabled then
 				if self.send[character] and not self.cache[character].received then
 					self.send[character].count = self.send[character].count - 1
 				end
-				self.cache[character].received = true
-				self.cache[character].nextcheck = nil
 				self.handlers[prefix](self, character, message)
 			end
 		end
@@ -451,22 +450,22 @@ if not disabled then
 	ChatThrottleLib.MIN_FPS = 15 -- down from 20
 end
 
-xrp.msp = {
-	-- xrp uses some new fields, but the protocol is v1.
-	protocol = 1,
+xrp.msp = 1
+
+xrp.fields = {
 	-- Fields in tooltip.
-	ttfields = { VP = true, VA = true, NA = true, NH = true, NI = true, NT = true, RA = true, FR = true, FC = true, CU = true },
+	tt = { VP = true, VA = true, NA = true, NH = true, NI = true, NT = true, RA = true, FR = true, FC = true, CU = true },
 	-- These fields are (or should) be generated from UnitSomething()
 	-- functions. GF is an XRP-original, storing non-localized faction (since
 	-- we cache between sessions and can have data on both factions at once).
-	unitfields = { GC = true, GF = true, GR = true, GS = true, GU = true },
+	unit = { GC = true, GF = true, GR = true, GS = true, GU = true },
 	-- Metadata fields, not to be user-set.
-	metafields = { VA = true, VP = true },
+	meta = { VA = true, VP = true },
 	-- Dummy fields are used for extra XRP communication, not to be
 	-- user-exposed.
-	dummyfields = { XC = true, XD = true },
+	dummy = { XC = true, XD = true },
 	-- 45 seconds for non-TT fields.
-	fieldtimes = setmetatable(
+	times = setmetatable(
 		{ TT = 15, },
 		{
 			__index = function(self, field)
@@ -476,8 +475,8 @@ xrp.msp = {
 	),
 }
 
-function xrp.msp:QueueRequest(character, field, safe)
-	if disabled or character == xrp.toon.withrealm or xrp:NameWithoutRealm(character) == UNKNOWN then return false end
+function xrp:QueueRequest(character, field, safe)
+	if disabled or character == self.toon.withrealm or self:NameWithoutRealm(character) == UNKNOWN then return false end
 
 	local append = true
 	if not msp.request[character] then
@@ -499,12 +498,12 @@ function xrp.msp:QueueRequest(character, field, safe)
 	return true
 end
 
-function xrp.msp:Request(character, fields, safe)
-	if disabled or character == xrp.toon.withrealm or xrp:NameWithoutRealm(character) == UNKNOWN then return false end
+function xrp:Request(character, fields, safe)
+	if disabled or character == self.toon.withrealm or self:NameWithoutRealm(character) == UNKNOWN then return false end
 
 	local now = GetTime()
 	if not msp.cache[character].received and now < msp.cache[character].nextcheck then
-		xrp:FireEvent("MSP_FAIL", character, "nomsp")
+		self:FireEvent("MSP_FAIL", character, "nomsp")
 		return false
 	elseif not msp.cache[character].received then
 		msp.cache[character].nextcheck = now + (safe == 0 and 300 or 30)
@@ -515,7 +514,7 @@ function xrp.msp:Request(character, fields, safe)
 	local reqtt = false
 	-- This entire for block is FRAGILE. Modifications not recommended.
 	for key = #fields, 1, -1 do
-		if fields[key] == "TT" or xrp.msp.ttfields[fields[key]] then
+		if fields[key] == "TT" or self.fields.tt[fields[key]] then
 			table.remove(fields, key)
 			reqtt = true
 		end
@@ -527,7 +526,7 @@ function xrp.msp:Request(character, fields, safe)
 
 	local out = {}
 	for _, field in ipairs(fields) do
-		if not msp.cache[character].time[field] or now > msp.cache[character].time[field] + xrp.msp.fieldtimes[field] then
+		if not msp.cache[character].time[field] or now > msp.cache[character].time[field] + self.fields.times[field] then
 			out[#out + 1] = ((not xrp_cache[character] or not xrp_cache[character].versions[field]) and "?%s" or "?%s%u"):format(field, xrp_cache[character] and xrp_cache[character].versions[field] or 0)
 			msp.cache[character].time[field] = now
 		end
@@ -541,23 +540,21 @@ function xrp.msp:Request(character, fields, safe)
 		end
 		return true
 	end
-	xrp:FireEvent("MSP_FAIL", character, "time")
+	self:FireEvent("MSP_FAIL", character, "time")
 	return false
 end
 
-function xrp.msp:Update()
+function xrp:Update()
 	if disabled then return false end
-
-	local changes, ttchanges, character = false, false, xrp.toon.withrealm
-	local new, old = xrp.current(), xrp_cache[character].fields
-
+	local changes, ttchanges, character = false, false, self.toon.withrealm
+	local new, old = self.current(), xrp_cache[character].fields
 	for field, contents in pairs(new) do
 		if old[field] ~= contents then
 			changes = true
 			xrp_versions[field] = (xrp_versions[field] or 0) + 1
 			xrp_cache[character].fields[field] = contents
 			xrp_cache[character].versions[field] = xrp_versions[field]
-			ttchanges = self.ttfields[field] or ttchanges
+			ttchanges = self.fields.tt[field] or ttchanges
 		end
 	end
 	for field, _ in pairs(old) do
@@ -566,7 +563,7 @@ function xrp.msp:Update()
 			xrp_versions[field] = (xrp_versions[field] or 0) + 1
 			xrp_cache[character].fields[field] = nil
 			xrp_cache[character].versions[field] = xrp_versions[field]
-			ttchanges = self.ttfields[field] or ttchanges
+			ttchanges = self.fields.tt[field] or ttchanges
 		end
 	end
 	if ttchanges then
@@ -576,26 +573,26 @@ function xrp.msp:Update()
 	elseif not msp.tt then
 		-- If it's our character we never want the cache tidy to wipe it out.
 		-- Do this by setting the wipe timer for 2038. This should get run on
-		-- the first update every session
+		-- the first update every session (i.e., around PLAYER_LOGIN).
 		xrp_cache[character].lastreceive = 2147483647
 		msp:CacheTT()
 	end
 	if changes then
-		xrp:FireEvent("MSP_UPDATE")
+		self:FireEvent("MSP_UPDATE")
 		return true
 	end
 	return false
 end
 
-function xrp.msp:UpdateField(field)
+function xrp:UpdateField(field)
 	if disabled then return false end
-	local character = xrp.toon.withrealm
-	local old = xrp_cache[character].fields
-	if not old[field] or old[field] ~= xrp.current[field] then
+	local character = self.toon.withrealm
+	local new, old = self.current[field], xrp_cache[character].fields[field]
+	if old ~= new then
 		xrp_versions[field] = (xrp_versions[field] or 0) + 1
-		xrp_cache[character].fields[field] = xrp.current[field]
+		xrp_cache[character].fields[field] = new
 		xrp_cache[character].versions[field] = xrp_versions[field]
-		if self.ttfields[field] then
+		if self.fields.tt[field] then
 			xrp_versions.TT = (xrp_versions.TT or 0) + 1
 			xrp_cache[character].versions.TT = xrp_versions.TT
 			msp:CacheTT()
@@ -603,7 +600,7 @@ function xrp.msp:UpdateField(field)
 			xrp_cache[character].lastreceive = 2147483647
 			msp:CacheTT()
 		end
-		xrp:FireEvent("MSP_UPDATE", field)
+		self:FireEvent("MSP_UPDATE", field)
 		return true
 	end
 	return false
@@ -616,10 +613,7 @@ end
 -- the possibility of some delay).
 local function fs_Create()
 	local frame = CreateFrame("Frame")
-	local now = GetTime()
-	frame.lastdraw = now
-	frame.lastmsp = now
-	frame.lastctl = now
+	frame:Hide()
 	frame:SetScript("OnShow", function(self)
 		local now = GetTime()
 		self.lastdraw = now
@@ -659,6 +653,7 @@ end
 local fsframe
 local function fs_Check()
 	if GetCVar("gxWindow") == "0" then
+		--print("Fullscreen enabled.")
 		-- Is true fullscreen.
 		fsframe = fsframe or fs_Create()
 		fsframe:Show()
@@ -685,6 +680,5 @@ local function fs_Check()
 	end
 end
 
--- TODO: Double-check that GetCVar() runs correctly before ADDON_LOADED.
 hooksecurefunc("RestartGx", fs_Check)
 fs_Check()

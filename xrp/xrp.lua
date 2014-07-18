@@ -151,7 +151,7 @@ do
 				withrealm = xrp:NameWithRealm(name),
 				fields = {
 					VA = fullversion,
-					VP = tostring(xrp.msp.protocol),
+					VP = tostring(xrp.msp),
 				},
 			}
 
@@ -169,7 +169,7 @@ do
 			fields.GR = select(2, UnitRace("player"))
 			fields.GS = tostring(UnitSex("player"))
 			fields.GU = UnitGUID("player")
-			xrp.msp:Update()
+			xrp:Update()
 
 			if xrp.settings.cachetidy then
 				xrp:CacheTidy()
@@ -210,7 +210,7 @@ do
 			end
 		elseif event == "NEUTRAL_FACTION_SELECT_RESULT" then
 			xrp.toon.fields.GF = UnitFactionGroup("player")
-			xrp.msp:UpdateField("GF")
+			xrp:UpdateField("GF")
 			self:UnregisterEvent("NEUTRAL_FACTION_SELECT_RESULT")
 		end
 	end)
