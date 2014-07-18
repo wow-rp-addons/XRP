@@ -18,13 +18,10 @@
 local L = xrp.L
 
 function xrp:UnitNameWithRealm(unit)
-	local name, realm = UnitName(unit)
-	if not name or name == "" then
+	if not UnitIsPlayer(unit) then
 		return nil
-	elseif not UnitIsPlayer(unit) then
-		return name
 	end
-	return self:NameWithRealm(name, realm)
+	return self:NameWithRealm(UnitName(unit))
 end
 
 function xrp:NameWithRealm(name, realm)
