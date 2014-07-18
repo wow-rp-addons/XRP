@@ -84,7 +84,7 @@ do
 	xrp.units = setmetatable({}, {
 		__index = function (self, unit)
 			local name = xrp:UnitNameWithRealm(unit)
-			if not UnitIsPlayer(unit) or not name then
+			if not name then
 				return nil
 			end
 			-- These values may only update once per session (varying with
