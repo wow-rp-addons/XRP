@@ -26,7 +26,7 @@ do
 		"DE", "HI", -- High-bandwidth.
 	}
 
-	function xrp.viewer:SetField(field, contents, character)
+	function xrp.viewer:SetField(field, contents)
 		-- This does not need to be very smart. SetText() should be mapped to
 		-- the appropriate 'real' function if needed. However, the character
 		-- tables will return nil on an empty value, so watch for that.
@@ -40,8 +40,6 @@ do
 			self[field]:SetText(xrp:ConvertHeight(xrp:StripEscapes(contents), "user") or "")
 		elseif field == "AW" then
 			self[field]:SetText(xrp:ConvertWeight(xrp:StripEscapes(contents), "user") or "")
-		elseif field == "RA" then
-			self[field]:SetText(xrp:StripEscapes(contents) or xrp.values.GR[character.GR] or "")
 		else
 			self[field]:SetText(xrp:StripEscapes(contents) or "")
 		end
@@ -49,7 +47,7 @@ do
 
 	function xrp.viewer:Load(character)
 		for _, field in ipairs(display) do
-			self:SetField(field, character[field], character)
+			self:SetField(field, character[field] or (field == "RA" and xrp.values.GR[character.GR]) or nil)
 		end
 	end
 
@@ -60,7 +58,7 @@ do
 	xrp:HookEvent("MSP_FIELD", function(name, field)
 		if current == name and supported[field] then
 			--print("Trying to set: "..field.." for "..name..".")
-			xrp.viewer:SetField(field, xrp.cache[name][field], xrp.cache[name])
+			xrp.viewer:SetField(field, xrp.cache[name][field] or (field == "RA" and xrp.values.GR[xrp.cache[name].GR]) or nil)
 		end
 	end)
 end
@@ -92,13 +90,7 @@ function xrp.viewer:ViewCharacter(name)
 	self:Load(xrp.characters[name])
 	do
 		local GF = xrp.characters[name].GF
-		if GF and GF == "Alliance" then
-			SetPortraitToTexture(self.portrait, "Interface\\Icons\\INV_BannerPVP_02")
-		elseif GF and GF == "Horde" then
-			SetPortraitToTexture(self.portrait, "Interface\\Icons\\INV_BannerPVP_01")
-		else
-			SetPortraitToTexture(self.portrait, "Interface\\Icons\\INV_Misc_Book_17")
-		end
+		SetPortraitToTexture(self.portrait, GF and ((GF == "Alliance" and "Interface\\Icons\\INV_BannerPVP_02") or (GF == "Horde" and "Interface\\Icons\\INV_BannerPVP_01")) or "Interface\\Icons\\INV_Misc_Book_17")
 	end
 	ShowUIPanel(self)
 	if not self.Appearance:IsVisible() then
@@ -111,22 +103,27 @@ end
 
 xrp:HookEvent("MSP_RECEIVE", function(name)
 	if current == name then
-		xrp.viewer.XC:SetText(L["Received!"])
+		local XC = xrp.viewer.XC:GetText()
+		if not XC or XC:find("^Receiving") then
+			xrp.viewer.XC:SetText(L["Received!"])
+		end
 	end
 end)
 
 xrp:HookEvent("MSP_NOCHANGE", function(name)
-	if current == name and not xrp.viewer.XC:GetText() then
-		xrp.viewer.XC:SetText(L["No changes."])
+	if current == name then
+		local XC = xrp.viewer.XC:GetText()
+		if not XC or XC:find("^Receiving") then
+			xrp.viewer.XC:SetText(L["No changes."])
+		end
 	end
 end)
 
 xrp:HookEvent("MSP_CHUNK", function(name, chunk, totalchunks)
 	if current == name then
-		if chunk == totalchunks then
-			xrp.viewer.XC:SetFormattedText(L["Received! (%u/%u)"], chunk, totalchunks)
-		else
-			xrp.viewer.XC:SetFormattedText(totalchunks and L["Receiving... (%u/%u)"] or L["Receiving... (%u/??)"], chunk, totalchunks)
+		local XC = xrp.viewer.XC:GetText()
+		if chunk ~= totalchunks or not XC or XC:find("^Receiv") then
+			xrp.viewer.XC:SetFormattedText(totalchunks and (chunk == totalchunks and L["Received! (%u/%u)"] or L["Receiving... (%u/%u)"]) or L["Receiving... (%u/??)"], chunk, totalchunks)
 		end
 	end
 end)
