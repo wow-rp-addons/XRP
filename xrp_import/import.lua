@@ -18,7 +18,7 @@
 local L = xrp.L
 
 StaticPopupDialogs["XRP_IMPORT_RELOAD"] = {
-	text = L["Available profiles have been imported. You should reload your UI now."],
+	text = L["Available profiles have been imported and may be found in the editor's profile list. You should reload your UI now."],
 	button1 = L["Reload UI"],
 	button2 = CANCEL,
 	OnAccept = function()
