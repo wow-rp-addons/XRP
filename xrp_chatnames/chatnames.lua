@@ -82,7 +82,13 @@ xrp:HookLogin(function()
 		if event == "CHAT_MSG_TEXT_EMOTE" and arg12 then
 			-- No realm for arg2 in TEXT_EMOTEs. For whatever fucking reason.
 			-- Attach it here, falling back to our own realm.
-			arg2 = xrp:NameWithRealm(arg2, (select(7, GetPlayerInfoByGUID(arg12))))
+			arg2 = xrp:NameWithRealm(arg2, select(7, GetPlayerInfoByGUID(arg12)))
+			-- Own name isn't present in text emotes, but may be present in the
+			-- names of other players, creating weird results. If its our own
+			-- text emote, just don't return an RP name or a colored name.
+			if arg2 == xrp.toon.withrealm then
+				return xrp:NameWithoutRealm(arg2)
+			end
 		end
 
 		local chattype = event:sub(10)
@@ -144,6 +150,7 @@ xrp:HookLogin(function()
 	end)
 end)
 
+-- Right click menu entry for chat names and some other places.
 UnitPopupButtons["XRP_VIEWPROFILE"] = { text = xrp.L["RP Profile"], dist = 0 }
 table.insert(UnitPopupMenus["FRIEND"], 4, "XRP_VIEWPROFILE")
 hooksecurefunc("UnitPopup_OnClick", function(self)
@@ -158,14 +165,15 @@ end)
 -- pattern.
 hooksecurefunc("ChatEdit_ParseText", function(line, send)
 	if send == 1 then
-		local text = line:GetText()
+		local oldtext = line:GetText()
+		local text = oldtext
 		if text:find("%%xt") then
 			text = text:gsub("%%xt", UnitExists("target") and (xrp.units.target and xrp.units.target.NA or UnitName("target")) or xrp.L["nobody"])
 		end
 		if text:find("%%xf") then
 			text = text:gsub("%%xf", UnitExists("focus") and (xrp.units.focus and xrp.units.focus.NA or UnitName("focus")) or xrp.L["nobody"])
 		end
-		if text ~= line:GetText() then
+		if text ~= oldtext then
 			line:SetText(text)
 		end
 	end
