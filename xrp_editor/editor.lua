@@ -86,9 +86,7 @@ do
 		local profile = xrp.profiles[self.Profiles:GetText()]
 		local defaults = xrp.defaults[self.Profiles:GetText()]
 		for field, _ in pairs(supported) do
-			if not changes and (self[field]:GetText() ~= (profile[field] or "") or (self.checkboxes[field]:GetChecked() == 1) ~= defaults[field]) then
-				changes = true
-			end
+			changes = changes or self[field]:GetText() ~= (profile[field] or "") or (self.checkboxes[field]:GetChecked() == 1) ~= defaults[field]
 		end
 		if changes then
 			self.SaveButton:Enable()

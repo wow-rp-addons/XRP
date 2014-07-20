@@ -32,8 +32,7 @@ do
 		end
 
 		local function chatnames_Channels(...)
-			local p = 1
-			local list = {}
+			local list, p = {}, 1
 			while select(p, ...) do
 				list[(p + 1) * 0.5] = select(p + 1, ...)
 				p = p + 2

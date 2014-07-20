@@ -66,7 +66,7 @@ function xrp:StripEscapes(text)
 	-- This fully removes all color escapes, newline escapes, texture escapes,
 	-- and most types of link and chat link escapes. Other UI escape sequences
 	-- are escaped themselves to not render on display (|| instead of |).
-	return (text:gsub("||", "|"):gsub("|n", ""):gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|r", ""):gsub("|H.-|h(.-)|h", "%1"):gsub("|T.-|t", ""):gsub("|K.-|k.-|k", ""):gsub("|", "||"):match("^%s*(.-)%s*$"))
+	return text:gsub("||", "|"):gsub("|n", ""):gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|r", ""):gsub("|H.-|h(.-)|h", "%1"):gsub("|T.-|t", ""):gsub("|K.-|k.-|k", ""):gsub("|", "||"):match("^%s*(.-)%s*$")
 end
 
 function xrp:StripPunctuation(text)
@@ -149,7 +149,7 @@ function xrp:ConvertHeight(height, units)
 
 	units = (not units or units == "user") and xrp.settings.height or units
 	if units == "msp" then -- MSP internal format: cm without units as string.
-		return ("%u"):format(number)
+		return ("%u"):format(number + 0.5)
 	elseif units == "cm" then
 		return L["%u cm"]:format(number + 0.5)
 	elseif units == "m" then
