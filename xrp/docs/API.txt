@@ -96,8 +96,6 @@ of the character for whom the event is firing.
 		- offline: Indicates the character is offline.
 		- nomsp: Indicates the character likely does not have an MSP-enabled
 		  addon active.
-		- time: Indicates no request is being sent due to having recently
-		  requested all the fields.
 
 In general, MSP_RECEIVE and MSP_FIELD are the most useful events to hook, as
 the other events are mainly only useful if you are implementing a full viewer

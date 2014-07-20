@@ -58,7 +58,7 @@ do
 	xrp:HookEvent("MSP_FIELD", function(name, field)
 		if current == name and supported[field] then
 			--print("Trying to set: "..field.." for "..name..".")
-			xrp.viewer:SetField(field, xrp.cache[name][field] or (field == "RA" and xrp.values.GR[xrp.cache[name].GR]) or nil)
+			xrp.viewer:SetField(field, xrp.characters[name][field] or (field == "RA" and xrp.values.GR[xrp.characters[name].GR]) or nil)
 		end
 	end)
 end
@@ -136,8 +136,6 @@ xrp:HookEvent("MSP_FAIL", function(name, reason)
 			xrp.viewer.XC:SetText(L["Character is opposite faction."])
 		elseif reason == "nomsp" then
 			xrp.viewer.XC:SetText(L["No RP addon appears to be active."])
-		elseif reason == "time" then
-			xrp.viewer.XC:SetText(L["Too soon for updates."])
 		end
 	end
 end)
