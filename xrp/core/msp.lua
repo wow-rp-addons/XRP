@@ -287,7 +287,7 @@ do
 			local updated = false
 			if xrp_cache[character] and xrp_cache[character].fields[field] and contents == "" and not xrp.fields.unit[field] then
 				-- If it's newly blank, empty it in the cache. Never
-				-- empty G*.
+				-- empty G*, but do update them (following elseif).
 				xrp_cache[character].fields[field] = nil
 				updated = true
 			elseif contents ~= "" and xrp_cache[character].fields[field] ~= contents then
@@ -324,9 +324,11 @@ msp.handlers = {
 		for command in message:gmatch("([^\1]+)\1*") do
 			out[#out + 1] = self:Process(character, command)
 		end
+		-- If a field has been updated (i.e., changed content), fieldupdated
+		-- will be set to true; if a field was received, but the content has
+		-- not changed, fieldupdated will be set to false; if no fields were
+		-- received (i.e., only requests), fieldupdated is nil.
 		if self.cache[character].fieldupdated == true then
-			-- This only fires if there's actually been any changes to
-			-- field contents.
 			xrp:FireEvent("MSP_RECEIVE", character)
 			self.cache[character].fieldupdated = nil
 		elseif self.cache[character].fieldupdated == false then
@@ -465,36 +467,31 @@ xrp.fields = {
 	-- user-exposed.
 	dummy = { XC = true, XD = true },
 	-- 45 seconds for non-TT fields.
-	times = setmetatable(
-		{ TT = 15, },
-		{
-			__index = function(self, field)
-				return 45
-			end,
-		}
-	),
+	times = setmetatable({ TT = 15, }, {
+		__index = function(self, field)
+			return 45
+		end,
+	}),
 }
 
 function xrp:QueueRequest(character, field, safe)
 	if disabled or character == self.toon.withrealm or self:NameWithoutRealm(character) == UNKNOWN then return false end
 
-	local append = true
+	if msp.cache[character].time[field] and GetTime() < msp.cache[character].time[field] + self.fields.times[field] then
+		if msp.safe[character] then
+			msp.safe[character] = safe < msp.safe[character] and safe or msp.safe[character]
+		end
+		return false
+	end
+
 	if not msp.request[character] then
 		msp.request[character] = {}
-	else
-		for _, reqfield in pairs(msp.request[character]) do
-			if append and reqfield == field then
-				append = false
-			end
-		end
 	end
-	-- Always want the lowest (i.e., safest) value to skip dummies if possible.
+	--print(character..": "..field)
+	msp.request[character][#msp.request[character] + 1] = field
 	msp.safe[character] = (not msp.safe[character] or safe < msp.safe[character]) and safe or msp.safe[character]
-	if append then
-		--print(character..": "..field)
-		msp.request[character][#msp.request[character] + 1] = field
-		msp:Show()
-	end
+	msp:Show()
+
 	return true
 end
 
@@ -540,7 +537,6 @@ function xrp:Request(character, fields, safe)
 		end
 		return true
 	end
-	self:FireEvent("MSP_FAIL", character, "time")
 	return false
 end
 
