@@ -162,8 +162,8 @@ do
 	do
 		local function minimap_StatusSelect(self, status, arg2, checked)
 			local FC = xrp.selected.FC
-			if not checked and status ~= FC then
-				xrp.current.FC = status
+			if not checked and (status ~= FC or (not FC and status ~= "0")) then
+				xrp.current.FC = status ~= "0" and status or ""
 			elseif not checked then
 				xrp.current.FC = nil
 			end

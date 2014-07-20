@@ -28,10 +28,17 @@ StaticPopupDialogs["XRP_EDITOR_ADD"] = {
 	EditBoxOnTextChanged = function(self, data)
 		if self:GetText() ~= "" then
 			self:GetParent().button1:Enable()
+		else
+			self:GetParent().button1:Disable()
 		end
 	end,
 	OnAccept = function(self, data, data2)
-		xrp.editor:Load(self.editBox:GetText())
+		local name = self.editBox:GetText()
+		if xrp_profiles[name] then
+			StaticPopup_Show("XRP_EDITOR_FAIL")
+		else
+			xrp.editor:Load(self.editBox:GetText())
+		end
 	end,
 	enterClicksFirstButton = true,
 	timeout = 0,
@@ -64,6 +71,8 @@ StaticPopupDialogs["XRP_EDITOR_RENAME"] = {
 	EditBoxOnTextChanged = function(self, data)
 		if self:GetText() ~= "" then
 			self:GetParent().button1:Enable()
+		else
+			self:GetParent().button1:Disable()
 		end
 	end,
 	OnAccept = function(self, data, data2)
@@ -91,6 +100,8 @@ StaticPopupDialogs["XRP_EDITOR_COPY"] = {
 	EditBoxOnTextChanged = function(self, data)
 		if self:GetText() ~= "" then
 			self:GetParent().button1:Enable()
+		else
+			self:GetParent().button1:Disable()
 		end
 	end,
 	OnAccept = function(self, data, data2)
@@ -108,7 +119,7 @@ StaticPopupDialogs["XRP_EDITOR_COPY"] = {
 	preferredIndex = 3,
 }
 StaticPopupDialogs["XRP_EDITOR_FAIL"] = {
-	text = L["Something went wrong; a profile with that name may already exist."],
+	text = L["A profile with that name already exists (or something went wrong)."],
 	button1 = OKAY,
 	showAlert = true,
 	enterClicksFirstButton = true,
