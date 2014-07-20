@@ -421,6 +421,7 @@ if not disabled then
 			--print(GetTime()..": In: "..character..": "..message:gsub("\1", "\\1"))
 			--print("Receiving from: "..character)
 
+			local received = self.cache[character].received
 			self.cache[character].received = true
 			self.cache[character].nextcheck = nil
 
@@ -430,7 +431,7 @@ if not disabled then
 			-- request (to be absolutely certain that the *vital* dummy
 			-- response reaches the other side...).
 			if message == "?XD" then
-				if self.send[character] and not self.cache[character].received then
+				if self.send[character] and not received then
 					self.send[character].count = self.send[character].count - 1
 				end
 				self:Dummy(character, true)
@@ -440,7 +441,7 @@ if not disabled then
 					self.send[character].count = 0
 				end
 			else
-				if self.send[character] and not self.cache[character].received then
+				if self.send[character] and not received then
 					self.send[character].count = self.send[character].count - 1
 				end
 				self.handlers[prefix](self, character, message)
@@ -469,6 +470,9 @@ xrp.fields = {
 	-- 45 seconds for non-TT fields.
 	times = setmetatable({ TT = 15, }, {
 		__index = function(self, field)
+			if xrp.fields.tt[field] then
+				return self.TT
+			end
 			return 45
 		end,
 	}),
@@ -477,17 +481,10 @@ xrp.fields = {
 function xrp:QueueRequest(character, field, safe)
 	if disabled or character == self.toon.withrealm or self:NameWithoutRealm(character) == UNKNOWN then return false end
 
-	if msp.cache[character].time[field] and GetTime() < msp.cache[character].time[field] + self.fields.times[field] then
-		if msp.safe[character] then
-			msp.safe[character] = safe < msp.safe[character] and safe or msp.safe[character]
-		end
-		return false
-	end
-
 	if not msp.request[character] then
 		msp.request[character] = {}
 	end
-	--print(character..": "..field)
+
 	msp.request[character][#msp.request[character] + 1] = field
 	msp.safe[character] = (not msp.safe[character] or safe < msp.safe[character]) and safe or msp.safe[character]
 	msp:Show()
