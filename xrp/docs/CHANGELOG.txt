@@ -1,3 +1,44 @@
+5.4.8.0_rc6 (2014-07-20):
+
+	- The data storage format has changed and conversion is done automatically
+	  on login. Once you upgrade to rc6, you cannot return to a previous
+	  version.
+
+	- The viewer now will report "No changes." after receiving 'new' versions
+	  of fields for which there were no actual changes. This mainly occurred
+	  when dealing with MyRolePlay, as it doesn't track changes as strictly as
+	  XRP.
+
+	- The "Too soon for updates." message in the viewer has been removed. It
+	  became too difficult to maintain this behaviour with other code changes,
+	  and the message was often confusing or meaningless without knowledge of
+	  the underlying protocol/code.
+
+	- The warning about a new version will now display once every 20 hours,
+	  down from 24 hours.
+
+	- More code refactoring and optimization. A few things are probably a bit
+	  more reliable and/or faster now.
+
+	- Bugfixes:
+
+		- An issue where an offline character could be inaccurately reported
+		  as opposite faction has been fixed (where possible).
+
+		- Reverted a bandwidth limit change from rc5 which may have
+		  occasionally been triggering disconnections.
+
+		- Names in chat which consist solely of punctuation will no longer be
+		  removed alltogether.
+
+		- Apostrophe adjustments now also work with fancy Unicode apostrophes
+		  (this mainly affects some addon-performed emotes).
+
+		- New version warning should now properly stop showing after an
+		  upgrade.
+
+		- RP names in instance chat should now work.
+
 5.4.8.0_rc5 (2014-06-29):
 
 	- Overridden field timeout has been increased to 10 minutes after logout
