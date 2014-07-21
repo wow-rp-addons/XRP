@@ -1,46 +1,40 @@
-5.4.8.0_rc5 (2014-06-29):
+5.4.8.0_rc6 (2014-07-20):
 
-	- Overridden field timeout has been increased to 10 minutes after logout
-	  (up from 5).
+	- The data storage format has changed and conversion is done automatically
+	  on login. Once you upgrade to rc6, you cannot return to a previous
+	  version.
 
-	- Extra spacing option for tooltip has been adjusted to grouping in a
-	  3-2-3 format, rather than 3-3-2 ("Currently:" has been moved to the
-	  bottom group).
+	- The viewer now will report "No changes." after receiving 'new' versions
+	  of fields for which there were no actual changes. This mainly occurred
+	  when dealing with MyRolePlay, as it doesn't track changes as strictly as
+	  XRP.
 
-	- Profiles will now progressively load (i.e., as they are recieved) in the
-	  viewer. Short fields (such as height, weight, home, etc.) should be
-	  loaded prior to long fields (description/history) for long profiles.
+	- The "Too soon for updates." message in the viewer has been removed. It
+	  became too difficult to maintain this behaviour with other code changes,
+	  and the message was often confusing or meaningless without knowledge of
+	  the underlying protocol/code.
 
-		- Note: This will often be imperceptible for profiles below roughly
-		  4000 characters.
+	- The warning about a new version will now display once every 20 hours,
+	  down from 24 hours.
 
-	- Outgoing bandwidth limits have been slightly adjusted. Profile sends
-	  from XRP should be slightly faster now.
-
-		- In the extremely unlikely event that this causes issues with
-		  disconnects -- but note it was thoroughly tested and no disconnects
-		  could be triggered -- please inform the author.
+	- More code refactoring and optimization. A few things are probably a bit
+	  more reliable and/or faster now.
 
 	- Bugfixes:
 
-		- Use of %xt and %xf should no longer improperly print "nobody" when
-		  used on NPC or other non-player targets.
+		- An issue where an offline character could be inaccurately reported
+		  as opposite faction has been fixed (where possible).
 
-		- An issue where the Blizzard stealth/range issue workaround could
-		  send messages out-of-order in high-bandwidth circumstances has been
-		  fixed.
+		- Reverted a bandwidth limit change from rc5 which may have
+		  occasionally been triggering disconnections.
 
-		- An issue where being alt-tabbed in true fullscreen mode (not
-		  Fullscreen (Windowed)) caused profiles to not be sent to others has
-		  been mitigated. However, it's still not ideal to run true fullscreen
-		  with RP addons, if you spend lots of time tabbed out.
+		- Names in chat which consist solely of punctuation will no longer be
+		  removed alltogether.
 
-		- An issue where bugs in other addons could trigger higher outgoing
-		  bandwidth usage in XRP has been mitigated.
+		- Apostrophe adjustments now also work with fancy Unicode apostrophes
+		  (this mainly affects some addon-performed emotes).
 
-		- Minor optimizations have been made to the protocol and workaround
-		  implementations; these should slightly improve reliability and
-		  response times in some cases.
+		- New version warning should now properly stop showing after an
+		  upgrade.
 
-		- The active profile is now always updated properly when a field it
-		  inherits from default is modified in the default profile.
+		- RP names in instance chat should now work.

@@ -1,9 +1,9 @@
 ## Interface: 50400
 ## Title: XRP
-## Version: 5.4.8.0_rc5
+## Version: 5.4.8.0_rc6
 ## Author: Bor of Wyrmrest Accord (US)
 ## Notes: XRP is yet another roleplaying profile addon.
-## X-Category: Roleplaying
+## X-Category: Roleplay
 ## X-License: GPLv3
 ## SavedVariablesPerCharacter: xrp_overrides, xrp_profiles, xrp_selectedprofile, xrp_versions
 ## SavedVariables: xrp_cache, xrp_settings
