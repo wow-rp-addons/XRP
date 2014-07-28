@@ -139,9 +139,11 @@ xrp:HookLogin(function()
 
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_EMOTE", function(self, event, message, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, ...)
 		-- Some addons, but not commonly real people, use a fancy unicode
-		-- apostrophe.
-		local char = message:sub(0, 1)
-		if char == "'" or char == "’" then
+		-- apostrophe. Since Lua's string library isn't Unicode-aware, use
+		-- string.byte to check first three bytes.
+		local b1, b2, b3 = message:byte(1, 3)
+		-- 39 = ' | 44 = , | 58 = : | 226/128/153 = ’
+		if b1 == 39 or b1 == 44 or b1 == 58 or (b1 == 226 and b2 == 128 and b3 == 153) then
 			-- arg9 isn't normally used for CHAT_MSG_EMOTE.
 			arg9 = message:match("([^%s]*).*")
 			message = message:match("[^%s]*%s*(.*)")
