@@ -1,3 +1,27 @@
+5.4.8.0 (2014-07-28):
+
+	- Tooltip options have been rearranged (but not changed) for consistency
+	  and clarity. Default appearance and user-set appearance will not change.
+
+	- Importing standard MSP values for roleplaying style will now import a
+	  plain-text version, rather than the opaque numerical equivalent.
+
+	- The /xrp view command will now automatically uppercase the first letter
+	  of any character name.
+
+	- Commas and colons are now re-spaced as apostrophes are in emotes.
+
+	- Bugfixes:
+
+		- Selection of text in the viewer behaves consistently now.
+
+		- Fancy unicode apostrophes (used by some addons in emotes) will now
+		  actually be properly re-spaced.
+
+		- The viewer will now continue to load incomplete profiles even while
+		  hidden (so the completed load can be reopened later via the minimap
+		  menu or /xrp viewer).
+
 5.4.8.0_rc6 (2014-07-20):
 
 	- The data storage format has changed and conversion is done automatically
