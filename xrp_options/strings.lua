@@ -34,10 +34,10 @@ end
 
 if (select(4, GetAddOnInfo("xrp_tooltip"))) then
 	XRP_OPTIONS_TOOLTIP_TITLE = L["XRP: Tooltip Options"]
-	XRP_OPTIONS_TOOLTIP_REACTION = L["Color names by friend/foe (green/red)"]
+	XRP_OPTIONS_TOOLTIP_FACTION = L["Color RP names by faction"]
 	XRP_OPTIONS_TOOLTIP_WATCHING = L["Show indicator if player is targeting me"]
 	XRP_OPTIONS_TOOLTIP_GUILDRANK = L["Show guild rank"]
-	XRP_OPTIONS_TOOLTIP_RPRACE = L["Use roleplaying race"]
+	XRP_OPTIONS_TOOLTIP_NORPRACE = L["Hide roleplaying race"]
 	XRP_OPTIONS_TOOLTIP_NOOPFACTION = L["Hide (cached) roleplaying information for opposite faction"]
 	XRP_OPTIONS_TOOLTIP_NOHOSTILE = L["Hide roleplaying information for hostile PvP targets"]
 	XRP_OPTIONS_TOOLTIP_EXTRASPACE = L["Add extra spacing lines"]

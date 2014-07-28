@@ -18,10 +18,10 @@
 local settings
 do
 	local default_settings = {
-		reaction = true,
+		faction = false,
 		watching = false,
 		guildrank = false,
-		rprace = true,
+		norprace = false,
 		nohostile = false,
 		noopfaction = false,
 		extraspace = false,
@@ -29,6 +29,12 @@ do
 	xrp:HookLoad(function()
 		if type(xrp.settings.tooltip) ~= "table" then
 			xrp.settings.tooltip = {}
+		elseif xrp.settings.tooltip.reaction ~= nil then
+			-- Pre-5.4.8.0 (final).
+			xrp.settings.tooltip.faction = not xrp.settings.tooltip.reaction
+			xrp.settings.tooltip.reaction = nil
+			xrp.settings.tooltip.norprace = not xrp.settings.tooltip.rprace
+			xrp.settings.tooltip.rprace = nil
 		end
 		settings = setmetatable(xrp.settings.tooltip, { __index = default_settings })
 	end)
@@ -171,7 +177,7 @@ do
 				tooltip_RenderLine(("|cffa08050%s:|r |cffe6b399%s|r"):format(XRP_CU, tooltip_Truncate(xrp:StripEscapes(character.CU), 70, #XRP_CU)))
 			end
 
-			tooltip_RenderLine(cu.info:format(tooltip_Truncate(character.RA and settings.rprace and xrp:StripEscapes(character.RA) or cu.race, 40, 0, false)))
+			tooltip_RenderLine(cu.info:format(tooltip_Truncate(character.RA and not settings.norprace and xrp:StripEscapes(character.RA) or cu.race, 40, 0, false)))
 
 			if (character.FR and character.FR ~= "0") or (character.FC and character.FC ~= "0") then
 				local color = character.FC and character.FC ~= "0" and character.FC == "1" and "ff99664d" or "ff66b380"
@@ -236,7 +242,7 @@ do
 		local connected = UnitIsConnected(unit)
 
 		do
-			local color = settings.reaction and reaction_colors[(meattack and attackme and "hostile") or (faction == xrp.toon.fields.GF and not attackme and not meattack and "friendly") or ((faction == xrp.toon.fields.GF or faction == "Neutral") and "neutral") or "hostile"] or faction_colors[faction].dark
+			local color = not settings.faction and reaction_colors[(meattack and attackme and "hostile") or (faction == xrp.toon.fields.GF and not attackme and not meattack and "friendly") or ((faction == xrp.toon.fields.GF or faction == "Neutral") and "neutral") or "hostile"] or faction_colors[faction].dark
 			-- Can only ever be one of AFK, DND, or offline.
 			cu.nameformat = "|c"..color.."%s|r"..((UnitIsAFK(unit) and " |cff99994d"..CHAT_FLAG_AFK.."|r") or (UnitIsDND(unit) and " |cff994d4d"..CHAT_FLAG_DND.."|r") or (not connected and " |cff888888<"..PLAYER_OFFLINE..">|r") or "")
 		end
@@ -288,7 +294,7 @@ do
 
 		do
 			local name = UnitName(unit)
-			local color = settings.reaction and reaction_colors[(meattack and attackme and "hostile") or (faction == xrp.toon.fields.GF and not attackme and not meattack and "friendly") or ((faction == xrp.toon.fields.GF or faction == "Neutral") and "neutral") or "hostile"] or faction_colors[faction].dark
+			local color = not settings.faction and reaction_colors[(meattack and attackme and "hostile") or (faction == xrp.toon.fields.GF and not attackme and not meattack and "friendly") or ((faction == xrp.toon.fields.GF or faction == "Neutral") and "neutral") or "hostile"] or faction_colors[faction].dark
 			cu.nameformat = "|c"..color..name.."|r"
 		end
 
