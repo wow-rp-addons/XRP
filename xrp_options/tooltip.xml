@@ -23,14 +23,14 @@
 						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="15" y="-15"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="reactionLabel" inherits="GameFontWhite" text="XRP_OPTIONS_TOOLTIP_REACTION">
+				<FontString parentKey="factionLabel" inherits="GameFontWhite" text="XRP_OPTIONS_TOOLTIP_FACTION">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" x="24" y="-10"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="watchingLabel" inherits="GameFontWhite" text="XRP_OPTIONS_TOOLTIP_WATCHING">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.reactionLabel" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.factionLabel" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="guildrankLabel" inherits="GameFontWhite" text="XRP_OPTIONS_TOOLTIP_GUILDRANK">
@@ -38,14 +38,14 @@
 						<Anchor point="TOPLEFT" relativeKey="$parent.watchingLabel" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="rpraceLabel" inherits="GameFontWhite" text="XRP_OPTIONS_TOOLTIP_RPRACE">
+				<FontString parentKey="norpraceLabel" inherits="GameFontWhite" text="XRP_OPTIONS_TOOLTIP_NORPRACE">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.guildrankLabel" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="noopfactionLabel" inherits="GameFontWhite" text="XRP_OPTIONS_TOOLTIP_NOOPFACTION">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.rpraceLabel" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.norpraceLabel" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="nohostileLabel" inherits="GameFontWhite" text="XRP_OPTIONS_TOOLTIP_NOHOSTILE">
@@ -61,10 +61,10 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<CheckButton name="$parentreaction" parentKey="reaction" inherits="UICheckButtonTemplate">
+			<CheckButton name="$parentfaction" parentKey="faction" inherits="UICheckButtonTemplate">
 				<Size x="24" y="24"/>
 				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.reactionLabel" relativePoint="LEFT" x="-4" y="0"/>
+					<Anchor point="RIGHT" relativeKey="$parent.factionLabel" relativePoint="LEFT" x="-4" y="0"/>
 				</Anchors>
 			</CheckButton>
 			<CheckButton name="$parentwatching" parentKey="watching" inherits="UICheckButtonTemplate">
@@ -79,10 +79,10 @@
 					<Anchor point="RIGHT" relativeKey="$parent.guildrankLabel" relativePoint="LEFT" x="-4" y="0"/>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="$parentrprace" parentKey="rprace" inherits="UICheckButtonTemplate">
+			<CheckButton name="$parentnorprace" parentKey="norprace" inherits="UICheckButtonTemplate">
 				<Size x="24" y="24"/>
 				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.rpraceLabel" relativePoint="LEFT" x="-4" y="0"/>
+					<Anchor point="RIGHT" relativeKey="$parent.norpraceLabel" relativePoint="LEFT" x="-4" y="0"/>
 				</Anchors>
 			</CheckButton>
 			<CheckButton name="$parentnoopfaction" parentKey="noopfaction" inherits="UICheckButtonTemplate">
