@@ -140,12 +140,6 @@ xrp:HookEvent("MSP_FAIL", function(name, reason)
 	end
 end)
 
-xrp.viewer:SetScript("OnHide", function(self)
-	self.XC:SetText("")
-	current = UNKNOWN
-	PlaySound("igCharacterInfoClose")
-end)
-
 -- Setup shorthand access for easier looping later.
 -- Appearance tab
 for _, field in ipairs({ "AE", "RA", "AH", "AW" }) do

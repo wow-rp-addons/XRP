@@ -21,9 +21,6 @@
 			<OnTextChanged>
 				self:SetCursorPosition(0);
 			</OnTextChanged>
-			<OnEditFocusGained>
-				self:ClearFocus();
-			</OnEditFocusGained>
 			<OnEnter>
 				local text = self:GetText();
 				if (#text * 6.25) > self:GetWidth() then
@@ -34,6 +31,9 @@
 			<OnLeave>
 				GameTooltip:Hide()
 			</OnLeave>
+			<OnLoad>
+				self:Disable();
+			</OnLoad>
 		</Scripts>
 	</EditBox>
 	<ScrollFrame name="LargeOutputScrollFrameTemplate" inherits="UIPanelScrollFrameTemplate" virtual="true">
@@ -125,7 +125,7 @@
 						end
 					</OnTextChanged>
 					<OnLoad>
-						self:EnableMouse(false);
+						self:Disable();
 					</OnLoad>
 				</Scripts>
 				<FontString inherits="GameFontWhite"/>
