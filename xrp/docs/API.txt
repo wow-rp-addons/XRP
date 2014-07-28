@@ -24,8 +24,8 @@ xrp.units:
 xrp.guids:
 	This metatable provides access to character profile data for a specified
 	GUID. Note that GetPlayerInfoByGUID() must be able to succeed on the
-	specified GUID (meaning the WoW client has seen it in this session, and
-	you're not using a stored value from anothe session). As an example,
+	specified GUID (meaning the WoW client has seen it in this session -- you
+	cannot make use of a stored value from another session). As an example,
 	xrp.guids[UnitGUID("player")] will contain information about the current
 	player themselves (but, of course, this is better used with non-self
 	targets, such as for GUIDs attached to CHAT_MSG_* events).
@@ -33,9 +33,9 @@ xrp.guids:
 xrp.characters:
 	This metatable provides access to character profile data for a specified
 	character name. This name should be of the form Name-RealmName (though
-	'-RealmName' *may* be ommitted for same-realm, but this is not
-	recommended). For example, xrp.characters["Bor-WyrmrestAccord"] contains
-	profile data for the character Bor on the Wyrmrest Accord realm.
+	'-RealmName' *may* be ommitted for same-realm, it is strongly recommended
+	to include it). For example, xrp.characters["Bor-WyrmrestAccord"] contains
+	any profile data for the character Bor on the Wyrmrest Accord realm.
 
 The above three metatables automatically perform requests for updated versions
 of fields as appropriate. In general, there is no purpose to running any
@@ -66,7 +66,7 @@ There is no way to unhook an event currently (though this may be added later).
 
 Events:
 
-All of the following events provide a first argument of the name with realm
+All of the following events provide a first argument of the name-with-realm
 of the character for whom the event is firing.
 
 	- MSP_RECEIVE: Fires when a complete profile, including updated data, has
@@ -80,7 +80,8 @@ of the character for whom the event is firing.
 	  incomplete receives -- this fires as data is incoming). This provides
 	  a second argument with the name of the MSP field which has just been
 	  updated. This is likely to fire multiple times in quick succession as
-	  each newly-updated field is processed.
+	  each newly-updated field is processed, and indicates the new field data
+	  is immediately avaialble in the character tables.
 
 	- MSP_CHUNK: Fires when a profile data chunk is received. This does not
 	  indicate any field processing has taken place, simply that data is
@@ -101,10 +102,50 @@ In general, MSP_RECEIVE and MSP_FIELD are the most useful events to hook, as
 the other events are mainly only useful if you are implementing a full viewer
 to replace xrp_viewer.
 
-Reading and writing profile data
-================================
+Reading and modifying the current public profile
+================================================
 
-Character's own profile data info goes here.
+The contents of the current public profile may be read from the xrp.current
+table, using the same field names as MSP uses elsewhere.
+
+The current public profile is treated somewhat specially in XRP, as the full
+contents of the public profile may not completely correspond to the contents
+of any single saved profile. There are three special ways that data is added or
+removed from the active profile.
+
+The base of the profile is comprised of the currently-active saved profile, but
+some data is pulled from other sources. The VA (version) and VP (protocol)
+fields are filled automatically from XRP's version information, and the unit-
+related fields (G* fields) are automatically generated at login and cannot be
+modified by the user. Certain fields may also be inherited from the "Default"
+profile, if the values of those fields are empty in the currently-selected
+profile (which fields are is user-set).
+
+Finally, fields can be temporarily overriden by writing to the xrp.current
+table. These overrides are stored in a SavedVariable, but are wiped if the next
+login is greater than ten minutes after that character last logged out. Any
+fields may be overridden, and setting the field's value to nil removes the
+override. To explicitly set a field to empty, use an empty string instead ("").
+
+The same data is also available in the xrp.selected table, but minus the
+overriden fields. This can be used to check if a field has been overriden, such
+as through code like "xrp.current.FC ~= xrp.selected.FC" (if this expression
+evaluates to true, the FC field has been temporarily overriden). Unlike
+xrp.current, this table cannot be written to.
+
+Reading and writing saved profile data
+======================================
+
+Stored profiles are kept, by name, in xrp.profiles (and a full list of saved
+profiles may be obtained by running xrp.profiles()). The profile "Default"
+(localized by xrp.L["Default"]) and "Default (Old)" (localized by
+xrp.L["Default (Old)"]) are treated specially for some purposes. Other named
+profiles are treated without any unique treatment, regardless of name.
+
+As with most other storage tables, reading/writing the MSP field names provides
+access to the stored profile information and the ability to change the profile
+data. In addition, there is an xrp.defaults[profile] table which stores the
+true/false booleans for whether the named profile will inherit any empty fields from the "Default" profile or not.
 
 Helper functions
 ================
@@ -159,3 +200,9 @@ xrp:ConvertHeight(height, units)
 		values for units are: "msp", "cm", "m", and "ft". If units are not
 		provided, the user-selected preferred units are used. If conversion is
 		not possible, the input height is returned untouched.
+
+xrp.L[string]
+	arguments: string (string)
+	returns: Localized version of input string. Note that this is called as
+		a table, rather than a function. It may also be used as a local without
+		issue (such as via "local L = xrp.L").
