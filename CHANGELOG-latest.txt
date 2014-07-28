@@ -1,40 +1,23 @@
-5.4.8.0_rc6 (2014-07-20):
+5.4.8.0 (2014-07-28):
 
-	- The data storage format has changed and conversion is done automatically
-	  on login. Once you upgrade to rc6, you cannot return to a previous
-	  version.
+	- Tooltip options have been rearranged (but not changed) for consistency
+	  and clarity. Default appearance and user-set appearance will not change.
 
-	- The viewer now will report "No changes." after receiving 'new' versions
-	  of fields for which there were no actual changes. This mainly occurred
-	  when dealing with MyRolePlay, as it doesn't track changes as strictly as
-	  XRP.
+	- Importing standard MSP values for roleplaying style will now import a
+	  plain-text version, rather than the opaque numerical equivalent.
 
-	- The "Too soon for updates." message in the viewer has been removed. It
-	  became too difficult to maintain this behaviour with other code changes,
-	  and the message was often confusing or meaningless without knowledge of
-	  the underlying protocol/code.
+	- The /xrp view command will now automatically uppercase the first letter
+	  of any character name.
 
-	- The warning about a new version will now display once every 20 hours,
-	  down from 24 hours.
-
-	- More code refactoring and optimization. A few things are probably a bit
-	  more reliable and/or faster now.
+	- Commas and colons are now re-spaced as apostrophes are in emotes.
 
 	- Bugfixes:
 
-		- An issue where an offline character could be inaccurately reported
-		  as opposite faction has been fixed (where possible).
+		- Selection of text in the viewer behaves consistently now.
 
-		- Reverted a bandwidth limit change from rc5 which may have
-		  occasionally been triggering disconnections.
+		- Fancy unicode apostrophes (used by some addons in emotes) will now
+		  actually be properly re-spaced.
 
-		- Names in chat which consist solely of punctuation will no longer be
-		  removed alltogether.
-
-		- Apostrophe adjustments now also work with fancy Unicode apostrophes
-		  (this mainly affects some addon-performed emotes).
-
-		- New version warning should now properly stop showing after an
-		  upgrade.
-
-		- RP names in instance chat should now work.
+		- The viewer will now continue to load incomplete profiles even while
+		  hidden (so the completed load can be reopened later via the minimap
+		  menu or /xrp viewer).
