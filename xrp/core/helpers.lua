@@ -76,12 +76,12 @@ function xrp:StripPunctuation(text)
 	-- Most punctuation and all whitespace is stripped from start/end; any
 	-- punctuation in the middle is left as-is.
 	--
-	-- Punctuation stripped: `~@#$%^&*-_=+[{]}\|;:,<.>/
+	-- Punctuation stripped: `~!@#$%^&*()-_=+[{]}\|;:,<.>/?
 	-- Notable exceptions:
 	--		start: (
-	--		end: ?!)
+	--		end: .?!)
 	--		start/end: '"
-	local stripped = text:match("^[%`%~%!%@%#%$%%%^%&%*%)%-%_%=%+%[%{%]%}%\\%|%;%:%,%<%.%>%/%?%s]*(.-)[%`%~%@%#%$%%%^%&%*%(%-%_%=%+%[%{%]%}%\\%|%;%:%,%<%.%>%/%s]*$")
+	local stripped = text:match("^[%`%~%!%@%#%$%%%^%&%*%)%-%_%=%+%[%{%]%}%\\%|%;%:%,%<%.%>%/%?%s]*(.-)[%`%~%@%#%$%%%^%&%*%(%-%_%=%+%[%{%]%}%\\%|%;%:%,%<%>%/%s]*$")
 	return stripped ~= "" and stripped or text
 end
 
@@ -121,6 +121,7 @@ function xrp:ConvertHeight(height, units)
 	end
 	local number = tonumber(height)
 	if number and number <= 10 then
+		-- Under 10 is assumed to be meters if a plain number.
 		number = number * 100
 	end
 	if not number then
