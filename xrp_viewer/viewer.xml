@@ -270,6 +270,9 @@
 			<OnShow>
 				PlaySound("igCharacterInfoOpen");
 			</OnShow>
+			<OnHide>
+				PlaySound("igCharacterInfoClose");
+			</OnHide>
 		</Scripts>
 	</Frame>
 </Ui>
