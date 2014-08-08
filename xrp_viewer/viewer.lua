@@ -17,6 +17,7 @@
 
 local L = xrp.L
 local current = UNKNOWN
+local failed = UNKNOWN
 
 do
 	-- This will request fields in the order listed.
@@ -68,6 +69,7 @@ function xrp.viewer:ViewUnit(unit)
 		return
 	end
 	current = xrp:UnitNameWithRealm(unit)
+	failed = nil
 	self.XC:SetText("")
 	self:Load(xrp.units[unit])
 	SetPortraitTexture(self.portrait, unit)
@@ -86,6 +88,7 @@ function xrp.viewer:ViewCharacter(name)
 	end
 	name = xrp:NameWithRealm(name) -- If there's not a realm, add our realm.
 	current = name
+	failed = nil
 	self.XC:SetText("")
 	self:Load(xrp.characters[name])
 	do
@@ -103,8 +106,11 @@ end
 
 xrp:HookEvent("MSP_RECEIVE", function(name)
 	if current == name then
-		local XC = xrp.viewer.XC:GetText()
-		if not XC or XC:find("^Receiving") then
+		if failed == name then
+			failed = nil
+			xrp.viewer.XC:SetText("")
+			xrp.viewer:Load(xrp.characters[name])
+		else
 			xrp.viewer.XC:SetText(L["Received!"])
 		end
 	end
@@ -112,9 +118,15 @@ end)
 
 xrp:HookEvent("MSP_NOCHANGE", function(name)
 	if current == name then
-		local XC = xrp.viewer.XC:GetText()
-		if not XC or XC:find("^Receiving") then
-			xrp.viewer.XC:SetText(L["No changes."])
+		if failed == name then
+			failed = nil
+			xrp.viewer.XC:SetText("")
+			xrp.viewer:Load(xrp.characters[name])
+		else
+			local XC = xrp.viewer.XC:GetText()
+			if not XC or XC:find("^Receiving") then
+				xrp.viewer.XC:SetText(L["No changes."])
+			end
 		end
 	end
 end)
@@ -129,13 +141,16 @@ xrp:HookEvent("MSP_CHUNK", function(name, chunk, totalchunks)
 end)
 
 xrp:HookEvent("MSP_FAIL", function(name, reason)
-	if current == name and not xrp.viewer.XC:GetText() then
-		if reason == "offline" then
-			xrp.viewer.XC:SetText(L["Character is not online."])
-		elseif reason == "faction" then
-			xrp.viewer.XC:SetText(L["Character is opposite faction."])
-		elseif reason == "nomsp" then
-			xrp.viewer.XC:SetText(L["No RP addon appears to be active."])
+	if current == name then
+		failed = current
+		if not xrp.viewer.XC:GetText() then
+			if reason == "offline" then
+				xrp.viewer.XC:SetText(L["Character is not online."])
+			elseif reason == "faction" then
+				xrp.viewer.XC:SetText(L["Character is opposite faction."])
+			elseif reason == "nomsp" then
+				xrp.viewer.XC:SetText(L["No RP addon appears to be active."])
+			end
 		end
 	end
 end)
