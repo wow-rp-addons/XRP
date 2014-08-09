@@ -121,7 +121,7 @@ xrp:HookLogin(function()
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_TEXT_EMOTE", function(self, event, message, sender, ...)
 		-- Availability of GUID for restoring the realm. Bail out if we won't
 		-- be able to recover the realm name later.
-		if not (select(10, ...)) then
+		if not select(10, ...) then
 			return false
 		end
 
@@ -150,33 +150,4 @@ xrp:HookLogin(function()
 		end
 		return false, message, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, ...
 	end)
-end)
-
--- Right click menu entry for chat names and some other places.
-UnitPopupButtons["XRP_VIEWPROFILE"] = { text = xrp.L["RP Profile"], dist = 0 }
-table.insert(UnitPopupMenus["FRIEND"], 4, "XRP_VIEWPROFILE")
-hooksecurefunc("UnitPopup_OnClick", function(self)
-	if self.value == "XRP_VIEWPROFILE" then
-		xrp:ShowViewerCharacter(xrp:NameWithRealm(UIDROPDOWNMENU_INIT_MENU.name))
-	end
-end)
-
--- This replaces %xt and %xf with the target's/focus's RP name or, if that is
--- unavailable, unit name. Note that this has the minor oddity of saving the
--- replaced value in the chat history, rather than the %xt/%xf replacement
--- pattern.
-hooksecurefunc("ChatEdit_ParseText", function(line, send)
-	if send == 1 then
-		local oldtext = line:GetText()
-		local text = oldtext
-		if text:find("%%xt") then
-			text = text:gsub("%%xt", UnitExists("target") and (xrp.units.target and xrp.units.target.NA or UnitName("target")) or xrp.L["nobody"])
-		end
-		if text:find("%%xf") then
-			text = text:gsub("%%xf", UnitExists("focus") and (xrp.units.focus and xrp.units.focus.NA or UnitName("focus")) or xrp.L["nobody"])
-		end
-		if text ~= oldtext then
-			line:SetText(text)
-		end
-	end
 end)
