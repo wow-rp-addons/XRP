@@ -228,6 +228,22 @@
 					</ScrollFrame>
 				</Frames>
 			</Frame>
+			<CheckButton name="$parentBookmark" parentKey="Bookmark" inherits="UICheckButtonTemplate">
+				<Size x="23" y="23"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-23" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
+						GameTooltip:SetText(self:GetChecked() and xrp.L["Unbookmark"] or xrp.L["Bookmark"]);
+						GameTooltip:Show();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</CheckButton>
 			<Button name="$parentTab1" parentKey="Tab1" inherits="CharacterFrameTabButtonTemplate" id="1" text="XRP_APPEARANCE">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="11" y="2"/>
