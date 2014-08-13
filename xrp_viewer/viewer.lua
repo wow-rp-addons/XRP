@@ -50,6 +50,13 @@ do
 		for _, field in ipairs(display) do
 			self:SetField(field, character[field] or (field == "RA" and xrp.values.GR[character.GR]) or nil)
 		end
+		self.Bookmark:SetChecked(xrp.bookmarks[character] ~= nil)
+		if xrp.bookmarks[character] == 0 then
+			-- Own character, disable checkbox.
+			self.Bookmark:Disable()
+		else
+			self.Bookmark:Enable()
+		end
 	end
 
 	local supported = {}
@@ -172,3 +179,19 @@ end
 for _, field in ipairs({ "MO", "HI" }) do
 	xrp.viewer[field] = xrp.viewer.Biography[field].EditBox
 end
+
+xrp.viewer.Bookmark:SetScript("OnClick", function(self, button, down)
+	if not down then
+		if xrp.bookmarks[current] then
+			xrp.bookmarks[current] = false
+			GameTooltip:SetOwner(self, "ANCHOR_CURSOR")
+			GameTooltip:SetText(xrp.L["Bookmark"])
+			GameTooltip:Show()
+		else
+			xrp.bookmarks[current] = true
+			GameTooltip:SetOwner(self, "ANCHOR_CURSOR")
+			GameTooltip:SetText(xrp.L["Unbookmark"])
+			GameTooltip:Show()
+		end
+	end
+end)
