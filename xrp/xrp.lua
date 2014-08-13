@@ -221,14 +221,8 @@ do
 	local default_settings = {
 		height = "ft",
 		weight = "lb",
-		minimap = 225,
 		cachetime = 864000, -- 10 days
 		cachetidy = true,
-		hideminimaptt = false,
-		minimapdetached = false,
-		minimapx = 0,
-		minimapy = 0,
-		minimappoint = "CENTER",
 	}
 	xrp:HookLoad(function()
 		-- Account-wide.
