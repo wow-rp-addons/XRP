@@ -23,9 +23,9 @@ function xrp.options.core:okay()
 	settings.cachetime = UIDropDownMenu_GetSelectedValue(self.CacheTime)
 	settings.cachetidy = self.CacheAuto:GetChecked() == 1
 
-	settings.hideminimaptt = self.HideMinimapTT:GetChecked() == 1
-	settings.minimapdetached = self.MinimapDetached:GetChecked() == 1
-	xrp.minimap:SetDetached(settings.minimapdetached)
+	settings.minimap.hidett = self.HideMinimapTT:GetChecked() == 1
+	settings.minimap.detached = self.MinimapDetached:GetChecked() == 1
+	xrp.minimap:SetDetached(settings.minimap.detached)
 end
 
 function xrp.options.core:refresh()
@@ -39,8 +39,8 @@ function xrp.options.core:refresh()
 	UIDropDownMenu_SetSelectedValue(self.CacheTime, settings.cachetime)
 	self.CacheAuto:SetChecked(settings.cachetidy)
 
-	self.HideMinimapTT:SetChecked(settings.hideminimaptt)
-	self.MinimapDetached:SetChecked(settings.minimapdetached)
+	self.HideMinimapTT:SetChecked(settings.minimap.hidett)
+	self.MinimapDetached:SetChecked(settings.minimap.detached)
 	self.Lock:SetEnabled(self.MinimapDetached:GetChecked())
 	self.Lock:SetText(xrp.minimap.locked and UNLOCK or LOCK)
 end
@@ -52,9 +52,9 @@ function xrp.options.core:default()
 	settings.cachetime = nil
 	settings.cachetidy = nil
 
-	settings.hideminimaptt = nil
-	settings.minimapdetached = nil
-	xrp.minimap:SetDetached(settings.minimapdetached)
+	settings.minimap.hidett = nil
+	settings.minimap.detached = nil
+	xrp.minimap:SetDetached(settings.minimap.detached)
 
 	self:refresh()
 end

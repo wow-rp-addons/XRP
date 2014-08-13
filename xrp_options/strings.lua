@@ -22,8 +22,8 @@ XRP_OPTIONS_CORE_DEFAULTS = L["For new profiles, copy from \"Default\" for:"]
 XRP_OPTIONS_CORE_CACHE = L["Character profile cache expiry:"]
 XRP_OPTIONS_CORE_CACHEAUTO = L["Prune cache on login"]
 XRP_OPTIONS_CORE_MINIMAP = L["Minimap icon:"]
-XRP_OPTIONS_CORE_HIDEMINIMAPTT = L["Hide help tooltip on minimap icon"]
-XRP_OPTIONS_CORE_MINIMAPDETACHED = L["Detach minimap icon from minimap"]
+XRP_OPTIONS_CORE_MINIMAP_HIDETT = L["Hide help tooltip on minimap icon"]
+XRP_OPTIONS_CORE_MINIMAP_DETACHED = L["Detach minimap icon from minimap"]
 
 if (select(4, GetAddOnInfo("xrp_chatnames"))) then
 	XRP_OPTIONS_CHAT_TITLE = L["XRP: Chat Names Options"]
@@ -35,7 +35,7 @@ end
 if (select(4, GetAddOnInfo("xrp_tooltip"))) then
 	XRP_OPTIONS_TOOLTIP_TITLE = L["XRP: Tooltip Options"]
 	XRP_OPTIONS_TOOLTIP_FACTION = L["Color RP names by faction"]
-	XRP_OPTIONS_TOOLTIP_WATCHING = L["Show indicator if player is targeting me"]
+	XRP_OPTIONS_TOOLTIP_WATCHING = L["Show indicator if player is targeting me (|TInterface\\LFGFrame\\BattlenetWorking0:24:24|t)"]
 	XRP_OPTIONS_TOOLTIP_GUILDRANK = L["Show guild rank"]
 	XRP_OPTIONS_TOOLTIP_NORPRACE = L["Hide roleplaying race"]
 	XRP_OPTIONS_TOOLTIP_NOOPFACTION = L["Hide (cached) roleplaying information for opposite faction"]
