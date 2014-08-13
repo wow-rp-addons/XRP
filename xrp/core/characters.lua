@@ -65,10 +65,10 @@ do
 	local chars = setmetatable({}, weak)
 	xrp.characters = setmetatable({}, {
 		__index = function(self, name)
-			if not name or name == "" then
+			name = xrp:NameWithRealm(name)
+			if not name then
 				return nil
 			end
-			name = xrp:NameWithRealm(name)
 			if not chars[name] then
 				chars[name] = setmetatable({ [nk] = name, [rk] = true, [sk] = 2 }, charsmt)
 			end

@@ -43,14 +43,14 @@
 						<Anchor point="TOPLEFT" relativeKey="$parent.CacheLabel" relativePoint="BOTTOMLEFT" x="250" y="-12"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="MiscLabel" inherits="GameFontNormal" text="XRP_OPTIONS_CORE_MINIMAP">
+				<FontString parentKey="MinimapLabel" inherits="GameFontNormal" text="XRP_OPTIONS_CORE_MINIMAP">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.CacheLabel" relativePoint="BOTTOMLEFT" x="0" y="-50"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="HideMinimapTTLabel" inherits="GameFontWhite" text="XRP_OPTIONS_CORE_HIDEMINIMAPTT">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.MiscLabel" relativePoint="BOTTOMLEFT" x="24" y="-10"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.MinimapLabel" relativePoint="BOTTOMLEFT" x="24" y="-10"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="MinimapDetachedLabel" inherits="GameFontWhite" text="XRP_OPTIONS_CORE_MINIMAPDETACHED">

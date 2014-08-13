@@ -268,6 +268,7 @@ do
 			if type(xrp_profiles[L["Default"]]) ~= "table" then
 				xrp_profiles[L["Default"]] = {
 					fields = {},
+					defaults = {},
 				}
 			end
 			if type(xrp_profiles[L["Default"]].fields.NA) ~= "string" then
@@ -302,11 +303,16 @@ function xrp:CacheTidy(timer)
 	end
 	local now = time()
 	local before = now - timer
+	local beforeown = now - (timer * 10)
+	-- Minimum expiry of a week for player's own characters.
+	if beforeown < 604800 then
+		beforeown == 604800
+	end
 	for character, data in pairs(xrp_cache) do
 		if not data.lastreceive then
 			-- Pre-5.4.8.0_beta5.
 			data.lastreceive = now
-		elseif data.lastreceive < before then
+		elseif not data.bookmark and (not data.own and data.lastreceive < before) or data.lastreceive < beforeown then
 			xrp_cache[character] = nil
 		end
 	end
