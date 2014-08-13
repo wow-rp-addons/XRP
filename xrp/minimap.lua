@@ -18,7 +18,36 @@
 
 local L = xrp.L
 local settings
-xrp:HookLoad(function() settings = xrp.settings end)
+xrp:HookLoad(function()
+	local default_settings = {
+		angle = 225,
+		hidett = false,
+		detached = false,
+		x = 0,
+		y = 0,
+		point = "CENTER",
+	}
+	-- 5.4.8.1
+	if type(xrp.settings.minimap) == "number" then
+		local minimap = {
+			angle = xrp.settings.minimap,
+			hidett = xrp.settings.hideminimaptt,
+			detached = xrp.settings.minimapdetached,
+			x = xrp.settings.minimapx,
+			y = xrp.settings.minimapy,
+			point = xrp.settings.minimappoint,
+		}
+		xrp.settings.minimap = minimap
+		xrp.settings.hideminimaptt = nil
+		xrp.settings.minimapdetached = nil
+		xrp.settings.minimapx = nil
+		xrp.settings.minimapy = nil
+		xrp.settings.minimappoint = nil
+	elseif type(xrp.settings.minimap) ~= "table" then
+		xrp.settings.minimap = {}
+	end
+	settings = setmetatable(xrp.settings.minimap, { __index = default_settings })
+end)
 
 do
 	local minimap_OnDragStart, minimap_OnDragStop, minimap_UpdatePosition
@@ -42,7 +71,7 @@ do
 			}
 
 			function minimap_UpdatePosition(self)
-				local angle = math.rad(settings.minimap or 225)
+				local angle = math.rad(settings.angle)
 				local x, y, q = math.cos(angle), math.sin(angle), 1
 				if x < 0 then q = q + 1 end
 				if y > 0 then q = q + 2 end
@@ -64,7 +93,7 @@ do
 				local px, py = GetCursorPosition()
 				local scale = Minimap:GetEffectiveScale()
 				px, py = px / scale, py / scale
-				settings.minimap = math.deg(math.atan2(py - my, px - mx)) % 360
+				settings.angle = math.deg(math.atan2(py - my, px - mx)) % 360
 				minimap_UpdatePosition(self)
 			end
 
@@ -81,7 +110,7 @@ do
 
 	local function minimap_UpdatePositionDetached(self)
 		self:ClearAllPoints()
-		self:SetPoint(settings.minimappoint, self:GetParent(), settings.minimappoint, settings.minimapx, settings.minimapy)
+		self:SetPoint(settings.point, self:GetParent(), settings.point, settings.x, settings.y)
 	end
 
 	local function minimap_OnDragStartDetached(self)
@@ -94,7 +123,7 @@ do
 	local function minimap_OnDragStopDetached(self)
 		if not self.locked then
 			self:StopMovingOrSizing()
-			settings.minimappoint, settings.minimapx, settings.minimapy = select(3, self:GetPoint())
+			settings.point, settings.x, settings.y = select(3, self:GetPoint())
 		end
 		self:UnlockHighlight()
 	end
@@ -147,14 +176,12 @@ do
 	xrp:HookEvent("MSP_RECEIVE", minimap_UpdateIcon)
 
 	xrp:HookLoad(function()
-		settings = xrp.settings
-		xrp.minimap:SetDetached(settings.minimapdetached)
+		xrp.minimap:SetDetached(settings.detached)
 		xrp.minimap.locked = true
 		minimap_UpdateIcon()
 		xrp.minimap:SetScript("OnEvent", minimap_UpdateIcon)
 		xrp.minimap:RegisterEvent("PLAYER_TARGET_CHANGED")
 	end)
-	xrp.minimap:RegisterEvent("ADDON_LOADED")
 end
 
 do
