@@ -567,7 +567,8 @@ function xrp:Update()
 		-- If it's our character we never want the cache tidy to wipe it out.
 		-- Do this by setting the wipe timer for 2038. This should get run on
 		-- the first update every session (i.e., around PLAYER_LOGIN).
-		xrp_cache[character].lastreceive = 2147483647
+		xrp_cache[character].lastreceive = time()
+		xrp_cache[character].own = true
 		msp:CacheTT()
 	end
 	if changes then
@@ -590,7 +591,8 @@ function xrp:UpdateField(field)
 			xrp_cache[character].versions.TT = xrp_versions.TT
 			msp:CacheTT()
 		elseif not msp.tt then
-			xrp_cache[character].lastreceive = 2147483647
+			xrp_cache[character].lastreceive = time()
+			xrp_cache[character].own = true
 			msp:CacheTT()
 		end
 		self:FireEvent("MSP_UPDATE", field)

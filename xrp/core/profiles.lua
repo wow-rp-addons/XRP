@@ -247,6 +247,7 @@ do
 						fields = {
 							NA = xrp.toon.name,
 						},
+						defaults = {},
 					}
 				end
 				if name == xrp_selectedprofile then
@@ -307,7 +308,11 @@ do
 		__index = function(self, name)
 			if not xrp_profiles[name] then
 				return nil
-			elseif not defs[name] then
+			end
+			if not xrp_profiles[profile].defaults then
+				xrp_profiles[name].defaults = {}
+			end
+			if not defs[name] then
 				defs[name] = setmetatable({ [nk] = name }, defmt)
 			end
 			return defs[name]
