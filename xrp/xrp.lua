@@ -298,20 +298,23 @@ function xrp:CacheTidy(timer)
 	local now = time()
 	local before = now - timer
 	local beforeown = now - (timer * 10)
-	-- Minimum expiry of a week for player's own characters.
-	if beforeown < 604800 then
-		beforeown == 604800
+	-- Minimum expiry of two weeks for player's own characters.
+	if beforeown < 1209600 then
+		beforeown = 1209600
 	end
 	for character, data in pairs(xrp_cache) do
 		if not data.lastreceive then
 			-- Pre-5.4.8.0_beta5.
 			data.lastreceive = now
-		elseif not data.bookmark and (not data.own and data.lastreceive < before) or data.lastreceive < beforeown then
+		elseif not data.bookmark and (not data.own and data.lastreceive < before or data.lastreceive < beforeown) then
 			xrp_cache[character] = nil
 		end
 	end
-	-- Explicitly collect garbage, as there may be a hell of a lot of it.
-	collectgarbage()
+	if timer <= 60 then
+		-- Explicitly collect garbage, as there may be a hell of a lot of it
+		-- (the user probably clicked "Clear Cache" in the options).
+		collectgarbage()
+	end
 	return true
 end
 
