@@ -23,9 +23,27 @@ function xrp.options.core:okay()
 	settings.cachetime = UIDropDownMenu_GetSelectedValue(self.CacheTime)
 	settings.cachetidy = self.CacheAuto:GetChecked() == 1
 
-	settings.minimap.hidett = self.HideMinimapTT:GetChecked() == 1
+	settings.minimap.hidett = self.MinimapHideTT:GetChecked() == 1
 	settings.minimap.detached = self.MinimapDetached:GetChecked() == 1
 	xrp.minimap:SetDetached(settings.minimap.detached)
+
+	settings.integration.rightclick = self.IntegrationRightClick:GetChecked() == 1
+	settings.integration.interact = self.IntegrationInteractBind:GetChecked() == 1
+	settings.integration.replacements = self.IntegrationReplacements:GetChecked() == 1
+	do
+		local menus = self.IntegrationMenus:GetChecked() == 1
+		if settings.integration.menus ~= menus then
+			StaticPopup_Show("XRP_OPTIONS_RELOAD")
+		end
+		settings.integration.menus = menus
+	end
+	do
+		local unitmenus = self.IntegrationUnitMenus:GetChecked() == 1
+		if settings.integration.unitmenus ~= unitmenus then
+			StaticPopup_Show("XRP_OPTIONS_RELOAD")
+		end
+		settings.integration.unitmenus = unitmenus
+	end
 end
 
 function xrp.options.core:refresh()
@@ -39,10 +57,16 @@ function xrp.options.core:refresh()
 	UIDropDownMenu_SetSelectedValue(self.CacheTime, settings.cachetime)
 	self.CacheAuto:SetChecked(settings.cachetidy)
 
-	self.HideMinimapTT:SetChecked(settings.minimap.hidett)
+	self.MinimapHideTT:SetChecked(settings.minimap.hidett)
 	self.MinimapDetached:SetChecked(settings.minimap.detached)
 	self.Lock:SetEnabled(self.MinimapDetached:GetChecked())
 	self.Lock:SetText(xrp.minimap.locked and UNLOCK or LOCK)
+
+	self.IntegrationRightClick:SetChecked(settings.integration.rightclick)
+	self.IntegrationInteractBind:SetChecked(settings.integration.interact)
+	self.IntegrationReplacements:SetChecked(settings.integration.replacements)
+	self.IntegrationMenus:SetChecked(settings.integration.menus)
+	self.IntegrationUnitMenus:SetChecked(settings.integration.unitmenus)
 end
 
 function xrp.options.core:default()
@@ -55,6 +79,12 @@ function xrp.options.core:default()
 	settings.minimap.hidett = nil
 	settings.minimap.detached = nil
 	xrp.minimap:SetDetached(settings.minimap.detached)
+
+	settings.integration.rightclick = nil
+	settings.integration.interact = nil
+	settings.integration.replacements = nil
+	settings.integration.menus = nil
+	settings.integration.unitmenus = nil
 
 	self:refresh()
 end

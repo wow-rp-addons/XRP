@@ -17,6 +17,7 @@ core\msp.lua
 core\characters.lua
 core\bookmarks.lua
 loader.lua
+integration.lua
 commands.lua
 minimap.xml
 minimap.lua

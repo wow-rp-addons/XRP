@@ -24,6 +24,12 @@ XRP_OPTIONS_CORE_CACHEAUTO = L["Prune cache on login"]
 XRP_OPTIONS_CORE_MINIMAP = L["Minimap icon:"]
 XRP_OPTIONS_CORE_MINIMAP_HIDETT = L["Hide help tooltip on minimap icon"]
 XRP_OPTIONS_CORE_MINIMAP_DETACHED = L["Detach minimap icon from minimap"]
+XRP_OPTIONS_CORE_INTEGRATION = L["Integration:"]
+XRP_OPTIONS_CORE_INTEGRATION_RIGHTCLICK = L["View RP profiles via rightclick for non-hostile targets"]
+XRP_OPTIONS_CORE_INTEGRATION_INTERACTBIND = L["View RP profiles via interact with target/mouseover keybinds for non-hostile targets"]
+XRP_OPTIONS_CORE_INTEGRATION_REPLACEMENTS = L["Replace %xt/%xf with RP name of target/focus in chat"]
+XRP_OPTIONS_CORE_INTEGRATION_MENUS = L["Show \"RP Profile\" in right-click menus"]
+XRP_OPTIONS_CORE_INTEGRATION_UNITMENUS = L["Show \"RP Profile\" in unit frame right-click menus (disables \"Set Focus\")"]
 
 if (select(4, GetAddOnInfo("xrp_chatnames"))) then
 	XRP_OPTIONS_CHAT_TITLE = L["XRP: Chat Names Options"]
@@ -35,10 +41,24 @@ end
 if (select(4, GetAddOnInfo("xrp_tooltip"))) then
 	XRP_OPTIONS_TOOLTIP_TITLE = L["XRP: Tooltip Options"]
 	XRP_OPTIONS_TOOLTIP_FACTION = L["Color RP names by faction"]
-	XRP_OPTIONS_TOOLTIP_WATCHING = L["Show indicator if player is targeting me (|TInterface\\LFGFrame\\BattlenetWorking0:24:24|t)"]
+	XRP_OPTIONS_TOOLTIP_WATCHING = L["Show indicator if player is targeting me"]
 	XRP_OPTIONS_TOOLTIP_GUILDRANK = L["Show guild rank"]
 	XRP_OPTIONS_TOOLTIP_NORPRACE = L["Hide roleplaying race"]
 	XRP_OPTIONS_TOOLTIP_NOOPFACTION = L["Hide (cached) roleplaying information for opposite faction"]
 	XRP_OPTIONS_TOOLTIP_NOHOSTILE = L["Hide roleplaying information for hostile PvP targets"]
 	XRP_OPTIONS_TOOLTIP_EXTRASPACE = L["Add extra spacing lines"]
 end
+
+StaticPopupDialogs["XRP_OPTIONS_RELOAD"] = {
+	text = L["You have changed an XRP option which requires a UI reload to take effect."],
+	button1 = L["Reload UI"],
+	button2 = CANCEL,
+	OnAccept = function()
+		ReloadUI()
+	end,
+	enterClicksFirstButton = true,
+	timeout = 0,
+	whileDead = true,
+	hideOnEscape = true,
+	preferredIndex = 3,
+}

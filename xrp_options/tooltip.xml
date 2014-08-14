@@ -33,6 +33,11 @@
 						<Anchor point="TOPLEFT" relativeKey="$parent.factionLabel" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
 					</Anchors>
 				</FontString>
+				<FontString parentKey="watchingIcon" inherits="GameFontWhite" text="|TInterface\LFGFrame\BattlenetWorking0:32:32|t">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.watchingLabel" relativePoint="RIGHT" x="0" y="0"/>
+					</Anchors>
+				</FontString>
 				<FontString parentKey="guildrankLabel" inherits="GameFontWhite" text="XRP_OPTIONS_TOOLTIP_GUILDRANK">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.watchingLabel" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
