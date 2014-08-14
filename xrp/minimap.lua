@@ -251,7 +251,7 @@ do
 						end
 					end
 				elseif button == "RightButton" then
-					if settings.minimapdetached and not self.locked then
+					if settings.detached and not self.locked then
 						self.locked = true
 						GameTooltip:Hide()
 					else
@@ -274,10 +274,10 @@ do
 end
 
 xrp.minimap:SetScript("OnEnter", function(self, motion)
-	if motion and settings.minimapdetached and not self.locked then
+	if motion and settings.detached and not self.locked then
 		GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT", 30, 4)
 		GameTooltip:SetText(L["Right click to lock icon position."])
-	elseif motion and not settings.hideminimaptt then
+	elseif motion and not settings.hidett then
 		GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT", 30, 4)
 		GameTooltip:SetText(L["Click to:"])
 		GameTooltip:AddLine(" ")
@@ -291,7 +291,7 @@ xrp.minimap:SetScript("OnEnter", function(self, motion)
 end)
 
 xrp.minimap:SetScript("OnLeave", function(self, motion)
-	if not settings.hideminimaptt or (settings.minimapdetached and not self.locked) then
+	if not settings.hidett or (settings.detached and not self.locked) then
 		GameTooltip:Hide()
 	end
 	self.dim:Hide()

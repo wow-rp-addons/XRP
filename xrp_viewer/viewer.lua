@@ -50,8 +50,8 @@ do
 		for _, field in ipairs(display) do
 			self:SetField(field, character[field] or (field == "RA" and xrp.values.GR[character.GR]) or nil)
 		end
-		self.Bookmark:SetChecked(xrp.bookmarks[character] ~= nil)
-		if xrp.bookmarks[character] == 0 then
+		self.Bookmark:SetChecked(xrp.bookmarks[current] ~= nil)
+		if xrp.bookmarks[current] == 0 then
 			-- Own character, disable checkbox.
 			self.Bookmark:Disable()
 		else
