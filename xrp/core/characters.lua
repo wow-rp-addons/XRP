@@ -24,37 +24,37 @@ local nonewindex = function() end
 local weak = { __mode = "v" }
 local gcache = setmetatable({}, weak)
 
-local nk, rk, sk = {}, {}, {}
+local ck, rk, sk = {}, {}, {}
 
 local charsmt = {
 	__index = function(self, field)
 		if xrp.fields.dummy[field] or not field:find("^%u%u$") then
 			return nil
 		end
-		local name = self[nk]
+		local character = self[ck]
 		-- Any access to a field is treated as an implicit request to fetch
 		-- it (but msp won't do it if it's fresh, and will compile quick,
 		-- successive requests into one go). Also try avoiding requests when
 		-- we absolutely know they will fail. Never request data we already
 		-- have, and know is good.
-		if gcache[name] and gcache[name][field] then
-			return gcache[name][field]
+		if gcache[character] and gcache[character][field] then
+			return gcache[character][field]
 		end
 		local request = self[rk]
-		if request and (not gcache[name] or not gcache[name].GF or gcache[name].GF == xrp.toon.fields.GF) then
-			xrp:QueueRequest(name, field, self[sk])
-		elseif request and gcache[name] and gcache[name].GF ~= xrp.toon.fields.GF and gcache[name].GF ~= "Neutral" then
-			xrp:FireEvent("MSP_FAIL", name, "faction")
+		if request and (not gcache[character] or not gcache[character].GF or gcache[character].GF == xrp.toon.fields.GF) then
+			xrp:QueueRequest(character, field, self[sk])
+		elseif request and gcache[character] and gcache[character].GF ~= xrp.toon.fields.GF and gcache[character].GF ~= "Neutral" then
+			xrp:FireEvent("MSP_FAIL", character, "faction")
 		end
-		if xrp_cache[name] and xrp_cache[name].fields[field] then
-			return xrp_cache[name].fields[field]
+		if xrp_cache[character] and xrp_cache[character].fields[field] then
+			return xrp_cache[character].fields[field]
 		end
 		return nil
 	end,
 	__newindex = nonewindex,
 	__call = function(self)
 		local profile = {}
-		for field, contents in pairs(xrp_cache[self[nk]].fields) do
+		for field, contents in pairs(xrp_cache[self[ck]].fields) do
 			profile[field] = contents
 		end
 		return profile
@@ -64,15 +64,15 @@ local charsmt = {
 do
 	local chars = setmetatable({}, weak)
 	xrp.characters = setmetatable({}, {
-		__index = function(self, name)
-			name = xrp:NameWithRealm(name)
-			if not name then
+		__index = function(self, character)
+			character = xrp:NameWithRealm(character)
+			if not character then
 				return nil
 			end
-			if not chars[name] then
-				chars[name] = setmetatable({ [nk] = name, [rk] = true, [sk] = 2 }, charsmt)
+			if not chars[character] then
+				chars[character] = setmetatable({ [ck] = character, [rk] = true, [sk] = 2 }, charsmt)
 			end
-			return chars[name]
+			return chars[character]
 		end,
 		__newindex = nonewindex,
 		__metatable = false,
@@ -83,52 +83,52 @@ do
 	local chars = setmetatable({}, weak)
 	xrp.units = setmetatable({}, {
 		__index = function (self, unit)
-			local name = xrp:UnitNameWithRealm(unit)
-			if not name then
+			local character = xrp:UnitNameWithRealm(unit)
+			if not character then
 				return nil
 			end
 			-- These values may only update once per session (varying with
 			-- garbage collection). This could create minor confusion if
 			-- someone changes faction, race, sex, or GUID while we're still
 			-- logged in. Unlikely, but possible.
-			if not gcache[name] then
+			if not gcache[character] then
 				local GU = UnitGUID(unit)
 				local class, GC, race, GR, GS = GetPlayerInfoByGUID(GU)
-				gcache[name] = {
+				gcache[character] = {
 					GC = GC,
 					GF = UnitFactionGroup(unit),
 					GR = GR,
 					GS = tostring(GS),
 					GU = GU,
 				}
-				if xrp_cache[name] and name ~= xrp.toon.withrealm then
-					for field, contents in pairs(gcache[name]) do
+				if xrp_cache[character] and character ~= xrp.toon.withrealm then
+					for field, contents in pairs(gcache[character]) do
 						-- We DO want to overwrite these, to account for race,
 						-- faction, or sex changes.
-						xrp_cache[name].fields[field] = contents
+						xrp_cache[character].fields[field] = contents
 					end
 				end
-			elseif not gcache[name].GF then -- GUID won't always get faction.
-				gcache[name].GF = UnitFactionGroup(unit)
-				if xrp_cache[name] and name ~= xrp.toon.withrealm then
-					xrp_cache[name].fields.GF = gcache[name].GF
+			elseif not gcache[character].GF then -- GUID won't always get faction.
+				gcache[character].GF = UnitFactionGroup(unit)
+				if xrp_cache[character] and character ~= xrp.toon.withrealm then
+					xrp_cache[character].fields.GF = gcache[character].GF
 				end
 			end
 			-- Don't bother with requests to disconnected units.
 			local request = UnitIsConnected(unit) == 1
 			if not request then
-				xrp:FireEvent("MSP_FAIL", name, "offline")
+				xrp:FireEvent("MSP_FAIL", character, "offline")
 			end
 			-- Half-unsafe if we're not within 100 yards, or we are stealthed.
 			-- We have their GUID, but they may not have ours.
 			local safe = (IsItemInRange(44212, unit) ~= 1 or IsStealthed()) and 1 or 0
-			if not chars[name] then
-				chars[name] = setmetatable({ [nk] = name, [rk] = request, [sk] = safe }, charsmt)
+			if not chars[character] then
+				chars[character] = setmetatable({ [ck] = character, [rk] = request, [sk] = safe }, charsmt)
 			else
-				chars[name][rk] = request
-				chars[name][sk] = safe
+				chars[character][rk] = request
+				chars[character][sk] = safe
 			end
-			return chars[name]
+			return chars[character]
 		end,
 		__newindex = nonewindex,
 		__metatable = false,
@@ -157,35 +157,35 @@ do
 		__index = function (self, GU)
 			-- This will return nil if the GUID hasn't been seen by the client
 			-- yet in the session.
-			local class, GC, race, GR, GS, name, realm = GetPlayerInfoByGUID(GU)
-			name = xrp:NameWithRealm(name, realm)
-			if not name or name == "" then
+			local class, GC, race, GR, GS, character, realm = GetPlayerInfoByGUID(GU)
+			character = xrp:NameWithRealm(character, realm)
+			if not character or character == "" then
 				return nil
 			end
 			-- These values may only update once per session (varying with
 			-- garbage collection). This could create minor confusion if
 			-- someone changes faction, race, sex, or GUID while we're still
 			-- logged in. Unlikely, but possible.
-			if not gcache[name] then
-				gcache[name] = {
+			if not gcache[character] then
+				gcache[character] = {
 					GC = GC,
 					GF = race_faction[GR],
 					GR = GR,
 					GS = tostring(GS),
 					GU = GU,
 				}
-				if xrp_cache[name] and name ~= xrp.toon.withrealm then
-					for field, contents in pairs(gcache[name]) do
+				if xrp_cache[character] and character ~= xrp.toon.withrealm then
+					for field, contents in pairs(gcache[character]) do
 						-- We DO want to overwrite these, to account for race,
 						-- faction, or sex changes.
-						xrp_cache[name].fields[field] = contents
+						xrp_cache[character].fields[field] = contents
 					end
 				end
 			end
-			if not chars[name] then
-				chars[name] = setmetatable({ [nk] = name, [rk] = true, [sk] = 1 }, charsmt)
+			if not chars[character] then
+				chars[character] = setmetatable({ [ck] = character, [rk] = true, [sk] = 1 }, charsmt)
 			end
-			return chars[name]
+			return chars[character]
 		end,
 		__newindex = nonewindex,
 		__metatable = false,
@@ -195,21 +195,21 @@ end
 do
 	local chars = setmetatable({}, weak)
 	xrp.cache = setmetatable({}, {
-		__index = function(self, name)
-			if not name or name == "" then
+		__index = function(self, character)
+			if not character or character == "" then
 				return nil
 			end
-			name = xrp:NameWithRealm(name)
-			if not chars[name] then
-				chars[name] = setmetatable({ [nk] = name, [rk] = false }, charsmt)
+			character = xrp:NameWithRealm(character)
+			if not chars[character] then
+				chars[character] = setmetatable({ [ck] = character, [rk] = false }, charsmt)
 			end
-			return chars[name]
+			return chars[character]
 		end,
 		__newindex = nonewindex,
 		__call = function(self)
 			local out = {}
-			for name, _ in pairs(xrp_cache) do
-				out[#out + 1] = name
+			for character, _ in pairs(xrp_cache) do
+				out[#out + 1] = character
 			end
 			table.sort(out)
 			return out
