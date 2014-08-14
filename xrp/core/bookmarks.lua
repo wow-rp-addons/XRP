@@ -16,22 +16,22 @@
 ]]
 
 xrp.bookmarks = setmetatable({}, {
-	__index = function (self, name)
-		name = xrp:NameWithRealm(name)
-		if not name or not xrp_cache[name] then
+	__index = function (self, character)
+		character = xrp:NameWithRealm(character)
+		if not character or not xrp_cache[character] then
 			return nil
 		end
-		return xrp_cache[name].own and 0 or xrp_cache[name].bookmark
+		return xrp_cache[character].own and 0 or xrp_cache[character].bookmark
 	end,
-	__newindex = function(self, name, bookmark)
-		name = xrp:NameWithRealm(name)
-		if not name or not xrp_cache[name] then
+	__newindex = function(self, character, bookmark)
+		character = xrp:NameWithRealm(character)
+		if not character or not xrp_cache[character] then
 			return nil
 		end
-		if bookmark and not xrp_cache[name].bookmark then
-			xrp_cache[name].bookmark = time()
-		elseif xrp_cache[name].bookmark then
-			xrp_cache[name].bookmark = nil
+		if bookmark and not xrp_cache[character].bookmark then
+			xrp_cache[character].bookmark = time()
+		elseif xrp_cache[character].bookmark then
+			xrp_cache[character].bookmark = nil
 		end
 	end,
 	__metatable = false,
