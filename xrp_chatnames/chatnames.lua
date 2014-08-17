@@ -79,15 +79,17 @@ xrp:HookLogin(function()
 	-- /cry - I don't want to overwrite your functions, Blizzard, but you don't
 	-- leave me any choice.
 	function GetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14)
-		if event == "CHAT_MSG_TEXT_EMOTE" and arg12 then
-			-- No realm for arg2 in TEXT_EMOTEs. For whatever fucking reason.
-			-- Attach it here, falling back to our own realm.
-			arg2 = xrp:NameWithRealm(arg2, select(7, GetPlayerInfoByGUID(arg12)))
-			-- Own name isn't present in text emotes, but may be present in the
-			-- names of other players, creating weird results. If its our own
-			-- text emote, just don't return an RP name or a colored name.
-			if arg2 == xrp.toon.withrealm then
-				return xrp:NameWithoutRealm(arg2)
+		-- Emotes from ourselves don't have our name in them, and Blizzard's
+		-- code can erroneously replace substrings of the emotes or of the
+		-- target's name with our (colored/RP) name. Being sure to return a
+		-- non-colored, non-RP name for our own text emotes fixes the issue.
+		if event == "CHAT_MSG_TEXT_EMOTE" then
+			if arg2 == xrp.toon.name then
+				return arg2
+			elseif arg12 then
+				-- TEXT_EMOTE doesn't have realm attached to arg2, because
+				-- Blizzard's code is missing an escape for a gsub.
+				arg2 = xrp:NameWithRealm(arg2, select(7, GetPlayerInfoByGUID(arg12)))
 			end
 		end
 
@@ -118,25 +120,23 @@ xrp:HookLogin(function()
 		return nameformat:format(name)
 	end
 
-	ChatFrame_AddMessageEventFilter("CHAT_MSG_TEXT_EMOTE", function(self, event, message, sender, ...)
-		-- Availability of GUID for restoring the realm. Bail out if we won't
-		-- be able to recover the realm name later.
-		if not select(10, ...) then
-			return false
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_TEXT_EMOTE", function(self, event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, ...)
+		if not arg12 then return false end
+
+		-- Blizzard doesn't include the realm name in TEXT_EMOTE events because
+		-- of bad string escaping practices.
+		local realm = select(7, GetPlayerInfoByGUID(arg12))
+
+		if realm and realm ~= "" then
+			arg1 = arg1:gsub((xrp:NameWithRealm(arg2, realm):gsub("%-", "%%%-")), arg2, 1)
 		end
 
-		-- The other half of attaching the realm name in GetColoredName is to,
-		-- uh, remove it here first. Why? Fuck knows, it's Blizzard and we get
-		-- things like Player-RealmName-RealmName if we don't drop it here from
-		-- the message. ...Which is where the realm name is, because fuck
-		-- knows.
-		local nameless = message:match(("^"..CHAT_EMOTE_GET:format(FULL_PLAYER_NAME:format("%s", ".-")).."(.*)"):format(sender))
-		if nameless then
-			message = CHAT_EMOTE_GET:format(sender)..nameless
-		end
-		return false, message, sender, ...
+		return false, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, ...
 	end)
 
+	-- This fixes spacing at the start of emotes when using apostrophes,
+	-- commas, and colons. This requires a modified GetColoredName, so it has
+	-- to go hand-in-hand with chat names.
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_EMOTE", function(self, event, message, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, ...)
 		-- Some addons, but not commonly real people, use a fancy unicode
 		-- apostrophe. Since Lua's string library isn't Unicode-aware, use
