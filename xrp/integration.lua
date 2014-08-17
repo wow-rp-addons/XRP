@@ -35,83 +35,72 @@ end
 --
 -- This allows right-clicking on player targets with RP profiles to view those
 -- profiles, like how interacting with NPCs works.
+xrp:HookLogin(function()
+	-- Cache item data for range checking.
+	IsItemInRange(88589, "player")
+end)
 do
-	local mouseover, profile, friendly, clicking, mountable
-	do
-		local now
-		hooksecurefunc("TurnOrActionStart", function()
-			if not settings.rightclick then return end
-			now = GetTime()
-			clicking = true
-		end)
-		hooksecurefunc("TurnOrActionStop", function()
-			-- 0.75s interaction time is guessed as Blizzard number from
-			-- in-game testing. Used for consistency.
-			-- TODO: Deal with CheckInteractDistance and UnitVehicleSeatCount > 0
-			if settings.rightclick and profile and GetTime() - now < 0.75 and mouseover == xrp:UnitNameWithRealm("target") then
-				local mountrange = (UnitInParty("mouseover") or UnitInRaid("mouseover")) and IsItemInRange(88589, "mouseover") == 1
-				if mountable and not mountrange then
-					UIErrorsFrame:Clear() -- Hides errors on inteactable mount players.
-					xrp:ShowViewerUnit("target")
-				elseif not mountable then
-					xrp:ShowViewerUnit("target")
-				end
-			end
-			clicking = false
-		end)
-	end
 	local cursor = CreateFrame("Frame", nil, UIParent)
+	-- Pretending to be part of the mouse cursor, so better be above everything
+	-- we possibly can.
 	cursor:SetFrameStrata("TOOLTIP")
+	cursor:SetFrameLevel(255)
 	cursor:SetWidth(24)
 	cursor:SetHeight(24)
 	do
 		local cursorimage = cursor:CreateTexture(nil, "BACKGROUND")
-		--cursorimage:SetTexture("Interface\\CURSOR\\Trainer")
 		cursorimage:SetTexture("Interface\\MINIMAP\\TRACKING\\Class")
 		cursorimage:SetAllPoints(cursor)
 	end
-	cursor:Hide()
-	xrp:HookEvent("MSP_RECEIVE", function(name)
-		if settings.rightclick and not profile and friendly and name == xrp:UnitNameWithRealm("mouseover") then
-			profile = true
-			cursor:Show()
-		end
-	end)
+	do
+		-- There is no mouseover unit available during TurnOrAction*, but
+		-- if a unit is right-clicked, it will be the target unit by Stop.
+		local now, mouseover
+		hooksecurefunc("TurnOrActionStart", function()
+			if not settings.rightclick or InCombatLockdown() or not cursor:IsVisible() then return end
+			mouseover = cursor.current
+			now = GetTime()
+		end)
+		hooksecurefunc("TurnOrActionStop", function()
+			if not settings.rightclick or not mouseover then return end
+			-- 0.75s interaction time is guessed as Blizzard number from
+			-- in-game testing. Used for consistency.
+			if GetTime() - now < 0.75 and mouseover == xrp:UnitNameWithRealm("target") then
+				if cursor.mountable then
+					UIErrorsFrame:Clear() -- Hides errors on inteactable mount players.
+				end
+				xrp:ShowViewerUnit("target")
+			end
+			mouseover = nil
+		end)
+	end
 	cursor:SetScript("OnEvent", function(self, event)
-		if not settings.rightclick or GetMouseFocus() ~= WorldFrame then
+		if not settings.rightclick or InCombatLockdown() or GetMouseFocus() ~= WorldFrame or not xrp.units.mouseover then
+			self:Hide()
 			return
 		end
-		mouseover = xrp:UnitNameWithRealm("mouseover")
-		if xrp.units.mouseover and xrp.units.mouseover.VA and not InCombatLockdown() then
-			friendly = not UnitCanAttack("player", "mouseover")
-			mountable = UnitVehicleSeatCount("mouseover") > 0
-			local mountrange = (UnitInParty("mouseover") or UnitInRaid("mouseover")) and IsItemInRange(88589, "mouseover") == 1
-			profile = friendly and not (mountable and mountrange)
+		self.current = not UnitCanAttack("player", "mouseover") and xrp:UnitNameWithRealm("mouseover") or nil
+		-- Following two must be separate for UIErrorsFrame:Clear().
+		self.inparty = self.current and (UnitInParty("mouseover") or UnitInRaid("mouseover"))
+		self.mountable = self.current and UnitVehicleSeatCount("mouseover") > 0
+		if self.current and xrp.units.mouseover.VA and not (self.mountable and self.inparty and IsItemInRange(88589, "mouseover") == 1) then
 			self:Show()
 		else
-			profile = false
 			self:Hide()
 		end
 	end)
 	do
 		local previousX, previousY
-		--IsItemInRange(88589, "mouseover")
 		-- Crazy optimization crap since it's run every frame.
-		local UnitExists, InCombatLockdown, GetMouseFocus, WorldFrame, GetCursorPosition, UIParent, GetEffectiveScale = UnitExists, InCombatLockdown, GetMouseFocus, WorldFrame, GetCursorPosition, UIParent, UIParent.GetEffectiveScale
+		local UnitIsPlayer, InCombatLockdown, GetMouseFocus, WorldFrame, GetCursorPosition, IsItemInRange, UIParent, GetEffectiveScale = UnitIsPlayer, InCombatLockdown, GetMouseFocus, WorldFrame, GetCursorPosition, IsItemInRange, UIParent, UIParent.GetEffectiveScale
 		cursor:SetScript("OnUpdate", function(self, elapsed)
-			if not UnitExists("mouseover") or InCombatLockdown() then
-				profile = profile and clicking
-				self:Hide()
-				return
-			elseif GetMouseFocus() ~= WorldFrame then
-				profile = false
+			if not UnitIsPlayer("mouseover") or InCombatLockdown() or GetMouseFocus() ~= WorldFrame then
 				self:Hide()
 				return
 			end
 			local x, y = GetCursorPosition()
 			if x == previousX and y == previousY then return end
-			if IsItemInRange(88589, "mouseover") then
-				profile = false
+			if self.mountable and self.inparty and IsItemInRange(88589, "mouseover") == 1 then
 				self:Hide()
 				return
 			end
@@ -120,18 +109,24 @@ do
 			previousX, previousY = x, y
 		end)
 	end
+	xrp:HookEvent("MSP_RECEIVE", function(name)
+		if settings.rightclick and name == cursor.current and not InCombatLockdown() and not cursor:IsVisible() and not (cursor.mountable and cursor.inparty and IsItemInRange(88589, "mouseover") == 1) then
+			cursor:Show()
+		end
+	end)
 	cursor:RegisterEvent("UPDATE_MOUSEOVER_UNIT")
+	cursor:Hide()
 end
 
 -- Interact keybind integration
 --
 -- Permits using the Blizzard interact with mouseover/target keybindings as
--- RP profile view bindings. Don't do it for hostile targets -- interact keybinds
--- start attack there.
+-- RP profile view bindings. Don't do it for hostile targets -- interact
+-- keybinds start attack there.
 hooksecurefunc("InteractUnit", function(unit)
-	-- TODO: Deal with CheckInteractDistance and UnitVehicleSeatCount > 0
-	if not settings.interact or UnitCanAttack("player", unit) then return end
+	if not settings.interact or InCombatLockdown() or UnitCanAttack("player", unit) then return end
 	local mountable = UnitVehicleSeatCount(unit) > 0
+	if mountable and (UnitInParty(unit) or UnitInRaid(unit)) and IsItemInRange(88589, unit) == 1 then return end
 	if mountable then
 		UIErrorsFrame:Clear() -- Hides errors on inteactable mount players.
 	end
@@ -173,9 +168,10 @@ UnitPopupButtons["XRP_VIEW_CHARACTER"] = { text = xrp.L["RP Profile"], dist = 0 
 UnitPopupButtons["XRP_VIEW_UNIT"] = { text = xrp.L["RP Profile"], dist = 0 }
 
 hooksecurefunc("UnitPopup_OnClick", function(self)
-	if self.value == "XRP_VIEW_CHARACTER" then
+	local button = self.value
+	if button == "XRP_VIEW_CHARACTER" then
 		xrp:ShowViewerCharacter(xrp:NameWithRealm(UIDROPDOWNMENU_INIT_MENU.name, UIDROPDOWNMENU_INIT_MENU.server))
-	elseif self.value == "XRP_VIEW_UNIT" then
+	elseif button == "XRP_VIEW_UNIT" then
 		xrp:ShowViewerUnit(UIDROPDOWNMENU_INIT_MENU.unit)
 	end
 end)
