@@ -1,3 +1,51 @@
+5.4.8.1 (2014-08-17):
+
+	- NEW: Right clicking to view profile. On non-hostile player targets, a
+	  book icon will pop up beside the mouse cursor. When this book icon is
+	  visible, you can right click that player (just like with an NPC) to view
+	  their RP profile. This is enabled by default, but not available while
+	  in combat.
+
+	- NEW: Blizzard's standard interact with target/mouseover keybinds can now
+	  be used to view profiles of non-hostile player targets. This is enabled
+	  by default, but not available while in combat.
+
+	- EXTENDED: Right-click menu entries for viewing RP profiles are now in
+	  more places (notably guild list right-click). This is enabled by default.
+
+	- NEW: Right-click menu entries for unit frames can be enabled in the XRP
+	  interface options. Note that doing so may cause unavoidable taint issues,
+	  and will remove the "Set Focus" entry from those menus. This is disabled
+	  by default.
+
+	- NEW: Partial support for bookmarking profiles has been added. A checkbox
+	  is now present next to the close button in the profile viewer; ticking
+	  this box will bookmark the profile, setting it so that it will never be
+	  removed from the cache.
+
+		- In the future, this feature will be extended to allow for easy access
+		  to bookmarked profiles. At current, only the cache preservation is
+		  complete.
+
+	- Bugfixes:
+
+		- "Default (Old)" will not cause problems anymore. It can now properly
+		  be selected for editing, use, and renaming/copying/deleting.
+
+		- Rapidly opening the viewer before receiving tooltip information will
+		  now properly load the full profile after the tooltip data has been
+		  received.
+
+	- Miscellaneous:
+
+		- Options have been added to disable the right-click menu entry
+		  integration and the %xt/%xf replacement intergration. These may be
+		  found in the interface options.
+
+		- The maximum bandwidth usage of XRP (and other addons using
+		  ChatThrottleLib) has been reduced by 33% while in combat. This is
+		  unchanged while out of combat.
+
 5.4.8.0 (2014-07-28):
 
 	- Tooltip options have been rearranged (but not changed) for consistency

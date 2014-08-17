@@ -1,6 +1,6 @@
 ## Interface: 50400
 ## Title: XRP
-## Version: 5.4.8.0
+## Version: 5.4.8.1
 ## Author: Bor of Wyrmrest Accord (US)
 ## Notes: XRP is yet another roleplaying profile addon.
 ## X-Category: Roleplay
