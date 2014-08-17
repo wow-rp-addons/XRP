@@ -417,7 +417,7 @@ if not disabled then
 	end
 
 	msp:SetScript("OnEvent", function(self, event, prefix, message, channel, character)
-		if self.handlers[prefix] then
+		if event == "CHAT_MSG_ADDON" and self.handlers[prefix] then
 			--print(GetTime()..": In: "..character..": "..message:gsub("\1", "\\1"))
 			--print("Receiving from: "..character)
 
@@ -446,9 +446,15 @@ if not disabled then
 				end
 				self.handlers[prefix](self, character, message)
 			end
+		elseif event == "PLAYER_REGEN_DISABLED" then
+			ChatThrottleLib.MAX_CPS = 800
+		elseif event == "PLAYER_REGEN_ENABLED" then
+			ChatThrottleLib.MAX_CPS = 1200
 		end
 	end)
 	msp:RegisterEvent("CHAT_MSG_ADDON")
+	msp:RegisterEvent("PLAYER_REGEN_DISABLED")
+	msp:RegisterEvent("PLAYER_REGEN_ENABLED")
 	ChatThrottleLib.MAX_CPS = 1200 -- up from 800
 	ChatThrottleLib.MIN_FPS = 15 -- down from 20
 end
