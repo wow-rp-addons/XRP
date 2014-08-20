@@ -409,8 +409,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						StaticPopupDialogs["XRP_EDITOR_DELETE"].text = xrp.L["Are you sure you want to remove \"%s\"?"]:format(xrp.editor.Profiles:GetText());
-						StaticPopup_Show("XRP_EDITOR_DELETE");
+						StaticPopup_Show("XRP_EDITOR_DELETE", xrp.editor.Profiles:GetText());
 					</OnClick>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
@@ -430,8 +429,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						StaticPopupDialogs["XRP_EDITOR_RENAME"].text = xrp.L["Please enter a new name for \"%s\"."]:format(xrp.editor.Profiles:GetText());
-						StaticPopup_Show("XRP_EDITOR_RENAME");
+						StaticPopup_Show("XRP_EDITOR_RENAME", xrp.editor.Profiles:GetText());
 					</OnClick>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
@@ -451,8 +449,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						StaticPopupDialogs["XRP_EDITOR_COPY"].text = xrp.L["Please enter a name for the copy of \"%s\"."]:format(xrp.editor.Profiles:GetText());
-						StaticPopup_Show("XRP_EDITOR_COPY");
+						StaticPopup_Show("XRP_EDITOR_COPY", xrp.editor.Profiles:GetText());
 					</OnClick>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
