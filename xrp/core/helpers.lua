@@ -85,6 +85,15 @@ function xrp:StripPunctuation(text)
 	return stripped ~= "" and stripped or text
 end
 
+function xrp:LinkURLs(text)
+	if type(text) ~= "string" then
+		return nil
+	end
+	-- blue: 0091f2
+	-- purple: c845fa
+	return (text:gsub("([^ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789%/])([ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789%-%.]+%.com/[ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789%%%-%.%_%~%:%/%?#%[%]%@%!%$%&%'%(%)%*%+%,%;%=]+)", "%1http://%2"):gsub("(https?://[ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789%%%-%.%_%~%:%/%?#%[%]%@%!%$%&%'%(%)%*%+%,%;%=]+)", "|H%1|h|cffc845fa[%1]|r|h"))
+end
+
 function xrp:ConvertWeight(weight, units)
 	if not weight then
 		return nil

@@ -41,6 +41,8 @@ do
 			self[field]:SetText(xrp:ConvertHeight(xrp:StripEscapes(contents), "user") or "")
 		elseif field == "AW" then
 			self[field]:SetText(xrp:ConvertWeight(xrp:StripEscapes(contents), "user") or "")
+		elseif field == "CU" or field == "DE" or field == "MO" or field == "HI" then
+			self[field]:SetText(xrp:LinkURLs(xrp:StripEscapes(contents)) or "")
 		else
 			self[field]:SetText(xrp:StripEscapes(contents) or "")
 		end
@@ -162,24 +164,6 @@ xrp:HookEvent("MSP_FAIL", function(name, reason)
 	end
 end)
 
--- Setup shorthand access for easier looping later.
--- Appearance tab
-for _, field in ipairs({ "AE", "RA", "AH", "AW" }) do
-	xrp.viewer[field] = xrp.viewer.Appearance[field]
-end
--- EditBox is inside ScrollFrame
-for _, field in ipairs({ "CU", "DE" }) do
-	xrp.viewer[field] = xrp.viewer.Appearance[field].EditBox
-end
--- Biography tab
-for _, field in ipairs({ "AG", "HH", "HB" }) do
-	xrp.viewer[field] = xrp.viewer.Biography[field]
-end
--- EditBox is inside ScrollFrame
-for _, field in ipairs({ "MO", "HI" }) do
-	xrp.viewer[field] = xrp.viewer.Biography[field].EditBox
-end
-
 xrp.viewer.Bookmark:SetScript("OnClick", function(self, button, down)
 	if not down then
 		if xrp.bookmarks[current] then
@@ -195,3 +179,50 @@ xrp.viewer.Bookmark:SetScript("OnClick", function(self, button, down)
 		end
 	end
 end)
+
+StaticPopupDialogs["XRP_VIEWER_URL"] = {
+	text = (IsWindowsClient() or IsLinuxClient()) and L["Copy the URL (Ctrl+C) and paste into your web browser."] or IsMacClient() and L["Copy the URL (Cmd+C) and paste into your web browser."] or L["Copy the URL and paste into your web browser."],
+	button1 = DONE,
+	hasEditBox = true,
+	OnShow = function (self, url)
+		self.editBox:SetWidth(self.editBox:GetWidth() + 100)
+		self.editBox:SetText(url or "")
+		self.editBox:SetFocus()
+		self.editBox:HighlightText()
+	end,
+	EditBoxOnTextChanged = function(self, url)
+		self:SetText(url or "")
+		self:HighlightText()
+	end,
+	enterClicksFirstButton = true,
+	timeout = 0,
+	whileDead = true,
+	hideOnEscape = true,
+	preferredIndex = 3,
+}
+
+local function viewer_OnHyperlinkClick(self, url, link, button)
+	StaticPopup_Show("XRP_VIEWER_URL", nil, nil, url)
+end
+
+-- Setup shorthand access for easier looping later.
+-- Appearance tab
+for _, field in ipairs({ "AE", "RA", "AH", "AW" }) do
+	xrp.viewer[field] = xrp.viewer.Appearance[field]
+end
+-- EditBox is inside ScrollFrame
+for _, field in ipairs({ "CU", "DE" }) do
+	xrp.viewer[field] = xrp.viewer.Appearance[field].EditBox
+	xrp.viewer[field]:SetHyperlinksEnabled(true)
+	xrp.viewer[field]:SetScript("OnHyperlinkClick", viewer_OnHyperlinkClick)
+end
+-- Biography tab
+for _, field in ipairs({ "AG", "HH", "HB" }) do
+	xrp.viewer[field] = xrp.viewer.Biography[field]
+end
+-- EditBox is inside ScrollFrame
+for _, field in ipairs({ "MO", "HI" }) do
+	xrp.viewer[field] = xrp.viewer.Biography[field].EditBox
+	xrp.viewer[field]:SetHyperlinksEnabled(true)
+	xrp.viewer[field]:SetScript("OnHyperlinkClick", viewer_OnHyperlinkClick)
+end
