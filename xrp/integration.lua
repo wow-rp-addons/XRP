@@ -55,14 +55,20 @@ do
 	do
 		-- There is no mouseover unit available during TurnOrAction*, but
 		-- if a unit is right-clicked, it will be the target unit by Stop.
-		local now, mouseover
+		local now, mouseover, autointeract
 		hooksecurefunc("TurnOrActionStart", function()
 			if not settings.rightclick or InCombatLockdown() or not cursor:IsVisible() then return end
 			mouseover = cursor.current
 			now = GetTime()
+			if cursor.mountable then
+				autointeract = GetCVar("AutoInteract") == "1"
+				if autointeract then
+					SetCVar("AutoInteract", "0")
+				end
+			end
 		end)
 		hooksecurefunc("TurnOrActionStop", function()
-			if not settings.rightclick or not mouseover then return end
+			if not mouseover then return end
 			-- 0.75s interaction time is guessed as Blizzard number from
 			-- in-game testing. Used for consistency.
 			if GetTime() - now < 0.75 and mouseover == xrp:UnitNameWithRealm("target") then
@@ -71,7 +77,11 @@ do
 				end
 				xrp:ShowViewerUnit("target")
 			end
+			if autointeract then
+				SetCVar("AutoInteract", "1")
+			end
 			mouseover = nil
+			autointeract = nil
 		end)
 	end
 	cursor:SetScript("OnEvent", function(self, event)
