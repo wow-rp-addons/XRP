@@ -16,7 +16,7 @@
 ]]
 
 do
-	local supported = { NA = true, NI = true, NT = true, NH = true, AE = true, RA = true, AH = true, AW = true, CU = true, DE = true, AG = true, HH = true, HB = true, MO = true, HI = true, FR = true, FC = true }
+	local supported = { NA = true, NI = true, NT = true, NH = true, AE = true, RA = true, RC = true, AH = true, AW = true, CU = true, DE = true, AG = true, HH = true, HB = true, MO = true, HI = true, FR = true, FC = true }
 	do
 		local warn9000 = false
 		function xrp.editor:Save()
@@ -41,44 +41,39 @@ do
 		end
 	end
 
-	do
-		local reverting = false
-		function xrp.editor:Load(name)
-			self:ClearFocus()
-			-- This does not need to be very smart. SetText() should be mapped to the
-			-- appropriate 'real' function if needed.
-			local isdef = name == xrp.L["Default"]
-			local profile = xrp.profiles[name]
-			local defaults = xrp.defaults[name]
-			for field, _ in pairs(supported) do
-				self[field]:SetText(profile[field] or "")
-				if field ~= "FC" then
-					self[field]:SetCursorPosition(0)
-				end
-				self.checkboxes[field]:SetChecked(defaults[field])
-				if isdef then
-					self.checkboxes[field]:Hide()
-				else
-					self.checkboxes[field]:Show()
-				end
+	function xrp.editor:Load(name)
+		self:ClearFocus()
+		-- This does not need to be very smart. SetText() should be mapped to the
+		-- appropriate 'real' function if needed.
+		local isdef = name == xrp.L["Default"]
+		local profile = xrp.profiles[name]
+		local defaults = xrp.defaults[name]
+		for field, _ in pairs(supported) do
+			self[field]:SetText(profile[field] or "")
+			if field ~= "FC" then
+				self[field]:SetCursorPosition(0)
 			end
-
-			if self:IsVisible() and not self.Appearance:IsVisible() and not reverting then
-				PanelTemplates_SetTab(self, 1)
-				self.Biography:Hide()
-				self.Appearance:Show()
-				PlaySound("igCharacterInfoTab")
+			self.checkboxes[field]:SetChecked(defaults[field])
+			if isdef then
+				self.checkboxes[field]:Hide()
+			else
+				self.checkboxes[field]:Show()
 			end
-
-			self.Profiles:SetText(name)
-			self:CheckFields()
 		end
 
-		function xrp.editor:Revert()
-			reverting = true
-			self:Load(self.Profiles:GetText());
-			reverting = false
+		if self.Profiles:GetText() ~= name and not self.Appearance:IsVisible() then
+			PanelTemplates_SetTab(self, 1)
+			self.Biography:Hide()
+			self.Appearance:Show()
+			PlaySound("igCharacterInfoTab")
 		end
+
+		self.Profiles:SetText(name)
+		self:CheckFields()
+	end
+
+	function xrp.editor:Revert()
+		self:Load(self.Profiles:GetText());
 	end
 
 	function xrp.editor:CheckFields()
@@ -109,7 +104,7 @@ do
 	-- Setup shorthand access and other stuff.
 	xrp.editor.checkboxes = {}
 	-- Appearance tab
-	local appearance = { "NA", "NI", "NT", "NH", "AE", "RA", "AH", "AW", "CU" }
+	local appearance = { "NA", "NI", "NT", "NH", "AE", "RA", "RC", "AH", "AW", "CU" }
 	for key, field in ipairs(appearance) do
 		xrp.editor[field] = xrp.editor.Appearance[field]
 		xrp.editor[field].nextEditBox = xrp.editor.Appearance[appearance[key + 1]] or xrp.editor.Appearance["DE"].EditBox
@@ -149,7 +144,6 @@ do
 	local function infofunc(self, arg1, arg2, checked)
 		if not checked then
 			xrp.editor:Load(self.value)
-			UIDropDownMenu_SetSelectedValue(UIDROPDOWNMENU_OPEN_MENU, self.value)
 		end
 	end
 
@@ -188,5 +182,5 @@ do
 end
 
 xrp:HookLoad(function()
-	xrp.editor:Load(xrp.L["Default"])
+	xrp.editor:Load(xrp_selectedprofile)
 end)

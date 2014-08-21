@@ -31,6 +31,7 @@ XRP_NT = L["Title"]
 XRP_NH = L["House/Clan/Tribe"]
 XRP_AE = L["Eyes"]
 XRP_RA = L["Race"]
+XRP_RC = L["Class"]
 XRP_AH = L["Height"]
 XRP_AW = L["Weight"]
 XRP_CU = L["Currently"]
@@ -64,6 +65,19 @@ XRP_XC = L["MSP chunks"]
 XRP_XD = L["Dummy field"]
 
 xrp.values = {
+	GC = {
+		DEATHKNIGHT = L["Death Knight"],
+		DRUID = L["Druid"],
+		HUNTER = L["Hunter"],
+		MAGE = L["Mage"],
+		MONK = L["Monk"],
+		PALADIN = L["Paladin"],
+		PRIEST = L["Priest"],
+		ROGUE = L["Rogue"],
+		SHAMAN = L["Shaman"],
+		WARLOCK = L["Warlock"],
+		WARRIOR = L["Warrior"],
+	},
 	GR = {
 		Dwarf = L["Dwarf"],
 		Draenei = L["Draenei"],

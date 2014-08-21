@@ -22,7 +22,7 @@ local failed = UNKNOWN
 do
 	-- This will request fields in the order listed.
 	local display = {
-		"VA", "NA", "NH", "NI", "NT", "RA", "CU", -- In TT.
+		"VA", "NA", "NH", "NI", "NT", "RA", "RC", "CU", -- In TT.
 		"AE", "AH", "AW", "AG", "HH", "HB", "MO", -- Not in TT.
 		"DE", "HI", -- High-bandwidth.
 	}
@@ -50,7 +50,7 @@ do
 
 	function xrp.viewer:Load(character)
 		for _, field in ipairs(display) do
-			self:SetField(field, character[field] or (field == "RA" and xrp.values.GR[character.GR]) or nil)
+			self:SetField(field, character[field] or (field == "RA" and xrp.values.GR[character.GR]) or (field == "RC" and xrp.values.GC[character.GC]) or nil)
 		end
 		self.Bookmark:SetChecked(xrp.bookmarks[current] ~= nil)
 		if xrp.bookmarks[current] == 0 then
@@ -68,7 +68,9 @@ do
 	xrp:HookEvent("MSP_FIELD", function(name, field)
 		if current == name and supported[field] then
 			--print("Trying to set: "..field.." for "..name..".")
-			xrp.viewer:SetField(field, xrp.characters[name][field] or (field == "RA" and xrp.values.GR[xrp.characters[name].GR]) or nil)
+			xrp.viewer:SetField(field, xrp.characters[name][field])
+		elseif current == name and (field == "GR" and not xrp.cache[name].RA) or (field == "GC" and not xrp.cache[name].RC) then
+			xrp.viewer:SetField((field == "GR" and "RA") or (field == "GC" and "RC"), (field == "GR" and xrp.values.GR[xrp.characters[name].GR]) or (field == "GC" and xrp.values.GC[xrp.characters[name].GC]) or nil)
 		end
 	end)
 end
@@ -207,7 +209,7 @@ end
 
 -- Setup shorthand access for easier looping later.
 -- Appearance tab
-for _, field in ipairs({ "AE", "RA", "AH", "AW" }) do
+for _, field in ipairs({ "AE", "RA", "RC", "AH", "AW" }) do
 	xrp.viewer[field] = xrp.viewer.Appearance[field]
 end
 -- EditBox is inside ScrollFrame

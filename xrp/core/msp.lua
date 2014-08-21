@@ -202,7 +202,7 @@ msp:SetScript("OnUpdate", msp.OnUpdate)
 -- needs to be done, if appropriate, whenever this is called.
 do
 	-- This sets the field order to a xrp_viewer-ideal incoming order.
-	local tt = { "VP", "VA", "NA", "NH", "NI", "NT", "RA", "CU", "FR", "FC" }
+	local tt = { "VP", "VA", "NA", "NH", "NI", "NT", "RA", "RC", "CU", "FR", "FC" }
 	function msp:CacheTT()
 		local tooltip = {}
 		for _, field in ipairs(tt) do
@@ -463,7 +463,7 @@ xrp.msp = 1
 
 xrp.fields = {
 	-- Fields in tooltip.
-	tt = { VP = true, VA = true, NA = true, NH = true, NI = true, NT = true, RA = true, FR = true, FC = true, CU = true },
+	tt = { VP = true, VA = true, NA = true, NH = true, NI = true, NT = true, RA = true, RC = true, FR = true, FC = true, CU = true },
 	-- These fields are (or should) be generated from UnitSomething()
 	-- functions. GF is an XRP-original, storing non-localized faction (since
 	-- we cache between sessions and can have data on both factions at once).

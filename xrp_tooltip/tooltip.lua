@@ -22,6 +22,7 @@ do
 		watching = false,
 		guildrank = false,
 		norprace = false,
+		norpclass = false,
 		nohostile = false,
 		noopfaction = false,
 		extraspace = false,
@@ -45,6 +46,9 @@ local cu = {}
 local tooltip_RenderTooltip
 do
 	local function tooltip_Truncate(text, length, offset, double)
+		if type(text) ~= "string" then
+			return nil
+		end
 		offset = offset or 0
 		if double == nil then
 			double = true
@@ -151,7 +155,7 @@ do
 
 		if cu.type == "player" then
 
-			tooltip_RenderLine(cu.nameformat:format(character.NA and tooltip_Truncate(xrp:StripEscapes(character.NA), 65, 0, false) or xrp:NameWithoutRealm(cu.name)), cu.icons)
+			tooltip_RenderLine(cu.nameformat:format(tooltip_Truncate(xrp:StripEscapes(character.NA), 65, 0, false) or xrp:NameWithoutRealm(cu.name)), cu.icons)
 
 			if character.NI then
 				tooltip_RenderLine(("|cff6070a0%s:|r |cff99b3e6\"%s\"|r"):format(XRP_NI, tooltip_Truncate(xrp:StripEscapes(character.NI), 70, #XRP_NI, false)))
@@ -177,7 +181,7 @@ do
 				tooltip_RenderLine(("|cffa08050%s:|r |cffe6b399%s|r"):format(XRP_CU, tooltip_Truncate(xrp:StripEscapes(character.CU), 70, #XRP_CU)))
 			end
 
-			tooltip_RenderLine(cu.info:format(tooltip_Truncate(character.RA and not settings.norprace and xrp:StripEscapes(character.RA) or cu.race, 40, 0, false)))
+			tooltip_RenderLine(cu.info:format(tooltip_Truncate(not settings.norprace and xrp:StripEscapes(character.RA) or cu.race, 40, 0, false), tooltip_Truncate(not settings.norpclass and xrp:StripEscapes(character.RC) or cu.class, 40, 0, false)))
 
 			if (character.FR and character.FR ~= "0") or (character.FC and character.FC ~= "0") then
 				local color = character.FC and character.FC ~= "0" and character.FC == "1" and "ff99664d" or "ff66b380"
@@ -271,7 +275,8 @@ do
 		do
 			local level = UnitLevel(unit)
 			local class, classid = UnitClass(unit)
-			cu.info = ("%s %%s |c%s%s|r (%s)"):format((level < 1 and UNIT_LETHAL_LEVEL_TEMPLATE or UNIT_LEVEL_TEMPLATE):format(level), RAID_CLASS_COLORS[classid] and RAID_CLASS_COLORS[classid].colorStr or "ffffffff", class, PLAYER)
+			cu.class = class
+			cu.info = ("%s %%s |c%s%%s|r (%s)"):format((level < 1 and UNIT_LETHAL_LEVEL_TEMPLATE or UNIT_LEVEL_TEMPLATE):format(level), RAID_CLASS_COLORS[classid] and RAID_CLASS_COLORS[classid].colorStr or "ffffffff", PLAYER)
 		end
 
 		do

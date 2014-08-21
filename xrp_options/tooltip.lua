@@ -20,7 +20,7 @@ end
 
 local settings
 do
-	local tooltip_settings = { "faction", "watching", "guildrank", "norprace", "noopfaction", "nohostile", "extraspace" }
+	local tooltip_settings = { "faction", "watching", "guildrank", "norprace", "norpclass", "noopfaction", "nohostile", "extraspace" }
 
 	function xrp.options.tooltip:okay()
 		for _, tt in ipairs(tooltip_settings) do
