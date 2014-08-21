@@ -38,7 +38,13 @@
 						<!-- Nickname Label -->
 						<FontString parentKey="NILabel" inherits="GameFontNormalSmall" text="XRP_NI">
 							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.NALabel" relativePoint="LEFT" x="236" y="0"/>
+								<Anchor point="LEFT" relativeKey="$parent.NALabel" relativePoint="LEFT" x="196" y="0"/>
+							</Anchors>
+						</FontString>
+						<!-- Height Label -->
+						<FontString parentKey="AHLabel" inherits="GameFontNormalSmall" text="XRP_AH">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.NILabel" relativePoint="LEFT" x="146" y="0"/>
 							</Anchors>
 						</FontString>
 						<!-- Title Label -->
@@ -47,10 +53,16 @@
 								<Anchor point="TOPLEFT" relativeKey="$parent.NALabel" relativePoint="BOTTOMLEFT" x="0" y="-25"/>
 							</Anchors>
 						</FontString>
-						<!-- House/Clan Label -->
+						<!-- House/Clan/Tribe Label -->
 						<FontString parentKey="NHLabel" inherits="GameFontNormalSmall" text="XRP_NH">
 							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.NTLabel" relativePoint="LEFT" x="251" y="0"/>
+								<Anchor point="LEFT" relativeKey="$parent.NTLabel" relativePoint="LEFT" x="196" y="0"/>
+							</Anchors>
+						</FontString>
+						<!-- Weight Label -->
+						<FontString parentKey="AWLabel" inherits="GameFontNormalSmall" text="XRP_AW">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.NHLabel" relativePoint="LEFT" x="146" y="0"/>
 							</Anchors>
 						</FontString>
 						<!-- Eyes Label -->
@@ -62,19 +74,13 @@
 						<!-- Race Label -->
 						<FontString parentKey="RALabel" inherits="GameFontNormalSmall" text="XRP_RA">
 							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.AELabel" relativePoint="LEFT" x="131" y="0"/>
+								<Anchor point="LEFT" relativeKey="$parent.AELabel" relativePoint="LEFT" x="135" y="0"/>
 							</Anchors>
 						</FontString>
-						<!-- Height Label -->
-						<FontString parentKey="AHLabel" inherits="GameFontNormalSmall" text="XRP_AH">
+						<!-- Class Label -->
+						<FontString parentKey="RCLabel" inherits="GameFontNormalSmall" text="XRP_RC">
 							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.RALabel" relativePoint="LEFT" x="125" y="0"/>
-							</Anchors>
-						</FontString>
-						<!-- Weight Label -->
-						<FontString parentKey="AWLabel" inherits="GameFontNormalSmall" text="XRP_AW">
-							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.AHLabel" relativePoint="LEFT" x="81" y="0"/>
+								<Anchor point="LEFT" relativeKey="$parent.RALabel" relativePoint="LEFT" x="141" y="0"/>
 							</Anchors>
 						</FontString>
 						<!-- Currently Label -->
@@ -94,98 +100,110 @@
 				<Frames>
 					<!-- Name Box -->
 					<EditBox name="$parentNA" parentKey="NA" inherits="FancyInputBoxTemplate" autoFocus="false">
-						<Size x="226" y="20"/>
+						<Size x="186" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.NALabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
 						</Anchors>
 					</EditBox>
-					<CheckButton name="$parentNADefault" parentKey="NADefault" inherits="TinyEditorCheck">
+					<CheckButton parentKey="NADefault" inherits="TinyEditorCheck">
 						<Anchors>
 							<Anchor point="LEFT" relativeKey="$parent.NALabel" relativePoint="RIGHT"/>
 						</Anchors>
 					</CheckButton>
 					<!-- Nickname Box -->
 					<EditBox name="$parentNI" parentKey="NI" inherits="FancyInputBoxTemplate" autoFocus="false">
-						<Size x="171" y="20"/>
+						<Size x="136" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.NILabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
 						</Anchors>
 					</EditBox>
-					<CheckButton name="$parentNIDefault" parentKey="NIDefault" inherits="TinyEditorCheck">
+					<CheckButton parentKey="NIDefault" inherits="TinyEditorCheck">
 						<Anchors>
 							<Anchor point="LEFT" relativeKey="$parent.NILabel" relativePoint="RIGHT"/>
 						</Anchors>
 					</CheckButton>
+					<!-- Height Box -->
+					<EditBox name="$parentAH" parentKey="AH" inherits="FancyInputBoxTemplate" autoFocus="false">
+						<Size x="65" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.AHLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
+						</Anchors>
+					</EditBox>
+					<CheckButton parentKey="AHDefault" inherits="TinyEditorCheck">
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.AHLabel" relativePoint="RIGHT"/>
+						</Anchors>
+					</CheckButton>
 					<!-- Title Box -->
 					<EditBox name="$parentNT" parentKey="NT" inherits="FancyInputBoxTemplate" autoFocus="false">
-						<Size x="241" y="20"/>
+						<Size x="186" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.NTLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
 						</Anchors>
 					</EditBox>
-					<CheckButton name="$parentNTDefault" parentKey="NTDefault" inherits="TinyEditorCheck">
+					<CheckButton parentKey="NTDefault" inherits="TinyEditorCheck">
 						<Anchors>
 							<Anchor point="LEFT" relativeKey="$parent.NTLabel" relativePoint="RIGHT"/>
 						</Anchors>
 					</CheckButton>
-					<!-- House/Clan Box -->
+					<!-- House/Clan/Tribe Box -->
 					<EditBox name="$parentNH" parentKey="NH" inherits="FancyInputBoxTemplate" autoFocus="false">
-						<Size x="156" y="20"/>
+						<Size x="136" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.NHLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
 						</Anchors>
 					</EditBox>
-					<CheckButton name="$parentNHDefault" parentKey="NHDefault" inherits="TinyEditorCheck">
+					<CheckButton parentKey="NHDefault" inherits="TinyEditorCheck">
 						<Anchors>
 							<Anchor point="LEFT" relativeKey="$parent.NHLabel" relativePoint="RIGHT"/>
 						</Anchors>
 					</CheckButton>
+					<!-- Weight Box -->
+					<EditBox name="$parentAW" parentKey="AW" inherits="FancyInputBoxTemplate" autoFocus="false">
+						<Size x="65" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.AWLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
+						</Anchors>
+					</EditBox>
+					<CheckButton parentKey="AWDefault" inherits="TinyEditorCheck">
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.AWLabel" relativePoint="RIGHT"/>
+						</Anchors>
+					</CheckButton>
 					<!-- Eyes Box -->
 					<EditBox name="$parentAE" parentKey="AE" inherits="FancyInputBoxTemplate" autoFocus="false">
-						<Size x="121" y="20"/>
+						<Size x="125" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.AELabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
 						</Anchors>
 					</EditBox>
-					<CheckButton name="$parentAEDefault" parentKey="AEDefault" inherits="TinyEditorCheck">
+					<CheckButton parentKey="AEDefault" inherits="TinyEditorCheck">
 						<Anchors>
 							<Anchor point="LEFT" relativeKey="$parent.AELabel" relativePoint="RIGHT"/>
 						</Anchors>
 					</CheckButton>
 					<!-- Race Box -->
 					<EditBox name="$parentRA" parentKey="RA" inherits="FancyInputBoxTemplate" autoFocus="false">
-						<Size x="116" y="20"/>
+						<Size x="131" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.RALabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
 						</Anchors>
 					</EditBox>
-					<CheckButton name="$parentRADefault" parentKey="RADefault" inherits="TinyEditorCheck">
+					<CheckButton parentKey="RADefault" inherits="TinyEditorCheck">
 						<Anchors>
 							<Anchor point="LEFT" relativeKey="$parent.RALabel" relativePoint="RIGHT"/>
 						</Anchors>
 					</CheckButton>
-					<!-- Height Box -->
-					<EditBox name="$parentAH" parentKey="AH" inherits="FancyInputBoxTemplate" autoFocus="false">
-						<Size x="70" y="20"/>
+					<!-- Class Box -->
+					<EditBox name="$parentRC" parentKey="RC" inherits="FancyInputBoxTemplate" autoFocus="false">
+						<Size x="131" y="20"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.AHLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.RCLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
 						</Anchors>
 					</EditBox>
-					<CheckButton name="$parentAHDefault" parentKey="AHDefault" inherits="TinyEditorCheck">
+					<CheckButton parentKey="RCDefault" inherits="TinyEditorCheck">
 						<Anchors>
-							<Anchor point="LEFT" relativeKey="$parent.AHLabel" relativePoint="RIGHT"/>
-						</Anchors>
-					</CheckButton>
-					<!-- Weight Box -->
-					<EditBox name="$parentAW" parentKey="AW" inherits="FancyInputBoxTemplate" autoFocus="false">
-						<Size x="70" y="20"/>
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.AWLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
-						</Anchors>
-					</EditBox>
-					<CheckButton name="$parentAWDefault" parentKey="AWDefault" inherits="TinyEditorCheck">
-						<Anchors>
-							<Anchor point="LEFT" relativeKey="$parent.AWLabel" relativePoint="RIGHT"/>
+							<Anchor point="LEFT" relativeKey="$parent.RCLabel" relativePoint="RIGHT"/>
 						</Anchors>
 					</CheckButton>
 					<!-- Currently Box -->
@@ -195,7 +213,7 @@
 							<Anchor point="TOPLEFT" relativeKey="$parent.CULabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
 						</Anchors>
 					</EditBox>
-					<CheckButton name="$parentCUDefault" parentKey="CUDefault" inherits="TinyEditorCheck">
+					<CheckButton parentKey="CUDefault" inherits="TinyEditorCheck">
 						<Anchors>
 							<Anchor point="LEFT" relativeKey="$parent.CULabel" relativePoint="RIGHT"/>
 						</Anchors>
@@ -207,7 +225,7 @@
 							<Anchor point="TOPLEFT" relativeKey="$parent.DELabel" relativePoint="BOTTOMLEFT" x="2" y="-5"/>
 						</Anchors>
 					</ScrollFrame>
-					<CheckButton name="$parentDEDefault" parentKey="DEDefault" inherits="TinyEditorCheck">
+					<CheckButton parentKey="DEDefault" inherits="TinyEditorCheck">
 						<Anchors>
 							<Anchor point="LEFT" relativeKey="$parent.DELabel" relativePoint="RIGHT"/>
 						</Anchors>
@@ -273,7 +291,7 @@
 							<Anchor point="TOPLEFT" relativeKey="$parent.AGLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
 						</Anchors>
 					</EditBox>
-					<CheckButton name="$parentAGDefault" parentKey="AGDefault" inherits="TinyEditorCheck">
+					<CheckButton parentKey="AGDefault" inherits="TinyEditorCheck">
 						<Anchors>
 							<Anchor point="LEFT" relativeKey="$parent.AGLabel" relativePoint="RIGHT"/>
 						</Anchors>
@@ -285,7 +303,7 @@
 							<Anchor point="TOPLEFT" relativeKey="$parent.HHLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
 						</Anchors>
 					</EditBox>
-					<CheckButton name="$parentHHDefault" parentKey="HHDefault" inherits="TinyEditorCheck">
+					<CheckButton parentKey="HHDefault" inherits="TinyEditorCheck">
 						<Anchors>
 							<Anchor point="LEFT" relativeKey="$parent.HHLabel" relativePoint="RIGHT"/>
 						</Anchors>
@@ -297,7 +315,7 @@
 							<Anchor point="TOPLEFT" relativeKey="$parent.HBLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
 						</Anchors>
 					</EditBox>
-					<CheckButton name="$parentHBDefault" parentKey="HBDefault" inherits="TinyEditorCheck">
+					<CheckButton parentKey="HBDefault" inherits="TinyEditorCheck">
 						<Anchors>
 							<Anchor point="LEFT" relativeKey="$parent.HBLabel" relativePoint="RIGHT"/>
 						</Anchors>
@@ -309,7 +327,7 @@
 							<Anchor point="TOPLEFT" relativeKey="$parent.MOLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
 						</Anchors>
 					</EditBox>
-					<CheckButton name="$parentMODefault" parentKey="MODefault" inherits="TinyEditorCheck">
+					<CheckButton parentKey="MODefault" inherits="TinyEditorCheck">
 						<Anchors>
 							<Anchor point="LEFT" relativeKey="$parent.MOLabel" relativePoint="RIGHT"/>
 						</Anchors>
@@ -321,7 +339,7 @@
 							<Anchor point="TOPLEFT" relativeKey="$parent.HILabel" relativePoint="BOTTOMLEFT" x="2" y="-5"/>
 						</Anchors>
 					</ScrollFrame>
-					<CheckButton name="$parentHIDefault" parentKey="HIDefault" inherits="TinyEditorCheck">
+					<CheckButton parentKey="HIDefault" inherits="TinyEditorCheck">
 						<Anchors>
 							<Anchor point="LEFT" relativeKey="$parent.HILabel" relativePoint="RIGHT"/>
 						</Anchors>
@@ -333,7 +351,7 @@
 							<Anchor point="TOPLEFT" relativeKey="$parent.FRLabel" relativePoint="BOTTOMLEFT" x="2" y="-3"/>
 						</Anchors>
 					</EditBox>
-					<CheckButton name="$parentFRDefault" parentKey="FRDefault" inherits="TinyEditorCheck">
+					<CheckButton parentKey="FRDefault" inherits="TinyEditorCheck">
 						<Anchors>
 							<Anchor point="LEFT" relativeKey="$parent.FRLabel" relativePoint="RIGHT"/>
 						</Anchors>
@@ -356,7 +374,7 @@
 							</OnLoad>
 						</Scripts>
 					</Button>
-					<CheckButton name="$parentFCDefault" parentKey="FCDefault" inherits="TinyEditorCheck">
+					<CheckButton parentKey="FCDefault" inherits="TinyEditorCheck">
 						<Anchors>
 							<Anchor point="LEFT" relativeKey="$parent.FCLabel" relativePoint="RIGHT"/>
 						</Anchors>
@@ -382,7 +400,7 @@
 				</Scripts>
 			</Button>
 			<!-- + Profile Button -->
-			<Button name="$parentPlusProfile" parentKey="PlusProfile" inherits="UIPanelButtonTemplate" text=" + ">
+			<Button parentKey="PlusProfile" inherits="UIPanelButtonTemplate" text=" + ">
 				<Size x="28" y="28"/>
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.Profiles" relativePoint="RIGHT" x="34" y="2"/>
@@ -402,7 +420,7 @@
 				</Scripts>
 			</Button>
 			<!-- - Profile Button -->
-			<Button name="$parentMinusProfile" parentKey="MinusProfile" inherits="UIPanelButtonTemplate" text=" - ">
+			<Button parentKey="MinusProfile" inherits="UIPanelButtonTemplate" text=" - ">
 				<Size x="28" y="28"/>
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.PlusProfile" relativePoint="RIGHT" x="0" y="0"/>
@@ -422,7 +440,7 @@
 				</Scripts>
 			</Button>
 			<!-- R Profile Button -->
-			<Button name="$parentRenameProfile" parentKey="RenameProfile" inherits="UIPanelButtonTemplate" text=" R ">
+			<Button parentKey="RenameProfile" inherits="UIPanelButtonTemplate" text=" R ">
 				<Size x="28" y="28"/>
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.MinusProfile" relativePoint="RIGHT" x="0" y="0"/>
@@ -442,7 +460,7 @@
 				</Scripts>
 			</Button>
 			<!-- C Profile Button -->
-			<Button name="$parentCopyProfile" parentKey="CopyProfile" inherits="UIPanelButtonTemplate" text=" C ">
+			<Button parentKey="CopyProfile" inherits="UIPanelButtonTemplate" text=" C ">
 				<Size x="28" y="28"/>
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.RenameProfile" relativePoint="RIGHT" x="0" y="0"/>
@@ -462,7 +480,7 @@
 				</Scripts>
 			</Button>
 			<!-- Save Button -->
-			<Button name="$parentSave" parentKey="SaveButton" inherits="UIPanelButtonTemplate" text="SAVE">
+			<Button parentKey="SaveButton" inherits="UIPanelButtonTemplate" text="SAVE">
 				<Size x="96" y="21"/>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-6" y="4"/>
@@ -474,7 +492,7 @@
 				</Scripts>
 			</Button>
 			<!-- Revert Button -->
-			<Button name="$parentRevert" parentKey="RevertButton" inherits="UIPanelButtonTemplate" text="REVERT">
+			<Button parentKey="RevertButton" inherits="UIPanelButtonTemplate" text="REVERT">
 				<Size x="96" y="21"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.SaveButton" relativePoint="LEFT"/>
@@ -528,6 +546,9 @@
 				SetPortraitTexture(self.portrait, "player");
 				PlaySound("igCharacterInfoOpen");
 				self:CheckFields();
+				if self.RevertButton:GetButtonState() == "DISABLED" then
+					self:Load(xrp_selectedprofile);
+				end;
 			</OnShow>
 			<OnHide>
 				PlaySound("igCharacterInfoClose");

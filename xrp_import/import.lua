@@ -109,9 +109,10 @@ do
 				xrp.profiles["TRP2"].NA = NA ~= "" and NA or nil
 			end
 			xrp.profiles["TRP2"].RA = profile.Registre.RacePerso
+			xrp.profiles["TRP2"].RC = profile.Registre.ClassePerso
 			xrp.profiles["TRP2"].AE = profile.Registre.YeuxVisage
 			do
-				local NT = ("%s | %s | %s"):format(profile.Registre.ClassePerso or "", profile.Registre.Titre or "", profile.Registre.TitreComplet or ""):match("^[%s|]*(.-)[%s|]*$")
+				local NT = ("%s | %s"):format(profile.Registre.Titre or "", profile.Registre.TitreComplet or ""):match("^[%s|]*(.-)[%s|]*$")
 				xrp.profiles["TRP2"].NT = NT ~= "" and NT or nil
 			end
 			xrp.profiles["TRP2"].AG = profile.Registre.Age

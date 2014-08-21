@@ -48,9 +48,14 @@
 						<Anchor point="TOPLEFT" relativeKey="$parent.guildrankLabel" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="noopfactionLabel" inherits="GameFontWhite" text="XRP_OPTIONS_TOOLTIP_NOOPFACTION">
+				<FontString parentKey="norpclassLabel" inherits="GameFontWhite" text="XRP_OPTIONS_TOOLTIP_NORPCLASS">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.norpraceLabel" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="noopfactionLabel" inherits="GameFontWhite" text="XRP_OPTIONS_TOOLTIP_NOOPFACTION">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.norpclassLabel" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="nohostileLabel" inherits="GameFontWhite" text="XRP_OPTIONS_TOOLTIP_NOHOSTILE">
@@ -88,6 +93,12 @@
 				<Size x="24" y="24"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.norpraceLabel" relativePoint="LEFT" x="-4" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentnorpclass" parentKey="norpclass" inherits="UICheckButtonTemplate">
+				<Size x="24" y="24"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.norpclassLabel" relativePoint="LEFT" x="-4" y="0"/>
 				</Anchors>
 			</CheckButton>
 			<CheckButton name="$parentnoopfaction" parentKey="noopfaction" inherits="UICheckButtonTemplate">

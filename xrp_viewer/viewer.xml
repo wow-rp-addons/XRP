@@ -24,35 +24,35 @@
 		<Layers>
 			<Layer level="OVERLAY">
 				<!-- Version Information -->
-				<FontString name="$parentVA" parentKey="VA" inherits="GameFontNormalSmall" text="">
+				<FontString parentKey="VA" inherits="GameFontNormalSmall" text="">
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" x="8" y="10"/>
 					</Anchors>
 					<Color r="0.5" g="0.5" b="0.5"/>
 				</FontString>
 				<!-- Incoming Information -->
-				<FontString name="$parentXC" parentKey="XC" inherits="GameFontNormalSmall" text="">
+				<FontString parentKey="XC" inherits="GameFontNormalSmall" text="">
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-12" y="10"/>
 					</Anchors>
 					<Color r="0.5" g="0.5" b="0.5"/>
 				</FontString>
 				<!-- Nickname -->
-				<FontString name="$parentNI" parentKey="NI" inherits="GameFontNormalSmall" maxLines="1">
+				<FontString parentKey="NI" inherits="GameFontNormalSmall" maxLines="1">
 					<Size x="325"/>
 					<Anchors>
 						<Anchor point="TOP" relativePoint="TOP" x="0" y="-23"/>
 					</Anchors>
 				</FontString>
 				<!-- Title -->
-				<FontString name="$parentNT" parentKey="NT" inherits="GameFontNormalSmall" maxLines="1">
+				<FontString parentKey="NT" inherits="GameFontNormalSmall" maxLines="1">
 					<Size x="325"/>
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.NI" relativePoint="BOTTOM" x="0" y="-2"/>
 					</Anchors>
 				</FontString>
 				<!-- House/Clan/Tribe -->
-				<FontString name="$parentNH" parentKey="NH" inherits="GameFontNormalSmall" maxLines="1">
+				<FontString parentKey="NH" inherits="GameFontNormalSmall" maxLines="1">
 					<Size x="325"/>
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.NT" relativePoint="BOTTOM" x="0" y="-2"/>
@@ -69,37 +69,43 @@
 				<Layers>
 					<Layer level="OVERLAY">
 						<!-- Race Label -->
-						<FontString name="$parentRALabel" parentKey="RALabel" inherits="GameFontNormalSmall" text="XRP_RA">
+						<FontString parentKey="RALabel" inherits="GameFontNormalSmall" text="XRP_RA">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="12" y="-8"/>
 							</Anchors>
 						</FontString>
-						<!-- Height Label -->
-						<FontString name="$parentAHLabel" parentKey="AHLabel" inherits="GameFontNormalSmall" text="XRP_AH">
+						<!-- Race Label -->
+						<FontString parentKey="RCLabel" inherits="GameFontNormalSmall" text="XRP_RC">
 							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.RALabel" relativePoint="LEFT" x="240" y="0"/>
+								<Anchor point="LEFT" relativeKey="$parent.RALabel" relativePoint="LEFT" x="145" y="0"/>
+							</Anchors>
+						</FontString>
+						<!-- Height Label -->
+						<FontString parentKey="AHLabel" inherits="GameFontNormalSmall" text="XRP_AH">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.RCLabel" relativePoint="LEFT" x="145" y="0"/>
 							</Anchors>
 						</FontString>
 						<!-- Eyes Label -->
-						<FontString name="$parentAELabel" parentKey="AELabel" inherits="GameFontNormalSmall" text="XRP_AE">
+						<FontString parentKey="AELabel" inherits="GameFontNormalSmall" text="XRP_AE">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.RALabel" relativePoint="BOTTOMLEFT" x="0" y="-25"/>
 							</Anchors>
 						</FontString>
 						<!-- Weight Label -->
-						<FontString name="$parentAWLabel" parentKey="AWLabel" inherits="GameFontNormalSmall" text="XRP_AW">
+						<FontString parentKey="AWLabel" inherits="GameFontNormalSmall" text="XRP_AW">
 							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.AELabel" relativePoint="LEFT" x="240" y="0"/>
+								<Anchor point="LEFT" relativeKey="$parent.AELabel" relativePoint="LEFT" x="290" y="0"/>
 							</Anchors>
 						</FontString>
 						<!-- Currently Label -->
-						<FontString name="$parentCULabel" parentKey="CULabel" inherits="GameFontNormalSmall" text="XRP_CU">
+						<FontString parentKey="CULabel" inherits="GameFontNormalSmall" text="XRP_CU">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.AELabel" relativePoint="BOTTOMLEFT" x="0" y="-25"/>
 							</Anchors>
 						</FontString>
 						<!-- Description Label -->
-						<FontString name="$parentDELabel" parentKey="DELabel" inherits="GameFontNormalSmall" text="XRP_DE">
+						<FontString parentKey="DELabel" inherits="GameFontNormalSmall" text="XRP_DE">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.CULabel" relativePoint="BOTTOMLEFT" x="0" y="-60"/>
 							</Anchors>
@@ -109,28 +115,35 @@
 				<Frames>
 					<!-- Race Box -->
 					<EditBox name="$parentRA" parentKey="RA" inherits="FancyOutputBoxTemplate" autoFocus="false">
-						<Size x="230" y="20"/>
+						<Size x="135" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.RALabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
 						</Anchors>
 					</EditBox>
+					<!-- Race Box -->
+					<EditBox name="$parentRC" parentKey="RC" inherits="FancyOutputBoxTemplate" autoFocus="false">
+						<Size x="135" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.RCLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
+						</Anchors>
+					</EditBox>
 					<!-- Height Box -->
 					<EditBox name="$parentAH" parentKey="AH" inherits="FancyOutputBoxTemplate" autoFocus="false">
-						<Size x="167" y="20"/>
+						<Size x="117" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.AHLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
 						</Anchors>
 					</EditBox>
 					<!-- Eyes Box -->
 					<EditBox name="$parentAE" parentKey="AE" inherits="FancyOutputBoxTemplate" autoFocus="false">
-						<Size x="230" y="20"/>
+						<Size x="280" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.AELabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
 						</Anchors>
 					</EditBox>
 					<!-- Weight Box -->
 					<EditBox name="$parentAW" parentKey="AW" inherits="FancyOutputBoxTemplate" autoFocus="false">
-						<Size x="167" y="20"/>
+						<Size x="117" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.AWLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
 						</Anchors>
@@ -159,31 +172,31 @@
 				<Layers>
 					<Layer level="OVERLAY">
 						<!-- Home Label -->
-						<FontString name="$parentHHLabel" parentKey="HHLabel" inherits="GameFontNormalSmall" text="XRP_HH">
+						<FontString parentKey="HHLabel" inherits="GameFontNormalSmall" text="XRP_HH">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="12" y="-8"/>
 							</Anchors>
 						</FontString>
 						<!-- Age Label -->
-						<FontString name="$parentAGLabel" parentKey="AGLabel" inherits="GameFontNormalSmall" text="XRP_AG">
+						<FontString parentKey="AGLabel" inherits="GameFontNormalSmall" text="XRP_AG">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.HHLabel" relativePoint="BOTTOMLEFT" x="0" y="-25"/>
 							</Anchors>
 						</FontString>
 						<!-- Birthplace Label -->
-						<FontString name="$parentHBLabel" parentKey="HBLabel" inherits="GameFontNormalSmall" text="XRP_HB">
+						<FontString parentKey="HBLabel" inherits="GameFontNormalSmall" text="XRP_HB">
 							<Anchors>
 								<Anchor point="LEFT" relativeKey="$parent.AGLabel" relativePoint="LEFT" x="156" y="0"/>
 							</Anchors>
 						</FontString>
 						<!-- Motto Label -->
-						<FontString name="$parentMOLabel" parentKey="MOLabel" inherits="GameFontNormalSmall" text="XRP_MO">
+						<FontString parentKey="MOLabel" inherits="GameFontNormalSmall" text="XRP_MO">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.AGLabel" relativePoint="BOTTOMLEFT" x="0" y="-25"/>
 							</Anchors>
 						</FontString>
 						<!-- History Label -->
-						<FontString name="$parentHILabel" parentKey="HILabel" inherits="GameFontNormalSmall" text="XRP_HI">
+						<FontString parentKey="HILabel" inherits="GameFontNormalSmall" text="XRP_HI">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.MOLabel" relativePoint="BOTTOMLEFT" x="0" y="-60"/>
 							</Anchors>
@@ -228,7 +241,7 @@
 					</ScrollFrame>
 				</Frames>
 			</Frame>
-			<CheckButton name="$parentBookmark" parentKey="Bookmark" inherits="UICheckButtonTemplate">
+			<CheckButton parentKey="Bookmark" inherits="UICheckButtonTemplate">
 				<Size x="23" y="23"/>
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-23" y="0"/>
