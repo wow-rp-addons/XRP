@@ -179,6 +179,7 @@ do
 				local update = xrp_CompareVersion(xrp.settings.newversion, xrp.version)
 				local now = time()
 				if update == 1 and (not xrp.settings.versionwarning or xrp.settings.versionwarning < now - 72000) then
+					-- TODO 6.0: Replace with C_Timer.After
 					local timer = 0
 					self:SetScript("OnUpdate", function(self, elapsed)
 						timer = timer + elapsed
