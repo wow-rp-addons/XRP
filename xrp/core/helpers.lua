@@ -66,7 +66,7 @@ function xrp:StripEscapes(text)
 	-- This fully removes all color escapes, newline escapes, texture escapes,
 	-- and most types of link and chat link escapes. Other UI escape sequences
 	-- are escaped themselves to not render on display (|| instead of |).
-	return text:gsub("||", "|"):gsub("|n", ""):gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|r", ""):gsub("|H.-|h(.-)|h", "%1"):gsub("|T.-|t", ""):gsub("|K.-|k.-|k", ""):gsub("|", "||"):match("^%s*(.-)%s*$")
+	return text:gsub("||", "|"):gsub("|n", ""):gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|r", ""):gsub("|H.-|h(.-)|h", "%1"):gsub("|T.-|t", ""):gsub("|K.-|k.-|k", ""):gsub("|", "||"):trim()
 end
 
 function xrp:StripPunctuation(text)
@@ -81,17 +81,22 @@ function xrp:StripPunctuation(text)
 	--		start: (
 	--		end: .?!)
 	--		start/end: '"
-	local stripped = text:match("^[%`%~%!%@%#%$%%%^%&%*%)%-%_%=%+%[%{%]%}%\\%|%;%:%,%<%.%>%/%?%s]*(.-)[%`%~%@%#%$%%%^%&%*%(%-%_%=%+%[%{%]%}%\\%|%;%:%,%<%>%/%s]*$")
-	return stripped ~= "" and stripped or text
+	local nosquare = text:match("^[%s%[]*(.-)[%s%]]*$")
+	local stripped = nosquare:match("^[%`%~%!%@%#%$%%%^%&%*%)%-%_%=%+%[%{%]%}%\\%|%;%:%,%<%.%>%/%?%s]*(.-)[%`%~%@%#%$%%%^%&%*%(%-%_%=%+%[%{%]%}%\\%|%;%:%,%<%>%/%s]*$")
+	return (stripped ~= "" and stripped) or (nosquare ~= "" and nosquare) or text
 end
 
 function xrp:LinkURLs(text)
 	if type(text) ~= "string" then
 		return nil
 	end
-	-- blue: 0091f2
-	-- purple: c845fa
-	return (text:gsub("([^ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789%/])([ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789%-%.]+%.com/[ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789%%%-%.%_%~%:%/%?#%[%]%@%!%$%&%'%(%)%*%+%,%;%=]+)", "%1http://%2"):gsub("(https?://[ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789%%%-%.%_%~%:%/%?#%[%]%@%!%$%&%'%(%)%*%+%,%;%=]+)", "|H%1|h|cffc845fa[%1]|r|h"))
+	-- Garbled mess? Not as much.
+	-- 1) Add http:// to .com URLs.
+	-- 2) Add http:// to .net URLs.
+	-- 3) Add http:// to .org URLs.
+	-- 4) Strip excess added http://.
+	-- 5) Make all links into hyperlinks.
+	return (text:gsub("([ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789%-%.]+%.com)", "http://%1"):gsub("([ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789%-%.]+%.net)", "http://%1"):gsub("([ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789%-%.]+%.org)", "http://%1"):gsub("(https?://)http://", "%1"):gsub("(https?://[ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789%%%-%.%_%~%:%/%?#%[%]%@%!%$%&%'%(%)%*%+%,%;%=]+)", "|H%1|h|cffc845fa[%1]|r|h"))
 end
 
 function xrp:ConvertWeight(weight, units)
