@@ -85,7 +85,7 @@ do
 		end)
 	end
 	cursor:SetScript("OnEvent", function(self, event)
-		if not settings.rightclick or InCombatLockdown() or GetMouseFocus() ~= WorldFrame or not xrp.units.mouseover then
+		if not settings.rightclick or InCombatLockdown() or (settings.disableinstance and IsInInstance()) or GetMouseFocus() ~= WorldFrame or not xrp.units.mouseover then
 			self:Hide()
 			return
 		end
@@ -136,7 +136,7 @@ end
 hooksecurefunc("InteractUnit", function(unit)
 	if not settings.interact or InCombatLockdown() or UnitCanAttack("player", unit) then return end
 	local mountable = UnitVehicleSeatCount(unit) > 0
-	if mountable and (UnitInParty(unit) or UnitInRaid(unit)) and IsItemInRange(88589, unit) == 1 then return end
+	if mountable and (((UnitInParty(unit) or UnitInRaid(unit)) and IsItemInRange(88589, unit) == 1) or GetCVar("AutoInteract") == "1") then return end
 	if mountable then
 		UIErrorsFrame:Clear() -- Hides errors on inteactable mount players.
 	end

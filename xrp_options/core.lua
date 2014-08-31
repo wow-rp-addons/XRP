@@ -28,6 +28,7 @@ function xrp.options.core:okay()
 	xrp.minimap:SetDetached(settings.minimap.detached)
 
 	settings.integration.rightclick = self.IntegrationRightClick:GetChecked() == 1
+	settings.integration.disableinstance = self.IntegrationDisableInstance:GetChecked() == 1
 	settings.integration.interact = self.IntegrationInteractBind:GetChecked() == 1
 	settings.integration.replacements = self.IntegrationReplacements:GetChecked() == 1
 	do
@@ -63,6 +64,8 @@ function xrp.options.core:refresh()
 	self.Lock:SetText(xrp.minimap.locked and UNLOCK or LOCK)
 
 	self.IntegrationRightClick:SetChecked(settings.integration.rightclick)
+	self.IntegrationDisableInstance:SetChecked(settings.integration.disableinstance)
+	self.IntegrationDisableInstance:SetEnabled(self.IntegrationRightClick:GetChecked() == 1)
 	self.IntegrationInteractBind:SetChecked(settings.integration.interact)
 	self.IntegrationReplacements:SetChecked(settings.integration.replacements)
 	self.IntegrationMenus:SetChecked(settings.integration.menus)
@@ -81,6 +84,7 @@ function xrp.options.core:default()
 	xrp.minimap:SetDetached(settings.minimap.detached)
 
 	settings.integration.rightclick = nil
+	settings.integration.disableinstance = nil
 	settings.integration.interact = nil
 	settings.integration.replacements = nil
 	settings.integration.menus = nil
@@ -88,12 +92,6 @@ function xrp.options.core:default()
 
 	self:refresh()
 end
-
-xrp.options.core.MinimapDetached:SetScript("PostClick", function(self, button, down)
-	local lock = self:GetParent().Lock
-	lock:SetEnabled(self:GetChecked())
-	lock:SetText(xrp.minimap.locked and UNLOCK or LOCK)
-end)
 
 xrp.options.core.parent = XRP
 

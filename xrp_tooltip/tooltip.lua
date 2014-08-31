@@ -21,6 +21,7 @@ do
 		faction = false,
 		watching = false,
 		guildrank = false,
+		guildindex = false,
 		norprace = false,
 		norpclass = false,
 		nohostile = false,
@@ -259,8 +260,8 @@ do
 		end
 
 		do
-			local guildname, guildrank, _ = GetGuildInfo(unit)
-			cu.guild = guildname and (settings.guildrank == true and guildrank.." of <"..guildname..">" or "<"..guildname..">") or nil
+			local guildname, guildrank, guildindex = GetGuildInfo(unit)
+			cu.guild = guildname and (settings.guildrank and (settings.guildindex and "%s (%u) of <%s>" or "%s of <%s>") or "<%s>"):format(settings.guildrank and guildrank or guildname, settings.guildindex and (guildindex + 1) or guildname, guildname) or nil
 		end
 
 		do
@@ -331,8 +332,8 @@ do
 			elseif not race then
 				race = UNKNOWN
 			end
-			-- Mages, death knights, and warlocks have minions, hunters have pets.
-			-- Mages and death knights only have one pet family each.
+			-- Mages, death knights, and warlocks have minions, hunters have 
+			-- pets. Mages and death knights only have one pet family each.
 			local classid = (pettype == UNITNAME_TITLE_MINION and ((race == L["Elemental"] and "MAGE") or (race == L["Undead"] and "DEATHKNIGHT") or "WARLOCK")) or (pettype == UNITNAME_TITLE_PET and "HUNTER")
 			local level = UnitLevel(unit)
 
@@ -364,7 +365,7 @@ end)
 local fixframe = CreateFrame("Frame")
 GameTooltip:HookScript("OnTooltipSetUnit", function(self)
 	cu.type = nil
-	local unit = select(2, self:GetUnit())
+	local tooltip, unit = self:GetUnit()
 	if UnitIsPlayer(unit) then
 		tooltip_SetPlayerUnit(unit)
 	elseif UnitIsOtherPlayersPet(unit) or unit and UnitIsUnit("playerpet", unit) then
@@ -382,7 +383,7 @@ end)
 fixframe:Hide()
 fixframe:SetScript("OnUpdate", function(self, elapsed)
 	self:Hide()
-	local unit = select(2, GameTooltip:GetUnit())
+	local tooltip, unit = GameTooltip:GetUnit()
 	if UnitIsPlayer(unit) then
 		tooltip_SetPlayerUnit(unit)
 	elseif UnitIsOtherPlayersPet(unit) or unit and UnitIsUnit("playerpet", unit) then

@@ -43,9 +43,14 @@
 						<Anchor point="TOPLEFT" relativeKey="$parent.watchingLabel" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
 					</Anchors>
 				</FontString>
+				<FontString parentKey="guildindexLabel" inherits="GameFontWhite" text="XRP_OPTIONS_TOOLTIP_GUILDINDEX">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.guildrankLabel" relativePoint="BOTTOMLEFT" x="28" y="-10"/>
+					</Anchors>
+				</FontString>
 				<FontString parentKey="norpraceLabel" inherits="GameFontWhite" text="XRP_OPTIONS_TOOLTIP_NORPRACE">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.guildrankLabel" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.guildindexLabel" relativePoint="BOTTOMLEFT" x="-28" y="-10"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="norpclassLabel" inherits="GameFontWhite" text="XRP_OPTIONS_TOOLTIP_NORPCLASS">
@@ -88,6 +93,25 @@
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.guildrankLabel" relativePoint="LEFT" x="-4" y="0"/>
 				</Anchors>
+				<Scripts>
+					<PostClick>
+						self:GetParent().guildindex:SetEnabled(self:GetChecked() == 1)
+					</PostClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentguildindex" parentKey="guildindex" inherits="UICheckButtonTemplate">
+				<Size x="24" y="24"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.guildindexLabel" relativePoint="LEFT" x="-4" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnEnable>
+						self:GetParent().guildindexLabel:SetTextColor(1.0, 1.0, 1.0);
+					</OnEnable>
+					<OnDisable>
+						self:GetParent().guildindexLabel:SetTextColor(0.5, 0.5, 0.5);
+					</OnDisable>
+				</Scripts>
 			</CheckButton>
 			<CheckButton name="$parentnorprace" parentKey="norprace" inherits="UICheckButtonTemplate">
 				<Size x="24" y="24"/>

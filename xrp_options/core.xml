@@ -68,9 +68,14 @@
 						<Anchor point="TOPLEFT" relativeKey="$parent.IntegrationLabel" relativePoint="BOTTOMLEFT" x="24" y="-10"/>
 					</Anchors>
 				</FontString>
+				<FontString parentKey="IntegrationDisableInstanceLabel" inherits="GameFontWhite" text="XRP_OPTIONS_CORE_INTEGRATION_RIGHTCLICK_INSTANCE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.IntegrationRightClickLabel" relativePoint="BOTTOMLEFT" x="28" y="-10"/>
+					</Anchors>
+				</FontString>
 				<FontString parentKey="IntegrationInteractBindLabel" inherits="GameFontWhite" text="XRP_OPTIONS_CORE_INTEGRATION_INTERACTBIND">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.IntegrationRightClickLabel" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.IntegrationDisableInstanceLabel" relativePoint="BOTTOMLEFT" x="-28" y="-10"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="IntegrationReplacementsLabel" inherits="GameFontWhite" text="XRP_OPTIONS_CORE_INTEGRATION_REPLACEMENTS">
@@ -138,6 +143,13 @@
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.MinimapDetachedLabel" relativePoint="LEFT" x="-4" y="0"/>
 				</Anchors>
+				<Scripts>
+					<PostClick>
+						local lock = self:GetParent().Lock
+						lock:SetEnabled(self:GetChecked() == 1)
+						lock:SetText(xrp.minimap.locked and UNLOCK or LOCK)
+					</PostClick>
+				</Scripts>
 			</CheckButton>
 			<Button name="$parentLock" parentKey="Lock" inherits="UIPanelButtonTemplate" text="LOCK">
 				<Size x="72" y="21"/>
@@ -156,6 +168,25 @@
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.IntegrationRightClickLabel" relativePoint="LEFT" x="-4" y="0"/>
 				</Anchors>
+				<Scripts>
+					<PostClick>
+						self:GetParent().IntegrationDisableInstance:SetEnabled(self:GetChecked() == 1)
+					</PostClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentIntegrationDisableInstance" parentKey="IntegrationDisableInstance" inherits="UICheckButtonTemplate">
+				<Size x="24" y="24"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.IntegrationDisableInstanceLabel" relativePoint="LEFT" x="-4" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnEnable>
+						self:GetParent().IntegrationDisableInstanceLabel:SetTextColor(1.0, 1.0, 1.0);
+					</OnEnable>
+					<OnDisable>
+						self:GetParent().IntegrationDisableInstanceLabel:SetTextColor(0.5, 0.5, 0.5);
+					</OnDisable>
+				</Scripts>
 			</CheckButton>
 			<CheckButton name="$parentIntegrationInteractBind" parentKey="IntegrationInteractBind" inherits="UICheckButtonTemplate">
 				<Size x="24" y="24"/>
