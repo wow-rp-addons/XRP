@@ -60,7 +60,7 @@ function xrp:ShowOptions()
 		return false
 	end
 	InterfaceOptionsFrame_OpenToCategory(self.options.core)
-	xrp.options:SetScript("OnShow", nil)
+	self.options:SetScript("OnShow", nil)
 	return true
 end
 

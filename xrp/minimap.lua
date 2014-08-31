@@ -139,6 +139,7 @@ do
 				self:SetScript("OnDragStop", minimap_OnDragStopDetached)
 				self:SetParent(UIParent)
 				self:Show()
+				self:SetClampedToScreen(true)
 				minimap_UpdatePositionDetached(self)
 				self.locked = false
 				if detached ~= nil then
@@ -151,6 +152,7 @@ do
 				self:SetScript("OnDragStop", minimap_OnDragStop)
 				self:SetParent(Minimap)
 				self:Show()
+				self:SetClampedToScreen(false)
 				minimap_UpdatePosition(self)
 				if detached ~= nil then
 					print(L["The |cffabd473XRP|r button has been attached to the minimap. You may need to reload your UI (/reload)."])
