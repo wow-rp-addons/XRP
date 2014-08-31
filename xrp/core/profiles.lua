@@ -45,13 +45,7 @@ xrp.current = setmetatable({}, {
 		else
 			return nil
 		end
-		if field == "AH" then
-			return xrp:ConvertHeight(contents, "msp")
-		elseif field == "AW" then
-			return xrp:ConvertWeight(contents, "msp")
-		else
-			return contents
-		end
+		return field == "AH" and xrp:ConvertHeight(contents, "msp") or field == "AW" and xrp:ConvertWeight(contents, "msp") or contents
 	end,
 	__newindex = function(self, field, contents)
 		if xrp_overrides[field] == contents or xrp.fields.unit[field] or xrp.fields.meta[field] or xrp.fields.dummy[field] or not field:find("^%u%u$") then
@@ -98,13 +92,7 @@ xrp.selected = setmetatable({}, {
 		else
 			return nil
 		end
-		if field == "AH" then
-			return xrp:ConvertHeight(contents, "msp")
-		elseif field == "AW" then
-			return xrp:ConvertWeight(contents, "msp")
-		else
-			return contents
-		end
+		return field == "AH" and xrp:ConvertHeight(contents, "msp") or field == "AW" and xrp:ConvertWeight(contents, "msp") or contents
 	end,
 	__newindex = nonewindex,
 	__call = function(self)
@@ -193,7 +181,7 @@ do
 					for field, contents in pairs(xrp_profiles[profile].fields) do
 						xrp_profiles[argument].fields[field] = contents
 					end
-					for field, setting in pairs(xrp_profiles[profile ].defaults) do
+					for field, setting in pairs(xrp_profiles[profile].defaults) do
 						xrp_profiles[argument].defaults[field] = setting
 					end
 					-- Will only happen if copying over Default.

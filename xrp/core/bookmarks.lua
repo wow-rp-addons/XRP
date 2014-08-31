@@ -30,7 +30,7 @@ xrp.bookmarks = setmetatable({}, {
 		end
 		if bookmark and not xrp_cache[character].bookmark then
 			xrp_cache[character].bookmark = time()
-		elseif xrp_cache[character].bookmark then
+		elseif not bookmark and xrp_cache[character].bookmark then
 			xrp_cache[character].bookmark = nil
 		end
 	end,

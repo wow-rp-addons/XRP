@@ -105,7 +105,7 @@ do
 		end
 		if profile.Registre then
 			do
-				local NA = ("%s %s"):format(profile.Registre.Prenom or player, profile.Registre.Nom or ""):match("^%s*(.-)%s*$")
+				local NA = ("%s %s"):format(profile.Registre.Prenom or player, profile.Registre.Nom or ""):trim()
 				xrp.profiles["TRP2"].NA = NA ~= "" and NA or nil
 			end
 			xrp.profiles["TRP2"].RA = profile.Registre.RacePerso
