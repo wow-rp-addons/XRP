@@ -20,7 +20,7 @@ end
 
 local settings
 do
-	local tooltip_settings = { "faction", "watching", "guildrank", "norprace", "norpclass", "noopfaction", "nohostile", "extraspace" }
+	local tooltip_settings = { "faction", "watching", "guildrank", "guildindex", "norprace", "norpclass", "noopfaction", "nohostile", "extraspace" }
 
 	function xrp.options.tooltip:okay()
 		for _, tt in ipairs(tooltip_settings) do
@@ -32,6 +32,7 @@ do
 		for _, tt in ipairs(tooltip_settings) do
 			self[tt]:SetChecked(settings[tt])
 		end
+		self.guildindex:SetEnabled(self.guildrank:GetChecked() == 1)
 	end
 end
 
