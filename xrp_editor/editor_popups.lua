@@ -18,7 +18,7 @@
 local L = xrp.L
 
 StaticPopupDialogs["XRP_EDITOR_ADD"] = {
-	text = L["Please enter a name for the new profile."],
+	text = L["Enter a name for the new profile:"],
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	hasEditBox = true,
@@ -35,7 +35,7 @@ StaticPopupDialogs["XRP_EDITOR_ADD"] = {
 	OnAccept = function(self, data, data2)
 		local name = self.editBox:GetText()
 		if xrp_profiles[name] then
-			StaticPopup_Show("XRP_EDITOR_FAIL")
+			StaticPopup_Show("XRP_EDITOR_FAIL", name)
 		else
 			xrp.editor:Load(self.editBox:GetText())
 		end
@@ -61,7 +61,7 @@ StaticPopupDialogs["XRP_EDITOR_DELETE"] = {
 	preferredIndex = 3,
 }
 StaticPopupDialogs["XRP_EDITOR_RENAME"] = {
-	text = L["Please enter a new name for \"%s\"."],
+	text = L["Enter a new name for \"%s\":"],
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	hasEditBox = true,
@@ -76,11 +76,11 @@ StaticPopupDialogs["XRP_EDITOR_RENAME"] = {
 		end
 	end,
 	OnAccept = function(self, data, data2)
-		local text = self.editBox:GetText()
-		if not xrp.profiles[xrp.editor.Profiles:GetText()]("rename", text) then
-			StaticPopup_Show("XRP_EDITOR_FAIL")
+		local name = self.editBox:GetText()
+		if not xrp.profiles[xrp.editor.Profiles:GetText()]("rename", name) then
+			StaticPopup_Show("XRP_EDITOR_FAIL", name)
 		else
-			xrp.editor:Load(text)
+			xrp.editor:Load(name)
 		end
 	end,
 	enterClicksFirstButton = true,
@@ -90,7 +90,7 @@ StaticPopupDialogs["XRP_EDITOR_RENAME"] = {
 	preferredIndex = 3,
 }
 StaticPopupDialogs["XRP_EDITOR_COPY"] = {
-	text = L["Please enter a name for the copy of \"%s\"."],
+	text = L["Enter a name for the copy of \"%s\":"],
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	hasEditBox = true,
@@ -105,11 +105,11 @@ StaticPopupDialogs["XRP_EDITOR_COPY"] = {
 		end
 	end,
 	OnAccept = function(self, data, data2)
-		local text = self.editBox:GetText()
-		if not xrp.profiles[xrp.editor.Profiles:GetText()]("copy", text) then
-			StaticPopup_Show("XRP_EDITOR_FAIL")
+		local name = self.editBox:GetText()
+		if not xrp.profiles[xrp.editor.Profiles:GetText()]("copy", name) then
+			StaticPopup_Show("XRP_EDITOR_FAIL", name)
 		else
-			xrp.editor:Load(text)
+			xrp.editor:Load(name)
 		end
 	end,
 	enterClicksFirstButton = true,
@@ -119,7 +119,7 @@ StaticPopupDialogs["XRP_EDITOR_COPY"] = {
 	preferredIndex = 3,
 }
 StaticPopupDialogs["XRP_EDITOR_FAIL"] = {
-	text = L["A profile with that name already exists (or something went wrong)."],
+	text = L["A profile named \"%s\" already exists (or something went wrong)."],
 	button1 = OKAY,
 	showAlert = true,
 	enterClicksFirstButton = true,

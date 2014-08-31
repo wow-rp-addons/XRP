@@ -43,8 +43,8 @@ do
 
 	function xrp.editor:Load(name)
 		self:ClearFocus()
-		-- This does not need to be very smart. SetText() should be mapped to the
-		-- appropriate 'real' function if needed.
+		-- This does not need to be very smart. SetText() should be mapped to
+		-- the appropriate 'real' function if needed.
 		local isdef = name == xrp.L["Default"]
 		local profile = xrp.profiles[name]
 		local defaults = xrp.defaults[name]
@@ -70,10 +70,6 @@ do
 
 		self.Profiles:SetText(name)
 		self:CheckFields()
-	end
-
-	function xrp.editor:Revert()
-		self:Load(self.Profiles:GetText());
 	end
 
 	function xrp.editor:CheckFields()

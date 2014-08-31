@@ -499,7 +499,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						xrp.editor:Revert();
+						xrp.editor:Load(xrp.editor.Profiles:GetText());
 					</OnClick>
 				</Scripts>
 			</Button>
