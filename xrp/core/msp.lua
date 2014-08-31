@@ -22,7 +22,7 @@ if not msp_RPAddOn then
 	msp_RPAddOn = GetAddOnMetadata("xrp", "Title")
 else
 	StaticPopupDialogs["XRP_MSP_DISABLE"] = {
-		text = xrp.L["You are running another RP profile addon (%s). XRP's support for sending and receiving profiles is disabled; to enable it, disable %s and reload your UI."]:format(msp_RPAddOn, msp_RPAddOn),
+		text = xrp.L["You are running another RP profile addon (%s). XRP's support for sending and receiving profiles is disabled; to enable it, disable %s and reload your UI."],
 		button1 = OKAY,
 		showAlert = true,
 		enterClicksFirstButton = true,
@@ -32,7 +32,7 @@ else
 		preferredIndex = 3,
 	}
 	disabled = true
-	StaticPopup_Show("XRP_MSP_DISABLE")
+	StaticPopup_Show("XRP_MSP_DISABLE", msp_RPAddOn, msp_RPAddOn)
 end
 
 -- This is the core of the MSP send/recieve implementation. The API is nothing
@@ -139,6 +139,7 @@ do
 	end
 end
 
+-- TODO 6.0: RIP THIS OUT. HOORAY!!
 function msp:QueueSend(character, data, count)
 	if self.send[character] then
 		for _, request in ipairs(data) do
