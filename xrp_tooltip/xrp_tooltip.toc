@@ -1,7 +1,7 @@
 ## Interface: 50400
 ## Title: XRP: Tooltip
 ## Author: Bor of Wyrmrest Accord (US)
-## Version: 5.4.8.1
+## Version: 5.4.8.2
 ## Notes: Provides mousover tooltips including roleplaying profile information. (Note: Designed for default tooltips, may not work with other addons.)
 ## X-Category: Roleplay
 ## X-License: GPLv3

@@ -1,47 +1,43 @@
-5.4.8.1 (2014-08-17):
+5.4.8.2 (2014-08-31):
 
-	- NEW: Right clicking to view profile. On non-hostile player targets, a
-	  book icon will pop up beside the mouse cursor. When this book icon is
-	  visible, you can right click that player (just like with an NPC) to view
-	  their RP profile. This is enabled by default, but not available while
-	  in combat.
+	- NEW: Roleplay class field. This adds the ability to provide a different
+	  class name for roleplay purposes (such as "Assassin" rather than
+	  "Rogue"), including in the viewer and tooltip.
 
-	- NEW: Blizzard's standard interact with target/mouseover keybinds can now
-	  be used to view profiles of non-hostile player targets. This is enabled
-	  by default, but not available while in combat.
+		- The custom class in the tooltip will be colored with the player's
+		  in-game class color (i.e., druid orange, hunter green, etc.) for
+		  easy recognition.
 
-	- EXTENDED: Right-click menu entries for viewing RP profiles are now in
-	  more places (notably guild list right-click). This is enabled by default.
+		- This is currently only visible to other users of XRP 5.4.8.2 or
+		  later.
 
-	- NEW: Right-click menu entries for unit frames can be enabled in the XRP
-	  interface options. Note that doing so may cause unavoidable taint issues,
-	  and will remove the "Set Focus" entry from those menus. This is disabled
-	  by default.
+	- NEW: Copyable URLs in profiles. In profiles, URLs will now be highlighted
+	  epic purple and surrounded by square brackets. Clicking will provide
+	  a popup dialog box where the URL may be copied from.
 
-	- NEW: Partial support for bookmarking profiles has been added. A checkbox
-	  is now present next to the close button in the profile viewer; ticking
-	  this box will bookmark the profile, setting it so that it will never be
-	  removed from the cache.
+	- NEW: An option to show the numerical guild rank as well as the rank
+	  name in tooltips has been added. The number starts at 1 (guild master)
+	  and may have a maximum value of 9 (lowest rank).
 
-		- In the future, this feature will be extended to allow for easy access
-		  to bookmarked profiles. At current, only the cache preservation is
-		  complete.
+		- NOTE: Not all guilds make use of rank levels in the same manner --
+		  this is only available as a general indication of guild structure,
+		  and not a canonical indication of officers, initiates, or any other
+		  rank. The only rank that can be absolutely determined is the guild
+		  master (1).
+
+	- NEW: An option to disable the right-click profile viewing while inside
+	  any sort of instance (raid, dungeon, arena, or battleground) has been
+	  added.
 
 	- Bugfixes:
 
-		- "Default (Old)" will not cause problems anymore. It can now properly
-		  be selected for editing, use, and renaming/copying/deleting.
+		- Some odd interactions between click-to-move (a.k.a. autointeract)
+		  and right-click/interact keybind profile viewing have been fixed.
 
-		- Rapidly opening the viewer before receiving tooltip information will
-		  now properly load the full profile after the tooltip data has been
-		  received.
+		- The minimap button, while detached, now cannot end up hidden by
+		  being moved offscreen somehow.
 
 	- Miscellaneous:
 
-		- Options have been added to disable the right-click menu entry
-		  integration and the %xt/%xf replacement intergration. These may be
-		  found in the interface options.
-
-		- The maximum bandwidth usage of XRP (and other addons using
-		  ChatThrottleLib) has been reduced by 33% while in combat. This is
-		  unchanged while out of combat.
+		- The editor will now generally load your currently-selected profile
+		  when shown, unless there are unsaved changes to an opened profile.
