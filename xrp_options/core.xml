@@ -73,9 +73,14 @@
 						<Anchor point="TOPLEFT" relativeKey="$parent.IntegrationRightClickLabel" relativePoint="BOTTOMLEFT" x="28" y="-10"/>
 					</Anchors>
 				</FontString>
+				<FontString parentKey="IntegrationDisablePVPLabel" inherits="GameFontWhite" text="XRP_OPTIONS_CORE_INTEGRATION_RIGHTCLICK_PVP">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.IntegrationDisableInstanceLabel" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+					</Anchors>
+				</FontString>
 				<FontString parentKey="IntegrationInteractBindLabel" inherits="GameFontWhite" text="XRP_OPTIONS_CORE_INTEGRATION_INTERACTBIND">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.IntegrationDisableInstanceLabel" relativePoint="BOTTOMLEFT" x="-28" y="-10"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.IntegrationDisablePVPLabel" relativePoint="BOTTOMLEFT" x="-28" y="-10"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="IntegrationReplacementsLabel" inherits="GameFontWhite" text="XRP_OPTIONS_CORE_INTEGRATION_REPLACEMENTS">
@@ -170,7 +175,9 @@
 				</Anchors>
 				<Scripts>
 					<PostClick>
-						self:GetParent().IntegrationDisableInstance:SetEnabled(self:GetChecked() == 1)
+						local enable = self:GetChecked() == 1
+						self:GetParent().IntegrationDisableInstance:SetEnabled(enable)
+						self:GetParent().IntegrationDisablePVP:SetEnabled(enable)
 					</PostClick>
 				</Scripts>
 			</CheckButton>
@@ -185,6 +192,20 @@
 					</OnEnable>
 					<OnDisable>
 						self:GetParent().IntegrationDisableInstanceLabel:SetTextColor(0.5, 0.5, 0.5);
+					</OnDisable>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentIntegrationDisablePVP" parentKey="IntegrationDisablePVP" inherits="UICheckButtonTemplate">
+				<Size x="24" y="24"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.IntegrationDisablePVPLabel" relativePoint="LEFT" x="-4" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnEnable>
+						self:GetParent().IntegrationDisablePVPLabel:SetTextColor(1.0, 1.0, 1.0);
+					</OnEnable>
+					<OnDisable>
+						self:GetParent().IntegrationDisablePVPLabel:SetTextColor(0.5, 0.5, 0.5);
 					</OnDisable>
 				</Scripts>
 			</CheckButton>

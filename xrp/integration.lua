@@ -18,6 +18,8 @@ local settings
 do
 	local default_settings = {
 		rightclick = true,
+		disableinstance = false,
+		disablepvp = false,
 		interact = true,
 		replacements = true,
 		menus = true,
@@ -85,7 +87,7 @@ do
 		end)
 	end
 	cursor:SetScript("OnEvent", function(self, event)
-		if not settings.rightclick or InCombatLockdown() or (settings.disableinstance and IsInInstance()) or GetMouseFocus() ~= WorldFrame or not xrp.units.mouseover then
+		if not settings.rightclick or InCombatLockdown() or (settings.disableinstance and (IsInInstance() or IsInActiveWorldPVP())) or (settings.disablepvp and (UnitIsPVP("player") or UnitIsPVPFreeForAll("player"))) or GetMouseFocus() ~= WorldFrame or not xrp.units.mouseover then
 			self:Hide()
 			return
 		end
