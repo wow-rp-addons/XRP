@@ -29,6 +29,7 @@ function xrp.options.core:okay()
 
 	settings.integration.rightclick = self.IntegrationRightClick:GetChecked() == 1
 	settings.integration.disableinstance = self.IntegrationDisableInstance:GetChecked() == 1
+	settings.integration.disablepvp = self.IntegrationDisablePVP:GetChecked() == 1
 	settings.integration.interact = self.IntegrationInteractBind:GetChecked() == 1
 	settings.integration.replacements = self.IntegrationReplacements:GetChecked() == 1
 	do
@@ -65,7 +66,9 @@ function xrp.options.core:refresh()
 
 	self.IntegrationRightClick:SetChecked(settings.integration.rightclick)
 	self.IntegrationDisableInstance:SetChecked(settings.integration.disableinstance)
-	self.IntegrationDisableInstance:SetEnabled(self.IntegrationRightClick:GetChecked() == 1)
+	self.IntegrationDisableInstance:SetEnabled(settings.integration.rightclick)
+	self.IntegrationDisablePVP:SetChecked(settings.integration.disablepvp)
+	self.IntegrationDisablePVP:SetEnabled(settings.integration.rightclick)
 	self.IntegrationInteractBind:SetChecked(settings.integration.interact)
 	self.IntegrationReplacements:SetChecked(settings.integration.replacements)
 	self.IntegrationMenus:SetChecked(settings.integration.menus)
@@ -85,6 +88,7 @@ function xrp.options.core:default()
 
 	settings.integration.rightclick = nil
 	settings.integration.disableinstance = nil
+	settings.integration.disablepvp = nil
 	settings.integration.interact = nil
 	settings.integration.replacements = nil
 	settings.integration.menus = nil
