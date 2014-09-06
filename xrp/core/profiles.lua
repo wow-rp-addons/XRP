@@ -128,7 +128,7 @@ xrp.selected = setmetatable({}, {
 	__metatable = false,
 })
 
-local ck = {}
+local pk = {}
 
 local profs = setmetatable({}, { __mode = "v" })
 local defs = setmetatable({}, { __mode = "v" })
@@ -136,14 +136,14 @@ local defs = setmetatable({}, { __mode = "v" })
 do
 	local profmt = {
 		__index = function(self, field)
-			local profile = self[ck]
+			local profile = self[pk]
 			return xrp_profiles[profile].fields[field] or nil
 		end,
 		__newindex = function(self, field, contents)
 			if xrp.fields.unit[field] or xrp.fields.meta[field] or xrp.fields.dummy[field] or not field:find("^%u%u$") then
 				return
 			end
-			local profile = self[ck]
+			local profile = self[pk]
 			contents = type(contents) == "string" and contents ~= "" and contents or nil
 			if xrp_profiles[profile] and xrp_profiles[profile].fields[field] ~= contents then
 				xrp_profiles[profile].fields[field] = contents
@@ -154,16 +154,16 @@ do
 			end
 		end,
 		__call = function(self, action, argument)
-			if not xrp_profiles[self[ck]] then
+			if not xrp_profiles[self[pk]] then
 				return false
 			elseif action == "length" then
 				local length = 0
-				for field, contents in pairs(xrp_profiles[self[ck]].fields) do
+				for field, contents in pairs(xrp_profiles[self[pk]].fields) do
 					length = length + #contents
 				end
 				return length
 			elseif action == "rename" and type(argument) == "string" then
-				local profile = self[ck]
+				local profile = self[pk]
 				if type(xrp_profiles[profile]) == "table" and profile ~= L["Default"] and (type(xrp_profiles[argument]) ~= "table" or (argument == L["Default"] and profile ~= argument and (not xrp_profiles[L["Default (Old)"]] or profile == L["Default (Old)"]))) then
 					if argument == L["Default"] and profile ~= L["Default (Old)"] then
 						xrp_profiles[L["Default (Old)"]] = xrp_profiles[argument]
@@ -178,7 +178,7 @@ do
 					return true
 				end
 			elseif action == "copy" and type(argument) == "string" then
-				local profile = self[ck]
+				local profile = self[pk]
 				if type(xrp_profiles[profile]) == "table" and (type(xrp_profiles[argument]) ~= "table" or (argument == L["Default"] and argument ~= profile and (not xrp_profiles[L["Default (Old)"]] or profile == L["Default (Old)"]))) then
 					if argument == L["Default"] and profile ~= L["Default (Old)"] then
 						xrp_profiles[L["Default (Old)"]] = xrp_profiles[argument]
@@ -205,7 +205,7 @@ do
 					return true
 				end
 			elseif not action then
-				local profile = self[ck]
+				local profile = self[pk]
 				local ret = {}
 				for field, contents in pairs(xrp_profiles[profile].fields) do
 					ret[field] = contents
@@ -227,14 +227,14 @@ do
 				}
 			end
 			if not profs[profile] then
-				profs[profile] = setmetatable({ [ck] = profile }, profmt)
+				profs[profile] = setmetatable({ [pk] = profile }, profmt)
 			end
 			return profs[profile]
 		end,
 		__newindex = function(self, profile, data)
 			if type(data) == "table" then
 				if not profs[profile] then
-					profs[profile] = setmetatable({ [ck] = profile }, profmt)
+					profs[profile] = setmetatable({ [pk] = profile }, profmt)
 				end
 				for field, contents in pairs(data) do
 					profs[profile][field] = contents
@@ -286,7 +286,7 @@ end
 do
 	local defmt = {
 		__index = function(self, field)
-			local profile = self[ck]
+			local profile = self[pk]
 			if profile == L["Default"] or not xrp_profiles[profile] then
 				return false
 			elseif xrp_profiles[profile].defaults[field] ~= nil then
@@ -295,7 +295,7 @@ do
 			return true
 		end,
 		__newindex = function(self, field, state)
-			local profile = self[ck]
+			local profile = self[pk]
 			if profile == L["Default"] or not xrp_profiles[profile] or xrp.fields.unit[field] or xrp.fields.meta[field] or xrp.fields.dummy[field] or not field:find("^%u%u$") then
 				return
 			end
@@ -318,7 +318,7 @@ do
 				xrp_profiles[profile].defaults = {}
 			end
 			if not defs[profile] then
-				defs[profile] = setmetatable({ [ck] = profile }, defmt)
+				defs[profile] = setmetatable({ [pk] = profile }, defmt)
 			end
 			return defs[profile]
 		end,
