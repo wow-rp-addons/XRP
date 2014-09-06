@@ -32,6 +32,9 @@ local charsmt = {
 			return nil
 		end
 		local character = self[ck]
+		if character == xrp.toon.withrealm then
+			return xrp.current[field]
+		end
 		-- Any access to a field is treated as an implicit request to fetch
 		-- it (but msp won't do it if it's fresh, and will compile quick,
 		-- successive requests into one go). Also try avoiding requests when
@@ -52,13 +55,6 @@ local charsmt = {
 		return nil
 	end,
 	__newindex = nonewindex,
-	__call = function(self)
-		local profile = {}
-		for field, contents in pairs(xrp_cache[self[ck]].fields) do
-			profile[field] = contents
-		end
-		return profile
-	end,
 	__metatable = false,
 }
 do

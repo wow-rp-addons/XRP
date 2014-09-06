@@ -122,7 +122,7 @@ do
 		end
 	end
 
-	function xrp:UpdateVersion(version)
+	function xrp:AddonUpdate(version)
 		if not version or version == self.version or version == self.settings.newversion then return end
 		if xrp_CompareVersion(version, self.settings.newversion or self.version) >= 0 then
 			self.settings.newversion = version
@@ -147,12 +147,13 @@ do
 
 			local name = UnitName("player")
 			xrp.toon = {
-				name = name,
 				withrealm = xrp:NameWithRealm(name),
 				fields = {
+					NA = name,
 					VA = fullversion,
 					VP = tostring(xrp.msp),
 				},
+				versions = {},
 			}
 
 			for _, func in ipairs(onload) do
@@ -169,7 +170,11 @@ do
 			fields.GR = select(2, UnitRace("player"))
 			fields.GS = tostring(UnitSex("player"))
 			fields.GU = UnitGUID("player")
-			xrp:Update()
+			local versions = xrp.toon.versions
+			for field, contents in pairs(fields) do
+				versions[field] = contents ~= xrp_cache[xrp.toon.withrealm].fields[field] and xrp:NewVersion(field) or xrp_versions[field]
+				xrp:FireEvent("FIELD_UPDATE", field)
+			end
 
 			if xrp.settings.cachetidy then
 				xrp:CacheTidy()
@@ -206,12 +211,25 @@ do
 			end
 			self:RegisterEvent("PLAYER_LOGOUT")
 		elseif event == "PLAYER_LOGOUT" then
+			do
+				local fields, versions = xrp.current(), {}
+				for field, _ in pairs(profile) do
+					versions[field] = xrp.versions[field]
+				end
+				xrp_cache[xrp.toon.withrealm] = {
+					fields = fields,
+					versions = versions.
+					own = true,
+					lastreceive = time(),
+				}
+			end
 			for _, func in ipairs(onlogout) do
 				func()
 			end
 		elseif event == "NEUTRAL_FACTION_SELECT_RESULT" then
 			xrp.toon.fields.GF = UnitFactionGroup("player")
-			xrp:UpdateField("GF")
+			xrp.toon.versions.GF = xrp:NewVersion("GF")
+			xrp:FireEvent("FIELD_UPDATE", "GF")
 			self:UnregisterEvent("NEUTRAL_FACTION_SELECT_RESULT")
 		end
 	end)
@@ -236,13 +254,21 @@ do
 
 		-- Character-specific.
 		if type(xrp_overrides) ~= "table" then
-			xrp_overrides = {}
+			xrp_overrides = {
+				fields = {},
+				versions = {},
+			}
 		end
 		if type(xrp_profiles) ~= "table" then
 			xrp_profiles = {}
 		end
 		if type(xrp_versions) ~= "table" then
 			xrp_versions = {}
+		end
+
+		-- Pre-5.4.8.0_rc3.
+		if type(xrp_settings.defaults == "table") then
+			xrp_settings.defaults = nil
 		end
 
 		-- Pre-5.4.8.0_rc6.
@@ -252,10 +278,21 @@ do
 					xrp_profiles[profile] = {
 						fields = contents,
 						defaults = xrp_defaults[profile] or {},
+						versions = {},
 					}
 				end
 			end
 			xrp_defaults = nil
+		end
+
+		-- Pre-5.4.8.3
+		for name, profile in pairs(xrp_profiles) do
+			if not profile.versions then
+				profile.versions = {}
+				for field, contents in pairs(profile.fields) do
+					profile.versions[field] = xrp:NewVersion(field)
+				end
+			end
 		end
 
 		do
@@ -264,28 +301,15 @@ do
 				xrp_profiles[L["Default"]] = {
 					fields = {},
 					defaults = {},
+					versions = {},
 				}
-			end
-			if type(xrp_profiles[L["Default"]].fields.NA) ~= "string" then
-				xrp_profiles[L["Default"]].fields.NA = xrp.toon.name
 			end
 			if type(xrp_selectedprofile) ~= "string" or type(xrp_profiles[xrp_selectedprofile]) ~= "table" then
 				xrp_selectedprofile = L["Default"]
 			end
 		end
 
-		if type(xrp_cache[xrp.toon.withrealm]) ~= "table" then
-			xrp_cache[xrp.toon.withrealm] = {
-				fields = {},
-				versions = {},
-			}
-		end
-
 		xrp.settings = setmetatable(xrp_settings, { __index = default_settings })
-		-- Pre-5.4.8.0_rc3.
-		if type(xrp.settings.defaults == "table") then
-			xrp.settings.defaults = nil
-		end
 	end)
 end
 
