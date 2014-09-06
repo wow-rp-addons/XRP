@@ -76,6 +76,7 @@ end
 -- as possible. We don't want to be mucking with things in this kinda way
 -- before other addons if at all possible.
 xrp:HookLogin(function()
+	local player = UnitName("player")
 	-- /cry - I don't want to overwrite your functions, Blizzard, but you don't
 	-- leave me any choice.
 	function GetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14)
@@ -84,7 +85,7 @@ xrp:HookLogin(function()
 		-- target's name with our (colored/RP) name. Being sure to return a
 		-- non-colored, non-RP name for our own text emotes fixes the issue.
 		if event == "CHAT_MSG_TEXT_EMOTE" then
-			if arg2 == xrp.toon.name then
+			if arg2 == player then
 				return arg2
 			elseif arg12 then
 				-- TEXT_EMOTE doesn't have realm attached to arg2, because

@@ -113,10 +113,7 @@ msp.my = setmetatable({}, {
 -- that entirely automatically.
 msp.myver = setmetatable({}, {
 	__index = function(self, field)
-		if xrp_versions[field] then
-			return xrp_versions[field]
-		end
-		return nil
+		return xrp.versions[field]
 	end,
 	__newindex = nonewindex,
 	__metatable = false,

@@ -174,7 +174,7 @@ do
 		end
 	end
 
-	xrp:HookEvent("MSP_UPDATE", minimap_UpdateIcon)
+	xrp:HookEvent("FIELD_UPDATE", minimap_UpdateIcon)
 	xrp:HookEvent("MSP_RECEIVE", minimap_UpdateIcon)
 
 	xrp:HookLoad(function()

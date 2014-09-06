@@ -15,47 +15,63 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
+function xrp:NewVersion(field)
+	xrp_versions[field] = (xrp_versions[field] or 0) + 1
+	return xrp_versions[field]
+end
+
 xrp:HookLoad(function()
 	if not xrp_overrides.logout or xrp_overrides.logout + 600 < time() then
-		wipe(xrp_overrides)
-	else
-		xrp_overrides.logout = nil
+		wipe(xrp_overrides.fields)
+		wipe(xrp_overrides.versions)
 	end
+	xrp_overrides.logout = nil
 end)
 
 xrp:HookLogout(function()
-	if next(xrp_overrides) then
+	if next(xrp_overrides.fields) then
 		xrp_overrides.logout = time()
 	end
 end)
 
 local L = xrp.L
+
+xrp.versions = setmetatable({}, {
+	__index = function (self, field)
+		return xrp.toon.versions[field] or xrp_overrides.versions[field] or xrp_profiles[xrp_selectedprofile].versions[field] or (xrp.defaults[xrp_selectedprofile][field] and xrp_profiles[xrp.L["Default"]].versions[field]) or nil
+	end,
+	__newindex = function() end,
+	__metatable = false,
+})
+
 -- Current public profile (includes overrides).
 xrp.current = setmetatable({}, {
 	__index = function(self, field)
 		local contents
-		if xrp.toon.fields[field] then
-			contents = xrp.toon.fields[field]
-		elseif xrp_overrides[field] then
-			contents = xrp_overrides[field] ~= "" and xrp_overrides[field] or nil
+		if xrp_overrides.fields[field] then
+			contents = xrp_overrides.fields[field] ~= "" and xrp_overrides.fields[field] or nil
 		elseif xrp_profiles[xrp_selectedprofile].fields[field] then
 			contents = xrp_profiles[xrp_selectedprofile].fields[field]
 		elseif xrp.defaults[xrp_selectedprofile][field] == true and xrp_profiles[L["Default"]].fields[field] then
 			contents = xrp_profiles[L["Default"]].fields[field]
+		elseif xrp.toon.fields[field] then
+			contents = xrp.toon.fields[field]
 		else
 			return nil
 		end
 		return field == "AH" and xrp:ConvertHeight(contents, "msp") or field == "AW" and xrp:ConvertWeight(contents, "msp") or contents
 	end,
 	__newindex = function(self, field, contents)
-		if xrp_overrides[field] == contents or xrp.fields.unit[field] or xrp.fields.meta[field] or xrp.fields.dummy[field] or not field:find("^%u%u$") then
-			return
-		end
-		xrp_overrides[field] = contents
-		xrp:UpdateField(field)
+		if xrp_overrides.fields[field] == contents or xrp.fields.unit[field] or xrp.fields.meta[field] or xrp.fields.dummy[field] or not field:find("^%u%u$") then return end
+		xrp_overrides.fields[field] = contents
+		xrp_overrides.versions[field] = contents ~= nil and xrp:NewVersion(field) or nil
+		xrp:FireEvent("FIELD_UPDATE", field)
 	end,
 	__call = function(self)
 		local out = {}
+		for field, contents in pairs(xrp.toon.fields) do
+			out[field] = contents
+		end
 		for field, contents in pairs(xrp_profiles[L["Default"]].fields) do
 			if xrp.defaults[xrp_selectedprofile][field] then
 				out[field] = contents
@@ -64,11 +80,8 @@ xrp.current = setmetatable({}, {
 		for field, contents in pairs(xrp_profiles[xrp_selectedprofile].fields) do
 			out[field] = contents
 		end
-		for field, contents in pairs(xrp_overrides) do
+		for field, contents in pairs(xrp_overrides.fields) do
 			out[field] = contents ~= "" and contents or nil
-		end
-		for field, contents in pairs(xrp.toon.fields) do
-			out[field] = contents
 		end
 		out.AW = out.AW and xrp:ConvertWeight(out.AW, "msp") or nil
 		out.AH = out.AH and xrp:ConvertHeight(out.AH, "msp") or nil
@@ -83,12 +96,12 @@ local nonewindex = function() end
 xrp.selected = setmetatable({}, {
 	__index = function(self, field)
 		local contents
-		if xrp.toon.fields[field] then
-			contents = xrp.toon.fields[field]
-		elseif xrp_profiles[xrp_selectedprofile].fields[field] then
+		if xrp_profiles[xrp_selectedprofile].fields[field] then
 			contents = xrp_profiles[xrp_selectedprofile].fields[field]
 		elseif xrp.defaults[xrp_selectedprofile][field] == true and xrp_profiles[L["Default"]].fields[field] then
 			contents = xrp_profiles[L["Default"]].fields[field]
+		elseif xrp.toon.fields[field] then
+			contents = xrp.toon.fields[field]
 		else
 			return nil
 		end
@@ -97,15 +110,15 @@ xrp.selected = setmetatable({}, {
 	__newindex = nonewindex,
 	__call = function(self)
 		local out = {}
+		for field, contents in pairs(xrp.toon.fields) do
+			out[field] = contents
+		end
 		for field, contents in pairs(xrp_profiles[L["Default"]].fields) do
 			if xrp.defaults[xrp_selectedprofile][field] then
 				out[field] = contents
 			end
 		end
 		for field, contents in pairs(xrp_profiles[xrp_selectedprofile].fields) do
-			out[field] = contents
-		end
-		for field, contents in pairs(xrp.toon.fields) do
 			out[field] = contents
 		end
 		out.AW = out.AW and xrp:ConvertWeight(out.AW, "msp") or nil
@@ -131,15 +144,12 @@ do
 				return
 			end
 			local profile = self[ck]
-			if type(contents) == "string" and contents ~= "" and xrp_profiles[profile] and xrp_profiles[profile].fields[field] ~= contents then
+			contents = type(contents) == "string" and contents ~= "" and contents or nil
+			if xrp_profiles[profile] and xrp_profiles[profile].fields[field] ~= contents then
 				xrp_profiles[profile].fields[field] = contents
-				if profile == xrp_selectedprofile or (profile == L["Default"] and xrp.defaults[xrp_selectedprofile][field] == true) then
-					xrp:UpdateField(field)
-				end
-			elseif (not contents or contents == "") and xrp_profiles[profile] and xrp_profiles[profile].fields[field] ~= nil then
-				xrp_profiles[profile].fields[field] = nil
-				if profile == xrp_selectedprofile or (profile == L["Default"] and xrp.defaults[xrp_selectedprofile][field] == true) then
-					xrp:UpdateField(field)
+				xrp_profiles[profile].versions[field] = contents ~= nil and xrp:NewVersion(field) or nil
+				if (profile == xrp_selectedprofile or (profile == L["Default"] and xrp.defaults[xrp_selectedprofile][field])) then
+					xrp:FireEvent("FIELD_UPDATE", field)
 				end
 			end
 		end,
@@ -177,6 +187,7 @@ do
 					xrp_profiles[argument] = {
 						fields = {},
 						defaults = {},
+						versions = {},
 					}
 					for field, contents in pairs(xrp_profiles[profile].fields) do
 						xrp_profiles[argument].fields[field] = contents
@@ -184,9 +195,12 @@ do
 					for field, setting in pairs(xrp_profiles[profile].defaults) do
 						xrp_profiles[argument].defaults[field] = setting
 					end
+					for field, version in pairs(xrp_profiles[profile].versions) do
+						xrp_profiles[argument].versions[field] = version
+					end
 					-- Will only happen if copying over Default.
 					if xrp_selectedprofile == argument then
-						xrp:Update()
+						xrp:FireEvent("FIELD_UPDATE")
 					end
 					return true
 				end
@@ -209,6 +223,7 @@ do
 				xrp_profiles[profile] = {
 					fields = {},
 					defaults = {},
+					versions = {},
 				}
 			end
 			if not profs[profile] then
@@ -236,6 +251,7 @@ do
 							NA = xrp.toon.name,
 						},
 						defaults = {},
+						versions = {},
 					}
 				end
 				if profile == xrp_selectedprofile then
@@ -255,9 +271,10 @@ do
 			elseif type(profile) == "string" and xrp_profiles[profile] then
 				xrp_selectedprofile = profile
 				if not keepoverrides then
-					wipe(xrp_overrides)
+					wipe(xrp_overrides.fields)
+					wipe(xrp_overrides.versions)
 				end
-				xrp:Update()
+				xrp:FireEvent("FIELD_UPDATE")
 				return true
 			end
 			return false

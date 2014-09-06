@@ -22,7 +22,7 @@ if not msp_RPAddOn then
 	msp_RPAddOn = GetAddOnMetadata("xrp", "Title")
 else
 	StaticPopupDialogs["XRP_MSP_DISABLE"] = {
-		text = xrp.L["You are running another RP profile addon (%s). XRP's support for sending and receiving profiles is disabled; to enable it, disable %s and reload your UI."],
+		text = xrp.L["You are running another RP profile addon (\"%s\"). XRP's support for sending and receiving profiles is disabled; to enable it, disable \"%s\" and reload your UI."],
 		button1 = OKAY,
 		showAlert = true,
 		enterClicksFirstButton = true,
@@ -199,20 +199,35 @@ end
 msp:Hide()
 msp:SetScript("OnUpdate", msp.OnUpdate)
 
--- Caches a tooltip response, but *does not* modify the tooltip version. That
--- needs to be done, if appropriate, whenever this is called.
 do
 	-- This sets the field order to a xrp_viewer-ideal incoming order.
-	local tt = { "VP", "VA", "NA", "NH", "NI", "NT", "RA", "RC", "CU", "FR", "FC" }
-	function msp:CacheTT()
-		local tooltip = {}
-		for _, field in ipairs(tt) do
-			tooltip[#tooltip + 1] = (not xrp.current[field] and (not xrp_versions[field] and "%s" or "%s%u") or "%s%u=%s"):format(field, xrp_versions[field], xrp.current[field])
+	local ttfields = { "VP", "VA", "NA", "NH", "NI", "NT", "RA", "RC", "CU", "FR", "FC" }
+	local tt, oldtt
+	function msp:GetTT()
+		if not tt then
+			if not oldtt and xrp_overrides.oldtt then
+				oldtt = xrp_overrides.oldtt
+				xrp_overrides.oldtt = nil
+			end
+			local tooltip = {}
+			for _, field in ipairs(ttfields) do
+				tooltip[#tooltip + 1] = (not xrp.current[field] and "%s" or "%s%u=%s"):format(field, xrp.versions[field], xrp.current[field])
+			end
+			local newtt = table.concat(tooltip, "\1")
+			tt = ("%s\1TT%u"):format(newtt, newtt ~= oldtt and xrp:NewVersion("TT") or xrp_versions.TT)
+			oldtt = newtt
 		end
-		tooltip[#tooltip + 1] = ("TT%u"):format(xrp_versions.TT)
-		self.tt = table.concat(tooltip, "\1")
-		--print((self.tt:gsub("\1", "\\1")))
+		--print((tt:gsub("\1", "\\1")))
+		return tt
 	end
+	xrp:HookEvent("FIELD_UPDATE", function(field)
+		if tt and (not field or xrp.fields.tt[field]) then
+			tt = nil
+		end
+	end)
+	xrp:HookLogout(function()
+		xrp_overrides.oldtt = oldtt
+	end)
 end
 
 do
@@ -245,20 +260,17 @@ do
 				return nil
 			end
 			req_timer[character][field] = now
-			if (xrp_versions[field] and version == xrp_versions[field]) or (not xrp_versions[field] and version == 0) then
+			if version == xrp.versions[field] or (not xrp.versions[field] and version == 0) then
 				-- They already have the latest.
-				return (not xrp_versions[field] and "%s" or "!%s%u"):format(field, xrp_versions[field])
+				return (not xrp.versions[field] and "%s" or "!%s%u"):format(field, xrp.versions[field])
 			elseif field == "TT" then
-				if not self.tt then -- Panic, something went wrong in init.
-					xrp:Update() -- ...but try to fix it.
-				end
-				return self.tt
+				return self:GetTT()
 			elseif not xrp.current[field] then
 				-- Field is empty.
-				return (not xrp_versions[field] and "%s" or "%s%u"):format(field, xrp_versions[field])
+				return field
 			end
 			-- Field has content.
-			return ("%s%u=%s"):format(field, xrp_versions[field], xrp.current[field])
+			return ("%s%u=%s"):format(field, xrp.versions[field], xrp.current[field])
 		elseif action == "!" then
 			-- Told us we have latest of their field.
 			self.cache[character].time[field] = GetTime()
@@ -295,7 +307,7 @@ do
 				xrp_cache[character].fields[field] = contents
 				updated = true
 				if field == "VA" then
-					xrp:UpdateVersion(contents:match("^XRP/([^;]+)"))
+					xrp:AddonUpdate(contents:match("^XRP/([^;]+)"))
 				end
 			end
 			if version ~= 0 then
@@ -539,70 +551,6 @@ function xrp:Request(character, fields, safe)
 		else
 			msp:QueueSend(character, out, safe or 2)
 		end
-		return true
-	end
-	return false
-end
-
-function xrp:Update()
-	if disabled then return false end
-	local changes, ttchanges, character = false, false, self.toon.withrealm
-	local new, old = self.current(), xrp_cache[character].fields
-	for field, contents in pairs(new) do
-		if old[field] ~= contents then
-			changes = true
-			xrp_versions[field] = (xrp_versions[field] or 0) + 1
-			xrp_cache[character].fields[field] = contents
-			xrp_cache[character].versions[field] = xrp_versions[field]
-			ttchanges = self.fields.tt[field] or ttchanges
-		end
-	end
-	for field, _ in pairs(old) do
-		if not new[field] then
-			changes = true
-			xrp_versions[field] = (xrp_versions[field] or 0) + 1
-			xrp_cache[character].fields[field] = nil
-			xrp_cache[character].versions[field] = xrp_versions[field]
-			ttchanges = self.fields.tt[field] or ttchanges
-		end
-	end
-	if ttchanges then
-		xrp_versions.TT = (xrp_versions.TT or 0) + 1
-		xrp_cache[character].versions.TT = xrp_versions.TT
-		msp:CacheTT()
-	elseif not msp.tt then
-		-- If it's our character we never want the cache tidy to wipe it out.
-		-- Do this by setting the wipe timer for 2038. This should get run on
-		-- the first update every session (i.e., around PLAYER_LOGIN).
-		xrp_cache[character].lastreceive = time()
-		xrp_cache[character].own = true
-		msp:CacheTT()
-	end
-	if changes then
-		self:FireEvent("MSP_UPDATE")
-		return true
-	end
-	return false
-end
-
-function xrp:UpdateField(field)
-	if disabled then return false end
-	local character = self.toon.withrealm
-	local new, old = self.current[field], xrp_cache[character].fields[field]
-	if old ~= new then
-		xrp_versions[field] = (xrp_versions[field] or 0) + 1
-		xrp_cache[character].fields[field] = new
-		xrp_cache[character].versions[field] = xrp_versions[field]
-		if self.fields.tt[field] then
-			xrp_versions.TT = (xrp_versions.TT or 0) + 1
-			xrp_cache[character].versions.TT = xrp_versions.TT
-			msp:CacheTT()
-		elseif not msp.tt then
-			xrp_cache[character].lastreceive = time()
-			xrp_cache[character].own = true
-			msp:CacheTT()
-		end
-		self:FireEvent("MSP_UPDATE", field)
 		return true
 	end
 	return false
