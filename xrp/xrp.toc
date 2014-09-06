@@ -15,7 +15,6 @@ core\profiles.lua
 libs\ChatThrottleLib\ChatThrottleLib.xml
 core\msp.lua
 core\characters.lua
-core\bookmarks.lua
 loader.lua
 integration.lua
 commands.lua
