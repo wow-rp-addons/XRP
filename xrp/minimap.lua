@@ -327,6 +327,16 @@ StaticPopupDialogs["XRP_CURRENTLY"] = {
 	OnCancel = function(self, data, data2) -- Reset button.
 		xrp.current.CU = nil
 	end,
+	EditBoxOnEnterPressed = function(self)
+		local parent = self:GetParent()
+		if parent.button1:IsEnabled() then
+			xrp.current.CU = self:GetText()
+			parent:Hide()
+		end
+	end,
+	EditBoxOnEscapePressed = function(self)
+		self:GetParent():Hide()
+	end,
 	enterClicksFirstButton = true,
 	timeout = 0,
 	whileDead = true,
