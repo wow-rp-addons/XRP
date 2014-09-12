@@ -196,6 +196,12 @@ StaticPopupDialogs["XRP_VIEWER_URL"] = {
 		self:SetText(url or "")
 		self:HighlightText()
 	end,
+	EditBoxOnEnterPressed = function(self)
+		self:GetParent():Hide()
+	end,
+	EditBoxOnEscapePressed = function(self)
+		self:GetParent():Hide()
+	end,
 	enterClicksFirstButton = true,
 	timeout = 0,
 	whileDead = true,

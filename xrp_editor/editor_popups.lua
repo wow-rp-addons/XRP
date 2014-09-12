@@ -37,9 +37,25 @@ StaticPopupDialogs["XRP_EDITOR_ADD"] = {
 		if xrp_profiles[name] then
 			StaticPopup_Show("XRP_EDITOR_FAIL", name)
 		else
-			xrp.editor:Load(self.editBox:GetText())
+			xrp.editor:Load(name)
 		end
 	end,
+	EditBoxOnEnterPressed = function(self)
+		local parent = self:GetParent()
+		if parent.button1:IsEnabled() then
+			local name = self:GetText()
+			if xrp_profiles[name] then
+				StaticPopup_Show("XRP_EDITOR_FAIL", name)
+			else
+				xrp.editor:Load(name)
+			end
+		end
+	end,
+	EditBoxOnEscapePressed = function(self)
+		self:GetParent():Hide()
+	end,
+	enterClicksFirstButton = true,
+	timeout = 0,
 	enterClicksFirstButton = true,
 	timeout = 0,
 	whileDead = true,
@@ -83,6 +99,20 @@ StaticPopupDialogs["XRP_EDITOR_RENAME"] = {
 			xrp.editor:Load(name)
 		end
 	end,
+	EditBoxOnEnterPressed = function(self)
+		local parent = self:GetParent()
+		if parent.button1:IsEnabled() then
+			local name = self:GetText()
+			if not xrp.profiles[xrp.editor.Profiles:GetText()]("rename", name) then
+				StaticPopup_Show("XRP_EDITOR_FAIL", name)
+			else
+				xrp.editor:Load(name)
+			end
+		end
+	end,
+	EditBoxOnEscapePressed = function(self)
+		self:GetParent():Hide()
+	end,
 	enterClicksFirstButton = true,
 	timeout = 0,
 	whileDead = true,
@@ -111,6 +141,20 @@ StaticPopupDialogs["XRP_EDITOR_COPY"] = {
 		else
 			xrp.editor:Load(name)
 		end
+	end,
+	EditBoxOnEnterPressed = function(self)
+		local parent = self:GetParent()
+		if parent.button1:IsEnabled() then
+			local name = self:GetText()
+			if not xrp.profiles[xrp.editor.Profiles:GetText()]("copy", name) then
+				StaticPopup_Show("XRP_EDITOR_FAIL", name)
+			else
+				xrp.editor:Load(name)
+			end
+		end
+	end,
+	EditBoxOnEscapePressed = function(self)
+		self:GetParent():Hide()
 	end,
 	enterClicksFirstButton = true,
 	timeout = 0,
