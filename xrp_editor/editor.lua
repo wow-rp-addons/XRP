@@ -25,10 +25,12 @@ do
 			-- appropriate 'real' function if GetText() isn't already right. The
 			-- profile code will assume an empty string means an empty field.
 			local name = self.Profiles:GetText()
+			local profile, inherits = xrp.profiles[name], xrp.inherits[name]
 			for field, _ in pairs(supported) do
-				xrp.profiles[name][field] = self[field]:GetText()
-				xrp.defaults[name][field] = self.checkboxes[field]:GetChecked() == 1
+				profile[field] = self[field]:GetText()
+				inherits[field] = self.checkboxes[field]:GetChecked() == 1
 			end
+			xrp.inherits[name] = self.Parent:GetText()
 			local length = xrp.profiles[name]("length")
 			if length > 16000 then
 				StaticPopup_Show("XRP_EDITOR_16000")
@@ -45,19 +47,18 @@ do
 		self:ClearFocus()
 		-- This does not need to be very smart. SetText() should be mapped to
 		-- the appropriate 'real' function if needed.
-		local isdef = name == xrp.L["Default"]
-		local profile = xrp.profiles[name]
-		local defaults = xrp.defaults[name]
+		local profile, inherits = xrp.profiles[name], xrp.inherits[name]
+		local hasparent = xrp_profiles[name].parent ~= nil
 		for field, _ in pairs(supported) do
 			self[field]:SetText(profile[field] or "")
 			if field ~= "FC" then
 				self[field]:SetCursorPosition(0)
 			end
-			self.checkboxes[field]:SetChecked(defaults[field])
-			if isdef then
-				self.checkboxes[field]:Hide()
-			else
+			self.checkboxes[field]:SetChecked(inherits[field] ~= false)
+			if hasparent then
 				self.checkboxes[field]:Show()
+			else
+				self.checkboxes[field]:Hide()
 			end
 		end
 
@@ -69,15 +70,23 @@ do
 		end
 
 		self.Profiles:SetText(name)
+		self.Parent:SetText(xrp_profiles[name].parent or "")
 		self:CheckFields()
 	end
 
 	function xrp.editor:CheckFields()
-		local changes = false
-		local profile = xrp.profiles[self.Profiles:GetText()]
-		local defaults = xrp.defaults[self.Profiles:GetText()]
+		-- TODO: parent GetText() might return "" instead of nil.
+		local name, parent = self.Profiles:GetText(), self.Parent:GetText()
+		local profile, inherits = xrp.profiles[name], xrp.inherits[name]
+		local newparent = parent ~= xrp_profiles[name].parent
+		local changes = newparent
 		for field, _ in pairs(supported) do
-			changes = changes or self[field]:GetText() ~= (profile[field] or "") or (self.checkboxes[field]:GetChecked() == 1) ~= defaults[field]
+			changes = changes or self[field]:GetText() ~= (profile[field] or "") or (self.checkboxes[field]:GetChecked() == 1) ~= (inherits[field] ~= false)
+			if newparent and parent then
+				self.checkboxes[field]:Show()
+			elseif newparent then
+				self.checkboxes[field]:Hide()
+			end
 		end
 		if changes then
 			self.SaveButton:Enable()
@@ -148,9 +157,6 @@ do
 			local info = UIDropDownMenu_CreateInfo()
 			info.text = value
 			info.value = value
-			if value == xrp.L["Default"] then
-				info.colorCode = "|cffeecc00"
-			end
 			info.func = infofunc
 			UIDropDownMenu_AddButton(info)
 		end
@@ -164,6 +170,23 @@ do
 			xrp.editor:CheckFields()
 		end
 	end
+
+	UIDropDownMenu_Initialize(xrp.editor.Parent, function()
+		do
+			local info = UIDropDownMenu_CreateInfo()
+			info.text = xrp.L["None"]
+			info.value = ""
+			info.func = infofunc
+			UIDropDownMenu_AddButton(info)
+		end
+		for _, value in ipairs(xrp.profiles()) do
+			local info = UIDropDownMenu_CreateInfo()
+			info.text = value
+			info.value = value
+			info.func = infofunc
+			UIDropDownMenu_AddButton(info)
+		end
+	end)
 
 	local FC = xrp.values.FC
 	UIDropDownMenu_Initialize(xrp.editor.FC, function()

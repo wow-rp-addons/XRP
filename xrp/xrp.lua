@@ -277,7 +277,7 @@ do
 				if type(contents) == "table" then
 					xrp_profiles[profile] = {
 						fields = contents,
-						defaults = xrp_defaults[profile] or {},
+						inherits = xrp_defaults[profile] or {},
 						versions = {},
 					}
 				end
@@ -293,6 +293,13 @@ do
 					profile.versions[field] = xrp:NewVersion(field)
 				end
 			end
+			if not profile.inherits then
+				profile.inherits = profile.defaults or {}
+				profile.defaults = nil
+				if name ~= xrp.L["Default"] then
+					profile.parent = xrp.L["Default"]
+				end
+			end
 		end
 
 		do
@@ -300,7 +307,7 @@ do
 			if type(xrp_profiles[L["Default"]]) ~= "table" then
 				xrp_profiles[L["Default"]] = {
 					fields = {},
-					defaults = {},
+					inherits = {},
 					versions = {},
 				}
 			end

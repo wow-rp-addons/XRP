@@ -52,7 +52,7 @@ StaticPopupDialogs["XRP_EDITOR_DELETE"] = {
 	button2 = NO,
 	OnAccept = function(self, data, data2)
 		xrp.profiles[xrp.editor.Profiles:GetText()] = nil
-		xrp.editor:Load(L["Default"])
+		xrp.editor:Load(xrp_selectedprofile)
 	end,
 	enterClicksFirstButton = false,
 	timeout = 0,

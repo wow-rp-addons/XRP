@@ -15,11 +15,6 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-function xrp:NewVersion(field)
-	xrp_versions[field] = (xrp_versions[field] or 0) + 1
-	return xrp_versions[field]
-end
-
 xrp:HookLoad(function()
 	if not xrp_overrides.logout or xrp_overrides.logout + 600 < time() then
 		wipe(xrp_overrides.fields)
@@ -34,15 +29,10 @@ xrp:HookLogout(function()
 	end
 end)
 
-local L = xrp.L
-
-xrp.versions = setmetatable({}, {
-	__index = function (self, field)
-		return xrp.toon.versions[field] or xrp_overrides.versions[field] or xrp_profiles[xrp_selectedprofile].versions[field] or (xrp.defaults[xrp_selectedprofile][field] and xrp_profiles[xrp.L["Default"]].versions[field]) or nil
-	end,
-	__newindex = function() end,
-	__metatable = false,
-})
+function xrp:NewVersion(field)
+	xrp_versions[field] = (xrp_versions[field] or 0) + 1
+	return xrp_versions[field]
+end
 
 -- Current public profile (includes overrides).
 xrp.current = setmetatable({}, {
@@ -52,8 +42,8 @@ xrp.current = setmetatable({}, {
 			contents = xrp_overrides.fields[field] ~= "" and xrp_overrides.fields[field] or nil
 		elseif xrp_profiles[xrp_selectedprofile].fields[field] then
 			contents = xrp_profiles[xrp_selectedprofile].fields[field]
-		elseif xrp.defaults[xrp_selectedprofile][field] == true and xrp_profiles[L["Default"]].fields[field] then
-			contents = xrp_profiles[L["Default"]].fields[field]
+		elseif xrp_profiles[xrp.inherits[xrp_selectedprofile][field]] then
+			contents = xrp_profiles[xrp.inherits[xrp_selectedprofile][field]].fields[field]
 		elseif xrp.toon.fields[field] then
 			contents = xrp.toon.fields[field]
 		else
@@ -72,9 +62,19 @@ xrp.current = setmetatable({}, {
 		for field, contents in pairs(xrp.toon.fields) do
 			out[field] = contents
 		end
-		for field, contents in pairs(xrp_profiles[L["Default"]].fields) do
-			if xrp.defaults[xrp_selectedprofile][field] then
-				out[field] = contents
+		do
+			local parents, count = {}, 0, inherit = xrp_profiles[xrp_selectedprofile].parent
+			while inherit and count < 5 do
+				count = count + 1
+				parents[#parents + 1] = inherit
+				inherit = xrp_profiles[inherit].parent
+			end
+			for _, profile in pairs(parents) do
+				for field, contents in pairs(xrp_profiles[profile]) do
+					if xrp.inherits[xrp_selectedprofile][field] == profile then
+						out[field] = contents
+					end
+				end
 			end
 		end
 		for field, contents in pairs(xrp_profiles[xrp_selectedprofile].fields) do
@@ -98,8 +98,8 @@ xrp.selected = setmetatable({}, {
 		local contents
 		if xrp_profiles[xrp_selectedprofile].fields[field] then
 			contents = xrp_profiles[xrp_selectedprofile].fields[field]
-		elseif xrp.defaults[xrp_selectedprofile][field] == true and xrp_profiles[L["Default"]].fields[field] then
-			contents = xrp_profiles[L["Default"]].fields[field]
+		elseif xrp_profiles[xrp.inherits[xrp_selectedprofile][field]] then
+			contents = xrp_profiles[xrp.inherits[xrp_selectedprofile][field]].fields[field]
 		elseif xrp.toon.fields[field] then
 			contents = xrp.toon.fields[field]
 		else
@@ -108,30 +108,21 @@ xrp.selected = setmetatable({}, {
 		return field == "AH" and xrp:ConvertHeight(contents, "msp") or field == "AW" and xrp:ConvertWeight(contents, "msp") or contents
 	end,
 	__newindex = nonewindex,
-	__call = function(self)
-		local out = {}
-		for field, contents in pairs(xrp.toon.fields) do
-			out[field] = contents
-		end
-		for field, contents in pairs(xrp_profiles[L["Default"]].fields) do
-			if xrp.defaults[xrp_selectedprofile][field] then
-				out[field] = contents
-			end
-		end
-		for field, contents in pairs(xrp_profiles[xrp_selectedprofile].fields) do
-			out[field] = contents
-		end
-		out.AW = out.AW and xrp:ConvertWeight(out.AW, "msp") or nil
-		out.AH = out.AH and xrp:ConvertHeight(out.AH, "msp") or nil
-		return out
+	__metatable = false,
+})
+
+xrp.versions = setmetatable({}, {
+	__index = function (self, field)
+		return xrp.toon.versions[field] or xrp_overrides.versions[field] or xrp_profiles[xrp_selectedprofile].versions[field] or (xrp_profiles[xrp.inherits[xrp_selectedprofile][field]] and xrp_profiles[xrp.inherits[xrp_selectedprofile][field]].versions[field]) or nil
 	end,
+	__newindex = nonewindex,
 	__metatable = false,
 })
 
 local pk = {}
 
 local profs = setmetatable({}, { __mode = "v" })
-local defs = setmetatable({}, { __mode = "v" })
+local inhs = setmetatable({}, { __mode = "v" })
 
 do
 	local profmt = {
@@ -148,7 +139,7 @@ do
 			if xrp_profiles[profile] and xrp_profiles[profile].fields[field] ~= contents then
 				xrp_profiles[profile].fields[field] = contents
 				xrp_profiles[profile].versions[field] = contents ~= nil and xrp:NewVersion(field) or nil
-				if (profile == xrp_selectedprofile or (profile == L["Default"] and xrp.defaults[xrp_selectedprofile][field])) then
+				if profile == xrp_selectedprofile or profile == xrp.inherits[xrp_selectedprofile][field] then
 					xrp:FireEvent("FIELD_UPDATE", field)
 				end
 			end
@@ -164,43 +155,39 @@ do
 				return length
 			elseif action == "rename" and type(argument) == "string" then
 				local profile = self[pk]
-				if type(xrp_profiles[profile]) == "table" and profile ~= L["Default"] and (type(xrp_profiles[argument]) ~= "table" or (argument == L["Default"] and profile ~= argument and (not xrp_profiles[L["Default (Old)"]] or profile == L["Default (Old)"]))) then
-					if argument == L["Default"] and profile ~= L["Default (Old)"] then
-						xrp_profiles[L["Default (Old)"]] = xrp_profiles[argument]
-					end
+				if type(xrp_profiles[profile]) == "table" and type(xrp_profiles[argument]) ~= "table" then
 					-- Rename profile to the nonexistant table provided.
 					xrp_profiles[argument] = xrp_profiles[profile]
-					-- Select the new name if this is our active profile.
-					if xrp_selectedprofile == argument then
-						xrp.profiles(argument)
+					for name, contents in pairs(xrp_profiles) do
+						if contents.parent == profile then
+							contents.parent = argument
+						end
 					end
-					xrp.profiles[profile] = nil -- Use table access to save Default.
+					-- Select the new name if this is our active profile.
+					if xrp_selectedprofile == profile then
+						xrp_selectedprofile = argument
+					end
+					xrp.profiles[profile] = nil
 					return true
 				end
 			elseif action == "copy" and type(argument) == "string" then
 				local profile = self[pk]
-				if type(xrp_profiles[profile]) == "table" and (type(xrp_profiles[argument]) ~= "table" or (argument == L["Default"] and argument ~= profile and (not xrp_profiles[L["Default (Old)"]] or profile == L["Default (Old)"]))) then
-					if argument == L["Default"] and profile ~= L["Default (Old)"] then
-						xrp_profiles[L["Default (Old)"]] = xrp_profiles[argument]
-					end
+				if type(xrp_profiles[profile]) == "table" and type(xrp_profiles[argument]) ~= "table" then
 					-- Copy profile into the empty table called.
 					xrp_profiles[argument] = {
 						fields = {},
-						defaults = {},
+						inherits = {},
 						versions = {},
+						parent = xrp_profiles[profile].parent,
 					}
 					for field, contents in pairs(xrp_profiles[profile].fields) do
 						xrp_profiles[argument].fields[field] = contents
 					end
-					for field, setting in pairs(xrp_profiles[profile].defaults) do
-						xrp_profiles[argument].defaults[field] = setting
+					for field, setting in pairs(xrp_profiles[profile].inherits) do
+						xrp_profiles[argument].inherits[field] = setting
 					end
 					for field, version in pairs(xrp_profiles[profile].versions) do
 						xrp_profiles[argument].versions[field] = version
-					end
-					-- Will only happen if copying over Default.
-					if xrp_selectedprofile == argument then
-						xrp:FireEvent("FIELD_UPDATE")
 					end
 					return true
 				end
@@ -222,7 +209,7 @@ do
 			if not xrp_profiles[profile] then
 				xrp_profiles[profile] = {
 					fields = {},
-					defaults = {},
+					inherits = {},
 					versions = {},
 				}
 			end
@@ -240,22 +227,12 @@ do
 					profs[profile][field] = contents
 				end
 			elseif data == nil then
-				if profile ~= L["Default"] then
-					xrp_profiles[profile] = nil
-					profs[profile] = nil
-					defs[profile] = nil
-				else
-					-- New, almost-blank profile if Default.
-					xrp_profiles[profile] = {
-						fields = {
-							NA = xrp.toon.name,
-						},
-						defaults = {},
-						versions = {},
-					}
-				end
+				xrp_profiles[profile] = nil
+				profs[profile] = nil
+				inhs[profile] = nil
 				if profile == xrp_selectedprofile then
-					xrp.profiles(L["Default"])
+					-- TODO: HANDLE SOMEHOW.
+					xrp.profiles("Default")
 				end
 			end
 		end,
@@ -263,10 +240,9 @@ do
 			if not profile then
 				local list = {}
 				for profile, _ in pairs(xrp_profiles) do
-					list[#list + 1] = profile ~= L["Default"] and profile or nil
+					list[#list + 1] = profile
 				end
 				table.sort(list)
-				table.insert(list, 1, L["Default"])
 				return list
 			elseif type(profile) == "string" and xrp_profiles[profile] then
 				xrp_selectedprofile = profile
@@ -284,45 +260,73 @@ do
 end
 
 do
-	local defmt = {
+	local inhmt = {
 		__index = function(self, field)
 			local profile = self[pk]
-			if profile == L["Default"] or not xrp_profiles[profile] then
+			if not xrp_profiles[profile].inherits[field] then
 				return false
-			elseif xrp_profiles[profile].defaults[field] ~= nil then
-				return xrp_profiles[profile].defaults[field]
+			end
+			local inherit = xrp_profiles[profile].parent
+			if xrp_profiles[profile].fields[field] ~= nil or not xrp_profiles[inherit] then
+				return true
+			end
+			local count = 0
+			while count < 5 do
+				count = count + 1
+				if xrp_profiles[inherit] and xrp_profiles[inherit].fields[field] then
+					return inherit
+				elseif xrp_profiles[inherit] and xrp_profiles[inherit].inherits[field] and xrp_profiles[xrp_profiles[inherit].parent] then
+					inherit = xrp_profiles[inherit].parent
+				else
+					return true
+				end
 			end
 			return true
 		end,
 		__newindex = function(self, field, state)
 			local profile = self[pk]
-			if profile == L["Default"] or not xrp_profiles[profile] or xrp.fields.unit[field] or xrp.fields.meta[field] or xrp.fields.dummy[field] or not field:find("^%u%u$") then
-				return
-			end
-			if state ~= xrp_profiles[profile].defaults[field] then
-				xrp_profiles[profile].defaults[field] = state
-				if profile == xrp_selectedprofile then
-					xrp:UpdateField(field)
+			if not xrp_profiles[profile] or xrp.fields.unit[field] or xrp.fields.meta[field] or xrp.fields.dummy[field] or not field:find("^%u%u$") then return end
+			if state ~= xrp_profiles[profile].inherits[field] then
+				local current = xrp.inherits[xrp_selectedprofile][field]
+				xrp_profiles[profile].inherits[field] = state
+				if current ~= xrp.inherits[xrp_selectedprofile][field] then
+					xrp:FireEvent("FIELD_UPDATE", field)
 				end
 			end
 		end,
 		__metatable = false,
 	}
 
-	xrp.defaults = setmetatable({}, {
+	xrp.inherits = setmetatable({}, {
 		__index = function(self, profile)
 			if not xrp_profiles[profile] then
 				return nil
 			end
-			if not xrp_profiles[profile].defaults then
-				xrp_profiles[profile].defaults = {}
+			if not inhs[profile] then
+				inhs[profile] = setmetatable({ [pk] = profile }, inhmt)
 			end
-			if not defs[profile] then
-				defs[profile] = setmetatable({ [pk] = profile }, defmt)
-			end
-			return defs[profile]
+			return inhs[profile]
 		end,
-		__newindex = nonewindex,
+		__newindex = function(self, profile, parent)
+			if not xrp_profiles[profile] then return end
+			if parent ~= xrp_profiles[profile].parent then
+				local count, isused, inherit = 0, profile == xrp_selectedprofile, xrp_profiles[xrp_selectedprofile].parent
+				while inherit and not isused and count < 5 do
+					count = count + 1
+					if inherit == profile then
+						isused = true
+					elseif xrp_profiles[inherit] and xrp_profiles[inherit].parent then
+						inherit = xrp_profiles[inherit].parent
+					else
+						inherit = nil
+					end
+				end
+				xrp_profiles[profile].parent = parent
+				if isused then
+					xrp:FireEvent("FIELD_UPDATE")
+				end
+			end
+		end,
 		__metatable = false,
 	})
 end

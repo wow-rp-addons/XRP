@@ -479,6 +479,24 @@
 					</OnLeave>
 				</Scripts>
 			</Button>
+			<!-- Parent Profile -->
+			<Button name="$parentParent" parentKey="Parent" inherits="UIDropDownMenuTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-12" y="10"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						UIDropDownMenu_SetWidth(self, 100, 0);
+						function self:SetText(value)
+							UIDropDownMenu_Initialize(self, self.initialize);
+							UIDropDownMenu_SetSelectedValue(self, value);
+						end;
+						function self:GetText()
+							return UIDropDownMenu_GetSelectedValue(self);
+						end;
+					</OnLoad>
+				</Scripts>
+			</Button>
 			<!-- Save Button -->
 			<Button parentKey="SaveButton" inherits="UIPanelButtonTemplate" text="SAVE">
 				<Size x="96" y="21"/>
