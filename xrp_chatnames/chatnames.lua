@@ -108,7 +108,7 @@ xrp:HookLogin(function()
 			event = event.."_"..arg9:match("^([^%s]+).*"):upper()
 		end
 
-		local name = settings[event] and arg12 and xrp:StripPunctuation(xrp:StripEscapes(xrp.guids[arg12].NA)) or Ambiguate(arg2, "guild")
+		local name = settings[event] and arg12 and xrp:StripEscapes(xrp.guids[arg12].NA) or Ambiguate(arg2, "guild")
 		local nameformat = ((event == "CHAT_MSG_EMOTE" or event == "CHAT_MSG_TEXT_EMOTE") and settings.emotebraced and "[%s]" or "%s")..(event == "CHAT_MSG_EMOTE" and arg9 or "")
 
 		local info = ChatTypeInfo[chattype]
