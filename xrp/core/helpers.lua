@@ -69,23 +69,6 @@ function xrp:StripEscapes(text)
 	return text:gsub("||", "|"):gsub("|n", ""):gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|r", ""):gsub("|H.-|h(.-)|h", "%1"):gsub("|T.-|t", ""):gsub("|K.-|k.-|k", ""):gsub("|", "||"):trim()
 end
 
-function xrp:StripPunctuation(text)
-	if type(text) ~= "string" then
-		return nil
-	end
-	-- Most punctuation and all whitespace is stripped from start/end; any
-	-- punctuation in the middle is left as-is.
-	--
-	-- Punctuation stripped: `~!@#$%^&*()-_=+[{]}\|;:,<.>/?
-	-- Notable exceptions:
-	--		start: (
-	--		end: .?!)
-	--		start/end: '"
-	local nosquare = text:match("^[%s%[]*(.-)[%s%]]*$")
-	local stripped = nosquare:match("^[%`%~%!%@%#%$%%%^%&%*%)%-%_%=%+%[%{%]%}%\\%|%;%:%,%<%.%>%/%?%s]*(.-)[%`%~%@%#%$%%%^%&%*%(%-%_%=%+%[%{%]%}%\\%|%;%:%,%<%>%/%s]*$")
-	return (stripped ~= "" and stripped) or (nosquare ~= "" and nosquare) or text
-end
-
 function xrp:LinkURLs(text)
 	if type(text) ~= "string" then
 		return nil
