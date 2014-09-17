@@ -20,7 +20,7 @@
 		<Scripts>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
-				GameTooltip:SetText(xrp.L["Use value from \"Default\" if empty."]);
+				GameTooltip:SetText(xrp.L["Use parent profile if blank."]);
 				GameTooltip:Show();
 			</OnEnter>
 			<OnLeave>
