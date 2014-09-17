@@ -52,7 +52,7 @@ do
 		-- This does not need to be very smart. SetText() should be mapped to
 		-- the appropriate 'real' function if needed.
 		local profile, inherits = xrp.profiles[name], xrp.inherits[name]
-		local hasparent = xrp_profiles[name].parent ~= nil
+		local hasparent = xrpSaved.profiles[name].parent ~= nil
 		for field, _ in pairs(supported) do
 			self[field]:SetText(profile[field] or "")
 			if field ~= "FC" then
@@ -74,7 +74,7 @@ do
 		end
 
 		self.Profiles:SetText(name)
-		self.Parent:SetText(xrp_profiles[name].parent or "")
+		self.Parent:SetText(xrpSaved.profiles[name].parent or "")
 		self:CheckFields()
 	end
 
@@ -84,7 +84,7 @@ do
 			parent = nil
 		end
 		local profile, inherits = xrp.profiles[name], xrp.inherits[name]
-		local newparent = parent ~= xrp_profiles[name].parent
+		local newparent = parent ~= xrpSaved.profiles[name].parent
 		local changes = newparent
 		for field, _ in pairs(supported) do
 			changes = changes or self[field]:GetText() ~= (profile[field] or "") or (self.checkboxes[field]:GetChecked() == 1) ~= (inherits[field] ~= false)
@@ -207,5 +207,5 @@ do
 end
 
 xrp:HookLoad(function()
-	xrp.editor:Load(xrp_selectedprofile)
+	xrp.editor:Load(xrpSaved.selected)
 end)

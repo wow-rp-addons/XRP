@@ -576,7 +576,7 @@
 				PlaySound("igCharacterInfoOpen");
 				self:CheckFields();
 				if self.RevertButton:GetButtonState() == "DISABLED" then
-					self:Load(xrp_selectedprofile);
+					self:Load(xrpSaved.selected);
 				end;
 			</OnShow>
 			<OnHide>

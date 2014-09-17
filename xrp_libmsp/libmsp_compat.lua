@@ -52,7 +52,7 @@ local mspchars = setmetatable({}, { __mode = "v" })
 
 local fieldmt = {
 	__index = function(self, field)
-		return xrp_cache[self[nk]].fields[field] or ""
+		return xrpCache[self[nk]].fields[field] or ""
 	end,
 	__newindex = nonewindex,
 	__metatable = false,
@@ -60,7 +60,7 @@ local fieldmt = {
 
 local vermt = {
 	__index = function(self, field)
-		return xrp_cache[self[nk]].versions[field]
+		return xrpCache[self[nk]].versions[field]
 	end,
 	__newindex = nonewindex,
 	__metatable = false,
@@ -86,7 +86,7 @@ local emptychar = setmetatable({
 msp.char = setmetatable({}, {
 	__index = function (self, character)
 		local name = xrp:NameWithRealm(character) -- For pre-5.4.7 addons.
-		if xrp_cache[name] then
+		if xrpCache[name] then
 			mspchars[name] = { field = setmetatable({ [nk] = name }, fieldmt), ver = setmetatable({ [nk] = name }, vermt), time = timetable, }
 			return mspchars[name]
 		end
@@ -134,7 +134,7 @@ end
 -- present if we know about someone. Real weird, since this is all-but-
 -- explicitly noted as an internal LibMSP function in the library...
 function msp:PlayerKnownAbout(character)
-	return xrp_cache[character] ~= nil
+	return xrpCache[character] ~= nil
 end
 
 -- Dummy function. Updates are processed as they're set in XRP. Benefits of

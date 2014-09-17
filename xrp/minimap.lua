@@ -263,8 +263,9 @@ do
 						end
 
 						wipe(menulist_profiles)
+						local selected = xrpSaved.selected
 						for _, name in ipairs(xrp.profiles()) do
-							menulist_profiles[#menulist_profiles + 1] = { text = name, checked = xrp_selectedprofile == name, arg1 = name, func = minimap_ProfileSelect, }
+							menulist_profiles[#menulist_profiles + 1] = { text = name, checked = selected == name, arg1 = name, func = minimap_ProfileSelect, }
 						end
 
 						EasyMenu(minimap_menulist, xrp.minimap.menu, xrp.minimap, 3, 10, "MENU", nil)
