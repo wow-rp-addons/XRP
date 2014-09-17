@@ -164,7 +164,7 @@ do
 			self:RegisterEvent("PLAYER_LOGIN")
 		elseif event == "PLAYER_LOGIN" then
 			local fields = xrp.toon.fields
-			fields.GC = select(2, UnitClass("player"))
+			fields.GC = select(2, UnitClassBase("player"))
 			fields.GF = UnitFactionGroup("player")
 			fields.GR = select(2, UnitRace("player"))
 			fields.GS = tostring(UnitSex("player"))

@@ -275,7 +275,7 @@ do
 		cu.race = UnitRace(unit) or UnitCreatureType(unit)
 		do
 			local level = UnitLevel(unit)
-			local class, classid = UnitClass(unit)
+			local class, classid = UnitClassBase(unit)
 			cu.class = class
 			cu.info = ("%s %%s |c%s%%s|r (%s)"):format((level < 1 and UNIT_LETHAL_LEVEL_TEMPLATE or UNIT_LEVEL_TEMPLATE):format(level), RAID_CLASS_COLORS[classid] and RAID_CLASS_COLORS[classid].colorStr or "ffffffff", PLAYER)
 		end
