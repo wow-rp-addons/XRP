@@ -218,7 +218,7 @@ do
 				end
 				xrp_cache[xrp.toon.withrealm] = {
 					fields = fields,
-					versions = versions.
+					versions = versions,
 					own = true,
 					lastreceive = time(),
 				}
@@ -300,6 +300,10 @@ do
 					profile.parent = xrp.L["Default"]
 				end
 			end
+		end
+		if not xrp_overrides.fields then
+			xrp_overrides.fields = {}
+			xrp_overrides.versions = {}
 		end
 
 		do

@@ -21,6 +21,16 @@
 	<Include file="editor_templates.xml"/>
 	<Frame name="xrp_editor" toplevel="true" movable="true" parent="UIParent" enableMouse="true" inherits="ButtonFrameTemplate" hidden="true">
 		<Size x="439" y="525"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<!-- Parent Profile -->
+				<FontString parentKey="ParentLabel" inherits="GameFontNormalSmall" text="Parent profile:">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" x="8" y="10"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
 		<Frames>
 			<Frame name="$parentAppearance" parentKey="Appearance" useParentLevel="true" hidden="false">
 				<Anchors>
@@ -482,7 +492,7 @@
 			<!-- Parent Profile -->
 			<Button name="$parentParent" parentKey="Parent" inherits="UIDropDownMenuTemplate">
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-12" y="10"/>
+					<Anchor point="LEFT" relativeKey="$parent.ParentLabel" relativePoint="RIGHT" x="-8" y="-2"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
