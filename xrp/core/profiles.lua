@@ -63,7 +63,7 @@ xrp.current = setmetatable({}, {
 			out[field] = contents
 		end
 		do
-			local parents, count = {}, 0, inherit = xrp_profiles[xrp_selectedprofile].parent
+			local parents, count, inherit = {}, 0, xrp_profiles[xrp_selectedprofile].parent
 			while inherit and count < 5 do
 				count = count + 1
 				parents[#parents + 1] = inherit
@@ -263,7 +263,7 @@ do
 	local inhmt = {
 		__index = function(self, field)
 			local profile = self[pk]
-			if not xrp_profiles[profile].inherits[field] then
+			if xrp_profiles[profile].inherits[field] == false then
 				return false
 			end
 			local inherit = xrp_profiles[profile].parent

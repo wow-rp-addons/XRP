@@ -30,7 +30,11 @@ do
 				profile[field] = self[field]:GetText()
 				inherits[field] = self.checkboxes[field]:GetChecked() == 1
 			end
-			xrp.inherits[name] = self.Parent:GetText()
+			local parent = self.Parent:GetText()
+			if parent == "" then
+				parent = nil
+			end
+			xrp.inherits[name] = parent
 			local length = xrp.profiles[name]("length")
 			if length > 16000 then
 				StaticPopup_Show("XRP_EDITOR_16000")
@@ -75,16 +79,18 @@ do
 	end
 
 	function xrp.editor:CheckFields()
-		-- TODO: parent GetText() might return "" instead of nil.
 		local name, parent = self.Profiles:GetText(), self.Parent:GetText()
+		if parent == "" then
+			parent = nil
+		end
 		local profile, inherits = xrp.profiles[name], xrp.inherits[name]
 		local newparent = parent ~= xrp_profiles[name].parent
 		local changes = newparent
 		for field, _ in pairs(supported) do
 			changes = changes or self[field]:GetText() ~= (profile[field] or "") or (self.checkboxes[field]:GetChecked() == 1) ~= (inherits[field] ~= false)
-			if newparent and parent then
+			if parent then
 				self.checkboxes[field]:Show()
-			elseif newparent then
+			else
 				self.checkboxes[field]:Hide()
 			end
 		end
