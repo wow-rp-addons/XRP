@@ -49,8 +49,8 @@ local charsmt = {
 		elseif request and gcache[character] and gcache[character].GF ~= xrp.toon.fields.GF and gcache[character].GF ~= "Neutral" then
 			xrp:FireEvent("MSP_FAIL", character, "faction")
 		end
-		if xrp_cache[character] and xrp_cache[character].fields[field] then
-			return xrp_cache[character].fields[field]
+		if xrpCache[character] and xrpCache[character].fields[field] then
+			return xrpCache[character].fields[field]
 		end
 		return nil
 	end,
@@ -97,17 +97,17 @@ do
 					GS = tostring(GS),
 					GU = GU,
 				}
-				if xrp_cache[character] and character ~= xrp.toon.withrealm then
+				if xrpCache[character] and character ~= xrp.toon.withrealm then
 					for field, contents in pairs(gcache[character]) do
 						-- We DO want to overwrite these, to account for race,
 						-- faction, or sex changes.
-						xrp_cache[character].fields[field] = contents
+						xrpCache[character].fields[field] = contents
 					end
 				end
 			elseif not gcache[character].GF then -- GUID won't always get faction.
 				gcache[character].GF = UnitFactionGroup(unit)
-				if xrp_cache[character] and character ~= xrp.toon.withrealm then
-					xrp_cache[character].fields.GF = gcache[character].GF
+				if xrpCache[character] and character ~= xrp.toon.withrealm then
+					xrpCache[character].fields.GF = gcache[character].GF
 				end
 			end
 			-- Don't bother with requests to disconnected units.
@@ -170,11 +170,11 @@ do
 					GS = tostring(GS),
 					GU = GU,
 				}
-				if xrp_cache[character] and character ~= xrp.toon.withrealm then
+				if xrpCache[character] and character ~= xrp.toon.withrealm then
 					for field, contents in pairs(gcache[character]) do
 						-- We DO want to overwrite these, to account for race,
 						-- faction, or sex changes.
-						xrp_cache[character].fields[field] = contents
+						xrpCache[character].fields[field] = contents
 					end
 				end
 			end
@@ -204,7 +204,7 @@ do
 		__newindex = nonewindex,
 		__call = function(self)
 			local out = {}
-			for character, _ in pairs(xrp_cache) do
+			for character, _ in pairs(xrpCache) do
 				out[#out + 1] = character
 			end
 			table.sort(out)
@@ -217,20 +217,20 @@ end
 xrp.bookmarks = setmetatable({}, {
 	__index = function (self, character)
 		character = xrp:NameWithRealm(character)
-		if not character or not xrp_cache[character] then
+		if not character or not xrpCache[character] then
 			return nil
 		end
-		return xrp_cache[character].own and 0 or xrp_cache[character].bookmark
+		return xrpCache[character].own and 0 or xrpCache[character].bookmark
 	end,
 	__newindex = function(self, character, bookmark)
 		character = xrp:NameWithRealm(character)
-		if not character or not xrp_cache[character] then
+		if not character or not xrpCache[character] then
 			return nil
 		end
-		if bookmark and not xrp_cache[character].bookmark then
-			xrp_cache[character].bookmark = time()
-		elseif not bookmark and xrp_cache[character].bookmark then
-			xrp_cache[character].bookmark = nil
+		if bookmark and not xrpCache[character].bookmark then
+			xrpCache[character].bookmark = time()
+		elseif not bookmark and xrpCache[character].bookmark then
+			xrpCache[character].bookmark = nil
 		end
 	end,
 	__metatable = false,

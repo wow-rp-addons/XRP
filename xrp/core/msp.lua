@@ -205,16 +205,16 @@ do
 	local tt, oldtt
 	function msp:GetTT()
 		if not tt then
-			if not oldtt and xrp_overrides.oldtt then
-				oldtt = xrp_overrides.oldtt
-				xrp_overrides.oldtt = nil
+			if not oldtt and xrpSaved.oldtt then
+				oldtt = xrpSaved.oldtt
+				xrpSaved.oldtt = nil
 			end
 			local tooltip = {}
 			for _, field in ipairs(ttfields) do
 				tooltip[#tooltip + 1] = (not xrp.current[field] and "%s" or "%s%u=%s"):format(field, xrp.versions[field], xrp.current[field])
 			end
 			local newtt = table.concat(tooltip, "\1")
-			tt = ("%s\1TT%u"):format(newtt, newtt ~= oldtt and xrp:NewVersion("TT") or xrp_versions.TT)
+			tt = ("%s\1TT%u"):format(newtt, newtt ~= oldtt and xrp:NewVersion("TT") or xrpSaved.versions.TT)
 			oldtt = newtt
 		end
 		--print((tt:gsub("\1", "\\1")))
@@ -226,7 +226,7 @@ do
 		end
 	end)
 	xrp:HookLogout(function()
-		xrp_overrides.oldtt = oldtt
+		xrpSaved.oldtt = oldtt
 	end)
 end
 
@@ -278,8 +278,8 @@ do
 			return nil
 		elseif action == "" then
 			-- Gave us a field.
-			if not xrp_cache[character] and (contents ~= "" or version ~= 0) then
-				xrp_cache[character] = {
+			if not xrpCache[character] and (contents ~= "" or version ~= 0) then
+				xrpCache[character] = {
 					fields = {},
 					versions = {},
 				}
@@ -294,26 +294,26 @@ do
 				-- function is the *only* place a character cache table is
 				-- created).
 				for gfield, _ in pairs(xrp.fields.unit) do
-					xrp_cache[character].fields[gfield] = xrp.cache[character][gfield]
+					xrpCache[character].fields[gfield] = xrp.cache[character][gfield]
 				end
 			end
 			local updated = false
-			if xrp_cache[character] and xrp_cache[character].fields[field] and contents == "" and not xrp.fields.unit[field] then
+			if xrpCache[character] and xrpCache[character].fields[field] and contents == "" and not xrp.fields.unit[field] then
 				-- If it's newly blank, empty it in the cache. Never
 				-- empty G*, but do update them (following elseif).
-				xrp_cache[character].fields[field] = nil
+				xrpCache[character].fields[field] = nil
 				updated = true
-			elseif contents ~= "" and xrp_cache[character].fields[field] ~= contents then
-				xrp_cache[character].fields[field] = contents
+			elseif contents ~= "" and xrpCache[character].fields[field] ~= contents then
+				xrpCache[character].fields[field] = contents
 				updated = true
 				if field == "VA" then
 					xrp:AddonUpdate(contents:match("^XRP/([^;]+)"))
 				end
 			end
 			if version ~= 0 then
-				xrp_cache[character].versions[field] = version
-			elseif xrp_cache[character] then
-				xrp_cache[character].versions[field] = nil
+				xrpCache[character].versions[field] = version
+			elseif xrpCache[character] then
+				xrpCache[character].versions[field] = nil
 			end
 			-- Save time regardless of contents or version. This prevents
 			-- querying again too soon. Query time is also set prior to initial
@@ -352,8 +352,8 @@ msp.handlers = {
 			self:QueueSend(character, out)
 		end
 		-- Cache timer. Last receive marked for clearing old entries.
-		if xrp_cache[character] then
-			xrp_cache[character].lastreceive = time()
+		if xrpCache[character] then
+			xrpCache[character].lastreceive = time()
 		end
 	end,
 	["MSP\1"] = function(self, character, message)
@@ -540,7 +540,7 @@ function xrp:Request(character, fields, safe)
 	local out = {}
 	for _, field in ipairs(fields) do
 		if not msp.cache[character].time[field] or now > msp.cache[character].time[field] + self.fields.times[field] then
-			out[#out + 1] = ((not xrp_cache[character] or not xrp_cache[character].versions[field]) and "?%s" or "?%s%u"):format(field, xrp_cache[character] and xrp_cache[character].versions[field] or 0)
+			out[#out + 1] = ((not xrpCache[character] or not xrpCache[character].versions[field]) and "?%s" or "?%s%u"):format(field, xrpCache[character] and xrpCache[character].versions[field] or 0)
 			msp.cache[character].time[field] = now
 		end
 	end

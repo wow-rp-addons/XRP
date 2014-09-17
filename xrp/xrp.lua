@@ -27,8 +27,7 @@ do
 		__index = function(self, key)
 			return translation[locale] and translation[locale][key] or key
 		end,
-		__newindex = function()
-		end,
+		__newindex = function() end,
 		__metatable = false,
 	})
 end
@@ -172,7 +171,7 @@ do
 			fields.GU = UnitGUID("player")
 			local versions = xrp.toon.versions
 			for field, contents in pairs(fields) do
-				versions[field] = contents ~= xrp_cache[xrp.toon.withrealm].fields[field] and xrp:NewVersion(field) or xrp_versions[field]
+				versions[field] = contents ~= xrpCache[xrp.toon.withrealm].fields[field] and xrp:NewVersion(field) or xrpSaved.versions[field]
 				xrp:FireEvent("FIELD_UPDATE", field)
 			end
 
@@ -216,7 +215,7 @@ do
 				for field, _ in pairs(profile) do
 					versions[field] = xrp.versions[field]
 				end
-				xrp_cache[xrp.toon.withrealm] = {
+				xrpCache[xrp.toon.withrealm] = {
 					fields = fields,
 					versions = versions,
 					own = true,
@@ -244,83 +243,104 @@ do
 		cachetidy = true,
 	}
 	xrp:HookLoad(function()
-		-- Account-wide.
-		if type(xrp_settings) ~= "table" then
-			xrp_settings = {}
-		end
-		if type(xrp_cache) ~= "table" then
-			xrp_cache = {}
-		end
-
-		-- Character-specific.
-		if type(xrp_overrides) ~= "table" then
-			xrp_overrides = {
-				fields = {},
-				versions = {},
-			}
-		end
-		if type(xrp_profiles) ~= "table" then
-			xrp_profiles = {}
-		end
-		if type(xrp_versions) ~= "table" then
-			xrp_versions = {}
-		end
-
-		-- Pre-5.4.8.0_rc3.
-		if type(xrp_settings.defaults == "table") then
-			xrp_settings.defaults = nil
-		end
-
-		-- Pre-5.4.8.0_rc6.
-		if xrp_defaults ~= nil then
-			for profile, contents in pairs(xrp_profiles) do
-				if type(contents) == "table" then
-					xrp_profiles[profile] = {
-						fields = contents,
-						inherits = xrp_defaults[profile] or {},
-						versions = {},
-					}
-				end
-			end
-			xrp_defaults = nil
-		end
-
-		-- Pre-5.4.8.3
-		for name, profile in pairs(xrp_profiles) do
-			if not profile.versions then
-				profile.versions = {}
-				for field, contents in pairs(profile.fields) do
-					profile.versions[field] = xrp:NewVersion(field)
-				end
-			end
-			if not profile.inherits then
-				profile.inherits = profile.defaults or {}
-				profile.defaults = nil
-				if name ~= xrp.L["Default"] then
-					profile.parent = xrp.L["Default"]
-				end
+		if not xrpCache then
+			if xrp_cache then
+				xrpCache = xrp_cache
+				xrp_cache = nil
+			else
+				xrpCache = {}
 			end
 		end
-		if not xrp_overrides.fields then
-			xrp_overrides.fields = {}
-			xrp_overrides.versions = {}
-		end
-
-		do
-			local L = xrp.L
-			if type(xrp_profiles[L["Default"]]) ~= "table" then
-				xrp_profiles[L["Default"]] = {
-					fields = {},
-					inherits = {},
-					versions = {},
+		if not xrpAccountSaved then
+			if xrp_settings then
+				-- Pre-5.4.8.0_rc3.
+				if type(xrp_settings.defaults == "table") then
+					xrp_settings.defaults = nil
+				end
+				xrpAccountSaved = {
+					settings = xrp_settings,
+				}
+				xrp_settings = nil
+			else
+				xrpAccountSaved = {
+					settings = {},
 				}
 			end
-			if type(xrp_selectedprofile) ~= "string" or type(xrp_profiles[xrp_selectedprofile]) ~= "table" then
-				xrp_selectedprofile = L["Default"]
+		end
+		if not xrpSaved then
+			if xrp_profiles then
+				-- Pre-5.4.8.0_rc6.
+				if xrp_defaults ~= nil then
+					for profile, contents in pairs(xrp_profiles) do
+						if type(contents) == "table" then
+							xrp_profiles[profile] = {
+								fields = contents,
+								inherits = xrp_defaults[profile] or {},
+								versions = {},
+							}
+						end
+					end
+					xrp_defaults = nil
+				end
+				-- Pre-5.4.8.3
+				for name, profile in pairs(xrp_profiles) do
+					if not profile.versions then
+						profile.versions = {}
+						for field, contents in pairs(profile.fields) do
+							profile.versions[field] = xrp:NewVersion(field)
+						end
+					end
+					if not profile.inherits then
+						profile.inherits = profile.defaults or {}
+						profile.defaults = nil
+						if name ~= xrp.L["Default"] then
+							profile.parent = xrp.L["Default"]
+						end
+					end
+				end
+				xrpSaved = {
+					overrides = {
+						fields = {},
+						versions = {},
+					},
+					profiles = xrp_profiles,
+					selected = xrp_selectedprofile,
+					toon = {
+						fields = {},
+						versions = {},
+					},
+					versions = xrp_versions,
+					dataVersion = 1,
+				}
+				xrp_overrides = nil
+				xrp_profiles = nil
+				xrp_selectedprofile = nil
+				xrp_versions = nil
+			else
+				xrpSaved = {
+					overrides = {
+						fields = {},
+						versions = {},
+					},
+					profiles = {
+						[xrp.L["Default"]] = {
+							fields = {},
+							inherits = {},
+							versions = {},
+						},
+					},
+					selected = xrp.L["Default"],
+					toon = {
+						fields = {},
+						versions = {},
+					},
+					versions = {},
+					dataVersion = 1,
+				}
 			end
 		end
 
-		xrp.settings = setmetatable(xrp_settings, { __index = default_settings })
+		xrp.settings = setmetatable(xrpAccountSaved.settings, { __index = default_settings })
 	end)
 end
 
@@ -338,12 +358,12 @@ function xrp:CacheTidy(timer)
 	if beforeown < 1209600 then
 		beforeown = 1209600
 	end
-	for character, data in pairs(xrp_cache) do
+	for character, data in pairs(xrpCache) do
 		if not data.lastreceive then
 			-- Pre-5.4.8.0_beta5.
 			data.lastreceive = now
 		elseif not data.bookmark and (not data.own and data.lastreceive < before or data.lastreceive < beforeown) then
-			xrp_cache[character] = nil
+			xrpCache[character] = nil
 		end
 	end
 	if timer <= 60 then

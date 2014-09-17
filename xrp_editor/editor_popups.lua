@@ -34,7 +34,7 @@ StaticPopupDialogs["XRP_EDITOR_ADD"] = {
 	end,
 	OnAccept = function(self, data, data2)
 		local name = self.editBox:GetText()
-		if xrp_profiles[name] then
+		if xrpSaved.profiles[name] then
 			StaticPopup_Show("XRP_EDITOR_FAIL", name)
 		else
 			xrp.editor:Load(name)
@@ -44,7 +44,7 @@ StaticPopupDialogs["XRP_EDITOR_ADD"] = {
 		local parent = self:GetParent()
 		if parent.button1:IsEnabled() then
 			local name = self:GetText()
-			if xrp_profiles[name] then
+			if xrpSaved.profiles[name] then
 				StaticPopup_Show("XRP_EDITOR_FAIL", name)
 			else
 				xrp.editor:Load(name)
@@ -68,7 +68,7 @@ StaticPopupDialogs["XRP_EDITOR_DELETE"] = {
 	button2 = NO,
 	OnAccept = function(self, data, data2)
 		xrp.profiles[xrp.editor.Profiles:GetText()] = nil
-		xrp.editor:Load(xrp_selectedprofile)
+		xrp.editor:Load(xrpSaved.selected)
 	end,
 	enterClicksFirstButton = false,
 	timeout = 0,
