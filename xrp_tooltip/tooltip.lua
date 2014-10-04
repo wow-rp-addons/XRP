@@ -247,7 +247,7 @@ do
 		local connected = UnitIsConnected(unit)
 
 		do
-			local color = not settings.faction and reaction_colors[(meattack and attackme and "hostile") or (faction == xrp.toon.fields.GF and not attackme and not meattack and "friendly") or ((faction == xrp.toon.fields.GF or faction == "Neutral") and "neutral") or "hostile"] or faction_colors[faction].dark
+			local color = not settings.faction and reaction_colors[(meattack and attackme and "hostile") or (faction == xrpSaved.meta.fields.GF and not attackme and not meattack and "friendly") or ((faction == xrpSaved.meta.fields.GF or faction == "Neutral") and "neutral") or "hostile"] or faction_colors[faction].dark
 			-- Can only ever be one of AFK, DND, or offline.
 			cu.nameformat = "|c"..color.."%s|r"..((UnitIsAFK(unit) and " |cff99994d"..CHAT_FLAG_AFK.."|r") or (UnitIsDND(unit) and " |cff994d4d"..CHAT_FLAG_DND.."|r") or (not connected and " |cff888888<"..PLAYER_OFFLINE..">|r") or "")
 		end
@@ -266,7 +266,7 @@ do
 
 		do
 			local realm = cu.name:match(FULL_PLAYER_NAME:format(".+", "(.+)"))
-			if realm == xrp.toon.withrealm:match(FULL_PLAYER_NAME:format(".+", "(.+)")) then
+			if realm == xrp.toon:match(FULL_PLAYER_NAME:format(".+", "(.+)")) then
 				realm = nil
 			end
 			cu.titlerealm = "|c"..faction_colors[faction].light..(UnitPVPName(unit) or xrp:NameWithoutRealm(cu.name))..(realm and (" ("..xrp:RealmNameWithSpacing(realm)..")|r") or "|r")
@@ -287,20 +287,20 @@ do
 		end
 
 		cu.type = "player"
-		tooltip_RenderTooltip((not settings.noopfaction or (faction == xrp.toon.fields.GF or faction == "Neutral")) and (not settings.nohostile or (not attackme or not meattack)) and xrp.units[unit] or unknown)
+		tooltip_RenderTooltip((not settings.noopfaction or (faction == xrpSaved.meta.fields.GF or faction == "Neutral")) and (not settings.nohostile or (not attackme or not meattack)) and xrp.units[unit] or unknown)
 	end
 
 	function tooltip_SetPetUnit(unit)
 		local faction = UnitFactionGroup(unit)
 		if not faction or type(faction_colors[faction]) ~= "table" then
-			faction = UnitIsUnit(unit, "playerpet") and xrp.toon.fields.GF or "Neutral"
+			faction = UnitIsUnit(unit, "playerpet") and xrpSaved.meta.fields.GF or "Neutral"
 		end
 		local attackme = UnitCanAttack(unit, "player")
 		local meattack = UnitCanAttack("player", unit)
 
 		do
 			local name = UnitName(unit)
-			local color = not settings.faction and reaction_colors[(meattack and attackme and "hostile") or (faction == xrp.toon.fields.GF and not attackme and not meattack and "friendly") or ((faction == xrp.toon.fields.GF or faction == "Neutral") and "neutral") or "hostile"] or faction_colors[faction].dark
+			local color = not settings.faction and reaction_colors[(meattack and attackme and "hostile") or (faction == xrpSaved.meta.fields.GF and not attackme and not meattack and "friendly") or ((faction == xrpSaved.meta.fields.GF or faction == "Neutral") and "neutral") or "hostile"] or faction_colors[faction].dark
 			cu.nameformat = "|c"..color..name.."|r"
 		end
 
@@ -341,7 +341,7 @@ do
 		end
 
 		cu.type = "pet"
-		tooltip_RenderTooltip((not settings.noopfaction or (faction == xrp.toon.fields.GF or faction == "Neutral")) and (not settings.nohostile or (not attackme or not meattack)) and xrp.characters[cu.name] or unknown)
+		tooltip_RenderTooltip((not settings.noopfaction or (faction == xrpSaved.meta.fields.GF or faction == "Neutral")) and (not settings.nohostile or (not attackme or not meattack)) and xrp.characters[cu.name] or unknown)
 	end
 end
 
