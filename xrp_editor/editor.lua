@@ -33,6 +33,9 @@ do
 			parent = nil
 		end
 		xrp.profiles[name].parent = parent
+		if xrp.profiles[name].parent ~= parent then
+			self.Parent:SetText(xrp.profiles[name].parent)
+		end
 		-- Save and Revert buttons will disable after saving.
 		self:CheckFields()
 	end
