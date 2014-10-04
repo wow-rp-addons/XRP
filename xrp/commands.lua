@@ -84,11 +84,11 @@ end
 xrpcmds.profile = function(args)
 	if args == "list" or args == L["list"] then
 		print(L["Profiles:"])
-		for _, profile in ipairs(xrp.profiles()) do
+		for _, profile in ipairs(xrp.profiles:List()) do
 			print(profile)
 		end
 	elseif type(args) == "string" then
-		if xrp.profiles(args) then
+		if xrp.profiles[args] and xrp.profiles[args]:Activate() then
 			print(L["Set profile to \"%s\"."]:format(args))
 		else
 			print(L["Failed to set profile (does \"%s\" exist?)."]:format(args))
@@ -100,15 +100,15 @@ end
 
 xrpcmds.status = function(args)
 	if args == "nil" or args == L["nil"] then
-		xrp.current.FC = nil
+		xrp.current.fields.FC = nil
 	elseif args == "ooc" or args == L["ooc"] then
-		xrp.current.FC = "1"
+		xrp.current.fields.FC = "1"
 	elseif args == "ic" or args == L["ic"] then
-		xrp.current.FC = "2"
+		xrp.current.fields.FC = "2"
 	elseif args == "lfc" or args == L["lfc"] then
-		xrp.current.FC = "3"
+		xrp.current.fields.FC = "3"
 	elseif args == "st" or args == L["st"] then
-		xrp.current.FC = "4"
+		xrp.current.fields.FC = "4"
 	else
 		xrpcmds.help("status")
 	end

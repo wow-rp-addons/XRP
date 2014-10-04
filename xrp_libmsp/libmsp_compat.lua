@@ -99,12 +99,12 @@ msp.char = setmetatable({}, {
 msp.my = setmetatable({}, {
 	__index = function(self, field)
 		-- Return currently active profile field (incl. overrides).
-		return xrp.current[field]
+		return xrp.current.fields[field]
 	end,
 	__newindex = function(self, field, contents)
 		-- Sets a temporary override. Removes if empty string (unlike normal
-		-- xrp.current overrides allowing explicitly empty).
-		xrp.current[field] = contents ~= "" and contents or nil
+		-- overrides allowing explicitly empty).
+		xrp.current.fields[field] = contents ~= "" and contents or nil
 	end,
 	__metatable = false,
 })
@@ -113,7 +113,7 @@ msp.my = setmetatable({}, {
 -- that entirely automatically.
 msp.myver = setmetatable({}, {
 	__index = function(self, field)
-		return xrp.versions[field]
+		return xrp.current.versions[field]
 	end,
 	__newindex = nonewindex,
 	__metatable = false,
