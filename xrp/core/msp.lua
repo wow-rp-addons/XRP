@@ -209,9 +209,10 @@ do
 				oldtt = xrpSaved.oldtt
 				xrpSaved.oldtt = nil
 			end
+			local current = xrp.current
 			local tooltip = {}
 			for _, field in ipairs(ttfields) do
-				tooltip[#tooltip + 1] = (not xrp.current[field] and "%s" or "%s%u=%s"):format(field, xrp.versions[field], xrp.current[field])
+				tooltip[#tooltip + 1] = (not current.fields[field] and "%s" or "%s%u=%s"):format(field, current.versions[field], current.fields[field])
 			end
 			local newtt = table.concat(tooltip, "\1")
 			tt = ("%s\1TT%u"):format(newtt, newtt ~= oldtt and xrp:NewVersion("TT") or xrpSaved.versions.TT)
@@ -260,17 +261,17 @@ do
 				return nil
 			end
 			req_timer[character][field] = now
-			if version == xrp.versions[field] or (not xrp.versions[field] and version == 0) then
+			if version == xrp.current.versions[field] or (not xrp.current.versions[field] and version == 0) then
 				-- They already have the latest.
-				return (not xrp.versions[field] and "%s" or "!%s%u"):format(field, xrp.versions[field])
+				return (not xrp.current.versions[field] and "%s" or "!%s%u"):format(field, xrp.current.versions[field])
 			elseif field == "TT" then
 				return self:GetTT()
-			elseif not xrp.current[field] then
+			elseif not xrp.current.fields[field] then
 				-- Field is empty.
 				return field
 			end
 			-- Field has content.
-			return ("%s%u=%s"):format(field, xrp.versions[field], xrp.current[field])
+			return ("%s%u=%s"):format(field, xrp.current.versions[field], xrp.current.fields[field])
 		elseif action == "!" then
 			-- Told us we have latest of their field.
 			self.cache[character].time[field] = GetTime()

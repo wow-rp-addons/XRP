@@ -17,53 +17,37 @@
 
 do
 	local supported = { NA = true, NI = true, NT = true, NH = true, AE = true, RA = true, RC = true, AH = true, AW = true, CU = true, DE = true, AG = true, HH = true, HB = true, MO = true, HI = true, FR = true, FC = true }
-	do
-		local warn9000 = false
-		function xrp.editor:Save()
-			self:ClearFocus()
-			-- This doesn't need to be smart. GetText() should be mapped to the
-			-- appropriate 'real' function if GetText() isn't already right. The
-			-- profile code will assume an empty string means an empty field.
-			local name = self.Profiles:GetText()
-			local profile, inherits = xrp.profiles[name], xrp.inherits[name]
-			for field, _ in pairs(supported) do
-				profile[field] = self[field]:GetText()
-				inherits[field] = self.checkboxes[field]:GetChecked() == 1
-			end
-			local parent = self.Parent:GetText()
-			if parent == "" then
-				parent = nil
-			end
-			xrp.inherits[name] = parent
-			local length = xrp.profiles[name]("length")
-			if length > 16000 then
-				StaticPopup_Show("XRP_EDITOR_16000")
-			elseif length > 9000 and not warn9000 then
-				warn9000 = true
-				StaticPopup_Show("XRP_EDITOR_9000")
-			end
-			-- Save and Revert buttons will disable after saving.
-			self:CheckFields()
+	function xrp.editor:Save()
+		self:ClearFocus()
+		-- This doesn't need to be smart. GetText() should be mapped to the
+		-- appropriate 'real' function if GetText() isn't already right. The
+		-- profile code will assume an empty string means an empty field.
+		local name = self.Profiles:GetText()
+		local profile, inherits = xrp.profiles[name].fields, xrp.profiles[name].inherits
+		for field, _ in pairs(supported) do
+			profile[field] = self[field]:GetText()
+			inherits[field] = self.checkboxes[field]:GetChecked() == 1
 		end
+		local parent = self.Parent:GetText()
+		if parent == "" then
+			parent = nil
+		end
+		xrp.profiles[name].parent = parent
+		-- Save and Revert buttons will disable after saving.
+		self:CheckFields()
 	end
 
 	function xrp.editor:Load(name)
 		self:ClearFocus()
 		-- This does not need to be very smart. SetText() should be mapped to
 		-- the appropriate 'real' function if needed.
-		local profile, inherits = xrp.profiles[name], xrp.inherits[name]
-		local hasparent = xrpSaved.profiles[name].parent ~= nil
+		local profile, inherits = xrp.profiles[name].fields, xrp.profiles[name].inherits
 		for field, _ in pairs(supported) do
 			self[field]:SetText(profile[field] or "")
 			if field ~= "FC" then
 				self[field]:SetCursorPosition(0)
 			end
 			self.checkboxes[field]:SetChecked(inherits[field] ~= false)
-			if hasparent then
-				self.checkboxes[field]:Show()
-			else
-				self.checkboxes[field]:Hide()
-			end
 		end
 
 		if self.Profiles:GetText() ~= name and not self.Appearance:IsVisible() then
@@ -74,7 +58,7 @@ do
 		end
 
 		self.Profiles:SetText(name)
-		self.Parent:SetText(xrpSaved.profiles[name].parent or "")
+		self.Parent:SetText(xrp.profiles[name].parent or "")
 		self:CheckFields()
 	end
 
@@ -83,8 +67,8 @@ do
 		if parent == "" then
 			parent = nil
 		end
-		local profile, inherits = xrp.profiles[name], xrp.inherits[name]
-		local newparent = parent ~= xrpSaved.profiles[name].parent
+		local profile, inherits = xrp.profiles[name].fields, xrp.profiles[name].inherits
+		local newparent = parent ~= xrp.profiles[name].parent
 		local changes = newparent
 		for field, _ in pairs(supported) do
 			changes = changes or self[field]:GetText() ~= (profile[field] or "") or (self.checkboxes[field]:GetChecked() == 1) ~= (inherits[field] ~= false)
@@ -159,7 +143,7 @@ do
 	end
 
 	UIDropDownMenu_Initialize(xrp.editor.Profiles, function()
-		for _, value in ipairs(xrp.profiles()) do
+		for _, value in ipairs(xrp.profiles:List()) do
 			local info = UIDropDownMenu_CreateInfo()
 			info.text = value
 			info.value = value
@@ -185,7 +169,7 @@ do
 			info.func = infofunc
 			UIDropDownMenu_AddButton(info)
 		end
-		for _, value in ipairs(xrp.profiles()) do
+		for _, value in ipairs(xrp.profiles:List()) do
 			local info = UIDropDownMenu_CreateInfo()
 			info.text = value
 			info.value = value

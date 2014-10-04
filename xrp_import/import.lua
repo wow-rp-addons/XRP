@@ -46,6 +46,10 @@ StaticPopupDialogs["XRP_IMPORT_FAILED"] = {
 -- This is easy. Using a very similar storage format (i.e., MSP fields).
 local function import_MyRolePlay()
 	for name, profile in pairs(mrpSaved.Profiles) do
+		local newname = "MRP-"..name
+		if not xrp.profiles:Add(newname) then
+			return
+		end
 		for field, value in pairs(profile) do
 			if not xrp.fields.unit[field] and not xrp.fields.meta[field] and not xrp.fields.dummy[field] and field:find("^%u%u$") then
 				if field == "FC" then
@@ -57,7 +61,7 @@ local function import_MyRolePlay()
 				elseif field == "FR" and tonumber(value) then
 					value = value ~= "0" and xrp.values.FR[tonumber(value)] or ""
 				end
-				xrp.profiles["MRP-"..name][field] = value ~= "" and value or nil
+				xrp.profiles[newname].fields[field] = value ~= "" and value or nil
 			end
 		end
 	end
@@ -82,12 +86,15 @@ do
 
 	-- This is a bit more complex. And partly in French.
 	function import_totalRP2()
+		if not xrp.profiles:Add("TRP2") then
+			return
+		end
 		local realm = GetRealmName()
 		local player = (UnitName("player"))
 		local profile = TRP2_Module_PlayerInfo[realm][player]
 		if profile.Actu then
-			xrp.profiles["TRP2"].CU = profile.Actu.ActuTexte
-			xrp.profiles["TRP2"].FC = profile.Actu.StatutRP and profile.Actu.StatutRP ~= 0 and tostring(profile.Actu.StatutRP) or nil
+			xrp.profiles["TRP2"].fields.CU = profile.Actu.ActuTexte
+			xrp.profiles["TRP2"].fields.FC = profile.Actu.StatutRP and profile.Actu.StatutRP ~= 0 and tostring(profile.Actu.StatutRP) or nil
 		end
 		local DE = ""
 		if profile.Registre and profile.Registre.TraitVisage then
@@ -99,27 +106,27 @@ do
 		if profile.Physique and profile.Physique.PhysiqueTexte then
 			DE = ("%s%s"):format(DE, profile.Physique.PhysiqueTexte)
 		end
-		xrp.profiles["TRP2"].DE = DE ~= "" and DE:match("^(.-)\n+$") or nil
+		xrp.profiles["TRP2"].fields.DE = DE ~= "" and DE:match("^(.-)\n+$") or nil
 		if profile.Histoire then
-			xrp.profiles["TRP2"].HI = profile.Histoire.HistoireTexte
+			xrp.profiles["TRP2"].fields.HI = profile.Histoire.HistoireTexte
 		end
 		if profile.Registre then
 			do
 				local NA = ("%s %s"):format(profile.Registre.Prenom or player, profile.Registre.Nom or ""):trim()
-				xrp.profiles["TRP2"].NA = NA ~= "" and NA or nil
+				xrp.profiles["TRP2"].fields.NA = NA ~= "" and NA or nil
 			end
-			xrp.profiles["TRP2"].RA = profile.Registre.RacePerso
-			xrp.profiles["TRP2"].RC = profile.Registre.ClassePerso
-			xrp.profiles["TRP2"].AE = profile.Registre.YeuxVisage
+			xrp.profiles["TRP2"].fields.RA = profile.Registre.RacePerso
+			xrp.profiles["TRP2"].fields.RC = profile.Registre.ClassePerso
+			xrp.profiles["TRP2"].fields.AE = profile.Registre.YeuxVisage
 			do
 				local NT = ("%s | %s"):format(profile.Registre.Titre or "", profile.Registre.TitreComplet or ""):match("^[%s|]*(.-)[%s|]*$")
-				xrp.profiles["TRP2"].NT = NT ~= "" and NT or nil
+				xrp.profiles["TRP2"].fields.NT = NT ~= "" and NT or nil
 			end
-			xrp.profiles["TRP2"].AG = profile.Registre.Age
-			xrp.profiles["TRP2"].HH = profile.Registre.Habitation
-			xrp.profiles["TRP2"].HB = profile.Registre.Origine
-			xrp.profiles["TRP2"].AH = trp2_height[profile.Registre.Taille or 3]
-			xrp.profiles["TRP2"].AW = trp2_weight[profile.Registre.Silhouette or 2]
+			xrp.profiles["TRP2"].fields.AG = profile.Registre.Age
+			xrp.profiles["TRP2"].fields.HH = profile.Registre.Habitation
+			xrp.profiles["TRP2"].fields.HB = profile.Registre.Origine
+			xrp.profiles["TRP2"].fields.AH = trp2_height[profile.Registre.Taille or 3]
+			xrp.profiles["TRP2"].fields.AW = trp2_weight[profile.Registre.Silhouette or 2]
 		end
 	end
 end

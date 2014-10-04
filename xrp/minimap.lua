@@ -167,7 +167,10 @@ do
 	local function minimap_UpdateIcon()
 		if xrp.units.target and xrp.units.target.VA then
 			xrp.minimap.icon:SetTexture("Interface\\Icons\\INV_Misc_Book_03")
-		elseif not xrp.current.FC or xrp.current.FC == "0" or xrp.current.FC == "1" then
+			return
+		end
+		local FC = xrp.current.fields.FC
+		if not FC or FC == "0" or FC == "1" then
 			xrp.minimap.icon:SetTexture("Interface\\Icons\\Ability_Malkorok_BlightofYshaarj_Red")
 		else
 			xrp.minimap.icon:SetTexture("Interface\\Icons\\Ability_Malkorok_BlightofYshaarj_Green")
@@ -190,11 +193,11 @@ do
 	local menulist_status = {}
 	do
 		local function minimap_StatusSelect(self, status, arg2, checked)
-			local FC = xrp.selected.FC
+			local FC = xrp.profiles.SELECTED.fields.FC
 			if not checked and (status ~= FC or (not FC and status ~= "0")) then
-				xrp.current.FC = status ~= "0" and status or ""
+				xrp.current.fields.FC = status ~= "0" and status or ""
 			elseif not checked then
-				xrp.current.FC = nil
+				xrp.current.fields.FC = nil
 			end
 			ToggleDropDownMenu(nil, nil, xrp.minimap.menu)
 		end
@@ -230,8 +233,8 @@ do
 
 	do
 		local function minimap_ProfileSelect(self, name, arg2, checked)
-			if not checked then
-				xrp.profiles(name)
+			if not checked and xrp.profiles[name] then
+				xrp.profiles[name]:Activate()
 			end
 			ToggleDropDownMenu(nil, nil, xrp.minimap.menu)
 		end
@@ -242,14 +245,14 @@ do
 					if xrp.units.target and xrp.units.target.VA then
 						xrp:ShowViewerUnit("target")
 					else
-						local FC, FCnil = xrp.current.FC, xrp.selected.FC
+						local FC, FCnil = xrp.current.fields.FC, xrp.profiles.SELECTED.fields.FC
 						local IC, ICnil = FC ~= nil and FC ~= "1" and FC ~= "0", FCnil ~= nil and FCnil ~= "1" and FCnil ~= "0"
 						if FC ~= FCnil and IC ~= ICnil then
-							xrp.current.FC = nil
+							xrp.current.fields.FC = nil
 						elseif IC then
-							xrp.current.FC = "1"
+							xrp.current.fields.FC = "1"
 						else
-							xrp.current.FC = "2"
+							xrp.current.fields.FC = "2"
 						end
 					end
 				elseif button == "RightButton" then
@@ -257,14 +260,14 @@ do
 						self.locked = true
 						GameTooltip:Hide()
 					else
-						local FC = xrp.current.FC or "0"
+						local FC = xrp.current.fields.FC or "0"
 						for _, item in ipairs(menulist_status) do
 							item.checked = FC == item.arg1
 						end
 
 						wipe(menulist_profiles)
 						local selected = xrpSaved.selected
-						for _, name in ipairs(xrp.profiles()) do
+						for _, name in ipairs(xrp.profiles:List()) do
 							menulist_profiles[#menulist_profiles + 1] = { text = name, checked = selected == name, arg1 = name, func = minimap_ProfileSelect, }
 						end
 
@@ -308,30 +311,30 @@ StaticPopupDialogs["XRP_CURRENTLY"] = {
 	hasEditBox = true,
 	OnShow = function(self, data)
 		self.editBox:SetWidth(self.editBox:GetWidth() + 150)
-		self.editBox:SetText(xrp.current.CU or "")
+		self.editBox:SetText(xrp.current.fields.CU or "")
 		self.editBox:HighlightText()
 		self.button1:Disable()
-		if xrp.current.CU == xrp.selected.CU then
+		if not xrp.current.overrides.CU then
 			self.button2:Disable()
 		end
 	end,
 	EditBoxOnTextChanged = function(self, data)
-		if self:GetText() ~= (xrp.current.CU or "") then
+		if self:GetText() ~= (xrp.current.fields.CU or "") then
 			self:GetParent().button1:Enable()
 		else
 			self:GetParent().button1:Disable()
 		end
 	end,
 	OnAccept = function(self, data, data2)
-		xrp.current.CU = self.editBox:GetText()
+		xrp.current.fields.CU = self.editBox:GetText()
 	end,
 	OnCancel = function(self, data, data2) -- Reset button.
-		xrp.current.CU = nil
+		xrp.current.fields.CU = nil
 	end,
 	EditBoxOnEnterPressed = function(self)
 		local parent = self:GetParent()
 		if parent.button1:IsEnabled() then
-			xrp.current.CU = self:GetText()
+			xrp.current.fields.CU = self:GetText()
 			parent:Hide()
 		end
 	end,

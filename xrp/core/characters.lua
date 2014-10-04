@@ -33,7 +33,7 @@ local charsmt = {
 		end
 		local character = self[ck]
 		if character == xrp.toon.withrealm then
-			return xrp.current[field]
+			return xrp.current.fields[field]
 		end
 		-- Any access to a field is treated as an implicit request to fetch
 		-- it (but msp won't do it if it's fresh, and will compile quick,

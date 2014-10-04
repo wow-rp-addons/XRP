@@ -211,9 +211,10 @@ do
 			self:RegisterEvent("PLAYER_LOGOUT")
 		elseif event == "PLAYER_LOGOUT" then
 			do
-				local fields, versions = xrp.current(), {}
+				local current = xrp.current
+				local fields, versions = current:List(), {}
 				for field, _ in pairs(profile) do
-					versions[field] = xrp.versions[field]
+					versions[field] = current.versions[field]
 				end
 				xrpCache[xrp.toon.withrealm] = {
 					fields = fields,
