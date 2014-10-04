@@ -31,9 +31,9 @@ function xrp:NameWithRealm(name, realm)
 		return name
 	elseif realm and realm ~= "" then
 		-- If a realm was provided, use it.
-		return FULL_PLAYER_NAME:format(name, (realm:gsub("%s+", "")))
+		return FULL_PLAYER_NAME:format(name, (realm:gsub("%s*%-*", "")))
 	end
-	return FULL_PLAYER_NAME:format(name, (GetRealmName():gsub("%s+", "")))
+	return FULL_PLAYER_NAME:format(name, (GetRealmName():gsub("%s*%-*", "")))
 end
 
 -- Dumb version of Ambiguate() which always strips.
@@ -44,19 +44,23 @@ function xrp:NameWithoutRealm(name)
 	return name:match(FULL_PLAYER_NAME:format("(.+)", ".+")) or name
 end
 
-function xrp:RealmNameWithSpacing(realm)
-	-- First gsub: spaces lower followed by upper (i.e., Wyrmrest Accord).
-	-- Second gsub: spaces lower followed by digit (i.e., Area 52).
-	-- Third gsub: spaces lower followed by 'of' (i.e., Sisters of Elune).
-	-- TODO: Non-English.
-	-- "(%l)der "
-	-- "(%l)von "
-	-- "(%l)des "
-	-- "(%l)ewige "
-	-- "(%l)du "
-	-- "eé"
-	-- ... Lots for non-English. Should handle some other way?...
-	return (realm:gsub("(%l)(%u)", "%1 %2"):gsub("(%l)(%d)", "%1 %2"):gsub("(%l)of ", "%1 of "))
+do
+	-- Realms just needing title case spacing are handled via gsub. These are
+	-- more complex, such as lower case words, digits, or dashes.
+	--
+	-- L["Translation note!"]: Realm names need to be provided by translators.
+	local realms = {
+		["AltarofStorms"] = "Altar of Storms",
+		["Area52"] = "Area 52",
+		["AzjolNerub"] = "Azjol-Nerub",
+		["ChamberofAspects"] = "Chamber of Aspects",
+		["SistersofElune"] = "Sisters of Elune",
+	}
+
+	function xrp:RealmNameWithSpacing(realm)
+		-- gsub: spaces lower followed by upper (i.e., Wyrmrest Accord).
+		return realms[realm] or (realm:gsub("(%l)(%u)", "%1 %2"))
+	end
 end
 
 function xrp:StripEscapes(text)
