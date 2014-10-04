@@ -136,24 +136,7 @@ do
 	local addonstring = "%s/%s"
 	init:SetScript("OnEvent", function(self, event, addon)
 		if event == "ADDON_LOADED" and addon == "xrp" then
-			local fullversion = addonstring:format(GetAddOnMetadata("xrp", "Title"), xrp.version)
-			for _, addon in ipairs(addons) do
-				local name, title, notes, enabled, loadable, reason = GetAddOnInfo(addon)
-				if enabled or loadable then
-					fullversion = fullversion..";"..addonstring:format(name, GetAddOnMetadata(name, "Version"))
-				end
-			end
-
-			local name = UnitName("player")
-			xrp.toon = {
-				withrealm = xrp:NameWithRealm(name),
-				fields = {
-					NA = name,
-					VA = fullversion,
-					VP = tostring(xrp.msp),
-				},
-				versions = {},
-			}
+			xrp.toon = xrp:NameWithRealm(UnitName("player"))
 
 			for _, func in ipairs(onload) do
 				func()
@@ -163,16 +146,34 @@ do
 			self:UnregisterEvent("ADDON_LOADED")
 			self:RegisterEvent("PLAYER_LOGIN")
 		elseif event == "PLAYER_LOGIN" then
-			local fields = xrp.toon.fields
-			fields.GC = select(2, UnitClassBase("player"))
-			fields.GF = UnitFactionGroup("player")
-			fields.GR = select(2, UnitRace("player"))
-			fields.GS = tostring(UnitSex("player"))
-			fields.GU = UnitGUID("player")
-			local versions = xrp.toon.versions
-			for field, contents in pairs(fields) do
-				versions[field] = contents ~= xrpCache[xrp.toon.withrealm].fields[field] and xrp:NewVersion(field) or xrpSaved.versions[field]
-				xrp:FireEvent("FIELD_UPDATE", field)
+			local newfields
+			do
+				local fullversion = addonstring:format(GetAddOnMetadata("xrp", "Title"), xrp.version)
+				for _, addon in ipairs(addons) do
+					local name, title, notes, enabled, loadable, reason = GetAddOnInfo(addon)
+					if enabled or loadable then
+						fullversion = fullversion..";"..addonstring:format(name, GetAddOnMetadata(name, "Version"))
+					end
+				end
+				local GU = UnitGUID("player")
+				local class, GC, race, GR, GS, name, realm, GF, faction = GetPlayerInfoByGUID(GU), UnitFactionGroup("player")
+				newfields = {
+					GC = GC,
+					GF = GF,
+					GR = GR,
+					GS = tostring(GS),
+					GU = GU,
+					NA = name, -- Fallback NA field.
+					VA = fullversion,
+					VP = tostring(xrp.msp),
+				}
+			end
+			local fields, versions = xrpSaved.meta.fields, xrpSaved.meta.versions
+			for field, contents in pairs(newfields) do
+				if contents ~= fields[field] then
+					fields[field] = contents
+					versions[field] = xrp:NewVersion(field)
+				end
 			end
 
 			if xrp.settings.cachetidy then
@@ -216,7 +217,7 @@ do
 				for field, _ in pairs(profile) do
 					versions[field] = current.versions[field]
 				end
-				xrpCache[xrp.toon.withrealm] = {
+				xrpCache[xrp.toon] = {
 					fields = fields,
 					versions = versions,
 					own = true,
@@ -227,8 +228,8 @@ do
 				func()
 			end
 		elseif event == "NEUTRAL_FACTION_SELECT_RESULT" then
-			xrp.toon.fields.GF = UnitFactionGroup("player")
-			xrp.toon.versions.GF = xrp:NewVersion("GF")
+			xrpSaved.meta.fields.GF = UnitFactionGroup("player")
+			xrpSaved.meta.versions.GF = xrp:NewVersion("GF")
 			xrp:FireEvent("FIELD_UPDATE", "GF")
 			self:UnregisterEvent("NEUTRAL_FACTION_SELECT_RESULT")
 		end
@@ -306,7 +307,7 @@ do
 					},
 					profiles = xrp_profiles,
 					selected = xrp_selectedprofile,
-					toon = {
+					meta = {
 						fields = {},
 						versions = {},
 					},
@@ -331,7 +332,7 @@ do
 						},
 					},
 					selected = xrp.L["Default"],
-					toon = {
+					meta = {
 						fields = {},
 						versions = {},
 					},

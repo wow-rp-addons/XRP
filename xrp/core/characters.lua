@@ -32,7 +32,7 @@ local charsmt = {
 			return nil
 		end
 		local character = self[ck]
-		if character == xrp.toon.withrealm then
+		if character == xrp.toon then
 			return xrp.current.fields[field]
 		end
 		-- Any access to a field is treated as an implicit request to fetch
@@ -44,9 +44,9 @@ local charsmt = {
 			return gcache[character][field]
 		end
 		local request = self[rk]
-		if request and (not gcache[character] or not gcache[character].GF or gcache[character].GF == xrp.toon.fields.GF) then
+		if request and (not gcache[character] or not gcache[character].GF or gcache[character].GF == xrpSaved.meta.fields.GF) then
 			xrp:QueueRequest(character, field, self[sk])
-		elseif request and gcache[character] and gcache[character].GF ~= xrp.toon.fields.GF and gcache[character].GF ~= "Neutral" then
+		elseif request and gcache[character] and gcache[character].GF ~= xrpSaved.meta.fields.GF and gcache[character].GF ~= "Neutral" then
 			xrp:FireEvent("MSP_FAIL", character, "faction")
 		end
 		if xrpCache[character] and xrpCache[character].fields[field] then
@@ -97,7 +97,7 @@ do
 					GS = tostring(GS),
 					GU = GU,
 				}
-				if xrpCache[character] and character ~= xrp.toon.withrealm then
+				if xrpCache[character] and character ~= xrp.toon then
 					for field, contents in pairs(gcache[character]) do
 						-- We DO want to overwrite these, to account for race,
 						-- faction, or sex changes.
@@ -106,7 +106,7 @@ do
 				end
 			elseif not gcache[character].GF then -- GUID won't always get faction.
 				gcache[character].GF = UnitFactionGroup(unit)
-				if xrpCache[character] and character ~= xrp.toon.withrealm then
+				if xrpCache[character] and character ~= xrp.toon then
 					xrpCache[character].fields.GF = gcache[character].GF
 				end
 			end
@@ -170,7 +170,7 @@ do
 					GS = tostring(GS),
 					GU = GU,
 				}
-				if xrpCache[character] and character ~= xrp.toon.withrealm then
+				if xrpCache[character] and character ~= xrp.toon then
 					for field, contents in pairs(gcache[character]) do
 						-- We DO want to overwrite these, to account for race,
 						-- faction, or sex changes.

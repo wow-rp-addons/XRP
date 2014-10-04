@@ -77,7 +77,7 @@ do
 			else
 				-- If they're not offline, they're opposite faction. Same error
 				-- for both.
-				local offline = not (xrp.cache[character].GF and xrp.cache[character].GF ~= xrp.toon.fields.GF)
+				local offline = not (xrp.cache[character].GF and xrp.cache[character].GF ~= xrpSaved.meta.fields.GF)
 				-- 30 second timer between checks for offline characters. Try
 				-- to not query offline characters higher up the chain as well,
 				-- remember.

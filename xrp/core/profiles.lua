@@ -49,8 +49,8 @@ xrp.current = setmetatable({
 				contents = profiles[selected].fields[field]
 			elseif profiles[xrp.profiles[selected].inherits[field]] then
 				contents = profiles[xrp.profiles[selected].inherits[field]].fields[field]
-			elseif xrp.toon.fields[field] then
-				contents = xrp.toon.fields[field]
+			elseif xrpSaved.meta.fields[field] then
+				contents = xrpSaved.meta.fields[field]
 			else
 				return nil
 			end
@@ -67,7 +67,7 @@ xrp.current = setmetatable({
 	versions = setmetatable({}, {
 		__index = function (self, field)
 			local selected = xrpSaved.selected
-			return overrides.versions[field] or profiles[selected].versions[field] or (profiles[xrp.profiles[selected].inherits[field]] and profiles[xrp.profiles[selected].inherits[field]].versions[field]) or xrp.toon.versions[field] or nil
+			return overrides.versions[field] or profiles[selected].versions[field] or (profiles[xrp.profiles[selected].inherits[field]] and profiles[xrp.profiles[selected].inherits[field]].versions[field]) or xrpSaved.meta.versions[field] or nil
 		end,
 		__newindex = nonewindex,
 		__metatable = false,
@@ -81,7 +81,7 @@ xrp.current = setmetatable({
 	}),
 	List = function(self)
 		local out, selected = {}, xrpSaved.selected
-		for field, contents in pairs(xrp.toon.fields) do
+		for field, contents in pairs(xrpSaved.meta.fields) do
 			out[field] = contents
 		end
 		do
