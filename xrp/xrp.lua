@@ -155,13 +155,12 @@ do
 						fullversion = fullversion..";"..addonstring:format(name, GetAddOnMetadata(name, "Version"))
 					end
 				end
-				local GU = UnitGUID("player")
-				local class, GC, race, GR, GS, name, realm, GF, faction = GetPlayerInfoByGUID(GU), UnitFactionGroup("player")
+				local GU, GC, GR, GS, GF, name = UnitGUID("player"), select(2, UnitClassBase("player")), select(2, UnitRace("player")), tostring(UnitSex("player")), UnitFactionGroup("player"), UnitName("player")
 				newfields = {
 					GC = GC,
 					GF = GF,
 					GR = GR,
-					GS = tostring(GS),
+					GS = GS,
 					GU = GU,
 					NA = name, -- Fallback NA field.
 					VA = fullversion,
@@ -284,22 +283,6 @@ do
 					end
 					xrp_defaults = nil
 				end
-				-- Pre-5.4.8.3
-				for name, profile in pairs(xrp_profiles) do
-					if not profile.versions then
-						profile.versions = {}
-						for field, contents in pairs(profile.fields) do
-							profile.versions[field] = xrp:NewVersion(field)
-						end
-					end
-					if not profile.inherits then
-						profile.inherits = profile.defaults or {}
-						profile.defaults = nil
-						if name ~= xrp.L["Default"] then
-							profile.parent = xrp.L["Default"]
-						end
-					end
-				end
 				xrpSaved = {
 					overrides = {
 						fields = {},
@@ -314,6 +297,28 @@ do
 					versions = xrp_versions,
 					dataVersion = 1,
 				}
+				for name, profile in pairs(xrpSaved.profiles) do
+					if not profile.versions then
+						profile.versions = {}
+						for field, contents in pairs(profile.fields) do
+							profile.versions[field] = xrp:NewVersion(field)
+						end
+					end
+					if not profile.inherits then
+						profile.inherits = profile.defaults or {}
+						profile.defaults = nil
+						if name ~= xrp.L["Default"] then
+							profile.parent = xrp.L["Default"]
+						end
+					end
+					if name == "Add" or name == "List" or name == "SELECTED" then
+						xrpSaved.profiles[name.." Renamed"] = profile
+						if xrpSaved.selected == name then
+							xrpSaved.selected = name.." Renamed"
+						end
+						xrpSaved.profiles[name] = nil
+					end
+				end
 				xrp_overrides = nil
 				xrp_profiles = nil
 				xrp_selectedprofile = nil

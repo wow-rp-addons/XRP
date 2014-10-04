@@ -268,7 +268,7 @@ do
 				if not inhs[name] then
 					inhs[name] = setmetatable({ [nk] = name }, inhmt)
 				end
-				return fields[name]
+				return inhs[name]
 			elseif component == "parent" then
 				return profiles[name].parent
 			end
@@ -358,7 +358,7 @@ xrp.profiles = setmetatable({}, {
 		if not profs[name] then
 			profs[name] = setmetatable({ [nk] = name }, profmt)
 		end
-		return profs[profile]
+		return profs[name]
 	end,
 	__newindex = nonewindex,
 	__metatable = false,
