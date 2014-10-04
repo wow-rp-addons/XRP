@@ -21,26 +21,26 @@ function xrp.options.core:okay()
 	settings.weight = UIDropDownMenu_GetSelectedValue(self.AWUnits)
 
 	settings.cachetime = UIDropDownMenu_GetSelectedValue(self.CacheTime)
-	settings.cachetidy = self.CacheAuto:GetChecked() == 1
+	settings.cachetidy = self.CacheAuto:GetChecked()
 
-	settings.minimap.hidett = self.MinimapHideTT:GetChecked() == 1
-	settings.minimap.detached = self.MinimapDetached:GetChecked() == 1
+	settings.minimap.hidett = self.MinimapHideTT:GetChecked()
+	settings.minimap.detached = self.MinimapDetached:GetChecked()
 	xrp.minimap:SetDetached(settings.minimap.detached)
 
-	settings.integration.rightclick = self.IntegrationRightClick:GetChecked() == 1
-	settings.integration.disableinstance = self.IntegrationDisableInstance:GetChecked() == 1
-	settings.integration.disablepvp = self.IntegrationDisablePVP:GetChecked() == 1
-	settings.integration.interact = self.IntegrationInteractBind:GetChecked() == 1
-	settings.integration.replacements = self.IntegrationReplacements:GetChecked() == 1
+	settings.integration.rightclick = self.IntegrationRightClick:GetChecked()
+	settings.integration.disableinstance = self.IntegrationDisableInstance:GetChecked()
+	settings.integration.disablepvp = self.IntegrationDisablePVP:GetChecked()
+	settings.integration.interact = self.IntegrationInteractBind:GetChecked()
+	settings.integration.replacements = self.IntegrationReplacements:GetChecked()
 	do
-		local menus = self.IntegrationMenus:GetChecked() == 1
+		local menus = self.IntegrationMenus:GetChecked()
 		if settings.integration.menus ~= menus then
 			StaticPopup_Show("XRP_OPTIONS_RELOAD")
 		end
 		settings.integration.menus = menus
 	end
 	do
-		local unitmenus = self.IntegrationUnitMenus:GetChecked() == 1
+		local unitmenus = self.IntegrationUnitMenus:GetChecked()
 		if settings.integration.unitmenus ~= unitmenus then
 			StaticPopup_Show("XRP_OPTIONS_RELOAD")
 		end

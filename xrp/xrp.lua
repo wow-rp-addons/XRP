@@ -150,7 +150,7 @@ do
 			do
 				local fullversion = addonstring:format(GetAddOnMetadata("xrp", "Title"), xrp.version)
 				for _, addon in ipairs(addons) do
-					local name, title, notes, enabled, loadable, reason = GetAddOnInfo(addon)
+					local name, title, notes, enabled, reason, secure, loadable = GetAddOnInfo(addon)
 					if enabled or loadable then
 						fullversion = fullversion..";"..addonstring:format(name, GetAddOnMetadata(name, "Version"))
 					end
@@ -183,15 +183,9 @@ do
 				local update = xrp_CompareVersion(xrp.settings.newversion, xrp.version)
 				local now = time()
 				if update == 1 and (not xrp.settings.versionwarning or xrp.settings.versionwarning < now - 72000) then
-					-- TODO 6.0: Replace with C_Timer.After
-					local timer = 0
-					self:SetScript("OnUpdate", function(self, elapsed)
-						timer = timer + elapsed
-						if timer > 8 then
-							print(xrp.L["There is a new version of |cffabd473XRP|r available. You should update to %s as soon as possible."]:format(xrp.settings.newversion))
-							xrp.settings.versionwarning = now
-							self:SetScript("OnUpdate", nil)
-						end
+					C_Timer.After(8, function()
+						print(xrp.L["There is a new version of |cffabd473XRP|r available. You should update to %s as soon as possible."]:format(xrp.settings.newversion))
+						xrp.settings.versionwarning = now
 					end)
 				elseif update == -1 then
 					xrp.settings.newversion = nil
@@ -213,7 +207,7 @@ do
 			do
 				local current = xrp.current
 				local fields, versions = current:List(), {}
-				for field, _ in pairs(profile) do
+				for field, _ in pairs(fields) do
 					versions[field] = current.versions[field]
 				end
 				xrpCache[xrp.toon] = {

@@ -112,6 +112,11 @@ xrp.current = setmetatable({
 }, { __newindex = nonewindex, })
 
 local nk = {}
+local FORBIDDEN_NAMES = {
+	Add = true,
+	List = true,
+	SELECTED = true,
+}
 
 local profmt
 do
@@ -126,7 +131,7 @@ do
 		end,
 		Rename = function(self, newname)
 			local name = self[nk]
-			if type(newname) ~= "string" or type(profiles[newname]) == "table" or type(profiles[name]) ~= "table" then
+			if type(newname) ~= "string" or FORBIDDEN_NAMES[newname] or type(profiles[newname]) == "table" or type(profiles[name]) ~= "table" then
 				return false
 			end
 			-- Rename profile to the nonexistant table provided.
@@ -146,7 +151,7 @@ do
 		end,
 		Copy = function(self, newname)
 			local name = self[nk]
-			if type(newname) ~= "string" or type(profiles[newname]) == "table" or type(profiles[name]) ~= "table" then
+			if type(newname) ~= "string" or FORBIDDEN_NAMES[newname] or type(profiles[newname]) == "table" or type(profiles[name]) ~= "table" then
 				return false
 			end
 			-- Copy profile into the empty table called.
@@ -276,7 +281,7 @@ do
 		end,
 		__newindex = function(self, component, parent)
 			local name = self[nk]
-			if component ~= "parent" or type(parent) ~= "string" or parent == profiles[name].parent then return end
+			if component ~= "parent" or parent == profiles[name].parent then return end
 			-- Walk through the new parentage to make sure there's no looping.
 			local count, inherit = 0, parent
 			while inherit and count < 16 do
@@ -316,14 +321,9 @@ local nonewindex = function() end
 
 local profiles_Functions
 do
-	local forbidden = {
-		Add = true,
-		List = true,
-		SELECTED = true,
-	}
 	profiles_Functions = {
 		Add = function(self, name)
-			if profiles[name] or forbidden[name] then
+			if profiles[name] or FORBIDDEN_NAMES[name] then
 				return false
 			end
 			profiles[name] = {

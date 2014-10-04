@@ -151,7 +151,7 @@
 				<Scripts>
 					<PostClick>
 						local lock = self:GetParent().Lock
-						lock:SetEnabled(self:GetChecked() == 1)
+						lock:SetEnabled(self:GetChecked())
 						lock:SetText(xrp.minimap.locked and UNLOCK or LOCK)
 					</PostClick>
 				</Scripts>
@@ -175,7 +175,7 @@
 				</Anchors>
 				<Scripts>
 					<PostClick>
-						local enable = self:GetChecked() == 1
+						local enable = self:GetChecked()
 						self:GetParent().IntegrationDisableInstance:SetEnabled(enable)
 						self:GetParent().IntegrationDisablePVP:SetEnabled(enable)
 					</PostClick>

@@ -114,7 +114,18 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad function="InputScrollFrame_OnLoad"/>
+			<OnLoad>
+				self.ScrollBar:SetFrameLevel(self.FocusButton:GetFrameLevel() + 2);
+				self.ScrollBar:ClearAllPoints();
+				self.ScrollBar:SetPoint("TOPLEFT", self, "TOPRIGHT", -13, -11);
+				self.ScrollBar:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", -13, 9);
+				self.ScrollBar.ScrollDownButton:SetPoint("TOP", self.ScrollBar, "BOTTOM", 0, 4);
+				self.ScrollBar.ScrollUpButton:SetPoint("BOTTOM", sel.ScrollBar, "TOP", 0, -4);
+				self.ScrollBar.ScrollUpButton:Disable();
+				self.scrollBarHideable = 1;
+				self.ScrollBar:Hide();
+				self.EditBox:SetWidth(self:GetWidth() - 18);
+			</OnLoad>
 		</Scripts>
 		<ScrollChild>
 			<EditBox parentKey="EditBox" multiLine="true" letters="65536" countInvisibleLetters="true" autoFocus="false">

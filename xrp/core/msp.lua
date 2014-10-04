@@ -40,10 +40,8 @@ end
 -- (minimal) public API is contained in xrp. In general even that shouldn't
 -- be interacted with.
 local msp = CreateFrame("Frame")
--- OnUpdate timer.
-msp.timer = 0.08
--- Sending message queue; send queue safety; requested field queue
-msp.send, msp.safe, msp.request = {}, {}, {}
+-- Requested field queue
+msp.request = {}
 -- Session cache. Do NOT make weak.
 msp.cache = setmetatable({}, {
 	__index = function(self, character)
@@ -84,7 +82,6 @@ do
 				if msp.cache[character].nextcheck and offline then
 					msp.cache[character].nextcheck = now + 30
 				end
-				msp.send[character] = nil
 				xrp:FireEvent("MSP_FAIL", character, offline and "offline" or "faction")
 			end
 			return dofilter
@@ -122,79 +119,18 @@ do
 		end
 		self.cache[character].lastsend = GetTime()
 	end
-
-	local function msp_DummyFilter(character)
-		--print("dummy sent")
-		msp_AddFilter(character)
-		if msp.send[character] then
-			--print("queuing next message")
-			msp.send[character].sendtime = GetTime() + msp.send[character].delay
-		end
-	end
-
-	function msp:Dummy(character, response)
-		--print(GetTime()..": Out: "..character..": "..(response and "XD" or "?XD"))
-		ChatThrottleLib:SendAddonMessage("ALERT", "MSP", response and "XD" or "?XD", "WHISPER", character, "XRP-"..character, response and msp_AddFilter or msp_DummyFilter, character)
-		self.cache[character].lastsend = GetTime()
-	end
-end
-
--- TODO 6.0: RIP THIS OUT. HOORAY!!
-function msp:QueueSend(character, data, count)
-	if self.send[character] then
-		for _, request in ipairs(data) do
-			self.send[character].data[#self.send[character].data + 1] = request
-		end
-		if count and count - 1 < self.send[character].count then
-			self.send[character].count = count - 1
-		end
-		return
-	end
-	local now = GetTime()
-	-- Names as units are odd -- same realm MUST NOT have realm attached.
-	local unit = Ambiguate(character, "none")
-	if count == 0 or (self.cache[character].received and now < self.cache[character].lastsend + 60) or UnitInParty(unit) or UnitInRaid(unit) then
-		self:Send(character, data)
-		return
-	end
-	local delay = (count == 1 or self.cache[character].received or now < self.cache[character].lastsend + 60) and (1.000 + ((select(3, GetNetStats())) * 0.001)) or (0.500 + ((select(3, GetNetStats())) * 0.001))
-	self.send[character] = { data = data, count = (count or 2) - 1, delay = delay, sendtime = now + delay }
-	self:Dummy(character)
-	self:Show()
 end
 
 function msp:OnUpdate(elapsed)
-	self.timer = self.timer + elapsed
-	if self.timer < 0.08 then return end
-	self.timer = 0
 	-- This exhausts itself every time it's run. One and done.
 	if next(self.request) then
 		for character, fields in pairs(self.request) do
 			--print(character..": "..fields)
-			xrp:Request(character, fields, self.safe[character])
+			xrp:Request(character, fields)
 			self.request[character] = nil
-			self.safe[character] = nil
 		end
 	end
-	-- This might need to keep running repeatedly.
-	if next(self.send) then
-		for character, message in pairs(self.send) do
-			local now = GetTime()
-			if message.sendtime and message.sendtime <= now and message.count > 0 then
-				message.count = message.count - 1
-				message.sendtime = nil
-				self:Dummy(character)
-			elseif message.sendtime and message.sendtime <= now then
-				self:Send(character, message.data)
-				self.send[character] = nil
-			end
-		end
-	else
-		-- Only if there's nothing left in the send queue.
-		self:Hide()
-		-- Run first framedraw on next show.
-		self.timer = 0.08
-	end
+	self:Hide()
 end
 msp:Hide()
 msp:SetScript("OnUpdate", msp.OnUpdate)
@@ -350,7 +286,7 @@ msp.handlers = {
 			self.cache[character].fieldupdated = nil
 		end
 		if #out > 0 then
-			self:QueueSend(character, out)
+			self:Send(character, out)
 		end
 		-- Cache timer. Last receive marked for clearing old entries.
 		if xrpCache[character] then
@@ -435,31 +371,10 @@ if not disabled then
 			--print(GetTime()..": In: "..character..": "..message:gsub("\1", "\\1"))
 			--print("Receiving from: "..character)
 
-			local received = self.cache[character].received
 			self.cache[character].received = true
 			self.cache[character].nextcheck = nil
 
-			-- Dummy messages, requests and responses, are handled quickly,
-			-- rather than running full processing on them. This also cuts out
-			-- the attempts to send dummy requests when receiving a dummy
-			-- request (to be absolutely certain that the *vital* dummy
-			-- response reaches the other side...).
-			if message == "?XD" then
-				if self.send[character] and not received then
-					self.send[character].count = self.send[character].count - 1
-				end
-				self:Dummy(character, true)
-			elseif message == "XD" then
-				if self.send[character] then
-					self.send[character].sendtime = GetTime()
-					self.send[character].count = 0
-				end
-			else
-				if self.send[character] and not received then
-					self.send[character].count = self.send[character].count - 1
-				end
-				self.handlers[prefix](self, character, message)
-			end
+			self.handlers[prefix](self, character, message)
 		elseif event == "PLAYER_REGEN_DISABLED" then
 			ChatThrottleLib.MAX_CPS = 800
 		elseif event == "PLAYER_REGEN_ENABLED" then
@@ -486,7 +401,7 @@ xrp.fields = {
 	meta = { VA = true, VP = true },
 	-- Dummy fields are used for extra XRP communication, not to be
 	-- user-exposed.
-	dummy = { XC = true, XD = true },
+	dummy = { XC = true },
 	-- 45 seconds for non-TT fields.
 	times = setmetatable({ TT = 15, }, {
 		__index = function(self, field)
@@ -498,7 +413,7 @@ xrp.fields = {
 	}),
 }
 
-function xrp:QueueRequest(character, field, safe)
+function xrp:QueueRequest(character, field)
 	if disabled or character == self.toon or self:NameWithoutRealm(character) == UNKNOWN then return false end
 
 	if not msp.request[character] then
@@ -506,13 +421,12 @@ function xrp:QueueRequest(character, field, safe)
 	end
 
 	msp.request[character][#msp.request[character] + 1] = field
-	msp.safe[character] = (not msp.safe[character] or safe < msp.safe[character]) and safe or msp.safe[character]
 	msp:Show()
 
 	return true
 end
 
-function xrp:Request(character, fields, safe)
+function xrp:Request(character, fields)
 	if disabled or character == self.toon or self:NameWithoutRealm(character) == UNKNOWN then return false end
 
 	local now = GetTime()
@@ -520,7 +434,7 @@ function xrp:Request(character, fields, safe)
 		self:FireEvent("MSP_FAIL", character, "nomsp")
 		return false
 	elseif not msp.cache[character].received then
-		msp.cache[character].nextcheck = now + (safe == 0 and 300 or 30)
+		msp.cache[character].nextcheck = now + 300
 	end
 
 	-- No need to strip repeated fields -- the logic below for not querying
@@ -547,11 +461,7 @@ function xrp:Request(character, fields, safe)
 	end
 	if #out > 0 then
 		--print(character..": "..table.concat(out, " "))
-		if safe == 0 then
-			msp:Send(character, out)
-		else
-			msp:QueueSend(character, out, safe or 2)
-		end
+		msp:Send(character, out)
 		return true
 	end
 	return false

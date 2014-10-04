@@ -101,8 +101,9 @@
 				self.ScrollBar:ClearAllPoints();
 				self.ScrollBar:SetPoint("TOPLEFT", self, "TOPRIGHT", -13, -11);
 				self.ScrollBar:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", -13, 9);
-				_G[self:GetName().."ScrollBarScrollDownButton"]:SetPoint("TOP", self.ScrollBar, "BOTTOM", 0, 4);
-				_G[self:GetName().."ScrollBarScrollUpButton"]:SetPoint("BOTTOM", self.ScrollBar, "TOP", 0, -4);
+				self.ScrollBar.ScrollDownButton:SetPoint("TOP", self.ScrollBar, "BOTTOM", 0, 4);
+				self.ScrollBar.ScrollUpButton:SetPoint("BOTTOM", self.ScrollBar, "TOP", 0, -4);
+				self.ScrollBar.ScrollUpButton:Disable();
 				self.ScrollBarHideable = 1;
 				self.ScrollBar:Hide();
 				self.EditBox:SetWidth(self:GetWidth() - 18);

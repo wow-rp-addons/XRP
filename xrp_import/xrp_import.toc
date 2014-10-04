@@ -1,7 +1,7 @@
-## Interface: 50400
+## Interface: 60000
 ## Title: XRP: Import
 ## Author: Bor of Wyrmrest Accord (US)
-## Version: 5.4.8.2
+## Version: 6.0.2.0_beta1
 ## Notes: Imports character profiles for the current character from MyRolePlay and/or TotalRP2. (You should be able to enable MyRolePlay, TotalRP2, and XRP: Import at the same time to import all your profiles in one shot.)
 ## X-Category: Roleplay
 ## X-License: GPLv3
