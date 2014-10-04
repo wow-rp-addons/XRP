@@ -62,7 +62,6 @@ XRP_GU = L["Toon GUID"]
 
 -- Dummy fields.
 XRP_XC = L["MSP chunks"]
-XRP_XD = L["Dummy field"]
 
 xrp.values = {
 	GC = {

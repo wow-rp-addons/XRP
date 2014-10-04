@@ -15,16 +15,11 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
--- This makes sure the client has the item data cached to allow range checking.
-xrp:HookLogin(function()
-	IsItemInRange(44212, "player")
-end)
-
 local nonewindex = function() end
 local weak = { __mode = "v" }
 local gcache = setmetatable({}, weak)
 
-local ck, rk, sk = {}, {}, {}
+local ck, rk = {}, {}
 
 local charsmt = {
 	__index = function(self, field)
@@ -45,7 +40,7 @@ local charsmt = {
 		end
 		local request = self[rk]
 		if request and (not gcache[character] or not gcache[character].GF or gcache[character].GF == xrpSaved.meta.fields.GF) then
-			xrp:QueueRequest(character, field, self[sk])
+			xrp:QueueRequest(character, field)
 		elseif request and gcache[character] and gcache[character].GF ~= xrpSaved.meta.fields.GF and gcache[character].GF ~= "Neutral" then
 			xrp:FireEvent("MSP_FAIL", character, "faction")
 		end
@@ -66,17 +61,14 @@ do
 				return nil
 			end
 			if not chars[character] then
-				chars[character] = setmetatable({ [ck] = character, [rk] = true, [sk] = 2 }, charsmt)
+				chars[character] = setmetatable({ [ck] = character, [rk] = true }, charsmt)
 			end
 			return chars[character]
 		end,
 		__newindex = nonewindex,
 		__metatable = false,
 	})
-end
 
-do
-	local chars = setmetatable({}, weak)
 	xrp.units = setmetatable({}, {
 		__index = function (self, unit)
 			local character = xrp:UnitNameWithRealm(unit)
@@ -110,28 +102,17 @@ do
 					xrpCache[character].fields.GF = gcache[character].GF
 				end
 			end
-			-- Don't bother with requests to disconnected units.
-			local request = UnitIsConnected(unit) == 1
-			if not request then
-				xrp:FireEvent("MSP_FAIL", character, "offline")
-			end
 			-- Half-unsafe if we're not within 100 yards, or we are stealthed.
 			-- We have their GUID, but they may not have ours.
-			local safe = (IsItemInRange(44212, unit) ~= 1 or IsStealthed()) and 1 or 0
 			if not chars[character] then
-				chars[character] = setmetatable({ [ck] = character, [rk] = request, [sk] = safe }, charsmt)
-			else
-				chars[character][rk] = request
-				chars[character][sk] = safe
+				chars[character] = setmetatable({ [ck] = character, [rk] = true }, charsmt)
 			end
 			return chars[character]
 		end,
 		__newindex = nonewindex,
 		__metatable = false,
 	})
-end
 
-do
 	local race_faction = {
 		Human = "Alliance",
 		Dwarf = "Alliance",
@@ -148,7 +129,6 @@ do
 		Pandaren = nil, -- Can't tell faction.
 	}
 
-	local chars = setmetatable({}, weak)
 	xrp.guids = setmetatable({}, {
 		__index = function (self, GU)
 			-- This will return nil if the GUID hasn't been seen by the client
@@ -179,7 +159,7 @@ do
 				end
 			end
 			if not chars[character] then
-				chars[character] = setmetatable({ [ck] = character, [rk] = true, [sk] = 1 }, charsmt)
+				chars[character] = setmetatable({ [ck] = character, [rk] = true }, charsmt)
 			end
 			return chars[character]
 		end,

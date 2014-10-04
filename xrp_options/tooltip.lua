@@ -24,7 +24,7 @@ do
 
 	function xrp.options.tooltip:okay()
 		for _, tt in ipairs(tooltip_settings) do
-			settings[tt] = self[tt]:GetChecked() == 1
+			settings[tt] = self[tt]:GetChecked()
 		end
 	end
 
@@ -32,7 +32,7 @@ do
 		for _, tt in ipairs(tooltip_settings) do
 			self[tt]:SetChecked(settings[tt])
 		end
-		self.guildindex:SetEnabled(self.guildrank:GetChecked() == 1)
+		self.guildindex:SetEnabled(self.guildrank:GetChecked())
 	end
 end
 

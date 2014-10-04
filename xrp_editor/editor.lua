@@ -26,7 +26,7 @@ do
 		local profile, inherits = xrp.profiles[name].fields, xrp.profiles[name].inherits
 		for field, _ in pairs(supported) do
 			profile[field] = self[field]:GetText()
-			inherits[field] = self.checkboxes[field]:GetChecked() == 1
+			inherits[field] = self.checkboxes[field]:GetChecked()
 		end
 		local parent = self.Parent:GetText()
 		if parent == "" then
@@ -34,7 +34,7 @@ do
 		end
 		xrp.profiles[name].parent = parent
 		if xrp.profiles[name].parent ~= parent then
-			self.Parent:SetText(xrp.profiles[name].parent)
+			self.Parent:SetText(xrp.profiles[name].parent or "")
 		end
 		-- Save and Revert buttons will disable after saving.
 		self:CheckFields()
@@ -74,7 +74,7 @@ do
 		local newparent = parent ~= xrp.profiles[name].parent
 		local changes = newparent
 		for field, _ in pairs(supported) do
-			changes = changes or self[field]:GetText() ~= (profile[field] or "") or (self.checkboxes[field]:GetChecked() == 1) ~= (inherits[field] ~= false)
+			changes = changes or self[field]:GetText() ~= (profile[field] or "") or (self.checkboxes[field]:GetChecked()) ~= (inherits[field] ~= false)
 			if parent then
 				self.checkboxes[field]:Show()
 			else

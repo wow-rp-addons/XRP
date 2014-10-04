@@ -221,14 +221,19 @@ do
 	}
 
 	-- Reverse order or indexes would change.
-	if not select(4, GetAddOnInfo("xrp_options")) then
-		table.remove(minimap_menulist, 7)
-	end
-	if not select(4, GetAddOnInfo("xrp_viewer")) then
-		table.remove(minimap_menulist, 6)
-	end
-	if not select(4, GetAddOnInfo("xrp_editor")) then
-		table.remove(minimap_menulist, 5)
+	do
+		local loaded, reason = select(4, GetAddOnInfo("xrp_options"))
+		if not loaded and reason ~= "DEMAND_LOADED" then
+			table.remove(minimap_menulist, 7)
+		end
+		loaded, reason = select(4, GetAddOnInfo("xrp_viewer"))
+		if not loaded and reason ~= "DEMAND_LOADED" then
+			table.remove(minimap_menulist, 6)
+		end
+		loaded, reason = select(4, GetAddOnInfo("xrp_editor"))
+		if not loaded and reason ~= "DEMAND_LOADED" then
+			table.remove(minimap_menulist, 5)
+		end
 	end
 
 	do

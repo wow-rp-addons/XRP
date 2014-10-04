@@ -1,8 +1,8 @@
-## Interface: 50400
+## Interface: 60000
 ## LoadOnDemand: 1
 ## Title: XRP: Editor
 ## Author: Bor of Wyrmrest Accord (US)
-## Version: 5.4.8.2
+## Version: 6.0.2.0_beta1
 ## Notes: Provides a profile editor, supporting common fields.
 ## X-Category: Roleplay
 ## X-License: GPLv3

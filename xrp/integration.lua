@@ -95,7 +95,7 @@ do
 		-- Following two must be separate for UIErrorsFrame:Clear().
 		self.inparty = self.current and (UnitInParty("mouseover") or UnitInRaid("mouseover"))
 		self.mountable = self.current and UnitVehicleSeatCount("mouseover") > 0
-		if self.current and xrp.units.mouseover.VA and not (self.mountable and self.inparty and IsItemInRange(88589, "mouseover") == 1) then
+		if self.current and xrp.units.mouseover.VA and not (self.mountable and self.inparty and IsItemInRange(88589, "mouseover")) then
 			self:Show()
 		else
 			self:Hide()
@@ -112,7 +112,7 @@ do
 			end
 			local x, y = GetCursorPosition()
 			if x == previousX and y == previousY then return end
-			if self.mountable and self.inparty and IsItemInRange(88589, "mouseover") == 1 then
+			if self.mountable and self.inparty and IsItemInRange(88589, "mouseover") then
 				self:Hide()
 				return
 			end
@@ -122,7 +122,7 @@ do
 		end)
 	end
 	xrp:HookEvent("MSP_RECEIVE", function(name)
-		if settings.rightclick and name == cursor.current and not InCombatLockdown() and not cursor:IsVisible() and not (cursor.mountable and cursor.inparty and IsItemInRange(88589, "mouseover") == 1) then
+		if settings.rightclick and name == cursor.current and not InCombatLockdown() and not cursor:IsVisible() and not (cursor.mountable and cursor.inparty and IsItemInRange(88589, "mouseover")) then
 			cursor:Show()
 		end
 	end)
@@ -138,7 +138,7 @@ end
 hooksecurefunc("InteractUnit", function(unit)
 	if not settings.interact or InCombatLockdown() or UnitCanAttack("player", unit) then return end
 	local mountable = UnitVehicleSeatCount(unit) > 0
-	if mountable and (((UnitInParty(unit) or UnitInRaid(unit)) and IsItemInRange(88589, unit) == 1) or GetCVar("AutoInteract") == "1") then return end
+	if mountable and (((UnitInParty(unit) or UnitInRaid(unit)) and IsItemInRange(88589, unit)) or GetCVar("AutoInteract") == "1") then return end
 	if mountable then
 		UIErrorsFrame:Clear() -- Hides errors on inteactable mount players.
 	end
@@ -176,8 +176,8 @@ end)
 -- Note: Cannot be added to menus which call protected functions without
 -- causing taint problems. This includes all unit menus with a "SET_FOCUS"
 -- button. The menus can be found in Blizzard's UnitPopups.lua.
-UnitPopupButtons["XRP_VIEW_CHARACTER"] = { text = xrp.L["RP Profile"], dist = 0 }
-UnitPopupButtons["XRP_VIEW_UNIT"] = { text = xrp.L["RP Profile"], dist = 0 }
+UnitPopupButtons["XRP_VIEW_CHARACTER"] = { text = xrp.L["Roleplay Profile"], dist = 0 }
+UnitPopupButtons["XRP_VIEW_UNIT"] = { text = xrp.L["Roleplay Profile"], dist = 0 }
 
 hooksecurefunc("UnitPopup_OnClick", function(self)
 	local button = self.value
@@ -190,29 +190,30 @@ end)
 xrp:HookLoad(function()
 	if settings.menus then
 		-- Chat names and some other places.
-		table.insert(UnitPopupMenus["FRIEND"], 3, "XRP_VIEW_CHARACTER")
-		table.insert(UnitPopupMenus["FRIEND_OFFLINE"], 1, "XRP_VIEW_CHARACTER")
+		table.insert(UnitPopupMenus["FRIEND"], 5, "XRP_VIEW_CHARACTER")
+		table.insert(UnitPopupMenus["FRIEND_OFFLINE"], 2, "INTERACT_SUBSECTION_TITLE")
+		table.insert(UnitPopupMenus["FRIEND_OFFLINE"], 3, "XRP_VIEW_CHARACTER")
 		-- Guild list.
-		table.insert(UnitPopupMenus["GUILD"], 3, "XRP_VIEW_CHARACTER")
-		table.insert(UnitPopupMenus["GUILD_OFFLINE"], 2, "XRP_VIEW_CHARACTER")
+		table.insert(UnitPopupMenus["GUILD"], 4, "XRP_VIEW_CHARACTER")
+		table.insert(UnitPopupMenus["GUILD_OFFLINE"], 3, "XRP_VIEW_CHARACTER")
 		-- Chat channel roster.
-		table.insert(UnitPopupMenus["CHAT_ROSTER"], 2, "XRP_VIEW_CHARACTER")
+		table.insert(UnitPopupMenus["CHAT_ROSTER"], 3, "XRP_VIEW_CHARACTER")
 	end
 	if settings.unitmenus then
 		-- Player target/misc.
-		table.insert(UnitPopupMenus["PLAYER"], 5, "XRP_VIEW_UNIT")
-		if UnitPopupMenus["PLAYER"][3] == "SET_FOCUS" then
-			table.remove(UnitPopupMenus["PLAYER"], 3)
+		table.insert(UnitPopupMenus["PLAYER"], 6, "XRP_VIEW_UNIT")
+		if UnitPopupMenus["PLAYER"][2] == "SET_FOCUS" then
+			table.remove(UnitPopupMenus["PLAYER"], 2)
 		end
 		-- Player in party.
-		table.insert(UnitPopupMenus["PARTY"], 13, "XRP_VIEW_UNIT")
-		if UnitPopupMenus["PARTY"][3] == "SET_FOCUS" then
-			table.remove(UnitPopupMenus["PARTY"], 3)
+		table.insert(UnitPopupMenus["PARTY"], 6, "XRP_VIEW_UNIT")
+		if UnitPopupMenus["PARTY"][2] == "SET_FOCUS" then
+			table.remove(UnitPopupMenus["PARTY"], 2)
 		end
 		-- Player in raid.
-		table.insert(UnitPopupMenus["RAID_PLAYER"], 11, "XRP_VIEW_UNIT")
-		if UnitPopupMenus["RAID_PLAYER"][3] == "SET_FOCUS" then
-			table.remove(UnitPopupMenus["RAID_PLAYER"], 3)
+		table.insert(UnitPopupMenus["RAID_PLAYER"], 3, "XRP_VIEW_UNIT")
+		if UnitPopupMenus["RAID_PLAYER"][2] == "SET_FOCUS" then
+			table.remove(UnitPopupMenus["RAID_PLAYER"], 2)
 		end
 	end
 end)
