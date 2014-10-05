@@ -499,7 +499,7 @@ xrp.fields = {
 }
 
 function xrp:QueueRequest(character, field, safe)
-	if disabled or character == self.toon.withrealm or self:NameWithoutRealm(character) == UNKNOWN then return false end
+	if disabled or character == self.toon or self:NameWithoutRealm(character) == UNKNOWN then return false end
 
 	if not msp.request[character] then
 		msp.request[character] = {}
@@ -513,7 +513,7 @@ function xrp:QueueRequest(character, field, safe)
 end
 
 function xrp:Request(character, fields, safe)
-	if disabled or character == self.toon.withrealm or self:NameWithoutRealm(character) == UNKNOWN then return false end
+	if disabled or character == self.toon or self:NameWithoutRealm(character) == UNKNOWN then return false end
 
 	local now = GetTime()
 	if not msp.cache[character].received and now < msp.cache[character].nextcheck then
