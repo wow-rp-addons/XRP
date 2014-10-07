@@ -86,6 +86,7 @@ do
 			["XRP"] = "XRP",
 			["MYROLEPLAY"] = "MRP",
 			["TOTALRP2"] = "TRP2",
+			["TOTALRP3"] = "TRP3",
 			["GNOMTEC_BADGE"] = "GTEC",
 			["FLAGRSP"] = "RSP",
 			["FLAGRSP2"] = "RSP2",
