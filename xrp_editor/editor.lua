@@ -67,6 +67,7 @@ do
 
 	function xrp.editor:CheckFields()
 		local name, parent = self.Profiles:GetText(), self.Parent:GetText()
+		if not xrp.profiles[name] then return end
 		if parent == "" then
 			parent = nil
 		end
