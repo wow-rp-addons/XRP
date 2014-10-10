@@ -50,6 +50,7 @@ StaticPopupDialogs["XRP_EDITOR_ADD"] = {
 				xrp.editor:Load(name)
 			end
 		end
+		parent:Hide()
 	end,
 	EditBoxOnEscapePressed = function(self)
 		self:GetParent():Hide()
@@ -67,13 +68,14 @@ StaticPopupDialogs["XRP_EDITOR_DELETE"] = {
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function(self, data, data2)
+		local name = xrp.editor.Profiles:GetText()
 		if not xrp.profiles[name]:Delete() then
 			StaticPopup_Show("XRP_EDITOR_FAIL", name, L["You cannot remove your active profile."])
 		else
 			xrp.editor:Load(xrpSaved.selected)
 		end
 	end,
-	enterClicksFirstButton = true,
+	enterClicksFirstButton = false,
 	timeout = 0,
 	whileDead = true,
 	hideOnEscape = true,
@@ -112,6 +114,7 @@ StaticPopupDialogs["XRP_EDITOR_RENAME"] = {
 				xrp.editor:Load(name)
 			end
 		end
+		parent:Hide()
 	end,
 	EditBoxOnEscapePressed = function(self)
 		self:GetParent():Hide()
@@ -155,6 +158,7 @@ StaticPopupDialogs["XRP_EDITOR_COPY"] = {
 				xrp.editor:Load(name)
 			end
 		end
+		self:GetParent():Hide()
 	end,
 	EditBoxOnEscapePressed = function(self)
 		self:GetParent():Hide()
