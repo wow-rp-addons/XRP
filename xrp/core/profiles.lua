@@ -123,10 +123,27 @@ do
 	local profile_Functions = {
 		Delete = function(self)
 			local name = self[nk]
-			if name == xrpSaved.selected then
+			local selected = xrpSaved.selected
+			if name == selected then
 				return false
 			end
+			-- Walk through the selected profile's parentage to see if we're in
+			-- the chain anywhere.
+			local isused, count, inherit = name == selected, 0, profiles[selected].parent
+			while inherit and not isused and count < 16 do
+				count = count + 1
+				if inherit == name then
+					isused = true
+				elseif profiles[inherit] and profiles[inherit].parent then
+					inherit = profiles[inherit].parent
+				else
+					inherit = nil
+				end
+			end
 			profiles[name] = nil
+			if isused then
+				xrp:FireEvent("FIELD_UPDATE")
+			end
 			return true
 		end,
 		Rename = function(self, newname)
