@@ -140,6 +140,11 @@ do
 					inherit = nil
 				end
 			end
+			for _, profile in pairs(profiles) do
+				if profile.parent == name then
+					profile.parent = profiles[name].parent or nil
+				end
+			end
 			profiles[name] = nil
 			if isused then
 				xrp:FireEvent("FIELD_UPDATE")
