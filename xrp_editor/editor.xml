@@ -376,10 +376,19 @@
 								UIDropDownMenu_SetWidth(self, 189, 0);
 								function self:SetText(value)
 									UIDropDownMenu_Initialize(self, self.initialize);
-									UIDropDownMenu_SetSelectedValue(self, value);
+									return UIDropDownMenu_SetSelectedValue(self, value);
 								end;
 								function self:GetText()
 									return UIDropDownMenu_GetSelectedValue(self);
+								end;
+								self.text = _G[self:GetName().."Text"];
+								function self:SetTextColor(r, g, b, a)
+									return self.text:SetTextColor(r, g, b, a);
+								end;
+								function self:HasFocus()
+									return false;
+								end;
+								function self:SetCursorPosition()
 								end;
 							</OnLoad>
 						</Scripts>
