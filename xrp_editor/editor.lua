@@ -25,7 +25,7 @@ do
 		local name = self.Profiles:GetText()
 		local profile, inherits = xrp.profiles[name].fields, xrp.profiles[name].inherits
 		for field, _ in pairs(supported) do
-			profile[field] = self[field]:GetText()
+			profile[field] = self[field].inherited and "" or self[field]:GetText()
 			inherits[field] = self.checkboxes[field]:GetChecked()
 		end
 		local parent = self.Parent:GetText()
@@ -47,9 +47,9 @@ do
 		local profile, inherits = xrp.profiles[name].fields, xrp.profiles[name].inherits
 		for field, _ in pairs(supported) do
 			self[field]:SetText(profile[field] or "")
-			if field ~= "FC" then
-				self[field]:SetCursorPosition(0)
-			end
+			self[field]:SetTextColor(1.0, 1.0, 1.0, 1.0)
+			self[field]:SetCursorPosition(0)
+			self[field].inherited = false
 			self.checkboxes[field]:SetChecked(inherits[field] ~= false)
 		end
 
@@ -71,15 +71,32 @@ do
 			parent = nil
 		end
 		local profile, inherits = xrp.profiles[name].fields, xrp.profiles[name].inherits
-		local newparent = parent ~= xrp.profiles[name].parent
-		local changes = newparent
+		local changes = parent ~= xrp.profiles[name].parent
 		for field, _ in pairs(supported) do
-			changes = changes or self[field]:GetText() ~= (profile[field] or "") or (self.checkboxes[field]:GetChecked()) ~= (inherits[field] ~= false)
 			if parent then
 				self.checkboxes[field]:Show()
+				if not self[field]:HasFocus() and (self[field]:GetText() == "" or self[field].inherited) then
+					if self.checkboxes[field]:GetChecked() then
+						self[field].inherited = true
+						self[field]:SetTextColor(0.5, 0.5, 0.5, 1.0)
+						local parentinherit = xrp.profiles[parent].inherits[field]
+						self[field]:SetText(xrp.profiles[parent].fields[field] or (type(parentinherit) == "string" and  parentinherit ~= parent and xrp.profiles[parentinherit].fields[field]) or "")
+						self[field]:SetCursorPosition(0)
+					else
+						self[field]:SetText("")
+						self[field]:SetTextColor(1.0, 1.0, 1.0, 1.0)
+						self[field].inherited = false
+					end
+				end
 			else
 				self.checkboxes[field]:Hide()
+				if self[field].inherited then
+					self[field]:SetText("")
+					self[field]:SetTextColor(1.0, 1.0, 1.0, 1.0)
+					self[field].inherited = false
+				end
 			end
+			changes = changes or (self[field].inherited and profile[field] ~= nil) or (not self[field].inherited and self[field]:GetText() ~= (profile[field] or "")) or (self.checkboxes[field]:GetChecked()) ~= (inherits[field] ~= false)
 		end
 		if changes then
 			self.SaveButton:Enable()
@@ -105,11 +122,13 @@ do
 	local appearance = { "NA", "NI", "NT", "NH", "AE", "RA", "RC", "AH", "AW", "CU" }
 	for key, field in ipairs(appearance) do
 		xrp.editor[field] = xrp.editor.Appearance[field]
+		xrp.editor[field].fieldName = field
 		xrp.editor[field].nextEditBox = xrp.editor.Appearance[appearance[key + 1]] or xrp.editor.Appearance["DE"].EditBox
 		xrp.editor.checkboxes[field] = xrp.editor.Appearance[field.."Default"]
 	end
 	-- EditBox is inside ScrollFrame
 	xrp.editor["DE"] = xrp.editor.Appearance["DE"].EditBox
+	xrp.editor["DE"].fieldName = "DE"
 	xrp.editor["DE"].nextEditBox = xrp.editor.Appearance["NA"]
 	xrp.editor.checkboxes["DE"] = xrp.editor.Appearance["DEDefault"]
 
@@ -124,10 +143,12 @@ do
 		elseif field ~= "FC" then
 			xrp.editor[field].nextEditBox = xrp.editor.Biography[biography[key + 1]]
 		end
+		xrp.editor[field].fieldName = field
 		xrp.editor.checkboxes[field] = xrp.editor.Biography[field.."Default"]
 	end
 	-- EditBox is inside ScrollFrame
 	xrp.editor["HI"] = xrp.editor.Biography["HI"].EditBox
+	xrp.editor["HI"].fieldName = "HI"
 	xrp.editor["HI"].nextEditBox = xrp.editor.Biography["FR"]
 	xrp.editor.checkboxes["HI"] = xrp.editor.Biography["HIDefault"]
 end
@@ -180,6 +201,19 @@ do
 			UIDropDownMenu_AddButton(info)
 		end
 	end)
+end
+
+do
+	local function infofunc(self, arg1, arg2, checked)
+		if not checked or xrp.editor.FC.inherited then
+			UIDropDownMenu_SetSelectedValue(UIDROPDOWNMENU_OPEN_MENU, self.value)
+			if xrp.editor.FC.inherited then
+				xrp.editor.FC.inherited = false
+				xrp.editor.FC:SetTextColor(1.0, 1.0, 1.0, 1.0)
+			end
+			xrp.editor:CheckFields()
+		end
+	end
 
 	local FC = xrp.values.FC
 	UIDropDownMenu_Initialize(xrp.editor.FC, function()

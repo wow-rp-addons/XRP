@@ -41,6 +41,17 @@
 			<OnTextChanged>
 				xrp.editor:CheckFields();
 			</OnTextChanged>
+			<OnEditFocusGained>
+				if self.inherited then
+					self:SetText("");
+					self:SetTextColor(1.0, 1.0, 1.0, 1.0);
+					self.inherited = false;
+				end;
+			</OnEditFocusGained>
+			<OnEditFocusLost>
+				self:ClearFocus();
+				xrp.editor:CheckFields();
+			</OnEditFocusLost>
 		</Scripts>
 		<FontString inherits="GameFontWhite"/>
 	</EditBox>
@@ -120,7 +131,7 @@
 				self.ScrollBar:SetPoint("TOPLEFT", self, "TOPRIGHT", -13, -11);
 				self.ScrollBar:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", -13, 9);
 				self.ScrollBar.ScrollDownButton:SetPoint("TOP", self.ScrollBar, "BOTTOM", 0, 4);
-				self.ScrollBar.ScrollUpButton:SetPoint("BOTTOM", sel.ScrollBar, "TOP", 0, -4);
+				self.ScrollBar.ScrollUpButton:SetPoint("BOTTOM", self.ScrollBar, "TOP", 0, -4);
 				self.ScrollBar.ScrollUpButton:Disable();
 				self.scrollBarHideable = 1;
 				self.ScrollBar:Hide();
@@ -155,9 +166,15 @@
 						 this.-->
 					<OnEditFocusGained>
 						self:GetParent().FocusButton:Hide();
+						if self.inherited then
+							self:SetText("");
+							self:SetTextColor(1.0, 1.0, 1.0, 1.0);
+							self.inherited = false;
+						end;
 					</OnEditFocusGained>
 					<OnEditFocusLost>
 						self:GetParent().FocusButton:Show();
+						xrp.editor:CheckFields();
 					</OnEditFocusLost>
 				</Scripts>
 				<FontString inherits="GameFontWhite"/>
