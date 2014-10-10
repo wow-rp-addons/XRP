@@ -1,43 +1,60 @@
-5.4.8.2 (2014-08-31):
+6.0.2.0_beta1 (2014-10-10):
 
-	- NEW: Roleplay class field. This adds the ability to provide a different
-	  class name for roleplay purposes (such as "Assassin" rather than
-	  "Rogue"), including in the viewer and tooltip.
+	- THIS RELEASE IS FOR 6.0 ONLY. IT CANNOT BE USED ON 5.4.8 (LIVE).
 
-		- The custom class in the tooltip will be colored with the player's
-		  in-game class color (i.e., druid orange, hunter green, etc.) for
-		  easy recognition.
+	- This is an unstable release for use on beta and PTR. Please don't use it
+	  on live 6.0 servers (a stable release should be up the morning of
+	  October the 14th).
 
-		- This is currently only visible to other users of XRP 5.4.8.2 or
-		  later.
+	- This version is compatible with 6.0. Changes have been made where
+	  needed, and an ugly workaround has been removed due to bugs being fixed.
+	  Hooray!
 
-	- NEW: Copyable URLs in profiles. In profiles, URLs will now be highlighted
-	  epic purple and surrounded by square brackets. Clicking will provide
-	  a popup dialog box where the URL may be copied from.
+	- Profile parenting/inheritance has been vastly improved. Instead of
+	  inheritance from "Default", any profile can be used as a parent profile,
+	  inheriting select fields from that parent (or parents of parents, to a
+	  maximum depth of 16).
 
-	- NEW: An option to show the numerical guild rank as well as the rank
-	  name in tooltips has been added. The number starts at 1 (guild master)
-	  and may have a maximum value of 9 (lowest rank).
+		- The editor now shows what will be in your public profile when
+		  editing. Inherited values are shown in grey text.
 
-		- NOTE: Not all guilds make use of rank levels in the same manner --
-		  this is only available as a general indication of guild structure,
-		  and not a canonical indication of officers, initiates, or any other
-		  rank. The only rank that can be absolutely determined is the guild
-		  master (1).
+		- The "Default" profile is no longer treated specially and may be
+		  renamed or removed at will (so long as it is not your active
+		  profile).
 
-	- NEW: An option to disable the right-click profile viewing while inside
-	  any sort of instance (raid, dungeon, arena, or battleground) has been
-	  added.
+	- An option to disable right-click profile viewing while PvP flagged has
+	  been added.
 
 	- Bugfixes:
 
-		- Some odd interactions between click-to-move (a.k.a. autointeract)
-		  and right-click/interact keybind profile viewing have been fixed.
+		- Pressing enter or escape in popups with text boxes will now behave
+		  in a more useful manner.
 
-		- The minimap button, while detached, now cannot end up hidden by
-		  being moved offscreen somehow.
+		- A display issue with player-imitating NPCs (such as in Proving
+		  Grounds) in the tooltip has been fixed.
+
+		- Potential bugs involving the Azjol-Nerub realm have been fixed.
 
 	- Miscellaneous:
 
-		- The editor will now generally load your currently-selected profile
-		  when shown, unless there are unsaved changes to an opened profile.
+		- bit.ly URLs without http:// or https:// will should link properly in
+		  profiles.
+
+		- For the purposes of disabling right-click profile viewing, active
+		  world PvP zones (i.e., Tol Barad or Wintergrasp while a battle is
+		  in-progress) are now considered instances.
+
+		- Persistent versioning of fields has been added. This may slightly
+		  reduce bandwidth consumption in the case of rapid profile changes.
+
+		- Stripping of certain types of punctuation surrounding names in
+		  chat has been removed. It's difficult to handle properly and tends
+		  to produce inconsistent results too often.
+
+		- The warning about lengthy profiles has been removed (profile storage
+		  changes made the warning unreliable). It may be re-added in another
+		  form at a later release.
+
+		- The XRP profile API has changed substantially. The documentation has
+		  been removed from the addon distriubtion, but will be posted and
+		  linked from the project page at a later date.
