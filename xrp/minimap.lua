@@ -165,7 +165,7 @@ end
 
 do
 	local function minimap_UpdateIcon()
-		if xrp.units.target and xrp.units.target.VA then
+		if xrp.units.target and xrp.units.target.fields.VA then
 			xrp.minimap.icon:SetTexture("Interface\\Icons\\INV_Misc_Book_03")
 			return
 		end
@@ -247,7 +247,7 @@ do
 		xrp.minimap:SetScript("OnClick", function(self, button, down)
 			if not down then
 				if button == "LeftButton" then
-					if xrp.units.target and xrp.units.target.VA then
+					if xrp.units.target and xrp.units.target.fields.VA then
 						xrp:ShowViewerUnit("target")
 					else
 						local FC, FCnil = xrp.current.fields.FC, xrp.profiles.SELECTED.fields.FC

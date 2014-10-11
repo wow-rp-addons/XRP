@@ -20,50 +20,95 @@ local weak = { __mode = "v" }
 local gcache = setmetatable({}, weak)
 
 local ck, rk = {}, {}
+local character_mt
 
-local charsmt = {
-	__index = function(self, field)
-		if xrp.fields.dummy[field] or not field:find("^%u%u$") then
-			return nil
-		end
-		local character = self[ck]
-		if character == xrp.toon then
-			return xrp.current.fields[field]
-		end
-		-- Any access to a field is treated as an implicit request to fetch
-		-- it (but msp won't do it if it's fresh, and will compile quick,
-		-- successive requests into one go). Also try avoiding requests when
-		-- we absolutely know they will fail. Never request data we already
-		-- have, and know is good.
-		if gcache[character] and gcache[character][field] then
-			return gcache[character][field]
-		end
-		local request = self[rk]
-		if request and (not gcache[character] or not gcache[character].GF or gcache[character].GF == xrp.current.fields.GF) then
-			xrp:QueueRequest(character, field)
-		elseif request and gcache[character] and gcache[character].GF ~= xrp.current.fields.GF and gcache[character].GF ~= "Neutral" then
-			xrp:FireEvent("MSP_FAIL", character, "faction")
-		end
-		if xrpCache[character] and xrpCache[character].fields[field] then
-			return xrpCache[character].fields[field]
-		end
-		return nil
-	end,
-	__newindex = nonewindex,
-	__metatable = false,
-}
 do
-	local chars = setmetatable({}, weak)
+	local fields_mt = {
+		__index = function(self, field)
+			if xrp.fields.dummy[field] or not field:find("^%u%u$") then
+				return nil
+			end
+			local character = self[ck]
+			if character == xrp.toon then
+				return xrp.current.fields[field]
+			end
+			-- Any access to a field is treated as an implicit request to fetch
+			-- it (but msp won't do it if it's fresh, and will compile quick,
+			-- successive requests into one go). Also try avoiding requests
+			-- when we absolutely know they will fail. Never request data we
+			-- already have, and know is good.
+			if gcache[character] and gcache[character][field] then
+				return gcache[character][field]
+			end
+			local request = self[rk]
+			if request and (not gcache[character] or not gcache[character].GF or gcache[character].GF == "Neutral" or gcache[character].GF == xrp.current.fields.GF) then
+				xrp:QueueRequest(character, field)
+			elseif request and gcache[character] and gcache[character].GF ~= xrp.current.fields.GF then
+				xrp:FireEvent("MSP_FAIL", character, "faction")
+			end
+			if xrpCache[character] and xrpCache[character].fields[field] then
+				return xrpCache[character].fields[field]
+			end
+			return nil
+		end,
+		__newindex = nonewindex,
+		__metatable = false,
+	}
+
+	character_mt = {
+		__index = function(self, component)
+			local character = self[ck]
+			if component == "fields" then
+				rawset(self, "fields", setmetatable({ [ck] = character, [rk] = self[rk] }, fields_mt))
+				return self.fields
+			elseif component == "bookmark" then
+				if not xrpCache[character] then
+					return nil
+				end
+				return xrpCache[character].own and 0 or xrpCache[character].bookmark
+			elseif component == "hide" then
+				if not xrpCache[character] then
+					return nil
+				end
+				return xrpCache[character].hide
+			end
+		end,
+		__newindex = function(self, component, value)
+			if component ~= "bookmark" and component ~= "hide" then return end
+			local character = self[ck]
+			if not xrpCache[character] then
+				return nil
+			end
+			if component == "bookmark" then
+				if value and not xrpCache[character].bookmark then
+					xrpCache[character].bookmark = time()
+				elseif not value and xrpCache[character].bookmark then
+					xrpCache[character].bookmark = nil
+				end
+			elseif component == "hide" then
+				if value and not xrpCache[character].hide then
+					xrpCache[character].hide = true
+				elseif not value and xrpCache[character].hide then
+					xrpCache[character].hide = nil
+				end
+			end
+		end,
+		__metatable = false,
+	}
+end
+
+do
+	local characters = setmetatable({}, weak)
 	xrp.characters = setmetatable({}, {
 		__index = function(self, character)
 			character = xrp:NameWithRealm(character)
 			if not character then
 				return nil
 			end
-			if not chars[character] then
-				chars[character] = setmetatable({ [ck] = character, [rk] = true }, charsmt)
+			if not characters[character] then
+				characters[character] = setmetatable({ [ck] = character, [rk] = true }, character_mt)
 			end
-			return chars[character]
+			return characters[character]
 		end,
 		__newindex = nonewindex,
 		__metatable = false,
@@ -102,12 +147,10 @@ do
 					xrpCache[character].fields.GF = gcache[character].GF
 				end
 			end
-			-- Half-unsafe if we're not within 100 yards, or we are stealthed.
-			-- We have their GUID, but they may not have ours.
-			if not chars[character] then
-				chars[character] = setmetatable({ [ck] = character, [rk] = true }, charsmt)
+			if not characters[character] then
+				characters[character] = setmetatable({ [ck] = character, [rk] = true }, character_mt)
 			end
-			return chars[character]
+			return characters[character]
 		end,
 		__newindex = nonewindex,
 		__metatable = false,
@@ -158,10 +201,10 @@ do
 					end
 				end
 			end
-			if not chars[character] then
-				chars[character] = setmetatable({ [ck] = character, [rk] = true }, charsmt)
+			if not characters[character] then
+				characters[character] = setmetatable({ [ck] = character, [rk] = true }, character_mt)
 			end
-			return chars[character]
+			return characters[character]
 		end,
 		__newindex = nonewindex,
 		__metatable = false,
@@ -169,17 +212,17 @@ do
 end
 
 do
-	local chars = setmetatable({}, weak)
+	local characters = setmetatable({}, weak)
 	xrp.cache = setmetatable({}, {
 		__index = function(self, character)
 			if not character or character == "" then
 				return nil
 			end
 			character = xrp:NameWithRealm(character)
-			if not chars[character] then
-				chars[character] = setmetatable({ [ck] = character, [rk] = false }, charsmt)
+			if not characters[character] then
+				characters[character] = setmetatable({ [ck] = character, [rk] = false }, character_mt)
 			end
-			return chars[character]
+			return characters[character]
 		end,
 		__newindex = nonewindex,
 		__call = function(self)
@@ -193,25 +236,3 @@ do
 		__metatable = false,
 	})
 end
-
-xrp.bookmarks = setmetatable({}, {
-	__index = function (self, character)
-		character = xrp:NameWithRealm(character)
-		if not character or not xrpCache[character] then
-			return nil
-		end
-		return xrpCache[character].own and 0 or xrpCache[character].bookmark
-	end,
-	__newindex = function(self, character, bookmark)
-		character = xrp:NameWithRealm(character)
-		if not character or not xrpCache[character] then
-			return nil
-		end
-		if bookmark and not xrpCache[character].bookmark then
-			xrpCache[character].bookmark = time()
-		elseif not bookmark and xrpCache[character].bookmark then
-			xrpCache[character].bookmark = nil
-		end
-	end,
-	__metatable = false,
-})

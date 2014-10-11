@@ -52,8 +52,8 @@ do
 		for _, field in ipairs(display) do
 			self:SetField(field, character[field] or (field == "RA" and xrp.values.GR[character.GR]) or (field == "RC" and xrp.values.GC[character.GC]) or nil)
 		end
-		self.Bookmark:SetChecked(xrp.bookmarks[current] ~= nil)
-		if xrp.bookmarks[current] == 0 then
+		self.Bookmark:SetChecked(xrp.characters[current].bookmark ~= nil)
+		if xrp.characters[current].bookmark == 0 then
 			-- Own character, disable checkbox.
 			self.Bookmark:Disable()
 		else
@@ -68,9 +68,9 @@ do
 	xrp:HookEvent("MSP_FIELD", function(name, field)
 		if current == name and supported[field] then
 			--print("Trying to set: "..field.." for "..name..".")
-			xrp.viewer:SetField(field, xrp.characters[name][field])
+			xrp.viewer:SetField(field, xrp.characters[name].fields[field])
 		elseif current == name and (field == "GR" and not xrp.cache[name].RA) or (field == "GC" and not xrp.cache[name].RC) then
-			xrp.viewer:SetField((field == "GR" and "RA") or (field == "GC" and "RC"), (field == "GR" and xrp.values.GR[xrp.characters[name].GR]) or (field == "GC" and xrp.values.GC[xrp.characters[name].GC]) or nil)
+			xrp.viewer:SetField((field == "GR" and "RA") or (field == "GC" and "RC"), (field == "GR" and xrp.values.GR[xrp.characters[name].fields.GR]) or (field == "GC" and xrp.values.GC[xrp.characters[name].fields.GC]) or nil)
 		end
 	end)
 end
@@ -82,7 +82,7 @@ function xrp.viewer:ViewUnit(unit)
 	current = xrp:UnitNameWithRealm(unit)
 	failed = nil
 	self.XC:SetText("")
-	self:Load(xrp.units[unit])
+	self:Load(xrp.units[unit].fields)
 	SetPortraitTexture(self.portrait, unit)
 	ShowUIPanel(self)
 	if not self.Appearance:IsVisible() then
@@ -101,9 +101,9 @@ function xrp.viewer:ViewCharacter(name)
 	current = name
 	failed = nil
 	self.XC:SetText("")
-	self:Load(xrp.characters[name])
+	self:Load(xrp.characters[name].fields)
 	do
-		local GF = xrp.characters[name].GF
+		local GF = xrp.characters[name].fields.GF
 		SetPortraitToTexture(self.portrait, GF and ((GF == "Alliance" and "Interface\\Icons\\INV_BannerPVP_02") or (GF == "Horde" and "Interface\\Icons\\INV_BannerPVP_01")) or "Interface\\Icons\\INV_Misc_Book_17")
 	end
 	ShowUIPanel(self)
@@ -120,7 +120,7 @@ xrp:HookEvent("MSP_RECEIVE", function(name)
 		if failed == name then
 			failed = nil
 			xrp.viewer.XC:SetText("")
-			xrp.viewer:Load(xrp.characters[name])
+			xrp.viewer:Load(xrp.characters[name].fields)
 		else
 			xrp.viewer.XC:SetText(L["Received!"])
 		end
@@ -132,7 +132,7 @@ xrp:HookEvent("MSP_NOCHANGE", function(name)
 		if failed == name then
 			failed = nil
 			xrp.viewer.XC:SetText("")
-			xrp.viewer:Load(xrp.characters[name])
+			xrp.viewer:Load(xrp.characters[name].fields)
 		else
 			local XC = xrp.viewer.XC:GetText()
 			if not XC or XC:find("^Receiving") then
@@ -168,13 +168,13 @@ end)
 
 xrp.viewer.Bookmark:SetScript("OnClick", function(self, button, down)
 	if not down then
-		if xrp.bookmarks[current] then
-			xrp.bookmarks[current] = false
+		if xrp.characters[current].bookmark then
+			xrp.characters[current].bookmark = false
 			GameTooltip:SetOwner(self, "ANCHOR_CURSOR")
 			GameTooltip:SetText(xrp.L["Bookmark"])
 			GameTooltip:Show()
 		else
-			xrp.bookmarks[current] = true
+			xrp.character[current].bookmark = true
 			GameTooltip:SetOwner(self, "ANCHOR_CURSOR")
 			GameTooltip:SetText(xrp.L["Unbookmark"])
 			GameTooltip:Show()

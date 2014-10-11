@@ -108,12 +108,13 @@ xrp:HookLogin(function()
 			event = event.."_"..arg9:match("^([^%s]+).*"):upper()
 		end
 
-		local name = settings[event] and arg12 and xrp:StripEscapes(xrp.guids[arg12].NA) or Ambiguate(arg2, "guild")
+		local character = arg12 and xrp.guids[arg12] or nil
+		local name = settings[event] and character and not character.hide and xrp:StripEscapes(character.fields.NA) or Ambiguate(arg2, "guild")
 		local nameformat = ((event == "CHAT_MSG_EMOTE" or event == "CHAT_MSG_TEXT_EMOTE") and settings.emotebraced and "[%s]" or "%s")..(event == "CHAT_MSG_EMOTE" and arg9 or "")
 
 		local info = ChatTypeInfo[chattype]
 		if info and info.colorNameByClass and arg12 then
-			local color = RAID_CLASS_COLORS[xrp.guids[arg12].GC]
+			local color = RAID_CLASS_COLORS[character.fields.GC]
 			if color and color.colorStr then
 				return nameformat:format(("|c%s%s|r"):format(color.colorStr, name))
 			end

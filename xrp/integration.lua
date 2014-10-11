@@ -95,7 +95,7 @@ do
 		-- Following two must be separate for UIErrorsFrame:Clear().
 		self.inparty = self.current and (UnitInParty("mouseover") or UnitInRaid("mouseover"))
 		self.mountable = self.current and UnitVehicleSeatCount("mouseover") > 0
-		if self.current and xrp.units.mouseover.VA and not (self.mountable and self.inparty and IsItemInRange(88589, "mouseover")) then
+		if self.current and xrp.units.mouseover.fields.VA and not (self.mountable and self.inparty and IsItemInRange(88589, "mouseover")) then
 			self:Show()
 		else
 			self:Hide()
@@ -156,10 +156,10 @@ hooksecurefunc("ChatEdit_ParseText", function(line, send)
 		local oldtext = line:GetText()
 		local text = oldtext
 		if text:find("%xt", nil, true) then
-			text = text:gsub("%%xt", UnitExists("target") and (xrp.units.target and xrp.units.target.NA or UnitName("target")) or xrp.L["nobody"])
+			text = text:gsub("%%xt", UnitExists("target") and (xrp.units.target and xrp.units.target.fields.NA or UnitName("target")) or xrp.L["nobody"])
 		end
 		if text:find("%xf", nil, true) then
-			text = text:gsub("%%xf", UnitExists("focus") and (xrp.units.focus and xrp.units.focus.NA or UnitName("focus")) or xrp.L["nobody"])
+			text = text:gsub("%%xf", UnitExists("focus") and (xrp.units.focus and xrp.units.focus.fields.NA or UnitName("focus")) or xrp.L["nobody"])
 		end
 		if text ~= oldtext then
 			line:SetText(text)
