@@ -90,6 +90,7 @@ do
 			["GNOMTEC_BADGE"] = "GTEC",
 			["FLAGRSP"] = "RSP",
 			["FLAGRSP2"] = "RSP2",
+			["HIDDEN"] = "Hidden",
 		}
 		local extra_addons = {
 			["GHI"] = "GHI",
@@ -151,9 +152,12 @@ do
 		end
 	end
 
+	local hidden = { VA = "Hidden/0" }
+
 	function tooltip_RenderTooltip(character)
 		oldlines = GameTooltip:NumLines()
 		numline = 0
+		character = character.hide and hidden or character.fields
 
 		if cu.type == "player" then
 
@@ -233,7 +237,7 @@ do
 		neutral = "ffe6b300",
 		hostile = "ffcc4d38",
 	}
-	local unknown = {}
+	local unknown = { fields = {} }
 
 	function tooltip_SetPlayerUnit(unit)
 		cu.name = xrp:UnitNameWithRealm(unit)

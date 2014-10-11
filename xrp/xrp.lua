@@ -367,7 +367,12 @@ function xrp:CacheTidy(timer)
 			-- Pre-5.4.8.0_beta5.
 			data.lastreceive = now
 		elseif not data.bookmark and (not data.own and data.lastreceive < before or data.lastreceive < beforeown) then
-			xrpCache[character] = nil
+			if data.hide == nil then
+				xrpCache[character] = nil
+			else
+				xrpCache[character].fields = {}
+				xrpCache[character].versions = {}
+			end
 		end
 	end
 	if timer <= 300 then
