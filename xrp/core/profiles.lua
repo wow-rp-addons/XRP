@@ -38,6 +38,8 @@ function xrp:NewVersion(field)
 	return xrpSaved.versions[field]
 end
 
+local nonewindex = function() end
+
 xrp.current = setmetatable({
 	fields = setmetatable({}, {
 		__index = function(self, field)
@@ -118,7 +120,7 @@ local FORBIDDEN_NAMES = {
 	SELECTED = true,
 }
 
-local profmt
+local profile_mt
 do
 	local profile_Functions = {
 		Delete = function(self)
@@ -216,7 +218,7 @@ do
 		end,
 	}
 
-	local fldmt = {
+	local fields_mt = {
 		__index = function(self, field)
 			if xrp.fields.unit[field] or xrp.fields.meta[field] or xrp.fields.dummy[field] or not field:find("^%u%u$") then
 				return nil
@@ -228,9 +230,10 @@ do
 			local name = self[nk]
 			contents = type(contents) == "string" and contents ~= "" and contents or nil
 			if profiles[name] and profiles[name].fields[field] ~= contents then
+				local isused = name == xrp.profiles[xrpSaved.selected].inherits[field]
 				profiles[name].fields[field] = contents
 				profiles[name].versions[field] = contents ~= nil and xrp:NewVersion(field) or nil
-				if name == xrp.profiles[xrpSaved.selected].inherits[field] then
+				if isused or name == xrp.profiles[xrpSaved.selected].inherits[field] then
 					xrp:FireEvent("FIELD_UPDATE", field)
 				end
 			end
@@ -238,7 +241,7 @@ do
 		__metatable = false,
 	}
 
-	local inhmt = {
+	local inherits_mt = {
 		__index = function(self, field)
 			local name = self[nk]
 			if xrp.fields.unit[field] or xrp.fields.meta[field] or xrp.fields.dummy[field] or not field:find("^%u%u$") or profiles[name].inherits[field] == false then
@@ -275,10 +278,7 @@ do
 		__metatable = false,
 	}
 
-	local flds = setmetatable({}, { __mode = "v" })
-	local inhs = setmetatable({}, { __mode = "v" })
-
-	profmt = {
+	profile_mt = {
 		__index = function(self, component)
 			local name = self[nk]
 			if not profiles[name] then
@@ -287,25 +287,21 @@ do
 			if profile_Functions[component] then
 				return profile_Functions[component]
 			elseif component == "fields" then
-				if not flds[name] then
-					flds[name] = setmetatable({ [nk] = name }, fldmt)
-				end
-				return flds[name]
+				rawset(self, "fields", setmetatable({ [nk] = name }, fields_mt))
+				return self.fields
 			elseif component == "inherits" then
-				if not inhs[name] then
-					inhs[name] = setmetatable({ [nk] = name }, inhmt)
-				end
-				return inhs[name]
+				rawset(self, "inherits", setmetatable({ [nk] = name }, inherits_mt))
+				return self.inherits
 			elseif component == "parent" then
 				return profiles[name].parent
 			end
 			return nil
 		end,
-		__newindex = function(self, component, parent)
+		__newindex = function(self, component, value)
 			local name = self[nk]
-			if component ~= "parent" or parent == profiles[name].parent then return end
+			if component ~= "parent" or value == profiles[name].parent then return end
 			-- Walk through the new parentage to make sure there's no looping.
-			local count, inherit = 0, parent
+			local count, inherit = 0, value
 			while inherit and count < 16 do
 				if inherit == name then return end
 				count = count + 1
@@ -330,7 +326,7 @@ do
 					inherit = nil
 				end
 			end
-			profiles[name].parent = parent
+			profiles[name].parent = value
 			if isused then
 				xrp:FireEvent("FIELD_UPDATE")
 			end
@@ -338,8 +334,6 @@ do
 		__metatable = false,
 	}
 end
-
-local nonewindex = function() end
 
 local profiles_Functions
 do
@@ -378,7 +372,7 @@ xrp.profiles = setmetatable({}, {
 			return nil
 		end
 		if not profs[name] then
-			profs[name] = setmetatable({ [nk] = name }, profmt)
+			profs[name] = setmetatable({ [nk] = name }, profile_mt)
 		end
 		return profs[name]
 	end,

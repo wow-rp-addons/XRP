@@ -182,7 +182,7 @@ do
 			if xrp.settings.newversion then
 				local update = xrp_CompareVersion(xrp.settings.newversion, xrp.version)
 				local now = time()
-				if update == 1 and (not xrp.settings.versionwarning or xrp.settings.versionwarning < now - 72000) then
+				if update == 1 and (not xrp.settings.versionwarning or xrp.settings.versionwarning < now - 21600) then
 					C_Timer.After(8, function()
 						print(xrp.L["There is a new version of |cffabd473XRP|r available. You should update to %s as soon as possible."]:format(xrp.settings.newversion))
 						xrp.settings.versionwarning = now
@@ -204,6 +204,9 @@ do
 			end
 			self:RegisterEvent("PLAYER_LOGOUT")
 		elseif event == "PLAYER_LOGOUT" then
+			-- Note: This code must be thoroughly tested if any changes are
+			-- made. If there are any errors in here, they are not visible in
+			-- any manner in-game.
 			do
 				local current = xrp.current
 				local fields, versions = current:List(), {}
@@ -239,7 +242,7 @@ do
 	}
 	xrp:HookLoad(function()
 		if not xrpCache then
-			if xrp_cache then
+			if type(xrp_cache) == "table" then
 				xrpCache = xrp_cache
 				xrp_cache = nil
 			else
@@ -247,7 +250,7 @@ do
 			end
 		end
 		if not xrpAccountSaved then
-			if xrp_settings then
+			if type(xrp_settings) == "table" then
 				-- Pre-5.4.8.0_rc3.
 				if type(xrp_settings.defaults == "table") then
 					xrp_settings.defaults = nil
@@ -263,9 +266,9 @@ do
 			end
 		end
 		if not xrpSaved then
-			if xrp_profiles then
+			if type(xrp_profiles) == "table" then
 				-- Pre-5.4.8.0_rc6.
-				if xrp_defaults ~= nil then
+				if type(xrp_defaults) == "table" then
 					for profile, contents in pairs(xrp_profiles) do
 						if type(contents) == "table" then
 							xrp_profiles[profile] = {
@@ -288,17 +291,17 @@ do
 						fields = {},
 						versions = {},
 					},
-					versions = xrp_versions,
+					versions = xrp_versions or {},
 					dataVersion = 1,
 				}
 				for name, profile in pairs(xrpSaved.profiles) do
-					if not profile.versions then
+					if type(profile.versions) ~= "table" then
 						profile.versions = {}
 						for field, contents in pairs(profile.fields) do
 							profile.versions[field] = xrp:NewVersion(field)
 						end
 					end
-					if not profile.inherits then
+					if type(profile.inherits) ~= "table" then
 						profile.inherits = profile.defaults or {}
 						profile.defaults = nil
 						if name ~= xrp.L["Default"] then
@@ -367,7 +370,7 @@ function xrp:CacheTidy(timer)
 			xrpCache[character] = nil
 		end
 	end
-	if timer <= 60 then
+	if timer <= 300 then
 		-- Explicitly collect garbage, as there may be a hell of a lot of it
 		-- (the user probably clicked "Clear Cache" in the options).
 		collectgarbage()
@@ -404,7 +407,7 @@ StaticPopupDialogs["XRP_CACHE_CLEAR"] = {
 		xrp:CacheTidy(60)
 		StaticPopup_Show("XRP_CACHE_CLEARED")
 	end,
-	enterClicksFirstButton = true,
+	enterClicksFirstButton = false,
 	timeout = 0,
 	whileDead = true,
 	hideOnEscape = true,
