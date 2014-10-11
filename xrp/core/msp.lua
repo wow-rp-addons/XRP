@@ -75,7 +75,7 @@ do
 			else
 				-- If they're not offline, they're opposite faction. Same error
 				-- for both.
-				local offline = not (xrp.cache[character].GF and xrp.cache[character].GF ~= xrpSaved.meta.fields.GF)
+				local offline = not (xrp.cache[character].GF and xrp.cache[character].GF ~= xrp.current.fields.GF)
 				-- 30 second timer between checks for offline characters. Try
 				-- to not query offline characters higher up the chain as well,
 				-- remember.
@@ -141,6 +141,7 @@ do
 	local tt, oldtt
 	function msp:GetTT()
 		if not tt then
+			--print("Rebuilding tt.")
 			if not oldtt and xrpSaved.oldtt then
 				oldtt = xrpSaved.oldtt
 				xrpSaved.oldtt = nil
@@ -151,6 +152,9 @@ do
 				tooltip[#tooltip + 1] = (not current.fields[field] and "%s" or "%s%u=%s"):format(field, current.versions[field], current.fields[field])
 			end
 			local newtt = table.concat(tooltip, "\1")
+			--if newtt ~= oldtt then
+				--print("TT updated.")
+			--end
 			tt = ("%s\1TT%u"):format(newtt, newtt ~= oldtt and xrp:NewVersion("TT") or xrpSaved.versions.TT)
 			oldtt = newtt
 		end
@@ -197,13 +201,17 @@ do
 				return nil
 			end
 			req_timer[character][field] = now
-			if version == xrp.current.versions[field] or (not xrp.current.versions[field] and version == 0) then
+			if field == "TT" then
+				if version == (xrpSaved.versions.TT or 0) then
+					return (not xrpSaved.versions.TT and "TT" or "!TT%u"):format(xrpSaved.versions.TT)
+				end
+				return self:GetTT()
+			elseif version == (xrp.current.versions[field] or 0) then
 				-- They already have the latest.
 				return (not xrp.current.versions[field] and "%s" or "!%s%u"):format(field, xrp.current.versions[field])
-			elseif field == "TT" then
-				return self:GetTT()
 			elseif not xrp.current.fields[field] then
-				-- Field is empty.
+				-- Field is empty. TODO: Can this ever happen with new
+				-- versioning?
 				return field
 			end
 			-- Field has content.
