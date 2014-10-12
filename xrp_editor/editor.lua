@@ -181,15 +181,16 @@ end
 do
 	local function infofunc(self, arg1, arg2, checked)
 		if not checked then
-			UIDropDownMenu_SetSelectedValue(UIDROPDOWNMENU_OPEN_MENU, self.value)
+			xrp.editor.Parent:SetValue(arg1)
 			xrp.editor:CheckFields()
 		end
 	end
 
-	UIDropDownMenu_Initialize(xrp.editor.Parent, function()
+	UIDropDownMenu_Initialize(xrp.editor.Parent.Menu, function()
 		do
 			local info = UIDropDownMenu_CreateInfo()
 			info.text = xrp.L["None"]
+			info.arg1 = ""
 			info.value = ""
 			info.func = infofunc
 			UIDropDownMenu_AddButton(info)
@@ -197,6 +198,7 @@ do
 		for _, value in ipairs(xrp.profiles:List()) do
 			local info = UIDropDownMenu_CreateInfo()
 			info.text = value
+			info.arg1 = value
 			info.value = value
 			info.func = infofunc
 			UIDropDownMenu_AddButton(info)

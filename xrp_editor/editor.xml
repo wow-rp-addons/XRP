@@ -499,21 +499,33 @@
 				</Scripts>
 			</Button>
 			<!-- Parent Profile -->
-			<Button name="$parentParent" parentKey="Parent" inherits="UIDropDownMenuTemplate">
+			<Button name="$parentParent" parentKey="Parent" inherits="UIPanelButtonTemplate" text="">
+				<Size x="160" y="21"/>
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.ParentLabel" relativePoint="RIGHT" x="-8" y="-2"/>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" x="6" y="4"/>
 				</Anchors>
+				<Frames>
+					<Button name="$parentMenu" parentKey="Menu" hidden="true" inherits="UIDropDownMenuTemplate"/>
+				</Frames>
 				<Scripts>
 					<OnLoad>
-						UIDropDownMenu_SetWidth(self, 100, 0);
-						function self:SetText(value)
-							UIDropDownMenu_Initialize(self, self.initialize);
-							UIDropDownMenu_SetSelectedValue(self, value);
+						function self:SetText(text)
+							UIDropDownMenu_Initialize(self.Menu, self.Menu.initialize);
+							UIDropDownMenu_SetSelectedValue(self.Menu, text);
+							self:SetFormattedText(xrp.L["Parent: %s"], text and text ~= "" and text or NONE);
+						end;
+						function self:SetValue(text)
+							UIDropDownMenu_SetSelectedValue(self.Menu, text);
+							self:SetFormattedText(xrp.L["Parent: %s"], text and text ~= "" and text or NONE);
 						end;
 						function self:GetText()
-							return UIDropDownMenu_GetSelectedValue(self);
+							return UIDropDownMenu_GetSelectedValue(self.Menu);
 						end;
 					</OnLoad>
+					<OnClick>
+						ToggleDropDownMenu(nil, nil, self.Menu, self, 0, 0);
+						PlaySound("igMainMenuOptionCheckBoxOn");
+					</OnClick>
 				</Scripts>
 			</Button>
 			<!-- Save Button -->
