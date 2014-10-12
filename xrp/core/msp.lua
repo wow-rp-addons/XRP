@@ -75,7 +75,7 @@ do
 			else
 				-- If they're not offline, they're opposite faction. Same error
 				-- for both.
-				local offline = not (xrp.cache[character].GF and xrp.cache[character].GF ~= xrp.current.fields.GF)
+				local offline = not (xrp.cache[character].fields.GF and xrp.cache[character].fields.GF ~= xrp.current.fields.GF)
 				-- 30 second timer between checks for offline characters. Try
 				-- to not query offline characters higher up the chain as well,
 				-- remember.
@@ -239,7 +239,7 @@ do
 				-- function is the *only* place a character cache table is
 				-- created).
 				for gfield, _ in pairs(xrp.fields.unit) do
-					xrpCache[character].fields[gfield] = xrp.cache[character][gfield]
+					xrpCache[character].fields[gfield] = xrp.cache[character].fields[gfield]
 				end
 			end
 			local updated = false

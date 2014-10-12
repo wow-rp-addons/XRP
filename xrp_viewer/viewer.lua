@@ -52,13 +52,6 @@ do
 		for _, field in ipairs(display) do
 			self:SetField(field, character[field] or (field == "RA" and xrp.values.GR[character.GR]) or (field == "RC" and xrp.values.GC[character.GC]) or nil)
 		end
-		self.Bookmark:SetChecked(xrp.characters[current].bookmark ~= nil)
-		if xrp.characters[current].bookmark == 0 then
-			-- Own character, disable checkbox.
-			self.Bookmark:Disable()
-		else
-			self.Bookmark:Enable()
-		end
 	end
 
 	local supported = {}
@@ -69,7 +62,7 @@ do
 		if current == name and supported[field] then
 			--print("Trying to set: "..field.." for "..name..".")
 			xrp.viewer:SetField(field, xrp.characters[name].fields[field])
-		elseif current == name and (field == "GR" and not xrp.cache[name].RA) or (field == "GC" and not xrp.cache[name].RC) then
+		elseif current == name and (field == "GR" and not xrp.cache[name].fields.RA) or (field == "GC" and not xrp.cache[name].fields.RC) then
 			xrp.viewer:SetField((field == "GR" and "RA") or (field == "GC" and "RC"), (field == "GR" and xrp.values.GR[xrp.characters[name].fields.GR]) or (field == "GC" and xrp.values.GC[xrp.characters[name].fields.GC]) or nil)
 		end
 	end)
@@ -166,21 +159,22 @@ xrp:HookEvent("MSP_FAIL", function(name, reason)
 	end
 end)
 
-xrp.viewer.Bookmark:SetScript("OnClick", function(self, button, down)
-	if not down then
-		if xrp.characters[current].bookmark then
-			xrp.characters[current].bookmark = false
-			GameTooltip:SetOwner(self, "ANCHOR_CURSOR")
-			GameTooltip:SetText(xrp.L["Bookmark"])
-			GameTooltip:Show()
-		else
-			xrp.character[current].bookmark = true
-			GameTooltip:SetOwner(self, "ANCHOR_CURSOR")
-			GameTooltip:SetText(xrp.L["Unbookmark"])
-			GameTooltip:Show()
+do
+	local function infofunc(self, arg1, arg2, checked)
+		if arg1 == 1 then
+			xrp.characters[current].bookmark = not checked
+		elseif arg1 == 2 then
+			xrp.characters[current].hide = not checked
 		end
 	end
-end)
+
+	xrp.viewer.Menu.Menu.menuList = {
+		{ text = "Bookmark", arg1 = 1, isNotRadio = true, checked = function() return xrp.characters[current].bookmark ~= nil end, func = infofunc, },
+		{ text = "Hide profile", arg1 = 2, isNotRadio = true, checked = function() return xrp.characters[current].hide ~= nil end, func = infofunc, },
+	}
+
+	UIDropDownMenu_Initialize(xrp.viewer.Menu.Menu, EasyMenu_Initialize, "MENU", nil, xrp.viewer.Menu.Menu.menuList)
+end
 
 StaticPopupDialogs["XRP_VIEWER_URL"] = {
 	text = (IsWindowsClient() or IsLinuxClient()) and L["Copy the URL (Ctrl+C) and paste into your web browser."] or IsMacClient() and L["Copy the URL (Cmd+C) and paste into your web browser."] or L["Copy the URL and paste into your web browser."],
