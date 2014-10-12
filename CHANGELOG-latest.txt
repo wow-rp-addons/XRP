@@ -1,10 +1,20 @@
-6.0.2.0_beta1 (2014-10-10):
+6.0.2.0_beta2 (2014-10-12):
 
 	- THIS RELEASE IS FOR 6.0 ONLY. IT CANNOT BE USED ON 5.4.8 (LIVE).
 
 	- This is an unstable release for use on beta and PTR. Please don't use it
 	  on live 6.0 servers (a stable release should be up the morning of
 	  October the 14th).
+
+	- (beta2) The dropdown on the editor for chosing a parent profile has been
+	  changed to look a bit nicer where it is.
+
+	- (beta2) Bookmarks checkbox on viewer replaced by menu providing
+	  bookmarking or hiding of profile. (Hiding of profiles hides profiles on
+	  tooltips and in chat names, but may still be accessed through the
+	  viewer).
+
+	- (beta2) Assorted bugs have been fixed.
 
 	- This version is compatible with 6.0. Changes have been made where
 	  needed, and an ugly workaround has been removed due to bugs being fixed.
@@ -55,6 +65,6 @@
 		  changes made the warning unreliable). It may be re-added in another
 		  form at a later release.
 
-		- The XRP profile API has changed substantially. The documentation has
-		  been removed from the addon distriubtion, but will be posted and
-		  linked from the project page at a later date.
+		- The XRP profile API and characters API has changed substantially.
+		  The documentation has been removed from the addon distriubtion, but
+		  will be posted and linked from the project page at a later date.
