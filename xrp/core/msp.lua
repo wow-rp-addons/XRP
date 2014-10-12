@@ -96,7 +96,7 @@ do
 	function msp:Send(character, data)
 		data = table.concat(data, "\1")
 		--print("Sending to: "..character)
-		--print(GetTime()..": Out: "..character..": "..data:gsub("\1", "\\1"))
+		--print(GetTime()..": Out: "..character..": "..data:gsub("\1", ";"))
 		if #data <= 255 then
 			ChatThrottleLib:SendAddonMessage("NORMAL", "MSP", data, "WHISPER", character, "XRP-"..character, msp_AddFilter, character)
 			--print(character..": Outgoing MSP")
@@ -376,7 +376,10 @@ if not disabled then
 
 	msp:SetScript("OnEvent", function(self, event, prefix, message, channel, character)
 		if event == "CHAT_MSG_ADDON" and self.handlers[prefix] then
-			--print(GetTime()..": In: "..character..": "..message:gsub("\1", "\\1"))
+			-- Sometimes won't have the realm attached because I dunno. Always
+			-- works correctly for different-realm (connected) messages.
+			character = xrp:NameWithRealm("character")
+			--print(GetTime()..": In: "..character..": "..message:gsub("\1", ";"))
 			--print("Receiving from: "..character)
 
 			self.cache[character].received = true
