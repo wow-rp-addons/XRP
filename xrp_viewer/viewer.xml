@@ -241,22 +241,26 @@
 					</ScrollFrame>
 				</Frames>
 			</Frame>
-			<CheckButton parentKey="Bookmark" inherits="UICheckButtonTemplate">
-				<Size x="23" y="23"/>
+			<Button name="$parentMenu" parentKey="Menu" inherits="UIPanelButtonTemplate" text="|TInterface\BUTTONS\UI-SortArrow:7:18:4:-2|t">
+				<Size x="23" y="19"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-23" y="0"/>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-23" y="-1"/>
 				</Anchors>
+				<Frames>
+					<Button name="$parentMenu" parentKey="Menu" hidden="true" inherits="UIDropDownMenuTemplate">
+						<KeyValues>
+							<KeyValue key="point" value="TOPRIGHT"/>
+							<KeyValue key="relativePoint" value="BOTTOMRIGHT"/>
+						</KeyValues>
+					</Button>
+				</Frames>
 				<Scripts>
-					<OnEnter>
-						GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
-						GameTooltip:SetText(self:GetChecked() and xrp.L["Unbookmark"] or xrp.L["Bookmark"]);
-						GameTooltip:Show();
-					</OnEnter>
-					<OnLeave>
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnClick>
+						ToggleDropDownMenu(nil, nil, self.Menu, self, 0, 0, self.Menu.menuList);
+						PlaySound("igMainMenuOptionCheckBoxOn");
+					</OnClick>
 				</Scripts>
-			</CheckButton>
+			</Button>
 			<Button name="$parentTab1" parentKey="Tab1" inherits="CharacterFrameTabButtonTemplate" id="1" text="XRP_APPEARANCE">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="0" y="1"/>
