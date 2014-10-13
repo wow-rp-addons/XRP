@@ -199,12 +199,15 @@ do
 			elseif not checked then
 				xrp.current.fields.FC = nil
 			end
-			ToggleDropDownMenu(nil, nil, xrp.minimap.menu)
+			CloseDropDownMenus()
+		end
+		local function minimap_StatusChecked(self)
+			return self.arg1 == (xrp.current.fields.FC or "0")
 		end
 
 		local FC = xrp.values.FC
 		for i = 0, #FC, 1 do
-			menulist_status[#menulist_status + 1] = { text = FC[i], checked = false, arg1 = tostring(i), func = minimap_StatusSelect, }
+			menulist_status[#menulist_status + 1] = { text = FC[i], checked = minimap_StatusChecked, arg1 = tostring(i), func = minimap_StatusSelect, }
 		end
 	end
 
@@ -216,7 +219,7 @@ do
 		{ text = XRP_CU..CONTINUED, notCheckable = true, func = function() StaticPopup_Show("XRP_CURRENTLY") end, },
 		{ text = L["Profile editor..."], notCheckable = true, func = function() xrp:ToggleEditor() end, },
 		{ text = L["Profile viewer..."], notCheckable = true, func = function() xrp:ToggleViewer() end, },
-		{ text = L["Options..."], notCheckable = true, func = function() xrp:ShowOptions(); xrp:ShowOptions() end, },
+		{ text = L["Options..."], notCheckable = true, func = function() xrp:ShowOptions() xrp:ShowOptions() end, },
 		{ text = CANCEL, notCheckable = true, },
 	}
 
@@ -241,7 +244,7 @@ do
 			if not checked and xrp.profiles[name] then
 				xrp.profiles[name]:Activate()
 			end
-			ToggleDropDownMenu(nil, nil, xrp.minimap.menu)
+			CloseDropDownMenus()
 		end
 
 		xrp.minimap:SetScript("OnClick", function(self, button, down)
@@ -260,27 +263,24 @@ do
 							xrp.current.fields.FC = "2"
 						end
 					end
+					CloseDropDownMenus()
 				elseif button == "RightButton" then
 					if settings.detached and not self.locked then
 						self.locked = true
 						GameTooltip:Hide()
 					else
-						local FC = xrp.current.fields.FC or "0"
-						for _, item in ipairs(menulist_status) do
-							item.checked = FC == item.arg1
-						end
-
 						wipe(menulist_profiles)
 						local selected = xrpSaved.selected
 						for _, name in ipairs(xrp.profiles:List()) do
 							menulist_profiles[#menulist_profiles + 1] = { text = name, checked = selected == name, arg1 = name, func = minimap_ProfileSelect, }
 						end
 
-						EasyMenu(minimap_menulist, xrp.minimap.menu, xrp.minimap, 3, 10, "MENU", nil)
+						ToggleDropDownMenu(nil, nil, self.Menu, self, -2, 5, minimap_menulist)
 					end
 				end
 			end
 		end)
+		UIDropDownMenu_Initialize(xrp.minimap.Menu, EasyMenu_Initialize, "MENU", nil, minimap_menulist)
 	end
 end
 

@@ -288,16 +288,18 @@
 				</Scripts>
 			</Button>
 		</Frames>
+		<Attributes>
+			<Attribute name="UIPanelLayout-defined" type="boolean" value="true"/>
+			<Attribute name="UIPanelLayout-enabled" type="boolean" value="true"/>
+			<Attribute name="UIPanelLayout-area" type="string" value="left"/>
+			<Attribute name="UIPanelLayout-pushable" type="number" value="2"/>
+			<Attribute name="UIPanelLayout-height" type="number" value="545"/>
+			<Attribute name="UIPanelLayout-whileDead" type="boolean" value="true"/>
+		</Attributes>
 		<Scripts>
 			<OnLoad>
 				xrp.viewer = self;
 				SetPortraitToTexture(self.portrait, "Interface\\Icons\\INV_Misc_Book_17");
-				self:SetAttribute("UIPanelLayout-defined", true);
-				self:SetAttribute("UIPanelLayout-enabled", true);
-				self:SetAttribute("UIPanelLayout-area", "left");
-				self:SetAttribute("UIPanelLayout-pushable", 2);
-				self:SetAttribute("UIPanelLayout-height", 545);
-				self:SetAttribute("UIPanelLayout-whileDead", true);
 				PanelTemplates_SetNumTabs(self, 2);
 				PanelTemplates_SetTab(self, 1);
 			</OnLoad>

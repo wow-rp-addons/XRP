@@ -357,21 +357,16 @@ function xrp:CacheTidy(timer)
 	end
 	local now = time()
 	local before = now - timer
-	local beforeown = now - (timer * 10)
-	-- Minimum expiry of two weeks for player's own characters.
-	if beforeown < 1209600 then
-		beforeown = 1209600
-	end
 	for character, data in pairs(xrpCache) do
 		if not data.lastreceive then
-			-- Pre-5.4.8.0_beta5.
 			data.lastreceive = now
-		elseif not data.bookmark and (not data.own and data.lastreceive < before or data.lastreceive < beforeown) then
+		elseif not data.bookmark and data.lastreceive < before then
 			if data.hide == nil then
 				xrpCache[character] = nil
 			else
 				xrpCache[character].fields = {}
 				xrpCache[character].versions = {}
+				xrpCache[character].lastreceive = now
 			end
 		end
 	end

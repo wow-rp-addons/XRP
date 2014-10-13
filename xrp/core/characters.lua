@@ -65,20 +65,22 @@ do
 				if not xrpCache[character] then
 					return nil
 				end
-				return xrpCache[character].own and 0 or xrpCache[character].bookmark
+				return xrpCache[character].bookmark
 			elseif component == "hide" then
 				if not xrpCache[character] then
 					return nil
 				end
 				return xrpCache[character].hide
+			elseif component == "own" then
+				if not xrpCache[character] then
+					return nil
+				end
+				return xrpCache[character].own
 			end
 		end,
 		__newindex = function(self, component, value)
-			if component ~= "bookmark" and component ~= "hide" then return end
 			local character = self[ck]
-			if not xrpCache[character] then
-				return nil
-			end
+			if not xrpCache[character] then return end
 			if component == "bookmark" then
 				if value and not xrpCache[character].bookmark then
 					xrpCache[character].bookmark = time()
