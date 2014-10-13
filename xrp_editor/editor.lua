@@ -81,7 +81,7 @@ do
 						self[field].inherited = true
 						self[field]:SetTextColor(0.5, 0.5, 0.5, 1.0)
 						local parentinherit = xrp.profiles[parent].inherits[field]
-						self[field]:SetText(xrp.profiles[parent].fields[field] or (type(parentinherit) == "string" and  parentinherit ~= parent and xrp.profiles[parentinherit].fields[field]) or "")
+						self[field]:SetText(xrp.profiles[parent].fields[field] or (type(parentinherit) == "string" and xrp.profiles[parentinherit].fields[field]) or "")
 						self[field]:SetCursorPosition(0)
 					else
 						self[field]:SetText("")
@@ -195,13 +195,16 @@ do
 			info.func = infofunc
 			UIDropDownMenu_AddButton(info)
 		end
+		local profile = xrp.editor.Profiles:GetText()
 		for _, value in ipairs(xrp.profiles:List()) do
-			local info = UIDropDownMenu_CreateInfo()
-			info.text = value
-			info.arg1 = value
-			info.value = value
-			info.func = infofunc
-			UIDropDownMenu_AddButton(info)
+			if value ~= profile then
+				local info = UIDropDownMenu_CreateInfo()
+				info.text = value
+				info.arg1 = value
+				info.value = value
+				info.func = infofunc
+				UIDropDownMenu_AddButton(info)
+			end
 		end
 	end)
 end
