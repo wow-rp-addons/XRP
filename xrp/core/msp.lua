@@ -202,17 +202,16 @@ do
 			end
 			req_timer[character][field] = now
 			if field == "TT" then
-				if version == (xrpSaved.versions.TT or 0) then
-					return (not xrpSaved.versions.TT and "TT" or "!TT%u"):format(xrpSaved.versions.TT)
+				-- Rebuild the TT to catch any version changes before checking
+				-- the version.
+				local tt = self:GetTT()
+				if version == xrpSaved.versions.TT then
+					return ("!TT%u"):format(xrpSaved.versions.TT)
 				end
-				return self:GetTT()
+				return tt
 			elseif version == (xrp.current.versions[field] or 0) then
 				-- They already have the latest.
 				return (not xrp.current.versions[field] and "%s" or "!%s%u"):format(field, xrp.current.versions[field])
-			elseif not xrp.current.fields[field] then
-				-- Field is empty. TODO: Can this ever happen with new
-				-- versioning?
-				return field
 			end
 			-- Field has content.
 			return ("%s%u=%s"):format(field, xrp.current.versions[field], xrp.current.fields[field])

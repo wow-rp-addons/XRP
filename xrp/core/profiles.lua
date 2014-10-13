@@ -88,7 +88,7 @@ xrp.current = setmetatable({
 		end
 		do
 			local parents, count, inherit = {}, 0, profiles[selected].parent
-			while inherit and count < 5 do
+			while inherit and count < 16 do
 				count = count + 1
 				parents[#parents + 1] = inherit
 				inherit = profiles[inherit].parent
@@ -230,7 +230,8 @@ do
 			local name = self[nk]
 			contents = type(contents) == "string" and contents ~= "" and contents or nil
 			if profiles[name] and profiles[name].fields[field] ~= contents then
-				local isused = name == xrp.profiles[xrpSaved.selected].inherits[field]
+				local selected = xrpSaved.selected
+				local isused = name == selected or name == xrp.profiles[selected].inherits[field]
 				profiles[name].fields[field] = contents
 				profiles[name].versions[field] = contents ~= nil and xrp:NewVersion(field) or nil
 				if isused or name == xrp.profiles[xrpSaved.selected].inherits[field] then
@@ -249,7 +250,7 @@ do
 			end
 			local inherit = profiles[name].parent
 			if profiles[name].fields[field] ~= nil or not profiles[inherit] then
-				return name
+				return true
 			end
 			local count = 0
 			while count < 16 do
@@ -259,10 +260,10 @@ do
 				elseif profiles[inherit] and profiles[inherit].inherits[field] and profiles[profiles[inherit].parent] then
 					inherit = profiles[inherit].parent
 				else
-					return name
+					return true
 				end
 			end
-			return name
+			return true
 		end,
 		__newindex = function(self, field, state)
 			if xrp.fields.unit[field] or xrp.fields.meta[field] or xrp.fields.dummy[field] or not field:find("^%u%u$") then return end
