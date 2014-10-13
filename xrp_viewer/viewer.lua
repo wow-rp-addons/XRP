@@ -52,6 +52,11 @@ do
 		for _, field in ipairs(display) do
 			self:SetField(field, character[field] or (field == "RA" and xrp.values.GR[character.GR]) or (field == "RC" and xrp.values.GC[character.GC]) or nil)
 		end
+		if xrp.characters[current].bookmark == 0 then
+			self.Menu:Disable()
+		else
+			self.Menu:Enable()
+		end
 	end
 
 	local supported = {}
