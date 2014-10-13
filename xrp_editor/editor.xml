@@ -509,14 +509,13 @@
 				</Frames>
 				<Scripts>
 					<OnLoad>
-						function self:SetText(text)
+						function self:SetText(value)
 							UIDropDownMenu_Initialize(self.Menu, self.Menu.initialize);
-							UIDropDownMenu_SetSelectedValue(self.Menu, text);
-							self:SetFormattedText(xrp.L["Parent: %s"], text and text ~= "" and text or NONE);
+							self:SetValue(value);
 						end;
-						function self:SetValue(text)
-							UIDropDownMenu_SetSelectedValue(self.Menu, text);
-							self:SetFormattedText(xrp.L["Parent: %s"], text and text ~= "" and text or NONE);
+						function self:SetValue(value)
+							UIDropDownMenu_SetSelectedValue(self.Menu, value);
+							self:SetFormattedText(xrp.L["Parent: %s"], value and value ~= "" and value or NONE);
 						end;
 						function self:GetText()
 							return UIDropDownMenu_GetSelectedValue(self.Menu);
@@ -579,15 +578,17 @@
 				</Scripts>
 			</Button>
 		</Frames>
+		<Attributes>
+			<Attribute name="UIPanelLayout-defined" type="boolean" value="true"/>
+			<Attribute name="UIPanelLayout-enabled" type="boolean" value="true"/>
+			<Attribute name="UIPanelLayout-area" type="string" value="left"/>
+			<Attribute name="UIPanelLayout-pushable" type="number" value="4"/>
+			<Attribute name="UIPanelLayout-height" type="number" value="545"/>
+			<Attribute name="UIPanelLayout-whileDead" type="boolean" value="true"/>
+		</Attributes>
 		<Scripts>
 			<OnLoad>
 				xrp.editor = self;
-				self:SetAttribute("UIPanelLayout-defined", true);
-				self:SetAttribute("UIPanelLayout-enabled", true);
-				self:SetAttribute("UIPanelLayout-area", "left");
-				self:SetAttribute("UIPanelLayout-pushable", 4);
-				self:SetAttribute("UIPanelLayout-height", 545);
-				self:SetAttribute("UIPanelLayout-whileDead", true);
 				PanelTemplates_SetNumTabs(self, 2);
 				PanelTemplates_SetTab(self, 1);
 				self.TitleText:SetText(GetAddOnMetadata("xrp_editor", "Title"));

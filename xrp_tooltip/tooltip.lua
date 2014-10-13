@@ -187,7 +187,7 @@ do
 				tooltip_RenderLine(("|cffa08050%s:|r |cffe6b399%s|r"):format(XRP_CU, tooltip_Truncate(xrp:StripEscapes(character.CU), 70, #XRP_CU)))
 			end
 
-			tooltip_RenderLine(cu.info:format(tooltip_Truncate(not settings.norprace and xrp:StripEscapes(character.RA) or cu.race, 40, 0, false), tooltip_Truncate(not settings.norpclass and xrp:StripEscapes(character.RC) or cu.class, 40, 0, false)))
+			tooltip_RenderLine(cu.info:format(tooltip_Truncate(not settings.norprace and xrp:StripEscapes(character.RA) or cu.race or UNKNOWN, 40, 0, false), tooltip_Truncate(not settings.norpclass and xrp:StripEscapes(character.RC) or cu.class or UNKNOWN, 40, 0, false)))
 
 			if (character.FR and character.FR ~= "0") or (character.FC and character.FC ~= "0") then
 				local color = character.FC and character.FC ~= "0" and character.FC == "1" and "ff99664d" or "ff66b380"
