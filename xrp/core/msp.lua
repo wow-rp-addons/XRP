@@ -378,7 +378,7 @@ if not disabled then
 		if event == "CHAT_MSG_ADDON" and self.handlers[prefix] then
 			-- Sometimes won't have the realm attached because I dunno. Always
 			-- works correctly for different-realm (connected) messages.
-			character = xrp:NameWithRealm("character")
+			character = xrp:NameWithRealm(character)
 			--print(GetTime()..": In: "..character..": "..message:gsub("\1", ";"))
 			--print("Receiving from: "..character)
 
