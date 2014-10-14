@@ -1,12 +1,11 @@
-6.0.2.0_rc1 (2014-10-13):
+6.0.2.0 (2014-10-14):
 
-	- This version is compatible with 6.0.2. It also includes major changes,
-	  and it is recommended to make a backup copy of your WTF folder just in
-	  case something goes wrong with either the XRP update or the WoW update.
+	- This version is compatible with 6.0.2.
 
-	- While this release has been tested thoroughly, it has not been widely
-	  tested by many people. Please keep an eye out for bugs or updates
-	  released over the next while.
+		- If you are upgrading from a previous version of XRP, it is STRONGLY
+		  recommended to make a backup copy of your WTF folder, for the
+		  unlikely case of something going wrong during either the XRP update
+		  or the 6.0 game patch.
 
 	- Automated profile swapping has been added. This is accessed through the
 	  minimap button under "Profile automation".
@@ -31,23 +30,16 @@
 	  option is toggled through a menu in the upper-right corner of the
 	  viewer.
 
-	- An option to disable right-click profile viewing while PvP flagged has
-	  been added.
-
-	- Bugfixes:
+	- Miscellaneous:
 
 		- Pressing enter or escape in popups with text boxes will now behave
 		  in a more useful manner.
 
-		- A display issue with player-imitating NPCs (such as in Proving
-		  Grounds) in the tooltip has been fixed.
-
-		- Potential bugs involving the Azjol-Nerub realm have been fixed.
-
-	- Miscellaneous:
-
-		- bit.ly URLs without http:// or https:// will should link properly in
+		- bit.ly URLs without http:// or https:// should link properly in
 		  profiles.
+
+		- An option to disable right-click profile viewing while PvP flagged
+		  has been added.
 
 		- For the purposes of disabling right-click profile viewing, active
 		  world PvP zones (i.e., Tol Barad or Wintergrasp while a battle is

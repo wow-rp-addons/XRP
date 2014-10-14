@@ -1,3 +1,65 @@
+6.0.2.0 (2014-10-14):
+
+	- This version is compatible with 6.0.2.
+
+		- If you are upgrading from a previous version of XRP, it is STRONGLY
+		  recommended to make a backup copy of your WTF folder, for the
+		  unlikely case of something going wrong during either the XRP update
+		  or the 6.0 game patch.
+
+	- Automated profile swapping has been added. This is accessed through the
+	  minimap button under "Profile automation".
+
+		- Please note this is EXPERIMENTAL and may not always work as
+		  intended. If you have issues with automated swaps, please report the
+		  bug and disable the XRP: Automation addon in the meanwhile.
+
+	- Profile parenting/inheritance has been vastly improved. Instead of
+	  inheritance from "Default", any profile can be used as a parent profile,
+	  inheriting select fields from that parent (or parents of parents, to a
+	  maximum depth of 16).
+
+		- The editor now shows what will be in your public profile when
+		  editing. Inherited values are shown in grey text.
+
+		- The "Default" profile is no longer treated specially and may be
+		  renamed or removed at will (so long as it is not your active
+		  profile).
+
+	- Hiding of profiles (in chat names and tooltips) has been added. This
+	  option is toggled through a menu in the upper-right corner of the
+	  viewer.
+
+	- Miscellaneous:
+
+		- Pressing enter or escape in popups with text boxes will now behave
+		  in a more useful manner.
+
+		- bit.ly URLs without http:// or https:// should link properly in
+		  profiles.
+
+		- An option to disable right-click profile viewing while PvP flagged
+		  has been added.
+
+		- For the purposes of disabling right-click profile viewing, active
+		  world PvP zones (i.e., Tol Barad or Wintergrasp while a battle is
+		  in-progress) are now considered instances.
+
+		- Persistent versioning of fields has been added. This may slightly
+		  reduce bandwidth consumption in the case of rapid profile changes.
+
+		- Stripping of certain types of punctuation surrounding names in
+		  chat has been removed. It's difficult to handle properly and tends
+		  to produce inconsistent results too often.
+
+		- The warning about lengthy profiles has been removed (profile storage
+		  changes made the warning unreliable). It may be re-added in another
+		  form at a later release.
+
+		- The XRP profile API and characters API has changed substantially.
+		  The documentation has been removed from the addon distriubtion, but
+		  will be posted and linked from the project page at a later date.
+
 5.4.8.2 (2014-08-31):
 
 	- NEW: Roleplay class field. This adds the ability to provide a different
