@@ -219,6 +219,7 @@ do
 		{ text = XRP_CU..CONTINUED, notCheckable = true, func = function() StaticPopup_Show("XRP_CURRENTLY") end, },
 		{ text = L["Profile editor..."], notCheckable = true, func = function() xrp:ToggleEditor() end, },
 		{ text = L["Profile viewer..."], notCheckable = true, func = function() xrp:ToggleViewer() end, },
+		{ text = L["Profile automation..."], notCheckable = true, func = function() ToggleFrame(xrp.auto) end, },
 		{ text = L["Options..."], notCheckable = true, func = function() xrp:ShowOptions() xrp:ShowOptions() end, },
 		{ text = CANCEL, notCheckable = true, },
 	}
@@ -227,6 +228,10 @@ do
 	do
 		local loaded, reason = select(4, GetAddOnInfo("xrp_options"))
 		if not loaded and reason ~= "DEMAND_LOADED" then
+			table.remove(minimap_menulist, 8)
+		end
+		loaded = select(4, GetAddOnInfo("xrp_auto"))
+		if not loaded then
 			table.remove(minimap_menulist, 7)
 		end
 		loaded, reason = select(4, GetAddOnInfo("xrp_viewer"))

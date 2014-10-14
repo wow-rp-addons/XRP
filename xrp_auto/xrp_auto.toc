@@ -1,0 +1,13 @@
+## Interface: 60000
+## Title: XRP: Automation
+## Version: 6.0.2.0_rc1
+## Author: Bor of Wyrmrest Accord (US)
+## Notes: Provides automated profile swapping for forms and equipment sets.
+## X-Category: Roleplay
+## X-License: GPLv3
+## Dependencies: xrp
+
+strings.lua
+selector.xml
+swap.lua
+selector.lua
