@@ -91,7 +91,7 @@ xrpcmds.profile = function(args)
 		if xrp.profiles[args] and xrp.profiles[args]:Activate() then
 			print(L["Set profile to \"%s\"."]:format(args))
 		else
-			print(L["Failed to set profile (does \"%s\" exist?)."]:format(args))
+			print(L["Failed to set profile to \"%s\"."]:format(args))
 		end
 	else
 		xrpcmds.help("profile")

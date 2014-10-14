@@ -32,7 +32,6 @@ do
 	end
 	local FORM_ID = {
 		[1] = "CAT",
-		--[2] = "TREANT", -- Tree of Life (temporary) not Glyph of the Treant.
 		[3] = "TRAVEL",
 		[4] = "AQUATIC",
 		[5] = "BEAR",
@@ -125,40 +124,42 @@ do
 			end
 		end
 
-		return classform, raceform, equipset
+		return raceform, classform, equipset
 	end
 end
 
 local swap = CreateFrame("Frame")
-local function TestForm(self, event, unit)
-	if InCombatLockdown() or (event == "UNIT_PORTRAIT_UPDATE" and unit ~= "player") then return end
-	if event == "PLAYER_REGEN_DISABLED" then
-		self:Hide()
-		return
+do
+	local function TestForm(self, event, unit)
+		if InCombatLockdown() or (event == "UNIT_PORTRAIT_UPDATE" and unit ~= "player") then return end
+		if event == "PLAYER_REGEN_DISABLED" then
+			self:Hide()
+			return
+		end
+		local race, class, equip = GetCurrentForm()
+		local newform = self.class ~= class or self.race ~= race or self.equip ~= equip
+		if event == "PLAYER_REGEN_ENABLED" and (newform or self.timer > 0) then
+			self.timer = 6
+			self.race = race
+			self.class = class
+			self.equip = equip
+			self:Show()
+		elseif newform then
+			self.timer = 3
+			self.race = race
+			self.class = class
+			self.equip = equip
+			self:Show()
+		end
 	end
-	local class, race, equip = GetCurrentForm()
-	local newform = self.class ~= class or self.race ~= race or self.equip ~= equip
-	if event == "PLAYER_REGEN_ENABLED" and (newform or self.timer > 0) then
-		self.timer = 6
-		self.class = class
-		self.race = race
-		self.equip = equip
-		self:Show()
-	elseif newform then
-		self.timer = 3
-		self.class = class
-		self.race = race
-		self.equip = equip
-		self:Show()
+	function xrp.auto:ForceRecheck()
+		swap.race = nil
+		swap.class = nil
+		swap.equip = nil
+		TestForm(swap)
 	end
+	swap:SetScript("OnEvent", TestForm)
 end
-function xrp.auto:ForceRecheck()
-	swap.class = nil
-	swap.race = nil
-	swap.equip = nil
-	TestForm(swap)
-end
-swap:SetScript("OnEvent", TestForm)
 swap:SetScript("OnUpdate", function(self, elapsed)
 	self.timer = self.timer - elapsed
 	if self.timer > 0 then return end

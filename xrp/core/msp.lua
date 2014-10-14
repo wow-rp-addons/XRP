@@ -330,7 +330,7 @@ msp.handlers = {
 			if not message then return end
 			self.cache[character].buffer = ""
 		end
-		if message:find("\1", 1, true) then
+		if message:find("\1", nil, true) then
 			message = type(self.cache[character].buffer) == "string" and (self.cache[character].buffer..message) or (table.concat(self.cache[character].buffer)..message)
 			for command in message:gmatch("([^\1]+)\1") do
 				if command:find("^[^%?]") then
