@@ -1,24 +1,19 @@
-6.0.2.0_beta2 (2014-10-12):
+6.0.2.0_rc1 (2014-10-13):
 
-	- THIS RELEASE IS FOR 6.0 ONLY. IT CANNOT BE USED ON 5.4.8 (LIVE).
+	- This version is compatible with 6.0.2. It also includes major changes,
+	  and it is recommended to make a backup copy of your WTF folder just in
+	  case something goes wrong with either the XRP update or the WoW update.
 
-	- This is an unstable release for use on beta and PTR. Please don't use it
-	  on live 6.0 servers (a stable release should be up the morning of
-	  October the 14th).
+	- While this release has been tested thoroughly, it has not been widely
+	  tested by many people. Please keep an eye out for bugs or updates
+	  released over the next while.
 
-	- (beta2) The dropdown on the editor for chosing a parent profile has been
-	  changed to look a bit nicer where it is.
+	- Automated profile swapping has been added. This is accessed through the
+	  minimap button under "Profile automation".
 
-	- (beta2) Bookmarks checkbox on viewer replaced by menu providing
-	  bookmarking or hiding of profile. (Hiding of profiles hides profiles on
-	  tooltips and in chat names, but may still be accessed through the
-	  viewer).
-
-	- (beta2) Assorted bugs have been fixed.
-
-	- This version is compatible with 6.0. Changes have been made where
-	  needed, and an ugly workaround has been removed due to bugs being fixed.
-	  Hooray!
+		- Please note this is EXPERIMENTAL and may not always work as
+		  intended. If you have issues with automated swaps, please report the
+		  bug and disable the XRP: Automation addon in the meanwhile.
 
 	- Profile parenting/inheritance has been vastly improved. Instead of
 	  inheritance from "Default", any profile can be used as a parent profile,
@@ -31,6 +26,10 @@
 		- The "Default" profile is no longer treated specially and may be
 		  renamed or removed at will (so long as it is not your active
 		  profile).
+
+	- Hiding of profiles (in chat names and tooltips) has been added. This
+	  option is toggled through a menu in the upper-right corner of the
+	  viewer.
 
 	- An option to disable right-click profile viewing while PvP flagged has
 	  been added.

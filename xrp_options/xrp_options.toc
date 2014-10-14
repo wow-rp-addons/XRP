@@ -2,7 +2,7 @@
 ## LoadOnDemand: 1
 ## Title: XRP: Options
 ## Author: Bor of Wyrmrest Accord (US)
-## Version: 6.0.2.0_beta3
+## Version: 6.0.2.0_rc1
 ## Notes: Provides an interface options panel for XRP.
 ## X-Category: Roleplay
 ## X-License: GPLv3
