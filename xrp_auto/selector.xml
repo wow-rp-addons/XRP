@@ -85,7 +85,7 @@
 					<OnLoad>
 						UIDropDownMenu_SetWidth(self, 260, 0);
 						function self:SetText(value)
-							UIDropDownMenu_Initialize(self, self.initialize, nil, nil, self.forms);
+							UIDropDownMenu_Initialize(self, self.initialize);
 							UIDropDownMenu_SetSelectedValue(self, value);
 							xrp.auto:CheckButtons();
 						end;

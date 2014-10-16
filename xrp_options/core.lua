@@ -113,7 +113,7 @@ do
 	do
 		local heights = { L["Centimeters"], L["Feet/Inches"], L["Meters"] }
 		table.sort(heights)
-		UIDropDownMenu_Initialize(xrp.options.core.AHUnits, function()
+		function xrp.options.core.AHUnits:initialize(level, menuList)
 			for _, text in ipairs(heights) do
 				local info = UIDropDownMenu_CreateInfo()
 				info.text = text
@@ -121,13 +121,13 @@ do
 				info.func = infofunc
 				UIDropDownMenu_AddButton(info)
 			end
-		end)
+		end
 	end
 
 	do
 		local weights = { L["Kilograms"], L["Pounds"] }
 		table.sort(weights)
-		UIDropDownMenu_Initialize(xrp.options.core.AWUnits, function()
+		function xrp.options.core.AWUnits:initialize(level, menuList)
 			for _, text in ipairs(weights) do
 				local info = UIDropDownMenu_CreateInfo()
 				info.text = text
@@ -135,13 +135,13 @@ do
 				info.func = infofunc
 				UIDropDownMenu_AddButton(info)
 			end
-		end)
+		end
 	end
 
 	do
 		local times = { L["1 day"], L["3 days"], L["7 days"], L["10 days"], L["2 weeks"], L["1 month"], L["3 months"] }
 		local seconds = { 86400, 259200, 604800, 864000, 1209600, 2419200, 7257600 }
-		UIDropDownMenu_Initialize(xrp.options.core.CacheTime, function()
+		function xrp.options.core.CacheTime:initialize(level, menuList)
 			for key, text in ipairs(times) do
 				local info = UIDropDownMenu_CreateInfo()
 				info.text = text
@@ -149,7 +149,7 @@ do
 				info.func = infofunc
 				UIDropDownMenu_AddButton(info)
 			end
-		end)
+		end
 	end
 end
 

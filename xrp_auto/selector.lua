@@ -29,7 +29,7 @@ do
 		end
 	end
 
-	UIDropDownMenu_Initialize(xrp.auto.Profile, function()
+	function xrp.auto.Profile:initialize(level, menuList)
 		do
 			local info = UIDropDownMenu_CreateInfo()
 			info.text = xrp.L["None"]
@@ -44,7 +44,7 @@ do
 			info.func = infofunc
 			UIDropDownMenu_AddButton(info)
 		end
-	end)
+	end
 end
 
 local GR, GC = select(2, UnitRace("player")), select(2, UnitClassBase("player"))
@@ -462,4 +462,4 @@ _G[xrp.auto.Form:GetName().."Button"]:SetScript("OnClick", function(self)
 	PlaySound("igMainMenuOptionCheckBoxOn")
 end)
 
-UIDropDownMenu_Initialize(xrp.auto.Form, EasyMenu_Initialize, nil, nil, xrp.auto.Form.forms)
+xrp.auto.Form.initialize = EasyMenu_Initialize
