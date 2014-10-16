@@ -211,7 +211,10 @@ do
 				return tt
 			elseif version == (xrp.current.versions[field] or 0) then
 				-- They already have the latest.
-				return (not xrp.current.versions[field] and "%s" or "!%s%u"):format(field, xrp.current.versions[field])
+				return not xrp.current.versions[field] and field or ("!%s%u"):format(field, xrp.current.versions[field])
+			elseif not xrp.current.fields[field] then
+				-- Field is empty.
+				return field
 			end
 			-- Field has content.
 			return ("%s%u=%s"):format(field, xrp.current.versions[field], xrp.current.fields[field])
