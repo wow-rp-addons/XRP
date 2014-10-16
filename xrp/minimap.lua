@@ -285,7 +285,8 @@ do
 				end
 			end
 		end)
-		UIDropDownMenu_Initialize(xrp.minimap.Menu, EasyMenu_Initialize, "MENU", nil, minimap_menulist)
+		xrp.minimap.Menu.initialize = EasyMenu_Initialize
+		xrp.minimap.Menu.displayMode = "MENU"
 	end
 end
 

@@ -178,7 +178,8 @@ do
 		{ text = "Hide profile", arg1 = 2, isNotRadio = true, checked = function() return xrp.characters[current].hide ~= nil end, func = infofunc, },
 	}
 
-	UIDropDownMenu_Initialize(xrp.viewer.Menu.Menu, EasyMenu_Initialize, "MENU", nil, xrp.viewer.Menu.Menu.menuList)
+	xrp.viewer.Menu.Menu.initialize = EasyMenu_Initialize
+	xrp.viewer.Menu.Menu.displayMode = "MENU"
 end
 
 StaticPopupDialogs["XRP_VIEWER_URL"] = {

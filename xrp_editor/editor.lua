@@ -167,7 +167,7 @@ do
 		end
 	end
 
-	UIDropDownMenu_Initialize(xrp.editor.Profiles, function()
+	function xrp.editor.Profiles:initialize(level, menuList)
 		for _, value in ipairs(xrp.profiles:List()) do
 			local info = UIDropDownMenu_CreateInfo()
 			info.text = value
@@ -175,7 +175,7 @@ do
 			info.func = infofunc
 			UIDropDownMenu_AddButton(info)
 		end
-	end)
+	end
 end
 
 do
@@ -186,7 +186,7 @@ do
 		end
 	end
 
-	UIDropDownMenu_Initialize(xrp.editor.Parent.Menu, function()
+	function xrp.editor.Parent.Menu:initialize(level, menuList)
 		do
 			local info = UIDropDownMenu_CreateInfo()
 			info.text = xrp.L["None"]
@@ -206,7 +206,7 @@ do
 				UIDropDownMenu_AddButton(info)
 			end
 		end
-	end)
+	end
 end
 
 do
@@ -222,7 +222,7 @@ do
 	end
 
 	local FC = xrp.values.FC
-	UIDropDownMenu_Initialize(xrp.editor.FC, function()
+	function xrp.editor.FC:initialize(level, menuList)
 		for i = 0, #FC, 1 do
 			local info = UIDropDownMenu_CreateInfo()
 			info.text = FC[i]
@@ -230,7 +230,7 @@ do
 			info.func = infofunc
 			UIDropDownMenu_AddButton(info)
 		end
-	end)
+	end
 end
 
 xrp:HookLoad(function()

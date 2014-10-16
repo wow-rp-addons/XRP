@@ -7,7 +7,10 @@
 		  unlikely case of something going wrong during either the XRP update
 		  or the 6.0 game patch.
 
-	- Minor bugs have been fixed.
+	- Bugs have been fixed:
+
+		- A number of minor UI taints (especially Blizzard compact raid
+		  frames) have been fixed.
 
 		- A circumstance where recently-blanked fields could fail to send to
 		  others has been fixed.
