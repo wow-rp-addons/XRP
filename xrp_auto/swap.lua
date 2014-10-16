@@ -138,7 +138,7 @@ do
 		end
 		local race, class, equip = GetCurrentForm()
 		local newform = self.class ~= class or self.race ~= race or self.equip ~= equip
-		if event == "PLAYER_REGEN_ENABLED" and (newform or self.timer > 0) then
+		if event == "PLAYER_REGEN_ENABLED" and (newform or (self.timer and self.timer > 0)) then
 			self.timer = 6
 			self.race = race
 			self.class = class

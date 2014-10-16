@@ -64,8 +64,8 @@ function xrp:ShowOptions()
 	return true
 end
 
-local enabled, loadable = select(4, GetAddOnInfo("xrp_libmsp"))
-if enabled and loadable and not _G.msp then
+local loaded, reason = select(4, GetAddOnInfo("xrp_libmsp"))
+if not loaded and reason == "DEMAND_LOADED" and not _G.msp then
 	local msp = setmetatable({}, {
 		__index = function(self, index)
 			if not LoadIfNeeded("xrp_libmsp") then

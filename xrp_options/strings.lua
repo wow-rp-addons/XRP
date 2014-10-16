@@ -18,7 +18,6 @@
 local L = xrp.L
 
 XRP_OPTIONS_CORE_TITLE = L["XRP: Core Options"]
-XRP_OPTIONS_CORE_DEFAULTS = L["For new profiles, copy from \"Default\" for:"]
 XRP_OPTIONS_CORE_CACHE = L["Character profile cache expiry:"]
 XRP_OPTIONS_CORE_CACHEAUTO = L["Prune cache on login"]
 XRP_OPTIONS_CORE_MINIMAP = L["Minimap icon:"]
