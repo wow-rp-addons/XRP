@@ -27,7 +27,7 @@ local GetCurrentForm
 do
 	local hasrace = select(2, UnitRace("player")) == "Worgen"
 	local class = select(2, UnitClassBase("player"))
-	if not (class == "DRUID" or class == "PRIEST" or class == "SHAMAN" or class == "WARLOCK") then
+	if not (class == "DRUID" or class == "PRIEST" or class == "SHAMAN") then
 		class = nil
 	end
 	local FORM_ID = {
@@ -81,8 +81,6 @@ do
 				end
 			elseif class == "PRIEST" or class == "SHAMAN" then
 				classform = FORM_ID[GetShapeshiftFormID()]
-			elseif class == "WARLOCK" and UnitBuff("player", xrp.L["Dark Apotheosis"]) then
-				classform = "APOTHEOSIS"
 			end
 		end
 
