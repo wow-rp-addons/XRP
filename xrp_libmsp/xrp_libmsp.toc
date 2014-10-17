@@ -2,7 +2,7 @@
 ## LoadOnDemand: 1
 ## Title: XRP: LibMSP Compat
 ## Author: Bor of Wyrmrest Accord (US)
-## Version: 6.0.2.0
+## Version: 6.0.2.1
 ## Notes: Provides partial compatibility with LibMSP, allowing some other addons to interact with XRP. If enabled, this will only load if such an addon is present.
 ## X-Category: Roleplay
 ## X-License: GPLv3
