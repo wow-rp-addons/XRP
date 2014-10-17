@@ -70,14 +70,14 @@ local formNames = {
 }
 if GR == "Worgen" then
 	formNames["DEFAULT"] = L["Worgen"]
-elseif GC == "PRIEST" or GC == "WARLOCK" then
+elseif GC == "PRIEST" then
 	formNames["DEFAULT"] = L["Standard"]
 elseif GC == "DRUID" or GC == "SHAMAN" then
 	formNames["DEFAULT"] = L["Humanoid"]
 end
 
 local hasRace = GR == "Worgen"
-local hasClass = GC == "DRUID" or GC == "PRIEST" or GC == "SHAMAN" or GC == "WARLOCK"
+local hasClass = GC == "DRUID" or GC == "PRIEST" or GC == "SHAMAN"
 
 function xrp.auto.Form:MakeWords(text)
 	local form, equipment = text:match("^([^\29]+)\29?([^\29]*)$")
@@ -106,7 +106,7 @@ end
 function xrp.auto:CheckButtons()
 	local form, profile = self.Form:GetText(), self.Profile:GetText()
 	local changes = auto[form] ~= (profile ~= "" and profile or nil)
-	if not auto["DEFAULT"] then
+	if next(auto) and not auto["DEFAULT"] then
 		self.Warning:Show()
 		self.Warning:SetFormattedText(L["You do not have a default/fallback profile. You should set a profile for \"%s\" to fix this."], formNames["DEFAULT"])
 	else
@@ -277,41 +277,6 @@ do
 					menuList = equipsets,
 				},
 			}
-		elseif GC == "WARLOCK" then
-			xrp.auto.Form.forms= {
-				{ -- Worgen
-					text = formNames["DEFAULT"],
-					value = "default",
-					func = forms_Click,
-					checked = forms_Check,
-					hasArrow = true,
-					menuList = equipsets,
-				},
-				{ -- Human
-					text = formNames["HUMAN"],
-					value = "human",
-					func = forms_Click,
-					checked = forms_Check,
-					hasArrow = true,
-					menuList = equipsets,
-				},
-				{ -- Dark Apotheosis (Worgen)
-					text = formNames["DEFAULT\30APOTHEOSIS"],
-					value = "default\30apotheosis",
-					func = forms_Click,
-					checked = forms_Check,
-					hasArrow = true,
-					menuList = equipsets,
-				},
-				{ -- Dark Apotheosis (Worgen)
-					text = formNames["HUMAN\30APOTHEOSIS"],
-					value = "human\30apotheosis",
-					func = forms_Click,
-					checked = forms_Check,
-					hasArrow = true,
-					menuList = equipsets,
-				},
-			}
 		else
 			xrp.auto.Form.forms = {
 				{ -- Worgen
@@ -428,25 +393,6 @@ do
 					value = "ghostwolf",
 					func = forms_Click,
 					checked = forms_Check,
-				},
-			}
-		elseif GC == "WARLOCK" then
-			xrp.auto.Form.forms = {
-				{ -- Standard
-					text = formNames["DEFAULT"],
-					value = "default",
-					func = forms_Click,
-					checked = forms_Check,
-					hasArrow = true,
-					menuList = equipsets,
-				},
-				{ -- Dark Apotheosis
-					text = formNames["APOTHEOSIS"],
-					value = "apotheosis",
-					func = forms_Click,
-					checked = forms_Check,
-					hasArrow = true,
-					menuList = equipsets,
 				},
 			}
 		else
