@@ -40,7 +40,7 @@ do
 			return false
 		end
 		for _, func in ipairs(events[event]) do
-			func(...)
+			pcall(func, ...)
 		end
 		return true
 	end
@@ -62,7 +62,7 @@ do
 		if type(func) ~= "function" then
 			return false
 		elseif not onload then
-			func()
+			pcall(func)
 		else
 			onload[#onload + 1] = func
 		end
@@ -74,7 +74,7 @@ do
 		if type(func) ~= "function" then
 			return false
 		elseif not onlogin then
-			func()
+			pcall(func)
 		else
 			onlogin[#onlogin + 1] = func
 		end
@@ -136,10 +136,10 @@ do
 	local addonstring = "%s/%s"
 	init:SetScript("OnEvent", function(self, event, addon)
 		if event == "ADDON_LOADED" and addon == "xrp" then
-			xrp.toon = xrp:NameWithRealm(UnitName("player"))
+			xrp.toon = xrp:UnitNameWithRealm("player")
 
 			for _, func in ipairs(onload) do
-				func()
+				pcall(func)
 			end
 			onload = nil
 
@@ -194,7 +194,7 @@ do
 			end
 
 			for _, func in ipairs(onlogin) do
-				func()
+				pcall(func)
 			end
 			onlogin = nil
 
@@ -221,7 +221,7 @@ do
 				}
 			end
 			for _, func in ipairs(onlogout) do
-				func()
+				pcall(func)
 			end
 		elseif event == "NEUTRAL_FACTION_SELECT_RESULT" then
 			xrpSaved.meta.fields.GF = UnitFactionGroup("player")
