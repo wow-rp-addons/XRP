@@ -1,4 +1,4 @@
-6.0.2.1 (2014-10-17):
+6.0.2.2 (2014-10-??):
 
 	- This version is compatible with 6.0.2.
 
@@ -7,19 +7,7 @@
 		  unlikely case of something going wrong during either the XRP update
 		  or the 6.0 game patch.
 
-	- In this release, bugs have been fixed:
+	- Bugfixes:
 
-		- The form automation for Dark Apotheosis has been removed. I didn't
-		  realize it was cut in 6.0. :(
-
-		- A number of minor UI taints (especially Blizzard compact raid
-		  frames) have been fixed.
-
-		- A circumstance where recently-blanked fields could fail to send to
-		  others (emitting a Lua error) has been fixed.
-
-		- A rare Lua error involving automated profile swapping has been
-		  fixed.
-
-		- The LibMSP compatibility layer will once again properly load if
-		  needed by other addons.
+		- The order of fields selected by pressing tab in the editor has been
+		  fixed to match the display order.
