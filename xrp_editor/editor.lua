@@ -120,7 +120,7 @@ do
 	-- Setup shorthand access and other stuff.
 	xrp.editor.checkboxes = {}
 	-- Appearance tab
-	local appearance = { "NA", "NI", "NT", "NH", "AE", "RA", "RC", "AH", "AW", "CU" }
+	local appearance = { "NA", "NI", "AH", "NT", "NH", "AW", "AE", "RA", "RC", "CU" }
 	for key, field in ipairs(appearance) do
 		xrp.editor[field] = xrp.editor.Appearance[field]
 		xrp.editor[field].fieldName = field
