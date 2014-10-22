@@ -7,6 +7,16 @@
 		  unlikely case of something going wrong during either the XRP update
 		  or the 6.0 game patch.
 
+	- This version introduces experimental support for sending/recieving RP
+	  profiles over Battle.net (BattleTag/RealID). This enables limited
+	  crossfaction and crossrealm support with your friends.
+
+		- At current, XRP 6.0.2.2+ is the only addon to support this.
+
+		- Once it is considered to be reasonably stable (likely meaning it's
+		  in a stable release of XRP), work will be done on porting it to the
+		  reference LibMSP used by other addons
+
 	- Bugfixes:
 
 		- The order of fields selected by pressing tab in the editor has been
