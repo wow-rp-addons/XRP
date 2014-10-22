@@ -61,7 +61,7 @@ function msp:UpdateBNList()
 	if not BNConnected() then return end
 	for i = 1, select(2, BNGetNumFriends()) do
 		for j = 1, BNGetNumFriendToons(i) do
-			local toonName, client, realmName, _, _, _, _, _, _, _, _, _, _, _, toonID = select(2, BNGetFriendToonInfo(i, j))
+			local active, toonName, client, realmName, _, _, _, _, _, _, _, _, _, _, _, toonID = BNGetFriendToonInfo(i, j)
 			if client == "WoW" then
 				local character = xrp:NameWithRealm(toonName, realmName)
 				self.bnet[character] = toonID
@@ -461,9 +461,14 @@ if not disabled then
 
 			self.handlers[prefix](self, character, message, true)
 		elseif event == "BN_TOON_NAME_UPDATED" or event == "BN_FRIEND_TOON_ONLINE" then
-			local toonName, client, realmName = select(2, BNGetToonInfo(prefix))
+			local active, toonName, client, realmName = BNGetToonInfo(prefix)
 			if client == "WoW" then
 				local character = xrp:NameWithRealm(toonName, realmName)
+				-- Reset check timer for newly-seen characters, particularly
+				-- for the case of newly-added BN friends. TODO: Test this.
+				if not self.bnet[character] and not self.cache[character].received and self.cache[character].nextcheck ~= 0 then
+					self.cache[character].nextcheck = 0
+				end
 				self.bnet[character] = prefix
 				self.bnetid[prefix] = character
 			end
