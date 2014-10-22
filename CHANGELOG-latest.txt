@@ -1,11 +1,4 @@
-6.0.2.2 (2014-10-??):
-
-	- This version is compatible with 6.0.2.
-
-		- If you are upgrading from a pre-6.0 version of XRP, it is STRONGLY
-		  recommended to make a backup copy of your WTF folder, for the
-		  unlikely case of something going wrong during either the XRP update
-		  or the 6.0 game patch.
+6.0.2.2_beta1 (2014-10-22):
 
 	- This version introduces experimental support for sending/recieving RP
 	  profiles over Battle.net (BattleTag/RealID). This enables limited

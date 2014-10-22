@@ -1,6 +1,6 @@
 ## Interface: 60000
 ## Title: XRP: Automation
-## Version: 6.0.2.1
+## Version: 6.0.2.2_beta1
 ## Author: Bor of Wyrmrest Accord (US)
 ## Notes: Provides automated profile swapping for forms and equipment sets.
 ## X-Category: Roleplay
