@@ -40,11 +40,8 @@ do
 			if gcache[character] and gcache[character][field] then
 				return gcache[character][field]
 			end
-			local request = self[rk]
-			if request and (not gcache[character] or not gcache[character].GF or gcache[character].GF == "Neutral" or gcache[character].GF == xrp.current.fields.GF) then
+			if self[rk] then
 				xrp:QueueRequest(character, field)
-			elseif request and gcache[character] and gcache[character].GF ~= xrp.current.fields.GF then
-				xrp:FireEvent("MSP_FAIL", character, "faction")
 			end
 			if xrpCache[character] and xrpCache[character].fields[field] then
 				return xrpCache[character].fields[field]
