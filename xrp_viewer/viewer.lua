@@ -117,9 +117,10 @@ xrp:HookEvent("MSP_RECEIVE", function(name)
 	if current == name then
 		if failed == name then
 			failed = nil
-			xrp.viewer.XC:SetText("")
 			xrp.viewer:Load(xrp.characters[name].fields)
-		else
+		end
+		local XC = xrp.viewer.XC:GetText()
+		if not XC or not XC:find(L["^Received"]) then
 			xrp.viewer.XC:SetText(L["Received!"])
 		end
 	end
@@ -129,13 +130,11 @@ xrp:HookEvent("MSP_NOCHANGE", function(name)
 	if current == name then
 		if failed == name then
 			failed = nil
-			xrp.viewer.XC:SetText("")
 			xrp.viewer:Load(xrp.characters[name].fields)
-		else
-			local XC = xrp.viewer.XC:GetText()
-			if not XC or XC:find("^Receiving") then
-				xrp.viewer.XC:SetText(L["No changes."])
-			end
+		end
+		local XC = xrp.viewer.XC:GetText()
+		if not XC or not XC:find(L["^Received"]) then
+			xrp.viewer.XC:SetText(L["No changes."])
 		end
 	end
 end)
@@ -143,7 +142,7 @@ end)
 xrp:HookEvent("MSP_CHUNK", function(name, chunk, totalchunks)
 	if current == name then
 		local XC = xrp.viewer.XC:GetText()
-		if chunk ~= totalchunks or not XC or XC:find("^Receiv") then
+		if chunk ~= totalchunks or not XC or XC:find(L["^Receiv"]) then
 			xrp.viewer.XC:SetFormattedText(totalchunks and (chunk == totalchunks and L["Received! (%u/%u)"] or L["Receiving... (%u/%u)"]) or L["Receiving... (%u/??)"], chunk, totalchunks)
 		end
 	end
