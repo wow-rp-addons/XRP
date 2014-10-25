@@ -1,5 +1,5 @@
 --[[
-	© Justin Snelgrove
+	(C) 2014 Justin Snelgrove <jj@stormlord.ca>
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -17,9 +17,6 @@
 
 local auto
 xrp:HookLoad(function()
-	if type(xrpSaved.auto) ~= "table" then
-		xrpSaved.auto = {}
-	end
 	auto = xrpSaved.auto
 end)
 
@@ -150,7 +147,7 @@ do
 			self:Show()
 		end
 	end
-	function xrp.auto:ForceRecheck()
+	function xrp:AutoRecheck()
 		swap.race = nil
 		swap.class = nil
 		swap.equip = nil

@@ -31,6 +31,14 @@ function xrp:ToggleEditor()
 	return true
 end
 
+function xrp:ToggleAuto()
+	if not LoadIfNeeded("xrp_editor") then
+		return false
+	end
+	ToggleFrame(self.auto)
+	return true
+end
+
 function xrp:ToggleViewer()
 	if not LoadIfNeeded("xrp_viewer") then
 		return false

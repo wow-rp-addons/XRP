@@ -100,7 +100,7 @@ function xrp.auto:AcceptForm()
 		self.Status:SetFormattedText("The assigned profile for the %s form/set has been removed.", self.Form:MakeWords(form))
 	end
 	self:CheckButtons()
-	self:ForceRecheck()
+	xrp:AutoRecheck()
 end
 
 function xrp.auto:CheckButtons()

@@ -130,7 +130,7 @@
 		<Scripts>
 			<OnLoad>
 				xrp.auto = self;
-				self.TitleText:SetText(GetAddOnMetadata("xrp_auto", "Title"));
+				self.TitleText:SetText(xrp.L["Profile Automation"]);
 			</OnLoad>
 			<OnShow>
 				SetPortraitTexture(self.portrait, "player");

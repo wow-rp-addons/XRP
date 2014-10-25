@@ -3,11 +3,14 @@
 ## Title: XRP: Editor
 ## Author: Bor of Wyrmrest Accord (US)
 ## Version: 6.0.2.2_beta1
-## Notes: Provides a profile editor, supporting common fields.
+## Notes: Provides a profile editor.
 ## X-Category: Roleplay
 ## X-License: GPLv3
 ## Dependencies: xrp
 
+strings.lua
 editor.xml
 editor.lua
 editor_popups.lua
+auto.xml
+auto.lua
