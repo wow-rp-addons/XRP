@@ -1,5 +1,5 @@
 --[[
-	© Justin Snelgrove
+	(C) 2014 Justin Snelgrove <jj@stormlord.ca>
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -15,6 +15,8 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
+if not select(4, GetAddOnInfo("MyRolePlay")) and not select(4, GetAddOnInfo("totalRP2")) then return end
+
 local L = xrp.L
 
 StaticPopupDialogs["XRP_IMPORT_RELOAD"] = {
@@ -29,23 +31,15 @@ StaticPopupDialogs["XRP_IMPORT_RELOAD"] = {
 	whileDead = true,
 	hideOnEscape = true,
 	preferredIndex = 3,
-	cancels = "XRP_MSP_DISABLE", -- We know, it's supposed to do that.
-}
-
-StaticPopupDialogs["XRP_IMPORT_FAILED"] = {
-	text = L["No supported RP addons found to import from. You should log out and re-enable XRP: Import along with MyRolePlay and/or TotalRP2 if you wish to import profiles."],
-	button1 = OKAY,
-	showAlert = true,
-	enterClicksFirstButton = true,
-	timeout = 0,
-	whileDead = true,
-	hideOnEscape = true,
-	preferredIndex = 3,
+	cancels = "XRP_MSP_DISABLE",
 }
 
 -- This is easy. Using a very similar storage format (i.e., MSP fields).
 local function import_MyRolePlay()
-	if not mrpSaved then return end
+	if not mrpSaved then
+		return 0
+	end
+	local imported = 0
 	for name, profile in pairs(mrpSaved.Profiles) do
 		local newname = "MRP-"..name
 		if xrp.profiles:Add(newname) then
@@ -63,8 +57,10 @@ local function import_MyRolePlay()
 					xrp.profiles[newname].fields[field] = value ~= "" and value or nil
 				end
 			end
+			imported = imported + 1
 		end
 	end
+	return imported
 end
 
 local import_totalRP2
@@ -86,8 +82,8 @@ do
 
 	-- This is a bit more complex. And partly in French.
 	function import_totalRP2()
-		if if not TRP2_Module_PlayerInfo or not xrp.profiles:Add("TRP2") then
-			return
+		if not TRP2_Module_PlayerInfo or not xrp.profiles:Add("TRP2") then
+			return 0
 		end
 		local realm = GetRealmName()
 		local player = (UnitName("player"))
@@ -128,35 +124,26 @@ do
 			xrp.profiles["TRP2"].fields.AH = trp2_height[profile.Registre.Taille or 3]
 			xrp.profiles["TRP2"].fields.AW = trp2_weight[profile.Registre.Silhouette or 2]
 		end
+		return 1
 	end
 end
 
 local import = CreateFrame("Frame")
 import:SetScript("OnEvent", function(self, event, addon)
-	if event == "ADDON_LOADED" and addon == "xrp_import" then
-
-		local mrploaded = select(4, GetAddOnInfo("MyRolePlay"))
-		if mrploaded then
-			import_MyRolePlay()
+	if event == "ADDON_LOADED" and addon == "MyRolePlay" then
+		local count = import_MyRolePlay()
+		if count > 0 then
 			DisableAddOn("MyRolePlay")
+			self:RegisterEvent("PLAYER_LOGIN")
 		end
-
-		local trp2loaded = select(4, GetAddOnInfo("totalRP2"))
-		if trp2loaded then
-			import_totalRP2()
+	elseif event == "ADDON_LOADED" and addon == "totalRP2" then
+		local count = import_totalRP2()
+		if count > 0 then
 			DisableAddOn("totalRP2")
+			self:RegisterEvent("PLAYER_LOGIN")
 		end
-
-		DisableAddOn(addon)
-
-		if mrploaded or trp2loaded then
-			StaticPopup_Show("XRP_IMPORT_RELOAD")
-		else
-			StaticPopup_Show("XRP_IMPORT_FAILED")
-		end
-
-		self:UnregisterAllEvents()
-		self:SetScript("OnEvent", nil)
+	elseif event == "PLAYER_LOGIN" then
+		StaticPopup_Show("XRP_IMPORT_RELOAD")
 	end
 end)
 import:RegisterEvent("ADDON_LOADED")
