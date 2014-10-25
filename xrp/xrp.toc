@@ -22,3 +22,4 @@ commands.lua
 minimap.xml
 minimap.lua
 about.xml
+extra\libmsp_compat.lua

@@ -1,5 +1,5 @@
 --[[
-	© Justin Snelgrove
+	(C) 2014 Justin Snelgrove <jj@stormlord.ca>
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -15,6 +15,8 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
+if msp ~= nil then return end
+
 -- This file provides emulation of reference LibMSP for XRP. This is used by
 -- some addons (such as GHI) to interact with a RP profile. For the most part,
 -- this is read-only. msp.my (current profile) is writable, but only sets an
@@ -26,7 +28,7 @@
 -- more like reference LibMSP.
 
 local msp = {}
-msp.version = 8 -- Let's just say we're 8. It's common enough.
+msp.version = 9 -- Let's just say we're 9.
 msp.protocolversion = xrp.msp
 
 -- Passes the function into xrp:HookEvent. Arguments for fired events are the
