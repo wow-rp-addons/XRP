@@ -591,7 +591,7 @@
 				xrp.editor = self;
 				PanelTemplates_SetNumTabs(self, 2);
 				PanelTemplates_SetTab(self, 1);
-				self.TitleText:SetText(GetAddOnMetadata("xrp_editor", "Title"));
+				self.TitleText:SetText(xrp.L["Profile Editor"]);
 			</OnLoad>
 			<OnShow>
 				SetPortraitTexture(self.portrait, "player");

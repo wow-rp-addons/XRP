@@ -257,11 +257,13 @@ do
 				end
 				xrpAccountSaved = {
 					settings = xrp_settings,
+					dataVersion = 1,
 				}
 				xrp_settings = nil
 			else
 				xrpAccountSaved = {
 					settings = {},
+					dataVersion = 1,
 				}
 			end
 		end
@@ -281,18 +283,19 @@ do
 					xrp_defaults = nil
 				end
 				xrpSaved = {
+					auto = {},
+					meta = {
+						fields = {},
+						versions = {},
+					},
 					overrides = {
 						fields = {},
 						versions = {},
 					},
 					profiles = xrp_profiles,
 					selected = xrp_selectedprofile,
-					meta = {
-						fields = {},
-						versions = {},
-					},
 					versions = xrp_versions or {},
-					dataVersion = 1,
+					dataVersion = 2,
 				}
 				for name, profile in pairs(xrpSaved.profiles) do
 					if type(profile.versions) ~= "table" then
@@ -322,6 +325,11 @@ do
 				xrp_versions = nil
 			else
 				xrpSaved = {
+					auto = {},
+					meta = {
+						fields = {},
+						versions = {},
+					},
 					overrides = {
 						fields = {},
 						versions = {},
@@ -334,14 +342,17 @@ do
 						},
 					},
 					selected = xrp.L["Default"],
-					meta = {
-						fields = {},
-						versions = {},
-					},
 					versions = {},
-					dataVersion = 1,
+					dataVersion = 2,
 				}
 			end
+		end
+		if xrpSaved.dataVersion < 2 then
+			if type(xrpSaved.auto) ~= "table" then
+				xrpSaved.auto = {}
+			end
+			xrpSaved.dataVersion = 2
+			xrpAccountSaved.dataVersion = 1
 		end
 
 		xrp.settings = setmetatable(xrpAccountSaved.settings, { __index = default_settings })

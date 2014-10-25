@@ -218,8 +218,8 @@ do
 		{ text = XRP_FC, notCheckable = true, hasArrow = true, menuList = menulist_status, },
 		{ text = XRP_CU..CONTINUED, notCheckable = true, func = function() StaticPopup_Show("XRP_CURRENTLY") end, },
 		{ text = L["Editor..."], notCheckable = true, func = function() xrp:ToggleEditor() end, },
+		{ text = L["Automation..."], notCheckable = true, func = function() xrp:ToggleAuto() end, },
 		{ text = L["Viewer..."], notCheckable = true, func = function() xrp:ToggleViewer() end, },
-		{ text = L["Automation..."], notCheckable = true, func = function() ToggleFrame(xrp.auto) end, },
 		{ text = L["Options..."], notCheckable = true, func = function() xrp:ShowOptions() xrp:ShowOptions() end, },
 		{ text = CANCEL, notCheckable = true, },
 	}
@@ -230,16 +230,13 @@ do
 		if not loaded and reason ~= "DEMAND_LOADED" then
 			table.remove(minimap_menulist, 8)
 		end
-		loaded = select(4, GetAddOnInfo("xrp_auto"))
-		if not loaded then
-			table.remove(minimap_menulist, 7)
-		end
 		loaded, reason = select(4, GetAddOnInfo("xrp_viewer"))
 		if not loaded and reason ~= "DEMAND_LOADED" then
-			table.remove(minimap_menulist, 6)
+			table.remove(minimap_menulist, 7)
 		end
 		loaded, reason = select(4, GetAddOnInfo("xrp_editor"))
 		if not loaded and reason ~= "DEMAND_LOADED" then
+			table.remove(minimap_menulist, 6)
 			table.remove(minimap_menulist, 5)
 		end
 	end
