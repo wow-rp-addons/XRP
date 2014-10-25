@@ -6,7 +6,6 @@ move-folders:
     xrp/xrp_chatnames: xrp_chatnames
     xrp/xrp_editor: xrp_editor
     xrp/xrp_import: xrp_import
-    xrp/xrp_libmsp: xrp_libmsp
     xrp/xrp_options: xrp_options
     xrp/xrp_tooltip: xrp_tooltip
     xrp/xrp_viewer: xrp_viewer

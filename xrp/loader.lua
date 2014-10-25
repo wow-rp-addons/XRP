@@ -71,18 +71,3 @@ function xrp:ShowOptions()
 	self.options:SetScript("OnShow", nil)
 	return true
 end
-
-local loaded, reason = select(4, GetAddOnInfo("xrp_libmsp"))
-if not loaded and reason == "DEMAND_LOADED" and not _G.msp then
-	local msp = setmetatable({}, {
-		__index = function(self, index)
-			if not LoadIfNeeded("xrp_libmsp") then
-				return nil
-			end
-			return _G.msp[index]
-		end,
-		__newindex = function() end,
-		__metatable = false,
-	})
-	_G.msp = msp
-end
