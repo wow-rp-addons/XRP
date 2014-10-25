@@ -191,13 +191,22 @@ xrp:HookLoad(function()
 	if settings.menus then
 		-- Chat names and some other places.
 		table.insert(UnitPopupMenus["FRIEND"], 5, "XRP_VIEW_CHARACTER")
+		if UnitPopupMenus["FRIEND"][2] == "TARGET" then
+			table.remove(UnitPopupMenus["FRIEND"], 2)
+		end
 		table.insert(UnitPopupMenus["FRIEND_OFFLINE"], 2, "INTERACT_SUBSECTION_TITLE")
 		table.insert(UnitPopupMenus["FRIEND_OFFLINE"], 3, "XRP_VIEW_CHARACTER")
 		-- Guild list.
 		table.insert(UnitPopupMenus["GUILD"], 4, "XRP_VIEW_CHARACTER")
+		if UnitPopupMenus["GUILD"][1] == "TARGET" then
+			table.remove(UnitPopupMenus["GUILD"], 1)
+		end
 		table.insert(UnitPopupMenus["GUILD_OFFLINE"], 3, "XRP_VIEW_CHARACTER")
 		-- Chat channel roster.
 		table.insert(UnitPopupMenus["CHAT_ROSTER"], 3, "XRP_VIEW_CHARACTER")
+		if UnitPopupMenus["CHAT_ROSTER"][1] == "TARGET" then
+			table.remove(UnitPopupMenus["CHAT_ROSTER"], 1)
+		end
 	end
 	if settings.unitmenus then
 		-- Player target/misc.
