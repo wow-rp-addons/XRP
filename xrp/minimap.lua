@@ -217,9 +217,9 @@ do
 		{ text = L["Profiles"], notCheckable = true, hasArrow = true, menuList = menulist_profiles, },
 		{ text = XRP_FC, notCheckable = true, hasArrow = true, menuList = menulist_status, },
 		{ text = XRP_CU..CONTINUED, notCheckable = true, func = function() StaticPopup_Show("XRP_CURRENTLY") end, },
-		{ text = L["Profile editor..."], notCheckable = true, func = function() xrp:ToggleEditor() end, },
-		{ text = L["Profile viewer..."], notCheckable = true, func = function() xrp:ToggleViewer() end, },
-		{ text = L["Profile automation..."], notCheckable = true, func = function() ToggleFrame(xrp.auto) end, },
+		{ text = L["Editor..."], notCheckable = true, func = function() xrp:ToggleEditor() end, },
+		{ text = L["Viewer..."], notCheckable = true, func = function() xrp:ToggleViewer() end, },
+		{ text = L["Automation..."], notCheckable = true, func = function() ToggleFrame(xrp.auto) end, },
 		{ text = L["Options..."], notCheckable = true, func = function() xrp:ShowOptions() xrp:ShowOptions() end, },
 		{ text = CANCEL, notCheckable = true, },
 	}

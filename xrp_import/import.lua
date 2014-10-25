@@ -45,23 +45,23 @@ StaticPopupDialogs["XRP_IMPORT_FAILED"] = {
 
 -- This is easy. Using a very similar storage format (i.e., MSP fields).
 local function import_MyRolePlay()
+	if not mrpSaved then return end
 	for name, profile in pairs(mrpSaved.Profiles) do
 		local newname = "MRP-"..name
-		if not xrp.profiles:Add(newname) then
-			return
-		end
-		for field, value in pairs(profile) do
-			if not xrp.fields.unit[field] and not xrp.fields.meta[field] and not xrp.fields.dummy[field] and field:find("^%u%u$") then
-				if field == "FC" then
-					if not tonumber(value) and value ~= "" then
-						value = "2"
-					elseif value == "0" then
-						value = ""
+		if xrp.profiles:Add(newname) then
+			for field, value in pairs(profile) do
+				if not xrp.fields.unit[field] and not xrp.fields.meta[field] and not xrp.fields.dummy[field] and field:find("^%u%u$") then
+					if field == "FC" then
+						if not tonumber(value) and value ~= "" then
+							value = "2"
+						elseif value == "0" then
+							value = ""
+						end
+					elseif field == "FR" and tonumber(value) then
+						value = value ~= "0" and xrp.values.FR[tonumber(value)] or ""
 					end
-				elseif field == "FR" and tonumber(value) then
-					value = value ~= "0" and xrp.values.FR[tonumber(value)] or ""
+					xrp.profiles[newname].fields[field] = value ~= "" and value or nil
 				end
-				xrp.profiles[newname].fields[field] = value ~= "" and value or nil
 			end
 		end
 	end
@@ -86,7 +86,7 @@ do
 
 	-- This is a bit more complex. And partly in French.
 	function import_totalRP2()
-		if not xrp.profiles:Add("TRP2") then
+		if if not TRP2_Module_PlayerInfo or not xrp.profiles:Add("TRP2") then
 			return
 		end
 		local realm = GetRealmName()
