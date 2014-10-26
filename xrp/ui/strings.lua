@@ -1,5 +1,5 @@
 --[[
-	© Justin Snelgrove
+	(C) 2014 Justin Snelgrove <jj@stormlord.ca>
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -123,7 +123,7 @@ end
 XRP_COPYHEADER = L["License/Copyright"]
 
 -- Copyright line should not be localized.
-XRP_COPYRIGHT = "(C) 2014 Bor Blasthammer <bor@blasthammer.net>"
+XRP_COPYRIGHT = "(C) 2014 Justin Snelgrove <jj@stormlord.ca>"
 
 -- These two should, ideally, be taken from FSF translations.
 XRP_LICENSE = L[ [[This program is free software: you can redistribute it and/or modify

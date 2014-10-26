@@ -1,4 +1,8 @@
-6.0.2.2_beta1 (2014-10-22):
+6.0.2.2_beta2 (2014-10-27):
+
+	- This version reorganizes file and addon layout. You should remove all
+	  old xrp components (i.e., xrp_import, xrp_libmsp, xrp_auto) prior to
+	  upgrading. You should also exit the game while upgrading.
 
 	- This version introduces experimental support for sending/recieving RP
 	  profiles over Battle.net (BattleTag/RealID). This enables limited
@@ -9,6 +13,12 @@
 		- Once it is considered to be reasonably stable (likely meaning it's
 		  in a stable release of XRP), work will be done on porting it to the
 		  reference LibMSP used by other addons
+
+	- This version also introduces experimental support for sending/recieving
+	  RP profiles over party or raid channels. This enables crossrealm
+	  profiles while in a party or raid group, with others in that group.
+
+		- The same restrictions as above apply for this feature.
 
 	- Bugfixes:
 
