@@ -190,7 +190,7 @@ do
 			tooltip_RenderLine(cu.info:format(tooltip_Truncate(not settings.norprace and xrp:StripEscapes(character.RA) or cu.race or UNKNOWN, 40, 0, false), tooltip_Truncate(not settings.norpclass and xrp:StripEscapes(character.RC) or cu.class or UNKNOWN, 40, 0, false)))
 
 			if (character.FR and character.FR ~= "0") or (character.FC and character.FC ~= "0") then
-				local color = character.FC and character.FC ~= "0" and character.FC == "1" and "ff99664d" or "ff66b380"
+				local color = character.FC == "1" and "ff99664d" or "ff66b380"
 				-- AAAAAAAAAAAAAAAAAAAAAAAA. The boolean logic.
 				local frline = ("|c%s%s|r"):format(color, tooltip_Truncate((character.FR == "0" or not character.FR) and " " or tonumber(character.FR) and xrp.values.FR[tonumber(character.FR)] or xrp:StripEscapes(character.FR), 35, 0, false))
 				local fcline
