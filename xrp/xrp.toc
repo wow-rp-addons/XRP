@@ -9,18 +9,18 @@
 ## SavedVariables: xrpAccountSaved, xrpCache
 
 xrp.lua
-strings.lua
 core\helpers.lua
 core\profiles.lua
 libs\ChatThrottleLib\ChatThrottleLib.xml
 core\msp.lua
 core\characters.lua
 core\automation.lua
-loader.lua
-integration.lua
-commands.lua
-minimap.xml
-minimap.lua
-about.xml
+ui\loader.lua
+ui\strings.lua
+ui\integration.lua
+ui\commands.lua
+ui\minimap.xml
+ui\minimap.lua
+ui\about.xml
 extra\libmsp_compat.lua
 extra\import.lua

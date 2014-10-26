@@ -1,5 +1,5 @@
 --[[
-	© Justin Snelgrove
+	(C) 2014 Justin Snelgrove <jj@stormlord.ca>
 	(C) 2008-2011 Rabbit <rabbit.magtheridon@gmail.com>
 
 	This program is free software: you can redistribute it and/or modify
