@@ -16,6 +16,7 @@
 ]]
 
 local settings
+local L = xrp.L
 function xrp.options.core:okay()
 	settings.height = UIDropDownMenu_GetSelectedValue(self.AHUnits)
 	settings.weight = UIDropDownMenu_GetSelectedValue(self.AWUnits)
@@ -35,14 +36,14 @@ function xrp.options.core:okay()
 	do
 		local menus = self.IntegrationMenus:GetChecked()
 		if settings.integration.menus ~= menus then
-			StaticPopup_Show("XRP_OPTIONS_RELOAD")
+			StaticPopup_Show("XRP_RELOAD", L["You have changed an XRP option which requires a UI reload to take effect."])
 		end
 		settings.integration.menus = menus
 	end
 	do
 		local unitmenus = self.IntegrationUnitMenus:GetChecked()
 		if settings.integration.unitmenus ~= unitmenus then
-			StaticPopup_Show("XRP_OPTIONS_RELOAD")
+			StaticPopup_Show("XRP_RELOAD", L["You have changed an XRP option which requires a UI reload to take effect."])
 		end
 		settings.integration.unitmenus = unitmenus
 	end
@@ -99,7 +100,6 @@ end
 
 xrp.options.core.parent = XRP
 
-local L = xrp.L
 xrp.options.core.name = L["Core"]
 InterfaceOptions_AddCategory(xrp.options.core)
 
