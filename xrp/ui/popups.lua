@@ -38,6 +38,21 @@ StaticPopupDialogs["XRP_ERROR"] = {
 	preferredIndex = 3,
 }
 
+StaticPopupDialogs["XRP_RELOAD"] = {
+	text = L["%s"],
+	button1 = L["Reload UI"],
+	button2 = CANCEL,
+	showAlert = true,
+	OnAccept = function()
+		ReloadUI()
+	end,
+	enterClicksFirstButton = false,
+	timeout = 0,
+	whileDead = true,
+	hideOnEscape = true,
+	preferredIndex = 3,
+}
+
 StaticPopupDialogs["XRP_CURRENTLY"] = {
 	text = L["What are you currently doing?\n(This will reset ten minutes after logout.)"],
 	button1 = ACCEPT,
