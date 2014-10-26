@@ -26,7 +26,7 @@ StaticPopupDialogs["XRP_IMPORT_RELOAD"] = {
 	OnAccept = function()
 		ReloadUI()
 	end,
-	enterClicksFirstButton = true,
+	enterClicksFirstButton = false,
 	timeout = 0,
 	whileDead = true,
 	hideOnEscape = true,

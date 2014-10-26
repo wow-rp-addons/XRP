@@ -51,17 +51,3 @@ if (select(4, GetAddOnInfo("xrp_tooltip"))) then
 	XRP_OPTIONS_TOOLTIP_NOHOSTILE = L["Hide roleplaying information for hostile PvP targets"]
 	XRP_OPTIONS_TOOLTIP_EXTRASPACE = L["Add extra spacing lines"]
 end
-
-StaticPopupDialogs["XRP_OPTIONS_RELOAD"] = {
-	text = L["You have changed an XRP option which requires a UI reload to take effect."],
-	button1 = L["Reload UI"],
-	button2 = CANCEL,
-	OnAccept = function()
-		ReloadUI()
-	end,
-	enterClicksFirstButton = true,
-	timeout = 0,
-	whileDead = true,
-	hideOnEscape = true,
-	preferredIndex = 3,
-}
