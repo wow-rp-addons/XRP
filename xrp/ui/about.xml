@@ -70,7 +70,7 @@
 				<Scripts>
 					<OnClick>
 						xrp:CacheTidy();
-						StaticPopup_Show("XRP_CACHE_TIDIED");
+						StaticPopup_Show("XRP_NOTIFICATION", xrp.L["Old entries have been pruned from the cache."]);
 					</OnClick>
 				</Scripts>
 			</Button>

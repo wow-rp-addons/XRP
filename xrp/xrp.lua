@@ -91,7 +91,7 @@ do
 		return true
 	end
 
-	local function xrp_CompareVersion(new_version, old_version)
+	local function CompareVersion(new_version, old_version)
 		local new_major, new_minor, new_patch, new_rev, new_addon, new_reltype, new_relrev = new_version:match("(%d+)%.(%d+)%.(%d+)(%l?)%.(%d+)%_?(%l*)(%d*)")
 		local old_major, old_minor, old_patch, old_rev, old_addon, old_reltype, old_relrev = old_version:match("(%d+)%.(%d+)%.(%d+)(%l?)%.(%d+)%_?(%l*)(%d*)")
 
@@ -123,7 +123,7 @@ do
 
 	function xrp:AddonUpdate(version)
 		if not version or version == self.version or version == self.settings.newversion then return end
-		if xrp_CompareVersion(version, self.settings.newversion or self.version) >= 0 then
+		if CompareVersion(version, self.settings.newversion or self.version) >= 0 then
 			self.settings.newversion = version
 		end
 	end
@@ -180,7 +180,7 @@ do
 			end
 
 			if xrp.settings.newversion then
-				local update = xrp_CompareVersion(xrp.settings.newversion, xrp.version)
+				local update = CompareVersion(xrp.settings.newversion, xrp.version)
 				local now = time()
 				if update == 1 and (not xrp.settings.versionwarning or xrp.settings.versionwarning < now - 21600) then
 					C_Timer.After(8, function()
@@ -388,57 +388,3 @@ function xrp:CacheTidy(timer)
 	end
 	return true
 end
-
--- This is kinda terrifying, but it fixes some major UI tainting when the user
--- presses "Cancel" in the Interface Options (out of combat). The drawback is
--- that any changes made to the default compact raid frames aren't actually
--- cancelled (they're not saved, but they're still active). Still, this is
--- better than having the Cancel button completely taint the raid frames.
-function CompactUnitFrameProfiles_CancelChanges(self)
-	InterfaceOptionsPanel_Cancel(self)
-
-	-- The following is disabled to make it more obvious that changes aren't
-	-- really cancelled.
-	--RestoreRaidProfileFromCopy()
-
-	CompactUnitFrameProfiles_UpdateCurrentPanel()
-
-	-- The following is disabled because it's the actual function that taints
-	-- everything. The execution path is tainted by the time this function is
-	-- called if there's any addon with an Interface Options panel.
-	--CompactUnitFrameProfiles_ApplyCurrentSettings()
-end
-
-local L = xrp.L
-StaticPopupDialogs["XRP_CACHE_CLEAR"] = {
-	text = L["Are you sure you wish to empty the profile cache?"],
-	button1 = ACCEPT,
-	button2 = CANCEL,
-	OnAccept = function()
-		xrp:CacheTidy(60)
-		StaticPopup_Show("XRP_CACHE_CLEARED")
-	end,
-	enterClicksFirstButton = false,
-	timeout = 0,
-	whileDead = true,
-	hideOnEscape = true,
-	preferredIndex = 3,
-}
-StaticPopupDialogs["XRP_CACHE_CLEARED"] = {
-	text = L["The cache has been cleared."],
-	button1 = OKAY,
-	enterClicksFirstButton = true,
-	timeout = 0,
-	whileDead = true,
-	hideOnEscape = true,
-	preferredIndex = 3,
-}
-StaticPopupDialogs["XRP_CACHE_TIDIED"] = {
-	text = L["Old entries have been pruned from the cache."],
-	button1 = OKAY,
-	enterClicksFirstButton = true,
-	timeout = 0,
-	whileDead = true,
-	hideOnEscape = true,
-	preferredIndex = 3,
-}
