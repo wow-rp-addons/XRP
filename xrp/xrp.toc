@@ -15,6 +15,7 @@ libs\ChatThrottleLib\ChatThrottleLib.xml
 core\msp.lua
 core\characters.lua
 core\automation.lua
+ui\popups.lua
 ui\loader.lua
 ui\strings.lua
 ui\integration.lua
@@ -22,5 +23,6 @@ ui\commands.lua
 ui\minimap.xml
 ui\minimap.lua
 ui\about.xml
+extra\fixes.lua
 extra\libmsp_compat.lua
 extra\import.lua
