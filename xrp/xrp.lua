@@ -295,7 +295,8 @@ do
 					profiles = xrp_profiles,
 					selected = xrp_selectedprofile,
 					versions = xrp_versions or {},
-					dataVersion = 2,
+					--TODO
+					dataVersion = 1,
 				}
 				for name, profile in pairs(xrpSaved.profiles) do
 					if type(profile.versions) ~= "table" then
@@ -343,7 +344,8 @@ do
 					},
 					selected = xrp.L["Default"],
 					versions = {},
-					dataVersion = 2,
+					--TODO
+					dataVersion = 1,
 				}
 			end
 		end
@@ -351,8 +353,9 @@ do
 			if type(xrpSaved.auto) ~= "table" then
 				xrpSaved.auto = {}
 			end
-			xrpSaved.dataVersion = 2
-			xrpAccountSaved.dataVersion = 1
+			--TODO
+			--xrpSaved.dataVersion = 2
+			--xrpAccountSaved.dataVersion = 1
 		end
 
 		xrp.settings = setmetatable(xrpAccountSaved.settings, { __index = default_settings })
