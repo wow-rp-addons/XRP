@@ -189,6 +189,33 @@ do
 	end)
 end
 
+local function ShowMinimapTooltip(self)
+	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT", 30, 4)
+	GameTooltip:SetText(xrp.current.fields.NA)
+	GameTooltip:AddLine(" ")
+	GameTooltip:AddLine(L["Profile: |cffffffff%s|r"]:format(xrpSaved.selected))
+	local FC = xrp.current.fields.FC
+	if FC and FC ~= "0" then
+		GameTooltip:AddLine(L["Status: |cff%s%s|r"]:format(FC == "1" and "99664d" or "66b380", xrp.values.FC[tonumber(FC)] or FC))
+	end
+	local CU = xrp.current.fields.CU
+	if CU then
+		GameTooltip:AddLine(" ")
+		GameTooltip:AddLine(L["Currently:"])
+		GameTooltip:AddLine(("|cffe6b399%s|r"):format(CU or "None"), nil, nil, nil, true)
+	end
+	GameTooltip:AddLine(" ")
+	if xrp.units.target and xrp.units.target.fields.VA then
+		GameTooltip:AddLine(L["|cffffffffClick to view your target's profile.|r"])
+	elseif not FC or FC == "0" or FC == "1" then
+		GameTooltip:AddLine(L["|cff66b380Click for in character.|r"])
+	else
+		GameTooltip:AddLine(L["|cff99664dClick for out of character.|r"])
+	end
+	GameTooltip:AddLine(L["|cffffffffRight click for the menu.|r"])
+	GameTooltip:Show()
+end
+
 do
 	local menulist_status = {}
 	do
@@ -265,6 +292,9 @@ do
 							xrp.current.fields.FC = "2"
 						end
 					end
+					if not settings.hidett then
+						ShowMinimapTooltip(self)
+					end
 					CloseDropDownMenus()
 				elseif button == "RightButton" then
 					if settings.detached and not self.locked then
@@ -278,6 +308,9 @@ do
 						end
 
 						ToggleDropDownMenu(nil, nil, self.Menu, self, -2, 5, minimap_menulist)
+						if not settings.hidett then
+							GameTooltip:Hide()
+						end
 					end
 				end
 			end
@@ -292,15 +325,7 @@ xrp.minimap:SetScript("OnEnter", function(self, motion)
 		GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT", 30, 4)
 		GameTooltip:SetText(L["Right click to lock icon position."])
 	elseif motion and not settings.hidett then
-		GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT", 30, 4)
-		GameTooltip:SetText(L["Click to:"])
-		GameTooltip:AddLine(" ")
-		GameTooltip:AddLine(("|TInterface\\Icons\\Ability_Malkorok_BlightofYshaarj_Red:20|t: %s"):format(L["Toggle your status to IC."]))
-		GameTooltip:AddLine(("|TInterface\\Icons\\Ability_Malkorok_BlightofYshaarj_Green:20|t: %s"):format(L["Toggle your status to OOC."]))
-		GameTooltip:AddLine(("|TInterface\\Icons\\INV_Misc_Book_03:20|t: %s"):format(L["View your target's profile."]))
-		GameTooltip:AddLine(" ")
-		GameTooltip:AddLine(L["Right click for the menu."])
-		GameTooltip:Show()
+		ShowMinimapTooltip(self)
 	end
 end)
 
