@@ -15,7 +15,8 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-if not select(4, GetAddOnInfo("MyRolePlay")) and not select(4, GetAddOnInfo("totalRP2")) then return end
+local hasMRP, hasTRP2 = (select(4, GetAddOnInfo("MyRolePlay"))), (select(4, GetAddOnInfo("totalRP2")))
+if not (hasMRP or hasTRP2) then return end
 
 local L = xrp.L
 
@@ -129,21 +130,26 @@ do
 end
 
 local import = CreateFrame("Frame")
-import:SetScript("OnEvent", function(self, event, addon)
-	if event == "ADDON_LOADED" and addon == "MyRolePlay" then
-		local count = import_MyRolePlay()
-		if count > 0 then
-			DisableAddOn("MyRolePlay")
-			self:RegisterEvent("PLAYER_LOGIN")
+import:SetScript("OnEvent", function(self, event)
+	if event == "PLAYER_LOGIN" then
+		local imported = false
+		if hasMRP then
+			local count = import_MyRolePlay()
+			if count > 0 then
+				DisableAddOn("MyRolePlay")
+				imported = true
+			end
 		end
-	elseif event == "ADDON_LOADED" and addon == "totalRP2" then
-		local count = import_totalRP2()
-		if count > 0 then
-			DisableAddOn("totalRP2")
-			self:RegisterEvent("PLAYER_LOGIN")
+		if hasTRP2 then
+			local count = import_totalRP2()
+			if count > 0 then
+				DisableAddOn("totalRP2")
+				imported = true
+			end
 		end
-	elseif event == "PLAYER_LOGIN" then
-		StaticPopup_Show("XRP_IMPORT_RELOAD")
+		if imported then
+			StaticPopup_Show("XRP_IMPORT_RELOAD")
+		end
 	end
 end)
-import:RegisterEvent("ADDON_LOADED")
+import:RegisterEvent("PLAYER_LOGIN")
