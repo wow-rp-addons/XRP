@@ -1,4 +1,4 @@
-6.0.2.2_beta2 (2014-10-27):
+6.0.2.2_beta2 (2014-10-28):
 
 	- This version reorganizes file and addon layout. You should remove all
 	  old xrp components (i.e., xrp_import, xrp_libmsp, xrp_auto) prior to
@@ -18,9 +18,24 @@
 	  RP profiles over party or raid channels. This enables crossrealm
 	  profiles while in a party or raid group, with others in that group.
 
-		- The same restrictions as above apply for this feature.
+		- The same restrictions as above apply for this feature. The priority
+		  for profile sending/recieving is as follows:
+				Battle.net > Standard > Group
+		  This means you will not be using the party/raid implementation when
+		  in a group with friends on your BattleTag.
+
+	- The tooltip format on the minimap icon has drastically changed.
+	  Hopefully it's more useful now.
+
+	- The positioning of "Roleplay Profile" in the right click menus has been
+	  changed to just below the name of the character (i.e., first in the
+	  menu).
 
 	- Bugfixes:
 
 		- The order of fields selected by pressing tab in the editor has been
 		  fixed to match the display order.
+
+		- Added a warning if the raid profiles dialog is opened when the
+		  interface options is closed about possible tainting caused by
+		  Blizzard bugs.
