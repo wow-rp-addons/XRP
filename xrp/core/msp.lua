@@ -173,7 +173,7 @@ do
 			local prefix = isRequest and character.."\30" or ""
 			local chunksize = 255 - #prefix
 			if #data < chunksize then
-				ChatThrottleLib:SendAddonMessage("NORMAL", "GMSP", prefix..data, channel, nil, "XRP-GROUP")
+				ChatThrottleLib:SendAddonMessage("NORMAL", "GMSP", prefix..data, "RAID", nil, "XRP-GROUP")
 			else
 				chunksize = chunksize - 1
 				-- XC is most likely to add five or six extra characters, will
@@ -181,15 +181,15 @@ do
 				-- profile is over 25000 characters or so. So let's say six.
 				data = ("XC=%u\1%s"):format(((#data + 6) / chunksize) + 1, data)
 				local position = 1
-				ChatThrottleLib:SendAddonMessage("BULK", "GMSP", prefix.."\1"..data:sub(position, position + chunksize - 1), channel, nil, "XRP-GROUP")
+				ChatThrottleLib:SendAddonMessage("BULK", "GMSP", prefix.."\1"..data:sub(position, position + chunksize - 1), "RAID", nil, "XRP-GROUP")
 				--print(character..": Outgoing MSP\\1")
 				position = position + chunksize
 				while position + chunksize <= #data do
-					ChatThrottleLib:SendAddonMessage("BULK", "GMSP", prefix.."\2"..data:sub(position, position + chunksize - 1), channel, nil, "XRP-GROUP")
+					ChatThrottleLib:SendAddonMessage("BULK", "GMSP", prefix.."\2"..data:sub(position, position + chunksize - 1), "RAID", nil, "XRP-GROUP")
 					--print(character..": Outgoing MSP\\2")
 					position = position + chunksize
 				end
-				ChatThrottleLib:SendAddonMessage("BULK", "GMSP", prefix.."\3"..data:sub(position), channel, nil, "XRP-GROUP")
+				ChatThrottleLib:SendAddonMessage("BULK", "GMSP", prefix.."\3"..data:sub(position), "RAID", nil, "XRP-GROUP")
 				--print(character..": Outgoing MSP\\3")
 
 			end
@@ -455,7 +455,7 @@ msp.handlers = {
 		if character == xrp.toon then return end
 		local target, prefix, message = message:match(message:find("\30", nil, true) and "^(.+)\30([\1\2\3]?)(.+)$" or "^(.-)([\1\2\3]?)(.+)$")
 		if target ~= "" and target ~= xrp.toon then return end
-		self.handlers[prefix ~= "" and ("MSP%s"):format(prefix) or "MSP"](self, character, message, channel)
+		self.handlers[prefix ~= "" and ("MSP%s"):format(prefix) or "MSP"](self, character, message, channel == "PARTY" and "RAID" or channel)
 	end,
 }
 
@@ -496,6 +496,20 @@ if not disabled then
 				self.bnet[character] = prefix
 				self.bnetid[prefix] = character
 			end
+		elseif event == "GROUP_ROSTER_UPDATE" then
+			local units = IsInRaid() and self.raidUnits or self.partyUnits
+			local inGroup, newinGroup = self.inGroup, {}
+			for _, unit in ipairs(units) do
+				local name = xrp:UnitNameWithRealm(unit)
+				if not name then break end
+				if name ~= xrp.toon then
+					if not inGroup[name] and not self.cache[name].received then
+						self.cache[name].nextcheck = 0
+					end
+					newinGroup[name] = true
+				end
+			end
+			self.inGroup = newinGroup
 		elseif event == "BN_CONNECTED" then
 			self:UpdateBNList()
 			self:RegisterEvent("BN_TOON_NAME_UPDATED")
@@ -514,6 +528,7 @@ if not disabled then
 	msp:RegisterEvent("BN_CHAT_MSG_ADDON")
 	msp:RegisterEvent("PLAYER_REGEN_DISABLED")
 	msp:RegisterEvent("PLAYER_REGEN_ENABLED")
+	msp:RegisterEvent("GROUP_ROSTER_UPDATE")
 	xrp:HookLogin(function()
 		msp:UpdateBNList()
 		msp:RegisterEvent("BN_CONNECTED")
@@ -523,6 +538,20 @@ if not disabled then
 	end)
 	ChatThrottleLib.MAX_CPS = 1200 -- up from 800
 	ChatThrottleLib.MIN_FPS = 15 -- down from 20
+end
+
+do
+	local raidUnits, partyUnits = {}, {}
+	local raid, party = "raid%u", "party%u"
+	for i = 1, MAX_RAID_MEMBERS do
+		raidUnits[#raidUnits + 1] = raid:format(i)
+	end
+	for i = 1, MAX_PARTY_MEMBERS do
+		partyUnits[#partyUnits + 1] = party:format(i)
+	end
+	msp.raidUnits = raidUnits
+	msp.partyUnits = partyUnits
+	msp.inGroup = {}
 end
 
 xrp.msp = 2
