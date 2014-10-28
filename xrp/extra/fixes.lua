@@ -26,7 +26,29 @@ end)
 
 InterfaceOptionsFrame:HookScript("OnHide", function(self)
 	if cufopened then
-		StaticPopup_Show("XRP_RELOAD", xrp.L["You accessed the raid profiles options. Due to Blizzard bugs, this can cause severe UI problems for which it may (inaccurately) blame XRP. You should reload your UI now to fix this."])
+		StaticPopup_Show("XRP_RELOAD", xrp.L["Accessing the raid profiles configuration may cause UI problems due to Blizzard bugs (inaccurately blaming XRP or others). You should reload your UI now to avoid this possibility."])
 		cufopened = false
 	end
 end)
+
+-- And also...
+--
+-- This is kinda terrifying, but it fixes some major UI tainting when the user
+-- presses "Cancel" in the Interface Options (out of combat). The drawback is
+-- that any changes made to the default compact raid frames aren't actually
+-- cancelled (they're not saved, but they're still active). Still, this is
+-- better than having the Cancel button completely taint the raid frames.
+function CompactUnitFrameProfiles_CancelChanges(self)
+	InterfaceOptionsPanel_Cancel(self)
+
+	-- The following is disabled to make it more obvious that changes aren't
+	-- really cancelled.
+	--RestoreRaidProfileFromCopy()
+
+	CompactUnitFrameProfiles_UpdateCurrentPanel()
+
+	-- The following is disabled because it's the actual function that taints
+	-- everything. The execution path is tainted by the time this function is
+	-- called if there's any addon with an Interface Options panel.
+	--CompactUnitFrameProfiles_ApplyCurrentSettings()
+end
