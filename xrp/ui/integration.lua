@@ -190,39 +190,36 @@ end)
 xrp:HookLoad(function()
 	if settings.menus then
 		-- Chat names and some other places.
-		table.insert(UnitPopupMenus["FRIEND"], 5, "XRP_VIEW_CHARACTER")
-		if UnitPopupMenus["FRIEND"][2] == "TARGET" then
-			table.remove(UnitPopupMenus["FRIEND"], 2)
+		table.insert(UnitPopupMenus["FRIEND"], 1, "XRP_VIEW_CHARACTER")
+		if UnitPopupMenus["FRIEND"][3] == "TARGET" then
+			table.remove(UnitPopupMenus["FRIEND"], 3)
 		end
-		table.insert(UnitPopupMenus["FRIEND_OFFLINE"], 2, "INTERACT_SUBSECTION_TITLE")
-		table.insert(UnitPopupMenus["FRIEND_OFFLINE"], 3, "XRP_VIEW_CHARACTER")
 		-- Guild list.
-		table.insert(UnitPopupMenus["GUILD"], 4, "XRP_VIEW_CHARACTER")
-		if UnitPopupMenus["GUILD"][1] == "TARGET" then
-			table.remove(UnitPopupMenus["GUILD"], 1)
+		table.insert(UnitPopupMenus["GUILD"], 1, "XRP_VIEW_CHARACTER")
+		if UnitPopupMenus["GUILD"][2] == "TARGET" then
+			table.remove(UnitPopupMenus["GUILD"], 2)
 		end
-		table.insert(UnitPopupMenus["GUILD_OFFLINE"], 3, "XRP_VIEW_CHARACTER")
 		-- Chat channel roster.
-		table.insert(UnitPopupMenus["CHAT_ROSTER"], 3, "XRP_VIEW_CHARACTER")
-		if UnitPopupMenus["CHAT_ROSTER"][1] == "TARGET" then
-			table.remove(UnitPopupMenus["CHAT_ROSTER"], 1)
+		table.insert(UnitPopupMenus["CHAT_ROSTER"], 1, "XRP_VIEW_CHARACTER")
+		if UnitPopupMenus["CHAT_ROSTER"][2] == "TARGET" then
+			table.remove(UnitPopupMenus["CHAT_ROSTER"], 2)
 		end
 	end
 	if settings.unitmenus then
 		-- Player target/misc.
-		table.insert(UnitPopupMenus["PLAYER"], 6, "XRP_VIEW_UNIT")
-		if UnitPopupMenus["PLAYER"][2] == "SET_FOCUS" then
-			table.remove(UnitPopupMenus["PLAYER"], 2)
+		table.insert(UnitPopupMenus["PLAYER"], 1, "XRP_VIEW_UNIT")
+		if UnitPopupMenus["PLAYER"][3] == "SET_FOCUS" then
+			table.remove(UnitPopupMenus["PLAYER"], 3)
 		end
 		-- Player in party.
-		table.insert(UnitPopupMenus["PARTY"], 6, "XRP_VIEW_UNIT")
-		if UnitPopupMenus["PARTY"][2] == "SET_FOCUS" then
-			table.remove(UnitPopupMenus["PARTY"], 2)
+		table.insert(UnitPopupMenus["PARTY"], 1, "XRP_VIEW_UNIT")
+		if UnitPopupMenus["PARTY"][3] == "SET_FOCUS" then
+			table.remove(UnitPopupMenus["PARTY"], 3)
 		end
 		-- Player in raid.
-		table.insert(UnitPopupMenus["RAID_PLAYER"], 3, "XRP_VIEW_UNIT")
-		if UnitPopupMenus["RAID_PLAYER"][2] == "SET_FOCUS" then
-			table.remove(UnitPopupMenus["RAID_PLAYER"], 2)
+		table.insert(UnitPopupMenus["RAID_PLAYER"], 1, "XRP_VIEW_UNIT")
+		if UnitPopupMenus["RAID_PLAYER"][3] == "SET_FOCUS" then
+			table.remove(UnitPopupMenus["RAID_PLAYER"], 3)
 		end
 	end
 end)

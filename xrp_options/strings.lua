@@ -29,8 +29,8 @@ XRP_OPTIONS_CORE_INTEGRATION_RIGHTCLICK_INSTANCE = L["Disable rightclick integra
 XRP_OPTIONS_CORE_INTEGRATION_RIGHTCLICK_PVP = L["Disable rightclick integration while PvP flagged"]
 XRP_OPTIONS_CORE_INTEGRATION_INTERACTBIND = L["View RP profiles via interact with target/mouseover keybinds for non-hostile targets"]
 XRP_OPTIONS_CORE_INTEGRATION_REPLACEMENTS = L["Replace %xt/%xf with RP name of target/focus in chat"]
-XRP_OPTIONS_CORE_INTEGRATION_MENUS = L["Show \"RP Profile\" in right-click menus"]
-XRP_OPTIONS_CORE_INTEGRATION_UNITMENUS = L["Show \"RP Profile\" in unit frame right-click menus (disables \"Set Focus\")"]
+XRP_OPTIONS_CORE_INTEGRATION_MENUS = L["Show \"Roleplay Profile\" in right-click menus (disables \"Target\")"]
+XRP_OPTIONS_CORE_INTEGRATION_UNITMENUS = L["Show \"Roleplay Profile\" in unit frame right-click menus (disables \"Set Focus\")"]
 
 if (select(4, GetAddOnInfo("xrp_chatnames"))) then
 	XRP_OPTIONS_CHAT_TITLE = L["XRP: Chat Names Options"]
