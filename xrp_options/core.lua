@@ -15,93 +15,89 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
+local addonName, private = ...
+
+private.core = XRPOptionsCore
+XRPOptionsCore = nil
+
 local settings
 local L = xrp.L
-function xrp.options.core:okay()
-	settings.height = UIDropDownMenu_GetSelectedValue(self.AHUnits)
-	settings.weight = UIDropDownMenu_GetSelectedValue(self.AWUnits)
 
-	settings.cachetime = UIDropDownMenu_GetSelectedValue(self.CacheTime)
-	settings.cachetidy = self.CacheAuto:GetChecked()
+do
+	local CORE_BOOLEAN = { "cachetidy" }
+	local CORE_MENU = { "height", "weight", "cachetime" }
+	local MINIMAP_BOOLEAN = { "hidett", "detached" }
+	local INTEGRATION_BOOLEAN = { "rightclick", "disableinstance", "disablepvp", "interact", "replacements", "menus", "unitmenus" }
 
-	settings.minimap.hidett = self.MinimapHideTT:GetChecked()
-	settings.minimap.detached = self.MinimapDetached:GetChecked()
-	xrp.minimap:SetDetached(settings.minimap.detached)
-
-	settings.integration.rightclick = self.IntegrationRightClick:GetChecked()
-	settings.integration.disableinstance = self.IntegrationDisableInstance:GetChecked()
-	settings.integration.disablepvp = self.IntegrationDisablePVP:GetChecked()
-	settings.integration.interact = self.IntegrationInteractBind:GetChecked()
-	settings.integration.replacements = self.IntegrationReplacements:GetChecked()
-	do
-		local menus = self.IntegrationMenus:GetChecked()
-		if settings.integration.menus ~= menus then
+	function private.core:okay()
+		if settings.minimap.detached ~= self.detached:GetChecked() or settings.integration.menus ~= self.menus:GetChecked() or settings.integration.unitmenus ~= self.unitmenus:GetChecked() then
 			StaticPopup_Show("XRP_RELOAD", L["You have changed an XRP option which requires a UI reload to take effect."])
 		end
-		settings.integration.menus = menus
-	end
-	do
-		local unitmenus = self.IntegrationUnitMenus:GetChecked()
-		if settings.integration.unitmenus ~= unitmenus then
-			StaticPopup_Show("XRP_RELOAD", L["You have changed an XRP option which requires a UI reload to take effect."])
+
+		for _, setting in ipairs(CORE_BOOLEAN) do
+			settings[setting] = self[setting]:GetChecked()
 		end
-		settings.integration.unitmenus = unitmenus
+
+		for _, setting in ipairs(CORE_MENU) do
+			settings[setting] = UIDropDownMenu_GetSelectedValue(self[setting])
+		end
+
+		for _, setting in ipairs(MINIMAP_BOOLEAN) do
+			settings.minimap[setting] = self[setting]:GetChecked()
+		end
+
+		for _, setting in ipairs(INTEGRATION_BOOLEAN) do
+			settings.integration[setting] = self[setting]:GetChecked()
+		end
 	end
+
+	function private.core:refresh()
+		for _, setting in ipairs(CORE_BOOLEAN) do
+			self[setting]:SetChecked(settings[setting])
+		end
+
+		for _, setting in ipairs(CORE_MENU) do
+			UIDropDownMenu_Initialize(self[setting], self[setting].initialize)
+			UIDropDownMenu_SetSelectedValue(self[setting], settings[setting])
+		end
+
+		for _, setting in ipairs(MINIMAP_BOOLEAN) do
+			self[setting]:SetChecked(settings.minimap[setting])
+		end
+
+		for _, setting in ipairs(INTEGRATION_BOOLEAN) do
+			self[setting]:SetChecked(settings.integration[setting])
+		end
+		self.disableinstance:SetEnabled(settings.integration.rightclick)
+		self.disablepvp:SetEnabled(settings.integration.rightclick)
+	end
+
+	function private.core:default()
+		for _, setting in ipairs(CORE_BOOLEAN) do
+			settings[setting] = nil
+		end
+
+		for _, setting in ipairs(CORE_MENU) do
+			settings[setting] = nil
+		end
+
+		for _, setting in ipairs(MINIMAP_BOOLEAN) do
+			settings.minimap[setting] = nil
+		end
+
+		for _, setting in ipairs(INTEGRATION_BOOLEAN) do
+			settings.integration[setting] = nil
+		end
+
+		self:refresh()
+	end
+
 end
 
-function xrp.options.core:refresh()
-	UIDropDownMenu_Initialize(self.AHUnits, self.AHUnits.initialize)
-	UIDropDownMenu_SetSelectedValue(self.AHUnits, settings.height)
+private.core.parent = XRP
 
-	UIDropDownMenu_Initialize(self.AWUnits, self.AWUnits.initialize)
-	UIDropDownMenu_SetSelectedValue(self.AWUnits, settings.weight)
-
-	UIDropDownMenu_Initialize(self.CacheTime, self.CacheTime.initialize)
-	UIDropDownMenu_SetSelectedValue(self.CacheTime, settings.cachetime)
-	self.CacheAuto:SetChecked(settings.cachetidy)
-
-	self.MinimapHideTT:SetChecked(settings.minimap.hidett)
-	self.MinimapDetached:SetChecked(settings.minimap.detached)
-	self.Lock:SetEnabled(self.MinimapDetached:GetChecked())
-	self.Lock:SetText(xrp.minimap.locked and UNLOCK or LOCK)
-
-	self.IntegrationRightClick:SetChecked(settings.integration.rightclick)
-	self.IntegrationDisableInstance:SetChecked(settings.integration.disableinstance)
-	self.IntegrationDisableInstance:SetEnabled(settings.integration.rightclick)
-	self.IntegrationDisablePVP:SetChecked(settings.integration.disablepvp)
-	self.IntegrationDisablePVP:SetEnabled(settings.integration.rightclick)
-	self.IntegrationInteractBind:SetChecked(settings.integration.interact)
-	self.IntegrationReplacements:SetChecked(settings.integration.replacements)
-	self.IntegrationMenus:SetChecked(settings.integration.menus)
-	self.IntegrationUnitMenus:SetChecked(settings.integration.unitmenus)
-end
-
-function xrp.options.core:default()
-	settings.height = nil
-	settings.weight = nil
-
-	settings.cachetime = nil
-	settings.cachetidy = nil
-
-	settings.minimap.hidett = nil
-	settings.minimap.detached = nil
-	xrp.minimap:SetDetached(settings.minimap.detached)
-
-	settings.integration.rightclick = nil
-	settings.integration.disableinstance = nil
-	settings.integration.disablepvp = nil
-	settings.integration.interact = nil
-	settings.integration.replacements = nil
-	settings.integration.menus = nil
-	settings.integration.unitmenus = nil
-
-	self:refresh()
-end
-
-xrp.options.core.parent = XRP
-
-xrp.options.core.name = L["Core"]
-InterfaceOptions_AddCategory(xrp.options.core)
+private.core.name = L["Core"]
+InterfaceOptions_AddCategory(private.core)
 
 do
 	local infofunc = function(self, arg1, arg2, checked)
@@ -113,7 +109,7 @@ do
 	do
 		local heights = { L["Centimeters"], L["Feet/Inches"], L["Meters"] }
 		table.sort(heights)
-		function xrp.options.core.AHUnits:initialize(level, menuList)
+		function private.core.height:initialize(level, menuList)
 			for _, text in ipairs(heights) do
 				local info = UIDropDownMenu_CreateInfo()
 				info.text = text
@@ -127,7 +123,7 @@ do
 	do
 		local weights = { L["Kilograms"], L["Pounds"] }
 		table.sort(weights)
-		function xrp.options.core.AWUnits:initialize(level, menuList)
+		function private.core.weight:initialize(level, menuList)
 			for _, text in ipairs(weights) do
 				local info = UIDropDownMenu_CreateInfo()
 				info.text = text
@@ -141,11 +137,11 @@ do
 	do
 		local times = { L["1 day"], L["3 days"], L["7 days"], L["10 days"], L["2 weeks"], L["1 month"], L["3 months"] }
 		local seconds = { 86400, 259200, 604800, 864000, 1209600, 2419200, 7257600 }
-		function xrp.options.core.CacheTime:initialize(level, menuList)
-			for key, text in ipairs(times) do
+		function private.core.cachetime:initialize(level, menuList)
+			for index, text in ipairs(times) do
 				local info = UIDropDownMenu_CreateInfo()
 				info.text = text
-				info.value = seconds[key]
+				info.value = seconds[index]
 				info.func = infofunc
 				UIDropDownMenu_AddButton(info)
 			end
@@ -155,5 +151,5 @@ end
 
 xrp:HookLoad(function()
 	settings = xrp.settings
-	xrp.options.core:refresh()
+	private.core:refresh()
 end)

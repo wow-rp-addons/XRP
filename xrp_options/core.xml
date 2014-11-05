@@ -15,7 +15,7 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-	<Frame name="$parent_core" parentKey="core" parent="xrp_options">
+	<Frame name="XRPOptionsCore" parent="InterfaceOptionsFrame">
 		<Layers>
 			<Layer level="OVERLAY">
 				<FontString parentKey="Title" inherits="GameFontNormalLarge" text="XRP_OPTIONS_CORE_TITLE">
@@ -23,22 +23,22 @@
 						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="15" y="-15"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="AHUnitsLabel" inherits="GameFontNormal" text="XRP_AH">
+				<FontString parentKey="heightLabel" inherits="GameFontNormal" text="XRP_AH">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="AWUnitsLabel" inherits="GameFontNormal" text="XRP_AW">
+				<FontString parentKey="weightLabel" inherits="GameFontNormal" text="XRP_AW">
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.AHUnitsLabel" relativePoint="LEFT" x="250" y="0"/>
+						<Anchor point="LEFT" relativeKey="$parent.heightLabel" relativePoint="LEFT" x="250" y="0"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="CacheLabel" inherits="GameFontNormal" text="XRP_OPTIONS_CORE_CACHE">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.AHUnitsLabel" relativePoint="BOTTOMLEFT" x="0" y="-50"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.heightLabel" relativePoint="BOTTOMLEFT" x="0" y="-50"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="CacheAutoLabel" inherits="GameFontWhite" text="XRP_OPTIONS_CORE_CACHEAUTO">
+				<FontString parentKey="cachetidyLabel" inherits="GameFontWhite" text="XRP_OPTIONS_CORE_CACHEAUTO">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.CacheLabel" relativePoint="BOTTOMLEFT" x="250" y="-12"/>
 					</Anchors>
@@ -48,14 +48,14 @@
 						<Anchor point="TOPLEFT" relativeKey="$parent.CacheLabel" relativePoint="BOTTOMLEFT" x="0" y="-50"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="MinimapHideTTLabel" inherits="GameFontWhite" text="XRP_OPTIONS_CORE_MINIMAP_HIDETT">
+				<FontString parentKey="hidettLabel" inherits="GameFontWhite" text="XRP_OPTIONS_CORE_MINIMAP_HIDETT">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.MinimapLabel" relativePoint="BOTTOMLEFT" x="24" y="-10"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="MinimapDetachedLabel" inherits="GameFontWhite" text="XRP_OPTIONS_CORE_MINIMAP_DETACHED">
+				<FontString parentKey="detachedLabel" inherits="GameFontWhite" text="XRP_OPTIONS_CORE_MINIMAP_DETACHED">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.MinimapHideTTLabel" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.hidettLabel" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="IntegrationLabel" inherits="GameFontNormal" text="XRP_OPTIONS_CORE_INTEGRATION">
@@ -63,47 +63,47 @@
 						<Anchor point="TOPLEFT" relativeKey="$parent.MinimapLabel" relativePoint="BOTTOMLEFT" x="0" y="-60"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="IntegrationRightClickLabel" inherits="GameFontWhite" text="XRP_OPTIONS_CORE_INTEGRATION_RIGHTCLICK">
+				<FontString parentKey="rightclickLabel" inherits="GameFontWhite" text="XRP_OPTIONS_CORE_INTEGRATION_RIGHTCLICK">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.IntegrationLabel" relativePoint="BOTTOMLEFT" x="24" y="-10"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="IntegrationDisableInstanceLabel" inherits="GameFontWhite" text="XRP_OPTIONS_CORE_INTEGRATION_RIGHTCLICK_INSTANCE">
+				<FontString parentKey="disableinstanceLabel" inherits="GameFontWhite" text="XRP_OPTIONS_CORE_INTEGRATION_RIGHTCLICK_INSTANCE">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.IntegrationRightClickLabel" relativePoint="BOTTOMLEFT" x="28" y="-10"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.rightclickLabel" relativePoint="BOTTOMLEFT" x="28" y="-10"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="IntegrationDisablePVPLabel" inherits="GameFontWhite" text="XRP_OPTIONS_CORE_INTEGRATION_RIGHTCLICK_PVP">
+				<FontString parentKey="disablepvpLabel" inherits="GameFontWhite" text="XRP_OPTIONS_CORE_INTEGRATION_RIGHTCLICK_PVP">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.IntegrationDisableInstanceLabel" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.disableinstanceLabel" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="IntegrationInteractBindLabel" inherits="GameFontWhite" text="XRP_OPTIONS_CORE_INTEGRATION_INTERACTBIND">
+				<FontString parentKey="interactLabel" inherits="GameFontWhite" text="XRP_OPTIONS_CORE_INTEGRATION_INTERACTBIND">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.IntegrationDisablePVPLabel" relativePoint="BOTTOMLEFT" x="-28" y="-10"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.disablepvpLabel" relativePoint="BOTTOMLEFT" x="-28" y="-10"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="IntegrationReplacementsLabel" inherits="GameFontWhite" text="XRP_OPTIONS_CORE_INTEGRATION_REPLACEMENTS">
+				<FontString parentKey="replacementsLabel" inherits="GameFontWhite" text="XRP_OPTIONS_CORE_INTEGRATION_REPLACEMENTS">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.IntegrationInteractBindLabel" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.interactLabel" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="IntegrationMenusLabel" inherits="GameFontWhite" text="XRP_OPTIONS_CORE_INTEGRATION_MENUS">
+				<FontString parentKey="menusLabel" inherits="GameFontWhite" text="XRP_OPTIONS_CORE_INTEGRATION_MENUS">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.IntegrationReplacementsLabel" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.replacementsLabel" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="IntegrationUnitMenusLabel" inherits="GameFontWhite" text="XRP_OPTIONS_CORE_INTEGRATION_UNITMENUS">
+				<FontString parentKey="unitmenusLabel" inherits="GameFontWhite" text="XRP_OPTIONS_CORE_INTEGRATION_UNITMENUS">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.IntegrationMenusLabel" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.menusLabel" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button name="$parentAHUnits" parentKey="AHUnits" inherits="UIDropDownMenuTemplate">
+			<Button name="XRPOptionsCoreHeightMenu" parentKey="height" inherits="UIDropDownMenuTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.AHUnitsLabel" relativePoint="BOTTOMLEFT" x="-22" y="-5"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.heightLabel" relativePoint="BOTTOMLEFT" x="-22" y="-5"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
@@ -111,9 +111,9 @@
 					</OnLoad>
 				</Scripts>
 			</Button>
-			<Button name="$parentAWUnits" parentKey="AWUnits" inherits="UIDropDownMenuTemplate">
+			<Button name="XRPOptionsCoreWeightMenu" parentKey="weight" inherits="UIDropDownMenuTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.AWUnitsLabel" relativePoint="BOTTOMLEFT" x="-22" y="-5"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.weightLabel" relativePoint="BOTTOMLEFT" x="-22" y="-5"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
@@ -121,7 +121,7 @@
 					</OnLoad>
 				</Scripts>
 			</Button>
-			<Button name="$parentCacheTime" parentKey="CacheTime" inherits="UIDropDownMenuTemplate">
+			<Button name="XRPOptionsCoreCacheTimeMenu" parentKey="cachetime" inherits="UIDropDownMenuTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.CacheLabel" relativePoint="BOTTOMLEFT" x="-22" y="-5"/>
 				</Anchors>
@@ -131,106 +131,87 @@
 					</OnLoad>
 				</Scripts>
 			</Button>
-			<CheckButton name="$parentCacheAuto" parentKey="CacheAuto" inherits="UICheckButtonTemplate">
+			<CheckButton parentKey="cachetidy" inherits="UICheckButtonTemplate">
 				<Size x="24" y="24"/>
 				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.CacheAutoLabel" relativePoint="LEFT" x="-4" y="0"/>
+					<Anchor point="RIGHT" relativeKey="$parent.cachetidyLabel" relativePoint="LEFT" x="-4" y="0"/>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="$parentMinimapHideTT" parentKey="MinimapHideTT" inherits="UICheckButtonTemplate">
+			<CheckButton parentKey="hidett" inherits="UICheckButtonTemplate">
 				<Size x="24" y="24"/>
 				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.MinimapHideTTLabel" relativePoint="LEFT" x="-4" y="0"/>
+					<Anchor point="RIGHT" relativeKey="$parent.hidettLabel" relativePoint="LEFT" x="-4" y="0"/>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="$parentMinimapDetached" parentKey="MinimapDetached" inherits="UICheckButtonTemplate">
+			<CheckButton parentKey="detached" inherits="UICheckButtonTemplate">
 				<Size x="24" y="24"/>
 				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.MinimapDetachedLabel" relativePoint="LEFT" x="-4" y="0"/>
+					<Anchor point="RIGHT" relativeKey="$parent.detachedLabel" relativePoint="LEFT" x="-4" y="0"/>
 				</Anchors>
-				<Scripts>
-					<PostClick>
-						local lock = self:GetParent().Lock
-						lock:SetEnabled(self:GetChecked())
-						lock:SetText(xrp.minimap.locked and UNLOCK or LOCK)
-					</PostClick>
-				</Scripts>
 			</CheckButton>
-			<Button name="$parentLock" parentKey="Lock" inherits="UIPanelButtonTemplate" text="LOCK">
-				<Size x="72" y="21"/>
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.MinimapDetachedLabel" relativePoint="RIGHT" x="10" y="0"/>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						xrp.minimap.locked = not xrp.minimap.locked;
-						self:SetText(xrp.minimap.locked and UNLOCK or LOCK);
-					</OnClick>
-				</Scripts>
-			</Button>
-			<CheckButton name="$parentIntegrationRightClick" parentKey="IntegrationRightClick" inherits="UICheckButtonTemplate">
+			<CheckButton parentKey="rightclick" inherits="UICheckButtonTemplate">
 				<Size x="24" y="24"/>
 				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.IntegrationRightClickLabel" relativePoint="LEFT" x="-4" y="0"/>
+					<Anchor point="RIGHT" relativeKey="$parent.rightclickLabel" relativePoint="LEFT" x="-4" y="0"/>
 				</Anchors>
 				<Scripts>
 					<PostClick>
 						local enable = self:GetChecked()
-						self:GetParent().IntegrationDisableInstance:SetEnabled(enable)
-						self:GetParent().IntegrationDisablePVP:SetEnabled(enable)
+						self:GetParent().disableinstance:SetEnabled(enable)
+						self:GetParent().disablepvp:SetEnabled(enable)
 					</PostClick>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="$parentIntegrationDisableInstance" parentKey="IntegrationDisableInstance" inherits="UICheckButtonTemplate">
+			<CheckButton parentKey="disableinstance" inherits="UICheckButtonTemplate">
 				<Size x="24" y="24"/>
 				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.IntegrationDisableInstanceLabel" relativePoint="LEFT" x="-4" y="0"/>
+					<Anchor point="RIGHT" relativeKey="$parent.disableinstanceLabel" relativePoint="LEFT" x="-4" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnEnable>
-						self:GetParent().IntegrationDisableInstanceLabel:SetTextColor(1.0, 1.0, 1.0);
+						self:GetParent().disableinstanceLabel:SetTextColor(1.0, 1.0, 1.0);
 					</OnEnable>
 					<OnDisable>
-						self:GetParent().IntegrationDisableInstanceLabel:SetTextColor(0.5, 0.5, 0.5);
+						self:GetParent().disableinstanceLabel:SetTextColor(0.5, 0.5, 0.5);
 					</OnDisable>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="$parentIntegrationDisablePVP" parentKey="IntegrationDisablePVP" inherits="UICheckButtonTemplate">
+			<CheckButton parentKey="disablepvp" inherits="UICheckButtonTemplate">
 				<Size x="24" y="24"/>
 				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.IntegrationDisablePVPLabel" relativePoint="LEFT" x="-4" y="0"/>
+					<Anchor point="RIGHT" relativeKey="$parent.disablepvpLabel" relativePoint="LEFT" x="-4" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnEnable>
-						self:GetParent().IntegrationDisablePVPLabel:SetTextColor(1.0, 1.0, 1.0);
+						self:GetParent().disablepvpLabel:SetTextColor(1.0, 1.0, 1.0);
 					</OnEnable>
 					<OnDisable>
-						self:GetParent().IntegrationDisablePVPLabel:SetTextColor(0.5, 0.5, 0.5);
+						self:GetParent().disablepvpLabel:SetTextColor(0.5, 0.5, 0.5);
 					</OnDisable>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="$parentIntegrationInteractBind" parentKey="IntegrationInteractBind" inherits="UICheckButtonTemplate">
+			<CheckButton parentKey="interact" inherits="UICheckButtonTemplate">
 				<Size x="24" y="24"/>
 				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.IntegrationInteractBindLabel" relativePoint="LEFT" x="-4" y="0"/>
+					<Anchor point="RIGHT" relativeKey="$parent.interactLabel" relativePoint="LEFT" x="-4" y="0"/>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="$parentIntegrationReplacements" parentKey="IntegrationReplacements" inherits="UICheckButtonTemplate">
+			<CheckButton parentKey="replacements" inherits="UICheckButtonTemplate">
 				<Size x="24" y="24"/>
 				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.IntegrationReplacementsLabel" relativePoint="LEFT" x="-4" y="0"/>
+					<Anchor point="RIGHT" relativeKey="$parent.replacementsLabel" relativePoint="LEFT" x="-4" y="0"/>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="$parentIntegrationMenus" parentKey="IntegrationMenus" inherits="UICheckButtonTemplate">
+			<CheckButton parentKey="menus" inherits="UICheckButtonTemplate">
 				<Size x="24" y="24"/>
 				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.IntegrationMenusLabel" relativePoint="LEFT" x="-4" y="0"/>
+					<Anchor point="RIGHT" relativeKey="$parent.menusLabel" relativePoint="LEFT" x="-4" y="0"/>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="$parentIntegrationUnitMenus" parentKey="IntegrationUnitMenus" inherits="UICheckButtonTemplate">
+			<CheckButton parentKey="unitmenus" inherits="UICheckButtonTemplate">
 				<Size x="24" y="24"/>
 				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.IntegrationUnitMenusLabel" relativePoint="LEFT" x="-4" y="0"/>
+					<Anchor point="RIGHT" relativeKey="$parent.unitmenusLabel" relativePoint="LEFT" x="-4" y="0"/>
 				</Anchors>
 			</CheckButton>
 		</Frames>

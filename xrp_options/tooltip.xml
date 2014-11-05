@@ -15,7 +15,7 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-	<Frame name="$parent_tooltip" parentKey="tooltip" parent="xrp_options">
+	<Frame name="XRPOptionsTooltip" parent="InterfaceOptionsFrame">
 		<Layers>
 			<Layer level="OVERLAY">
 				<FontString parentKey="Title" inherits="GameFontNormalLarge" text="XRP_OPTIONS_TOOLTIP_TITLE">
@@ -76,19 +76,19 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<CheckButton name="$parentfaction" parentKey="faction" inherits="UICheckButtonTemplate">
+			<CheckButton parentKey="faction" inherits="UICheckButtonTemplate">
 				<Size x="24" y="24"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.factionLabel" relativePoint="LEFT" x="-4" y="0"/>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="$parentwatching" parentKey="watching" inherits="UICheckButtonTemplate">
+			<CheckButton parentKey="watching" inherits="UICheckButtonTemplate">
 				<Size x="24" y="24"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.watchingLabel" relativePoint="LEFT" x="-4" y="0"/>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="$parentguildrank" parentKey="guildrank" inherits="UICheckButtonTemplate">
+			<CheckButton parentKey="guildrank" inherits="UICheckButtonTemplate">
 				<Size x="24" y="24"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.guildrankLabel" relativePoint="LEFT" x="-4" y="0"/>
@@ -99,7 +99,7 @@
 					</PostClick>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="$parentguildindex" parentKey="guildindex" inherits="UICheckButtonTemplate">
+			<CheckButton parentKey="guildindex" inherits="UICheckButtonTemplate">
 				<Size x="24" y="24"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.guildindexLabel" relativePoint="LEFT" x="-4" y="0"/>
@@ -113,31 +113,31 @@
 					</OnDisable>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="$parentnorprace" parentKey="norprace" inherits="UICheckButtonTemplate">
+			<CheckButton parentKey="norprace" inherits="UICheckButtonTemplate">
 				<Size x="24" y="24"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.norpraceLabel" relativePoint="LEFT" x="-4" y="0"/>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="$parentnorpclass" parentKey="norpclass" inherits="UICheckButtonTemplate">
+			<CheckButton parentKey="norpclass" inherits="UICheckButtonTemplate">
 				<Size x="24" y="24"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.norpclassLabel" relativePoint="LEFT" x="-4" y="0"/>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="$parentnoopfaction" parentKey="noopfaction" inherits="UICheckButtonTemplate">
+			<CheckButton parentKey="noopfaction" inherits="UICheckButtonTemplate">
 				<Size x="24" y="24"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.noopfactionLabel" relativePoint="LEFT" x="-4" y="0"/>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="$parentnohostile" parentKey="nohostile" inherits="UICheckButtonTemplate">
+			<CheckButton parentKey="nohostile" inherits="UICheckButtonTemplate">
 				<Size x="24" y="24"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.nohostileLabel" relativePoint="LEFT" x="-4" y="0"/>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="$parentextraspace" parentKey="extraspace" inherits="UICheckButtonTemplate">
+			<CheckButton parentKey="extraspace" inherits="UICheckButtonTemplate">
 				<Size x="24" y="24"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.extraspaceLabel" relativePoint="LEFT" x="-4" y="0"/>
