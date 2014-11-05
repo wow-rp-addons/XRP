@@ -19,7 +19,7 @@
 	<!-- It's dangerous to go alone, take a syntax highlighter. -->
 	<!-- No, seriously, though. This is the easiest way to get a good UI. -->
 	<Include file="editor_templates.xml"/>
-	<Frame name="xrp_editor" toplevel="true" movable="true" parent="UIParent" enableMouse="true" inherits="ButtonFrameTemplate" hidden="true">
+	<Frame name="XRPEditor" toplevel="true" movable="true" parent="UIParent" enableMouse="true" inherits="ButtonFrameTemplate" hidden="true">
 		<Size x="439" y="525"/>
 		<Layers>
 			<Layer level="OVERLAY">
@@ -32,7 +32,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame name="$parentAppearance" parentKey="Appearance" useParentLevel="true" hidden="false">
+			<Frame parentKey="Appearance" useParentLevel="true" hidden="false">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.Inset" relativePoint="TOPLEFT"/>
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset" relativePoint="BOTTOMRIGHT"/>
@@ -109,7 +109,7 @@
 				</Layers>
 				<Frames>
 					<!-- Name Box -->
-					<EditBox name="$parentNA" parentKey="NA" inherits="FancyInputBoxTemplate" autoFocus="false">
+					<EditBox parentKey="NA" inherits="FancyInputBoxTemplate" autoFocus="false">
 						<Size x="186" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.NALabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
@@ -121,7 +121,7 @@
 						</Anchors>
 					</CheckButton>
 					<!-- Nickname Box -->
-					<EditBox name="$parentNI" parentKey="NI" inherits="FancyInputBoxTemplate" autoFocus="false">
+					<EditBox parentKey="NI" inherits="FancyInputBoxTemplate" autoFocus="false">
 						<Size x="136" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.NILabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
@@ -133,7 +133,7 @@
 						</Anchors>
 					</CheckButton>
 					<!-- Height Box -->
-					<EditBox name="$parentAH" parentKey="AH" inherits="FancyInputBoxTemplate" autoFocus="false">
+					<EditBox parentKey="AH" inherits="FancyInputBoxTemplate" autoFocus="false">
 						<Size x="65" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.AHLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
@@ -145,7 +145,7 @@
 						</Anchors>
 					</CheckButton>
 					<!-- Title Box -->
-					<EditBox name="$parentNT" parentKey="NT" inherits="FancyInputBoxTemplate" autoFocus="false">
+					<EditBox parentKey="NT" inherits="FancyInputBoxTemplate" autoFocus="false">
 						<Size x="186" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.NTLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
@@ -157,7 +157,7 @@
 						</Anchors>
 					</CheckButton>
 					<!-- House/Clan/Tribe Box -->
-					<EditBox name="$parentNH" parentKey="NH" inherits="FancyInputBoxTemplate" autoFocus="false">
+					<EditBox parentKey="NH" inherits="FancyInputBoxTemplate" autoFocus="false">
 						<Size x="136" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.NHLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
@@ -169,7 +169,7 @@
 						</Anchors>
 					</CheckButton>
 					<!-- Weight Box -->
-					<EditBox name="$parentAW" parentKey="AW" inherits="FancyInputBoxTemplate" autoFocus="false">
+					<EditBox parentKey="AW" inherits="FancyInputBoxTemplate" autoFocus="false">
 						<Size x="65" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.AWLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
@@ -181,7 +181,7 @@
 						</Anchors>
 					</CheckButton>
 					<!-- Eyes Box -->
-					<EditBox name="$parentAE" parentKey="AE" inherits="FancyInputBoxTemplate" autoFocus="false">
+					<EditBox parentKey="AE" inherits="FancyInputBoxTemplate" autoFocus="false">
 						<Size x="125" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.AELabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
@@ -193,7 +193,7 @@
 						</Anchors>
 					</CheckButton>
 					<!-- Race Box -->
-					<EditBox name="$parentRA" parentKey="RA" inherits="FancyInputBoxTemplate" autoFocus="false">
+					<EditBox parentKey="RA" inherits="FancyInputBoxTemplate" autoFocus="false">
 						<Size x="131" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.RALabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
@@ -205,7 +205,7 @@
 						</Anchors>
 					</CheckButton>
 					<!-- Class Box -->
-					<EditBox name="$parentRC" parentKey="RC" inherits="FancyInputBoxTemplate" autoFocus="false">
+					<EditBox parentKey="RC" inherits="FancyInputBoxTemplate" autoFocus="false">
 						<Size x="131" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.RCLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
@@ -217,7 +217,7 @@
 						</Anchors>
 					</CheckButton>
 					<!-- Currently Box -->
-					<EditBox name="$parentCU" parentKey="CU" inherits="FancyInputBoxTemplate" autoFocus="false">
+					<EditBox parentKey="CU" inherits="FancyInputBoxTemplate" autoFocus="false">
 						<Size x="407" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.CULabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
@@ -229,7 +229,7 @@
 						</Anchors>
 					</CheckButton>
 					<!-- Description Box -->
-					<ScrollFrame name="$parentDE" parentKey="DE" inherits="LargeInputScrollFrameTemplate">
+					<ScrollFrame name="XRPEditorDE" parentKey="DE" inherits="LargeInputScrollFrameTemplate">
 						<Size x="402" y="264"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.DELabel" relativePoint="BOTTOMLEFT" x="2" y="-5"/>
@@ -242,7 +242,7 @@
 					</CheckButton>
 				</Frames>
 			</Frame>
-			<Frame name="$parentBiography" parentKey="Biography" useParentLevel="true" hidden="true">
+			<Frame parentKey="Biography" useParentLevel="true" hidden="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.Inset" relativePoint="TOPLEFT"/>
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset" relativePoint="BOTTOMRIGHT"/>
@@ -295,7 +295,7 @@
 				</Layers>
 				<Frames>
 					<!-- Age Box -->
-					<EditBox name="$parentAG" parentKey="AG" inherits="FancyInputBoxTemplate" autoFocus="false">
+					<EditBox parentKey="AG" inherits="FancyInputBoxTemplate" autoFocus="false">
 						<Size x="65" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.AGLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
@@ -307,7 +307,7 @@
 						</Anchors>
 					</CheckButton>
 					<!-- Home Box -->
-					<EditBox name="$parentHH" parentKey="HH" inherits="FancyInputBoxTemplate" autoFocus="false">
+					<EditBox parentKey="HH" inherits="FancyInputBoxTemplate" autoFocus="false">
 						<Size x="161" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.HHLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
@@ -319,7 +319,7 @@
 						</Anchors>
 					</CheckButton>
 					<!-- Birthplace Box -->
-					<EditBox name="$parentHB" parentKey="HB" inherits="FancyInputBoxTemplate" autoFocus="false">
+					<EditBox parentKey="HB" inherits="FancyInputBoxTemplate" autoFocus="false">
 						<Size x="161" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.HBLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
@@ -331,7 +331,7 @@
 						</Anchors>
 					</CheckButton>
 					<!-- Motto Box -->
-					<EditBox name="$parentMO" parentKey="MO" inherits="FancyInputBoxTemplate" autoFocus="false">
+					<EditBox parentKey="MO" inherits="FancyInputBoxTemplate" autoFocus="false">
 						<Size x="407" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.MOLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
@@ -343,7 +343,7 @@
 						</Anchors>
 					</CheckButton>
 					<!-- History Box -->
-					<ScrollFrame name="$parentHI" parentKey="HI" inherits="LargeInputScrollFrameTemplate">
+					<ScrollFrame name="XRPEditorHI" parentKey="HI" inherits="LargeInputScrollFrameTemplate">
 						<Size x="402" y="294"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.HILabel" relativePoint="BOTTOMLEFT" x="2" y="-5"/>
@@ -355,7 +355,7 @@
 						</Anchors>
 					</CheckButton>
 					<!-- Style Box -->
-					<EditBox name="$parentFR" parentKey="FR" inherits="FancyInputBoxTemplate" autoFocus="false">
+					<EditBox parentKey="FR" inherits="FancyInputBoxTemplate" autoFocus="false">
 						<Size x="199" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.FRLabel" relativePoint="BOTTOMLEFT" x="2" y="-3"/>
@@ -367,7 +367,7 @@
 						</Anchors>
 					</CheckButton>
 					<!-- Status Menu -->
-					<Button name="$parentFC" parentKey="FC" inherits="UIDropDownMenuTemplate">
+					<Button name="XRPEditorMenuFC" parentKey="FC" inherits="UIDropDownMenuTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.FCLabel" relativePoint="BOTTOMLEFT" x="-22" y="0"/>
 						</Anchors>
@@ -401,7 +401,7 @@
 				</Frames>
 			</Frame>
 			<!-- Saved Character Profiles -->
-			<Button name="$parentProfiles" parentKey="Profiles" inherits="UIDropDownMenuTemplate">
+			<Button name="XRPEditorMenuProfiles" parentKey="Profiles" inherits="UIDropDownMenuTemplate">
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-225" y="-27"/>
 				</Anchors>
@@ -446,7 +446,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						StaticPopup_Show("XRP_EDITOR_DELETE", xrp.editor.Profiles:GetText());
+						StaticPopup_Show("XRP_EDITOR_DELETE", self:GetParent().Profiles:GetText());
 					</OnClick>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
@@ -466,7 +466,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						StaticPopup_Show("XRP_EDITOR_RENAME", xrp.editor.Profiles:GetText());
+						StaticPopup_Show("XRP_EDITOR_RENAME", self:GetParent().Profiles:GetText());
 					</OnClick>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
@@ -486,7 +486,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						StaticPopup_Show("XRP_EDITOR_COPY", xrp.editor.Profiles:GetText());
+						StaticPopup_Show("XRP_EDITOR_COPY", self:GetParent().Profiles:GetText());
 					</OnClick>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
@@ -499,13 +499,13 @@
 				</Scripts>
 			</Button>
 			<!-- Parent Profile -->
-			<Button name="$parentParent" parentKey="Parent" inherits="UIPanelButtonTemplate" text="">
+			<Button parentKey="Parent" inherits="UIPanelButtonTemplate" text="">
 				<Size x="160" y="21"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" x="6" y="4"/>
 				</Anchors>
 				<Frames>
-					<Button name="$parentMenu" parentKey="Menu" hidden="true" inherits="UIDropDownMenuTemplate"/>
+					<Button name="XRPEditorMenuParent" parentKey="Menu" hidden="true" inherits="UIDropDownMenuTemplate"/>
 				</Frames>
 				<Scripts>
 					<OnLoad>
@@ -535,7 +535,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						xrp.editor:Save();
+						self:GetParent():Save();
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -547,7 +547,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						xrp.editor:Load(xrp.editor.Profiles:GetText());
+						self:GetParent():Load(self:GetParent().Profiles:GetText());
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -588,7 +588,6 @@
 		</Attributes>
 		<Scripts>
 			<OnLoad>
-				xrp.editor = self;
 				PanelTemplates_SetNumTabs(self, 2);
 				PanelTemplates_SetTab(self, 1);
 				self.TitleText:SetText(xrp.L["Profile Editor"]);
