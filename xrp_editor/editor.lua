@@ -15,143 +15,153 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-do
-	local supported = { NA = true, NI = true, NT = true, NH = true, AE = true, RA = true, RC = true, AH = true, AW = true, CU = true, DE = true, AG = true, HH = true, HB = true, MO = true, HI = true, FR = true, FC = true }
-	function xrp.editor:Save()
-		self:ClearFocus()
-		-- This doesn't need to be smart. GetText() should be mapped to the
-		-- appropriate 'real' function if GetText() isn't already right. The
-		-- profile code will assume an empty string means an empty field.
-		local name = self.Profiles:GetText()
-		local profile, inherits = xrp.profiles[name].fields, xrp.profiles[name].inherits
-		for field, _ in pairs(supported) do
-			profile[field] = self[field].inherited and "" or self[field]:GetText()
-			inherits[field] = self.checkboxes[field]:GetChecked()
-		end
-		local parent = self.Parent:GetText()
-		if parent == "" then
-			parent = nil
-		end
-		xrp.profiles[name].parent = parent
-		if xrp.profiles[name].parent ~= parent then
-			self.Parent:SetText(xrp.profiles[name].parent or "")
-		end
-		-- Save and Revert buttons will disable after saving.
-		self:CheckFields()
+local addonName, private = ...
+
+private.editor = XRPEditor
+XRPEditor = nil
+
+function private.editor:Save()
+	self:ClearFocus()
+	-- This doesn't need to be smart. GetText() should be mapped to the
+	-- appropriate 'real' function if GetText() isn't already right. The
+	-- profile code will assume an empty string means an empty field.
+	local name = self.Profiles:GetText()
+	local profile, inherits = xrp.profiles[name].fields, xrp.profiles[name].inherits
+	for field, control in pairs(self.fields) do
+		profile[field] = control.inherited and "" or control:GetText()
+		inherits[field] = self.checkboxes[field]:GetChecked()
 	end
-
-	function xrp.editor:Load(name)
-		self:ClearFocus()
-		-- This does not need to be very smart. SetText() should be mapped to
-		-- the appropriate 'real' function if needed.
-		local profile, inherits = xrp.profiles[name].fields, xrp.profiles[name].inherits
-		for field, _ in pairs(supported) do
-			self[field]:SetText(profile[field] or "")
-			self[field]:SetTextColor(1.0, 1.0, 1.0, 1.0)
-			self[field]:SetCursorPosition(0)
-			self[field].inherited = false
-			self.checkboxes[field]:SetChecked(inherits[field] ~= false)
-		end
-
-		if self.Profiles:GetText() ~= name and not self.Appearance:IsVisible() then
-			PanelTemplates_SetTab(self, 1)
-			self.Biography:Hide()
-			self.Appearance:Show()
-			PlaySound("igCharacterInfoTab")
-		end
-
-		self.Profiles:SetText(name)
+	local parent = self.Parent:GetText()
+	if parent == "" then
+		parent = nil
+	end
+	xrp.profiles[name].parent = parent
+	if xrp.profiles[name].parent ~= parent then
 		self.Parent:SetText(xrp.profiles[name].parent or "")
-		self:CheckFields()
+	end
+	-- Save and Revert buttons will disable after saving.
+	self:CheckFields()
+end
+
+function private.editor:Load(name)
+	self:ClearFocus()
+	-- This does not need to be very smart. SetText() should be mapped to the
+	-- appropriate 'real' function if needed.
+	local profile, inherits = xrp.profiles[name].fields, xrp.profiles[name].inherits
+	for field, control in pairs(self.fields) do
+		control:SetText(profile[field] or "")
+		control:SetTextColor(1.0, 1.0, 1.0, 1.0)
+		control:SetCursorPosition(0)
+		control.inherited = false
+		self.checkboxes[field]:SetChecked(inherits[field] ~= false)
 	end
 
-	function xrp.editor:CheckFields()
-		local name, parent = self.Profiles:GetText(), self.Parent:GetText()
-		if not xrp.profiles[name] then return end
-		if parent == "" then
-			parent = nil
-		end
-		local profile, inherits = xrp.profiles[name].fields, xrp.profiles[name].inherits
-		local changes = parent ~= xrp.profiles[name].parent
-		for field, _ in pairs(supported) do
-			if parent then
-				self.checkboxes[field]:Show()
-				if not self[field]:HasFocus() and (self[field]:GetText() == "" or self[field].inherited) then
-					if self.checkboxes[field]:GetChecked() then
-						self[field].inherited = true
-						self[field]:SetTextColor(0.5, 0.5, 0.5, 1.0)
-						local parentinherit = xrp.profiles[parent].inherits[field]
-						self[field]:SetText(xrp.profiles[parent].fields[field] or (type(parentinherit) == "string" and xrp.profiles[parentinherit].fields[field]) or "")
-						self[field]:SetCursorPosition(0)
-					else
-						self[field]:SetText("")
-						self[field]:SetTextColor(1.0, 1.0, 1.0, 1.0)
-						self[field].inherited = false
-					end
-				end
-			else
-				self.checkboxes[field]:Hide()
-				if self[field].inherited then
-					self[field]:SetText("")
-					self[field]:SetTextColor(1.0, 1.0, 1.0, 1.0)
-					self[field].inherited = false
+	if self.Profiles:GetText() ~= name and not self.Appearance:IsVisible() then
+		PanelTemplates_SetTab(self, 1)
+		self.Biography:Hide()
+		self.Appearance:Show()
+		PlaySound("igCharacterInfoTab")
+	end
+
+	self.Profiles:SetText(name)
+	self.Parent:SetText(xrp.profiles[name].parent or "")
+	self:CheckFields()
+end
+
+function private.editor:CheckFields()
+	local name, parent = self.Profiles:GetText(), self.Parent:GetText()
+	if not xrp.profiles[name] then return end
+	if parent == "" then
+		parent = nil
+	end
+	local profile, inherits = xrp.profiles[name].fields, xrp.profiles[name].inherits
+	local changes = parent ~= xrp.profiles[name].parent
+	for field, control in pairs(self.fields) do
+		if parent then
+			self.checkboxes[field]:Show()
+			if not control:HasFocus() and (control:GetText() == "" or control.inherited) then
+				if self.checkboxes[field]:GetChecked() then
+					control.inherited = true
+					control:SetTextColor(0.5, 0.5, 0.5, 1.0)
+					local parentinherit = xrp.profiles[parent].inherits[field]
+					control:SetText(xrp.profiles[parent].fields[field] or (type(parentinherit) == "string" and parentinherit ~= name and xrp.profiles[parentinherit].fields[field]) or "")
+					control:SetCursorPosition(0)
+				else
+					control:SetText("")
+					control:SetTextColor(1.0, 1.0, 1.0, 1.0)
+					control.inherited = false
 				end
 			end
-			changes = changes or (self[field].inherited and profile[field] ~= nil) or (not self[field].inherited and self[field]:GetText() ~= (profile[field] or "")) or (self.checkboxes[field]:GetChecked()) ~= (inherits[field] ~= false)
-		end
-		if changes then
-			self.SaveButton:Enable()
-			self.RevertButton:Enable()
 		else
-			self.SaveButton:Disable()
-			self.RevertButton:Disable()
+			self.checkboxes[field]:Hide()
+			if control.inherited then
+				control:SetText("")
+				control:SetTextColor(1.0, 1.0, 1.0, 1.0)
+				control.inherited = false
+			end
 		end
+		changes = changes or (control.inherited and profile[field] ~= nil) or (not control.inherited and control:GetText() ~= (profile[field] or "")) or (self.checkboxes[field]:GetChecked()) ~= (inherits[field] ~= false)
+	end
+	if changes then
+		self.SaveButton:Enable()
+		self.RevertButton:Enable()
+	else
+		self.SaveButton:Disable()
+		self.RevertButton:Disable()
 	end
 end
 
-function xrp.editor:ClearFocus()
-	self.NA:SetFocus()
-	self.NA:ClearFocus()
-	self.AG:SetFocus()
-	self.AG:ClearFocus()
+function private.editor:ClearFocus()
+	self.fields.NA:SetFocus()
+	self.fields.NA:ClearFocus()
+	self.fields.AG:SetFocus()
+	self.fields.AG:ClearFocus()
 end
 
 do
 	-- Setup shorthand access and other stuff.
-	xrp.editor.checkboxes = {}
+	private.editor.fields, private.editor.checkboxes = {}, {}
 	-- Appearance tab
 	local appearance = { "NA", "NI", "AH", "NT", "NH", "AW", "AE", "RA", "RC", "CU" }
-	for key, field in ipairs(appearance) do
-		xrp.editor[field] = xrp.editor.Appearance[field]
-		xrp.editor[field].fieldName = field
-		xrp.editor[field].nextEditBox = xrp.editor.Appearance[appearance[key + 1]] or xrp.editor.Appearance["DE"].EditBox
-		xrp.editor.checkboxes[field] = xrp.editor.Appearance[field.."Default"]
+	for index, field in ipairs(appearance) do
+		local control = private.editor.Appearance[field]
+		private.editor.fields[field] = control
+		--control.fieldName = field
+		control.nextEditBox = private.editor.Appearance[appearance[index + 1]] or private.editor.Appearance["DE"].EditBox
+		private.editor.checkboxes[field] = private.editor.Appearance[field.."Default"]
 	end
-	-- EditBox is inside ScrollFrame
-	xrp.editor["DE"] = xrp.editor.Appearance["DE"].EditBox
-	xrp.editor["DE"].fieldName = "DE"
-	xrp.editor["DE"].nextEditBox = xrp.editor.Appearance["NA"]
-	xrp.editor.checkboxes["DE"] = xrp.editor.Appearance["DEDefault"]
+	do
+		-- EditBox is inside ScrollFrame
+		local control = private.editor.Appearance["DE"].EditBox
+		private.editor.fields["DE"] = control
+		--control.fieldName = "DE"
+		control.nextEditBox = private.editor.Appearance["NA"]
+		private.editor.checkboxes["DE"] = private.editor.Appearance["DEDefault"]
+	end
 
 	-- Biography tab
 	local biography = { "AG", "HH", "HB", "MO", "FR", "FC" }
-	for key, field in ipairs(biography) do
-		xrp.editor[field] = xrp.editor.Biography[field]
+	for index, field in ipairs(biography) do
+		local control = private.editor.Biography[field]
+		private.editor.fields[field] = control
+		--control.fieldName = field
 		if field == "MO" then
-			xrp.editor[field].nextEditBox = xrp.editor.Biography["HI"].EditBox
+			control.nextEditBox = private.editor.Biography["HI"].EditBox
 		elseif field == "FR" then
-			xrp.editor[field].nextEditBox = xrp.editor.Biography["AG"]
+			control.nextEditBox = private.editor.Biography["AG"]
 		elseif field ~= "FC" then
-			xrp.editor[field].nextEditBox = xrp.editor.Biography[biography[key + 1]]
+			control.nextEditBox = private.editor.Biography[biography[index + 1]]
 		end
-		xrp.editor[field].fieldName = field
-		xrp.editor.checkboxes[field] = xrp.editor.Biography[field.."Default"]
+		private.editor.checkboxes[field] = private.editor.Biography[field.."Default"]
 	end
-	-- EditBox is inside ScrollFrame
-	xrp.editor["HI"] = xrp.editor.Biography["HI"].EditBox
-	xrp.editor["HI"].fieldName = "HI"
-	xrp.editor["HI"].nextEditBox = xrp.editor.Biography["FR"]
-	xrp.editor.checkboxes["HI"] = xrp.editor.Biography["HIDefault"]
+	do
+		-- EditBox is inside ScrollFrame
+		local control = private.editor.Biography["HI"].EditBox
+		private.editor.fields["HI"] = control
+		--control.fieldName = "HI"
+		control.nextEditBox = private.editor.Biography["FR"]
+		private.editor.checkboxes["HI"] = private.editor.Biography["HIDefault"]
+	end
 end
 
 -- Ugh, DropDownMenus. These are a royal pain in the ass to work with, but make
@@ -163,11 +173,11 @@ end
 do
 	local function infofunc(self, arg1, arg2, checked)
 		if not checked then
-			xrp.editor:Load(self.value)
+			private.editor:Load(self.value)
 		end
 	end
 
-	function xrp.editor.Profiles:initialize(level, menuList)
+	function private.editor.Profiles:initialize(level, menuList)
 		for _, value in ipairs(xrp.profiles:List()) do
 			local info = UIDropDownMenu_CreateInfo()
 			info.text = value
@@ -181,12 +191,12 @@ end
 do
 	local function infofunc(self, arg1, arg2, checked)
 		if not checked then
-			xrp.editor.Parent:SetValue(arg1)
-			xrp.editor:CheckFields()
+			private.editor.Parent:SetValue(arg1)
+			private.editor:CheckFields()
 		end
 	end
 
-	function xrp.editor.Parent.Menu:initialize(level, menuList)
+	function private.editor.Parent.Menu:initialize(level, menuList)
 		do
 			local info = UIDropDownMenu_CreateInfo()
 			info.text = xrp.L["None"]
@@ -195,7 +205,7 @@ do
 			info.func = infofunc
 			UIDropDownMenu_AddButton(info)
 		end
-		local profile = xrp.editor.Profiles:GetText()
+		local profile = private.editor.Profiles:GetText()
 		for _, value in ipairs(xrp.profiles:List()) do
 			if value ~= profile then
 				local info = UIDropDownMenu_CreateInfo()
@@ -211,18 +221,18 @@ end
 
 do
 	local function infofunc(self, arg1, arg2, checked)
-		if not checked or xrp.editor.FC.inherited then
+		if not checked or private.editor.fields.FC.inherited then
 			UIDropDownMenu_SetSelectedValue(UIDROPDOWNMENU_OPEN_MENU, self.value)
-			if xrp.editor.FC.inherited then
-				xrp.editor.FC.inherited = false
-				xrp.editor.FC:SetTextColor(1.0, 1.0, 1.0, 1.0)
+			if private.editor.fields.FC.inherited then
+				private.editor.FC.fields.inherited = false
+				private.editor.fields.FC:SetTextColor(1.0, 1.0, 1.0, 1.0)
 			end
-			xrp.editor:CheckFields()
+			private.editor:CheckFields()
 		end
 	end
 
 	local FC = xrp.values.FC
-	function xrp.editor.FC:initialize(level, menuList)
+	function private.editor.fields.FC:initialize(level, menuList)
 		for i = 0, #FC, 1 do
 			local info = UIDropDownMenu_CreateInfo()
 			info.text = FC[i]
@@ -234,5 +244,16 @@ do
 end
 
 xrp:HookLoad(function()
-	xrp.editor:Load(xrpSaved.selected)
+	private.editor:Load(xrpSaved.selected)
 end)
+
+function xrp:Edit(profile)
+	if profile then
+		private.editor:Load(profile)
+	elseif private.editor:IsShown() then
+		HideUIPanel(private.editor)
+		return true
+	end
+	ShowUIPanel(private.editor)
+	return true
+end
