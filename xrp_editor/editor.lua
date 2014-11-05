@@ -162,6 +162,7 @@ do
 		control.fieldName = field
 		control.nextEditBox = private.editor.Appearance[appearance[index + 1]] or private.editor.Appearance["DE"].EditBox
 		private.editor.checkboxes[field] = private.editor.Appearance[field.."Default"]
+		private.editor.checkboxes[field].fieldName = field
 	end
 	do
 		-- EditBox is inside ScrollFrame
@@ -170,6 +171,7 @@ do
 		control.fieldName = "DE"
 		control.nextEditBox = private.editor.Appearance["NA"]
 		private.editor.checkboxes["DE"] = private.editor.Appearance["DEDefault"]
+		private.editor.checkboxes["DE"].fieldName = "DE"
 	end
 
 	-- Biography tab
@@ -186,6 +188,7 @@ do
 			control.nextEditBox = private.editor.Biography[biography[index + 1]]
 		end
 		private.editor.checkboxes[field] = private.editor.Biography[field.."Default"]
+		private.editor.checkboxes[field].fieldName = field
 	end
 	do
 		-- EditBox is inside ScrollFrame
@@ -194,6 +197,7 @@ do
 		control.fieldName = "HI"
 		control.nextEditBox = private.editor.Biography["FR"]
 		private.editor.checkboxes["HI"] = private.editor.Biography["HIDefault"]
+		private.editor.checkboxes["HI"].fieldName = "HI"
 	end
 end
 
