@@ -16,6 +16,9 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
+local minimap = LibDBIcon10_XRP
+LibDBIcon10_XRP = nil
+
 local L = xrp.L
 local settings
 xrp:HookLoad(function()
@@ -114,66 +117,32 @@ do
 	end
 
 	local function minimap_OnDragStartDetached(self)
-		self:LockHighlight()
-		if not self.locked then
+		if IsShiftKeyDown() then
+			self:LockHighlight()
 			self:StartMoving()
+			self.moving = true
 		end
 	end
 
 	local function minimap_OnDragStopDetached(self)
-		if not self.locked then
+		if self.moving then
 			self:StopMovingOrSizing()
 			settings.point, settings.x, settings.y = select(3, self:GetPoint())
-		end
-		self:UnlockHighlight()
-	end
-
-	do
-		local detached = nil
-		function xrp.minimap:SetDetached(detach)
-			if detach == detached then
-				return
-			elseif detach then
-				-- Set scripts for free-form moving.
-				self:SetScript("OnDragStart", minimap_OnDragStartDetached)
-				self:SetScript("OnDragStop", minimap_OnDragStopDetached)
-				self:SetParent(UIParent)
-				self:Show()
-				self:SetClampedToScreen(true)
-				minimap_UpdatePositionDetached(self)
-				self.locked = false
-				if detached ~= nil then
-					print(L["The |cffabd473XRP|r button has been detached from the minimap and is unlocked. You may need to reload your UI (/reload), but note doing so will lock the button's position."])
-				end
-				detached = true
-			else
-				-- Set script for minimap-attached moving.
-				self:SetScript("OnDragStart", minimap_OnDragStart)
-				self:SetScript("OnDragStop", minimap_OnDragStop)
-				self:SetParent(Minimap)
-				self:Show()
-				self:SetClampedToScreen(false)
-				minimap_UpdatePosition(self)
-				if detached ~= nil then
-					print(L["The |cffabd473XRP|r button has been attached to the minimap. You may need to reload your UI (/reload)."])
-				end
-				detached = false
-			end
+			self:UnlockHighlight()
+			self.moving = nil
 		end
 	end
-end
 
-do
 	local function minimap_UpdateIcon()
 		if xrp.units.target and xrp.units.target.fields.VA then
-			xrp.minimap.icon:SetTexture("Interface\\Icons\\INV_Misc_Book_03")
+			minimap.icon:SetTexture("Interface\\Icons\\INV_Misc_Book_03")
 			return
 		end
 		local FC = xrp.current.fields.FC
 		if not FC or FC == "0" or FC == "1" then
-			xrp.minimap.icon:SetTexture("Interface\\Icons\\Ability_Malkorok_BlightofYshaarj_Red")
+			minimap.icon:SetTexture("Interface\\Icons\\Ability_Malkorok_BlightofYshaarj_Red")
 		else
-			xrp.minimap.icon:SetTexture("Interface\\Icons\\Ability_Malkorok_BlightofYshaarj_Green")
+			minimap.icon:SetTexture("Interface\\Icons\\Ability_Malkorok_BlightofYshaarj_Green")
 		end
 	end
 
@@ -181,11 +150,25 @@ do
 	xrp:HookEvent("MSP_RECEIVE", minimap_UpdateIcon)
 
 	xrp:HookLoad(function()
-		xrp.minimap:SetDetached(settings.detached)
-		xrp.minimap.locked = true
+		if settings.detached then
+			-- Set scripts for free-form moving.
+			minimap:SetScript("OnDragStart", minimap_OnDragStartDetached)
+			minimap:SetScript("OnDragStop", minimap_OnDragStopDetached)
+			minimap:RegisterForDrag("RightButton")
+			minimap:SetClampedToScreen(true)
+			minimap_UpdatePositionDetached(minimap)
+		else
+			-- Set scripts for minimap-attached moving.
+			minimap:SetScript("OnDragStart", minimap_OnDragStart)
+			minimap:SetScript("OnDragStop", minimap_OnDragStop)
+			minimap:RegisterForDrag("LeftButton")
+			minimap:SetParent(Minimap)
+			minimap:SetClampedToScreen(false)
+			minimap_UpdatePosition(minimap)
+		end
 		minimap_UpdateIcon()
-		xrp.minimap:SetScript("OnEvent", minimap_UpdateIcon)
-		xrp.minimap:RegisterEvent("PLAYER_TARGET_CHANGED")
+		minimap:SetScript("OnEvent", minimap_UpdateIcon)
+		minimap:RegisterEvent("PLAYER_TARGET_CHANGED")
 	end)
 end
 
@@ -244,10 +227,10 @@ do
 		{ text = L["Profiles"], notCheckable = true, hasArrow = true, menuList = menulist_profiles, },
 		{ text = XRP_FC, notCheckable = true, hasArrow = true, menuList = menulist_status, },
 		{ text = XRP_CU..CONTINUED, notCheckable = true, func = function() StaticPopup_Show("XRP_CURRENTLY") end, },
-		{ text = L["Editor..."], notCheckable = true, func = function() xrp:ToggleEditor() end, },
-		{ text = L["Automation..."], notCheckable = true, func = function() xrp:ToggleAuto() end, },
-		{ text = L["Viewer..."], notCheckable = true, func = function() xrp:ToggleViewer() end, },
-		{ text = L["Options..."], notCheckable = true, func = function() xrp:ShowOptions() xrp:ShowOptions() end, },
+		{ text = L["Editor..."], notCheckable = true, func = function() xrp:Edit() end, },
+		{ text = L["Automation..."], notCheckable = true, func = function() xrp:Auto() end, },
+		{ text = L["Viewer..."], notCheckable = true, func = function() xrp:View() end, },
+		{ text = L["Options..."], notCheckable = true, func = function() xrp:Options() end, },
 		{ text = CANCEL, notCheckable = true, },
 	}
 
@@ -276,11 +259,11 @@ do
 			CloseDropDownMenus()
 		end
 
-		xrp.minimap:SetScript("OnClick", function(self, button, down)
+		minimap:SetScript("OnClick", function(self, button, down)
 			if not down then
 				if button == "LeftButton" then
 					if xrp.units.target and xrp.units.target.fields.VA then
-						xrp:ShowViewerUnit("target")
+						xrp:View("target")
 					else
 						local FC, FCnil = xrp.current.fields.FC, xrp.profiles.SELECTED.fields.FC
 						local IC, ICnil = FC ~= nil and FC ~= "1" and FC ~= "0", FCnil ~= nil and FCnil ~= "1" and FCnil ~= "0"
@@ -297,40 +280,31 @@ do
 					end
 					CloseDropDownMenus()
 				elseif button == "RightButton" then
-					if settings.detached and not self.locked then
-						self.locked = true
+					wipe(menulist_profiles)
+					local selected = xrpSaved.selected
+					for _, name in ipairs(xrp.profiles:List()) do
+						menulist_profiles[#menulist_profiles + 1] = { text = name, checked = selected == name, arg1 = name, func = minimap_ProfileSelect, }
+					end
+					ToggleDropDownMenu(nil, nil, self.Menu, self, -2, 5, minimap_menulist)
+					if not settings.hidett then
 						GameTooltip:Hide()
-					else
-						wipe(menulist_profiles)
-						local selected = xrpSaved.selected
-						for _, name in ipairs(xrp.profiles:List()) do
-							menulist_profiles[#menulist_profiles + 1] = { text = name, checked = selected == name, arg1 = name, func = minimap_ProfileSelect, }
-						end
-
-						ToggleDropDownMenu(nil, nil, self.Menu, self, -2, 5, minimap_menulist)
-						if not settings.hidett then
-							GameTooltip:Hide()
-						end
 					end
 				end
 			end
 		end)
-		xrp.minimap.Menu.initialize = EasyMenu_Initialize
-		xrp.minimap.Menu.displayMode = "MENU"
+		minimap.Menu.initialize = EasyMenu_Initialize
+		minimap.Menu.displayMode = "MENU"
 	end
 end
 
-xrp.minimap:SetScript("OnEnter", function(self, motion)
-	if motion and settings.detached and not self.locked then
-		GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT", 30, 4)
-		GameTooltip:SetText(L["Right click to lock icon position."])
-	elseif motion and not settings.hidett then
+minimap:SetScript("OnEnter", function(self, motion)
+	if motion and not settings.hidett then
 		ShowMinimapTooltip(self)
 	end
 end)
 
-xrp.minimap:SetScript("OnLeave", function(self, motion)
-	if not settings.hidett or (settings.detached and not self.locked) then
+minimap:SetScript("OnLeave", function(self, motion)
+	if not settings.hidett then
 		GameTooltip:Hide()
 	end
 	self.dim:Hide()

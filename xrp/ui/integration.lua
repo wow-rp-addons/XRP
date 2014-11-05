@@ -77,7 +77,7 @@ do
 				if cursor.mountable then
 					UIErrorsFrame:Clear() -- Hides errors on inteactable mount players.
 				end
-				xrp:ShowViewerUnit("target")
+				xrp:View("target")
 			end
 			if autointeract then
 				SetCVar("AutoInteract", "1")
@@ -142,7 +142,7 @@ hooksecurefunc("InteractUnit", function(unit)
 	if mountable then
 		UIErrorsFrame:Clear() -- Hides errors on inteactable mount players.
 	end
-	xrp:ShowViewerUnit(unit)
+	xrp:View(unit)
 end)
 
 -- Chat box integration (%xt/%xf)
@@ -182,9 +182,9 @@ UnitPopupButtons["XRP_VIEW_UNIT"] = { text = xrp.L["Roleplay Profile"], dist = 0
 hooksecurefunc("UnitPopup_OnClick", function(self)
 	local button = self.value
 	if button == "XRP_VIEW_CHARACTER" then
-		xrp:ShowViewerCharacter(xrp:NameWithRealm(UIDROPDOWNMENU_INIT_MENU.name, UIDROPDOWNMENU_INIT_MENU.server))
+		xrp:View(xrp:NameWithRealm(UIDROPDOWNMENU_INIT_MENU.name, UIDROPDOWNMENU_INIT_MENU.server))
 	elseif button == "XRP_VIEW_UNIT" then
-		xrp:ShowViewerUnit(UIDROPDOWNMENU_INIT_MENU.unit)
+		xrp:View(UIDROPDOWNMENU_INIT_MENU.unit)
 	end
 end)
 xrp:HookLoad(function()

@@ -15,7 +15,7 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-	<Frame name="xrp_options" parent="InterfaceOptionsFrame" hidden="true">
+	<Frame name="XRPAbout" parent="InterfaceOptionsFrame" hidden="true">
 		<Layers>
 			<Layer level="OVERLAY">
 				<FontString parentKey="Title" inherits="GameFontNormalLarge" text="XRP">
@@ -51,7 +51,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button name="$parentCacheClear" parentKey="CacheClear" inherits="UIPanelButtonTemplate" text="XRP_CLEAR_CACHE">
+			<Button parentKey="CacheClear" inherits="UIPanelButtonTemplate" text="XRP_CLEAR_CACHE">
 				<Size x="96" y="21"/>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-15" y="15"/>
@@ -62,27 +62,20 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="$parentCacheTidy" parentKey="CacheTidy" inherits="UIPanelButtonTemplate" text="XRP_TIDY_CACHE">
+			<Button parentKey="CacheTidy" inherits="UIPanelButtonTemplate" text="XRP_TIDY_CACHE">
 				<Size x="96" y="21"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.CacheClear" relativePoint="LEFT" x="-15"/>
 				</Anchors>
-				<Scripts>
-					<OnClick>
-						xrp:CacheTidy();
-						StaticPopup_Show("XRP_NOTIFICATION", xrp.L["Old entries have been pruned from the cache."]);
-					</OnClick>
-				</Scripts>
 			</Button>
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				xrp.options = self;
 				self.name = XRP;
 				InterfaceOptions_AddCategory(self);
 			</OnLoad>
 			<OnShow>
-				xrp:ShowOptions();
+				xrp:Options("core");
 			</OnShow>
 		</Scripts>
 	</Frame>

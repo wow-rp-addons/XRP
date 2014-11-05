@@ -15,6 +15,8 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
+local addonName, private = ...
+
 local L = xrp.L
 
 XRP = "XRP"
@@ -117,8 +119,8 @@ BINDING_NAME_XRP_VIEWER_MOUSEOVER = L["View mouseover's RP profile"]
 
 do
 	local info = "|cff99b3e6%s:|r %s"
-	XRP_AUTHOR = info:format(L["Author"], GetAddOnMetadata("xrp", "Author"))
-	XRP_VERSION = info:format(GAME_VERSION_LABEL, GetAddOnMetadata("xrp", "Version"))
+	XRP_AUTHOR = info:format(L["Author"], GetAddOnMetadata(addonName, "Author"))
+	XRP_VERSION = info:format(GAME_VERSION_LABEL, xrp.version)
 end
 XRP_COPYHEADER = L["License/Copyright"]
 

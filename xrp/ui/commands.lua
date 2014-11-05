@@ -115,12 +115,13 @@ xrpcmds.status = function(args)
 end
 
 xrpcmds.view = function(args)
-	if (not args and UnitIsPlayer("target")) or args == "target" or args == L["target"] then
-		xrp:ShowViewerUnit("target")
-	elseif (not args and UnitIsPlayer("mouseover")) or args == "mouseover" or args == L["mouseover"] then
-		xrp:ShowViewerUnit("mouseover")
-	elseif type(args) == "string" then
-		xrp:ShowViewerCharacter((args:gsub("^%l", string.upper)))
+	if not args and UnitIsPlayer("target") then
+		args = "target"
+	elseif not args and UnitIsPlayer("mouseover") then
+		args = "mouseover"
+	end
+	if type(args) == "string" then
+		xrp:View(args)
 	else
 		xrpcmds.help("view")
 	end

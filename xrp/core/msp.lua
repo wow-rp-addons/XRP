@@ -15,11 +15,13 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
+local addonName, private = ...
+
 -- Claim MSP rights ASAP to try heading off other addons. Since we start with
 -- "x", this probably won't help much.
 local disabled = false
 if not msp_RPAddOn then
-	msp_RPAddOn = GetAddOnMetadata("xrp", "Title")
+	msp_RPAddOn = GetAddOnMetadata(addonName, "Title")
 else
 	StaticPopupDialogs["XRP_MSP_DISABLE"] = {
 		text = xrp.L["You are running another RP profile addon (\"%s\"). XRP's support for sending and receiving profiles is disabled; to enable it, disable \"%s\" and reload your UI."],
@@ -36,12 +38,11 @@ else
 end
 
 -- This is the core of the MSP send/recieve implementation. The API is nothing
--- like LibMSP and is not public, despite using the same table name. The
--- (minimal) public API is contained in xrp. In general even that shouldn't
--- be interacted with.
+-- like LibMSP and is not directly accessible outside of the XRP core.
 local msp = CreateFrame("Frame")
+private.msp = msp
 -- Battle.net friends mapping.
-msp.bnet, msp.bnetid = {}, {}
+msp.bnet = {}
 -- Requested field queue
 msp.request = {}
 -- Session cache. Do NOT make weak.
@@ -49,7 +50,6 @@ msp.cache = setmetatable({}, {
 	__index = function(self, character)
 		self[character] = {
 			nextcheck = 0,
-			lastsend = 0,
 			received = false,
 			time = {},
 		}
@@ -65,7 +65,6 @@ function msp:UpdateBNList()
 			if client == "WoW" then
 				local character = xrp:NameWithRealm(toonName, realmName)
 				self.bnet[character] = toonID
-				self.bnetid[toonID] = character
 			end
 		end
 	end
@@ -74,7 +73,7 @@ end
 do
 	local msp_AddFilter
 	do
-		-- Filter "No such..." errors.
+		-- Filter visible "No such..." errors from addon messages.
 		local filter = setmetatable({}, { __mode = "v" })
 
 		ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", function(self, event, message)
@@ -83,22 +82,13 @@ do
 				return false
 			end
 			local now = GetTime()
-			-- Filter if within 1000ms of current time plus home latency.
 			-- GetNetStats() provides value in milliseconds.
 			local dofilter = filter[character] > (now - 1.000 - ((select(3, GetNetStats())) * 0.001))
 			if not dofilter then
 				filter[character] = nil
 			else
-				-- If they're not offline, they're opposite faction. Same error
-				-- for both.
---				local offline = not (xrp.cache[character].fields.GF and xrp.cache[character].fields.GF ~= xrp.current.fields.GF)
-				-- 30 second timer between checks for offline characters. Try
-				-- to not query offline characters higher up the chain as well,
-				-- remember.
---				if msp.cache[character].nextcheck and offline then
---					msp.cache[character].nextcheck = now + 60
---				end
-				xrp:FireEvent("MSP_FAIL", character, (not xrp.cache[character].fields.GF or xrp.cache[character].fields.GF ~= xrp.current.fields.GF) and "offline" or "faction")
+				-- Same error message for offline and opposite faction.
+				private:FireEvent("MSP_FAIL", character, (not xrp.cache[character].fields.GF or xrp.cache[character].fields.GF ~= xrp.current.fields.GF) and "offline" or "faction")
 			end
 			return dofilter
 		end)
@@ -113,6 +103,8 @@ do
 		data = table.concat(data, "\1")
 		--print("Sending to: "..character)
 		--print(GetTime()..": Out: "..character..": "..data:gsub("\1", ";"))
+
+		-- Check whether sending by BN is available and preferred.
 		if (not channel or channel == "BN") and self.bnet[character] then
 			if not select(15, BNGetToonInfo(self.bnet[character])) then
 				self.bnet[character] = nil
@@ -124,6 +116,7 @@ do
 				end
 			end
 		end
+
 		if (not channel or channel == "BN") and self.bnet[character] then
 			if #data <= 4078 then
 				BNSendGameData(self.bnet[character], "MSP", data)
@@ -134,76 +127,47 @@ do
 				data = ("XC=%u\1%s"):format(((#data + 5) / 4078) + 1, data)
 				local position = 1
 				BNSendGameData(self.bnet[character], "MSP\1", data:sub(position, position + 4077))
-				--print(character..": Outgoing MSP\\1")
 				position = position + 4078
 				while position + 4078 <= #data do
 					BNSendGameData(self.bnet[character], "MSP\2", data:sub(position, position + 4077))
-					--print(character..": Outgoing MSP\\2")
 					position = position + 4078
 				end
 				BNSendGameData(self.bnet[character], "MSP\3", data:sub(position))
-				--print(character..": Outgoing MSP\\3")
 			end
 		end
-		channel = (not channel or channel == "GAME") and UnitRealmRelationship(Ambiguate(character, "none")) == LE_REALM_RELATION_COALESCED and "RAID" or "WHISPER"
-		if channel == "WHISPER" then
-			if #data <= 255 then
-				ChatThrottleLib:SendAddonMessage("NORMAL", "MSP", data, "WHISPER", character, "XRP-"..character, msp_AddFilter, character)
-				--print(character..": Outgoing MSP")
-			else
-				-- XC is most likely to add five or six extra characters, will
-				-- not add less than five, and only adds seven or more if the
-				-- profile is over 25000 characters or so. So let's say six.
-				data = ("XC=%u\1%s"):format(((#data + 6) / 255) + 1, data)
-				local position = 1
-				ChatThrottleLib:SendAddonMessage("BULK", "MSP\1", data:sub(position, position + 254), "WHISPER", character, "XRP-"..character, msp_AddFilter, character)
-				--print(character..": Outgoing MSP\\1")
-				position = position + 255
-				while position + 255 <= #data do
-					ChatThrottleLib:SendAddonMessage("BULK", "MSP\2", data:sub(position, position + 254), "WHISPER", character, "XRP-"..character, msp_AddFilter, character)
-					--print(character..": Outgoing MSP\\2")
-					position = position + 255
-				end
-				ChatThrottleLib:SendAddonMessage("BULK", "MSP\3", data:sub(position), "WHISPER", character, "XRP-"..character, msp_AddFilter, character)
-				--print(character..": Outgoing MSP\\3")
-			end
-		end
-		if channel == "RAID" then
-			-- Send to party/raid.
-			local prefix = isRequest and character.."\30" or ""
-			local chunksize = 255 - #prefix
-			if #data < chunksize then
-				ChatThrottleLib:SendAddonMessage("NORMAL", "GMSP", prefix..data, "RAID", nil, "XRP-GROUP")
-			else
-				chunksize = chunksize - 1
-				-- XC is most likely to add five or six extra characters, will
-				-- not add less than five, and only adds seven or more if the
-				-- profile is over 25000 characters or so. So let's say six.
-				data = ("XC=%u\1%s"):format(((#data + 6) / chunksize) + 1, data)
-				local position = 1
-				ChatThrottleLib:SendAddonMessage("BULK", "GMSP", prefix.."\1"..data:sub(position, position + chunksize - 1), "RAID", nil, "XRP-GROUP")
-				--print(character..": Outgoing MSP\\1")
-				position = position + chunksize
-				while position + chunksize <= #data do
-					ChatThrottleLib:SendAddonMessage("BULK", "GMSP", prefix.."\2"..data:sub(position, position + chunksize - 1), "RAID", nil, "XRP-GROUP")
-					--print(character..": Outgoing MSP\\2")
-					position = position + chunksize
-				end
-				ChatThrottleLib:SendAddonMessage("BULK", "GMSP", prefix.."\3"..data:sub(position), "RAID", nil, "XRP-GROUP")
-				--print(character..": Outgoing MSP\\3")
+		if channel == "BN" then return end
 
+		local isGroup = (not channel or channel == "GAME") and UnitRealmRelationship(Ambiguate(character, "none")) == LE_REALM_RELATION_COALESCED
+		channel = isGroup and "RAID" or "WHISPER"
+		local prepend = isGroup and isRequest and ("%s\30"):format(character) or ""
+		local queue = isGroup and "XRP-GROUP" or ("XRP-%s"):format(character)
+		local callback = not isGroup and msp_AddFilter or nil
+		local chunksize = 255 - #prepend
+
+		if #data <= chunksize then
+			ChatThrottleLib:SendAddonMessage("NORMAL", not isGroup and "MSP" or "GMSP", prepend..data, channel, character, queue, callback, character)
+		else
+			chunksize = isGroup and (chunksize - 1) or chunksize
+			-- XC is most likely to add five or six extra characters, will
+			-- not add less than five, and only adds seven or more if the
+			-- profile is over 25000 characters or so. So let's say six.
+			data = ("XC=%u\1%s"):format(((#data + 6) / chunksize) + 1, data)
+			local position = 1
+			ChatThrottleLib:SendAddonMessage("BULK", not isGroup and "MSP\1" or "GMSP", (isGroup and "%s\1%s" or "%s%s"):format(prepend, data:sub(position, position + chunksize - 1)), channel, character, queue, callback, character)
+			position = position + chunksize
+			while position + chunksize <= #data do
+				ChatThrottleLib:SendAddonMessage("BULK", not isGroup and "MSP\2" or "GMSP", (isGroup and "%s\2%s" or "%s%s"):format(prepend, data:sub(position, position + chunksize - 1)), channel, character, queue, callback, character)
+				position = position + chunksize
 			end
+			ChatThrottleLib:SendAddonMessage("BULK", not isGroup and "MSP\3" or "GMSP", (isGroup and "%s\3%s" or "%s%s"):format(prepend, data:sub(position)), channel, character, queue, callback, character)
 		end
-		self.cache[character].lastsend = GetTime()
 	end
 end
 
 function msp:OnUpdate(elapsed)
-	-- This exhausts itself every time it's run. One and done.
 	if next(self.request) then
 		for character, fields in pairs(self.request) do
-			--print(character..": "..fields)
-			xrp:Request(character, fields)
+			private:Request(character, fields)
 			self.request[character] = nil
 		end
 	end
@@ -213,12 +177,11 @@ msp:Hide()
 msp:SetScript("OnUpdate", msp.OnUpdate)
 
 do
-	-- This sets the field order to a xrp_viewer-ideal incoming order.
+	-- Tooltip order for ideal xrp_viewer usage.
 	local ttfields = { "VP", "VA", "NA", "NH", "NI", "NT", "RA", "RC", "CU", "FR", "FC" }
 	local tt, oldtt
 	function msp:GetTT()
 		if not tt then
-			--print("Rebuilding tt.")
 			if not oldtt and xrpSaved.oldtt then
 				oldtt = xrpSaved.oldtt
 				xrpSaved.oldtt = nil
@@ -228,17 +191,13 @@ do
 				tooltip[#tooltip + 1] = (not current.fields[field] and "%s" or "%s%u=%s"):format(field, current.versions[field], current.fields[field])
 			end
 			local newtt = table.concat(tooltip, "\1")
-			--if newtt ~= oldtt then
-				--print("TT updated.")
-			--end
-			tt = ("%s\1TT%u"):format(newtt, newtt ~= oldtt and xrp:NewVersion("TT") or xrpSaved.versions.TT)
+			tt = ("%s\1TT%u"):format(newtt, newtt ~= oldtt and private:NewVersion("TT") or xrpSaved.versions.TT)
 			oldtt = newtt
 		end
-		--print((tt:gsub("\1", "\\1")))
 		return tt
 	end
 	xrp:HookEvent("FIELD_UPDATE", function(field)
-		if tt and (not field or xrp.fields.tt[field]) then
+		if tt and (not field or private.fields.tt[field]) then
 			tt = nil
 		end
 	end)
@@ -259,9 +218,6 @@ do
 	-- made. msp.cache[character].fieldupdated is set to true if a
 	-- field has changed, false if a field has not been changed.
 	function msp:Process(character, command)
-		-- Original LibMSP match string uses %a%a rather than %u%u.
-		-- According to protcol documentation, %u%u would be more
-		-- correct.
 		local action, field, version, contents = command:match("(%p?)(%u%u)(%d*)=?(.*)")
 		version = tonumber(version) or 0
 		if not field then
@@ -289,7 +245,7 @@ do
 				-- They already have the latest.
 				return not xrp.current.versions[field] and field or ("!%s%u"):format(field, xrp.current.versions[field])
 			elseif not xrp.current.fields[field] then
-				-- Field is empty.
+				-- Field is empty. Empty fields are always version 0 in XRP.
 				return field
 			end
 			-- Field has content.
@@ -319,12 +275,12 @@ do
 				-- exists (indicating MSP support is/was present -- this
 				-- function is the *only* place a character cache table is
 				-- created).
-				for gfield, _ in pairs(xrp.fields.unit) do
+				for gfield, _ in pairs(private.fields.unit) do
 					xrpCache[character].fields[gfield] = xrp.cache[character].fields[gfield]
 				end
 			end
 			local updated = false
-			if xrpCache[character] and xrpCache[character].fields[field] and contents == "" and not xrp.fields.unit[field] then
+			if xrpCache[character] and xrpCache[character].fields[field] and contents == "" and not private.fields.unit[field] then
 				-- If it's newly blank, empty it in the cache. Never
 				-- empty G*, but do update them (following elseif).
 				xrpCache[character].fields[field] = nil
@@ -333,7 +289,7 @@ do
 				xrpCache[character].fields[field] = contents
 				updated = true
 				if field == "VA" then
-					xrp:AddonUpdate(contents:match("^XRP/([^;]+)"))
+					private:AddonUpdate(contents:match("^XRP/([^;]+)"))
 				end
 			end
 			if version ~= 0 then
@@ -347,7 +303,7 @@ do
 			self.cache[character].time[field] = GetTime()
 
 			if updated then
-				xrp:FireEvent("MSP_FIELD", character, field)
+				private:FireEvent("MSP_FIELD", character, field)
 				self.cache[character].fieldupdated = true
 				if field == "VP" and tonumber(contents) then
 					self.cache[character].bnet = tonumber(contents) >= 2
@@ -371,10 +327,10 @@ msp.handlers = {
 		-- not changed, fieldupdated will be set to false; if no fields were
 		-- received (i.e., only requests), fieldupdated is nil.
 		if self.cache[character].fieldupdated == true then
-			xrp:FireEvent("MSP_RECEIVE", character)
+			private:FireEvent("MSP_RECEIVE", character)
 			self.cache[character].fieldupdated = nil
 		elseif self.cache[character].fieldupdated == false then
-			xrp:FireEvent("MSP_NOCHANGE", character)
+			private:FireEvent("MSP_NOCHANGE", character)
 			self.cache[character].fieldupdated = nil
 		end
 		if #out > 0 then
@@ -394,18 +350,16 @@ msp.handlers = {
 		end
 		-- This only does partial processing -- queries (i.e., ?NA) are
 		-- processed only after full reception. Most times that sort of mixed
-		-- message won't even exist, but XRP can produce it sometimes.
+		-- message won't even exist, but the spec allows for it.
 		for command in message:gmatch("([^\1]+)\1") do
 			if command:find("^[^%?]") then
 				self:Process(character, command)
 				message = message:gsub(command:gsub("(%W)","%%%1").."\1", "")
 			end
 		end
-		--print(message:gsub("\1", "\\1"))
 		self.cache[character].chunks = 1
-		-- First message = fresh buffer.
 		self.cache[character][channel] = message
-		xrp:FireEvent("MSP_CHUNK", character, self.cache[character].chunks, self.cache[character].totalchunks or nil)
+		private:FireEvent("MSP_CHUNK", character, self.cache[character].chunks, self.cache[character].totalchunks)
 	end,
 	["MSP\2"] = function(self, character, message, channel)
 		-- If we don't have a buffer (i.e., no prior received message),
@@ -432,7 +386,7 @@ msp.handlers = {
 			end
 		end
 		self.cache[character].chunks = (self.cache[character].chunks or 0) + 1
-		xrp:FireEvent("MSP_CHUNK", character, self.cache[character].chunks, self.cache[character].totalchunks or nil)
+		private:FireEvent("MSP_CHUNK", character, self.cache[character].chunks, self.cache[character].totalchunks)
 	end,
 	["MSP\3"] = function(self, character, message, channel)
 		-- If we don't have a buffer (i.e., no prior received message),
@@ -445,7 +399,7 @@ msp.handlers = {
 		self.handlers["MSP"](self, character, type(self.cache[character][channel]) == "string" and (self.cache[character][channel]..message) or (table.concat(self.cache[character][channel])..message), channel)
 		-- MSP_CHUNK after MSP_RECEIVE would fire. Makes it easier to
 		-- do something useful when chunks == totalchunks.
-		xrp:FireEvent("MSP_CHUNK", character, (self.cache[character].chunks or 0) + 1, (self.cache[character].chunks or 0) + 1)
+		private:FireEvent("MSP_CHUNK", character, (self.cache[character].chunks or 0) + 1, (self.cache[character].chunks or 0) + 1)
 
 		self.cache[character].chunks = nil
 		self.cache[character].totalchunks = nil
@@ -477,7 +431,9 @@ if not disabled then
 
 			self.handlers[prefix](self, character, message, channel)
 		elseif event == "BN_CHAT_MSG_ADDON" and self.handlers[prefix] then
-			local character = self.bnetid[sender]
+			local active, toonName, client, realmName = BNGetToonInfo(sender)
+			local character = xrp:NameWithRealm(toonName, realmName)
+			self.bnet[character] = sender
 
 			self.cache[character].bnet = true
 			self.cache[character].received = true
@@ -488,13 +444,10 @@ if not disabled then
 			local active, toonName, client, realmName = BNGetToonInfo(prefix)
 			if client == "WoW" then
 				local character = xrp:NameWithRealm(toonName, realmName)
-				-- Reset check timer for newly-seen characters, particularly
-				-- for the case of newly-added BN friends.
-				if not self.bnet[character] and not self.cache[character].received and self.cache[character].nextcheck ~= 0 then
+				if not self.bnet[character] and not self.cache[character].received then
 					self.cache[character].nextcheck = 0
 				end
 				self.bnet[character] = prefix
-				self.bnetid[prefix] = character
 			end
 		elseif event == "GROUP_ROSTER_UPDATE" then
 			local units = IsInRaid() and self.raidUnits or self.partyUnits
@@ -515,9 +468,9 @@ if not disabled then
 			self:RegisterEvent("BN_TOON_NAME_UPDATED")
 			self:RegisterEvent("BN_FRIEND_TOON_ONLINE")
 		elseif event == "BN_DISCONNECTED" then
-			self.bnet, self.bnetid = {}, {}
 			self:UnregisterEvent("BN_TOON_NAME_UPDATED")
 			self:UnregisterEvent("BN_FRIEND_TOON_ONLINE")
+			self.bnet = {}
 		elseif event == "PLAYER_REGEN_DISABLED" then
 			ChatThrottleLib.MAX_CPS = 800
 		elseif event == "PLAYER_REGEN_ENABLED" then
@@ -526,15 +479,17 @@ if not disabled then
 	end)
 	msp:RegisterEvent("CHAT_MSG_ADDON")
 	msp:RegisterEvent("BN_CHAT_MSG_ADDON")
+	msp:RegisterEvent("GROUP_ROSTER_UPDATE")
 	msp:RegisterEvent("PLAYER_REGEN_DISABLED")
 	msp:RegisterEvent("PLAYER_REGEN_ENABLED")
-	msp:RegisterEvent("GROUP_ROSTER_UPDATE")
 	xrp:HookLogin(function()
-		msp:UpdateBNList()
+		if BNConnected() then
+			msp:UpdateBNList()
+			msp:RegisterEvent("BN_TOON_NAME_UPDATED")
+			msp:RegisterEvent("BN_FRIEND_TOON_ONLINE")
+		end
 		msp:RegisterEvent("BN_CONNECTED")
 		msp:RegisterEvent("BN_DISCONNECTED")
-		msp:RegisterEvent("BN_TOON_NAME_UPDATED")
-		msp:RegisterEvent("BN_FRIEND_TOON_ONLINE")
 	end)
 	ChatThrottleLib.MAX_CPS = 1200 -- up from 800
 	ChatThrottleLib.MIN_FPS = 15 -- down from 20
@@ -544,19 +499,19 @@ do
 	local raidUnits, partyUnits = {}, {}
 	local raid, party = "raid%u", "party%u"
 	for i = 1, MAX_RAID_MEMBERS do
-		raidUnits[#raidUnits + 1] = raid:format(i)
+		raidUnits[i] = raid:format(i)
 	end
 	for i = 1, MAX_PARTY_MEMBERS do
-		partyUnits[#partyUnits + 1] = party:format(i)
+		partyUnits[i] = party:format(i)
 	end
 	msp.raidUnits = raidUnits
 	msp.partyUnits = partyUnits
 	msp.inGroup = {}
 end
 
-xrp.msp = 2
+private.msp = 2
 
-xrp.fields = {
+private.fields = {
 	-- Fields in tooltip.
 	tt = { VP = true, VA = true, NA = true, NH = true, NI = true, NT = true, RA = true, RC = true, FR = true, FC = true, CU = true },
 	-- These fields are (or should) be generated from UnitSomething()
@@ -571,7 +526,7 @@ xrp.fields = {
 	-- 45 seconds for non-TT fields.
 	times = setmetatable({ TT = 15, }, {
 		__index = function(self, field)
-			if xrp.fields.tt[field] then
+			if private.fields.tt[field] then
 				return self.TT
 			end
 			return 45
@@ -579,8 +534,8 @@ xrp.fields = {
 	}),
 }
 
-function xrp:QueueRequest(character, field)
-	if disabled or character == self.toon or self:NameWithoutRealm(character) == UNKNOWN then return false end
+function private:QueueRequest(character, field)
+	if disabled or character == xrp.toon or xrp:NameWithoutRealm(character) == UNKNOWN then return false end
 
 	if not msp.request[character] then
 		msp.request[character] = {}
@@ -592,8 +547,8 @@ function xrp:QueueRequest(character, field)
 	return true
 end
 
-function xrp:Request(character, fields)
-	if disabled or character == self.toon or self:NameWithoutRealm(character) == UNKNOWN then return false end
+function private:Request(character, fields)
+	if disabled or character == xrp.toon or xrp:NameWithoutRealm(character) == UNKNOWN then return false end
 
 	local now = GetTime()
 	if not msp.cache[character].received and now < msp.cache[character].nextcheck then
@@ -626,7 +581,6 @@ function xrp:Request(character, fields)
 		end
 	end
 	if #out > 0 then
-		--print(character..": "..table.concat(out, " "))
 		msp:Send(character, out, nil, true)
 		return true
 	end
@@ -652,17 +606,13 @@ local function fs_Create()
 	end)
 	frame:SetScript("OnEvent", function(self, event)
 		local now = GetTime()
-		--print(now..": "..event)
 		if self.lastdraw < now - 5 then
-			--print("No framedraw for 5+ seconds.")
 			-- No framedraw for 5+ seconds.
 			if msp:IsVisible() then
-				--print(now..": Running MSP OnUpdate!")
 				msp:OnUpdate(now - self.lastmsp)
 				self.lastmsp = now
 			end
 			if ChatThrottleLib.Frame:IsVisible() then
-				--print(now..": Running CTL OnUpdate!")
 				-- Temporarily setting MIN_FPS to zero since... Well, no
 				-- framedraws are happening, but it's not because the system is
 				-- bogged down.
@@ -680,7 +630,6 @@ end
 local fsframe
 local function fs_Check()
 	if GetCVar("gxWindow") == "0" then
-		--print("Fullscreen enabled.")
 		-- Is true fullscreen.
 		fsframe = fsframe or fs_Create()
 		fsframe:Show()

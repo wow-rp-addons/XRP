@@ -17,6 +17,8 @@
 
 if msp ~= nil then return end
 
+local addonName, private = ...
+
 -- This file provides emulation of reference LibMSP for XRP. This is used by
 -- some addons (such as GHI) to interact with a RP profile. For the most part,
 -- this is read-only. msp.my (current profile) is writable, but only sets an
@@ -29,7 +31,7 @@ if msp ~= nil then return end
 
 local msp = {}
 msp.version = 9 -- Let's just say we're 9.
-msp.protocolversion = xrp.msp
+msp.protocolversion = private.msp
 
 -- Passes the function into xrp:HookEvent. Arguments for fired events are the
 -- same as LibMSP's callbacks.
@@ -129,7 +131,11 @@ function msp:Request(character, fields)
 	elseif type(fields) ~= "table" then
 		return false
 	end
-	return xrp:Request(xrp:NameWithRealm(character), fields)
+	return private:Request(xrp:NameWithRealm(character), fields)
+end
+
+function msp:NameWithRealm(...)
+	return xrp:NameWithRealm(...)
 end
 
 -- Used by GHI... Working with the cache since GHI expects values to be

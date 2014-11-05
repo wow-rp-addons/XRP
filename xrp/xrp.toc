@@ -23,6 +23,7 @@ ui\commands.lua
 ui\minimap.xml
 ui\minimap.lua
 ui\about.xml
+ui\about.lua
 extra\fixes.lua
 extra\libmsp_compat.lua
 extra\import.lua
