@@ -15,6 +15,8 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
+local addonName, private = ...
+
 local nonewindex = function() end
 local weak = { __mode = "v" }
 local gcache = setmetatable({}, weak)
@@ -25,7 +27,7 @@ local character_mt
 do
 	local fields_mt = {
 		__index = function(self, field)
-			if xrp.fields.dummy[field] or not field:find("^%u%u$") then
+			if private.fields.dummy[field] or not field:find("^%u%u$") then
 				return nil
 			end
 			local character = self[ck]
@@ -41,7 +43,7 @@ do
 				return gcache[character][field]
 			end
 			if self[rk] then
-				xrp:QueueRequest(character, field)
+				private:QueueRequest(character, field)
 			end
 			if xrpCache[character] and xrpCache[character].fields[field] then
 				return xrpCache[character].fields[field]

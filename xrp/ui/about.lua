@@ -1,6 +1,5 @@
-<Bindings>
-<!--
-	© Justin Snelgrove
+--[[
+	(C) 2014 Justin Snelgrove <jj@stormlord.ca>
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -14,17 +13,14 @@
 
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
--->
-	<Binding name="XRP_EDITOR" header="XRP">
-		xrp:Edit();
-	</Binding>
-	<Binding name="XRP_VIEWER">
-		xrp:View(xrp.units.target and "target" or xrp.units.mouseover and "mouseover" or "player");
-	</Binding>
-	<Binding name="XRP_VIEWER_TARGET">
-		xrp:View("target");
-	</Binding>
-	<Binding name="XRP_VIEWER_MOUSEOVER">
-		xrp:View("mouseover");
-	</Binding>
-</Bindings>
+]]
+
+local addonName, private = ...
+
+private.about = XRPAbout
+XRPAbout = nil
+
+private.about.CacheTidy:SetScript("OnClick", function(self, button, down)
+	private:CacheTidy()
+	StaticPopup_Show("XRP_NOTIFICATION", xrp.L["Old entries have been pruned from the cache."])
+end)

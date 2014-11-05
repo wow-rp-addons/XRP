@@ -15,6 +15,8 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
+local addonName, private = ...
+
 local function LoadIfNeeded(addon)
 	local isloaded = IsAddOnLoaded(addon)
 	if not isloaded and IsAddOnLoadOnDemand(addon) then
@@ -23,51 +25,34 @@ local function LoadIfNeeded(addon)
 	return isloaded
 end
 
-function xrp:ToggleEditor()
+function xrp:Edit(profile)
 	if not LoadIfNeeded("xrp_editor") then
 		return false
 	end
-	ToggleFrame(self.editor)
-	return true
+	return self:Edit(profile)
 end
 
-function xrp:ToggleAuto()
+function xrp:Auto(form)
 	if not LoadIfNeeded("xrp_editor") then
 		return false
 	end
-	ToggleFrame(self.auto)
-	return true
+	return self:Auto(form)
 end
 
-function xrp:ToggleViewer()
+function xrp:View(player)
 	if not LoadIfNeeded("xrp_viewer") then
 		return false
 	end
-	ToggleFrame(self.viewer)
-	return true
+	return self:View(player)
 end
 
-function xrp:ShowViewerCharacter(character)
-	if not LoadIfNeeded("xrp_viewer") then
-		return false
-	end
-	self.viewer:ViewCharacter(character)
-	return true
-end
-
-function xrp:ShowViewerUnit(unit)
-	if not LoadIfNeeded("xrp_viewer") then
-		return false
-	end
-	self.viewer:ViewUnit(unit)
-	return true
-end
-
-function xrp:ShowOptions()
+function xrp:Options(pane)
 	if not LoadIfNeeded("xrp_options") then
 		return false
 	end
-	InterfaceOptionsFrame_OpenToCategory(self.options.core)
-	self.options:SetScript("OnShow", nil)
-	return true
+	private.about:SetScript("OnShow", nil)
+	-- Twice in a row since it won't always open to the requested pane first
+	-- try.
+	self:Options(pane)
+	return self:Options(pane)
 end

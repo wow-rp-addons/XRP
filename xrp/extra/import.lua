@@ -18,6 +18,8 @@
 local hasMRP, hasTRP2 = (select(4, GetAddOnInfo("MyRolePlay"))), (select(4, GetAddOnInfo("totalRP2")))
 if not (hasMRP or hasTRP2) then return end
 
+local addonName, private = ...
+
 local L = xrp.L
 
 StaticPopupDialogs["XRP_IMPORT_RELOAD"] = {
@@ -45,7 +47,7 @@ local function import_MyRolePlay()
 		local newname = "MRP-"..name
 		if xrp.profiles:Add(newname) then
 			for field, value in pairs(profile) do
-				if not xrp.fields.unit[field] and not xrp.fields.meta[field] and not xrp.fields.dummy[field] and field:find("^%u%u$") then
+				if not private.fields.unit[field] and not private.fields.meta[field] and not private.fields.dummy[field] and field:find("^%u%u$") then
 					if field == "FC" then
 						if not tonumber(value) and value ~= "" then
 							value = "2"

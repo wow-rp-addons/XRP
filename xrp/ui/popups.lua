@@ -15,6 +15,8 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
+local addonName, private = ...
+
 local L = xrp.L
 
 StaticPopupDialogs["XRP_NOTIFICATION"] = {
@@ -41,7 +43,7 @@ StaticPopupDialogs["XRP_ERROR"] = {
 StaticPopupDialogs["XRP_RELOAD"] = {
 	text = L["%s"],
 	button1 = L["Reload UI"],
-	button2 = CANCEL,
+	button2 = L["Not now"],
 	showAlert = true,
 	OnAccept = function()
 		ReloadUI()
@@ -103,7 +105,7 @@ StaticPopupDialogs["XRP_CACHE_CLEAR"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = function()
-		xrp:CacheTidy(60)
+		private:CacheTidy(60)
 		StaticPopup_Show("XRP_NOTIFICATION", L["The cache has been cleared."])
 	end,
 	enterClicksFirstButton = false,

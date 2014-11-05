@@ -47,20 +47,18 @@
 		<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
 		<Scripts>
 			<OnLoad>
-				xrp.minimap = self;
 				self:RegisterForClicks("anyUp");
-				self:RegisterForDrag("LeftButton");
 				self:SetDontSavePosition();
 			</OnLoad>
 			<OnMouseDown>
-				xrp.minimap.dim:Show();
+				self.dim:Show();
 			</OnMouseDown>
 			<OnMouseUp>
-				xrp.minimap.dim:Hide();
+				self.dim:Hide();
 			</OnMouseUp>
 		</Scripts>
 		<Frames>
-			<Button name="$parentMenu" parentKey="Menu" hidden="true" inherits="UIDropDownMenuTemplate">
+			<Button name="XRPMinimapMenu" parentKey="Menu" hidden="true" inherits="UIDropDownMenuTemplate">
 				<KeyValues>
 					<KeyValue key="point" value="TOPRIGHT"/>
 					<KeyValue key="relativePoint" value="BOTTOMRIGHT"/>

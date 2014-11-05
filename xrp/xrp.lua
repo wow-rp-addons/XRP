@@ -15,9 +15,11 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
+local addonName, private = ...
+
 xrp = {
 	translation = {},
-	version = GetAddOnMetadata("xrp", "Version"),
+	version = GetAddOnMetadata(addonName, "Version"),
 }
 
 do
@@ -35,7 +37,7 @@ end
 do
 	local events = {}
 
-	function xrp:FireEvent(event, ...)
+	function private:FireEvent(event, ...)
 		if type(events[event]) ~= "table" then
 			return false
 		end
@@ -121,10 +123,10 @@ do
 		end
 	end
 
-	function xrp:AddonUpdate(version)
-		if not version or version == self.version or version == self.settings.newversion then return end
-		if CompareVersion(version, self.settings.newversion or self.version) >= 0 then
-			self.settings.newversion = version
+	function private:AddonUpdate(version)
+		if not version or version == xrp.version or version == xrp.settings.newversion then return end
+		if CompareVersion(version, xrp.settings.newversion or xrp.version) >= 0 then
+			xrp.settings.newversion = version
 		end
 	end
 
@@ -135,11 +137,11 @@ do
 	}
 	local addonstring = "%s/%s"
 	init:SetScript("OnEvent", function(self, event, addon)
-		if event == "ADDON_LOADED" and addon == "xrp" then
+		if event == "ADDON_LOADED" and addon == addonName then
 			xrp.toon = xrp:UnitNameWithRealm("player")
 
 			for _, func in ipairs(onload) do
-				pcall(func)
+				pcall(func, "LOADED")
 			end
 			onload = nil
 
@@ -148,7 +150,7 @@ do
 		elseif event == "PLAYER_LOGIN" then
 			local newfields
 			do
-				local fullversion = addonstring:format(GetAddOnMetadata("xrp", "Title"), xrp.version)
+				local fullversion = addonstring:format(GetAddOnMetadata(addonName, "Title"), xrp.version)
 				for _, addon in ipairs(addons) do
 					local name, title, notes, enabled, reason, secure, loadable = GetAddOnInfo(addon)
 					if enabled or loadable then
@@ -164,19 +166,19 @@ do
 					GU = GU,
 					NA = name, -- Fallback NA field.
 					VA = fullversion,
-					VP = tostring(xrp.msp),
+					VP = tostring(private.msp),
 				}
 			end
 			local fields, versions = xrpSaved.meta.fields, xrpSaved.meta.versions
 			for field, contents in pairs(newfields) do
 				if contents ~= fields[field] then
 					fields[field] = contents
-					versions[field] = xrp:NewVersion(field)
+					versions[field] = private:NewVersion(field)
 				end
 			end
 
 			if xrp.settings.cachetidy then
-				xrp:CacheTidy()
+				private:CacheTidy()
 			end
 
 			if xrp.settings.newversion then
@@ -194,7 +196,7 @@ do
 			end
 
 			for _, func in ipairs(onlogin) do
-				pcall(func)
+				pcall(func, "LOGIN")
 			end
 			onlogin = nil
 
@@ -221,12 +223,12 @@ do
 				}
 			end
 			for _, func in ipairs(onlogout) do
-				pcall(func)
+				pcall(func, "LOGOUT")
 			end
 		elseif event == "NEUTRAL_FACTION_SELECT_RESULT" then
 			xrpSaved.meta.fields.GF = UnitFactionGroup("player")
-			xrpSaved.meta.versions.GF = xrp:NewVersion("GF")
-			xrp:FireEvent("FIELD_UPDATE", "GF")
+			xrpSaved.meta.versions.GF = private:NewVersion("GF")
+			private:FireEvent("FIELD_UPDATE", "GF")
 			self:UnregisterEvent("NEUTRAL_FACTION_SELECT_RESULT")
 		end
 	end)
@@ -302,7 +304,7 @@ do
 					if type(profile.versions) ~= "table" then
 						profile.versions = {}
 						for field, contents in pairs(profile.fields) do
-							profile.versions[field] = xrp:NewVersion(field)
+							profile.versions[field] = private:NewVersion(field)
 						end
 					end
 					if type(profile.inherits) ~= "table" then
@@ -362,7 +364,7 @@ do
 	end)
 end
 
-function xrp:CacheTidy(timer)
+function private:CacheTidy(timer)
 	if type(timer) ~= "number" or timer < 60 then
 		timer = xrp.settings.cachetime
 		if type(timer) ~= "number" or timer < 60 then
