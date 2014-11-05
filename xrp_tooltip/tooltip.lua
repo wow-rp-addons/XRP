@@ -90,7 +90,7 @@ do
 			["GNOMTEC_BADGE"] = "GTEC",
 			["FLAGRSP"] = "RSP",
 			["FLAGRSP2"] = "RSP2",
-			["HIDDEN"] = "Hidden",
+			["HIDDEN"] = "Hidden", -- Pseudo-addon used to mark as hidden.
 		}
 		local extra_addons = {
 			["GHI"] = "GHI",

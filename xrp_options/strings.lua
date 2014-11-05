@@ -47,7 +47,7 @@ if (select(4, GetAddOnInfo("xrp_tooltip"))) then
 	XRP_OPTIONS_TOOLTIP_GUILDINDEX = L["Show guild rank number"]
 	XRP_OPTIONS_TOOLTIP_NORPRACE = L["Hide roleplaying race"]
 	XRP_OPTIONS_TOOLTIP_NORPCLASS = L["Hide roleplaying class"]
-	XRP_OPTIONS_TOOLTIP_NOOPFACTION = L["Hide (cached) roleplaying information for opposite faction"]
+	XRP_OPTIONS_TOOLTIP_NOOPFACTION = L["Hide roleplaying information for opposite faction"]
 	XRP_OPTIONS_TOOLTIP_NOHOSTILE = L["Hide roleplaying information for hostile PvP targets"]
 	XRP_OPTIONS_TOOLTIP_EXTRASPACE = L["Add extra spacing lines"]
 end
