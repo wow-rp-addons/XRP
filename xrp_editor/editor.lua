@@ -68,23 +68,34 @@ function private.editor:Load(name)
 	self:CheckFields()
 end
 
-function private.editor:CheckFields()
-	local name, parent = self.Profiles:GetText(), self.Parent:GetText()
-	if not xrp.profiles[name] then return end
-	if parent == "" then
-		parent = nil
-	end
-	local profile, inherits = xrp.profiles[name].fields, xrp.profiles[name].inherits
-	local changes = parent ~= xrp.profiles[name].parent
-	for field, control in pairs(self.fields) do
+do
+	local function CheckField(self, name, parent, profile, inherits, field, control)
 		if parent then
 			self.checkboxes[field]:Show()
 			if not control:HasFocus() and (control:GetText() == "" or control.inherited) then
 				if self.checkboxes[field]:GetChecked() then
 					control.inherited = true
 					control:SetTextColor(0.5, 0.5, 0.5, 1.0)
-					local parentinherit = xrp.profiles[parent].inherits[field]
-					control:SetText(xrp.profiles[parent].fields[field] or (type(parentinherit) == "string" and parentinherit ~= name and xrp.profiles[parentinherit].fields[field]) or "")
+					local parentcontent = xrp.profiles[parent].fields[field]
+					if parentcontent then
+						control:SetText(parentcontent)
+					else
+						local parentinherit = xrp.profiles[parent].inherits[field]
+						if type(parentinherit) == "string" and parentinherit ~= name then
+							control:SetText(xrp.profiles[parentinherit].fields[field])
+						elseif field == "NA" or field == "RA" or field == "RC" then
+							local metafield = field == "RA" and "GR" or field == "RC" and "GC" or nil
+							control:SetText(xrpSaved.meta.fields[field] or xrp.values[metafield][xrpSaved.meta.fields[metafield]] or "")
+						else
+							control:SetText("")
+						end
+					end
+					control:SetCursorPosition(0)
+				elseif field == "NA" or field == "RA" or field == "RC" then
+					control.inherited = true
+					control:SetTextColor(0.5, 0.5, 0.5, 1.0)
+					local metafield = field == "RA" and "GR" or field == "RC" and "GC" or nil
+					control:SetText(xrpSaved.meta.fields[field] or xrp.values[metafield][xrpSaved.meta.fields[metafield]] or "")
 					control:SetCursorPosition(0)
 				else
 					control:SetText("")
@@ -94,20 +105,43 @@ function private.editor:CheckFields()
 			end
 		else
 			self.checkboxes[field]:Hide()
-			if control.inherited then
+			if (field == "NA" or field == "RA" or field == "RC") and not control:HasFocus() and (control:GetText() == "" or control.inherited) then
+				control.inherited = true
+				control:SetTextColor(0.5, 0.5, 0.5, 1.0)
+				local metafield = field == "RA" and "GR" or field == "RC" and "GC" or nil
+				control:SetText(xrpSaved.meta.fields[field] or xrp.values[metafield][xrpSaved.meta.fields[metafield]] or "")
+				control:SetCursorPosition(0)
+			elseif control.inherited then
 				control:SetText("")
 				control:SetTextColor(1.0, 1.0, 1.0, 1.0)
 				control.inherited = false
 			end
 		end
-		changes = changes or (control.inherited and profile[field] ~= nil) or (not control.inherited and control:GetText() ~= (profile[field] or "")) or (self.checkboxes[field]:GetChecked()) ~= (inherits[field] ~= false)
+		return (control.inherited and profile[field] ~= nil) or (not control.inherited and control:GetText() ~= (profile[field] or "")) or (self.checkboxes[field]:GetChecked()) ~= (inherits[field] ~= false) or nil
 	end
-	if changes then
-		self.SaveButton:Enable()
-		self.RevertButton:Enable()
-	else
-		self.SaveButton:Disable()
-		self.RevertButton:Disable()
+
+	local modified = {}
+	function private.editor:CheckFields(field)
+		local name, parent = self.Profiles:GetText(), self.Parent:GetText()
+		if not xrp.profiles[name] then return end
+		if parent == "" then
+			parent = nil
+		end
+		local profile, inherits = xrp.profiles[name].fields, xrp.profiles[name].inherits
+		if type(field) == "string" and self.fields[field] then
+			modified[field] = CheckField(self, name, parent, profile, inherits, field, self.fields[field])
+		else
+			for field, control in pairs(self.fields) do
+				modified[field] = CheckField(self, name, parent, profile, inherits, field, control)
+			end
+		end
+		if parent ~= xrp.profiles[name].parent or next(modified) then
+			self.SaveButton:Enable()
+			self.RevertButton:Enable()
+		else
+			self.SaveButton:Disable()
+			self.RevertButton:Disable()
+		end
 	end
 end
 
@@ -126,7 +160,7 @@ do
 	for index, field in ipairs(appearance) do
 		local control = private.editor.Appearance[field]
 		private.editor.fields[field] = control
-		--control.fieldName = field
+		control.fieldName = field
 		control.nextEditBox = private.editor.Appearance[appearance[index + 1]] or private.editor.Appearance["DE"].EditBox
 		private.editor.checkboxes[field] = private.editor.Appearance[field.."Default"]
 	end
@@ -134,7 +168,7 @@ do
 		-- EditBox is inside ScrollFrame
 		local control = private.editor.Appearance["DE"].EditBox
 		private.editor.fields["DE"] = control
-		--control.fieldName = "DE"
+		control.fieldName = "DE"
 		control.nextEditBox = private.editor.Appearance["NA"]
 		private.editor.checkboxes["DE"] = private.editor.Appearance["DEDefault"]
 	end
@@ -144,7 +178,7 @@ do
 	for index, field in ipairs(biography) do
 		local control = private.editor.Biography[field]
 		private.editor.fields[field] = control
-		--control.fieldName = field
+		control.fieldName = field
 		if field == "MO" then
 			control.nextEditBox = private.editor.Biography["HI"].EditBox
 		elseif field == "FR" then
@@ -158,7 +192,7 @@ do
 		-- EditBox is inside ScrollFrame
 		local control = private.editor.Biography["HI"].EditBox
 		private.editor.fields["HI"] = control
-		--control.fieldName = "HI"
+		control.fieldName = "HI"
 		control.nextEditBox = private.editor.Biography["FR"]
 		private.editor.checkboxes["HI"] = private.editor.Biography["HIDefault"]
 	end
