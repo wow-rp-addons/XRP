@@ -14,6 +14,12 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
+
+local addonName, private = ...
+
+private.auto = XRPAuto
+XRPAuto = nil
+
 local auto
 xrp:HookLoad(function()
 	auto = xrpSaved.auto
@@ -24,12 +30,12 @@ local L = xrp.L
 do
 	local function infofunc(self, arg1, arg2, checked)
 		if not checked then
-			UIDropDownMenu_SetSelectedValue(xrp.auto.Profile, self.value)
-			xrp.auto:CheckButtons()
+			UIDropDownMenu_SetSelectedValue(private.auto.Profile, self.value)
+			private.auto:CheckButtons()
 		end
 	end
 
-	function xrp.auto.Profile:initialize(level, menuList)
+	function private.auto.Profile:initialize(level, menuList)
 		do
 			local info = UIDropDownMenu_CreateInfo()
 			info.text = xrp.L["None"]
@@ -79,7 +85,7 @@ end
 local hasRace = GR == "Worgen"
 local hasClass = GC == "DRUID" or GC == "PRIEST" or GC == "SHAMAN"
 
-function xrp.auto.Form:MakeWords(text)
+function private.auto.Form:MakeWords(text)
 	local form, equipment = text:match("^([^\29]+)\29?([^\29]*)$")
 	if not equipment or equipment == "" then
 		return formNames[form]
@@ -90,7 +96,7 @@ function xrp.auto.Form:MakeWords(text)
 	end
 end
 
-function xrp.auto:AcceptForm()
+function private.auto:AcceptForm()
 	local form, profile = self.Form:GetText(), self.Profile:GetText()
 	profile = profile ~= "" and profile or nil
 	auto[form] = profile
@@ -100,10 +106,10 @@ function xrp.auto:AcceptForm()
 		self.Status:SetFormattedText("The assigned profile for the %s form/set has been removed.", self.Form:MakeWords(form))
 	end
 	self:CheckButtons()
-	xrp:AutoRecheck()
+	xrp:RecheckForm()
 end
 
-function xrp.auto:CheckButtons()
+function private.auto:CheckButtons()
 	local form, profile = self.Form:GetText(), self.Profile:GetText()
 	local changes = auto[form] ~= (profile ~= "" and profile or nil)
 	if next(auto) and not auto["DEFAULT"] then
@@ -122,14 +128,14 @@ do
 	local function equipsets_Click(self, arg1, arg2, checked)
 		if not checked then
 			local value = (UIDROPDOWNMENU_MENU_VALUE or "default"):upper()..self.value
-			xrp.auto.Form:SetValue(value)
+			private.auto.Form:SetValue(value)
 		end
 		CloseDropDownMenus()
 	end
 
 	local function equipsets_Check(self)
 		local value = (UIDROPDOWNMENU_MENU_VALUE or "default"):upper()..self.value
-		return xrp.auto.Form:GetText() == value
+		return private.auto.Form:GetText() == value
 	end
 
 	local noset = not hasRace and not hasClass and { text = formNames["DEFAULT"], value = "", checked = equipsets_Check, func = equipsets_Click, } or nil
@@ -163,18 +169,18 @@ do
 	-- raw value.
 	local function forms_Click(self, arg1, arg2, checked)
 		if not checked then
-			xrp.auto.Form:SetValue(self.value:upper())
+			private.auto.Form:SetValue(self.value:upper())
 		end
 		CloseDropDownMenus()
 	end
 
 	local function forms_Check(self)
-		return xrp.auto.Form:GetText() == self.value:upper()
+		return private.auto.Form:GetText() == self.value:upper()
 	end
 
 	if GR == "Worgen" then
 		if GC == "DRUID" then
-			xrp.auto.Form.forms = {
+			private.auto.Form.forms = {
 				{ -- Worgen
 					text = formNames["DEFAULT"],
 					value = "default",
@@ -243,7 +249,7 @@ do
 				},
 			}
 		elseif GC == "PRIEST" then
-			xrp.auto.Form.forms = {
+			private.auto.Form.forms = {
 				{ -- Worgen
 					text = formNames["DEFAULT"],
 					value = "default",
@@ -278,7 +284,7 @@ do
 				},
 			}
 		else
-			xrp.auto.Form.forms = {
+			private.auto.Form.forms = {
 				{ -- Worgen
 					text = formNames["DEFAULT"],
 					value = "default",
@@ -299,7 +305,7 @@ do
 		end
 	else
 		if GR == "DRUID" then
-			xrp.auto.Form.forms = {
+			private.auto.Form.forms = {
 				{ -- Humanoid
 					text = formNames["DEFAULT"],
 					value = "default",
@@ -360,7 +366,7 @@ do
 				}
 			}
 		elseif GC == "PRIEST" then
-			xrp.auto.Form.forms = {
+			private.auto.Form.forms = {
 				{ -- Standard
 					text = formNames["DEFAULT"],
 					value = "default",
@@ -379,7 +385,7 @@ do
 				},
 			}
 		elseif GC == "SHAMAN" then
-			xrp.auto.Form.forms = {
+			private.auto.Form.forms = {
 				{ -- Humanoid
 					text = formNames["DEFAULT"],
 					value = "default",
@@ -396,16 +402,27 @@ do
 				},
 			}
 		else
-			xrp.auto.Form.forms = equipsets
+			private.auto.Form.forms = equipsets
 		end
 	end
 end
 
-_G[xrp.auto.Form:GetName().."Button"]:SetScript("OnClick", function(self)
+_G[private.auto.Form:GetName().."Button"]:SetScript("OnClick", function(self)
 	update_EquipSets()
 	local parent = self:GetParent()
 	ToggleDropDownMenu(nil, nil, parent, nil, nil, nil, parent.forms)
 	PlaySound("igMainMenuOptionCheckBoxOn")
 end)
 
-xrp.auto.Form.initialize = EasyMenu_Initialize
+private.auto.Form.initialize = EasyMenu_Initialize
+
+function xrp:Auto(form)
+	if form then
+		private.auto.Form:SetValue(form)
+	elseif private.auto:IsShown() then
+		HideUIPanel(private.auto)
+		return true
+	end
+	ShowUIPanel(private.auto)
+	return true
+end

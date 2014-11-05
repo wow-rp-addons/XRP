@@ -124,6 +124,7 @@ do
 end
 
 local swap = CreateFrame("Frame")
+swap.timer = 0
 do
 	local function TestForm(self, event, unit)
 		if InCombatLockdown() or (event == "UNIT_PORTRAIT_UPDATE" and unit ~= "player") then return end
@@ -133,7 +134,7 @@ do
 		end
 		local race, class, equip = GetCurrentForm()
 		local newform = self.class ~= class or self.race ~= race or self.equip ~= equip
-		if event == "PLAYER_REGEN_ENABLED" and (newform or (self.timer and self.timer > 0)) then
+		if event == "PLAYER_REGEN_ENABLED" and (newform or self.timer > 0) then
 			self.timer = 6
 			self.race = race
 			self.class = class
@@ -147,7 +148,7 @@ do
 			self:Show()
 		end
 	end
-	function xrp:AutoRecheck()
+	function xrp:RecheckForm()
 		swap.race = nil
 		swap.class = nil
 		swap.equip = nil
