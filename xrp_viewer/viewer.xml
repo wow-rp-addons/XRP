@@ -19,7 +19,7 @@
 	<!-- It's dangerous to go alone, take a syntax highlighter. -->
 	<!-- No, seriously, though. This is the easiest way to get a good UI. -->
 	<Include file="viewer_templates.xml"/>
-	<Frame name="xrp_viewer" toplevel="true" movable="true" parent="UIParent" enableMouse="true" inherits="ButtonFrameTemplate" hidden="true">
+	<Frame name="XRPViewer" toplevel="true" movable="true" parent="UIParent" enableMouse="true" inherits="ButtonFrameTemplate" hidden="true">
 		<Size x="439" y="525"/>
 		<Layers>
 			<Layer level="OVERLAY">
@@ -61,7 +61,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame name="$parentAppearance" parentKey="Appearance" useParentLevel="true" hidden="false">
+			<Frame parentKey="Appearance" useParentLevel="true" hidden="false">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.Inset" relativePoint="TOPLEFT"/>
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset" relativePoint="BOTTOMRIGHT"/>
@@ -114,49 +114,49 @@
 				</Layers>
 				<Frames>
 					<!-- Race Box -->
-					<EditBox name="$parentRA" parentKey="RA" inherits="FancyOutputBoxTemplate" autoFocus="false">
+					<EditBox parentKey="RA" inherits="FancyOutputBoxTemplate" autoFocus="false">
 						<Size x="135" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.RALabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
 						</Anchors>
 					</EditBox>
 					<!-- Race Box -->
-					<EditBox name="$parentRC" parentKey="RC" inherits="FancyOutputBoxTemplate" autoFocus="false">
+					<EditBox parentKey="RC" inherits="FancyOutputBoxTemplate" autoFocus="false">
 						<Size x="135" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.RCLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
 						</Anchors>
 					</EditBox>
 					<!-- Height Box -->
-					<EditBox name="$parentAH" parentKey="AH" inherits="FancyOutputBoxTemplate" autoFocus="false">
+					<EditBox parentKey="AH" inherits="FancyOutputBoxTemplate" autoFocus="false">
 						<Size x="117" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.AHLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
 						</Anchors>
 					</EditBox>
 					<!-- Eyes Box -->
-					<EditBox name="$parentAE" parentKey="AE" inherits="FancyOutputBoxTemplate" autoFocus="false">
+					<EditBox parentKey="AE" inherits="FancyOutputBoxTemplate" autoFocus="false">
 						<Size x="280" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.AELabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
 						</Anchors>
 					</EditBox>
 					<!-- Weight Box -->
-					<EditBox name="$parentAW" parentKey="AW" inherits="FancyOutputBoxTemplate" autoFocus="false">
+					<EditBox parentKey="AW" inherits="FancyOutputBoxTemplate" autoFocus="false">
 						<Size x="117" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.AWLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
 						</Anchors>
 					</EditBox>
 					<!-- Currently Box -->
-					<ScrollFrame name="$parentCU" parentKey="CU" inherits="LargeOutputScrollFrameTemplate">
+					<ScrollFrame name="XRPViewerCU" parentKey="CU" inherits="LargeOutputScrollFrameTemplate">
 						<Size x="402" y="45"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.CULabel" relativePoint="BOTTOMLEFT" x="2" y="-5"/>
 						</Anchors>
 					</ScrollFrame>
 					<!-- Description Box -->
-					<ScrollFrame name="$parentDE" parentKey="DE" inherits="LargeOutputScrollFrameTemplate">
+					<ScrollFrame name="XRPViewerDE" parentKey="DE" inherits="LargeOutputScrollFrameTemplate">
 						<Size x="402" y="263"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.DELabel" relativePoint="BOTTOMLEFT" x="2" y="-5"/>
@@ -164,7 +164,7 @@
 					</ScrollFrame>
 				</Frames>
 			</Frame>
-			<Frame name="$parentBiography" parentKey="Biography" useParentLevel="true" hidden="true">
+			<Frame parentKey="Biography" useParentLevel="true" hidden="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.Inset" relativePoint="TOPLEFT"/>
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset" relativePoint="BOTTOMRIGHT"/>
@@ -205,35 +205,35 @@
 				</Layers>
 				<Frames>
 					<!-- Home Box -->
-					<EditBox name="$parentHH" parentKey="HH" inherits="FancyOutputBoxTemplate" autoFocus="false">
+					<EditBox parentKey="HH" inherits="FancyOutputBoxTemplate" autoFocus="false">
 						<Size x="407" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.HHLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
 						</Anchors>
 					</EditBox>
 					<!-- Age Box -->
-					<EditBox name="$parentAG" parentKey="AG" inherits="FancyOutputBoxTemplate" autoFocus="false">
+					<EditBox parentKey="AG" inherits="FancyOutputBoxTemplate" autoFocus="false">
 						<Size x="146" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.AGLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
 						</Anchors>
 					</EditBox>
 					<!-- Birthplace Box -->
-					<EditBox name="$parentHB" parentKey="HB" inherits="FancyOutputBoxTemplate" autoFocus="false">
+					<EditBox parentKey="HB" inherits="FancyOutputBoxTemplate" autoFocus="false">
 						<Size x="251" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.HBLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
 						</Anchors>
 					</EditBox>
 					<!-- Motto Box -->
-					<ScrollFrame name="$parentMO" parentKey="MO" inherits="LargeOutputScrollFrameTemplate">
+					<ScrollFrame name="XRPViewerMO" parentKey="MO" inherits="LargeOutputScrollFrameTemplate">
 						<Size x="402" y="45"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.MOLabel" relativePoint="BOTTOMLEFT" x="2" y="-5"/>
 						</Anchors>
 					</ScrollFrame>
 					<!-- History Box -->
-					<ScrollFrame name="$parentHI" parentKey="HI" inherits="LargeOutputScrollFrameTemplate">
+					<ScrollFrame name="XRPViewerHI" parentKey="HI" inherits="LargeOutputScrollFrameTemplate">
 						<Size x="402" y="263"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.HILabel" relativePoint="BOTTOMLEFT" x="2" y="-5"/>
@@ -241,13 +241,13 @@
 					</ScrollFrame>
 				</Frames>
 			</Frame>
-			<Button name="$parentMenu" parentKey="Menu" inherits="UIPanelButtonTemplate" text="|TInterface\BUTTONS\UI-SortArrow:7:18:4:-2|t">
+			<Button parentKey="Menu" inherits="UIPanelButtonTemplate" text="|TInterface\BUTTONS\UI-SortArrow:7:18:4:-2|t">
 				<Size x="23" y="19"/>
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-23" y="-1"/>
 				</Anchors>
 				<Frames>
-					<Button name="$parentMenu" parentKey="Menu" hidden="true" inherits="UIDropDownMenuTemplate">
+					<Button name="XRPViewerMenu" parentKey="Menu" hidden="true" inherits="UIDropDownMenuTemplate">
 						<KeyValues>
 							<KeyValue key="point" value="TOPRIGHT"/>
 							<KeyValue key="relativePoint" value="BOTTOMRIGHT"/>
@@ -298,8 +298,6 @@
 		</Attributes>
 		<Scripts>
 			<OnLoad>
-				xrp.viewer = self;
-				SetPortraitToTexture(self.portrait, "Interface\\Icons\\INV_Misc_Book_17");
 				PanelTemplates_SetNumTabs(self, 2);
 				PanelTemplates_SetTab(self, 1);
 			</OnLoad>

@@ -15,6 +15,9 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
+local viewer = XRPViewer
+XRPViewer = nil
+
 local L = xrp.L
 local current = UNKNOWN
 local failed = UNKNOWN
@@ -27,7 +30,7 @@ do
 		"DE", "HI", -- High-bandwidth.
 	}
 
-	function xrp.viewer:SetField(field, contents)
+	function viewer:SetField(field, contents)
 		-- This does not need to be very smart. SetText() should be mapped to
 		-- the appropriate 'real' function if needed. However, the character
 		-- tables will return nil on an empty value, so watch for that.
@@ -48,7 +51,7 @@ do
 		end
 	end
 
-	function xrp.viewer:Load(character)
+	function viewer:Load(character)
 		for _, field in ipairs(display) do
 			self:SetField(field, character[field] or (field == "RA" and xrp.values.GR[character.GR]) or (field == "RC" and xrp.values.GC[character.GC]) or nil)
 		end
@@ -66,62 +69,22 @@ do
 	xrp:HookEvent("MSP_FIELD", function(name, field)
 		if current == name and supported[field] then
 			--print("Trying to set: "..field.." for "..name..".")
-			xrp.viewer:SetField(field, xrp.characters[name].fields[field])
+			viewer:SetField(field, xrp.characters[name].fields[field])
 		elseif current == name and (field == "GR" and not xrp.cache[name].fields.RA) or (field == "GC" and not xrp.cache[name].fields.RC) then
-			xrp.viewer:SetField((field == "GR" and "RA") or (field == "GC" and "RC"), (field == "GR" and xrp.values.GR[xrp.characters[name].fields.GR]) or (field == "GC" and xrp.values.GC[xrp.characters[name].fields.GC]) or nil)
+			viewer:SetField((field == "GR" and "RA") or (field == "GC" and "RC"), (field == "GR" and xrp.values.GR[xrp.characters[name].fields.GR]) or (field == "GC" and xrp.values.GC[xrp.characters[name].fields.GC]) or nil)
 		end
 	end)
-end
-
-function xrp.viewer:ViewUnit(unit)
-	if not xrp.units[unit] then
-		return
-	end
-	current = xrp:UnitNameWithRealm(unit)
-	failed = nil
-	self.XC:SetText("")
-	self:Load(xrp.units[unit].fields)
-	SetPortraitTexture(self.portrait, unit)
-	ShowUIPanel(self)
-	if not self.Appearance:IsVisible() then
-		PanelTemplates_SetTab(self, 1)
-		self.Biography:Hide()
-		self.Appearance:Show()
-		PlaySound("igCharacterInfoTab")
-	end
-end
-
-function xrp.viewer:ViewCharacter(name)
-	if type(name) ~= "string" or name == "" then
-		return
-	end
-	name = xrp:NameWithRealm(name) -- If there's not a realm, add our realm.
-	current = name
-	failed = nil
-	self.XC:SetText("")
-	self:Load(xrp.characters[name].fields)
-	do
-		local GF = xrp.characters[name].fields.GF
-		SetPortraitToTexture(self.portrait, GF and ((GF == "Alliance" and "Interface\\Icons\\INV_BannerPVP_02") or (GF == "Horde" and "Interface\\Icons\\INV_BannerPVP_01")) or "Interface\\Icons\\INV_Misc_Book_17")
-	end
-	ShowUIPanel(self)
-	if not self.Appearance:IsVisible() then
-		PanelTemplates_SetTab(self, 1)
-		self.Biography:Hide()
-		self.Appearance:Show()
-		PlaySound("igCharacterInfoTab")
-	end
 end
 
 xrp:HookEvent("MSP_RECEIVE", function(name)
 	if current == name then
 		if failed == name then
 			failed = nil
-			xrp.viewer:Load(xrp.characters[name].fields)
+			viewer:Load(xrp.characters[name].fields)
 		end
-		local XC = xrp.viewer.XC:GetText()
+		local XC = viewer.XC:GetText()
 		if not XC or not XC:find(L["^Received"]) then
-			xrp.viewer.XC:SetText(L["Received!"])
+			viewer.XC:SetText(L["Received!"])
 		end
 	end
 end)
@@ -130,20 +93,20 @@ xrp:HookEvent("MSP_NOCHANGE", function(name)
 	if current == name then
 		if failed == name then
 			failed = nil
-			xrp.viewer:Load(xrp.characters[name].fields)
+			viewer:Load(xrp.characters[name].fields)
 		end
-		local XC = xrp.viewer.XC:GetText()
+		local XC = viewer.XC:GetText()
 		if not XC or not XC:find(L["^Received"]) then
-			xrp.viewer.XC:SetText(L["No changes."])
+			viewer.XC:SetText(L["No changes."])
 		end
 	end
 end)
 
 xrp:HookEvent("MSP_CHUNK", function(name, chunk, totalchunks)
 	if current == name then
-		local XC = xrp.viewer.XC:GetText()
+		local XC = viewer.XC:GetText()
 		if chunk ~= totalchunks or not XC or XC:find(L["^Receiv"]) then
-			xrp.viewer.XC:SetFormattedText(totalchunks and (chunk == totalchunks and L["Received! (%u/%u)"] or L["Receiving... (%u/%u)"]) or L["Receiving... (%u/??)"], chunk, totalchunks)
+			viewer.XC:SetFormattedText(totalchunks and (chunk == totalchunks and L["Received! (%u/%u)"] or L["Receiving... (%u/%u)"]) or L["Receiving... (%u/??)"], chunk, totalchunks)
 		end
 	end
 end)
@@ -151,13 +114,13 @@ end)
 xrp:HookEvent("MSP_FAIL", function(name, reason)
 	if current == name then
 		failed = current
-		if not xrp.viewer.XC:GetText() then
+		if not viewer.XC:GetText() then
 			if reason == "offline" then
-				xrp.viewer.XC:SetText(L["Character is not online."])
+				viewer.XC:SetText(L["Character is not online."])
 			elseif reason == "faction" then
-				xrp.viewer.XC:SetText(L["Character is opposite faction."])
+				viewer.XC:SetText(L["Character is opposite faction."])
 			elseif reason == "nomsp" then
-				xrp.viewer.XC:SetText(L["No RP addon appears to be active."])
+				viewer.XC:SetText(L["No RP addon appears to be active."])
 			end
 		end
 	end
@@ -172,13 +135,13 @@ do
 		end
 	end
 
-	xrp.viewer.Menu.Menu.menuList = {
+	viewer.Menu.Menu.menuList = {
 		{ text = "Bookmark", arg1 = 1, isNotRadio = true, checked = function() return xrp.characters[current].bookmark ~= nil end, func = infofunc, },
 		{ text = "Hide profile", arg1 = 2, isNotRadio = true, checked = function() return xrp.characters[current].hide ~= nil end, func = infofunc, },
 	}
 
-	xrp.viewer.Menu.Menu.initialize = EasyMenu_Initialize
-	xrp.viewer.Menu.Menu.displayMode = "MENU"
+	viewer.Menu.Menu.initialize = EasyMenu_Initialize
+	viewer.Menu.Menu.displayMode = "MENU"
 end
 
 StaticPopupDialogs["XRP_VIEWER_URL"] = {
@@ -215,21 +178,65 @@ end
 -- Setup shorthand access for easier looping later.
 -- Appearance tab
 for _, field in ipairs({ "AE", "RA", "RC", "AH", "AW" }) do
-	xrp.viewer[field] = xrp.viewer.Appearance[field]
+	viewer[field] = viewer.Appearance[field]
 end
 -- EditBox is inside ScrollFrame
 for _, field in ipairs({ "CU", "DE" }) do
-	xrp.viewer[field] = xrp.viewer.Appearance[field].EditBox
-	xrp.viewer[field]:SetHyperlinksEnabled(true)
-	xrp.viewer[field]:SetScript("OnHyperlinkClick", viewer_OnHyperlinkClick)
+	viewer[field] = viewer.Appearance[field].EditBox
+	viewer[field]:SetHyperlinksEnabled(true)
+	viewer[field]:SetScript("OnHyperlinkClick", viewer_OnHyperlinkClick)
 end
 -- Biography tab
 for _, field in ipairs({ "AG", "HH", "HB" }) do
-	xrp.viewer[field] = xrp.viewer.Biography[field]
+	viewer[field] = viewer.Biography[field]
 end
 -- EditBox is inside ScrollFrame
 for _, field in ipairs({ "MO", "HI" }) do
-	xrp.viewer[field] = xrp.viewer.Biography[field].EditBox
-	xrp.viewer[field]:SetHyperlinksEnabled(true)
-	xrp.viewer[field]:SetScript("OnHyperlinkClick", viewer_OnHyperlinkClick)
+	viewer[field] = viewer.Biography[field].EditBox
+	viewer[field]:SetHyperlinksEnabled(true)
+	viewer[field]:SetScript("OnHyperlinkClick", viewer_OnHyperlinkClick)
+end
+
+function xrp:View(player)
+	if not player then
+		if viewer:IsShown() then
+			HideUIPanel(viewer)
+			return true
+		end
+		if current == UNKNOWN then
+			failed = nil
+			SetPortraitTexture(viewer.portrait, "player")
+			viewer:Load(xrp.units.player.fields)
+		end
+		ShowUIPanel(viewer)
+		return true
+	end
+	local isUnit = true
+	if not xrp.units[player] then
+		local unit = Ambiguate(player, "none")
+		if not xrp.units[unit] then
+			isUnit = false
+			player = xrp:NameWithRealm(player):gsub("^%l", string.upper)
+		else
+			player = unit
+		end
+	end
+	current = isUnit and xrp:UnitNameWithRealm(player) or player
+	failed = nil
+	viewer.XC:SetText("")
+	viewer:Load(isUnit and xrp.units[player].fields or xrp.characters[player].fields)
+	if isUnit then
+		SetPortraitTexture(viewer.portrait, player)
+	else
+		local GF = xrp.characters[player].fields.GF
+		SetPortraitToTexture(viewer.portrait, GF and ((GF == "Alliance" and "Interface\\Icons\\INV_BannerPVP_02") or (GF == "Horde" and "Interface\\Icons\\INV_BannerPVP_01")) or "Interface\\Icons\\INV_Misc_Book_17")
+	end
+	ShowUIPanel(viewer)
+	if not viewer.Appearance:IsVisible() then
+		PanelTemplates_SetTab(viewer, 1)
+		viewer.Biography:Hide()
+		viewer.Appearance:Show()
+		PlaySound("igCharacterInfoTab")
+	end
+	return true
 end
