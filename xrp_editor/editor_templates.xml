@@ -27,7 +27,7 @@
 				GameTooltip:Hide();
 			</OnLeave>
 			<OnClick>
-				self:GetParent():GetParent():CheckFields();
+				self:GetParent():GetParent():CheckFields(self.fieldName);
 			</OnClick>
 		</Scripts>
 	</CheckButton>
@@ -39,7 +39,7 @@
 				end;
 			</OnTabPressed>
 			<OnTextChanged>
-				self:GetParent():GetParent():CheckFields();
+				self:GetParent():GetParent():CheckFields(self.fieldName);
 			</OnTextChanged>
 			<OnEditFocusGained>
 				if self.inherited then
@@ -50,7 +50,7 @@
 			</OnEditFocusGained>
 			<OnEditFocusLost>
 				self:ClearFocus();
-				self:GetParent():GetParent():CheckFields();
+				self:GetParent():GetParent():CheckFields(self.fieldName);
 			</OnEditFocusLost>
 		</Scripts>
 		<FontString inherits="GameFontWhite"/>
@@ -151,8 +151,9 @@
 						end;
 					</OnTabPressed>
 					<OnTextChanged>
-						ScrollingEdit_OnTextChanged(self, self:GetParent());
-						self:GetParent():GetParent():GetParent():CheckFields();
+						local parent = self:GetParent();
+						ScrollingEdit_OnTextChanged(self, parent);
+						parent:GetParent():GetParent():CheckFields(self.fieldName);
 					</OnTextChanged>
 					<OnCursorChanged function="ScrollingEdit_OnCursorChanged"/>
 					<OnUpdate>
@@ -173,8 +174,9 @@
 						end;
 					</OnEditFocusGained>
 					<OnEditFocusLost>
-						self:GetParent().FocusButton:Show();
-						self:GetParent():GetParent():GetParent():CheckFields();
+						local parent = self:GetParent()
+						parent.FocusButton:Show();
+						parent:GetParent():GetParent():CheckFields(self.fieldName);
 					</OnEditFocusLost>
 				</Scripts>
 				<FontString inherits="GameFontWhite"/>
