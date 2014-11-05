@@ -15,7 +15,7 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-	<Frame name="$parent_chatnames" parentKey="chatnames" parent="xrp_options">
+	<Frame name="XRPOptionsChatnames" parent="InterfaceOptionsFrame">
 		<Layers>
 			<Layer level="OVERLAY">
 				<FontString parentKey="Title" inherits="GameFontNormalLarge" text="XRP_OPTIONS_CHAT_TITLE">
@@ -86,55 +86,55 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<CheckButton name="$parentSay" parentKey="CHAT_MSG_SAY" inherits="UICheckButtonTemplate">
+			<CheckButton parentKey="CHAT_MSG_SAY" inherits="UICheckButtonTemplate">
 				<Size x="24" y="24"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.SayLabel" relativePoint="LEFT" x="-4" y="0"/>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="$parentYell" parentKey="CHAT_MSG_YELL" inherits="UICheckButtonTemplate">
+			<CheckButton parentKey="CHAT_MSG_YELL" inherits="UICheckButtonTemplate">
 				<Size x="24" y="24"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.YellLabel" relativePoint="LEFT" x="-4" y="0"/>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="$parentEmote" parentKey="CHAT_MSG_EMOTE" inherits="UICheckButtonTemplate">
+			<CheckButton parentKey="CHAT_MSG_EMOTE" inherits="UICheckButtonTemplate">
 				<Size x="24" y="24"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.EmoteLabel" relativePoint="LEFT" x="-4" y="0"/>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="$parentGuild" parentKey="CHAT_MSG_GUILD" inherits="UICheckButtonTemplate">
+			<CheckButton parentKey="CHAT_MSG_GUILD" inherits="UICheckButtonTemplate">
 				<Size x="24" y="24"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.GuildLabel" relativePoint="LEFT" x="-4" y="0"/>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="$parentWhisper" parentKey="CHAT_MSG_WHISPER" inherits="UICheckButtonTemplate">
+			<CheckButton parentKey="CHAT_MSG_WHISPER" inherits="UICheckButtonTemplate">
 				<Size x="24" y="24"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.WhisperLabel" relativePoint="LEFT" x="-4" y="0"/>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="$parentParty" parentKey="CHAT_MSG_PARTY" inherits="UICheckButtonTemplate">
+			<CheckButton parentKey="CHAT_MSG_PARTY" inherits="UICheckButtonTemplate">
 				<Size x="24" y="24"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.PartyLabel" relativePoint="LEFT" x="-4" y="0"/>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="$parentRaid" parentKey="CHAT_MSG_RAID" inherits="UICheckButtonTemplate">
+			<CheckButton parentKey="CHAT_MSG_RAID" inherits="UICheckButtonTemplate">
 				<Size x="24" y="24"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.RaidLabel" relativePoint="LEFT" x="-4" y="0"/>
 				</Anchors>
 			</CheckButton>
-			<CheckButton name="$parentInstance" parentKey="CHAT_MSG_INSTANCE_CHAT" inherits="UICheckButtonTemplate">
+			<CheckButton parentKey="CHAT_MSG_INSTANCE_CHAT" inherits="UICheckButtonTemplate">
 				<Size x="24" y="24"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.InstanceLabel" relativePoint="LEFT" x="-4" y="0"/>
 				</Anchors>
 			</CheckButton>
-			<Button name="$parentChannelButton" parentKey="CHANNEL_BUTTON">
+			<Button parentKey="Channels">
 				<Size x="24" y="24"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.ChannelLabel" relativePoint="LEFT" x="-4" y="0"/>
@@ -143,9 +143,22 @@
 				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
 				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
 				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+				<Frames>
+					<Button name="XRPOptionsChatnamesChannelMenu" parentKey="Menu" hidden="true" inherits="UIDropDownMenuTemplate">
+						<KeyValues>
+							<KeyValue key="point" value="TOPLEFT"/>
+							<KeyValue key="relativePoint" value="BOTTOMLEFT"/>
+						</KeyValues>
+					</Button>
+				</Frames>
+				<Scripts>
+					<OnClick>
+						ToggleDropDownMenu(nil, nil, self.Menu, self, 0, 0, self.Menu.menuList);
+						PlaySound("igMainMenuOptionCheckBoxOn");
+					</OnClick>
+				</Scripts>
 			</Button>
-			<Button name="$parentChannelMenu" parentKey="CHANNEL_MENU" hidden="true" inherits="UIDropDownMenuTemplate"/>
-			<CheckButton name="$parentemotebraced" parentKey="emotebraced" inherits="UICheckButtonTemplate">
+			<CheckButton parentKey="emotebraced" inherits="UICheckButtonTemplate">
 				<Size x="24" y="24"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.emotebracedLabel" relativePoint="LEFT" x="-4" y="0"/>

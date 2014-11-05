@@ -8,6 +8,7 @@
 ## X-License: GPLv3
 ## Dependencies: xrp
 
+options.lua
 strings.lua
 core.xml
 core.lua

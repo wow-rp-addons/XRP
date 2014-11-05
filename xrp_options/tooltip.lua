@@ -18,36 +18,41 @@ if not (select(4, GetAddOnInfo("xrp_tooltip"))) then
 	return
 end
 
+local addonName, private = ...
+
+private.tooltip = XRPOptionsTooltip
+XRPOptionsTooltip = nil
+
 local settings
 do
-	local tooltip_settings = { "faction", "watching", "guildrank", "guildindex", "norprace", "norpclass", "noopfaction", "nohostile", "extraspace" }
+	local TOOLTIP_BOOLEAN = { "faction", "watching", "guildrank", "guildindex", "norprace", "norpclass", "noopfaction", "nohostile", "extraspace" }
 
-	function xrp.options.tooltip:okay()
-		for _, tt in ipairs(tooltip_settings) do
-			settings[tt] = self[tt]:GetChecked()
+	function private.tooltip:okay()
+		for _, setting in ipairs(TOOLTIP_BOOLEAN) do
+			settings[setting] = self[setting]:GetChecked()
 		end
 	end
 
-	function xrp.options.tooltip:refresh()
-		for _, tt in ipairs(tooltip_settings) do
-			self[tt]:SetChecked(settings[tt])
+	function private.tooltip:refresh()
+		for _, setting in ipairs(TOOLTIP_BOOLEAN) do
+			self[setting]:SetChecked(settings[setting])
 		end
 		self.guildindex:SetEnabled(self.guildrank:GetChecked())
 	end
 end
 
-function xrp.options.tooltip:default()
-	for tt, setting in pairs(settings) do
-		settings[tt] = nil
+function private.tooltip:default()
+	for setting, _ in pairs(settings) do
+		settings[setting] = nil
 	end
 	self:refresh()
 end
 
-xrp.options.tooltip.parent = XRP
-xrp.options.tooltip.name = xrp.L["Tooltip"]
-InterfaceOptions_AddCategory(xrp.options.tooltip)
+private.tooltip.parent = XRP
+private.tooltip.name = xrp.L["Tooltip"]
+InterfaceOptions_AddCategory(private.tooltip)
 
 xrp:HookLoad(function()
 	settings = xrp.settings.tooltip
-	xrp.options.tooltip:refresh()
+	private.tooltip:refresh()
 end)
