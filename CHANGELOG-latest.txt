@@ -1,4 +1,4 @@
-6.0.2.2_beta2 (2014-10-28):
+6.0.3.0_beta1 (2014-11-05):
 
 	- This version reorganizes file and addon layout. You should remove all
 	  old xrp components (i.e., xrp_import, xrp_libmsp, xrp_auto) prior to
@@ -22,19 +22,33 @@
 		  for profile sending/recieving is as follows:
 				Battle.net > Standard > Group
 		  This means you will not be using the party/raid implementation when
-		  in a group with friends on your BattleTag.
+		  in a group with friends on your BattleTag or your realm.
 
-	- The tooltip format on the minimap icon has drastically changed.
-	  Hopefully it's more useful now.
+	- The minimap tooltip has drastically changed. Hopefully it's more useful
+	  now.
 
 	- The positioning of "Roleplay Profile" in the right click menus has been
 	  changed to just below the name of the character (i.e., first in the
 	  menu).
 
+	- Detachment of the minimap button behaves differently now. Toggling modes
+	  requires a UI reload (which will be prompted when the option is
+	  changed), and the button can no longer be locked or unlocked. Instead,
+	  shift+right click and drag will move it in detached mode.
+
+	- The internal naming of the editor, automation config, and viewer frames
+	  has changed. If you were making use of these (such as with an addon that
+	  allows movement of UI panels), you may need to reconfigure it. If you
+	  don't know what this means, you likely have nothing to worry about.
+
 	- Bugfixes:
 
 		- The order of fields selected by pressing tab in the editor has been
 		  fixed to match the display order.
+
+		- The editor will now properly display the fallback values for name,
+		  race, and class (in grey) when they are not set for a profile or its
+		  parents.
 
 		- Added a warning if the raid profiles dialog is opened when the
 		  interface options is closed about possible tainting caused by
