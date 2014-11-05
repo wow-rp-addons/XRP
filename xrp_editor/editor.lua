@@ -18,7 +18,6 @@
 local addonName, private = ...
 
 private.editor = XRPEditor
-XRPEditor = nil
 
 function private.editor:Save()
 	self:ClearFocus()

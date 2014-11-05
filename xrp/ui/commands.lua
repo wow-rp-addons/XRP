@@ -78,7 +78,7 @@ do
 end
 
 xrpcmds.editor = function(args)
-	xrp:ToggleEditor()
+	xrp:Edit()
 end
 
 xrpcmds.profile = function(args)
@@ -128,7 +128,7 @@ xrpcmds.view = function(args)
 end
 
 xrpcmds.viewer = function(args)
-	xrp:ToggleViewer()
+	xrp:View()
 end
 
 -- Aliases and localized aliases.

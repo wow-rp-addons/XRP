@@ -18,7 +18,6 @@
 local addonName, private = ...
 
 private.auto = XRPAuto
-XRPAuto = nil
 
 local auto
 xrp:HookLoad(function()

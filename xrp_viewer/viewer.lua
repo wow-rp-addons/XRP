@@ -16,7 +16,6 @@
 ]]
 
 local viewer = XRPViewer
-XRPViewer = nil
 
 local L = xrp.L
 local current = UNKNOWN
