@@ -18,7 +18,7 @@
 	<!-- Here there be dragons. XML dragons, the most dangerous sort. -->
 	<!-- It's dangerous to go alone, take a syntax highlighter. -->
 	<!-- No, seriously, though. This is the easiest way to get a good UI. -->
-	<Frame name="xrp_auto" toplevel="true" movable="true" parent="UIParent" enableMouse="true" inherits="ButtonFrameTemplate" hidden="true">
+	<Frame name="XRPAuto" toplevel="true" movable="true" parent="UIParent" enableMouse="true" inherits="ButtonFrameTemplate" hidden="true">
 		<Size x="300" y="225"/>
 		<Layers>
 			<Layer level="OVERLAY">
@@ -52,7 +52,7 @@
 		</Layers>
 		<Frames>
 			<!-- Form -->
-			<Button name="$parentForm" parentKey="Form" inherits="UIDropDownMenuTemplate">
+			<Button name="XRPAutoForm" parentKey="Form" inherits="UIDropDownMenuTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.FormLabel" relativePoint="BOTTOMLEFT" x="-22" y="0"/>
 				</Anchors>
@@ -67,8 +67,8 @@
 						function self:SetValue(value)
 							UIDropDownMenu_SetSelectedValue(self, value);
 							self.Text:SetText(self:MakeWords(value));
-							xrp.auto.Profile:SetText(xrpSaved.auto[value] or "");
-							xrp.auto:CheckButtons();
+							self:GetParent().Profile:SetText(xrpSaved.auto[value] or "");
+							self:GetParent():CheckButtons();
 						end;
 						function self:GetText()
 							return UIDropDownMenu_GetSelectedValue(self);
@@ -77,7 +77,7 @@
 				</Scripts>
 			</Button>
 			<!-- Profile -->
-			<Button name="$parentProfile" parentKey="Profile" inherits="UIDropDownMenuTemplate">
+			<Button name="XRPAutoProfile" parentKey="Profile" inherits="UIDropDownMenuTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.ProfileLabel" relativePoint="BOTTOMLEFT" x="-22" y="0"/>
 				</Anchors>
@@ -87,7 +87,7 @@
 						function self:SetText(value)
 							UIDropDownMenu_Initialize(self, self.initialize);
 							UIDropDownMenu_SetSelectedValue(self, value);
-							xrp.auto:CheckButtons();
+							self:GetParent():CheckButtons();
 						end;
 						function self:GetText()
 							return UIDropDownMenu_GetSelectedValue(self);
@@ -103,7 +103,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						xrp.auto:AcceptForm()
+						self:GetParent():AcceptForm()
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -115,7 +115,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						xrp.auto.Form:SetText(xrp.auto.Form:GetText())
+						self:GetParent().Form:SetText(self:GetParent().Form:GetText())
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -129,7 +129,6 @@
 		</Attributes>
 		<Scripts>
 			<OnLoad>
-				xrp.auto = self;
 				self.TitleText:SetText(xrp.L["Profile Automation"]);
 			</OnLoad>
 			<OnShow>
