@@ -547,7 +547,8 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						self:GetParent():Load(self:GetParent().Profiles:GetText());
+						local parent = self:GetParent();
+						parent:Load(parent.Profiles:GetText());
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -557,9 +558,10 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PanelTemplates_SetTab(self:GetParent(), 1);
-						self:GetParent().Biography:Hide();
-						self:GetParent().Appearance:Show();
+						local parent = self:GetParent();
+						PanelTemplates_SetTab(parent, 1);
+						parent.Biography:Hide();
+						parent.Appearance:Show();
 						PlaySound("igCharacterInfoTab");
 					</OnClick>
 				</Scripts>
@@ -570,9 +572,10 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PanelTemplates_SetTab(self:GetParent(), 2);
-						self:GetParent().Appearance:Hide();
-						self:GetParent().Biography:Show();
+						local parent = self:GetParent();
+						PanelTemplates_SetTab(parent, 2);
+						parent.Appearance:Hide();
+						parent.Biography:Show();
 						PlaySound("igCharacterInfoTab");
 					</OnClick>
 				</Scripts>

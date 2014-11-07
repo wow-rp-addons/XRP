@@ -29,7 +29,7 @@
 				end;
 			</OnEnter>
 			<OnLeave>
-				GameTooltip:Hide()
+				GameTooltip:Hide();
 			</OnLeave>
 			<OnLoad>
 				self:Disable();
@@ -104,7 +104,7 @@
 				self.ScrollBar.ScrollDownButton:SetPoint("TOP", self.ScrollBar, "BOTTOM", 0, 4);
 				self.ScrollBar.ScrollUpButton:SetPoint("BOTTOM", self.ScrollBar, "TOP", 0, -4);
 				self.ScrollBar.ScrollUpButton:Disable();
-				self.ScrollBarHideable = 1;
+				self.scrollBarHideable = 1;
 				self.ScrollBar:Hide();
 				self.EditBox:SetWidth(self:GetWidth() - 18);
 			</OnLoad>
@@ -119,11 +119,6 @@
 					<OnTextChanged>
 						self:SetCursorPosition(0);
 						self:GetParent():SetVerticalScroll(0);
-						if self:GetParent():GetVerticalScrollRange() > 0 then
-							self:GetParent().ScrollBar:Show();
-						else
-							self:GetParent().ScrollBar:Hide();
-						end
 					</OnTextChanged>
 					<OnLoad>
 						self:Disable();

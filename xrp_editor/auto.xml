@@ -67,8 +67,9 @@
 						function self:SetValue(value)
 							UIDropDownMenu_SetSelectedValue(self, value);
 							self.Text:SetText(self:MakeWords(value));
-							self:GetParent().Profile:SetText(xrpSaved.auto[value] or "");
-							self:GetParent():CheckButtons();
+							local parent = self:GetParent();
+							parent.Profile:SetText(xrpSaved.auto[value] or "");
+							parent:CheckButtons();
 						end;
 						function self:GetText()
 							return UIDropDownMenu_GetSelectedValue(self);
@@ -103,7 +104,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						self:GetParent():AcceptForm()
+						self:GetParent():AcceptForm();
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -115,7 +116,8 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						self:GetParent().Form:SetText(self:GetParent().Form:GetText())
+						local parent = self:GetParent();
+						parent.Form:SetText(parent.Form:GetText());
 					</OnClick>
 				</Scripts>
 			</Button>
