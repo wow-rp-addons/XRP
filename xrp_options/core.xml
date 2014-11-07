@@ -156,9 +156,9 @@
 				</Anchors>
 				<Scripts>
 					<PostClick>
-						local enable = self:GetChecked()
-						self:GetParent().disableinstance:SetEnabled(enable)
-						self:GetParent().disablepvp:SetEnabled(enable)
+						local enable, parent = self:GetChecked(), self:GetParent();
+						parent.disableinstance:SetEnabled(enable);
+						parent.disablepvp:SetEnabled(enable);
 					</PostClick>
 				</Scripts>
 			</CheckButton>

@@ -95,7 +95,7 @@
 				</Anchors>
 				<Scripts>
 					<PostClick>
-						self:GetParent().guildindex:SetEnabled(self:GetChecked())
+						self:GetParent().guildindex:SetEnabled(self:GetChecked());
 					</PostClick>
 				</Scripts>
 			</CheckButton>

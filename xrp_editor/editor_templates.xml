@@ -174,7 +174,7 @@
 					</OnEditFocusGained>
 					<OnEditFocusLost>
 						self:ClearFocus();
-						local parent = self:GetParent()
+						local parent = self:GetParent();
 						parent:GetParent():GetParent():CheckFields(self.fieldName);
 					</OnEditFocusLost>
 				</Scripts>
