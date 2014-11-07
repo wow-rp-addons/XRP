@@ -157,7 +157,7 @@
 					</ScrollFrame>
 					<!-- Description Box -->
 					<ScrollFrame name="XRPViewerDE" parentKey="DE" inherits="LargeOutputScrollFrameTemplate">
-						<Size x="402" y="263"/>
+						<Size x="402" y="264"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.DELabel" relativePoint="BOTTOMLEFT" x="2" y="-5"/>
 						</Anchors>
@@ -234,7 +234,7 @@
 					</ScrollFrame>
 					<!-- History Box -->
 					<ScrollFrame name="XRPViewerHI" parentKey="HI" inherits="LargeOutputScrollFrameTemplate">
-						<Size x="402" y="263"/>
+						<Size x="402" y="264"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.HILabel" relativePoint="BOTTOMLEFT" x="2" y="-5"/>
 						</Anchors>
