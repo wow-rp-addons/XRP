@@ -2,7 +2,7 @@
 ## LoadOnDemand: 1
 ## Title: XRP: Editor
 ## Author: Bor of Wyrmrest Accord (US)
-## Version: 6.0.3.0_beta1
+## Version: 6.0.3.0_beta2
 ## Notes: Provides a profile editor.
 ## X-Category: Roleplay
 ## X-License: GPLv3

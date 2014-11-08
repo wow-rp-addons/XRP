@@ -1,8 +1,15 @@
-6.0.3.0_beta1 (2014-11-05):
+6.0.3.0_beta2 (2014-11-08):
 
 	- This version reorganizes file and addon layout. You should remove all
 	  old xrp components (i.e., xrp_import, xrp_libmsp, xrp_auto) prior to
 	  upgrading. You should also exit the game while upgrading.
+
+	- This version replaces ChatThrottleLib with a new bandwidth library
+	  (necessary for supporting B.net profiles and easier support of group
+	  MSP). It currently replaces ChatThrottleLib when present, which may
+	  cause issues for addons relying on ChatThrottleLib in ways outside the
+	  norm. If you encounter any errors related to ChatThrottleLib while
+	  running this version of XRP, *PLEASE REPORT THEM*.
 
 	- This version introduces experimental support for sending/recieving RP
 	  profiles over Battle.net (BattleTag/RealID). This enables limited
@@ -31,6 +38,9 @@
 	  changed to just below the name of the character (i.e., first in the
 	  menu).
 
+	- Basic tooltip data will be prefetched in cases of not having any cached
+	  data about a player, if they load your profile.
+
 	- Detachment of the minimap button behaves differently now. Toggling modes
 	  requires a UI reload (which will be prompted when the option is
 	  changed), and the button can no longer be locked or unlocked. Instead,
@@ -39,7 +49,7 @@
 	- The internal naming of the editor, automation config, and viewer frames
 	  has changed. If you were making use of these (such as with an addon that
 	  allows movement of UI panels), you may need to reconfigure it. If you
-	  don't know what this means, you likely have nothing to worry about.
+	  don't know what this means, you probably don't need to know anyway.
 
 	- Bugfixes:
 
@@ -49,6 +59,18 @@
 		- The editor will now properly display the fallback values for name,
 		  race, and class (in grey) when they are not set for a profile or its
 		  parents.
+
+		- The viewer currently/description/motto/history fields will now
+		  correctly hide their scrollbars when appropriate.
+
+		- The viewer should no longer scroll a single pixel for descriptions
+		  or histories of a particular length.
+
+		- Fixed an issue where the viewer would sometimes report offline
+		  characters as being opposite faction instead.
+
+		- Roleplay names will now be used in channel leave/join messages, if
+		  they are enabled for that channel.
 
 		- Added a warning if the raid profiles dialog is opened when the
 		  interface options is closed about possible tainting caused by
