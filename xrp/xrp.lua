@@ -157,16 +157,14 @@ do
 						fullversion = fullversion..";"..addonstring:format(name, GetAddOnMetadata(name, "Version"))
 					end
 				end
-				local GU, GC, GR, GS, GF, name = UnitGUID("player"), select(2, UnitClassBase("player")), select(2, UnitRace("player")), tostring(UnitSex("player")), UnitFactionGroup("player"), UnitName("player")
 				newfields = {
-					GC = GC,
-					GF = GF,
-					GR = GR,
-					GS = GS,
-					GU = GU,
-					NA = name, -- Fallback NA field.
+					GC = select(2, UnitClassBase("player")),
+					GF = UnitFactionGroup("player"),
+					GR = select(2, UnitRace("player")),
+					GS = tostring(UnitSex("player")),
+					GU = UnitGUID("player"),
+					NA = UnitName("player"), -- Fallback NA field.
 					VA = fullversion,
-					VP = tostring(private.msp),
 				}
 			end
 			local fields, versions = xrpSaved.meta.fields, xrpSaved.meta.versions
@@ -176,6 +174,8 @@ do
 					versions[field] = private:NewVersion(field)
 				end
 			end
+			fields.VP = tostring(private.msp)
+			versions.VP = private.msp
 
 			if xrp.settings.cachetidy then
 				private:CacheTidy()
