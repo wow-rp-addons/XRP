@@ -11,7 +11,7 @@
 xrp.lua
 core\helpers.lua
 core\profiles.lua
-libs\ChatThrottleLib\ChatThrottleLib.xml
+lib\libbw\libbw.xml
 core\msp.lua
 core\characters.lua
 core\automation.lua
