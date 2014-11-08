@@ -88,7 +88,7 @@ do
 				filter[character] = nil
 			else
 				-- Same error message for offline and opposite faction.
-				private:FireEvent("MSP_FAIL", character, (not xrp.cache[character].fields.GF or xrp.cache[character].fields.GF ~= xrp.current.fields.GF) and "offline" or "faction")
+				private:FireEvent("MSP_FAIL", character, (not xrp.cache[character].fields.GF or xrp.cache[character].fields.GF == xrp.current.fields.GF) and "offline" or "faction")
 			end
 			return dofilter
 		end)
@@ -118,21 +118,23 @@ do
 		end
 
 		if (not channel or channel == "BN") and self.bnet[character] then
+			local presenceID = self.bnet[character]
+			local queue = ("XRP-%u"):format(presenceID)
 			if #data <= 4078 then
-				BNSendGameData(self.bnet[character], "MSP", data)
+				libbw:BNSendGameData(presenceID, "MSP", data, "NORMAL", queue)
 			else
 				-- XC is most likely to add five extra characters, will not add
 				-- less than five, and only adds six or more if the profile is
 				-- over 40000 characters or so. So let's say five.
 				data = ("XC=%u\1%s"):format(((#data + 5) / 4078) + 1, data)
 				local position = 1
-				BNSendGameData(self.bnet[character], "MSP\1", data:sub(position, position + 4077))
+				libbw:BNSendGameData(presenceID, "MSP\1", data:sub(position, position + 4077), "BULK", queue)
 				position = position + 4078
 				while position + 4078 <= #data do
-					BNSendGameData(self.bnet[character], "MSP\2", data:sub(position, position + 4077))
+					libbw:BNSendGameData(presenceID, "MSP\2", data:sub(position, position + 4077), "BULK", queue)
 					position = position + 4078
 				end
-				BNSendGameData(self.bnet[character], "MSP\3", data:sub(position))
+				libbw:BNSendGameData(presenceID, "MSP\3", data:sub(position), "BULK", queue)
 			end
 		end
 		if channel == "BN" then return end
@@ -145,7 +147,7 @@ do
 		local chunksize = 255 - #prepend
 
 		if #data <= chunksize then
-			ChatThrottleLib:SendAddonMessage("NORMAL", not isGroup and "MSP" or "GMSP", prepend..data, channel, character, queue, callback, character)
+			libbw:SendAddonMessage(not isGroup and "MSP" or "GMSP", prepend..data, channel, character, "NORMAL", queue, callback, character)
 		else
 			chunksize = isGroup and (chunksize - 1) or chunksize
 			-- XC is most likely to add five or six extra characters, will
@@ -153,13 +155,13 @@ do
 			-- profile is over 25000 characters or so. So let's say six.
 			data = ("XC=%u\1%s"):format(((#data + 6) / chunksize) + 1, data)
 			local position = 1
-			ChatThrottleLib:SendAddonMessage("BULK", not isGroup and "MSP\1" or "GMSP", (isGroup and "%s\1%s" or "%s%s"):format(prepend, data:sub(position, position + chunksize - 1)), channel, character, queue, callback, character)
+			libbw:SendAddonMessage(not isGroup and "MSP\1" or "GMSP", (isGroup and "%s\1%s" or "%s%s"):format(prepend, data:sub(position, position + chunksize - 1)), channel, character, "BULK", queue, callback, character)
 			position = position + chunksize
 			while position + chunksize <= #data do
-				ChatThrottleLib:SendAddonMessage("BULK", not isGroup and "MSP\2" or "GMSP", (isGroup and "%s\2%s" or "%s%s"):format(prepend, data:sub(position, position + chunksize - 1)), channel, character, queue, callback, character)
+				libbw:SendAddonMessage(not isGroup and "MSP\2" or "GMSP", (isGroup and "%s\2%s" or "%s%s"):format(prepend, data:sub(position, position + chunksize - 1)), channel, character, "BULK", queue, callback, character)
 				position = position + chunksize
 			end
-			ChatThrottleLib:SendAddonMessage("BULK", not isGroup and "MSP\3" or "GMSP", (isGroup and "%s\3%s" or "%s%s"):format(prepend, data:sub(position)), channel, character, queue, callback, character)
+			libbw:SendAddonMessage(not isGroup and "MSP\3" or "GMSP", (isGroup and "%s\3%s" or "%s%s"):format(prepend, data:sub(position)), channel, character, "BULK", queue, callback, character)
 		end
 	end
 end
@@ -333,11 +335,17 @@ msp.handlers = {
 			private:FireEvent("MSP_NOCHANGE", character)
 			self.cache[character].fieldupdated = nil
 		end
+		local hasCache = xrpCache[character] ~= nil
 		if #out > 0 then
+			-- If we don't have any info for them and haven't requested the
+			-- tooltip in this session, append a tooltip request.
+			if not (hasCache or self.cache[character].time.TT) then
+				out[#out + 1] = "?TT"
+			end
 			self:Send(character, out, channel)
 		end
-		-- Cache timer. Last receive marked for clearing old entries.
-		if xrpCache[character] then
+		if hasCache then
+			-- Cache timer. Last receive marked for clearing old entries.
 			xrpCache[character].lastreceive = time()
 		end
 	end,
@@ -346,11 +354,10 @@ msp.handlers = {
 		if totalchunks then
 			self.cache[character].totalchunks = totalchunks
 			-- Drop XC if present.
-			message = message:gsub(("XC=%d\1"):format(totalchunks), "")
+			message = message:gsub("^XC=%d+\1", "")
 		end
-		-- This only does partial processing -- queries (i.e., ?NA) are
-		-- processed only after full reception. Most times that sort of mixed
-		-- message won't even exist, but the spec allows for it.
+		-- This only does partial processing -- queries (i.e., ?TT) are
+		-- processed only after full reception.
 		for command in message:gmatch("([^\1]+)\1") do
 			if command:find("^[^%?]") then
 				self:Process(character, command)
@@ -471,17 +478,11 @@ if not disabled then
 			self:UnregisterEvent("BN_TOON_NAME_UPDATED")
 			self:UnregisterEvent("BN_FRIEND_TOON_ONLINE")
 			self.bnet = {}
-		elseif event == "PLAYER_REGEN_DISABLED" then
-			ChatThrottleLib.MAX_CPS = 800
-		elseif event == "PLAYER_REGEN_ENABLED" then
-			ChatThrottleLib.MAX_CPS = 1200
 		end
 	end)
 	msp:RegisterEvent("CHAT_MSG_ADDON")
 	msp:RegisterEvent("BN_CHAT_MSG_ADDON")
 	msp:RegisterEvent("GROUP_ROSTER_UPDATE")
-	msp:RegisterEvent("PLAYER_REGEN_DISABLED")
-	msp:RegisterEvent("PLAYER_REGEN_ENABLED")
 	xrp:HookLogin(function()
 		if BNConnected() then
 			msp:UpdateBNList()
@@ -491,8 +492,6 @@ if not disabled then
 		msp:RegisterEvent("BN_CONNECTED")
 		msp:RegisterEvent("BN_DISCONNECTED")
 	end)
-	ChatThrottleLib.MAX_CPS = 1200 -- up from 800
-	ChatThrottleLib.MIN_FPS = 15 -- down from 20
 end
 
 do
@@ -599,7 +598,8 @@ local function fs_Create()
 		local now = GetTime()
 		self.lastdraw = now
 		self.lastmsp = now
-		self.lastctl = now
+		self.lastbwbn = now
+		self.lastbwgame = now
 	end)
 	frame:SetScript("OnUpdate", function(self, elapsed)
 		self.lastdraw = self.lastdraw + elapsed
@@ -612,15 +612,13 @@ local function fs_Create()
 				msp:OnUpdate(now - self.lastmsp)
 				self.lastmsp = now
 			end
-			if ChatThrottleLib.Frame:IsVisible() then
-				-- Temporarily setting MIN_FPS to zero since... Well, no
-				-- framedraws are happening, but it's not because the system is
-				-- bogged down.
-				local minfps = ChatThrottleLib.MIN_FPS
-				ChatThrottleLib.MIN_FPS = 0
-				ChatThrottleLib.OnUpdate(ChatThrottleLib.Frame, now - self.lastctl)
-				ChatThrottleLib.MIN_FPS = minfps
-				self.lastctl = now
+			if libbw.BN:IsVisible() then
+				libbw.BN:OnUpdate(now - self.lastbwbn)
+				self.lastbwbn = now
+			end
+			if libbw.GAME:IsVisible() then
+				libbw.GAME:OnUpdate(now - self.lastbwgame)
+				self.lastbwgame = now
 			end
 		end
 	end)
