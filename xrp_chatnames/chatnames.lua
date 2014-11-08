@@ -23,7 +23,7 @@ do
 		["CHAT_MSG_YELL"] = true,
 		["CHAT_MSG_EMOTE"] = true, -- CHAT_MSG_TEXT_EMOTE.
 		["CHAT_MSG_GUILD"] = false, -- CHAT_MSG_OFFICER.
-		["CHAT_MSG_WHISPER"] = false, -- CHAT_MSG_WHISPER_INFORM, CHAT_MSG_AFK, CHAT_MSG_DND
+		["CHAT_MSG_WHISPER"] = false, -- CHAT_MSG_WHISPER_*, CHAT_MSG_AFK, CHAT_MSG_DND
 		["CHAT_MSG_PARTY"] = false, -- CHAT_MSG_PARTY_LEADER
 		["CHAT_MSG_RAID"] = false, -- CHAT_MSG_RAID_LEADER
 		["CHAT_MSG_INSTANCE_CHAT"] = false, -- CHAT_MSG_INSTANCE_CHAT_LEADER
@@ -32,7 +32,6 @@ do
 	local linked = {
 		["CHAT_MSG_TEXT_EMOTE"] = "CHAT_MSG_EMOTE",
 		["CHAT_MSG_OFFICER"] = "CHAT_MSG_GUILD",
-		["CHAT_MSG_WHISPER_INFORM"] = "CHAT_MSG_WHISPER",
 		["CHAT_MSG_AFK"] = "CHAT_MSG_WHISPER",
 		["CHAT_MSG_DND"] = "CHAT_MSG_WHISPER",
 		["CHAT_MSG_PARTY_LEADER"] = "CHAT_MSG_PARTY",
@@ -96,13 +95,15 @@ xrp:HookLogin(function()
 
 		local chattype = event:sub(10)
 		if chattype:sub(1, 7) == "WHISPER" then
+			event = "CHAT_MSG_WHISPER"
 			chattype = "WHISPER"
 		elseif chattype:sub(1, 7) == "CHANNEL" then
+			event = "CHAT_MSG_CHANNEL"
 			chattype = ("CHANNEL%u"):format(arg8)
 		end
 
 		-- RP name in channels is from case-insensitive NAME, not the number.
-		if event == "CHAT_MSG_CHANNEL" and type(arg9) == "string" and arg9:find("^[^%s]+.*") then
+		if event == "CHAT_MSG_CHANNEL" and type(arg9) == "string" and arg9 ~= "" then
 			-- The match() strips trims names like "General - Stormwind City"
 			-- down to just "General".
 			event = event.."_"..arg9:match("^([^%s]+).*"):upper()
