@@ -156,10 +156,10 @@ hooksecurefunc("ChatEdit_ParseText", function(line, send)
 		local oldtext = line:GetText()
 		local text = oldtext
 		if text:find("%xt", nil, true) then
-			text = text:gsub("%%xt", UnitExists("target") and (xrp.units.target and xrp.units.target.fields.NA or UnitName("target")) or xrp.L["nobody"])
+			text = text:gsub("%%xt", UnitExists("target") and (xrp.units.target and xrp:StripEscapes(xrp.units.target.fields.NA) or UnitName("target")) or xrp.L["nobody"])
 		end
 		if text:find("%xf", nil, true) then
-			text = text:gsub("%%xf", UnitExists("focus") and (xrp.units.focus and xrp.units.focus.fields.NA or UnitName("focus")) or xrp.L["nobody"])
+			text = text:gsub("%%xf", UnitExists("focus") and (xrp.units.focus and xrp:StripEscapes(xrp.units.focus.fields.NA) or UnitName("focus")) or xrp.L["nobody"])
 		end
 		if text ~= oldtext then
 			line:SetText(text)
