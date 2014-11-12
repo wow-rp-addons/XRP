@@ -143,7 +143,7 @@ function libbw:SendAddonMessage(prefix, text, kind, target, priorityName, queueN
 		end
 		-- CTL likes to drop RAID messages, despite the game falling back
 		-- automatically to PARTY.
-		if kind:upper() == "RAID" and not UnitInRaid("player") then
+		if kind:upper() == "RAID" and not IsInRaid() then
 			kind = "PARTY"
 		end
 		ChatThrottleLib:SendAddonMessage(priorityName, prefix, text, kind, target, queueName, callbackFn, callbackArg)
@@ -201,7 +201,7 @@ function libbw:SendChatMessage(text, kind, languageID, target, priorityName, que
 		end
 		-- CTL likes to drop RAID messages, despite the game falling back
 		-- automatically to PARTY.
-		if kind:upper() == "RAID" and not UnitInRaid("player") then
+		if kind:upper() == "RAID" and not IsInRaid() then
 			kind = "PARTY"
 		end
 		ChatThrottleLib:SendChatMessage(queueName or "libbw", priorityName, prefix, text, kind, target, queueName, callbackFn, callbackArg)
@@ -325,7 +325,7 @@ do
 				priority.queues.queue = priority.queues.queue.next
 			end
 			local doSend, kind = true, (message[fnMap[message.f]] or ""):upper()
-			if (kind == "RAID" or kind == "PARTY") and not UnitInParty("player") then
+			if (kind == "RAID" or kind == "PARTY") and not IsInGroup() then
 				doSend = false
 			end
 			local didSend = false
