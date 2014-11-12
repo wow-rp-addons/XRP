@@ -18,6 +18,7 @@
 local addonName, private = ...
 
 xrp = {
+	toon = xrp:UnitNameWithRealm("player"),
 	translation = {},
 	version = GetAddOnMetadata(addonName, "Version"),
 }
@@ -64,7 +65,7 @@ do
 		if type(func) ~= "function" then
 			return false
 		elseif not onload then
-			pcall(func)
+			pcall(func, "LOADED")
 		else
 			onload[#onload + 1] = func
 		end
@@ -76,7 +77,7 @@ do
 		if type(func) ~= "function" then
 			return false
 		elseif not onlogin then
-			pcall(func)
+			pcall(func, "LOGIN")
 		else
 			onlogin[#onlogin + 1] = func
 		end
@@ -93,30 +94,30 @@ do
 		return true
 	end
 
-	local function CompareVersion(new_version, old_version)
-		local new_major, new_minor, new_patch, new_rev, new_addon, new_reltype, new_relrev = new_version:match("(%d+)%.(%d+)%.(%d+)(%l?)%.(%d+)%_?(%l*)(%d*)")
-		local old_major, old_minor, old_patch, old_rev, old_addon, old_reltype, old_relrev = old_version:match("(%d+)%.(%d+)%.(%d+)(%l?)%.(%d+)%_?(%l*)(%d*)")
+	local function CompareVersion(newVersion, oldVersion)
+		local newMajor, newMinor, newPatch, newRev, newAddOn, newRelType, newRelRev = newVersion:match("(%d+)%.(%d+)%.(%d+)(%l?)%.(%d+)%_?(%l*)(%d*)")
+		local oldMajor, oldMinor, oldPatch, oldRev, oldAddOn, oldRelType, oldRelRev = oldVersion:match("(%d+)%.(%d+)%.(%d+)(%l?)%.(%d+)%_?(%l*)(%d*)")
 
-		new_reltype = (new_reltype == "alpha" and 1) or (new_reltype == "beta" and 2) or (new_reltype == "rc" and 3) or 4
-		old_reltype = (old_reltype == "alpha" and 1) or (old_reltype == "beta" and 2) or (old_reltype == "rc" and 3) or 4
+		newRelType = (newRelType == "alpha" and 1) or (newRelType == "beta" and 2) or (newRelType == "rc" and 3) or 4
+		oldRelType = (oldRelType == "alpha" and 1) or (oldRelType == "beta" and 2) or (oldRelType == "rc" and 3) or 4
 
-		local new_wow = (tonumber(new_major) * 1000000) + (tonumber(new_minor) * 10000) + (tonumber(new_patch) * 100) + ((new_rev and new_rev:lower():byte() or 96) - 96)
-		local old_wow = (tonumber(old_major) * 1000000) + (tonumber(old_minor) * 10000) + (tonumber(old_patch) * 100) + ((old_rev and old_rev:lower():byte() or 96) - 96)
+		local newWoW = (tonumber(newMajor) * 1000000) + (tonumber(newMinor) * 10000) + (tonumber(newPatch) * 100) + ((newRev and newRev:lower():byte() or 96) - 96)
+		local oldWoW = (tonumber(oldMajor) * 1000000) + (tonumber(oldMinor) * 10000) + (tonumber(oldPatch) * 100) + ((oldRev and oldRev:lower():byte() or 96) - 96)
 
-		if new_wow < old_wow then
+		if newWoW < oldWoW then
 			return -1
-		elseif new_reltype < old_reltype and new_wow > old_wow then
+		elseif newRelType < oldRelType and newWoW > oldWoW then
 			return 0
-		elseif new_wow > old_wow then
+		elseif newWoW > oldWoW then
 			return 1
 		end
 
-		local new_xrp = (tonumber(new_addon) * 10000) + (new_reltype * 100) + (tonumber(new_relrev) or 0)
-		local old_xrp = (tonumber(old_addon) * 10000) + (old_reltype * 100) + (tonumber(old_relrev) or 0)
+		local newXRP = (tonumber(newAddOn) * 10000) + (newRelType * 100) + (tonumber(newRelRev) or 0)
+		local oldXRP = (tonumber(oldAddOn) * 10000) + (oldRelType * 100) + (tonumber(oldRelRev) or 0)
 
-		if new_xrp <= old_xrp then
+		if newXRP <= oldXRP then
 			return -1
-		elseif new_reltype < old_reltype and new_xrp > old_xrp then
+		elseif newRelType < oldRelType and newXRP > oldXRP then
 			return 0
 		else
 			return 1
@@ -135,26 +136,18 @@ do
 		"GHI",
 		"Tongues",
 	}
-	local addonstring = "%s/%s"
 	init:SetScript("OnEvent", function(self, event, addon)
 		if event == "ADDON_LOADED" and addon == addonName then
-			xrp.toon = xrp:UnitNameWithRealm("player")
+			private:InitSettings()
 
-			for _, func in ipairs(onload) do
-				pcall(func, "LOADED")
-			end
-			onload = nil
-
-			self:UnregisterEvent("ADDON_LOADED")
-			self:RegisterEvent("PLAYER_LOGIN")
-		elseif event == "PLAYER_LOGIN" then
 			local newfields
 			do
-				local fullversion = addonstring:format(GetAddOnMetadata(addonName, "Title"), xrp.version)
+				local addonString = "%s/%s"
+				local fullVA = addonString:format(GetAddOnMetadata(addonName, "Title"), xrp.version)
 				for _, addon in ipairs(addons) do
 					local name, title, notes, enabled, reason, secure, loadable = GetAddOnInfo(addon)
 					if enabled or loadable then
-						fullversion = fullversion..";"..addonstring:format(name, GetAddOnMetadata(name, "Version"))
+						fullVA = fullVA..";"..addonString:format(name, GetAddOnMetadata(name, "Version"))
 					end
 				end
 				newfields = {
@@ -164,7 +157,7 @@ do
 					GS = tostring(UnitSex("player")),
 					GU = UnitGUID("player"),
 					NA = UnitName("player"), -- Fallback NA field.
-					VA = fullversion,
+					VA = fullVA,
 				}
 			end
 			local fields, versions = xrpSaved.meta.fields, xrpSaved.meta.versions
@@ -176,6 +169,11 @@ do
 			end
 			fields.VP = tostring(private.msp)
 			versions.VP = private.msp
+
+			for _, func in ipairs(onload) do
+				pcall(func, "LOADED")
+			end
+			onload = nil
 
 			if xrp.settings.cachetidy then
 				private:CacheTidy()
@@ -195,15 +193,18 @@ do
 				end
 			end
 
+			self:UnregisterEvent("ADDON_LOADED")
+			if fields.GF == "Neutral" then
+				self:RegisterEvent("NEUTRAL_FACTION_SELECT_RESULT")
+			end
+			self:RegisterEvent("PLAYER_LOGIN")
+		elseif event == "PLAYER_LOGIN" then
 			for _, func in ipairs(onlogin) do
 				pcall(func, "LOGIN")
 			end
 			onlogin = nil
 
 			self:UnregisterEvent("PLAYER_LOGIN")
-			if fields.GF == "Neutral" then
-				self:RegisterEvent("NEUTRAL_FACTION_SELECT_RESULT")
-			end
 			self:RegisterEvent("PLAYER_LOGOUT")
 		elseif event == "PLAYER_LOGOUT" then
 			-- Note: This code must be thoroughly tested if any changes are
@@ -233,163 +234,4 @@ do
 		end
 	end)
 	init:RegisterEvent("ADDON_LOADED")
-end
-
-do
-	local default_settings = {
-		height = "ft",
-		weight = "lb",
-		cachetime = 864000, -- 10 days
-		cachetidy = true,
-	}
-	xrp:HookLoad(function()
-		if not xrpCache then
-			if type(xrp_cache) == "table" then
-				xrpCache = xrp_cache
-				xrp_cache = nil
-			else
-				xrpCache = {}
-			end
-		end
-		if not xrpAccountSaved then
-			if type(xrp_settings) == "table" then
-				-- Pre-5.4.8.0_rc3.
-				if type(xrp_settings.defaults == "table") then
-					xrp_settings.defaults = nil
-				end
-				xrpAccountSaved = {
-					settings = xrp_settings,
-					dataVersion = 1,
-				}
-				xrp_settings = nil
-			else
-				xrpAccountSaved = {
-					settings = {},
-					dataVersion = 1,
-				}
-			end
-		end
-		if not xrpSaved then
-			if type(xrp_profiles) == "table" then
-				-- Pre-5.4.8.0_rc6.
-				if type(xrp_defaults) == "table" then
-					for profile, contents in pairs(xrp_profiles) do
-						if type(contents) == "table" then
-							xrp_profiles[profile] = {
-								fields = contents,
-								inherits = xrp_defaults[profile] or {},
-								versions = {},
-							}
-						end
-					end
-					xrp_defaults = nil
-				end
-				xrpSaved = {
-					auto = {},
-					meta = {
-						fields = {},
-						versions = {},
-					},
-					overrides = {
-						fields = {},
-						versions = {},
-					},
-					profiles = xrp_profiles,
-					selected = xrp_selectedprofile,
-					versions = xrp_versions or {},
-					--TODO
-					dataVersion = 1,
-				}
-				for name, profile in pairs(xrpSaved.profiles) do
-					if type(profile.versions) ~= "table" then
-						profile.versions = {}
-						for field, contents in pairs(profile.fields) do
-							profile.versions[field] = private:NewVersion(field)
-						end
-					end
-					if type(profile.inherits) ~= "table" then
-						profile.inherits = profile.defaults or {}
-						profile.defaults = nil
-						if name ~= xrp.L["Default"] then
-							profile.parent = xrp.L["Default"]
-						end
-					end
-					if name == "Add" or name == "List" or name == "SELECTED" then
-						xrpSaved.profiles[name.." Renamed"] = profile
-						if xrpSaved.selected == name then
-							xrpSaved.selected = name.." Renamed"
-						end
-						xrpSaved.profiles[name] = nil
-					end
-				end
-				xrp_overrides = nil
-				xrp_profiles = nil
-				xrp_selectedprofile = nil
-				xrp_versions = nil
-			else
-				xrpSaved = {
-					auto = {},
-					meta = {
-						fields = {},
-						versions = {},
-					},
-					overrides = {
-						fields = {},
-						versions = {},
-					},
-					profiles = {
-						[xrp.L["Default"]] = {
-							fields = {},
-							inherits = {},
-							versions = {},
-						},
-					},
-					selected = xrp.L["Default"],
-					versions = {},
-					--TODO
-					dataVersion = 1,
-				}
-			end
-		end
-		if xrpSaved.dataVersion < 2 then
-			if type(xrpSaved.auto) ~= "table" then
-				xrpSaved.auto = {}
-			end
-			--TODO
-			--xrpSaved.dataVersion = 2
-			--xrpAccountSaved.dataVersion = 1
-		end
-
-		xrp.settings = setmetatable(xrpAccountSaved.settings, { __index = default_settings })
-	end)
-end
-
-function private:CacheTidy(timer)
-	if type(timer) ~= "number" or timer < 60 then
-		timer = xrp.settings.cachetime
-		if type(timer) ~= "number" or timer < 60 then
-			return false
-		end
-	end
-	local now = time()
-	local before = now - timer
-	for character, data in pairs(xrpCache) do
-		if not data.lastreceive then
-			data.lastreceive = now
-		elseif not data.bookmark and data.lastreceive < before then
-			if data.hide == nil then
-				xrpCache[character] = nil
-			else
-				xrpCache[character].fields = {}
-				xrpCache[character].versions = {}
-				xrpCache[character].lastreceive = now
-			end
-		end
-	end
-	if timer <= 300 then
-		-- Explicitly collect garbage, as there may be a hell of a lot of it
-		-- (the user probably clicked "Clear Cache" in the options).
-		collectgarbage()
-	end
-	return true
 end
