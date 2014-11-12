@@ -9,6 +9,7 @@
 ## SavedVariables: xrpAccountSaved, xrpCache
 
 xrp.lua
+settings.lua
 core\helpers.lua
 core\profiles.lua
 lib\libbw\libbw.xml
