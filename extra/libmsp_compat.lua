@@ -33,18 +33,16 @@ local msp = {}
 msp.version = 9 -- Let's just say we're 9.
 msp.protocolversion = xrpPrivate.msp
 
--- Passes the function into xrp:HookEvent. Arguments for fired events are the
--- same as LibMSP's callbacks.
+-- Run MSP callbacks with appropriate arguments on XRP events.
 msp.callback = {
-	received = setmetatable({}, {
-		__index = function(self, key)
-			return nil
-		end,
-		__newindex = function(self, key, func)
-			xrp:HookEvent("MSP_RECEIVE", func)
-		end,
-	})
+	received = {},
 }
+
+xrp:HookEvent("RECEIVE", function(event, character)
+	for _, func in ipairs(msp.callback.received) do
+		pcall(func, character)
+	end
+end)
 
 local loadtime = GetTime()
 

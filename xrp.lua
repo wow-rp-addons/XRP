@@ -69,7 +69,7 @@ do
 			return false
 		end
 		for _, func in ipairs(events[event]) do
-			pcall(func, ...)
+			pcall(func, event, ...)
 		end
 		return true
 	end
@@ -218,7 +218,7 @@ do
 		elseif event == "NEUTRAL_FACTION_SELECT_RESULT" then
 			xrpSaved.meta.fields.GF = UnitFactionGroup("player")
 			xrpSaved.meta.versions.GF = xrpPrivate:NewVersion("GF")
-			xrpPrivate:FireEvent("FIELD_UPDATE", "GF")
+			xrpPrivate:FireEvent("UPDATE", "GF")
 			self:UnregisterEvent("NEUTRAL_FACTION_SELECT_RESULT")
 		end
 	end)

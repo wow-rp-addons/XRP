@@ -146,8 +146,8 @@ xrpPrivate.settingsToggles.minimap = {
 	enabled = function(setting)
 		if setting then
 			if minimap == nil then
-				xrp:HookEvent("FIELD_UPDATE", minimap_UpdateIcon)
-				xrp:HookEvent("MSP_RECEIVE", minimap_UpdateIcon)
+				xrp:HookEvent("UPDATE", minimap_UpdateIcon)
+				xrp:HookEvent("RECEIVE", minimap_UpdateIcon)
 			end
 			local detached = xrpPrivate.settings.minimap.detached
 			if detached then

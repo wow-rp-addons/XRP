@@ -85,7 +85,7 @@ do
 				filter[character] = nil
 			else
 				-- Same error message for offline and opposite faction.
-				xrpPrivate:FireEvent("MSP_FAIL", character, (not xrp.cache[character].fields.GF or xrp.cache[character].fields.GF == xrp.current.fields.GF) and "offline" or "faction")
+				xrpPrivate:FireEvent("FAIL", character, (not xrp.cache[character].fields.GF or xrp.cache[character].fields.GF == xrp.current.fields.GF) and "offline" or "faction")
 			end
 			return dofilter
 		end)
@@ -191,7 +191,7 @@ do
 		end
 		return tt
 	end
-	xrp:HookEvent("FIELD_UPDATE", function(field)
+	xrp:HookEvent("UPDATE", function(event, field)
 		if tt and (not field or xrpPrivate.fields.tt[field]) then
 			tt = nil
 		end
@@ -295,7 +295,7 @@ do
 			self.cache[character].time[field] = GetTime()
 
 			if updated then
-				xrpPrivate:FireEvent("MSP_FIELD", character, field)
+				xrpPrivate:FireEvent("FIELD", character, field)
 				self.cache[character].fieldupdated = true
 				if field == "VP" and tonumber(contents) then
 					self.cache[character].bnet = tonumber(contents) >= 2
@@ -319,10 +319,10 @@ msp.handlers = {
 		-- not changed, fieldupdated will be set to false; if no fields were
 		-- received (i.e., only requests), fieldupdated is nil.
 		if self.cache[character].fieldupdated == true then
-			xrpPrivate:FireEvent("MSP_RECEIVE", character)
+			xrpPrivate:FireEvent("RECEIVE", character)
 			self.cache[character].fieldupdated = nil
 		elseif self.cache[character].fieldupdated == false then
-			xrpPrivate:FireEvent("MSP_NOCHANGE", character)
+			xrpPrivate:FireEvent("NOCHANGE", character)
 			self.cache[character].fieldupdated = nil
 		end
 		local hasCache = xrpCache[character] ~= nil
@@ -356,7 +356,7 @@ msp.handlers = {
 		end
 		self.cache[character].chunks = 1
 		self.cache[character][channel] = message
-		xrpPrivate:FireEvent("MSP_CHUNK", character, self.cache[character].chunks, self.cache[character].totalchunks)
+		xrpPrivate:FireEvent("CHUNK", character, self.cache[character].chunks, self.cache[character].totalchunks)
 	end,
 	["MSP\2"] = function(self, character, message, channel)
 		-- If we don't have a buffer (i.e., no prior received message),
@@ -383,7 +383,7 @@ msp.handlers = {
 			end
 		end
 		self.cache[character].chunks = (self.cache[character].chunks or 0) + 1
-		xrpPrivate:FireEvent("MSP_CHUNK", character, self.cache[character].chunks, self.cache[character].totalchunks)
+		xrpPrivate:FireEvent("CHUNK", character, self.cache[character].chunks, self.cache[character].totalchunks)
 	end,
 	["MSP\3"] = function(self, character, message, channel)
 		-- If we don't have a buffer (i.e., no prior received message),
@@ -394,9 +394,9 @@ msp.handlers = {
 			self.cache[character][channel] = ""
 		end
 		self.handlers["MSP"](self, character, type(self.cache[character][channel]) == "string" and (self.cache[character][channel]..message) or (table.concat(self.cache[character][channel])..message), channel)
-		-- MSP_CHUNK after MSP_RECEIVE would fire. Makes it easier to
-		-- do something useful when chunks == totalchunks.
-		xrpPrivate:FireEvent("MSP_CHUNK", character, (self.cache[character].chunks or 0) + 1, (self.cache[character].chunks or 0) + 1)
+		-- CHUNK after RECEIVE would fire. Makes it easier to do something
+		-- useful when chunks == totalchunks.
+		xrpPrivate:FireEvent("CHUNK", character, (self.cache[character].chunks or 0) + 1, (self.cache[character].chunks or 0) + 1)
 
 		self.cache[character].chunks = nil
 		self.cache[character].totalchunks = nil
@@ -539,7 +539,7 @@ function xrpPrivate:Request(character, fields)
 
 	local now = GetTime()
 	if not msp.cache[character].received and now < msp.cache[character].nextcheck then
-		self:FireEvent("MSP_FAIL", character, "nomsp")
+		self:FireEvent("FAIL", character, "nomsp")
 		return false
 	elseif not msp.cache[character].received then
 		msp.cache[character].nextcheck = now + 120

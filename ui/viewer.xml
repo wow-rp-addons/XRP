@@ -363,7 +363,7 @@
 					for _, field in ipairs(display) do
 						supported[field] = true
 					end
-					xrp:HookEvent("MSP_FIELD", function(name, field)
+					xrp:HookEvent("FIELD", function(event, name, field)
 						if self.current == name and supported[field] then
 							self:SetField(field, xrp.characters[name].fields[field])
 						elseif self.current == name and (field == "GR" and not xrp.cache[name].fields.RA) or (field == "GC" and not xrp.cache[name].fields.RC) then
@@ -372,7 +372,7 @@
 					end)
 				end
 
-				xrp:HookEvent("MSP_RECEIVE", function(name)
+				xrp:HookEvent("RECEIVE", function(event, name)
 					if self.current == name then
 						if failed == name then
 							failed = nil
@@ -385,7 +385,7 @@
 					end
 				end)
 
-				xrp:HookEvent("MSP_NOCHANGE", function(name)
+				xrp:HookEvent("NOCHANGE", function(event, name)
 					if self.current == name then
 						if failed == name then
 							failed = nil
@@ -398,7 +398,7 @@
 					end
 				end)
 
-				xrp:HookEvent("MSP_CHUNK", function(name, chunk, totalchunks)
+				xrp:HookEvent("CHUNK", function(event, name, chunk, totalchunks)
 					if self.current == name then
 						local XC = self.XC:GetText()
 						if chunk ~= totalchunks or not XC or XC:find("^Receiv") then
@@ -407,7 +407,7 @@
 					end
 				end)
 
-				xrp:HookEvent("MSP_FAIL", function(name, reason)
+				xrp:HookEvent("FAIL", function(event, name, reason)
 					if self.current == name then
 						failed = self.current
 						if not self.XC:GetText() then
