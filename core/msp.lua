@@ -80,9 +80,7 @@ do
 			if not character or character == "" or not filter[character] then
 				return false
 			end
-			local now = GetTime()
-			-- GetNetStats() provides value in milliseconds.
-			local dofilter = filter[character] > (now - 1.000 - ((select(3, GetNetStats())) * 0.001))
+			local dofilter = filter[character] > (GetTime() - 2.500)
 			if not dofilter then
 				filter[character] = nil
 			else
