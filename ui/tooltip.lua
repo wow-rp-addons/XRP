@@ -326,7 +326,7 @@ end
 
 local enabled
 
-local function XRPTooltip_MSP_RECEIVE(character)
+local function XRPTooltip_RECEIVE(event, character)
 	if not enabled or character ~= cu.name then return end
 	local tooltip, unit = GameTooltip:GetUnit()
 	if tooltip and cu.type == "player" then
@@ -381,7 +381,7 @@ xrpPrivate.settingsToggles.tooltip = {
 						tooltip_SetPetUnit(unit)
 					end
 				end)
-				xrp:HookEvent("MSP_RECEIVE", XRPTooltip_MSP_RECEIVE)
+				xrp:HookEvent("RECEIVE", XRPTooltip_RECEIVE)
 				GameTooltip:HookScript("OnTooltipSetUnit", XRPTooltip_OnTooltipSetUnit)
 			end
 			enabled = true

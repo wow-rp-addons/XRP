@@ -91,7 +91,7 @@ do
 	end
 end
 
-local function XRPCursor_MSP_RECEIVE(name)
+local function XRPCursor_RECEIVE(event, name)
 	if rightclick and name == cursor.current and not InCombatLockdown() and not cursor:IsVisible() and not (cursor.mountable and cursor.inparty and IsItemInRange(88589, "mouseover")) then
 		cursor:Show()
 	end
@@ -132,7 +132,7 @@ xrpPrivate.settingsToggles.interact = {
 				cursor:SetScript("OnUpdate", XRPCursor_OnUpdateHandler)
 				hooksecurefunc("TurnOrActionStart", XRPCursor_TurnOrActionStart)
 				hooksecurefunc("TurnOrActionStop", XRPCursor_TurnOrActionStop)
-				xrp:HookEvent("MSP_RECEIVE", XRPCursor_MSP_RECEIVE)
+				xrp:HookEvent("RECEIVE", XRPCursor_RECEIVE)
 			end
 			cursor:RegisterEvent("UPDATE_MOUSEOVER_UNIT")
 			rightclick = true

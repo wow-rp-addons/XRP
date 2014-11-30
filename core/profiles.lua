@@ -46,7 +46,7 @@ xrp.current = setmetatable({
 			if xrpSaved.overrides.fields[field] == contents or xrpPrivate.fields.unit[field] or xrpPrivate.fields.meta[field] or xrpPrivate.fields.dummy[field] or not field:find("^%u%u$") then return end
 			xrpSaved.overrides.fields[field] = contents
 			xrpSaved.overrides.versions[field] = contents ~= nil and xrpPrivate:NewVersion(field) or nil
-			xrpPrivate:FireEvent("FIELD_UPDATE", field)
+			xrpPrivate:FireEvent("UPDATE", field)
 		end,
 		__metatable = false,
 	}),
@@ -133,7 +133,7 @@ do
 			end
 			profiles[name] = nil
 			if isused then
-				xrpPrivate:FireEvent("FIELD_UPDATE")
+				xrpPrivate:FireEvent("UPDATE")
 			end
 			return true
 		end,
@@ -190,7 +190,7 @@ do
 				xrpSaved.overrides.fields = {}
 				xrpSaved.overrides.versions = {}
 			end
-			xrpPrivate:FireEvent("FIELD_UPDATE")
+			xrpPrivate:FireEvent("UPDATE")
 			return true
 		end,
 		List = function(self)
@@ -219,7 +219,7 @@ do
 				profiles[name].fields[field] = contents
 				profiles[name].versions[field] = contents ~= nil and xrpPrivate:NewVersion(field) or nil
 				if isused or name == xrp.profiles[selected].inherits[field] then
-					xrpPrivate:FireEvent("FIELD_UPDATE", field)
+					xrpPrivate:FireEvent("UPDATE", field)
 				end
 			end
 		end,
@@ -256,7 +256,7 @@ do
 				local current = xrp.profiles[selected].inherits[field]
 				xrpSaved.profiles[name].inherits[field] = state
 				if current ~= xrp.profiles[selected].inherits[field] then
-					xrpPrivate:FireEvent("FIELD_UPDATE", field)
+					xrpPrivate:FireEvent("UPDATE", field)
 				end
 			end
 		end,
@@ -313,7 +313,7 @@ do
 			end
 			profiles[name].parent = value
 			if isused then
-				xrpPrivate:FireEvent("FIELD_UPDATE")
+				xrpPrivate:FireEvent("UPDATE")
 			end
 		end,
 		__metatable = false,
