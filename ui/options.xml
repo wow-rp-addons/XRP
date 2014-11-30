@@ -54,7 +54,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button parentKey="CacheClear" inherits="UIPanelButtonTemplate" text="XRP_CLEAR_CACHE">
+			<Button parentKey="CacheClear" inherits="UIPanelButtonTemplate" text="Clear Cache">
 				<Size x="96" y="21"/>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-15" y="15"/>
@@ -65,7 +65,7 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button parentKey="CacheTidy" inherits="UIPanelButtonTemplate" text="XRP_TIDY_CACHE">
+			<Button parentKey="CacheTidy" inherits="UIPanelButtonTemplate" text="Prune Cache">
 				<Size x="96" y="21"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.CacheClear" relativePoint="LEFT" x="-15"/>
@@ -183,18 +183,144 @@
 			</OnLoad>
 		</Scripts>
 	</Frame>
-	<Frame name="XRPCacheOptionsTemplate" inherits="XRPOptionsTemplate" virtual="true">
+	<Frame name="XRPCoreOptionsTemplate" parentArray="panes" inherits="XRPOptionsTemplate" virtual="true">
 		<KeyValues>
-			<KeyValue key="name" value="Cache"/>
-			<KeyValue key="titleText" value="XRP: Cache"/>
-			<KeyValue key="subText" value="Configure the caching options for XRP."/>
+			<KeyValue key="name" value="General"/>
+			<KeyValue key="titleText" value="XRP: General"/>
+			<KeyValue key="subText" value="Configure the core XRP options, dealing with viewing, display, and caching. Note that some of these options may require a UI reload (/reload) to fully enable/disable in some cases."/>
 		</KeyValues>
 		<Frames>
-			<Frame name="XRPCCacheOptionsTime" parentKey="Time" inherits="XRPOptionsDropDownTemplate">
+			<CheckButton parentKey="RightClick" inherits="XRPOptionsCheckboxTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.SubText" relativePoint="BOTTOMLEFT" x="-17" y="-8"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.SubText" relativePoint="BOTTOMLEFT" x="-2" y="-8"/>
 				</Anchors>
 				<KeyValues>
+					<KeyValue key="textString" value="Enable right click profile viewing"/>
+					<KeyValue key="xrpTable" value="interact"/>
+					<KeyValue key="xrpSetting" value="rightclick"/>
+					<KeyValue key="defaultValue" value="true" type="boolean"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="DisableInstance" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.RightClick" relativePoint="BOTTOMLEFT" x="24" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="textString" value="Disable right click viewing in instances"/>
+					<KeyValue key="dependsOn" value="RightClick"/>
+					<KeyValue key="xrpTable" value="interact"/>
+					<KeyValue key="xrpSetting" value="disableinstance"/>
+					<KeyValue key="defaultValue" value="false" type="boolean"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="DisablePvP" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.DisableInstance" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="textString" value="Disable right click viewing while PvP flagged"/>
+					<KeyValue key="dependsOn" value="RightClick"/>
+					<KeyValue key="xrpTable" value="interact"/>
+					<KeyValue key="xrpSetting" value="disablepvp"/>
+					<KeyValue key="defaultValue" value="false" type="boolean"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="Keybind" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.DisablePvP" relativePoint="BOTTOMLEFT" x="-24" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="textString" value="Enable profile viewing via default interact with target/mouseover keybinds"/>
+					<KeyValue key="xrpTable" value="interact"/>
+					<KeyValue key="xrpSetting" value="keybind"/>
+					<KeyValue key="defaultValue" value="true" type="boolean"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="MenusStandard" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Keybind" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="textString" value="Enable right-click menu entry in chat, friends list, and guild list (disables 'Target')"/>
+					<KeyValue key="xrpTable" value="menus"/>
+					<KeyValue key="xrpSetting" value="standard"/>
+					<KeyValue key="defaultValue" value="true" type="boolean"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="MenusUnits" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.MenusStandard" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="textString" value="Enable right-click menu entry on unit frames (disables 'Set Focus')"/>
+					<KeyValue key="xrpTable" value="menus"/>
+					<KeyValue key="xrpSetting" value="units"/>
+					<KeyValue key="defaultValue" value="false" type="boolean"/>
+				</KeyValues>
+			</CheckButton>
+			<Frame name="XRPDisplayOptionsHeight" parentKey="Height" inherits="XRPOptionsDropDownTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.MenusUnits" relativePoint="BOTTOMLEFT" x="-15" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="labelString" value="Height display units"/>
+					<KeyValue key="xrpTable" value="display"/>
+					<KeyValue key="xrpSetting" value="height"/>
+					<KeyValue key="defaultValue" value="ft"/>
+				</KeyValues>
+			</Frame>
+			<Frame name="XRPDisplayOptionsWeight" parentKey="Weight" inherits="XRPOptionsDropDownTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Height" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="labelString" value="Weight display units"/>
+					<KeyValue key="xrpTable" value="display"/>
+					<KeyValue key="xrpSetting" value="weight"/>
+					<KeyValue key="defaultValue" value="lb"/>
+				</KeyValues>
+			</Frame>
+			<CheckButton parentKey="MinimapEnabled" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Weight" relativePoint="BOTTOMLEFT" x="15" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="textString" value="Enable minimap button"/>
+					<KeyValue key="xrpTable" value="minimap"/>
+					<KeyValue key="xrpSetting" value="enabled"/>
+					<KeyValue key="defaultValue" value="true" type="boolean"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="MinimapDetached" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.MinimapEnabled" relativePoint="BOTTOMLEFT" x="24" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="textString" value="Detach button from minimap (shift + right click and drag to move)"/>
+					<KeyValue key="dependsOn" value="MinimapEnabled"/>
+					<KeyValue key="xrpTable" value="minimap"/>
+					<KeyValue key="xrpSetting" value="detached"/>
+					<KeyValue key="defaultValue" value="false" type="boolean"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="MinimapHideTT" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.MinimapDetached" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="textString" value="Hide tooltip on minimap button"/>
+					<KeyValue key="dependsOn" value="MinimapEnabled"/>
+					<KeyValue key="xrpTable" value="minimap"/>
+					<KeyValue key="xrpSetting" value="hidett"/>
+					<KeyValue key="defaultValue" value="false" type="boolean"/>
+				</KeyValues>
+			</CheckButton>
+			<Frame name="XRPCCacheOptionsTime" parentKey="Time" inherits="XRPOptionsDropDownTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.MinimapHideTT" relativePoint="BOTTOMLEFT" x="-39" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="labelString" value="Cache expiry time"/>
 					<KeyValue key="xrpTable" value="cache"/>
 					<KeyValue key="xrpSetting" value="time"/>
 					<KeyValue key="defaultValue" value="864000" type="number"/>
@@ -213,7 +339,7 @@
 			</CheckButton>
 		</Frames>
 	</Frame>
-	<Frame name="XRPChatOptionsTemplate" inherits="XRPOptionsTemplate" virtual="true">
+	<Frame name="XRPChatOptionsTemplate" parentArray="panes" inherits="XRPOptionsTemplate" virtual="true">
 		<KeyValues>
 			<KeyValue key="name" value="Chat"/>
 			<KeyValue key="titleText" value="XRP: Chat"/>
@@ -361,168 +487,7 @@
 			</CheckButton>
 		</Frames>
 	</Frame>
-	<Frame name="XRPDisplayOptionsTemplate" inherits="XRPOptionsTemplate" virtual="true">
-		<KeyValues>
-			<KeyValue key="name" value="Display"/>
-			<KeyValue key="titleText" value="XRP: Display"/>
-			<KeyValue key="subText" value="Configure the display format options available in XRP."/>
-		</KeyValues>
-		<Frames>
-			<Frame name="XRPDisplayOptionsHeight" parentKey="Height" inherits="XRPOptionsDropDownTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.SubText" relativePoint="BOTTOMLEFT" x="-17" y="-8"/>
-				</Anchors>
-				<KeyValues>
-					<KeyValue key="labelText" value="Height"/>
-					<KeyValue key="xrpTable" value="display"/>
-					<KeyValue key="xrpSetting" value="height"/>
-					<KeyValue key="defaultValue" value="ft"/>
-				</KeyValues>
-			</Frame>
-			<Frame name="XRPDisplayOptionsWeight" parentKey="Weight" inherits="XRPOptionsDropDownTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.Height" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
-				</Anchors>
-				<KeyValues>
-					<KeyValue key="labelText" value="Weight"/>
-					<KeyValue key="xrpTable" value="display"/>
-					<KeyValue key="xrpSetting" value="weight"/>
-					<KeyValue key="defaultValue" value="lb"/>
-				</KeyValues>
-			</Frame>
-		</Frames>
-	</Frame>
-	<Frame name="XRPInteractOptionsTemplate" inherits="XRPOptionsTemplate" virtual="true">
-		<KeyValues>
-			<KeyValue key="name" value="Interaction"/>
-			<KeyValue key="titleText" value="XRP: Interaction"/>
-			<KeyValue key="subText" value="Configure the interaction options available for XRP, integrated with the default user interface."/>
-		</KeyValues>
-		<Frames>
-			<CheckButton parentKey="RightClick" inherits="XRPOptionsCheckboxTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.SubText" relativePoint="BOTTOMLEFT" x="-2" y="-8"/>
-				</Anchors>
-				<KeyValues>
-					<KeyValue key="textString" value="Enable right click profile viewing"/>
-					<KeyValue key="xrpTable" value="interact"/>
-					<KeyValue key="xrpSetting" value="rightclick"/>
-					<KeyValue key="defaultValue" value="true" type="boolean"/>
-				</KeyValues>
-			</CheckButton>
-			<CheckButton parentKey="DisableInstance" inherits="XRPOptionsCheckboxTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.RightClick" relativePoint="BOTTOMLEFT" x="24" y="-8"/>
-				</Anchors>
-				<KeyValues>
-					<KeyValue key="textString" value="Disable right click viewing in instances"/>
-					<KeyValue key="dependsOn" value="RightClick"/>
-					<KeyValue key="xrpTable" value="interact"/>
-					<KeyValue key="xrpSetting" value="disableinstance"/>
-					<KeyValue key="defaultValue" value="false" type="boolean"/>
-				</KeyValues>
-			</CheckButton>
-			<CheckButton parentKey="DisablePvP" inherits="XRPOptionsCheckboxTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.DisableInstance" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
-				</Anchors>
-				<KeyValues>
-					<KeyValue key="textString" value="Disable right click viewing while PvP flagged"/>
-					<KeyValue key="dependsOn" value="RightClick"/>
-					<KeyValue key="xrpTable" value="interact"/>
-					<KeyValue key="xrpSetting" value="disablepvp"/>
-					<KeyValue key="defaultValue" value="false" type="boolean"/>
-				</KeyValues>
-			</CheckButton>
-			<CheckButton parentKey="Keybind" inherits="XRPOptionsCheckboxTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.DisablePvP" relativePoint="BOTTOMLEFT" x="-24" y="-8"/>
-				</Anchors>
-				<KeyValues>
-					<KeyValue key="textString" value="Enable profile viewing via default interact with target/mouseover keybinds"/>
-					<KeyValue key="xrpTable" value="interact"/>
-					<KeyValue key="xrpSetting" value="keybind"/>
-					<KeyValue key="defaultValue" value="true" type="boolean"/>
-				</KeyValues>
-			</CheckButton>
-		</Frames>
-	</Frame>
-	<Frame name="XRPMenusOptionsTemplate" inherits="XRPOptionsTemplate" virtual="true">
-		<KeyValues>
-			<KeyValue key="name" value="Menus"/>
-			<KeyValue key="titleText" value="XRP: Menus"/>
-			<KeyValue key="subText" value="Configure the options for XRP's right-click menu entries. Note that these options will disable certain options (noted) in the standard menus."/>
-		</KeyValues>
-		<Frames>
-			<CheckButton parentKey="MenusStandard" inherits="XRPOptionsCheckboxTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.SubText" relativePoint="BOTTOMLEFT" x="-2" y="-8"/>
-				</Anchors>
-				<KeyValues>
-					<KeyValue key="textString" value="Enable right-click menu entry in chat, friends list, and guild list (disables 'Target')"/>
-					<KeyValue key="xrpTable" value="menus"/>
-					<KeyValue key="xrpSetting" value="standard"/>
-					<KeyValue key="defaultValue" value="true" type="boolean"/>
-				</KeyValues>
-			</CheckButton>
-			<CheckButton parentKey="MenusUnits" inherits="XRPOptionsCheckboxTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.MenusStandard" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
-				</Anchors>
-				<KeyValues>
-					<KeyValue key="textString" value="Enable right-click menu entry on unit frames (disables 'Set Focus')"/>
-					<KeyValue key="xrpTable" value="menus"/>
-					<KeyValue key="xrpSetting" value="units"/>
-					<KeyValue key="defaultValue" value="false" type="boolean"/>
-				</KeyValues>
-			</CheckButton>
-		</Frames>
-	</Frame>
-	<Frame name="XRPMinimapOptionsTemplate" inherits="XRPOptionsTemplate" virtual="true">
-		<KeyValues>
-			<KeyValue key="name" value="Minimap"/>
-			<KeyValue key="titleText" value="XRP: Minimap"/>
-			<KeyValue key="subText" value="Configure the options for XRP's minimap button below. Fully disabling the button is not recommended at this time, as it removes easy access to serveral core functions."/>
-		</KeyValues>
-		<Frames>
-			<CheckButton parentKey="MinimapEnabled" inherits="XRPOptionsCheckboxTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.SubText" relativePoint="BOTTOMLEFT" x="-2" y="-8"/>
-				</Anchors>
-				<KeyValues>
-					<KeyValue key="textString" value="Enable minimap button"/>
-					<KeyValue key="xrpTable" value="minimap"/>
-					<KeyValue key="xrpSetting" value="enabled"/>
-					<KeyValue key="defaultValue" value="true" type="boolean"/>
-				</KeyValues>
-			</CheckButton>
-			<CheckButton parentKey="MinimapDetached" inherits="XRPOptionsCheckboxTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.MinimapEnabled" relativePoint="BOTTOMLEFT" x="24" y="-8"/>
-				</Anchors>
-				<KeyValues>
-					<KeyValue key="textString" value="Detach button from minimap (shift + right click and drag to move)"/>
-					<KeyValue key="dependsOn" value="MinimapEnabled"/>
-					<KeyValue key="xrpTable" value="minimap"/>
-					<KeyValue key="xrpSetting" value="detached"/>
-					<KeyValue key="defaultValue" value="false" type="boolean"/>
-				</KeyValues>
-			</CheckButton>
-			<CheckButton parentKey="MinimapHideTT" inherits="XRPOptionsCheckboxTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.MinimapDetached" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
-				</Anchors>
-				<KeyValues>
-					<KeyValue key="textString" value="Hide tooltip on minimap button"/>
-					<KeyValue key="dependsOn" value="MinimapEnabled"/>
-					<KeyValue key="xrpTable" value="minimap"/>
-					<KeyValue key="xrpSetting" value="hidett"/>
-					<KeyValue key="defaultValue" value="false" type="boolean"/>
-				</KeyValues>
-			</CheckButton>
-		</Frames>
-	</Frame>
-	<Frame name="XRPTooltipOptionsTemplate" inherits="XRPOptionsTemplate" virtual="true">
+	<Frame name="XRPTooltipOptionsTemplate" parentArray="panes" inherits="XRPOptionsTemplate" virtual="true">
 		<KeyValues>
 			<KeyValue key="name" value="Tooltip"/>
 			<KeyValue key="titleText" value="XRP: Tooltip"/>

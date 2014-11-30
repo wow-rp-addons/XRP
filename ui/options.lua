@@ -122,17 +122,26 @@ local function XRPOptionsChatChannels_CustomCancel(self)
 end
 
 function xrp:Options(pane)
-	if not about.chat then
+	if not about.core then
 		about:SetScript("OnShow", nil)
-		about.cache = CreateFrame("Frame", nil, about, "XRPCacheOptionsTemplate")
-		about.cache.Time.menuList = {
-			{ text = "1 day", value = 86400, owner = about.cache.Time, func = XRPOptionsDropDown_OnClick },
-			{ text = "3 days", value = 259200, owner = about.cache.Time, func = XRPOptionsDropDown_OnClick },
-			{ text = "7 days", value = 604800, owner = about.cache.Time, func = XRPOptionsDropDown_OnClick },
-			{ text = "10 days", value = 864000, owner = about.cache.Time, func = XRPOptionsDropDown_OnClick },
-			{ text = "2 weeks", value = 1209600, owner = about.cache.Time, func = XRPOptionsDropDown_OnClick },
-			{ text = "1 month", value = 2419200, owner = about.cache.Time, func = XRPOptionsDropDown_OnClick },
-			{ text = "3 months", value = 7257600, owner = about.cache.Time, func = XRPOptionsDropDown_OnClick },
+		about.core = CreateFrame("Frame", nil, about, "XRPCoreOptionsTemplate")
+		about.core.Height.menuList = {
+			{ text = "Centimeters", value = "cm", owner = about.core.Height, func = XRPOptionsDropDown_OnClick },
+			{ text = "Feet/Inches", value = "ft", owner = about.core.Height, func = XRPOptionsDropDown_OnClick },
+			{ text = "Meters", value = "m", owner = about.core.Height, func = XRPOptionsDropDown_OnClick },
+		}
+		about.core.Weight.menuList = {
+			{ text = "Kilograms", value = "kg", owner = about.core.Weight, func = XRPOptionsDropDown_OnClick },
+			{ text = "Pounds", value = "lb", owner = about.core.Weight, func = XRPOptionsDropDown_OnClick },
+		}
+		about.core.Time.menuList = {
+			{ text = "1 day", value = 86400, owner = about.core.Time, func = XRPOptionsDropDown_OnClick },
+			{ text = "3 days", value = 259200, owner = about.core.Time, func = XRPOptionsDropDown_OnClick },
+			{ text = "7 days", value = 604800, owner = about.core.Time, func = XRPOptionsDropDown_OnClick },
+			{ text = "10 days", value = 864000, owner = about.core.Time, func = XRPOptionsDropDown_OnClick },
+			{ text = "2 weeks", value = 1209600, owner = about.core.Time, func = XRPOptionsDropDown_OnClick },
+			{ text = "1 month", value = 2419200, owner = about.core.Time, func = XRPOptionsDropDown_OnClick },
+			{ text = "3 months", value = 7257600, owner = about.core.Time, func = XRPOptionsDropDown_OnClick },
 		}
 		about.chat = CreateFrame("Frame", nil, about, "XRPChatOptionsTemplate")
 		about.chat.Channels.CustomOkay = XRPOptionsChatChannels_CustomOkay
@@ -141,25 +150,11 @@ function xrp:Options(pane)
 		about.chat.Channels.CustomDefault = XRPOptionsChatChannels_CustomDefault
 		about.chat.Channels.menuList = {}
 		about.chat.Channels.settingsList = {}
-		about.display = CreateFrame("Frame", nil, about, "XRPDisplayOptionsTemplate")
-
-		about.display.Height.menuList = {
-			{ text = "Centimeters", value = "cm", owner = about.display.Height, func = XRPOptionsDropDown_OnClick },
-			{ text = "Feet/Inches", value = "ft", owner = about.display.Height, func = XRPOptionsDropDown_OnClick },
-			{ text = "Meters", value = "m", owner = about.display.Height, func = XRPOptionsDropDown_OnClick },
-		}
-		about.display.Weight.menuList = {
-			{ text = "Kilograms", value = "kg", owner = about.display.Weight, func = XRPOptionsDropDown_OnClick },
-			{ text = "Pounds", value = "lb", owner = about.display.Weight, func = XRPOptionsDropDown_OnClick },
-		}
-		about.interact = CreateFrame("Frame", nil, about, "XRPInteractOptionsTemplate")
-		about.menus = CreateFrame("Frame", nil, about, "XRPMenusOptionsTemplate")
-		about.minimap = CreateFrame("Frame", nil, about, "XRPMinimapOptionsTemplate")
 		about.tooltip = CreateFrame("Frame", nil, about, "XRPTooltipOptionsTemplate")
-		for _, frame in pairs({ "cache", "chat", "display", "interact", "menus", "minimap", "tooltip" }) do
-			about[frame]:refresh()
+		for _, frame in ipairs(about.panes) do
+			frame:refresh()
 		end
 		InterfaceOptionsFrame_OpenToCategory("XRP")
 	end
-	InterfaceOptionsFrame_OpenToCategory(about[pane] or about.interact)
+	InterfaceOptionsFrame_OpenToCategory(about[pane] or about.core)
 end
