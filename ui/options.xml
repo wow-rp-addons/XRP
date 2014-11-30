@@ -1,0 +1,666 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\..\FrameXML\UI.xsd">
+<!--
+	© Justin Snelgrove
+
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+	<Frame name="XRPAboutTemplate" hidden="true" virtual="true">
+		<KeyValues>
+			<KeyValue key="name" value="XRP"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Title" inherits="GameFontNormalLarge" text="XRP" justifyH="LEFT" justifyV="TOP">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="16" y="-16"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Author" inherits="GameFontWhite">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Version" inherits="GameFontWhite">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Author" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="CopyHeader" inherits="GameFontNormalLarge" text="License/Copyright">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Version" relativePoint="BOTTOMLEFT" x="0" y="-15"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Copyright" inherits="GameFontWhite" text="(C) 2014 Bor Blasthammer &lt;bor@blasthammer.net&gt;">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.CopyHeader" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="License" inherits="GameFontWhite" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Copyright" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="CacheClear" inherits="UIPanelButtonTemplate" text="XRP_CLEAR_CACHE">
+				<Size x="96" y="21"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-15" y="15"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						StaticPopup_Show("XRP_CACHE_CLEAR")
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button parentKey="CacheTidy" inherits="UIPanelButtonTemplate" text="XRP_TIDY_CACHE">
+				<Size x="96" y="21"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.CacheClear" relativePoint="LEFT" x="-15"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						StaticPopup_Show("XRP_CACHE_TIDY")
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				function self:okay()
+					if not self.controls then return end
+					for _, control in ipairs(self.controls) do
+						if control.CustomOkay then
+							control:CustomOkay()
+						else
+							control.oldValue = control.value
+						end
+					end
+				end
+				function self:refresh()
+					if not self.controls then return end
+					for _, control in ipairs(self.controls) do
+						if control.CustomRefresh then
+							control:CustomRefresh()
+						else
+							local setting = self:Get(control.xrpTable, control.xrpSetting)
+							control.value = setting
+							if control.oldValue == nil then
+								control.oldValue = setting
+							end
+							if control.type == CONTROLTYPE_CHECKBOX then
+								control:SetChecked(setting)
+							elseif control.type == CONTROLTYPE_DROPDOWN then
+								UIDropDownMenu_Initialize(control, control.initialize, nil, nil, control.menuList)
+								UIDropDownMenu_SetSelectedValue(control, setting)
+							end
+						end
+						if control.dependsOn then
+							if control.type == CONTROLTYPE_CHECKBOX then
+								control:SetEnabled(self[control.dependsOn]:GetChecked())
+							elseif control.type == CONTROLTYPE_DROPDOWN then
+								local setting = self[control.dependsOn]:GetChecked()
+								if setting then
+									UIDropDownMenu_EnableDropDown(control)
+								else
+									UIDropDownMenu_DisableDropDown(control)
+								end
+							end
+						end
+					end
+				end
+				function self:cancel()
+					if not self.controls then return end
+					for _, control in ipairs(self.controls) do
+						if control.CustomCancel then
+							control:CustomCancel()
+						else
+							self:Set(control.xrpTable, control.xrpSetting, control.oldValue)
+							control.value = control.oldValue
+							if control.type == CONTROLTYPE_CHECKBOX then
+								control:SetChecked(control.value)
+							elseif control.type == CONTROLTYPE_DROPDOWN then
+								UIDropDownMenu_Initialize(control, control.initialize, nil, nil, control.menuList)
+								UIDropDownMenu_SetSelectedValue(control, control.value)
+							end
+						end
+						if control.dependsOn then
+							if control.type == CONTROLTYPE_CHECKBOX then
+								control:SetEnabled(self[control.dependsOn]:GetChecked())
+							elseif control.type == CONTROLTYPE_DROPDOWN then
+								local setting = self[control.dependsOn]:GetChecked()
+								if setting then
+									UIDropDownMenu_EnableDropDown(control)
+								else
+									UIDropDownMenu_DisableDropDown(control)
+								end
+							end
+						end
+					end
+				end
+				function self:default()
+					if not self.controls then return end
+					for _, control in ipairs(self.controls) do
+						if control.CustomDefault then
+							control:CustomDefault()
+						else
+							self:Set(control.xrpTable, control.xrpSetting, control.defaultValue)
+							control.value = control.defaultValue
+							if control.type == CONTROLTYPE_CHECKBOX then
+								control:SetChecked(control.value)
+							elseif control.type == CONTROLTYPE_DROPDOWN then
+								UIDropDownMenu_Initialize(control, control.initialize, nil, nil, control.menuList)
+								UIDropDownMenu_SetSelectedValue(control, control.value)
+							end
+						end
+						if control.dependsOn then
+							if control.type == CONTROLTYPE_CHECKBOX then
+								control:SetEnabled(self[control.dependsOn]:GetChecked())
+							elseif control.type == CONTROLTYPE_DROPDOWN then
+								local setting = self[control.dependsOn]:GetChecked()
+								if setting then
+									UIDropDownMenu_EnableDropDown(control)
+								else
+									UIDropDownMenu_DisableDropDown(control)
+								end
+							end
+						end
+					end
+				end
+				InterfaceOptions_AddCategory(self)
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	<Frame name="XRPCacheOptionsTemplate" inherits="XRPOptionsTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="name" value="Cache"/>
+			<KeyValue key="titleText" value="XRP: Cache"/>
+			<KeyValue key="subText" value="Configure the caching options for XRP."/>
+		</KeyValues>
+		<Frames>
+			<Frame name="XRPCCacheOptionsTime" parentKey="Time" inherits="XRPOptionsDropDownTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.SubText" relativePoint="BOTTOMLEFT" x="-17" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="xrpTable" value="cache"/>
+					<KeyValue key="xrpSetting" value="time"/>
+					<KeyValue key="defaultValue" value="864000" type="number"/>
+				</KeyValues>
+			</Frame>
+			<CheckButton parentKey="AutoClean" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Time" relativePoint="BOTTOMLEFT" x="15" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="textString" value="Automatically clean old cache entries"/>
+					<KeyValue key="xrpTable" value="cache"/>
+					<KeyValue key="xrpSetting" value="autoclean"/>
+					<KeyValue key="defaultValue" value="true" type="boolean"/>
+				</KeyValues>
+			</CheckButton>
+		</Frames>
+	</Frame>
+	<Frame name="XRPChatOptionsTemplate" inherits="XRPOptionsTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="name" value="Chat"/>
+			<KeyValue key="titleText" value="XRP: Chat"/>
+			<KeyValue key="subText" value="Configure the chat-related options for XRP, primarily roleplay names in chat."/>
+		</KeyValues>
+		<Frames>
+			<CheckButton parentKey="RPNames" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.SubText" relativePoint="BOTTOMLEFT" x="-2" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="textString" value="Enable roleplay names in chat for:"/>
+					<KeyValue key="xrpTable" value="chat"/>
+					<KeyValue key="xrpSetting" value="rpnames"/>
+					<KeyValue key="defaultValue" value="true" type="boolean"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="CHAT_MSG_SAY" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.RPNames" relativePoint="BOTTOMLEFT" x="24" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="textString" value="Say"/>
+					<KeyValue key="dependsOn" value="RPNames"/>
+					<KeyValue key="xrpTable" value="chat"/>
+					<KeyValue key="xrpSetting" value="CHAT_MSG_SAY"/>
+					<KeyValue key="defaultValue" value="true" type="boolean"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="CHAT_MSG_EMOTE" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.CHAT_MSG_SAY" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="textString" value="Emote"/>
+					<KeyValue key="dependsOn" value="RPNames"/>
+					<KeyValue key="xrpTable" value="chat"/>
+					<KeyValue key="xrpSetting" value="CHAT_MSG_EMOTE"/>
+					<KeyValue key="defaultValue" value="true" type="boolean"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="CHAT_MSG_YELL" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.CHAT_MSG_EMOTE" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="textString" value="Yell"/>
+					<KeyValue key="dependsOn" value="RPNames"/>
+					<KeyValue key="xrpTable" value="chat"/>
+					<KeyValue key="xrpSetting" value="CHAT_MSG_YELL"/>
+					<KeyValue key="defaultValue" value="true" type="boolean"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="CHAT_MSG_WHISPER" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.CHAT_MSG_YELL" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="textString" value="Whisper"/>
+					<KeyValue key="dependsOn" value="RPNames"/>
+					<KeyValue key="xrpTable" value="chat"/>
+					<KeyValue key="xrpSetting" value="CHAT_MSG_WHISPER"/>
+					<KeyValue key="defaultValue" value="false" type="boolean"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="CHAT_MSG_GUILD" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.CHAT_MSG_WHISPER" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="textString" value="Guild"/>
+					<KeyValue key="dependsOn" value="RPNames"/>
+					<KeyValue key="xrpTable" value="chat"/>
+					<KeyValue key="xrpSetting" value="CHAT_MSG_GUILD"/>
+					<KeyValue key="defaultValue" value="false" type="boolean"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="CHAT_MSG_PARTY" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.CHAT_MSG_GUILD" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="textString" value="Party"/>
+					<KeyValue key="dependsOn" value="RPNames"/>
+					<KeyValue key="xrpTable" value="chat"/>
+					<KeyValue key="xrpSetting" value="CHAT_MSG_PARTY"/>
+					<KeyValue key="defaultValue" value="false" type="boolean"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="CHAT_MSG_RAID" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.CHAT_MSG_PARTY" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="textString" value="Raid"/>
+					<KeyValue key="dependsOn" value="RPNames"/>
+					<KeyValue key="xrpTable" value="chat"/>
+					<KeyValue key="xrpSetting" value="CHAT_MSG_RAID"/>
+					<KeyValue key="defaultValue" value="false" type="boolean"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="CHAT_MSG_INSTANCE_CHAT" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.CHAT_MSG_RAID" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="textString" value="Instance"/>
+					<KeyValue key="dependsOn" value="RPNames"/>
+					<KeyValue key="xrpTable" value="chat"/>
+					<KeyValue key="xrpSetting" value="CHAT_MSG_INSTANCE_CHAT"/>
+					<KeyValue key="defaultValue" value="false" type="boolean"/>
+				</KeyValues>
+			</CheckButton>
+			<Frame name="XRPChatOptionsChannels" parentKey="Channels" inherits="XRPOptionsDropDownTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.CHAT_MSG_INSTANCE_CHAT" relativePoint="BOTTOMLEFT" x="-15" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="textString" value="Channels"/>
+					<KeyValue key="dependsOn" value="RPNames"/>
+				</KeyValues>
+			</Frame>
+			<CheckButton parentKey="EmoteBraced" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Channels" relativePoint="BOTTOMLEFT" x="15" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="textString" value="Show square brackets around names in emotes"/>
+					<KeyValue key="dependsOn" value="RPNames"/>
+					<KeyValue key="xrpTable" value="chat"/>
+					<KeyValue key="xrpSetting" value="emotebraced"/>
+					<KeyValue key="defaultValue" value="false" type="boolean"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="Replacements" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.EmoteBraced" relativePoint="BOTTOMLEFT" x="-24" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="textString" value="Replace %xt and %xf with roleplay names of target and focus in chat"/>
+					<KeyValue key="xrpTable" value="chat"/>
+					<KeyValue key="xrpSetting" value="replacements"/>
+					<KeyValue key="defaultValue" value="true" type="boolean"/>
+				</KeyValues>
+			</CheckButton>
+		</Frames>
+	</Frame>
+	<Frame name="XRPDisplayOptionsTemplate" inherits="XRPOptionsTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="name" value="Display"/>
+			<KeyValue key="titleText" value="XRP: Display"/>
+			<KeyValue key="subText" value="Configure the display format options available in XRP."/>
+		</KeyValues>
+		<Frames>
+			<Frame name="XRPDisplayOptionsHeight" parentKey="Height" inherits="XRPOptionsDropDownTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.SubText" relativePoint="BOTTOMLEFT" x="-17" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="labelText" value="Height"/>
+					<KeyValue key="xrpTable" value="display"/>
+					<KeyValue key="xrpSetting" value="height"/>
+					<KeyValue key="defaultValue" value="ft"/>
+				</KeyValues>
+			</Frame>
+			<Frame name="XRPDisplayOptionsWeight" parentKey="Weight" inherits="XRPOptionsDropDownTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Height" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="labelText" value="Weight"/>
+					<KeyValue key="xrpTable" value="display"/>
+					<KeyValue key="xrpSetting" value="weight"/>
+					<KeyValue key="defaultValue" value="lb"/>
+				</KeyValues>
+			</Frame>
+		</Frames>
+	</Frame>
+	<Frame name="XRPInteractOptionsTemplate" inherits="XRPOptionsTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="name" value="Interaction"/>
+			<KeyValue key="titleText" value="XRP: Interaction"/>
+			<KeyValue key="subText" value="Configure the interaction options available for XRP, integrated with the default user interface."/>
+		</KeyValues>
+		<Frames>
+			<CheckButton parentKey="RightClick" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.SubText" relativePoint="BOTTOMLEFT" x="-2" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="textString" value="Enable right click profile viewing"/>
+					<KeyValue key="xrpTable" value="interact"/>
+					<KeyValue key="xrpSetting" value="rightclick"/>
+					<KeyValue key="defaultValue" value="true" type="boolean"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="DisableInstance" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.RightClick" relativePoint="BOTTOMLEFT" x="24" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="textString" value="Disable right click viewing in instances"/>
+					<KeyValue key="dependsOn" value="RightClick"/>
+					<KeyValue key="xrpTable" value="interact"/>
+					<KeyValue key="xrpSetting" value="disableinstance"/>
+					<KeyValue key="defaultValue" value="false" type="boolean"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="DisablePvP" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.DisableInstance" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="textString" value="Disable right click viewing while PvP flagged"/>
+					<KeyValue key="dependsOn" value="RightClick"/>
+					<KeyValue key="xrpTable" value="interact"/>
+					<KeyValue key="xrpSetting" value="disablepvp"/>
+					<KeyValue key="defaultValue" value="false" type="boolean"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="Keybind" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.DisablePvP" relativePoint="BOTTOMLEFT" x="-24" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="textString" value="Enable profile viewing via default interact with target/mouseover keybinds"/>
+					<KeyValue key="xrpTable" value="interact"/>
+					<KeyValue key="xrpSetting" value="keybind"/>
+					<KeyValue key="defaultValue" value="true" type="boolean"/>
+				</KeyValues>
+			</CheckButton>
+		</Frames>
+	</Frame>
+	<Frame name="XRPMenusOptionsTemplate" inherits="XRPOptionsTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="name" value="Menus"/>
+			<KeyValue key="titleText" value="XRP: Menus"/>
+			<KeyValue key="subText" value="Configure the options for XRP's right-click menu entries. Note that these options will disable certain options (noted) in the standard menus."/>
+		</KeyValues>
+		<Frames>
+			<CheckButton parentKey="MenusStandard" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.SubText" relativePoint="BOTTOMLEFT" x="-2" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="textString" value="Enable right-click menu entry in chat, friends list, and guild list (disables 'Target')"/>
+					<KeyValue key="xrpTable" value="menus"/>
+					<KeyValue key="xrpSetting" value="standard"/>
+					<KeyValue key="defaultValue" value="true" type="boolean"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="MenusUnits" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.MenusStandard" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="textString" value="Enable right-click menu entry on unit frames (disables 'Set Focus')"/>
+					<KeyValue key="xrpTable" value="menus"/>
+					<KeyValue key="xrpSetting" value="units"/>
+					<KeyValue key="defaultValue" value="false" type="boolean"/>
+				</KeyValues>
+			</CheckButton>
+		</Frames>
+	</Frame>
+	<Frame name="XRPMinimapOptionsTemplate" inherits="XRPOptionsTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="name" value="Minimap"/>
+			<KeyValue key="titleText" value="XRP: Minimap"/>
+			<KeyValue key="subText" value="Configure the options for XRP's minimap button below. Fully disabling the button is not recommended at this time, as it removes easy access to serveral core functions."/>
+		</KeyValues>
+		<Frames>
+			<CheckButton parentKey="MinimapEnabled" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.SubText" relativePoint="BOTTOMLEFT" x="-2" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="textString" value="Enable minimap button"/>
+					<KeyValue key="xrpTable" value="minimap"/>
+					<KeyValue key="xrpSetting" value="enabled"/>
+					<KeyValue key="defaultValue" value="true" type="boolean"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="MinimapDetached" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.MinimapEnabled" relativePoint="BOTTOMLEFT" x="24" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="textString" value="Detach button from minimap (shift + right click and drag to move)"/>
+					<KeyValue key="dependsOn" value="MinimapEnabled"/>
+					<KeyValue key="xrpTable" value="minimap"/>
+					<KeyValue key="xrpSetting" value="detached"/>
+					<KeyValue key="defaultValue" value="false" type="boolean"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="MinimapHideTT" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.MinimapDetached" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="textString" value="Hide tooltip on minimap button"/>
+					<KeyValue key="dependsOn" value="MinimapEnabled"/>
+					<KeyValue key="xrpTable" value="minimap"/>
+					<KeyValue key="xrpSetting" value="hidett"/>
+					<KeyValue key="defaultValue" value="false" type="boolean"/>
+				</KeyValues>
+			</CheckButton>
+		</Frames>
+	</Frame>
+	<Frame name="XRPTooltipOptionsTemplate" inherits="XRPOptionsTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="name" value="Tooltip"/>
+			<KeyValue key="titleText" value="XRP: Tooltip"/>
+			<KeyValue key="subText" value="Configure the options available for XRP's tooltip display. This display modifies and overwrites the default tooltip, and may conflict with other tooltip-modifying addons."/>
+		</KeyValues>
+		<Frames>
+			<CheckButton parentKey="TooltipEnabled" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.SubText" relativePoint="BOTTOMLEFT" x="-2" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="textString" value="Enable tooltip replacement"/>
+					<KeyValue key="xrpTable" value="tooltip"/>
+					<KeyValue key="xrpSetting" value="enabled"/>
+					<KeyValue key="defaultValue" value="true" type="boolean"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="TooltipWatching" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.TooltipEnabled" relativePoint="BOTTOMLEFT" x="24" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="textString" value="Show eye icon if tooltip subject is targeting you"/>
+					<KeyValue key="dependsOn" value="TooltipEnabled"/>
+					<KeyValue key="xrpTable" value="tooltip"/>
+					<KeyValue key="xrpSetting" value="watching"/>
+					<KeyValue key="defaultValue" value="false" type="boolean"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="TooltipExtraSpace" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.TooltipWatching" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="textString" value="Add extra spacing lines to the tooltip"/>
+					<KeyValue key="dependsOn" value="TooltipEnabled"/>
+					<KeyValue key="xrpTable" value="tooltip"/>
+					<KeyValue key="xrpSetting" value="extraspace"/>
+					<KeyValue key="defaultValue" value="false" type="boolean"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="TooltipExtraSpace" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.TooltipWatching" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="textString" value="Add extra spacing lines to the tooltip"/>
+					<KeyValue key="dependsOn" value="TooltipEnabled"/>
+					<KeyValue key="xrpTable" value="tooltip"/>
+					<KeyValue key="xrpSetting" value="extraspace"/>
+					<KeyValue key="defaultValue" value="false" type="boolean"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="TooltipGuildRank" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.TooltipExtraSpace" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="textString" value="Display guild rank in tooltip"/>
+					<KeyValue key="dependsOn" value="TooltipEnabled"/>
+					<KeyValue key="xrpTable" value="tooltip"/>
+					<KeyValue key="xrpSetting" value="guildrank"/>
+					<KeyValue key="defaultValue" value="false" type="boolean"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="TooltipGuildRankIndex" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.TooltipGuildRank" relativePoint="BOTTOMLEFT" x="24" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="textString" value="Also display guild rank index (numerical ranking) in tooltip"/>
+					<KeyValue key="dependsOn" value="TooltipGuildRank"/>
+					<KeyValue key="xrpTable" value="tooltip"/>
+					<KeyValue key="xrpSetting" value="guildrankindex"/>
+					<KeyValue key="defaultValue" value="false" type="boolean"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="TooltipFactionColor" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.TooltipGuildRankIndex" relativePoint="BOTTOMLEFT" x="-24" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="textString" value="Use faction coloring for roleplay names"/>
+					<KeyValue key="dependsOn" value="TooltipEnabled"/>
+					<KeyValue key="xrpTable" value="tooltip"/>
+					<KeyValue key="xrpSetting" value="faction"/>
+					<KeyValue key="defaultValue" value="false" type="boolean"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="TooltipNoHostile" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.TooltipFactionColor" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="textString" value="Disable roleplay information display on hostile subjects"/>
+					<KeyValue key="dependsOn" value="TooltipEnabled"/>
+					<KeyValue key="xrpTable" value="tooltip"/>
+					<KeyValue key="xrpSetting" value="nohostile"/>
+					<KeyValue key="defaultValue" value="true" type="boolean"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="TooltipNoOpFaction" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.TooltipNoHostile" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="textString" value="Disable roleplay information display on all opposite faction subjects"/>
+					<KeyValue key="dependsOn" value="TooltipEnabled"/>
+					<KeyValue key="xrpTable" value="tooltip"/>
+					<KeyValue key="xrpSetting" value="noopfaction"/>
+					<KeyValue key="defaultValue" value="false" type="boolean"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="TooltipNoRPClass" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.TooltipNoOpFaction" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="textString" value="Hide roleplay class information on tooltip"/>
+					<KeyValue key="dependsOn" value="TooltipEnabled"/>
+					<KeyValue key="xrpTable" value="tooltip"/>
+					<KeyValue key="xrpSetting" value="norpclass"/>
+					<KeyValue key="defaultValue" value="false" type="boolean"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="TooltipNoRPRace" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.TooltipNoRPClass" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="textString" value="Hide roleplay race information on tooltip"/>
+					<KeyValue key="dependsOn" value="TooltipEnabled"/>
+					<KeyValue key="xrpTable" value="tooltip"/>
+					<KeyValue key="xrpSetting" value="norprace"/>
+					<KeyValue key="defaultValue" value="false" type="boolean"/>
+				</KeyValues>
+			</CheckButton>
+		</Frames>
+	</Frame>
+	<Script file="options.lua"/>
+</Ui>
