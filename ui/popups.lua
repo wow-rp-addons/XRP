@@ -144,7 +144,7 @@ StaticPopupDialogs["XRP_CACHE_TIDY"] = {
 	text = "Old entries have been pruned from the cache.",
 	button1 = OKAY,
 	OnShow = function(self, data)
-		xrpPrivate:CacheTidy(60)
+		xrpPrivate:CacheTidy()
 	end,
 	enterClicksFirstButton = false,
 	timeout = 0,

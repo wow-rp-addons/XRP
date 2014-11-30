@@ -334,9 +334,9 @@ function xrpPrivate:CacheTidy(timer)
 			if data.hide == nil then
 				xrpCache[character] = nil
 			else
-				xrpCache[character].fields = {}
-				xrpCache[character].versions = {}
-				xrpCache[character].lastreceive = now
+				data.fields = {}
+				data.versions = {}
+				data.lastreceive = now
 			end
 		end
 	end
