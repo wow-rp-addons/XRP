@@ -1,0 +1,34 @@
+## Interface: 60000
+## Title: XRP
+## Version: 6.0.3.0_beta2
+## Author: Bor of Wyrmrest Accord (US)
+## Notes: XRP is yet another roleplaying profile addon.
+## X-Category: Roleplay
+## X-License: GPLv3
+## SavedVariablesPerCharacter: xrpSaved
+## SavedVariables: xrpAccountSaved, xrpCache
+
+xrp.lua
+settings.lua
+core\utils.lua
+core\profiles.lua
+lib\libbw\libbw.xml
+core\msp.lua
+core\characters.lua
+core\automation.lua
+ui\popups.lua
+ui\commands.lua
+ui\chat.lua
+ui\interact.lua
+ui\menus.lua
+ui\tooltip.lua
+ui\templates.xml
+ui\minimap.xml
+ui\viewer.xml
+ui\editor.xml
+ui\automation.xml
+ui\options.xml
+ui\ui.lua
+extra\fixes.lua
+extra\libmsp_compat.lua
+extra\import.lua

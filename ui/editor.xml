@@ -1,0 +1,866 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\..\FrameXML\UI.xsd">
+<!--
+	© Justin Snelgrove
+
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+	<!-- Here there be dragons. XML dragons, the most dangerous sort. -->
+	<!-- It's dangerous to go alone, take a syntax highlighter. -->
+	<!-- No, seriously, though. This is the easiest way to get a good UI. -->
+	<Frame name="XRPEditorTemplate" inherits="ButtonFrameTemplate" hidden="true" virtual="true">
+		<Size x="439" y="525"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<!-- Parent Profile -->
+				<FontString parentKey="ParentLabel" inherits="GameFontNormalSmall" text="Parent profile:">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" x="8" y="10"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Appearance" hidden="false">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Inset" relativePoint="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset" relativePoint="BOTTOMRIGHT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<!-- Name Label -->
+						<FontString parentKey="NALabel" inherits="GameFontNormalSmall" text="Name">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="12" y="-8"/>
+							</Anchors>
+						</FontString>
+						<!-- Nickname Label -->
+						<FontString parentKey="NILabel" inherits="GameFontNormalSmall" text="Nickname">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.NALabel" relativePoint="LEFT" x="196" y="0"/>
+							</Anchors>
+						</FontString>
+						<!-- Height Label -->
+						<FontString parentKey="AHLabel" inherits="GameFontNormalSmall" text="Height">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.NILabel" relativePoint="LEFT" x="146" y="0"/>
+							</Anchors>
+						</FontString>
+						<!-- Title Label -->
+						<FontString parentKey="NTLabel" inherits="GameFontNormalSmall" text="Title">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.NALabel" relativePoint="BOTTOMLEFT" x="0" y="-25"/>
+							</Anchors>
+						</FontString>
+						<!-- House/Clan/Tribe Label -->
+						<FontString parentKey="NHLabel" inherits="GameFontNormalSmall" text="House/Clan/Tribe">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.NTLabel" relativePoint="LEFT" x="196" y="0"/>
+							</Anchors>
+						</FontString>
+						<!-- Weight Label -->
+						<FontString parentKey="AWLabel" inherits="GameFontNormalSmall" text="Weight">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.NHLabel" relativePoint="LEFT" x="146" y="0"/>
+							</Anchors>
+						</FontString>
+						<!-- Eyes Label -->
+						<FontString parentKey="AELabel" inherits="GameFontNormalSmall" text="Eyes">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.NTLabel" relativePoint="BOTTOMLEFT" x="0" y="-25"/>
+							</Anchors>
+						</FontString>
+						<!-- Race Label -->
+						<FontString parentKey="RALabel" inherits="GameFontNormalSmall" text="Race">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.AELabel" relativePoint="LEFT" x="135" y="0"/>
+							</Anchors>
+						</FontString>
+						<!-- Class Label -->
+						<FontString parentKey="RCLabel" inherits="GameFontNormalSmall" text="Class">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.RALabel" relativePoint="LEFT" x="141" y="0"/>
+							</Anchors>
+						</FontString>
+						<!-- Currently Label -->
+						<FontString parentKey="CULabel" inherits="GameFontNormalSmall" text="Currently">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.AELabel" relativePoint="BOTTOMLEFT" x="0" y="-25"/>
+							</Anchors>
+						</FontString>
+						<!-- Description Label -->
+						<FontString parentKey="DELabel" inherits="GameFontNormalSmall" text="Description">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.CULabel" relativePoint="BOTTOMLEFT" x="0" y="-25"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<!-- Name Box -->
+					<EditBox parentKey="NA" inherits="XRPEditorInputBoxTemplate" autoFocus="false">
+						<Size x="186" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.NALabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
+						</Anchors>
+					</EditBox>
+					<CheckButton parentKey="NADefault" inherits="XRPEditorCheckBoxTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.NALabel" relativePoint="RIGHT"/>
+						</Anchors>
+					</CheckButton>
+					<!-- Nickname Box -->
+					<EditBox parentKey="NI" inherits="XRPEditorInputBoxTemplate" autoFocus="false">
+						<Size x="136" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.NILabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
+						</Anchors>
+					</EditBox>
+					<CheckButton parentKey="NIDefault" inherits="XRPEditorCheckBoxTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.NILabel" relativePoint="RIGHT"/>
+						</Anchors>
+					</CheckButton>
+					<!-- Height Box -->
+					<EditBox parentKey="AH" inherits="XRPEditorInputBoxTemplate" autoFocus="false">
+						<Size x="65" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.AHLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
+						</Anchors>
+					</EditBox>
+					<CheckButton parentKey="AHDefault" inherits="XRPEditorCheckBoxTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.AHLabel" relativePoint="RIGHT"/>
+						</Anchors>
+					</CheckButton>
+					<!-- Title Box -->
+					<EditBox parentKey="NT" inherits="XRPEditorInputBoxTemplate" autoFocus="false">
+						<Size x="186" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.NTLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
+						</Anchors>
+					</EditBox>
+					<CheckButton parentKey="NTDefault" inherits="XRPEditorCheckBoxTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.NTLabel" relativePoint="RIGHT"/>
+						</Anchors>
+					</CheckButton>
+					<!-- House/Clan/Tribe Box -->
+					<EditBox parentKey="NH" inherits="XRPEditorInputBoxTemplate" autoFocus="false">
+						<Size x="136" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.NHLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
+						</Anchors>
+					</EditBox>
+					<CheckButton parentKey="NHDefault" inherits="XRPEditorCheckBoxTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.NHLabel" relativePoint="RIGHT"/>
+						</Anchors>
+					</CheckButton>
+					<!-- Weight Box -->
+					<EditBox parentKey="AW" inherits="XRPEditorInputBoxTemplate" autoFocus="false">
+						<Size x="65" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.AWLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
+						</Anchors>
+					</EditBox>
+					<CheckButton parentKey="AWDefault" inherits="XRPEditorCheckBoxTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.AWLabel" relativePoint="RIGHT"/>
+						</Anchors>
+					</CheckButton>
+					<!-- Eyes Box -->
+					<EditBox parentKey="AE" inherits="XRPEditorInputBoxTemplate" autoFocus="false">
+						<Size x="125" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.AELabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
+						</Anchors>
+					</EditBox>
+					<CheckButton parentKey="AEDefault" inherits="XRPEditorCheckBoxTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.AELabel" relativePoint="RIGHT"/>
+						</Anchors>
+					</CheckButton>
+					<!-- Race Box -->
+					<EditBox parentKey="RA" inherits="XRPEditorInputBoxTemplate" autoFocus="false">
+						<Size x="131" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.RALabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
+						</Anchors>
+					</EditBox>
+					<CheckButton parentKey="RADefault" inherits="XRPEditorCheckBoxTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.RALabel" relativePoint="RIGHT"/>
+						</Anchors>
+					</CheckButton>
+					<!-- Class Box -->
+					<EditBox parentKey="RC" inherits="XRPEditorInputBoxTemplate" autoFocus="false">
+						<Size x="131" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.RCLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
+						</Anchors>
+					</EditBox>
+					<CheckButton parentKey="RCDefault" inherits="XRPEditorCheckBoxTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.RCLabel" relativePoint="RIGHT"/>
+						</Anchors>
+					</CheckButton>
+					<!-- Currently Box -->
+					<EditBox parentKey="CU" inherits="XRPEditorInputBoxTemplate" autoFocus="false">
+						<Size x="407" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.CULabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
+						</Anchors>
+					</EditBox>
+					<CheckButton parentKey="CUDefault" inherits="XRPEditorCheckBoxTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.CULabel" relativePoint="RIGHT"/>
+						</Anchors>
+					</CheckButton>
+					<!-- Description Box -->
+					<ScrollFrame name="$parentDE" parentKey="DE" inherits="XRPEditorInputScrollFrameTemplate">
+						<Size x="402" y="264"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.DELabel" relativePoint="BOTTOMLEFT" x="2" y="-5"/>
+						</Anchors>
+					</ScrollFrame>
+					<CheckButton parentKey="DEDefault" inherits="XRPEditorCheckBoxTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.DELabel" relativePoint="RIGHT"/>
+						</Anchors>
+					</CheckButton>
+				</Frames>
+			</Frame>
+			<Frame parentKey="Biography" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Inset" relativePoint="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset" relativePoint="BOTTOMRIGHT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<!-- Age Label -->
+						<FontString parentKey="AGLabel" inherits="GameFontNormalSmall" text="Age">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="12" y="-8"/>
+							</Anchors>
+						</FontString>
+						<!-- Home Label -->
+						<FontString parentKey="HHLabel" inherits="GameFontNormalSmall" text="Home">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.AGLabel" relativePoint="LEFT" x="75" y="0"/>
+							</Anchors>
+						</FontString>
+						<!-- Birthplace Label -->
+						<FontString parentKey="HBLabel" inherits="GameFontNormalSmall" text="Birthplace">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.HHLabel" relativePoint="LEFT" x="171" y="0"/>
+							</Anchors>
+						</FontString>
+						<!-- Motto Label -->
+						<FontString parentKey="MOLabel" inherits="GameFontNormalSmall" text="Motto">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.AGLabel" relativePoint="BOTTOMLEFT" x="0" y="-25"/>
+							</Anchors>
+						</FontString>
+						<!-- History Label -->
+						<FontString parentKey="HILabel" inherits="GameFontNormalSmall" text="History">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.MOLabel" relativePoint="BOTTOMLEFT" x="0" y="-25"/>
+							</Anchors>
+						</FontString>
+						<!-- Style Label -->
+						<FontString parentKey="FRLabel" inherits="GameFontNormalSmall" text="Roleplay style">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.HILabel" relativePoint="BOTTOMLEFT" x="0" y="-309"/>
+							</Anchors>
+						</FontString>
+						<!-- Status Label -->
+						<FontString parentKey="FCLabel" inherits="GameFontNormalSmall" text="Character status">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.FRLabel" relativePoint="LEFT" x="209" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<!-- Age Box -->
+					<EditBox parentKey="AG" inherits="XRPEditorInputBoxTemplate" autoFocus="false">
+						<Size x="65" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.AGLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
+						</Anchors>
+					</EditBox>
+					<CheckButton parentKey="AGDefault" inherits="XRPEditorCheckBoxTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.AGLabel" relativePoint="RIGHT"/>
+						</Anchors>
+					</CheckButton>
+					<!-- Home Box -->
+					<EditBox parentKey="HH" inherits="XRPEditorInputBoxTemplate" autoFocus="false">
+						<Size x="161" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.HHLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
+						</Anchors>
+					</EditBox>
+					<CheckButton parentKey="HHDefault" inherits="XRPEditorCheckBoxTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.HHLabel" relativePoint="RIGHT"/>
+						</Anchors>
+					</CheckButton>
+					<!-- Birthplace Box -->
+					<EditBox parentKey="HB" inherits="XRPEditorInputBoxTemplate" autoFocus="false">
+						<Size x="161" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.HBLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
+						</Anchors>
+					</EditBox>
+					<CheckButton parentKey="HBDefault" inherits="XRPEditorCheckBoxTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.HBLabel" relativePoint="RIGHT"/>
+						</Anchors>
+					</CheckButton>
+					<!-- Motto Box -->
+					<EditBox parentKey="MO" inherits="XRPEditorInputBoxTemplate" autoFocus="false">
+						<Size x="407" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.MOLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
+						</Anchors>
+					</EditBox>
+					<CheckButton parentKey="MODefault" inherits="XRPEditorCheckBoxTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.MOLabel" relativePoint="RIGHT"/>
+						</Anchors>
+					</CheckButton>
+					<!-- History Box -->
+					<ScrollFrame name="$parentHI" parentKey="HI" inherits="XRPEditorInputScrollFrameTemplate">
+						<Size x="402" y="294"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.HILabel" relativePoint="BOTTOMLEFT" x="2" y="-5"/>
+						</Anchors>
+					</ScrollFrame>
+					<CheckButton parentKey="HIDefault" inherits="XRPEditorCheckBoxTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.HILabel" relativePoint="RIGHT"/>
+						</Anchors>
+					</CheckButton>
+					<!-- Style Box -->
+					<EditBox parentKey="FR" inherits="XRPEditorInputBoxTemplate" autoFocus="false">
+						<Size x="199" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.FRLabel" relativePoint="BOTTOMLEFT" x="2" y="-3"/>
+						</Anchors>
+					</EditBox>
+					<CheckButton parentKey="FRDefault" inherits="XRPEditorCheckBoxTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.FRLabel" relativePoint="RIGHT"/>
+						</Anchors>
+					</CheckButton>
+					<!-- Status Menu -->
+					<Button name="$parentMenuFC" parentKey="FC" inherits="UIDropDownMenuTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.FCLabel" relativePoint="BOTTOMLEFT" x="-22" y="0"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								UIDropDownMenu_SetWidth(self, 189, 0)
+								function self:SetText(value)
+									UIDropDownMenu_Initialize(self, self.initialize)
+									return UIDropDownMenu_SetSelectedValue(self, value)
+								end
+								function self:GetText()
+									return UIDropDownMenu_GetSelectedValue(self)
+								end
+								self.text = _G[self:GetName().."Text"]
+								function self:SetTextColor(r, g, b, a)
+									return self.text:SetTextColor(r, g, b, a)
+								end
+								function self:HasFocus()
+									return false
+								end
+								function self:SetCursorPosition()
+								end
+							</OnLoad>
+						</Scripts>
+					</Button>
+					<CheckButton parentKey="FCDefault" inherits="XRPEditorCheckBoxTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.FCLabel" relativePoint="RIGHT"/>
+						</Anchors>
+					</CheckButton>
+				</Frames>
+			</Frame>
+			<!-- Saved Character Profiles -->
+			<Button name="$parentMenuProfiles" parentKey="Profiles" inherits="UIDropDownMenuTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-225" y="-27"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						UIDropDownMenu_SetWidth(self, 100, 0)
+						function self:SetText(value)
+							UIDropDownMenu_Initialize(self, self.initialize)
+							UIDropDownMenu_SetSelectedValue(self, value)
+						end
+						function self:GetText()
+							return UIDropDownMenu_GetSelectedValue(self)
+						end
+					</OnLoad>
+				</Scripts>
+			</Button>
+			<!-- + Profile Button -->
+			<Button parentKey="PlusProfile" inherits="UIPanelButtonTemplate" text=" + ">
+				<Size x="28" y="28"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Profiles" relativePoint="RIGHT" x="34" y="2"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						StaticPopup_Show("XRP_EDITOR_ADD")
+					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_CURSOR")
+						GameTooltip:SetText(ADD)
+						GameTooltip:Show()
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide()
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<!-- - Profile Button -->
+			<Button parentKey="MinusProfile" inherits="UIPanelButtonTemplate" text=" - ">
+				<Size x="28" y="28"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.PlusProfile" relativePoint="RIGHT" x="0" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						StaticPopup_Show("XRP_EDITOR_DELETE", self:GetParent().Profiles:GetText())
+					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_CURSOR")
+						GameTooltip:SetText(DELETE)
+						GameTooltip:Show()
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide()
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<!-- R Profile Button -->
+			<Button parentKey="RenameProfile" inherits="UIPanelButtonTemplate" text=" R ">
+				<Size x="28" y="28"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.MinusProfile" relativePoint="RIGHT" x="0" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						StaticPopup_Show("XRP_EDITOR_RENAME", self:GetParent().Profiles:GetText())
+					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_CURSOR")
+						GameTooltip:SetText("Rename")
+						GameTooltip:Show()
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide()
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<!-- C Profile Button -->
+			<Button parentKey="CopyProfile" inherits="UIPanelButtonTemplate" text=" C ">
+				<Size x="28" y="28"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.RenameProfile" relativePoint="RIGHT" x="0" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						StaticPopup_Show("XRP_EDITOR_COPY", self:GetParent().Profiles:GetText())
+					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_CURSOR")
+						GameTooltip:SetText("Copy")
+						GameTooltip:Show()
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide()
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<!-- Parent Profile -->
+			<Button parentKey="Parent" inherits="UIPanelButtonTemplate" text="">
+				<Size x="160" y="21"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" x="6" y="4"/>
+				</Anchors>
+				<Frames>
+					<Button name="$parentParentMenu" parentKey="Menu" hidden="true" inherits="UIDropDownMenuTemplate"/>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						function self:SetText(value)
+							UIDropDownMenu_Initialize(self.Menu, self.Menu.initialize)
+							self:SetValue(value)
+						end
+						function self:SetValue(value)
+							UIDropDownMenu_SetSelectedValue(self.Menu, value)
+							self:SetFormattedText("Parent: %s", value and value ~= "" and value or NONE)
+						end
+						function self:GetText()
+							return UIDropDownMenu_GetSelectedValue(self.Menu)
+						end
+					</OnLoad>
+					<OnClick>
+						ToggleDropDownMenu(nil, nil, self.Menu, self, 0, 0)
+						PlaySound("igMainMenuOptionCheckBoxOn")
+					</OnClick>
+				</Scripts>
+			</Button>
+			<!-- Save Button -->
+			<Button parentKey="SaveButton" inherits="UIPanelButtonTemplate" text="SAVE">
+				<Size x="96" y="21"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-6" y="4"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():Save()
+					</OnClick>
+				</Scripts>
+			</Button>
+			<!-- Revert Button -->
+			<Button parentKey="RevertButton" inherits="UIPanelButtonTemplate" text="REVERT">
+				<Size x="96" y="21"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.SaveButton" relativePoint="LEFT"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						local parent = self:GetParent()
+						parent:Load(parent.Profiles:GetText())
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentTab1" parentKey="Tab1" inherits="CharacterFrameTabButtonTemplate" id="1" text="Appearance">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="0" y="1"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						local parent = self:GetParent()
+						PanelTemplates_SetTab(parent, 1)
+						parent.Biography:Hide()
+						parent.Appearance:Show()
+						PlaySound("igCharacterInfoTab")
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentTab2" parentKey="Tab2" inherits="CharacterFrameTabButtonTemplate" id="2" text="Biography">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Tab1" relativePoint="RIGHT" x="-16" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						local parent = self:GetParent()
+						PanelTemplates_SetTab(parent, 2)
+						parent.Appearance:Hide()
+						parent.Biography:Show()
+						PlaySound("igCharacterInfoTab")
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Attributes>
+			<Attribute name="UIPanelLayout-defined" type="boolean" value="true"/>
+			<Attribute name="UIPanelLayout-enabled" type="boolean" value="true"/>
+			<Attribute name="UIPanelLayout-area" type="string" value="left"/>
+			<Attribute name="UIPanelLayout-pushable" type="number" value="4"/>
+			<Attribute name="UIPanelLayout-height" type="number" value="545"/>
+			<Attribute name="UIPanelLayout-whileDead" type="boolean" value="true"/>
+		</Attributes>
+		<Scripts>
+			<OnLoad>
+				PanelTemplates_SetNumTabs(self, 2)
+				PanelTemplates_SetTab(self, 1)
+				self.TitleText:SetText("Profile Editor")
+				function self:Save()
+					self:ClearFocus()
+					-- This doesn't need to be smart. GetText() should be
+					-- mapped to the appropriate 'real' function if GetText()
+					-- isn't already right. The profile code will assume an
+					-- empty string means an empty field.
+					local name = self.Profiles:GetText()
+					local profile, inherits = xrp.profiles[name].fields, xrp.profiles[name].inherits
+					for field, control in pairs(self.fields) do
+						profile[field] = control.inherited and "" or control:GetText()
+						inherits[field] = self.checkboxes[field]:GetChecked()
+					end
+					local parent = self.Parent:GetText()
+					if parent == "" then
+						parent = nil
+					end
+					xrp.profiles[name].parent = parent
+					if xrp.profiles[name].parent ~= parent then
+						self.Parent:SetText(xrp.profiles[name].parent or "")
+					end
+					-- Save and Revert buttons will disable after saving.
+					self:CheckFields()
+				end
+
+				function self:Load(name)
+					self:ClearFocus()
+					-- This does not need to be very smart. SetText() should be
+					-- mapped to the appropriate 'real' function if needed.
+					local profile, inherits = xrp.profiles[name].fields, xrp.profiles[name].inherits
+					for field, control in pairs(self.fields) do
+						control:SetText(profile[field] or "")
+						control:SetTextColor(1.0, 1.0, 1.0, 1.0)
+						control:SetCursorPosition(0)
+						control.inherited = false
+						self.checkboxes[field]:SetChecked(inherits[field] ~= false)
+					end
+
+					if self.Profiles:GetText() ~= name and not self.Appearance:IsVisible() then
+						PanelTemplates_SetTab(self, 1)
+						self.Biography:Hide()
+						self.Appearance:Show()
+						PlaySound("igCharacterInfoTab")
+					end
+
+					self.Profiles:SetText(name)
+					self.Parent:SetText(xrp.profiles[name].parent or "")
+					self:CheckFields()
+				end
+
+				do
+					local function CheckField(self, name, parent, profile, inherits, field, control)
+						if parent then
+							self.checkboxes[field]:Show()
+							if not control:HasFocus() and (control:GetText() == "" or control.inherited) then
+								if self.checkboxes[field]:GetChecked() then
+									control.inherited = true
+									control:SetTextColor(0.5, 0.5, 0.5, 1.0)
+									local parentcontent = xrp.profiles[parent].fields[field]
+									if parentcontent then
+										control:SetText(parentcontent)
+									else
+										local parentinherit = xrp.profiles[parent].inherits[field]
+										if type(parentinherit) == "string" and parentinherit ~= name then
+											control:SetText(xrp.profiles[parentinherit].fields[field])
+										elseif field == "NA" or field == "RA" or field == "RC" then
+											local metafield = field == "RA" and "GR" or field == "RC" and "GC" or nil
+											control:SetText(xrpSaved.meta.fields[field] or xrp.values[metafield][xrpSaved.meta.fields[metafield]] or "")
+										else
+											control:SetText("")
+										end
+									end
+									control:SetCursorPosition(0)
+								elseif field == "NA" or field == "RA" or field == "RC" then
+									control.inherited = true
+									control:SetTextColor(0.5, 0.5, 0.5, 1.0)
+									local metafield = field == "RA" and "GR" or field == "RC" and "GC" or nil
+									control:SetText(xrpSaved.meta.fields[field] or xrp.values[metafield][xrpSaved.meta.fields[metafield]] or "")
+									control:SetCursorPosition(0)
+								else
+									control:SetText("")
+									control:SetTextColor(1.0, 1.0, 1.0, 1.0)
+									control.inherited = false
+								end
+							end
+						else
+							self.checkboxes[field]:Hide()
+							if (field == "NA" or field == "RA" or field == "RC") and not control:HasFocus() and (control:GetText() == "" or control.inherited) then
+								control.inherited = true
+								control:SetTextColor(0.5, 0.5, 0.5, 1.0)
+								local metafield = field == "RA" and "GR" or field == "RC" and "GC" or nil
+								control:SetText(xrpSaved.meta.fields[field] or xrp.values[metafield][xrpSaved.meta.fields[metafield]] or "")
+								control:SetCursorPosition(0)
+							elseif control.inherited then
+								control:SetText("")
+								control:SetTextColor(1.0, 1.0, 1.0, 1.0)
+								control.inherited = false
+							end
+						end
+						return (control.inherited and profile[field] ~= nil) or (not control.inherited and control:GetText() ~= (profile[field] or "")) or (self.checkboxes[field]:GetChecked()) ~= (inherits[field] ~= false) or nil
+					end
+
+					local modified = {}
+					function self:CheckFields(field)
+						local name, parent = self.Profiles:GetText(), self.Parent:GetText()
+						if not xrp.profiles[name] then return end
+						if parent == "" then
+							parent = nil
+						end
+						local profile, inherits = xrp.profiles[name].fields, xrp.profiles[name].inherits
+						if type(field) == "string" and self.fields[field] then
+							modified[field] = CheckField(self, name, parent, profile, inherits, field, self.fields[field])
+						else
+							for field, control in pairs(self.fields) do
+								modified[field] = CheckField(self, name, parent, profile, inherits, field, control)
+							end
+						end
+						if parent ~= xrp.profiles[name].parent or next(modified) then
+							self.SaveButton:Enable()
+							self.RevertButton:Enable()
+						else
+							self.SaveButton:Disable()
+							self.RevertButton:Disable()
+						end
+					end
+				end
+
+				function self:ClearFocus()
+					self.fields.NA:SetFocus()
+					self.fields.NA:ClearFocus()
+					self.fields.AG:SetFocus()
+					self.fields.AG:ClearFocus()
+				end
+
+				do
+					-- Setup shorthand access and other stuff.
+					self.fields, self.checkboxes = {}, {}
+					-- Appearance tab
+					local appearance = { "NA", "NI", "AH", "NT", "NH", "AW", "AE", "RA", "RC", "CU" }
+					for index, field in ipairs(appearance) do
+						local control = self.Appearance[field]
+						self.fields[field] = control
+						control.fieldName = field
+						control.nextEditBox = self.Appearance[appearance[index + 1]] or self.Appearance["DE"].EditBox
+						self.checkboxes[field] = self.Appearance[field.."Default"]
+						self.checkboxes[field].fieldName = field
+					end
+					do
+						-- EditBox is inside ScrollFrame
+						local control = self.Appearance["DE"].EditBox
+						self.fields["DE"] = control
+						control.fieldName = "DE"
+						control.nextEditBox = self.Appearance["NA"]
+						self.checkboxes["DE"] = self.Appearance["DEDefault"]
+						self.checkboxes["DE"].fieldName = "DE"
+					end
+
+					-- Biography tab
+					local biography = { "AG", "HH", "HB", "MO", "FR", "FC" }
+					for index, field in ipairs(biography) do
+						local control = self.Biography[field]
+						self.fields[field] = control
+						control.fieldName = field
+						if field == "MO" then
+							control.nextEditBox = self.Biography["HI"].EditBox
+						elseif field == "FR" then
+							control.nextEditBox = self.Biography["AG"]
+						elseif field ~= "FC" then
+							control.nextEditBox = self.Biography[biography[index + 1]]
+						end
+						self.checkboxes[field] = self.Biography[field.."Default"]
+						self.checkboxes[field].fieldName = field
+					end
+					do
+						-- EditBox is inside ScrollFrame
+						local control = self.Biography["HI"].EditBox
+						self.fields["HI"] = control
+						control.fieldName = "HI"
+						control.nextEditBox = self.Biography["FR"]
+						self.checkboxes["HI"] = self.Biography["HIDefault"]
+						self.checkboxes["HI"].fieldName = "HI"
+					end
+				end
+
+				do
+					local function infofunc(button, arg1, arg2, checked)
+						if not checked then
+							self:Load(button.value)
+						end
+					end
+
+					function self.Profiles:initialize(level, menuList)
+						for _, value in ipairs(xrp.profiles:List()) do
+							local info = UIDropDownMenu_CreateInfo()
+							info.text = value
+							info.value = value
+							info.func = infofunc
+							UIDropDownMenu_AddButton(info)
+						end
+					end
+				end
+
+				do
+					local function infofunc(button, arg1, arg2, checked)
+						if not checked then
+							self.Parent:SetValue(arg1)
+							self:CheckFields()
+						end
+					end
+
+					function self.Parent.Menu:initialize(level, menuList)
+						do
+							local info = UIDropDownMenu_CreateInfo()
+							info.text = "None"
+							info.arg1 = ""
+							info.value = ""
+							info.func = infofunc
+							UIDropDownMenu_AddButton(info)
+						end
+						local profile = self:GetParent():GetParent().Profiles:GetText()
+						for _, value in ipairs(xrp.profiles:List()) do
+							if value ~= profile then
+								local info = UIDropDownMenu_CreateInfo()
+								info.text = value
+								info.arg1 = value
+								info.value = value
+								info.func = infofunc
+								UIDropDownMenu_AddButton(info)
+							end
+						end
+					end
+				end
+
+				do
+					local function infofunc(self, arg1, arg2, checked)
+						if not checked or self.fields.FC.inherited then
+							UIDropDownMenu_SetSelectedValue(UIDROPDOWNMENU_OPEN_MENU, self.value)
+							if self.fields.FC.inherited then
+								self.FC.fields.inherited = false
+								self.fields.FC:SetTextColor(1.0, 1.0, 1.0, 1.0)
+							end
+							self:CheckFields()
+						end
+					end
+
+					local FC = xrp.values.FC
+					function self.fields.FC:initialize(level, menuList)
+						for i = 0, #FC, 1 do
+							local info = UIDropDownMenu_CreateInfo()
+							info.text = FC[i]
+							info.value = i == 0 and "" or tostring(i)
+							info.func = infofunc
+							UIDropDownMenu_AddButton(info)
+						end
+					end
+				end
+
+				self:Load(xrpSaved.selected)
+			</OnLoad>
+			<OnShow>
+				SetPortraitTexture(self.portrait, "player")
+				PlaySound("igCharacterInfoOpen")
+				if self.RevertButton:GetButtonState() == "DISABLED" and self.Profiles:GetText() ~= xrpSaved.selected then
+					self:Load(xrpSaved.selected)
+				end
+			</OnShow>
+			<OnHide>
+				PlaySound("igCharacterInfoClose")
+			</OnHide>
+		</Scripts>
+	</Frame>
+</Ui>

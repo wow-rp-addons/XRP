@@ -1,11 +1,5 @@
-move-folders:
-    xrp/xrp_chatnames: xrp_chatnames
-    xrp/xrp_editor: xrp_editor
-    xrp/xrp_options: xrp_options
-    xrp/xrp_tooltip: xrp_tooltip
-    xrp/xrp_viewer: xrp_viewer
-    xrp/xrp: xrp
 ignore:
-    - CHANGELOG-latest.txt
-manual-changelog: CHANGELOG-latest.txt
+    - docs/CHANGELOG.txt
+    - .pkgmeta
+manual-changelog: docs/CHANGELOG.txt
 enable-nolib-creation: no

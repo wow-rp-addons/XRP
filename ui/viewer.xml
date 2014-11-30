@@ -1,0 +1,451 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\..\FrameXML\UI.xsd">
+<!--
+	© Justin Snelgrove
+
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+	<!-- Here there be dragons. XML dragons, the most dangerous sort. -->
+	<!-- It's dangerous to go alone, take a syntax highlighter. -->
+	<!-- No, seriously, though. This is the easiest way to get a good UI. -->
+	<Frame name="XRPViewerTemplate" inherits="ButtonFrameTemplate" hidden="true" virtual="true">
+		<Size x="439" y="525"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<!-- Version Information -->
+				<FontString parentKey="VA" inherits="GameFontNormalSmall" text="">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" x="8" y="10"/>
+					</Anchors>
+					<Color r="0.5" g="0.5" b="0.5"/>
+				</FontString>
+				<!-- Incoming Information -->
+				<FontString parentKey="XC" inherits="GameFontNormalSmall" text="">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-12" y="10"/>
+					</Anchors>
+					<Color r="0.5" g="0.5" b="0.5"/>
+				</FontString>
+				<!-- Nickname -->
+				<FontString parentKey="NI" inherits="GameFontNormalSmall" maxLines="1">
+					<Size x="325"/>
+					<Anchors>
+						<Anchor point="TOP" relativePoint="TOP" x="0" y="-23"/>
+					</Anchors>
+				</FontString>
+				<!-- Title -->
+				<FontString parentKey="NT" inherits="GameFontNormalSmall" maxLines="1">
+					<Size x="325"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.NI" relativePoint="BOTTOM" x="0" y="-2"/>
+					</Anchors>
+				</FontString>
+				<!-- House/Clan/Tribe -->
+				<FontString parentKey="NH" inherits="GameFontNormalSmall" maxLines="1">
+					<Size x="325"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.NT" relativePoint="BOTTOM" x="0" y="-2"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Appearance" useParentLevel="true" hidden="false">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Inset" relativePoint="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset" relativePoint="BOTTOMRIGHT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<!-- Race Label -->
+						<FontString parentKey="RALabel" inherits="GameFontNormalSmall" text="Race">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="12" y="-8"/>
+							</Anchors>
+						</FontString>
+						<!-- Race Label -->
+						<FontString parentKey="RCLabel" inherits="GameFontNormalSmall" text="Class">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.RALabel" relativePoint="LEFT" x="145" y="0"/>
+							</Anchors>
+						</FontString>
+						<!-- Height Label -->
+						<FontString parentKey="AHLabel" inherits="GameFontNormalSmall" text="Height">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.RCLabel" relativePoint="LEFT" x="145" y="0"/>
+							</Anchors>
+						</FontString>
+						<!-- Eyes Label -->
+						<FontString parentKey="AELabel" inherits="GameFontNormalSmall" text="Eyes">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.RALabel" relativePoint="BOTTOMLEFT" x="0" y="-25"/>
+							</Anchors>
+						</FontString>
+						<!-- Weight Label -->
+						<FontString parentKey="AWLabel" inherits="GameFontNormalSmall" text="Weight">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.AELabel" relativePoint="LEFT" x="290" y="0"/>
+							</Anchors>
+						</FontString>
+						<!-- Currently Label -->
+						<FontString parentKey="CULabel" inherits="GameFontNormalSmall" text="Currently">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.AELabel" relativePoint="BOTTOMLEFT" x="0" y="-25"/>
+							</Anchors>
+						</FontString>
+						<!-- Description Label -->
+						<FontString parentKey="DELabel" inherits="GameFontNormalSmall" text="Description">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.CULabel" relativePoint="BOTTOMLEFT" x="0" y="-60"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<!-- Race Box -->
+					<EditBox parentKey="RA" inherits="XRPViewerOutputBoxTemplate" autoFocus="false">
+						<Size x="135" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.RALabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
+						</Anchors>
+					</EditBox>
+					<!-- Race Box -->
+					<EditBox parentKey="RC" inherits="XRPViewerOutputBoxTemplate" autoFocus="false">
+						<Size x="135" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.RCLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
+						</Anchors>
+					</EditBox>
+					<!-- Height Box -->
+					<EditBox parentKey="AH" inherits="XRPViewerOutputBoxTemplate" autoFocus="false">
+						<Size x="117" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.AHLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
+						</Anchors>
+					</EditBox>
+					<!-- Eyes Box -->
+					<EditBox parentKey="AE" inherits="XRPViewerOutputBoxTemplate" autoFocus="false">
+						<Size x="280" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.AELabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
+						</Anchors>
+					</EditBox>
+					<!-- Weight Box -->
+					<EditBox parentKey="AW" inherits="XRPViewerOutputBoxTemplate" autoFocus="false">
+						<Size x="117" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.AWLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
+						</Anchors>
+					</EditBox>
+					<!-- Currently Box -->
+					<ScrollFrame name="$parentCU" parentKey="CU" inherits="XRPViewerOutputScrollFrameTemplate">
+						<Size x="402" y="45"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.CULabel" relativePoint="BOTTOMLEFT" x="2" y="-5"/>
+						</Anchors>
+					</ScrollFrame>
+					<!-- Description Box -->
+					<ScrollFrame name="$parentDE" parentKey="DE" inherits="XRPViewerOutputScrollFrameTemplate">
+						<Size x="402" y="264"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.DELabel" relativePoint="BOTTOMLEFT" x="2" y="-5"/>
+						</Anchors>
+					</ScrollFrame>
+				</Frames>
+			</Frame>
+			<Frame parentKey="Biography" useParentLevel="true" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Inset" relativePoint="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset" relativePoint="BOTTOMRIGHT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<!-- Home Label -->
+						<FontString parentKey="HHLabel" inherits="GameFontNormalSmall" text="Home">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="12" y="-8"/>
+							</Anchors>
+						</FontString>
+						<!-- Age Label -->
+						<FontString parentKey="AGLabel" inherits="GameFontNormalSmall" text="Age">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.HHLabel" relativePoint="BOTTOMLEFT" x="0" y="-25"/>
+							</Anchors>
+						</FontString>
+						<!-- Birthplace Label -->
+						<FontString parentKey="HBLabel" inherits="GameFontNormalSmall" text="Birthplace">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.AGLabel" relativePoint="LEFT" x="156" y="0"/>
+							</Anchors>
+						</FontString>
+						<!-- Motto Label -->
+						<FontString parentKey="MOLabel" inherits="GameFontNormalSmall" text="Motto">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.AGLabel" relativePoint="BOTTOMLEFT" x="0" y="-25"/>
+							</Anchors>
+						</FontString>
+						<!-- History Label -->
+						<FontString parentKey="HILabel" inherits="GameFontNormalSmall" text="History">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.MOLabel" relativePoint="BOTTOMLEFT" x="0" y="-60"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<!-- Home Box -->
+					<EditBox parentKey="HH" inherits="XRPViewerOutputBoxTemplate" autoFocus="false">
+						<Size x="407" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.HHLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
+						</Anchors>
+					</EditBox>
+					<!-- Age Box -->
+					<EditBox parentKey="AG" inherits="XRPViewerOutputBoxTemplate" autoFocus="false">
+						<Size x="146" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.AGLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
+						</Anchors>
+					</EditBox>
+					<!-- Birthplace Box -->
+					<EditBox parentKey="HB" inherits="XRPViewerOutputBoxTemplate" autoFocus="false">
+						<Size x="251" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.HBLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
+						</Anchors>
+					</EditBox>
+					<!-- Motto Box -->
+					<ScrollFrame name="$parentMO" parentKey="MO" inherits="XRPViewerOutputScrollFrameTemplate">
+						<Size x="402" y="45"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.MOLabel" relativePoint="BOTTOMLEFT" x="2" y="-5"/>
+						</Anchors>
+					</ScrollFrame>
+					<!-- History Box -->
+					<ScrollFrame name="$parentHI" parentKey="HI" inherits="XRPViewerOutputScrollFrameTemplate">
+						<Size x="402" y="264"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.HILabel" relativePoint="BOTTOMLEFT" x="2" y="-5"/>
+						</Anchors>
+					</ScrollFrame>
+				</Frames>
+			</Frame>
+			<Button parentKey="Menu" inherits="UIPanelButtonTemplate" text="|TInterface\BUTTONS\UI-SortArrow:7:18:4:-2|t">
+				<Size x="23" y="19"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-23" y="-1"/>
+				</Anchors>
+				<Frames>
+					<Button name="$parentMenu" parentKey="Menu" hidden="true" inherits="UIDropDownMenuTemplate">
+						<KeyValues>
+							<KeyValue key="point" value="TOPRIGHT"/>
+							<KeyValue key="relativePoint" value="BOTTOMRIGHT"/>
+							<KeyValue key="initialize" value="EasyMenu_Initialize" type="global"/>
+							<KeyValue key="displayMode" value="MENU"/>
+						</KeyValues>
+						<Scripts>
+							<OnLoad>
+								local viewer = self:GetParent():GetParent()
+								local function infofunc(self, arg1, arg2, checked)
+									if arg1 == 1 then
+										xrp.characters[viewer.current].bookmark = not checked
+									elseif arg1 == 2 then
+										xrp.characters[viewer.current].hide = not checked
+									end
+								end
+								self.menuList = {
+									{ text = "Bookmark", arg1 = 1, isNotRadio = true, checked = function() return xrp.characters[viewer.current].bookmark ~= nil end, func = infofunc, },
+									{ text = "Hide profile", arg1 = 2, isNotRadio = true, checked = function() return xrp.characters[viewer.current].hide ~= nil end, func = infofunc, },
+								}
+							</OnLoad>
+						</Scripts>
+					</Button>
+				</Frames>
+				<Scripts>
+					<OnClick>
+						ToggleDropDownMenu(nil, nil, self.Menu, self, 0, 0, self.Menu.menuList)
+						PlaySound("igMainMenuOptionCheckBoxOn")
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentTab1" parentKey="Tab1" inherits="CharacterFrameTabButtonTemplate" id="1" text="Appearance">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="0" y="1"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						local parent = self:GetParent()
+						PanelTemplates_SetTab(parent, 1)
+						parent.Biography:Hide()
+						parent.Appearance:Show()
+						PlaySound("igCharacterInfoTab")
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentTab2" parentKey="Tab2" inherits="CharacterFrameTabButtonTemplate" id="2" text="Biography">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Tab1" relativePoint="RIGHT" x="-16" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						local parent = self:GetParent()
+						PanelTemplates_SetTab(parent, 2)
+						parent.Appearance:Hide()
+						parent.Biography:Show()
+						PlaySound("igCharacterInfoTab")
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Attributes>
+			<Attribute name="UIPanelLayout-defined" type="boolean" value="true"/>
+			<Attribute name="UIPanelLayout-enabled" type="boolean" value="true"/>
+			<Attribute name="UIPanelLayout-area" type="string" value="left"/>
+			<Attribute name="UIPanelLayout-pushable" type="number" value="2"/>
+			<Attribute name="UIPanelLayout-height" type="number" value="545"/>
+			<Attribute name="UIPanelLayout-whileDead" type="boolean" value="true"/>
+		</Attributes>
+		<Scripts>
+			<OnLoad>
+				PanelTemplates_SetNumTabs(self, 2)
+				PanelTemplates_SetTab(self, 1)
+				self.current = UNKNOWN
+				self.failed = UNKNOWN
+
+				do
+					-- This will request fields in the order listed.
+					local display = {
+						"VA", "NA", "NH", "NI", "NT", "RA", "RC", "CU", -- In TT.
+						"AE", "AH", "AW", "AG", "HH", "HB", "MO", -- Not in TT.
+						"DE", "HI", -- High-bandwidth.
+					}
+
+					function self:SetField(field, contents)
+						if field == "NI" then
+							self[field]:SetText(contents and ("\"%s\""):format(xrp:StripEscapes(contents)) or "")
+						elseif field == "NA" then
+							self.TitleText:SetText(xrp:StripEscapes(contents) or Ambiguate(self.current, "none") or UNKNOWN)
+						elseif field == "VA" then
+							self[field]:SetText(contents and xrp:StripEscapes(contents:gsub(";", ", ")) or ("%s/%s"):format(UNKNOWN, NONE))
+						elseif field == "AH" then
+							self[field]:SetText(xrp:ConvertHeight(xrp:StripEscapes(contents), "user") or "")
+						elseif field == "AW" then
+							self[field]:SetText(xrp:ConvertWeight(xrp:StripEscapes(contents), "user") or "")
+						elseif field == "CU" or field == "DE" or field == "MO" or field == "HI" then
+							self[field]:SetText(xrp:LinkURLs(xrp:StripEscapes(contents)) or "")
+						else
+							self[field]:SetText(xrp:StripEscapes(contents) or "")
+						end
+					end
+
+					function self:Load(character)
+						for _, field in ipairs(display) do
+							self:SetField(field, character[field] or (field == "RA" and xrp.values.GR[character.GR]) or (field == "RC" and xrp.values.GC[character.GC]) or nil)
+						end
+						if xrp.characters[self.current].own then
+							self.Menu:Hide()
+						else
+							self.Menu:Show()
+						end
+					end
+
+					local supported = {}
+					for _, field in ipairs(display) do
+						supported[field] = true
+					end
+					xrp:HookEvent("MSP_FIELD", function(name, field)
+						if self.current == name and supported[field] then
+							self:SetField(field, xrp.characters[name].fields[field])
+						elseif self.current == name and (field == "GR" and not xrp.cache[name].fields.RA) or (field == "GC" and not xrp.cache[name].fields.RC) then
+							self:SetField((field == "GR" and "RA") or (field == "GC" and "RC"), (field == "GR" and xrp.values.GR[xrp.characters[name].fields.GR]) or (field == "GC" and xrp.values.GC[xrp.characters[name].fields.GC]) or nil)
+						end
+					end)
+				end
+
+				xrp:HookEvent("MSP_RECEIVE", function(name)
+					if self.current == name then
+						if failed == name then
+							failed = nil
+							self:Load(xrp.characters[name].fields)
+						end
+						local XC = self.XC:GetText()
+						if not XC or not XC:find("^Received") then
+							self.XC:SetText("Received!")
+						end
+					end
+				end)
+
+				xrp:HookEvent("MSP_NOCHANGE", function(name)
+					if self.current == name then
+						if failed == name then
+							failed = nil
+							self:Load(xrp.characters[name].fields)
+						end
+						local XC = self.XC:GetText()
+						if not XC or not XC:find("^Received") then
+							self.XC:SetText("No changes.")
+						end
+					end
+				end)
+
+				xrp:HookEvent("MSP_CHUNK", function(name, chunk, totalchunks)
+					if self.current == name then
+						local XC = self.XC:GetText()
+						if chunk ~= totalchunks or not XC or XC:find("^Receiv") then
+							self.XC:SetFormattedText(totalchunks and (chunk == totalchunks and "Received! (%u/%u)" or "Receiving... (%u/%u)") or "Receiving... (%u/??)", chunk, totalchunks)
+						end
+					end
+				end)
+
+				xrp:HookEvent("MSP_FAIL", function(name, reason)
+					if self.current == name then
+						failed = self.current
+						if not self.XC:GetText() then
+							if reason == "offline" then
+								self.XC:SetText("Character is not online.")
+							elseif reason == "faction" then
+								self.XC:SetText("Character is opposite faction.")
+							elseif reason == "nomsp" then
+								self.XC:SetText("No RP addon appears to be active.")
+							end
+						end
+					end
+				end)
+
+				-- Setup shorthand access for easier looping later.
+				-- Appearance tab
+				for _, field in ipairs({ "AE", "RA", "RC", "AH", "AW" }) do
+					self[field] = self.Appearance[field]
+				end
+				-- EditBox is inside ScrollFrame
+				for _, field in ipairs({ "CU", "DE" }) do
+					self[field] = self.Appearance[field].EditBox
+				end
+				-- Biography tab
+				for _, field in ipairs({ "AG", "HH", "HB" }) do
+					self[field] = self.Biography[field]
+				end
+				-- EditBox is inside ScrollFrame
+				for _, field in ipairs({ "MO", "HI" }) do
+					self[field] = self.Biography[field].EditBox
+				end
+			</OnLoad>
+			<OnShow>
+				PlaySound("igCharacterInfoOpen")
+			</OnShow>
+			<OnHide>
+				PlaySound("igCharacterInfoClose")
+			</OnHide>
+		</Scripts>
+	</Frame>
+</Ui>
