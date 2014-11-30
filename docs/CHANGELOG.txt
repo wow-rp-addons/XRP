@@ -1,55 +1,35 @@
-6.0.3.0_beta2 (2014-11-08):
+6.0.3.0_beta3 (2014-11-30):
 
-	- This version reorganizes file and addon layout. You should remove all
-	  old xrp components (i.e., xrp_import, xrp_libmsp, xrp_auto) prior to
-	  upgrading. You should also exit the game while upgrading.
+	- The internal file structure of the addon has changed *DRASTICALLY*. You
+	  should close WoW while upgrading, and remove all old XRP folders from
+	  your Interface\AddOns folder prior to installing the new (single-folder)
+	  version.
 
-	- This version replaces ChatThrottleLib with a new bandwidth library
-	  (necessary for supporting B.net profiles and easier support of group
-	  MSP). It currently replaces ChatThrottleLib when present, which may
-	  cause issues for addons relying on ChatThrottleLib in ways outside the
-	  norm. If you encounter any errors related to ChatThrottleLib while
-	  running this version of XRP, *PLEASE REPORT THEM*.
+	- Support for RP profiles over Battle.net and party/raid has been added.
+	  This is supported in XRP 6.0.3.0+, with a library allowing other RP
+	  addons to support these coming soon.
 
-	- This version introduces experimental support for sending/recieving RP
-	  profiles over Battle.net (BattleTag/RealID). This enables limited
-	  crossfaction and crossrealm support with your friends.
+	- ChatThrottleLib has been replaced by a new bandwidth library. If you
+	  encounter any errors related to ChatThrottleLib after upgrading, please
+	  report them immediately.
 
-		- At current, XRP 6.0.2.2+ is the only addon to support this.
-
-		- Once it is considered to be reasonably stable (likely meaning it's
-		  in a stable release of XRP), work will be done on porting it to the
-		  reference LibMSP used by other addons
-
-	- This version also introduces experimental support for sending/recieving
-	  RP profiles over party or raid channels. This enables crossrealm
-	  profiles while in a party or raid group, with others in that group.
-
-		- The same restrictions as above apply for this feature. The priority
-		  for profile sending/recieving is as follows:
-				Battle.net > Standard > Group
-		  This means you will not be using the party/raid implementation when
-		  in a group with friends on your BattleTag or your realm.
-
-	- The minimap tooltip has drastically changed. Hopefully it's more useful
-	  now.
+	- The minimap tooltip has drastically changed, and now has generally
+	  useful information.
 
 	- The positioning of "Roleplay Profile" in the right click menus has been
-	  changed to just below the name of the character (i.e., first in the
-	  menu).
+	  changed to just below the name of the character.
 
-	- Basic tooltip data will be prefetched in cases of not having any cached
-	  data about a player, if they load your profile.
+	- The detached minimap button is now moved by shift+right click and drag,
+	  rather than unlocking it.
 
-	- Detachment of the minimap button behaves differently now. Toggling modes
-	  requires a UI reload (which will be prompted when the option is
-	  changed), and the button can no longer be locked or unlocked. Instead,
-	  shift+right click and drag will move it in detached mode.
+	- The interface options panels have been redone completely. Settings now
+	  update dynamically (rather than needing to press "Okay" to see changes),
+	  and the layout of the options has changed.
 
 	- The internal naming of the editor, automation config, and viewer frames
 	  has changed. If you were making use of these (such as with an addon that
 	  allows movement of UI panels), you may need to reconfigure it. If you
-	  don't know what this means, you probably don't need to know anyway.
+	  don't know what this means, you probably don't need to worry.
 
 	- Bugfixes:
 
@@ -66,11 +46,14 @@
 		- The viewer should no longer scroll a single pixel for descriptions
 		  or histories of a particular length.
 
-		- Fixed an issue where the viewer would sometimes report offline
-		  characters as being opposite faction instead.
-
 		- Roleplay names will now be used in channel leave/join messages, if
 		  they are enabled for that channel.
+
+		- Some mage water elementals should no longer be referred to as "MT -
+		  Water Elemental", instead of the proper "Elemental" in the tooltip.
+
+		- Instances of "Character is not found." errors should be reduced or
+		  eliminated.
 
 		- Added a warning if the raid profiles dialog is opened when the
 		  interface options is closed about possible tainting caused by
