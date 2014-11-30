@@ -306,7 +306,7 @@ do
 
 			cu.name = xrp:NameWithRealm(owner)
 			local race = UnitCreatureFamily(unit) or UnitCreatureType(unit)
-			if race == "Ghoul" or race == "Water Elemental" then
+			if race == "Ghoul" or race == "Water Elemental" or race == "MT - Water Elemental" then
 				race = UnitCreatureType(unit)
 			elseif not race then
 				race = UNKNOWN
