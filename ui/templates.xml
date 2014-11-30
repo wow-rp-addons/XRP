@@ -419,6 +419,11 @@
 						<Anchor point="RIGHT" relativeTo="$parentRight" x="-43" y="2"/>
 					</Anchors>
 				</FontString>
+				<FontString parentKey="Label" inherits="GameFontHighlightLeft">
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentRight" relativePoint="RIGHT" x="-10" y="1"/>
+					</Anchors>
+				</FontString>
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture name="$parentIcon" hidden="true">
@@ -476,6 +481,9 @@
 				end
 				if self.textString then
 					UIDropDownMenu_SetText(self, self.textString)
+				end
+				if self.labelString then
+					self.Label:SetText(self.labelString)
 				end
 			</OnLoad>
 			<OnHide>
