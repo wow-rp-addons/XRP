@@ -70,9 +70,7 @@ StaticPopupDialogs["XRP_RELOAD"] = {
 	button1 = "Reload UI",
 	button2 = "Not now",
 	showAlert = true,
-	OnAccept = function()
-		ReloadUI()
-	end,
+	OnAccept = ReloadUI,
 	enterClicksFirstButton = false,
 	timeout = 0,
 	whileDead = true,
