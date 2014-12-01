@@ -31,6 +31,7 @@ local addonName, xrpPrivate = ...
 
 local msp = {}
 msp.version = 9 -- Let's just say we're 9.
+msp.versionx = 1 -- ...and version 1 LibMSPX.
 msp.protocolversion = xrpPrivate.msp
 
 -- Run MSP callbacks with appropriate arguments on XRP events.
@@ -41,10 +42,14 @@ msp.callback = {
 xrp:HookEvent("RECEIVE", function(event, character)
 	for _, func in ipairs(msp.callback.received) do
 		pcall(func, character)
+		local ambiguated = Ambiguate(character, "none")
+		if ambiguated ~= character then
+			-- Some unmaintained code expects names without realms for
+			-- same-realm.
+			pcall(func, ambiguated)
+		end
 	end
 end)
-
-local loadtime = GetTime()
 
 local nk = {} -- Used to hide character names inside table.
 
@@ -68,6 +73,7 @@ local vermt = {
 	__metatable = false,
 }
 
+local loadtime = GetTime()
 local timetable = setmetatable({}, {
 	__index = function()
 		return loadtime -- Worst-case scenario, they re-run msp:Request().
@@ -84,6 +90,13 @@ local emptychar = setmetatable({
 	ver = emptyt,
 	time = emptyt,
 }, emptymt)
+
+-- Some addons try to mess with the frames we don't actually have.
+msp.dummyframe = {
+	RegisterEvent = nonewindex,
+	UnregisterEvent = nonewindex,
+}
+msp.dummyframex = msp.dummyframe
 
 msp.char = setmetatable({}, {
 	__index = function (self, character)
