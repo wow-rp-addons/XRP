@@ -51,9 +51,10 @@ end)
 
 local function XRPOptionsDropDown_OnClick(self, arg1, arg2, checked)
 	if checked then return end
-	UIDropDownMenu_SetSelectedValue(self.owner, self.value)
-	self.owner.value = self.value
-	self.owner:GetParent():Set(self.owner.xrpTable, self.owner.xrpSetting, self.value)
+	UIDROPDOWNMENU_OPEN_MENU.menuList[UIDropDownMenu_GetSelectedID(UIDROPDOWNMENU_OPEN_MENU)].checked = nil
+	UIDropDownMenu_SetSelectedValue(UIDROPDOWNMENU_OPEN_MENU, self.value)
+	UIDROPDOWNMENU_OPEN_MENU.value = self.value
+	UIDROPDOWNMENU_OPEN_MENU:GetParent():Set(UIDROPDOWNMENU_OPEN_MENU.xrpTable, UIDROPDOWNMENU_OPEN_MENU.xrpSetting, self.value)
 end
 
 local XRPOptionsChatChannels_CustomRefresh
@@ -126,22 +127,22 @@ function xrp:Options(pane)
 		about:SetScript("OnShow", nil)
 		about.core = CreateFrame("Frame", nil, about, "XRPCoreOptionsTemplate")
 		about.core.Height.menuList = {
-			{ text = "Centimeters", value = "cm", owner = about.core.Height, func = XRPOptionsDropDown_OnClick },
-			{ text = "Feet/Inches", value = "ft", owner = about.core.Height, func = XRPOptionsDropDown_OnClick },
-			{ text = "Meters", value = "m", owner = about.core.Height, func = XRPOptionsDropDown_OnClick },
+			{ text = "Centimeters", value = "cm", func = XRPOptionsDropDown_OnClick },
+			{ text = "Feet/Inches", value = "ft", func = XRPOptionsDropDown_OnClick },
+			{ text = "Meters", value = "m", func = XRPOptionsDropDown_OnClick },
 		}
 		about.core.Weight.menuList = {
-			{ text = "Kilograms", value = "kg", owner = about.core.Weight, func = XRPOptionsDropDown_OnClick },
-			{ text = "Pounds", value = "lb", owner = about.core.Weight, func = XRPOptionsDropDown_OnClick },
+			{ text = "Kilograms", value = "kg", func = XRPOptionsDropDown_OnClick },
+			{ text = "Pounds", value = "lb", func = XRPOptionsDropDown_OnClick },
 		}
 		about.core.Time.menuList = {
-			{ text = "1 day", value = 86400, owner = about.core.Time, func = XRPOptionsDropDown_OnClick },
-			{ text = "3 days", value = 259200, owner = about.core.Time, func = XRPOptionsDropDown_OnClick },
-			{ text = "7 days", value = 604800, owner = about.core.Time, func = XRPOptionsDropDown_OnClick },
-			{ text = "10 days", value = 864000, owner = about.core.Time, func = XRPOptionsDropDown_OnClick },
-			{ text = "2 weeks", value = 1209600, owner = about.core.Time, func = XRPOptionsDropDown_OnClick },
-			{ text = "1 month", value = 2419200, owner = about.core.Time, func = XRPOptionsDropDown_OnClick },
-			{ text = "3 months", value = 7257600, owner = about.core.Time, func = XRPOptionsDropDown_OnClick },
+			{ text = "1 day", value = 86400, func = XRPOptionsDropDown_OnClick },
+			{ text = "3 days", value = 259200, func = XRPOptionsDropDown_OnClick },
+			{ text = "7 days", value = 604800, func = XRPOptionsDropDown_OnClick },
+			{ text = "10 days", value = 864000, func = XRPOptionsDropDown_OnClick },
+			{ text = "2 weeks", value = 1209600, func = XRPOptionsDropDown_OnClick },
+			{ text = "1 month", value = 2419200, func = XRPOptionsDropDown_OnClick },
+			{ text = "3 months", value = 7257600, func = XRPOptionsDropDown_OnClick },
 		}
 		about.chat = CreateFrame("Frame", nil, about, "XRPChatOptionsTemplate")
 		about.chat.Channels.CustomOkay = XRPOptionsChatChannels_CustomOkay

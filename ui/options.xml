@@ -230,7 +230,7 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.DisablePvP" relativePoint="BOTTOMLEFT" x="-24" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="textString" value="Enable profile viewing via default interact with target/mouseover keybinds"/>
+					<KeyValue key="textString" value="Enable profile viewing via Blizzard interact with target/mouseover keybinds"/>
 					<KeyValue key="xrpTable" value="interact"/>
 					<KeyValue key="xrpSetting" value="keybind"/>
 					<KeyValue key="defaultValue" value="true" type="boolean"/>
@@ -285,7 +285,7 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.Weight" relativePoint="BOTTOMLEFT" x="15" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="textString" value="Enable minimap button"/>
+					<KeyValue key="textString" value="Enable minimap button (disabling not recommended)"/>
 					<KeyValue key="xrpTable" value="minimap"/>
 					<KeyValue key="xrpSetting" value="enabled"/>
 					<KeyValue key="defaultValue" value="true" type="boolean"/>
@@ -491,7 +491,7 @@
 		<KeyValues>
 			<KeyValue key="name" value="Tooltip"/>
 			<KeyValue key="titleText" value="XRP: Tooltip"/>
-			<KeyValue key="subText" value="Configure the options available for XRP's tooltip display. This display modifies and overwrites the default tooltip, and may conflict with other tooltip-modifying addons."/>
+			<KeyValue key="subText" value="Configure the options available for XRP's tooltip display. This display overwrites the default tooltip and may conflict with other tooltip-modifying addons."/>
 		</KeyValues>
 		<Frames>
 			<CheckButton parentKey="TooltipEnabled" inherits="XRPOptionsCheckboxTemplate">
@@ -561,7 +561,7 @@
 					<KeyValue key="textString" value="Also display guild rank index (numerical ranking) in tooltip"/>
 					<KeyValue key="dependsOn" value="TooltipGuildRank"/>
 					<KeyValue key="xrpTable" value="tooltip"/>
-					<KeyValue key="xrpSetting" value="guildrankindex"/>
+					<KeyValue key="xrpSetting" value="guildindex"/>
 					<KeyValue key="defaultValue" value="false" type="boolean"/>
 				</KeyValues>
 			</CheckButton>
