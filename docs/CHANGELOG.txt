@@ -1,4 +1,4 @@
-6.0.3.0_beta3 (2014-11-30):
+6.0.3.0_beta3 (2014-12-01):
 
 	- The internal file structure of the addon has changed *DRASTICALLY*. You
 	  should close WoW while upgrading, and remove all old XRP folders from
@@ -32,6 +32,9 @@
 	  don't know what this means, you probably don't need to worry.
 
 	- Bugfixes:
+
+		- The minimap button positioning has been reset and the default
+		  changed to hopefully avoid being obstructed by the Garrison button.
 
 		- The order of fields selected by pressing tab in the editor has been
 		  fixed to match the display order.
