@@ -291,7 +291,7 @@
 						self:SetHyperlinksEnabled(true)
 					</OnLoad>
 					<OnHyperlinkClick>
-						StaticPopup_Show("XRP_URL", nil, nil, url)
+						StaticPopup_Show("XRP_URL", nil, nil, link)
 					</OnHyperlinkClick>
 				</Scripts>
 				<FontString inherits="GameFontWhite"/>
