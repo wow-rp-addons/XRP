@@ -203,7 +203,7 @@ StaticPopupDialogs["XRP_EDITOR_DELETE"] = {
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function(self, data, data2)
-		local name = xrpPrivate.editor.Profiles:GetText()
+		local name = xrpPrivate.editor.Profiles.contents
 		if not xrp.profiles[name]:Delete() then
 			StaticPopup_Show("XRP_ERROR", ("The profile\"%s\" is currently active. Active profiles cannot be removed."):format(name))
 		else
@@ -234,7 +234,7 @@ StaticPopupDialogs["XRP_EDITOR_RENAME"] = {
 	end,
 	OnAccept = function(self, data, data2)
 		local name = self.editBox:GetText()
-		if not xrp.profiles[xrpPrivate.editor.Profiles:GetText()]:Rename(name) then
+		if not xrp.profiles[xrpPrivate.editor.Profiles.contents]:Rename(name) then
 			StaticPopup_Show("XRP_ERROR", ("The name \"%s\" is unavailable or already in use."):format(name))
 		else
 			xrpPrivate.editor:Load(name)
@@ -244,7 +244,7 @@ StaticPopupDialogs["XRP_EDITOR_RENAME"] = {
 		local parent = self:GetParent()
 		if parent.button1:IsEnabled() then
 			local name = self:GetText()
-			if not xrp.profiles[xrpPrivate.editor.Profiles:GetText()]:Rename(name) then
+			if not xrp.profiles[xrpPrivate.editor.Profiles.contents]:Rename(name) then
 				StaticPopup_Show("XRP_ERROR", ("The name \"%s\" is unavailable or already in use."):format(name))
 			else
 				xrpPrivate.editor:Load(name)
@@ -279,7 +279,7 @@ StaticPopupDialogs["XRP_EDITOR_COPY"] = {
 	end,
 	OnAccept = function(self, data, data2)
 		local name = self.editBox:GetText()
-		if not xrp.profiles[xrpPrivate.editor.Profiles:GetText()]:Copy(name) then
+		if not xrp.profiles[xrpPrivate.editor.Profiles.contents]:Copy(name) then
 			StaticPopup_Show("XRP_ERROR", ("The name \"%s\" is unavailable or already in use."):format(name))
 		else
 			xrpPrivate.editor:Load(name)
@@ -289,7 +289,7 @@ StaticPopupDialogs["XRP_EDITOR_COPY"] = {
 		local parent = self:GetParent()
 		if parent.button1:IsEnabled() then
 			local name = self:GetText()
-			if not xrp.profiles[xrpPrivate.editor.Profiles:GetText()]:Copy(name) then
+			if not xrp.profiles[xrpPrivate.editor.Profiles.contents]:Copy(name) then
 				StaticPopup_Show("XRP_ERROR", ("The name \"%s\" is unavailable or already in use."):format(name))
 			else
 				xrpPrivate.editor:Load(name)

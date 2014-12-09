@@ -30,7 +30,8 @@ function xrp:View(player)
 			return
 		end
 		if viewer.current == UNKNOWN then
-			failed = nil
+			viewer.failed = nil
+			viewer.current = xrpPrivate.playerWithRealm
 			SetPortraitTexture(viewer.portrait, "player")
 			viewer:Load(xrp.units.player.fields)
 		end
@@ -62,10 +63,7 @@ function xrp:View(player)
 end
 
 function xrp:Edit(profile)
-	if not xrpPrivate.editor then
-		xrpPrivate.editor = CreateFrame("Frame", "XRPEditor", UIParent, "XRPEditorTemplate")
-	end
-	local editor = xrpPrivate.editor
+	local editor = xrpPrivate:GetEditor()
 	if not profile and editor:IsShown() then
 		HideUIPanel(editor)
 		return

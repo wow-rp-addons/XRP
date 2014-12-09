@@ -15,48 +15,123 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-	<CheckButton name="XRPEditorCheckBoxTemplate" inherits="UICheckButtonTemplate" virtual="true">
-		<Size x="12" y="12"/>
+	<Button name="XRPTabButtonTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true">
 		<Scripts>
-			<OnEnter>
-				GameTooltip:SetOwner(self, "ANCHOR_CURSOR")
-				GameTooltip:SetText("Use parent profile if blank.")
-				GameTooltip:Show()
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide()
-			</OnLeave>
 			<OnClick>
-				self:GetParent():GetParent():CheckFields(self.fieldName)
+				local parent, id = self:GetParent(), self:GetID()
+				PanelTemplates_SetTab(parent, id)
+				for paneID, pane in ipairs(parent.panes) do
+					if paneID == id then
+						pane:Show()
+					else
+						pane:Hide()
+					end
+				end
+				PlaySound("igCharacterInfoTab")
 			</OnClick>
 		</Scripts>
-	</CheckButton>
-	<EditBox name="XRPEditorInputBoxTemplate" inherits="InputBoxTemplate" virtual="true">
+	</Button>
+	<Frame name="XRPDropDownTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="initialize" value="EasyMenu_Initialize" type="global"/>
+			<KeyValue key="point" value="TOPLEFT"/>
+			<KeyValue key="relativePoint" value="BOTTOMRIGHT"/>
+			<KeyValue key="xOffset" value="-11" type="number"/>
+			<KeyValue key="yOffset" value="22" type="number"/>
+		</KeyValues>
+		<Size x="40" y="32"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentLeft" file="Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame">
+					<Size x="25" y="64"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="17"/>
+					</Anchors>
+					<TexCoords left="0" right="0.1953125" top="0" bottom="1"/>
+				</Texture>
+				<Texture name="$parentMiddle" file="Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame">
+					<Size x="115" y="64"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0.1953125" right="0.8046875" top="0" bottom="1"/>
+				</Texture>
+				<Texture name="$parentRight" file="Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame">
+					<Size x="25" y="64"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentMiddle" relativePoint="RIGHT"/>
+					</Anchors>
+					<TexCoords left="0.8046875" right="1" top="0" bottom="1"/>
+				</Texture>
+				<FontString name="$parentText" parentKey="MenuText" inherits="GameFontHighlightSmall" wordwrap="false" justifyH="RIGHT">
+					<Size x="0" y="10"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="$parentRight" x="-43" y="2"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentIcon" hidden="true">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="LEFT" x="30" y="2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentButton" parentKey="ArrowButton" motionScriptsWhileDisabled="true">
+				<Size x="24" y="24"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="$parentRight" x="-16" y="-18"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						local parent = self:GetParent()
+						ToggleDropDownMenu(nil, nil, parent, nil, nil, nil, parent.menuList)
+						PlaySound("igMainMenuOptionCheckBoxOn")
+					</OnClick>
+				</Scripts>
+				<NormalTexture name="$parentNormalTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up">
+					<Size x="24" y="24"/>
+					<Anchors>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</NormalTexture>
+				<PushedTexture name="$parentPushedTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Down">
+					<Size x="24" y="24"/>
+					<Anchors>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</PushedTexture>
+				<DisabledTexture name="$parentDisabledTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Disabled">
+					<Size x="24" y="24"/>
+					<Anchors>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</DisabledTexture>
+				<HighlightTexture name="$parentHighlightTexture" file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD">
+					<Size x="24" y="24"/>
+					<Anchors>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</HighlightTexture>
+			</Button>
+		</Frames>
 		<Scripts>
-			<OnTabPressed>
-				if (self.nextEditBox) then
-					self.nextEditBox:SetFocus()
-				end
-			</OnTabPressed>
-			<OnTextChanged>
-				self:GetParent():GetParent():CheckFields(self.fieldName)
-			</OnTextChanged>
-			<OnEditFocusGained>
-				if self.inherited then
-					self:SetText("")
-					self:SetTextColor(1.0, 1.0, 1.0, 1.0)
-					self.inherited = false
-				end
-			</OnEditFocusGained>
-			<OnEditFocusLost>
-				self:ClearFocus()
-				self:GetParent():GetParent():CheckFields(self.fieldName)
-			</OnEditFocusLost>
+			<OnHide>
+				CloseDropDownMenus()
+			</OnHide>
 		</Scripts>
-		<FontString inherits="GameFontWhite"/>
-	</EditBox>
-	<ScrollFrame name="XRPEditorInputScrollFrameTemplate" inherits="UIPanelScrollFrameTemplate" virtual="true">
-		<Size x="278" y="48"/>
+	</Frame>
+	<CheckButton name="XRPCheckBoxArtTemplate" virtual="true">
+		<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+		<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+		<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+		<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+		<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+	</CheckButton>
+	<ScrollFrame name="XRPScrollFrameArtTemplate" inherits="UIPanelScrollFrameTemplate" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="TopLeftTex" file="Interface\Common\Common-Input-Border-TL">
@@ -115,71 +190,6 @@
 				</Texture>
 			</Layer>
 		</Layers>
-		<Frames>
-			<Button parentKey="FocusButton" setAllPoints="true">
-				<Scripts>
-					<OnClick>
-						local editbox = self:GetParent().EditBox
-						editbox:SetFocus()
-						editbox:SetCursorPosition(#editbox:GetText())
-					</OnClick>
-				</Scripts>
-			</Button>
-		</Frames>
-		<Scripts>
-			<OnLoad>
-				self.ScrollBar:SetFrameLevel(self.FocusButton:GetFrameLevel() + 2)
-				self.ScrollBar:ClearAllPoints()
-				self.ScrollBar:SetPoint("TOPLEFT", self, "TOPRIGHT", -13, -11)
-				self.ScrollBar:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", -13, 9)
-				self.ScrollBar.ScrollDownButton:SetPoint("TOP", self.ScrollBar, "BOTTOM", 0, 4)
-				self.ScrollBar.ScrollUpButton:SetPoint("BOTTOM", self.ScrollBar, "TOP", 0, -4)
-				self.ScrollBar.ScrollUpButton:Disable()
-				self.scrollBarHideable = 1
-				self.ScrollBar:Hide()
-				self.EditBox:SetFrameLevel(self.FocusButton:GetFrameLevel() + 1)
-				self.EditBox:SetWidth(self:GetWidth() - 18)
-			</OnLoad>
-		</Scripts>
-		<ScrollChild>
-			<EditBox parentKey="EditBox" multiLine="true" letters="65536" countInvisibleLetters="true" autoFocus="false">
-				<Size x="1" y="1"/>
-				<Anchors>
-					<Anchor point="TOPLEFT"/>
-				</Anchors>
-				<Scripts>
-					<OnTabPressed>
-						if (self.nextEditBox) then
-							self.nextEditBox:SetFocus()
-						end
-					</OnTabPressed>
-					<OnTextChanged>
-						local parent = self:GetParent()
-						ScrollingEdit_OnTextChanged(self, parent)
-						parent:GetParent():GetParent():CheckFields(self.fieldName)
-					</OnTextChanged>
-					<OnCursorChanged function="ScrollingEdit_OnCursorChanged"/>
-					<OnUpdate>
-						ScrollingEdit_OnUpdate(self, elapsed, self:GetParent())
-					</OnUpdate>
-					<OnEscapePressed>
-						self:ClearFocus()
-					</OnEscapePressed>
-					<OnEditFocusGained>
-						if self.inherited then
-							self:SetText("")
-							self:SetTextColor(1.0, 1.0, 1.0, 1.0)
-							self.inherited = false
-						end
-					</OnEditFocusGained>
-					<OnEditFocusLost>
-						self:ClearFocus()
-						self:GetParent():GetParent():GetParent():CheckFields(self.fieldName)
-					</OnEditFocusLost>
-				</Scripts>
-				<FontString inherits="GameFontWhite"/>
-			</EditBox>
-		</ScrollChild>
 	</ScrollFrame>
 	<EditBox name="XRPViewerOutputBoxTemplate" inherits="InputBoxTemplate" virtual="true">
 		<FontString inherits="GameFontWhite"/>
@@ -202,66 +212,7 @@
 			</OnLoad>
 		</Scripts>
 	</EditBox>
-	<ScrollFrame name="XRPViewerOutputScrollFrameTemplate" inherits="UIPanelScrollFrameTemplate" virtual="true">
-		<Size x="278" y="48"/>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="TopLeftTex" file="Interface\Common\Common-Input-Border-TL">
-					<Size x="8" y="8"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="-5" y="5"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="TopRightTex" file="Interface\Common\Common-Input-Border-TR">
-					<Size x="8" y="8"/>
-					<Anchors>
-						<Anchor point="TOPRIGHT" x="5" y="5"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="TopTex" file="Interface\Common\Common-Input-Border-T">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.TopLeftTex" relativePoint="TOPRIGHT"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.TopRightTex" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="BottomLeftTex" file="Interface\Common\Common-Input-Border-BL">
-					<Size x="8" y="8"/>
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="-5" y="-5"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="BottomRightTex" file="Interface\Common\Common-Input-Border-BR">
-					<Size x="8" y="8"/>
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" x="5" y="-5"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="BottomTex" file="Interface\Common\Common-Input-Border-B">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.BottomLeftTex" relativePoint="TOPRIGHT"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRightTex" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="LeftTex" file="Interface\Common\Common-Input-Border-L">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.TopLeftTex" relativePoint="BOTTOMLEFT"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomLeftTex" relativePoint="TOPRIGHT"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="RightTex" file="Interface\Common\Common-Input-Border-R">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.TopRightTex" relativePoint="BOTTOMLEFT"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRightTex" relativePoint="TOPRIGHT"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="MiddleTex" file="Interface\Common\Common-Input-Border-M">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.LeftTex" relativePoint="TOPRIGHT"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.RightTex" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
+	<ScrollFrame name="XRPViewerOutputScrollFrameTemplate" inherits="XRPScrollFrameArtTemplate" virtual="true">
 		<Scripts>
 			<OnLoad>
 				self.ScrollBar:ClearAllPoints()
@@ -276,8 +227,7 @@
 			</OnLoad>
 		</Scripts>
 		<ScrollChild>
-			<EditBox parentKey="EditBox" multiLine="true" autoFocus="false">
-				<Size x="1" y="1"/>
+			<EditBox parentKey="EditBox" multiLine="true" letters="131071" countInvisibleLetters="true" autoFocus="false">
 				<Anchors>
 					<Anchor point="TOPLEFT"/>
 				</Anchors>
@@ -298,7 +248,7 @@
 			</EditBox>
 		</ScrollChild>
 	</ScrollFrame>
-	<CheckButton name="XRPOptionsCheckboxTemplate" parentArray="controls" virtual="true">
+	<CheckButton name="XRPOptionsCheckboxTemplate" parentArray="controls" inherits="XRPCheckBoxArtTemplate" virtual="true">
 		<KeyValues>
 			<KeyValue key="type" value="CONTROLTYPE_CHECKBOX" type="global"/>
 		</KeyValues>
@@ -374,105 +324,20 @@
 				end
 			</OnLoad>
 		</Scripts>
-		<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
-		<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
-		<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
-		<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
-		<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
 	</CheckButton>
-	<Frame name="XRPOptionsDropDownTemplate" parentArray="controls" virtual="true">
+	<Frame name="XRPOptionsDropDownTemplate" parentArray="controls" inherits="XRPDropDownTemplate" virtual="true">
 		<KeyValues>
 			<KeyValue key="type" value="CONTROLTYPE_DROPDOWN" type="global"/>
-			<KeyValue key="initialize" value="EasyMenu_Initialize" type="global"/>
-			<KeyValue key="point" value="TOPLEFT"/>
-			<KeyValue key="relativePoint" value="BOTTOMRIGHT"/>
-			<KeyValue key="xOffset" value="-11" type="number"/>
-			<KeyValue key="yOffset" value="22" type="number"/>
 		</KeyValues>
-		<Size x="40" y="32"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture name="$parentLeft" file="Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame">
-					<Size x="25" y="64"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="0" y="17"/>
-					</Anchors>
-					<TexCoords left="0" right="0.1953125" top="0" bottom="1"/>
-				</Texture>
-				<Texture name="$parentMiddle" file="Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame">
-					<Size x="115" y="64"/>
-					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
-					</Anchors>
-					<TexCoords left="0.1953125" right="0.8046875" top="0" bottom="1"/>
-				</Texture>
-				<Texture name="$parentRight" file="Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame">
-					<Size x="25" y="64"/>
-					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentMiddle" relativePoint="RIGHT"/>
-					</Anchors>
-					<TexCoords left="0.8046875" right="1" top="0" bottom="1"/>
-				</Texture>
-				<FontString name="$parentText" inherits="GameFontHighlightSmall" wordwrap="false" justifyH="RIGHT">
-					<Size x="0" y="10"/>
-					<Anchors>
-						<Anchor point="RIGHT" relativeTo="$parentRight" x="-43" y="2"/>
-					</Anchors>
-				</FontString>
 				<FontString parentKey="Label" inherits="GameFontHighlightLeft">
 					<Anchors>
 						<Anchor point="LEFT" relativeTo="$parentRight" relativePoint="RIGHT" x="-10" y="1"/>
 					</Anchors>
 				</FontString>
 			</Layer>
-			<Layer level="OVERLAY">
-				<Texture name="$parentIcon" hidden="true">
-					<Size x="16" y="16"/>
-					<Anchors>
-						<Anchor point="LEFT" x="30" y="2"/>
-					</Anchors>
-				</Texture>
-			</Layer>
 		</Layers>
-		<Frames>
-			<Button name="$parentButton" motionScriptsWhileDisabled="true">
-				<Size x="24" y="24"/>
-				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="$parentRight" x="-16" y="-18"/>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						local parent = self:GetParent()
-						ToggleDropDownMenu(nil, nil, parent, nil, nil, nil, parent.menuList)
-						PlaySound("igMainMenuOptionCheckBoxOn")
-					</OnClick>
-				</Scripts>
-				<NormalTexture name="$parentNormalTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up">
-					<Size x="24" y="24"/>
-					<Anchors>
-						<Anchor point="RIGHT"/>
-					</Anchors>
-				</NormalTexture>
-				<PushedTexture name="$parentPushedTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Down">
-					<Size x="24" y="24"/>
-					<Anchors>
-						<Anchor point="RIGHT"/>
-					</Anchors>
-				</PushedTexture>
-				<DisabledTexture name="$parentDisabledTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Disabled">
-					<Size x="24" y="24"/>
-					<Anchors>
-						<Anchor point="RIGHT"/>
-					</Anchors>
-				</DisabledTexture>
-				<HighlightTexture name="$parentHighlightTexture" file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD">
-					<Size x="24" y="24"/>
-					<Anchors>
-						<Anchor point="RIGHT"/>
-					</Anchors>
-				</HighlightTexture>
-			</Button>
-		</Frames>
 		<Scripts>
 			<OnLoad>
 				if self.dependsOn then
@@ -486,9 +351,6 @@
 					self.Label:SetText(self.labelString)
 				end
 			</OnLoad>
-			<OnHide>
-				CloseDropDownMenus()
-			</OnHide>
 		</Scripts>
 	</Frame>
 	<Frame name="XRPOptionsTemplate" virtual="true">
