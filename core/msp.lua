@@ -243,7 +243,7 @@ do
 			end
 			-- Field has content.
 			return ("%s%u=%s"):format(field, xrp.current.versions[field], xrp.current.fields[field])
-		elseif action == "!" and (not xrpCache[character] and version == 0 or xrpCache[character] and version == (xrpCache[character].versions[field] or 0)) then
+		elseif action == "!" and ((not xrpCache[character] and version == 0) or (xrpCache[character] and version == (xrpCache[character].versions[field] or 0))) then
 			-- Told us we have latest of their field.
 			self.cache[character].time[field] = GetTime()
 			self.cache[character].fieldupdated = self.cache[character].fieldupdated or false
