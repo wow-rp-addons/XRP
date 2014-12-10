@@ -46,7 +46,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.]])
 
 about:SetScript("OnShow", function(self)
-	xrp:Options("interact")
+	xrp:Options()
 end)
 
 local function XRPOptionsDropDown_OnClick(self, arg1, arg2, checked)

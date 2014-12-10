@@ -37,9 +37,10 @@ do
 		if args == "about" then
 			print(usage:format("/xrp about"))
 			print("Show basic information about XRP.")
-		elseif args == "editor" then
-			print(usage:format("/xrp editor"))
-			print("Toggle the editor open/closed.")
+		elseif args == "edit" then
+			print(usage:format("/xrp edit [<Profile>]"))
+			print(command:format("<none>", "Toggle the editor open/closed."))
+			print(command:format("<Profile>", "Open a profile for editing."))
 		elseif args == "profile" then
 			print(usage:format("/xrp profile [list|<Profile>]"))
 			print(command:format("list", "List all profiles."))
@@ -53,28 +54,25 @@ do
 			print(command:format("st", "Set to storyteller."))
 		elseif args == "view" or args == "show" then
 			print(usage:format("/xrp view [target|mouseover|<Character>]"))
+			print(command:format("<none>", "View your target or mouseover's profile, as available."))
 			print(command:format("target", "View your target's profile."))
 			print(command:format("mouseover", "View your mouseover's profile."))
 			print(command:format("<Character>", "View the profile of the named character."))
-		elseif args == "viewer" then
-			print(usage:format("/xrp viewer"))
-			print("Toggle the viewer open/closed.")
 		else
 			print(usage:format("/xrp <command> [argument]"))
 			print("Use /xrp help [command] for more usage information.")
 			print(command:format("about", "Display basic information about XRP."))
-			print(command:format("editor", "Toggle the editor."))
+			print(command:format("edit", "Access the editor."))
 			print(command:format("help", "Display this help message."))
 			print(command:format("profile", "Set your current profile."))
 			print(command:format("status", "Set your character status."))
 			print(command:format("view", "View a character's profile."))
-			print(command:format("viewer", "Toggle the viewer."))
 		end
 	end
 end
 
-xrpcmds.editor = function(args)
-	xrp:Edit()
+xrpcmds.edit = function(args)
+	xrp:Edit(args)
 end
 
 xrpcmds.profile = function(args)
@@ -123,14 +121,9 @@ xrpcmds.view = function(args)
 	end
 end
 
-xrpcmds.viewer = function(args)
-	xrp:View()
-end
-
 -- Aliases.
 xrpcmds.show = xrpcmds.view
 
--- Add a localized version, if applicable.
 SLASH_XRP1 =  "/xrp"
 
 SlashCmdList["XRP"] = function(input, editBox)
