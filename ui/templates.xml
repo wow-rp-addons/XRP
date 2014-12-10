@@ -15,6 +15,10 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
+<!--
+	This file contains generic XRP frame templates. Component-specific
+	templates are held within the component's respective XML file.
+-->
 	<Button name="XRPTabButtonTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true">
 		<Scripts>
 			<OnClick>
@@ -190,63 +194,6 @@
 				</Texture>
 			</Layer>
 		</Layers>
-	</ScrollFrame>
-	<EditBox name="XRPViewerOutputBoxTemplate" inherits="InputBoxTemplate" virtual="true">
-		<FontString inherits="GameFontWhite"/>
-		<Scripts>
-			<OnTextChanged>
-				self:SetCursorPosition(0)
-			</OnTextChanged>
-			<OnEnter>
-				local text = self:GetText()
-				if (#text * 6.25) > self:GetWidth() then
-					GameTooltip:SetOwner(self, "ANCHOR_CURSOR")
-					GameTooltip:SetText(text)
-				end
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide()
-			</OnLeave>
-			<OnLoad>
-				self:Disable()
-			</OnLoad>
-		</Scripts>
-	</EditBox>
-	<ScrollFrame name="XRPViewerOutputScrollFrameTemplate" inherits="XRPScrollFrameArtTemplate" virtual="true">
-		<Scripts>
-			<OnLoad>
-				self.ScrollBar:ClearAllPoints()
-				self.ScrollBar:SetPoint("TOPLEFT", self, "TOPRIGHT", -13, -11)
-				self.ScrollBar:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", -13, 9)
-				self.ScrollBar.ScrollDownButton:SetPoint("TOP", self.ScrollBar, "BOTTOM", 0, 4)
-				self.ScrollBar.ScrollUpButton:SetPoint("BOTTOM", self.ScrollBar, "TOP", 0, -4)
-				self.ScrollBar.ScrollUpButton:Disable()
-				self.scrollBarHideable = 1
-				self.ScrollBar:Hide()
-				self.EditBox:SetWidth(self:GetWidth() - 18)
-			</OnLoad>
-		</Scripts>
-		<ScrollChild>
-			<EditBox parentKey="EditBox" multiLine="true" letters="131071" countInvisibleLetters="true" autoFocus="false">
-				<Anchors>
-					<Anchor point="TOPLEFT"/>
-				</Anchors>
-				<Scripts>
-					<OnTextChanged>
-						self:SetCursorPosition(0)
-						self:GetParent():SetVerticalScroll(0)
-					</OnTextChanged>
-					<OnLoad>
-						self:Disable()
-						self:SetHyperlinksEnabled(true)
-					</OnLoad>
-					<OnHyperlinkClick>
-						StaticPopup_Show("XRP_URL", nil, nil, link)
-					</OnHyperlinkClick>
-				</Scripts>
-				<FontString inherits="GameFontWhite"/>
-			</EditBox>
-		</ScrollChild>
 	</ScrollFrame>
 	<CheckButton name="XRPOptionsCheckboxTemplate" parentArray="controls" inherits="XRPCheckBoxArtTemplate" virtual="true">
 		<KeyValues>

@@ -20,10 +20,7 @@ local addonName, xrpPrivate = ...
 function xrp:View(player)
 	local isUnit = UnitExists(player)
 	if isUnit and not UnitIsPlayer(player) then return end
-	if not xrpPrivate.viewer then
-		xrpPrivate.viewer = CreateFrame("Frame", "XRPViewer", UIParent, "XRPViewerTemplate")
-	end
-	local viewer = xrpPrivate.viewer
+	local viewer = xrpPrivate:GetViewer()
 	if not player then
 		if viewer:IsShown() then
 			HideUIPanel(viewer)
@@ -43,13 +40,15 @@ function xrp:View(player)
 		isUnit = UnitExists(unit)
 		player = isUnit and unit or xrp:NameWithRealm(player):gsub("^%l", string.upper)
 	end
-	viewer.current = isUnit and xrp:UnitNameWithRealm(player) or player
+	local newCurrent = isUnit and xrp:UnitNameWithRealm(player) or player
+	local isRefresh = viewer.current == newCurrent
+	viewer.current = newCurrent
 	viewer.failed = nil
 	viewer.XC:SetText("")
 	viewer:Load(isUnit and xrp.units[player].fields or xrp.characters[player].fields)
-	if isUnit then
+	if isUnit and not isRefresh then
 		SetPortraitTexture(viewer.portrait, player)
-	else
+	elseif not isRefresh then
 		local GF = xrp.characters[player].fields.GF
 		SetPortraitToTexture(viewer.portrait, GF and ((GF == "Alliance" and "Interface\\Icons\\INV_BannerPVP_02") or (GF == "Horde" and "Interface\\Icons\\INV_BannerPVP_01")) or "Interface\\Icons\\INV_Misc_Book_17")
 	end

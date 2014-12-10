@@ -18,7 +18,96 @@
 	<!-- Here there be dragons. XML dragons, the most dangerous sort. -->
 	<!-- It's dangerous to go alone, take a syntax highlighter. -->
 	<!-- No, seriously, though. This is the easiest way to get a good UI. -->
-	<Frame name="XRPViewerTemplate" inherits="ButtonFrameTemplate" hidden="true" virtual="true">
+	<EditBox name="XRPViewerSingleLineTemplate" autoFocus="false" inherits="InputBoxTemplate" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Label" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="-2" y="-1"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnTextChanged>
+				self:SetCursorPosition(0)
+			</OnTextChanged>
+			<OnEnter>
+				local text = self:GetText()
+				if (#text * 6.25) > self:GetWidth() then
+					GameTooltip:SetOwner(self, "ANCHOR_CURSOR")
+					GameTooltip:SetText(text)
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide()
+			</OnLeave>
+			<OnLoad>
+				self:Disable()
+				self.Label:SetText(self.fieldName)
+				local viewer = self:GetParent():GetParent()
+				if not viewer.fields then
+					viewer.fields = {}
+				end
+				viewer.fields[self.field] = self
+			</OnLoad>
+		</Scripts>
+		<FontString inherits="GameFontWhite"/>
+	</EditBox>
+	<ScrollFrame name="XRPViewerMultiLineTemplate" inherits="XRPScrollFrameArtTemplate" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Label" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="-2" y="5"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				self.ScrollBar:ClearAllPoints()
+				self.ScrollBar:SetPoint("TOPLEFT", self, "TOPRIGHT", -13, -11)
+				self.ScrollBar:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", -13, 9)
+				self.ScrollBar.ScrollDownButton:SetPoint("TOP", self.ScrollBar, "BOTTOM", 0, 4)
+				self.ScrollBar.ScrollUpButton:SetPoint("BOTTOM", self.ScrollBar, "TOP", 0, -4)
+				self.ScrollBar.ScrollUpButton:Disable()
+				self.scrollBarHideable = 1
+				self.ScrollBar:Hide()
+				self.EditBox:SetWidth(self:GetWidth() - 18)
+
+				self.Label:SetText(self.fieldName)
+
+				local viewer = self:GetParent():GetParent()
+				if not viewer.fields then
+					viewer.fields = {}
+				end
+				viewer.fields[self.field] = self.EditBox
+			</OnLoad>
+		</Scripts>
+		<ScrollChild>
+			<EditBox parentKey="EditBox" multiLine="true" letters="131071" countInvisibleLetters="true" autoFocus="false">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+				<Scripts>
+					<OnTextChanged>
+						self:SetCursorPosition(0)
+						self:GetParent():SetVerticalScroll(0)
+					</OnTextChanged>
+					<OnLoad>
+						self:Disable()
+						self:SetHyperlinksEnabled(true)
+					</OnLoad>
+					<OnHyperlinkClick>
+						StaticPopup_Show("XRP_URL", nil, nil, link)
+					</OnHyperlinkClick>
+				</Scripts>
+				<FontString inherits="GameFontWhite"/>
+			</EditBox>
+		</ScrollChild>
+	</ScrollFrame>
+	<Frame name="XRPViewerTemplate" inherits="ButtonFrameTemplate" hidden="true" enableMouse="true" virtual="true">
 		<Size x="439" y="525"/>
 		<Layers>
 			<Layer level="OVERLAY">
@@ -60,251 +149,186 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="Appearance" useParentLevel="true" hidden="false">
+			<Frame parentKey="Appearance" parentArray="panes" hidden="false">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.Inset" relativePoint="TOPLEFT"/>
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset" relativePoint="BOTTOMRIGHT"/>
 				</Anchors>
-				<Layers>
-					<Layer level="OVERLAY">
-						<!-- Race Label -->
-						<FontString parentKey="RALabel" inherits="GameFontNormalSmall" text="Race">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="12" y="-8"/>
-							</Anchors>
-						</FontString>
-						<!-- Race Label -->
-						<FontString parentKey="RCLabel" inherits="GameFontNormalSmall" text="Class">
-							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.RALabel" relativePoint="LEFT" x="145" y="0"/>
-							</Anchors>
-						</FontString>
-						<!-- Height Label -->
-						<FontString parentKey="AHLabel" inherits="GameFontNormalSmall" text="Height">
-							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.RCLabel" relativePoint="LEFT" x="145" y="0"/>
-							</Anchors>
-						</FontString>
-						<!-- Eyes Label -->
-						<FontString parentKey="AELabel" inherits="GameFontNormalSmall" text="Eyes">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.RALabel" relativePoint="BOTTOMLEFT" x="0" y="-25"/>
-							</Anchors>
-						</FontString>
-						<!-- Weight Label -->
-						<FontString parentKey="AWLabel" inherits="GameFontNormalSmall" text="Weight">
-							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.AELabel" relativePoint="LEFT" x="290" y="0"/>
-							</Anchors>
-						</FontString>
-						<!-- Currently Label -->
-						<FontString parentKey="CULabel" inherits="GameFontNormalSmall" text="Currently">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.AELabel" relativePoint="BOTTOMLEFT" x="0" y="-25"/>
-							</Anchors>
-						</FontString>
-						<!-- Description Label -->
-						<FontString parentKey="DELabel" inherits="GameFontNormalSmall" text="Description">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.CULabel" relativePoint="BOTTOMLEFT" x="0" y="-60"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
 				<Frames>
-					<!-- Race Box -->
-					<EditBox parentKey="RA" inherits="XRPViewerOutputBoxTemplate" autoFocus="false">
+					<!-- Race -->
+					<EditBox parentKey="RA" inherits="XRPViewerSingleLineTemplate">
+						<KeyValues>
+							<KeyValue key="field" value="RA"/>
+							<KeyValue key="fieldName" value="Race"/>
+						</KeyValues>
 						<Size x="135" y="20"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.RALabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="14" y="-18"/>
 						</Anchors>
 					</EditBox>
-					<!-- Race Box -->
-					<EditBox parentKey="RC" inherits="XRPViewerOutputBoxTemplate" autoFocus="false">
+					<!-- Class -->
+					<EditBox parentKey="RC" inherits="XRPViewerSingleLineTemplate">
+						<KeyValues>
+							<KeyValue key="field" value="RC"/>
+							<KeyValue key="fieldName" value="Class"/>
+						</KeyValues>
 						<Size x="135" y="20"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.RCLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
+							<Anchor point="LEFT" relativeKey="$parent.RA" relativePoint="RIGHT" x="10"/>
 						</Anchors>
 					</EditBox>
-					<!-- Height Box -->
-					<EditBox parentKey="AH" inherits="XRPViewerOutputBoxTemplate" autoFocus="false">
+					<!-- Height -->
+					<EditBox parentKey="AH" inherits="XRPViewerSingleLineTemplate">
+						<KeyValues>
+							<KeyValue key="field" value="AH"/>
+							<KeyValue key="fieldName" value="Height"/>
+						</KeyValues>
 						<Size x="117" y="20"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.AHLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
+							<Anchor point="LEFT" relativeKey="$parent.RC" relativePoint="RIGHT" x="10"/>
 						</Anchors>
 					</EditBox>
-					<!-- Eyes Box -->
-					<EditBox parentKey="AE" inherits="XRPViewerOutputBoxTemplate" autoFocus="false">
+					<!-- Eyes -->
+					<EditBox parentKey="AE" inherits="XRPViewerSingleLineTemplate">
+						<KeyValues>
+							<KeyValue key="field" value="AE"/>
+							<KeyValue key="fieldName" value="Eyes"/>
+						</KeyValues>
 						<Size x="280" y="20"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.AELabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.RA" relativePoint="BOTTOMLEFT" y="-15"/>
 						</Anchors>
 					</EditBox>
-					<!-- Weight Box -->
-					<EditBox parentKey="AW" inherits="XRPViewerOutputBoxTemplate" autoFocus="false">
+					<!-- Weight -->
+					<EditBox parentKey="AW" inherits="XRPViewerSingleLineTemplate">
+						<KeyValues>
+							<KeyValue key="field" value="AW"/>
+							<KeyValue key="fieldName" value="Weight"/>
+						</KeyValues>
 						<Size x="117" y="20"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.AWLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
+							<Anchor point="LEFT" relativeKey="$parent.AE" relativePoint="RIGHT" x="10"/>
 						</Anchors>
 					</EditBox>
-					<!-- Currently Box -->
-					<ScrollFrame name="$parentCU" parentKey="CU" inherits="XRPViewerOutputScrollFrameTemplate">
+					<!-- Currently -->
+					<ScrollFrame name="$parentCU" parentKey="CU" inherits="XRPViewerMultiLineTemplate">
+						<KeyValues>
+							<KeyValue key="field" value="CU"/>
+							<KeyValue key="fieldName" value="Currently"/>
+						</KeyValues>
 						<Size x="402" y="45"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.CULabel" relativePoint="BOTTOMLEFT" x="2" y="-5"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.AE" relativePoint="BOTTOMLEFT" y="-20"/>
 						</Anchors>
 					</ScrollFrame>
-					<!-- Description Box -->
-					<ScrollFrame name="$parentDE" parentKey="DE" inherits="XRPViewerOutputScrollFrameTemplate">
+					<!-- Description -->
+					<ScrollFrame name="$parentDE" parentKey="DE" inherits="XRPViewerMultiLineTemplate">
+						<KeyValues>
+							<KeyValue key="field" value="DE"/>
+							<KeyValue key="fieldName" value="Description"/>
+						</KeyValues>
 						<Size x="402" y="264"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.DELabel" relativePoint="BOTTOMLEFT" x="2" y="-5"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.CU" relativePoint="BOTTOMLEFT" y="-24"/>
 						</Anchors>
 					</ScrollFrame>
 				</Frames>
 			</Frame>
-			<Frame parentKey="Biography" useParentLevel="true" hidden="true">
+			<Frame parentKey="Biography" parentArray="panes" hidden="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.Inset" relativePoint="TOPLEFT"/>
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset" relativePoint="BOTTOMRIGHT"/>
 				</Anchors>
-				<Layers>
-					<Layer level="OVERLAY">
-						<!-- Home Label -->
-						<FontString parentKey="HHLabel" inherits="GameFontNormalSmall" text="Home">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="12" y="-8"/>
-							</Anchors>
-						</FontString>
-						<!-- Age Label -->
-						<FontString parentKey="AGLabel" inherits="GameFontNormalSmall" text="Age">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.HHLabel" relativePoint="BOTTOMLEFT" x="0" y="-25"/>
-							</Anchors>
-						</FontString>
-						<!-- Birthplace Label -->
-						<FontString parentKey="HBLabel" inherits="GameFontNormalSmall" text="Birthplace">
-							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.AGLabel" relativePoint="LEFT" x="156" y="0"/>
-							</Anchors>
-						</FontString>
-						<!-- Motto Label -->
-						<FontString parentKey="MOLabel" inherits="GameFontNormalSmall" text="Motto">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.AGLabel" relativePoint="BOTTOMLEFT" x="0" y="-25"/>
-							</Anchors>
-						</FontString>
-						<!-- History Label -->
-						<FontString parentKey="HILabel" inherits="GameFontNormalSmall" text="History">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.MOLabel" relativePoint="BOTTOMLEFT" x="0" y="-60"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
 				<Frames>
-					<!-- Home Box -->
-					<EditBox parentKey="HH" inherits="XRPViewerOutputBoxTemplate" autoFocus="false">
+					<!-- Home -->
+					<EditBox parentKey="HH" inherits="XRPViewerSingleLineTemplate">
+						<KeyValues>
+							<KeyValue key="field" value="HH"/>
+							<KeyValue key="fieldName" value="Home"/>
+						</KeyValues>
 						<Size x="407" y="20"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.HHLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="14" y="-18"/>
 						</Anchors>
 					</EditBox>
-					<!-- Age Box -->
-					<EditBox parentKey="AG" inherits="XRPViewerOutputBoxTemplate" autoFocus="false">
+					<!-- Age -->
+					<EditBox parentKey="AG" inherits="XRPViewerSingleLineTemplate">
+						<KeyValues>
+							<KeyValue key="field" value="AG"/>
+							<KeyValue key="fieldName" value="Age"/>
+						</KeyValues>
 						<Size x="146" y="20"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.AGLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.HH" relativePoint="BOTTOMLEFT" y="-15"/>
 						</Anchors>
 					</EditBox>
-					<!-- Birthplace Box -->
-					<EditBox parentKey="HB" inherits="XRPViewerOutputBoxTemplate" autoFocus="false">
+					<!-- Birthplace -->
+					<EditBox parentKey="HB" inherits="XRPViewerSingleLineTemplate">
+						<KeyValues>
+							<KeyValue key="field" value="HB"/>
+							<KeyValue key="fieldName" value="Birthplace"/>
+						</KeyValues>
 						<Size x="251" y="20"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.HBLabel" relativePoint="BOTTOMLEFT" x="2" y="0"/>
+							<Anchor point="LEFT" relativeKey="$parent.AG" relativePoint="RIGHT" x="10"/>
 						</Anchors>
 					</EditBox>
-					<!-- Motto Box -->
-					<ScrollFrame name="$parentMO" parentKey="MO" inherits="XRPViewerOutputScrollFrameTemplate">
+					<!-- Motto -->
+					<ScrollFrame name="$parentMO" parentKey="MO" inherits="XRPViewerMultiLineTemplate">
+						<KeyValues>
+							<KeyValue key="field" value="MO"/>
+							<KeyValue key="fieldName" value="Motto"/>
+						</KeyValues>
 						<Size x="402" y="45"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.MOLabel" relativePoint="BOTTOMLEFT" x="2" y="-5"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.AG" relativePoint="BOTTOMLEFT" y="-20"/>
 						</Anchors>
 					</ScrollFrame>
-					<!-- History Box -->
-					<ScrollFrame name="$parentHI" parentKey="HI" inherits="XRPViewerOutputScrollFrameTemplate">
+					<!-- History -->
+					<ScrollFrame name="$parentHI" parentKey="HI" inherits="XRPViewerMultiLineTemplate">
+						<KeyValues>
+							<KeyValue key="field" value="HI"/>
+							<KeyValue key="fieldName" value="History"/>
+						</KeyValues>
 						<Size x="402" y="264"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.HILabel" relativePoint="BOTTOMLEFT" x="2" y="-5"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.MO" relativePoint="BOTTOMLEFT" y="-24"/>
 						</Anchors>
 					</ScrollFrame>
 				</Frames>
 			</Frame>
-			<Button parentKey="Menu" inherits="UIPanelButtonTemplate" text="|TInterface\BUTTONS\UI-SortArrow:7:18:4:-2|t">
+			<Button parentKey="Menu" inherits="UIPanelButtonTemplate" text=" v ">
+				<KeyValues>
+					<KeyValue key="initialize" value="EasyMenu_Initialize" type="global"/>
+					<KeyValue key="displayMode" value="MENU"/>
+					<!-- This is kinda a hack. -->
+					<KeyValue key="SetHeight" value="assert" type="global"/>
+					<KeyValue key="point" value="TOPRIGHT"/>
+					<KeyValue key="relativePoint" value="BOTTOMRIGHT"/>
+				</KeyValues>
 				<Size x="23" y="19"/>
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-23" y="-1"/>
 				</Anchors>
-				<Frames>
-					<Button name="$parentMenu" parentKey="Menu" hidden="true" inherits="UIDropDownMenuTemplate">
-						<KeyValues>
-							<KeyValue key="point" value="TOPRIGHT"/>
-							<KeyValue key="relativePoint" value="BOTTOMRIGHT"/>
-							<KeyValue key="initialize" value="EasyMenu_Initialize" type="global"/>
-							<KeyValue key="displayMode" value="MENU"/>
-						</KeyValues>
-						<Scripts>
-							<OnLoad>
-								local viewer = self:GetParent():GetParent()
-								local function infofunc(self, arg1, arg2, checked)
-									if arg1 == 1 then
-										xrp.characters[viewer.current].bookmark = not checked
-									elseif arg1 == 2 then
-										xrp.characters[viewer.current].hide = not checked
-									end
-								end
-								self.menuList = {
-									{ text = "Bookmark", arg1 = 1, isNotRadio = true, checked = function() return xrp.characters[viewer.current].bookmark ~= nil end, func = infofunc, },
-									{ text = "Hide profile", arg1 = 2, isNotRadio = true, checked = function() return xrp.characters[viewer.current].hide ~= nil end, func = infofunc, },
-								}
-							</OnLoad>
-						</Scripts>
-					</Button>
-				</Frames>
 				<Scripts>
 					<OnClick>
-						ToggleDropDownMenu(nil, nil, self.Menu, self, 0, 0, self.Menu.menuList)
+						ToggleDropDownMenu(nil, nil, self, self, 0, 0, self.menuList)
 						PlaySound("igMainMenuOptionCheckBoxOn")
 					</OnClick>
+					<OnHide>
+						CloseDropDownMenus()
+					</OnHide>
 				</Scripts>
 			</Button>
-			<Button name="$parentTab1" parentKey="Tab1" inherits="CharacterFrameTabButtonTemplate" id="1" text="Appearance">
+			<Button name="$parentTab1" parentKey="Tab1" inherits="XRPTabButtonTemplate" id="1" text="Appearance">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="0" y="1"/>
 				</Anchors>
-				<Scripts>
-					<OnClick>
-						local parent = self:GetParent()
-						PanelTemplates_SetTab(parent, 1)
-						parent.Biography:Hide()
-						parent.Appearance:Show()
-						PlaySound("igCharacterInfoTab")
-					</OnClick>
-				</Scripts>
 			</Button>
-			<Button name="$parentTab2" parentKey="Tab2" inherits="CharacterFrameTabButtonTemplate" id="2" text="Biography">
+			<Button name="$parentTab2" parentKey="Tab2" inherits="XRPTabButtonTemplate" id="2" text="Biography">
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.Tab1" relativePoint="RIGHT" x="-16" y="0"/>
 				</Anchors>
-				<Scripts>
-					<OnClick>
-						local parent = self:GetParent()
-						PanelTemplates_SetTab(parent, 2)
-						parent.Appearance:Hide()
-						parent.Biography:Show()
-						PlaySound("igCharacterInfoTab")
-					</OnClick>
-				</Scripts>
 			</Button>
 		</Frames>
 		<Attributes>
@@ -319,126 +343,13 @@
 			<OnLoad>
 				PanelTemplates_SetNumTabs(self, 2)
 				PanelTemplates_SetTab(self, 1)
+				self.fields.NA = self.TitleText
+				self.fields.NT = self.NT
+				self.fields.NI = self.NI
+				self.fields.NH = self.NH
+				self.fields.VA = self.VA
 				self.current = UNKNOWN
 				self.failed = UNKNOWN
-
-				do
-					-- This will request fields in the order listed.
-					local display = {
-						"VA", "NA", "NH", "NI", "NT", "RA", "RC", "CU", -- In TT.
-						"AE", "AH", "AW", "AG", "HH", "HB", "MO", -- Not in TT.
-						"DE", "HI", -- High-bandwidth.
-					}
-
-					function self:SetField(field, contents)
-						if field == "NI" then
-							self[field]:SetText(contents and ("\"%s\""):format(xrp:StripEscapes(contents)) or "")
-						elseif field == "NA" then
-							self.TitleText:SetText(xrp:StripEscapes(contents) or Ambiguate(self.current, "none") or UNKNOWN)
-						elseif field == "VA" then
-							self[field]:SetText(contents and xrp:StripEscapes(contents:gsub(";", ", ")) or ("%s/%s"):format(UNKNOWN, NONE))
-						elseif field == "AH" then
-							self[field]:SetText(xrp:ConvertHeight(xrp:StripEscapes(contents), "user") or "")
-						elseif field == "AW" then
-							self[field]:SetText(xrp:ConvertWeight(xrp:StripEscapes(contents), "user") or "")
-						elseif field == "CU" or field == "DE" or field == "MO" or field == "HI" then
-							self[field]:SetText(xrp:LinkURLs(xrp:StripEscapes(contents)) or "")
-						else
-							self[field]:SetText(xrp:StripEscapes(contents) or "")
-						end
-					end
-
-					function self:Load(character)
-						for _, field in ipairs(display) do
-							self:SetField(field, character[field] or (field == "RA" and xrp.values.GR[character.GR]) or (field == "RC" and xrp.values.GC[character.GC]) or nil)
-						end
-						if xrp.characters[self.current].own then
-							self.Menu:Hide()
-						else
-							self.Menu:Show()
-						end
-					end
-
-					local supported = {}
-					for _, field in ipairs(display) do
-						supported[field] = true
-					end
-					xrp:HookEvent("FIELD", function(event, name, field)
-						if self.current == name and supported[field] then
-							self:SetField(field, xrp.characters[name].fields[field])
-						elseif self.current == name and (field == "GR" and not xrp.cache[name].fields.RA) or (field == "GC" and not xrp.cache[name].fields.RC) then
-							self:SetField((field == "GR" and "RA") or (field == "GC" and "RC"), (field == "GR" and xrp.values.GR[xrp.characters[name].fields.GR]) or (field == "GC" and xrp.values.GC[xrp.characters[name].fields.GC]) or nil)
-						end
-					end)
-				end
-
-				xrp:HookEvent("RECEIVE", function(event, name)
-					if self.current == name then
-						if failed == name then
-							failed = nil
-							self:Load(xrp.characters[name].fields)
-						end
-						local XC = self.XC:GetText()
-						if not XC or not XC:find("^Received") then
-							self.XC:SetText("Received!")
-						end
-					end
-				end)
-
-				xrp:HookEvent("NOCHANGE", function(event, name)
-					if self.current == name then
-						if failed == name then
-							failed = nil
-							self:Load(xrp.characters[name].fields)
-						end
-						local XC = self.XC:GetText()
-						if not XC or not XC:find("^Received") then
-							self.XC:SetText("No changes.")
-						end
-					end
-				end)
-
-				xrp:HookEvent("CHUNK", function(event, name, chunk, totalchunks)
-					if self.current == name then
-						local XC = self.XC:GetText()
-						if chunk ~= totalchunks or not XC or XC:find("^Receiv") then
-							self.XC:SetFormattedText(totalchunks and (chunk == totalchunks and "Received! (%u/%u)" or "Receiving... (%u/%u)") or "Receiving... (%u/??)", chunk, totalchunks)
-						end
-					end
-				end)
-
-				xrp:HookEvent("FAIL", function(event, name, reason)
-					if self.current == name then
-						failed = self.current
-						if not self.XC:GetText() then
-							if reason == "offline" then
-								self.XC:SetText("Character is not online.")
-							elseif reason == "faction" then
-								self.XC:SetText("Character is opposite faction.")
-							elseif reason == "nomsp" then
-								self.XC:SetText("No RP addon appears to be active.")
-							end
-						end
-					end
-				end)
-
-				-- Setup shorthand access for easier looping later.
-				-- Appearance tab
-				for _, field in ipairs({ "AE", "RA", "RC", "AH", "AW" }) do
-					self[field] = self.Appearance[field]
-				end
-				-- EditBox is inside ScrollFrame
-				for _, field in ipairs({ "CU", "DE" }) do
-					self[field] = self.Appearance[field].EditBox
-				end
-				-- Biography tab
-				for _, field in ipairs({ "AG", "HH", "HB" }) do
-					self[field] = self.Biography[field]
-				end
-				-- EditBox is inside ScrollFrame
-				for _, field in ipairs({ "MO", "HI" }) do
-					self[field] = self.Biography[field].EditBox
-				end
 			</OnLoad>
 			<OnShow>
 				PlaySound("igCharacterInfoOpen")
@@ -448,4 +359,5 @@
 			</OnHide>
 		</Scripts>
 	</Frame>
+	<Script file="viewer.lua"/>
 </Ui>
