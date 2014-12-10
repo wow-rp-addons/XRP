@@ -13,9 +13,10 @@
 	ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR
 	IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
-	libbw is partly based upon ChatThrottleLib, written by Mikk. This fork adds
-	support for Battle.net (BattleTag/RealID) communications, doesn't handle
-	ancient WoW versions, and trusts the Lua garbage collector to do its job.`
+	libbw is partly based upon ChatThrottleLib, written by Mikk. This
+	fork/rewrite adds support for Battle.net (BattleTag/RealID) communications,
+	doesn't handle ancient WoW versions, and trusts the Lua garbage collector
+	to do its job.
 
 	libbw provides throttling for outgoing communication, in order to avoid
 	situations where communications either trigger disconnects (with in-game
@@ -325,7 +326,7 @@ do
 				priority.queues.queue = priority.queues.queue.next
 			end
 			local doSend, kind = true, (message[fnMap[message.f]] or ""):upper()
-			if (kind == "RAID" or kind == "PARTY") and not IsInGroup() then
+			if (kind == "RAID" or kind == "PARTY" or kind == "INSTANCE_CHAT") and not IsInGroup() then
 				doSend = false
 			end
 			local didSend = false
