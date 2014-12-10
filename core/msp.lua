@@ -136,8 +136,9 @@ do
 		end
 		if channel == "BN" then return end
 
-		local isGroup = (not channel or channel == "GAME") and UnitRealmRelationship(Ambiguate(character, "none")) == LE_REALM_RELATION_COALESCED
-		channel = isGroup and "RAID" or "WHISPER"
+		local isGroup = channel ~= "WHISPER" and UnitRealmRelationship(Ambiguate(character, "none")) == LE_REALM_RELATION_COALESCED
+		local isInstance = isGroup and IsInGroup(LE_PARTY_CATEGORY_INSTANCE)
+		channel = channel ~= "GAME" and channel or (isGroup and (isInstance and "INSTANCE_CHAT" or "RAID") or "WHISPER")
 		local prepend = isGroup and isRequest and ("%s\30"):format(character) or ""
 		local queue = isGroup and "XRP-GROUP" or ("XRP-%s"):format(character)
 		local callback = not isGroup and msp_AddFilter or nil
@@ -176,7 +177,7 @@ msp:Hide()
 msp:SetScript("OnUpdate", msp.OnUpdate)
 
 do
-	-- Tooltip order for ideal xrp_viewer usage.
+	-- Tooltip order for ideal XRP viewer usage.
 	local ttfields = { "VP", "VA", "NA", "NH", "NI", "NT", "RA", "RC", "CU", "FR", "FC" }
 	local tt
 	function msp:GetTT()
@@ -308,11 +309,18 @@ do
 	end
 end
 
+local TT_REQ = { "?TT" }
 msp.handlers = {
 	["MSP"] = function(self, character, message, channel)
-		local out = {}
+		local out
 		for command in message:gmatch("([^\1]+)\1*") do
-			out[#out + 1] = self:Process(character, command)
+			local response = self:Process(character, command)
+			if response then
+				if not out then
+					out = {}
+				end
+				out[#out + 1] = response
+			end
 		end
 		-- If a field has been updated (i.e., changed content), fieldupdated
 		-- will be set to true; if a field was received, but the content has
@@ -326,17 +334,16 @@ msp.handlers = {
 			self.cache[character].fieldupdated = nil
 		end
 		local hasCache = xrpCache[character] ~= nil
-		if #out > 0 then
-			-- If we don't have any info for them and haven't requested the
-			-- tooltip in this session, append a tooltip request.
-			if not (hasCache or self.cache[character].time.TT) then
-				out[#out + 1] = "?TT"
-			end
+		if out and #out > 0 then
 			self:Send(character, out, channel)
 		end
 		if hasCache then
 			-- Cache timer. Last receive marked for clearing old entries.
 			xrpCache[character].lastreceive = time()
+		elseif not self.cache[character].time.TT then
+			-- If we don't have any info for them and haven't requested the
+			-- tooltip in this session, also send a tooltip request
+			self:Send(character, TT_REQ, channel, true)
 		end
 	end,
 	["MSP\1"] = function(self, character, message, channel)
@@ -403,25 +410,27 @@ msp.handlers = {
 		self.cache[character][channel] = nil
 	end,
 	["GMSP"] = function(self, character, message, channel)
-		if character == xrpPrivate.playerWithRealm then return end
 		local target, prefix, message = message:match(message:find("\30", nil, true) and "^(.+)\30([\1\2\3]?)(.+)$" or "^(.-)([\1\2\3]?)(.+)$")
 		if target ~= "" and target ~= xrpPrivate.playerWithRealm then return end
-		self.handlers[prefix ~= "" and ("MSP%s"):format(prefix) or "MSP"](self, character, message, channel == "PARTY" and "RAID" or channel)
+		self.handlers[prefix ~= "" and ("MSP%s"):format(prefix) or "MSP"](self, character, message, channel)
 	end,
 }
 
 msp:SetScript("OnEvent", function(self, event, prefix, message, channel, sender)
 	if event == "CHAT_MSG_ADDON" and self.handlers[prefix] then
 		-- Sometimes won't have the realm attached because I dunno. Always
-		-- works correctly for different-realm (connected) messages.
+		-- works correctly for different-realm messages.
 		local character = xrp:NameWithRealm(sender)
 		--print(GetTime()..": In: "..character..": "..message:gsub("\1", ";"))
 		--print("Receiving from: "..character)
 
-		self.cache[character].received = true
-		self.cache[character].nextcheck = nil
+		-- Ignore messages from ourselves (GMSP).
+		if character ~= xrpPrivate.playerWithRealm then
+			self.cache[character].received = true
+			self.cache[character].nextcheck = nil
 
-		self.handlers[prefix](self, character, message, channel)
+			self.handlers[prefix](self, character, message, channel)
+		end
 	elseif event == "BN_CHAT_MSG_ADDON" and self.handlers[prefix] then
 		local active, toonName, client, realmName = BNGetToonInfo(sender)
 		local character = xrp:NameWithRealm(toonName, realmName)
@@ -510,13 +519,13 @@ xrpPrivate.fields = {
 	-- Dummy fields are used for extra XRP communication, not to be
 	-- user-exposed.
 	dummy = { XC = true },
-	-- 45 seconds for non-TT fields.
+	-- 30 seconds for non-TT fields.
 	times = setmetatable({ TT = 15, }, {
 		__index = function(self, field)
 			if xrpPrivate.fields.tt[field] then
 				return self.TT
 			end
-			return 45
+			return 30
 		end,
 	}),
 }
