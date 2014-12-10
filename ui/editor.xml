@@ -35,7 +35,7 @@
 			</OnClick>
 		</Scripts>
 	</CheckButton>
-	<EditBox name="XRPEditorSingleLineTemplate" parentArray="controls" autoFocus="false" inherits="InputBoxTemplate" virtual="true">
+	<EditBox name="XRPEditorSingleLineTemplate" autoFocus="false" inherits="InputBoxTemplate" virtual="true">
 		<KeyValues>
 			<KeyValue key="inherited" value="false" type="boolean"/>
 			<KeyValue key="contents" value=""/>
@@ -102,7 +102,7 @@
 		</Scripts>
 		<FontString inherits="GameFontWhite"/>
 	</EditBox>
-	<ScrollFrame name="XRPEditorMultiLineTemplate" parentArray="controls" inherits="XRPScrollFrameArtTemplate" virtual="true">
+	<ScrollFrame name="XRPEditorMultiLineTemplate" inherits="XRPScrollFrameArtTemplate" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Label" inherits="GameFontNormalSmall">
@@ -141,11 +141,12 @@
 				self.ScrollBar:Hide()
 				self.EditBox:SetFrameLevel(self.FocusButton:GetFrameLevel() + 1)
 				self.EditBox:SetWidth(self:GetWidth() - 18)
+
 				self.Label:SetText(self.fieldName)
 				self.EditBox.field = self.field
-				local editor = self:GetParent():GetParent()
-				self.EditBox.field = self.field
 				self.EditBox.Inherit = self.Inherit
+
+				local editor = self:GetParent():GetParent()
 				if not editor.fields then
 					editor.fields = {}
 				end
@@ -227,7 +228,7 @@
 			</OnLeave>
 		</Scripts>
 	</Button>
-	<Frame name="XRPEditorTemplate" inherits="ButtonFrameTemplate" hidden="true" virtual="true">
+	<Frame name="XRPEditorTemplate" inherits="ButtonFrameTemplate" hidden="true" enableMouse="true" virtual="true">
 		<Size x="439" y="525"/>
 		<Layers>
 			<Layer level="OVERLAY">
@@ -459,7 +460,7 @@
 						</Anchors>
 					</EditBox>
 					<!-- Character status -->
-					<Frame name="$parentMenuFC" parentKey="FC" parentArray="controls" inherits="XRPDropDownTemplate">
+					<Frame name="$parentMenuFC" parentKey="FC" inherits="XRPDropDownTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="FC"/>
 							<KeyValue key="fieldName" value="Character status"/>
@@ -583,6 +584,9 @@
 						ToggleDropDownMenu(nil, nil, self, self, nil, nil, self.menuList)
 						PlaySound("igMainMenuOptionCheckBoxOn")
 					</OnClick>
+					<OnHide>
+						CloseDropDownMenus()
+					</OnHide>
 				</Scripts>
 			</Button>
 			<!-- Save Button -->
