@@ -51,7 +51,7 @@ end)
 
 local function XRPOptionsDropDown_OnClick(self, arg1, arg2, checked)
 	if checked then return end
-	UIDROPDOWNMENU_OPEN_MENU.menuList[UIDropDownMenu_GetSelectedID(UIDROPDOWNMENU_OPEN_MENU)].checked = nil
+	UIDROPDOWNMENU_OPEN_MENU.baseMenuList[UIDropDownMenu_GetSelectedID(UIDROPDOWNMENU_OPEN_MENU)].checked = nil
 	UIDropDownMenu_SetSelectedValue(UIDROPDOWNMENU_OPEN_MENU, self.value)
 	UIDROPDOWNMENU_OPEN_MENU.value = self.value
 	UIDROPDOWNMENU_OPEN_MENU:GetParent():Set(UIDROPDOWNMENU_OPEN_MENU.xrpTable, UIDROPDOWNMENU_OPEN_MENU.xrpSetting, self.value)
@@ -91,15 +91,15 @@ do
 	end
 
 	function XRPOptionsChatChannels_CustomRefresh(self)
-		wipe(self.menuList)
+		wipe(self.baseMenuList)
 		local channelList, seenChannels = ChannelsTable(GetChannelList()), {}
 		for _, name in ipairs(channelList) do
 			local channel = "CHAT_MSG_CHANNEL_"..name:upper()
-			AddChannel(channel, self.menuList, self.settingsList, seenChannels)
+			AddChannel(channel, self.baseMenuList, self.settingsList, seenChannels)
 		end
 		for channel, setting in pairs(xrpPrivate.settings.chat) do
 			if not seenChannels[channel] and channel:find("CHAT_MSG_CHANNEL_", nil, true) then
-				AddChannel(channel, self.menuList, self.settingsList, seenChannels)
+				AddChannel(channel, self.baseMenuList, self.settingsList, seenChannels)
 			end
 		end
 	end
@@ -126,16 +126,16 @@ function xrp:Options(pane)
 	if not about.core then
 		about:SetScript("OnShow", nil)
 		about.core = CreateFrame("Frame", nil, about, "XRPCoreOptionsTemplate")
-		about.core.Height.menuList = {
+		about.core.Height.baseMenuList = {
 			{ text = "Centimeters", value = "cm", func = XRPOptionsDropDown_OnClick },
 			{ text = "Feet/Inches", value = "ft", func = XRPOptionsDropDown_OnClick },
 			{ text = "Meters", value = "m", func = XRPOptionsDropDown_OnClick },
 		}
-		about.core.Weight.menuList = {
+		about.core.Weight.baseMenuList = {
 			{ text = "Kilograms", value = "kg", func = XRPOptionsDropDown_OnClick },
 			{ text = "Pounds", value = "lb", func = XRPOptionsDropDown_OnClick },
 		}
-		about.core.Time.menuList = {
+		about.core.Time.baseMenuList = {
 			{ text = "1 day", value = 86400, func = XRPOptionsDropDown_OnClick },
 			{ text = "3 days", value = 259200, func = XRPOptionsDropDown_OnClick },
 			{ text = "7 days", value = 604800, func = XRPOptionsDropDown_OnClick },
@@ -149,7 +149,7 @@ function xrp:Options(pane)
 		about.chat.Channels.CustomRefresh = XRPOptionsChatChannels_CustomRefresh
 		about.chat.Channels.CustomCancel = XRPOptionsChatChannels_CustomCancel
 		about.chat.Channels.CustomDefault = XRPOptionsChatChannels_CustomDefault
-		about.chat.Channels.menuList = {}
+		about.chat.Channels.baseMenuList = {}
 		about.chat.Channels.settingsList = {}
 		about.tooltip = CreateFrame("Frame", nil, about, "XRPTooltipOptionsTemplate")
 		for _, frame in ipairs(about.panes) do

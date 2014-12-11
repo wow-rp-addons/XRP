@@ -103,7 +103,7 @@
 							if control.type == CONTROLTYPE_CHECKBOX then
 								control:SetChecked(setting)
 							elseif control.type == CONTROLTYPE_DROPDOWN then
-								UIDropDownMenu_Initialize(control, control.initialize, nil, nil, control.menuList)
+								UIDropDownMenu_Initialize(control, control.initialize, nil, nil, control.baseMenuList)
 								UIDropDownMenu_SetSelectedValue(control, setting)
 							end
 						end
@@ -132,7 +132,7 @@
 							if control.type == CONTROLTYPE_CHECKBOX then
 								control:SetChecked(control.value)
 							elseif control.type == CONTROLTYPE_DROPDOWN then
-								UIDropDownMenu_Initialize(control, control.initialize, nil, nil, control.menuList)
+								UIDropDownMenu_Initialize(control, control.initialize, nil, nil, control.baseMenuList)
 								UIDropDownMenu_SetSelectedValue(control, control.value)
 							end
 						end
@@ -161,7 +161,7 @@
 							if control.type == CONTROLTYPE_CHECKBOX then
 								control:SetChecked(control.value)
 							elseif control.type == CONTROLTYPE_DROPDOWN then
-								UIDropDownMenu_Initialize(control, control.initialize, nil, nil, control.menuList)
+								UIDropDownMenu_Initialize(control, control.initialize, nil, nil, control.baseMenuList)
 								UIDropDownMenu_SetSelectedValue(control, control.value)
 							end
 						end

@@ -125,7 +125,7 @@ local function XRPViewer_FAIL(event, name, reason)
 	end
 end
 
-local XRPViewerMenu_menuList
+local XRPViewerMenu_baseMenuList
 do
 	local function XRPViewerMenu_Checked(self)
 		if self.arg1 == 1 then
@@ -143,7 +143,7 @@ do
 			xrp:View(UIDROPDOWNMENU_OPEN_MENU:GetParent().current)
 		end
 	end
-	XRPViewerMenu_menuList = {
+	XRPViewerMenu_baseMenuList = {
 		{ text = "Bookmark", arg1 = 1, isNotRadio = true, checked = XRPViewerMenu_Checked, func = XRPViewerMenu_Click, },
 		{ text = "Hide profile", arg1 = 2, isNotRadio = true, checked = XRPViewerMenu_Checked, func = XRPViewerMenu_Click, },
 		{ text = "Refresh", arg1 = 3, notCheckable = true, func = XRPViewerMenu_Click, },
@@ -155,7 +155,7 @@ function xrpPrivate:GetViewer()
 		return xrpPrivate.viewer
 	end
 	local frame = CreateFrame("Frame", "XRPViewer", UIParent, "XRPViewerTemplate")
-	frame.Menu.menuList = XRPViewerMenu_menuList
+	frame.Menu.baseMenuList = XRPViewerMenu_baseMenuList
 	frame.SetField = XRPViewer_SetField
 	frame.Load = XRPViewer_Load
 	xrp:HookEvent("FIELD", XRPViewer_FIELD)
