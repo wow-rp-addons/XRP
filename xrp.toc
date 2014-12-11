@@ -26,7 +26,6 @@ ui\templates.xml
 ui\minimap.xml
 ui\viewer.xml
 ui\editor.xml
-ui\automation.xml
 ui\options.xml
 ui\ui.lua
 extra\fixes.lua

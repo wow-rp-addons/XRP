@@ -211,6 +211,7 @@ function xrpPrivate:GetEditor()
 	frame.fields.FC.baseMenuList = XRPEditorFC_baseMenuList
 	frame.Parent:SetScript("PreClick", XRPEditorParent_PreClick)
 	frame.Profiles.ArrowButton:SetScript("PreClick", XRPEditorProfiles_PreClick)
+	xrpPrivate:SetupAutomationFrame(frame.Automation)
 	frame:Load(xrpSaved.selected)
 	xrpPrivate.editor = frame
 	return frame
