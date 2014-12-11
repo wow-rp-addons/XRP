@@ -90,7 +90,6 @@ do
 		{ text = "Character status", notCheckable = true, hasArrow = true, menuList = menulist_status, },
 		{ text = "Currently...", notCheckable = true, func = function() StaticPopup_Show("XRP_CURRENTLY") end, },
 		{ text = "Editor...", notCheckable = true, func = function() xrp:Edit() end, },
-		{ text = "Automation...", notCheckable = true, func = function() xrp:Automation() end, },
 		{ text = "Viewer...", notCheckable = true, func = function() xrp:View() end, },
 		{ text = "Options...", notCheckable = true, func = function() xrp:Options() end, },
 		{ text = CANCEL, notCheckable = true, },

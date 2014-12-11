@@ -73,21 +73,6 @@ function xrp:Edit(profile)
 	end
 end
 
-function xrp:Automation(form)
-	if not xrpPrivate.automation then
-		xrpPrivate.automation = CreateFrame("Frame", "XRPAutomation", UIParent, "XRPAutomationTemplate")
-	end
-	local automation = xrpPrivate.automation
-	if not form and automation:IsShown() then
-		HideUIPanel(automation)
-		return
-	end
-	ShowUIPanel(automation)
-	if form then
-		automation.Form:SetValue(form)
-	end
-end
-
 -- Global strings for keybinds.
 BINDING_HEADER_XRP = "XRP"
 BINDING_NAME_XRP_EDITOR = "Open/close RP profile editor"
