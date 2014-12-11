@@ -59,11 +59,11 @@ end
 
 local function ToggleButtons(self)
 	local form, profile = self.Form.contents, self.Profile.contents
-	local changes = xrpSaved.auto[form] ~= (profile ~= "" and profile or nil)
-	if next(xrpSaved.auto) and not xrpSaved.auto["DEFAULT"] then
+	local changes = xrpPrivate.auto[form] ~= (profile ~= "" and profile or nil)
+	if next(xrpSaved.auto) and not xrpPrivate.auto["DEFAULT"] then
 		self.Warning:Show()
 		self.Warning:SetFormattedText("You should set a fallback profile for \"%s\".", formNames["DEFAULT"])
-	elseif self.Warning:IsVisible() then
+	else
 		self.Warning:Hide()
 	end
 	self.Revert:SetEnabled(changes)
@@ -74,14 +74,13 @@ local function Save_OnClick(self, button, down)
 	local parent = self:GetParent()
 	local form, profile = parent.Form.contents, parent.Profile.contents
 	profile = profile ~= "" and profile or nil
-	xrpSaved.auto[form] = profile
+	xrpPrivate.auto[form] = profile
 	ToggleButtons(parent)
-	xrp:RecheckForm()
 end
 
 local function Revert_OnClick(self, button, down)
 	local parent = self:GetParent()
-	local formProfile = xrpSaved.auto[parent.Form.contents]
+	local formProfile = xrpPrivate.auto[parent.Form.contents]
 	parent.Profile.contents = formProfile or ""
 	parent.Profile.MenuText:SetText(formProfile or "None")
 	ToggleButtons(parent)
@@ -119,7 +118,7 @@ do
 			local set = (UIDROPDOWNMENU_MENU_VALUE or "DEFAULT")..self.value
 			UIDROPDOWNMENU_OPEN_MENU.contents = set
 			UIDROPDOWNMENU_OPEN_MENU.MenuText:SetText(MakeWords(set))
-			local Profile, setProfile = UIDROPDOWNMENU_OPEN_MENU:GetParent().Profile, xrpSaved.auto[set]
+			local Profile, setProfile = UIDROPDOWNMENU_OPEN_MENU:GetParent().Profile, xrpPrivate.auto[set]
 			Profile.contents = setProfile or ""
 			Profile.MenuText:SetText(setProfile or "None")
 			ToggleButtons(UIDROPDOWNMENU_OPEN_MENU:GetParent())
@@ -162,7 +161,7 @@ do
 		if not checked then
 			UIDROPDOWNMENU_OPEN_MENU.contents = self.value
 			UIDROPDOWNMENU_OPEN_MENU.MenuText:SetText(MakeWords(self.value))
-			local Profile, formProfile = UIDROPDOWNMENU_OPEN_MENU:GetParent().Profile, xrpSaved.auto[self.value]
+			local Profile, formProfile = UIDROPDOWNMENU_OPEN_MENU:GetParent().Profile, xrpPrivate.auto[self.value]
 			Profile.contents = formProfile or ""
 			Profile.MenuText:SetText(formProfile or "None")
 			ToggleButtons(UIDROPDOWNMENU_OPEN_MENU:GetParent())
@@ -412,7 +411,7 @@ function xrpPrivate:SetupAutomationFrame(frame)
 
 	frame.Form.contents = "DEFAULT"
 	frame.Form.MenuText:SetText(MakeWords("DEFAULT"))
-	local defaultProfile = xrpSaved.auto["DEFAULT"]
+	local defaultProfile = xrpPrivate.auto["DEFAULT"]
 	frame.Profile.contents = defaultProfile or ""
 	frame.Profile.MenuText:SetText(defaultProfile or "None")
 	ToggleButtons(frame)

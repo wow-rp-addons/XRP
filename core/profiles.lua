@@ -22,6 +22,22 @@ function xrpPrivate:NewVersion(field)
 	return xrpSaved.versions[field]
 end
 
+function xrpPrivate:DoesParentLoop(profile, parent)
+	local profiles = xrpSaved.profiles
+	-- Walk through the new parentage to make sure there's no looping.
+	local count = 0
+	while parent and count < 16 do
+		if parent == profile then return true end
+		count = count + 1
+		if profiles[parent] and profiles[parent].parent then
+			parent = profiles[parent].parent
+		else
+			parent = nil
+		end
+	end
+	return false
+end
+
 local nonewindex = function() end
 
 xrp.current = setmetatable({
@@ -129,6 +145,11 @@ do
 			for _, profile in pairs(profiles) do
 				if profile.parent == name then
 					profile.parent = profiles[name].parent or nil
+				end
+			end
+			for form, profile in pairs(xrpSaved.auto) do
+				if profile == name then
+					xrpSaved.auto[form] = nil
 				end
 			end
 			profiles[name] = nil
@@ -285,19 +306,11 @@ do
 		__newindex = function(self, component, value)
 			local name, profiles = self[nk], xrpSaved.profiles
 			if component ~= "parent" or value == profiles[name].parent then return end
-			-- Walk through the new parentage to make sure there's no looping.
-			local count, inherit = 0, value
-			while inherit and count < 16 do
-				if inherit == name then return end
-				count = count + 1
-				if profiles[inherit] and profiles[inherit].parent then
-					inherit = profiles[inherit].parent
-				else
-					inherit = nil
-				end
-			end
+
+			if xrpPrivate:DoesParentLoop(name, value) then return end
+
 			-- Walk through the selected profile's parentage to see if we're in
-			-- the chain anywhere.
+			-- the chain anywherer(for firing UPDATE event).
 			local selected = xrpSaved.selected
 			local isused = name == selected
 			count, inherit = 0, profiles[selected].parent
