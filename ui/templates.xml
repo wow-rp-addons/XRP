@@ -90,9 +90,12 @@
 					<Anchor point="TOPRIGHT" relativeTo="$parentRight" x="-16" y="-18"/>
 				</Anchors>
 				<Scripts>
+					<!-- NOTE: This uses baseMenuList instead of the default
+						 menuList, as that variable is overwritten when a
+						 second-level menu pops out. -->
 					<OnClick>
 						local parent = self:GetParent()
-						ToggleDropDownMenu(nil, nil, parent, nil, nil, nil, parent.menuList)
+						ToggleDropDownMenu(nil, nil, parent, nil, nil, nil, parent.baseMenuList)
 						PlaySound("igMainMenuOptionCheckBoxOn")
 					</OnClick>
 				</Scripts>

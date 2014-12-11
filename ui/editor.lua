@@ -140,7 +140,7 @@ do
 	end
 end
 
-local XRPEditorProfiles_PreClick, XRPEditorParent_PreClick, XRPEditorFC_menuList 
+local XRPEditorProfiles_PreClick, XRPEditorParent_PreClick, XRPEditorFC_baseMenuList
 do
 	local function XRPEditor_Checked(self)
 		return self.arg1 == UIDROPDOWNMENU_INIT_MENU.contents
@@ -155,9 +155,9 @@ do
 
 		function XRPEditorProfiles_PreClick(self, button, down)
 			local parent = self:GetParent()
-			parent.menuList = {}
+			parent.baseMenuList = {}
 			for _, profile in ipairs(xrp.profiles:List()) do
-				parent.menuList[#parent.menuList + 1] = { text = profile, checked = XRPEditor_Checked, arg1 = profile, func = XRPEditorProfiles_Click }
+				parent.baseMenuList[#parent.baseMenuList + 1] = { text = profile, checked = XRPEditor_Checked, arg1 = profile, func = XRPEditorProfiles_Click }
 			end
 		end
 	end
@@ -174,10 +174,10 @@ do
 		local none = { text = "None", checked = XRPEditor_Checked, arg1 = "", func = XRPEditorParent_Click }
 
 		function XRPEditorParent_PreClick(self, button, down)
-			self.menuList = { none }
+			self.baseMenuList = { none }
 			for _, profile in ipairs(xrp.profiles:List()) do
 				if profile ~= self:GetParent().Profiles.contents then
-					self.menuList[#self.menuList + 1] = { text = profile, checked = XRPEditor_Checked, arg1 = profile, func = XRPEditorParent_Click }
+					self.baseMenuList[#self.baseMenuList + 1] = { text = profile, checked = XRPEditor_Checked, arg1 = profile, func = XRPEditorParent_Click }
 				end
 			end
 		end
@@ -193,9 +193,9 @@ do
 		end
 
 		local FC = xrp.values.FC
-		XRPEditorFC_menuList = {}
+		XRPEditorFC_baseMenuList = {}
 		for i = 0, #FC, 1 do
-			XRPEditorFC_menuList[#XRPEditorFC_menuList + 1] = { text = FC[i], checked = XRPEditor_Checked, arg1 = i == 0 and "" or tostring(i), func = XRPEditorFC_Click }
+			XRPEditorFC_baseMenuList[#XRPEditorFC_baseMenuList + 1] = { text = FC[i], checked = XRPEditor_Checked, arg1 = i == 0 and "" or tostring(i), func = XRPEditorFC_Click }
 		end
 	end
 end
@@ -208,7 +208,7 @@ function xrpPrivate:GetEditor()
 	frame.Save = XRPEditor_Save
 	frame.Load = XRPEditor_Load
 	frame.CheckFields = XRPEditor_CheckFields
-	frame.fields.FC.menuList = XRPEditorFC_menuList
+	frame.fields.FC.baseMenuList = XRPEditorFC_baseMenuList
 	frame.Parent:SetScript("PreClick", XRPEditorParent_PreClick)
 	frame.Profiles.ArrowButton:SetScript("PreClick", XRPEditorProfiles_PreClick)
 	frame:Load(xrpSaved.selected)

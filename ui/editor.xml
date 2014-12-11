@@ -581,7 +581,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						ToggleDropDownMenu(nil, nil, self, self, nil, nil, self.menuList)
+						ToggleDropDownMenu(nil, nil, self, self, nil, nil, self.baseMenuList)
 						PlaySound("igMainMenuOptionCheckBoxOn")
 					</OnClick>
 					<OnHide>
