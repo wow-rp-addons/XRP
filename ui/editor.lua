@@ -175,8 +175,9 @@ do
 
 		function XRPEditorParent_PreClick(self, button, down)
 			self.baseMenuList = { none }
+			local editingProfile = self:GetParent().Profiles.contents
 			for _, profile in ipairs(xrp.profiles:List()) do
-				if profile ~= self:GetParent().Profiles.contents then
+				if profile ~= editingProfile and not xrpPrivate:DoesParentLoop(editingProfile, profile) then
 					self.baseMenuList[#self.baseMenuList + 1] = { text = profile, checked = XRPEditor_Checked, arg1 = profile, func = XRPEditorParent_Click }
 				end
 			end

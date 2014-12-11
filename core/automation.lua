@@ -17,6 +17,24 @@
 
 local addonName, xrpPrivate = ...
 
+local RecheckForm
+
+xrpPrivate.auto = setmetatable({}, {
+	__index = function(self, form)
+		local auto = xrpSaved.auto
+		local profile = auto[form]
+		if not xrpSaved.profiles[profile] then
+			return nil
+		end
+		return profile
+	end,
+	__newindex = function(self, form, profile)
+		if not xrpSaved.profiles[profile] then return end
+		xrpSaved.auto[form] = profile
+		RecheckForm()
+	end,
+})
+
 local GetCurrentForm
 do
 	local hasrace = select(2, UnitRace("player")) == "Worgen"
@@ -145,7 +163,7 @@ do
 			self:Show()
 		end
 	end
-	function xrp:RecheckForm()
+	function RecheckForm()
 		swap.race = nil
 		swap.class = nil
 		swap.equip = nil
@@ -168,7 +186,7 @@ swap:SetScript("OnUpdate", function(self, elapsed)
 	-- 6: DEFAULT-Equipment
 	-- 9: DEFAULT
 
-	local auto, form = xrpSaved.auto
+	local auto, form = xrpPrivate.auto
 	if self.race then
 		-- RACE-CLASS-Equipment (Worgen only)
 		if self.class and self.equip then
@@ -201,13 +219,6 @@ swap:SetScript("OnUpdate", function(self, elapsed)
 	end
 
 	if not auto[form] then
-		return
-	end
-
-	if not xrp.profiles[auto[form]] then
-		auto[form] = nil
-		--print("Profile was removed, deleting assignment and retrying.")
-		self:Show()
 		return
 	end
 
