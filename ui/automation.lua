@@ -401,12 +401,33 @@ do
 	end
 end
 
+local function OnShow(self)
+	local selectedForm, needsUpdate = self.Form.contents, false
+	if selectedForm:find("\29", nil, true) then
+		if not GetEquipmentSetInfoByName(selectedForm:match("^.*\29(.+)$")) then
+			selectedForm = "DEFAULT"
+			self.Form.MenuText:SetText(MakeWords(selectedForm))
+			self.Form.contents = selectedForm
+			needsUpdate = true
+		end
+	end
+	needsUpdate = needsUpdate or not xrp.profiles[self.Profile.contents]
+	if needsUpdate then
+		local newProfile = xrpPrivate.auto[selectedForm]
+		self.Profile.contents = newProfile
+		self.Profile.MenuText:SetText(newProfile or "None")
+	end
+	ToggleButtons(self)
+	PlaySound("UChatScrollButton")
+end
+
 function xrpPrivate:SetupAutomationFrame(frame)
 	frame.Form.ArrowButton:SetScript("PreClick", Form_PreClick)
 	frame.Form.baseMenuList = Form_baseMenuList
 	frame.Profile.ArrowButton:SetScript("PreClick", Profile_PreClick)
 	frame.Save:SetScript("OnClick", Save_OnClick)
 	frame.Revert:SetScript("OnClick", Revert_OnClick)
+	frame:SetScript("OnShow", OnShow)
 
 	frame.Form.contents = "DEFAULT"
 	frame.Form.MenuText:SetText(MakeWords("DEFAULT"))

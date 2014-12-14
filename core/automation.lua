@@ -167,9 +167,9 @@ do
 		swap.race = nil
 		swap.class = nil
 		swap.equip = nil
+		TestForm(swap)
 		-- This forces a form check immediately, for new profile assignments.
 		swap.timer = 0
-		TestForm(swap)
 	end
 	swap:SetScript("OnEvent", TestForm)
 end

@@ -753,9 +753,6 @@
 					</Button>
 				</Frames>
 				<Scripts>
-					<OnShow>
-						PlaySound("UChatScrollButton")
-					</OnShow>
 					<OnHide>
 						PlaySound("UChatScrollButton")
 					</OnHide>
@@ -785,9 +782,7 @@
 				end
 			</OnShow>
 			<OnHide>
-				if self.Automation:IsVisible() then
-					self.Automation:Hide()
-				end
+				self.Automation:Hide()
 				PlaySound("igCharacterInfoClose")
 			</OnHide>
 		</Scripts>

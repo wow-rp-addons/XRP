@@ -1,17 +1,13 @@
-6.0.3.0_beta5 (2014-12-10):
+6.0.3.0_rc1 (2014-12-13):
 
-	- beta5: beta4 and earlier users should restart WoW when installing, some
-	  files have been added/moved/removed relative to older versions.
+	- rc1: beta5 and earlier users should restart WoW when installing.
 
-	- beta5: Multiple bugs from beta4 have been fixed.
+	- Old versions of XRP should be removed from the Interface/AddOns folder
+	  prior to upgrading. This version of XRP has been reorganized into a
+	  single addon folder, rather than multiple smaller addons.
 
-		- Crossrealm group profiles should now work.
-
-		- LFR and Battleground groups should now be handled correctly.
-
-	- Old versions of XRP should be removed prior to upgrading. This version
-	  of XRP has been reorganized into a single addon folder, rather than
-	  multiple smaller addons.
+		- Many automated installers do this on their own, you may only need to
+		  worry about this if you manually install/update XRP.
 
 	- Support for RP profiles over Battle.net and party/raid has been added.
 	  This is supported in XRP 6.0.3.0+, with a library allowing other RP
@@ -21,8 +17,11 @@
 	  encounter any errors related to ChatThrottleLib after upgrading, please
 	  report them immediately.
 
+	- Profile automation config is now accessed through the editor.
+
 	- The minimap tooltip has drastically changed, and now has generally
-	  useful information.
+	  useful information. In light of this, the option to hide the minimap
+	  tooltip has been removed.
 
 	- The detached minimap button is now moved by shift+right click and drag,
 	  rather than unlocking it.
@@ -31,6 +30,9 @@
 	  update dynamically (rather than needing to press "Okay" to see changes),
 	  and the layout of the options has changed.
 
+	- The option to use (hard-to-read) faction colors instead of
+	  green/yellow/red reaction colors on tooltips has been removed.
+
 	- The internal naming of the editor, automation config, and viewer frames
 	  has changed. If you were making use of these (such as with an addon that
 	  allows movement of UI panels), you may need to reconfigure it. If you
@@ -38,7 +40,7 @@
 
 	- Bugfixes:
 
-		- The minimap button positioning has been reset and the default
+		- Attached minimap button positioning has been reset and the default
 		  changed to hopefully avoid being obstructed by the Garrison button.
 
 		- The order of fields selected by pressing tab in the editor has been
