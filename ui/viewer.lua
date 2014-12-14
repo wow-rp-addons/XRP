@@ -17,7 +17,9 @@
 
 local addonName, xrpPrivate = ...
 
-local XRPViewer_SetField, XRPViewer_Load, XRPViewer_FIELD
+local viewer
+
+local Load, FIELD
 do
 	-- This will request fields in the order listed.
 	local display = {
@@ -26,10 +28,10 @@ do
 		"DE", "HI", -- High-bandwidth.
 	}
 
-	function XRPViewer_SetField(self, field, contents)
+	local function SetField(field, contents)
 		contents = contents and xrp:StripEscapes(contents) or nil
 		if field == "NA" then
-			contents = contents or Ambiguate(self.current, "none") or UNKNOWN
+			contents = contents or Ambiguate(viewer.current, "none") or UNKNOWN
 		elseif field == "VA" then
 			contents = contents and contents:gsub(";", ", ") or "Unknown/None"
 		elseif not contents then
@@ -43,17 +45,20 @@ do
 		elseif field == "CU" or field == "DE" or field == "MO" or field == "HI" then
 			contents = xrp:LinkURLs(contents)
 		end
-		self.fields[field]:SetText(contents)
+		viewer.fields[field]:SetText(contents)
+		if field == "DE" or field == "HI" then
+			viewer.lastFieldSet = GetTime()
+		end
 	end
 
-	function XRPViewer_Load(self, character)
+	function Load(character)
 		for _, field in ipairs(display) do
-			self:SetField(field, character[field] or (field == "RA" and xrp.values.GR[character.GR]) or (field == "RC" and xrp.values.GC[character.GC]) or nil)
+			SetField(field, character[field] or (field == "RA" and xrp.values.GR[character.GR]) or (field == "RC" and xrp.values.GC[character.GC]) or nil)
 		end
-		if xrp.characters[self.current].own then
-			self.Menu:Hide()
+		if xrp.characters[viewer.current].own then
+			viewer.Menu:Hide()
 		else
-			self.Menu:Show()
+			viewer.Menu:Show()
 		end
 	end
 
@@ -61,22 +66,20 @@ do
 	for _, field in ipairs(display) do
 		supported[field] = true
 	end
-	function XRPViewer_FIELD(event, name, field)
-		local viewer = xrpPrivate.viewer
+	function FIELD(event, name, field)
 		if viewer.current == name and supported[field] then
-			viewer:SetField(field, xrp.characters[name].fields[field])
+			SetField(field, xrp.characters[name].fields[field])
 		elseif viewer.current == name and (field == "GR" and not xrp.cache[name].fields.RA) or (field == "GC" and not xrp.cache[name].fields.RC) then
-			viewer:SetField((field == "GR" and "RA") or (field == "GC" and "RC"), (field == "GR" and xrp.values.GR[xrp.characters[name].fields.GR]) or (field == "GC" and xrp.values.GC[xrp.characters[name].fields.GC]) or nil)
+			SetField((field == "GR" and "RA") or (field == "GC" and "RC"), (field == "GR" and xrp.values.GR[xrp.characters[name].fields.GR]) or (field == "GC" and xrp.values.GC[xrp.characters[name].fields.GC]) or nil)
 		end
 	end
 end
 
-local function XRPViewer_RECEIVE(event, name)
-	local viewer = xrpPrivate.viewer
+local function RECEIVE(event, name)
 	if viewer.current == name then
 		if viewer.failed == name then
 			viewer.failed = nil
-			viewer:Load(xrp.characters[name].fields)
+			Load(xrp.characters[name].fields)
 		end
 		local XC = viewer.XC:GetText()
 		if not XC or not XC:find("^Received") then
@@ -85,12 +88,11 @@ local function XRPViewer_RECEIVE(event, name)
 	end
 end
 
-local function XRPViewer_NOCHANGE(event, name)
-	local viewer = xrpPrivate.viewer
+local function NOCHANGE(event, name)
 	if viewer.current == name then
 		if viewer.failed == name then
 			viewer.failed = nil
-			viewer:Load(xrp.characters[name].fields)
+			Load(xrp.characters[name].fields)
 		end
 		local XC = viewer.XC:GetText()
 		if not XC or not XC:find("^Received") then
@@ -99,8 +101,7 @@ local function XRPViewer_NOCHANGE(event, name)
 	end
 end
 
-local function XRPViewer_CHUNK(event, name, chunk, totalchunks)
-	local viewer = xrpPrivate.viewer
+local function CHUNK(event, name, chunk, totalchunks)
 	if viewer.current == name then
 		local XC = viewer.XC:GetText()
 		if chunk ~= totalchunks or not XC or XC:find("^Receiv") then
@@ -109,8 +110,7 @@ local function XRPViewer_CHUNK(event, name, chunk, totalchunks)
 	end
 end
 
-local function XRPViewer_FAIL(event, name, reason)
-	local viewer = xrpPrivate.viewer
+local function FAIL(event, name, reason)
 	if viewer.current == name then
 		viewer.failed = viewer.current
 		if not viewer.XC:GetText() then
@@ -125,16 +125,16 @@ local function XRPViewer_FAIL(event, name, reason)
 	end
 end
 
-local XRPViewerMenu_baseMenuList
+local Menu_baseMenuList
 do
-	local function XRPViewerMenu_Checked(self)
+	local function Menu_Checked(self)
 		if self.arg1 == 1 then
 			return xrp.characters[UIDROPDOWNMENU_INIT_MENU:GetParent().current].bookmark ~= nil
 		elseif self.arg1 == 2 then
 			return xrp.characters[UIDROPDOWNMENU_INIT_MENU:GetParent().current].hide ~= nil
 		end
 	end
-	local function XRPViewerMenu_Click(self, arg1, arg2, checked)
+	local function Menu_Click(self, arg1, arg2, checked)
 		if arg1 == 1 then
 			xrp.characters[UIDROPDOWNMENU_OPEN_MENU:GetParent().current].bookmark = not checked
 		elseif arg1 == 2 then
@@ -143,26 +143,75 @@ do
 			xrp:View(UIDROPDOWNMENU_OPEN_MENU:GetParent().current)
 		end
 	end
-	XRPViewerMenu_baseMenuList = {
-		{ text = "Bookmark", arg1 = 1, isNotRadio = true, checked = XRPViewerMenu_Checked, func = XRPViewerMenu_Click, },
-		{ text = "Hide profile", arg1 = 2, isNotRadio = true, checked = XRPViewerMenu_Checked, func = XRPViewerMenu_Click, },
-		{ text = "Refresh", arg1 = 3, notCheckable = true, func = XRPViewerMenu_Click, },
+	Menu_baseMenuList = {
+		{ text = "Bookmark", arg1 = 1, isNotRadio = true, checked = Menu_Checked, func = Menu_Click, },
+		{ text = "Hide profile", arg1 = 2, isNotRadio = true, checked = Menu_Checked, func = Menu_Click, },
+		{ text = "Refresh", arg1 = 3, notCheckable = true, func = Menu_Click, },
 	}
 end
 
-function xrpPrivate:GetViewer()
-	if xrpPrivate.viewer then
-		return xrpPrivate.viewer
+local function Menu_PreClick(self, button, down)
+	if self:GetParent().lastFieldSet + 30 > GetTime() then
+		self.baseMenuList[3].disabled = true
+	else
+		self.baseMenuList[3].disabled = nil
 	end
+end
+
+local function CreateViewer()
 	local frame = CreateFrame("Frame", "XRPViewer", UIParent, "XRPViewerTemplate")
-	frame.Menu.baseMenuList = XRPViewerMenu_baseMenuList
-	frame.SetField = XRPViewer_SetField
-	frame.Load = XRPViewer_Load
-	xrp:HookEvent("FIELD", XRPViewer_FIELD)
-	xrp:HookEvent("RECEIVE", XRPViewer_RECEIVE)
-	xrp:HookEvent("NOCHANGE", XRPViewer_NOCHANGE)
-	xrp:HookEvent("CHUNK", XRPViewer_CHUNK)
-	xrp:HookEvent("FAIL", XRPViewer_FAIL)
-	xrpPrivate.viewer = frame
+	frame.Menu.baseMenuList = Menu_baseMenuList
+	frame.Menu:SetScript("PreClick", Menu_PreClick)
+	xrp:HookEvent("FIELD", FIELD)
+	xrp:HookEvent("RECEIVE", RECEIVE)
+	xrp:HookEvent("NOCHANGE", NOCHANGE)
+	xrp:HookEvent("CHUNK", CHUNK)
+	xrp:HookEvent("FAIL", FAIL)
 	return frame
+end
+
+function xrp:View(player)
+	local isUnit = UnitExists(player)
+	if isUnit and not UnitIsPlayer(player) then return end
+	if not viewer then
+		viewer = CreateViewer()
+	end
+	if not player then
+		if viewer:IsShown() then
+			HideUIPanel(viewer)
+			return
+		end
+		if viewer.current == UNKNOWN then
+			viewer.failed = nil
+			viewer.current = xrpPrivate.playerWithRealm
+			SetPortraitTexture(viewer.portrait, "player")
+			Load(self.units.player.fields)
+		end
+		ShowUIPanel(viewer)
+		return
+	end
+	if not isUnit then
+		local unit = Ambiguate(player, "none")
+		isUnit = UnitExists(unit)
+		player = isUnit and unit or self:NameWithRealm(player):gsub("^%l", string.upper)
+	end
+	local newCurrent = isUnit and self:UnitNameWithRealm(player) or player
+	local isRefresh = viewer.current == newCurrent
+	viewer.current = newCurrent
+	viewer.failed = nil
+	viewer.XC:SetText("")
+	Load(isUnit and self.units[player].fields or self.characters[player].fields)
+	if isUnit and not isRefresh then
+		SetPortraitTexture(viewer.portrait, player)
+	elseif not isRefresh then
+		local GF = self.characters[player].fields.GF
+		SetPortraitToTexture(viewer.portrait, GF and ((GF == "Alliance" and "Interface\\Icons\\INV_BannerPVP_02") or (GF == "Horde" and "Interface\\Icons\\INV_BannerPVP_01")) or "Interface\\Icons\\INV_Misc_Book_17")
+	end
+	ShowUIPanel(viewer)
+	if not viewer.Appearance:IsVisible() then
+		PanelTemplates_SetTab(viewer, 1)
+		viewer.Biography:Hide()
+		viewer.Appearance:Show()
+		PlaySound("igCharacterInfoTab")
+	end
 end
