@@ -65,7 +65,7 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button parentKey="CacheTidy" inherits="UIPanelButtonTemplate" text="Prune Cache">
+			<Button parentKey="CacheTidy" inherits="UIPanelButtonTemplate" text="Tidy Cache">
 				<Size x="96" y="21"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.CacheClear" relativePoint="LEFT" x="-15"/>
@@ -78,112 +78,163 @@
 			</Button>
 		</Frames>
 		<Scripts>
+			<OnShow>
+				if not self.core then
+					xrp:Options()
+				end
+				if self:Get("cache", "autoclean") then
+					self.CacheTidy:Hide()
+				else
+					self.CacheTidy:Show()
+				end
+			</OnShow>
+		</Scripts>
+	</Frame>
+	<CheckButton name="XRPOptionsCheckboxTemplate" parentArray="controls" inherits="XRPCheckBoxArtTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="type" value="CONTROLTYPE_CHECKBOX" type="global"/>
+		</KeyValues>
+		<Size x="26" y="26"/>
+		<HitRectInsets>
+			<AbsInset left="0" right="-500" top="0" bottom="0"/>
+		</HitRectInsets>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Text" inherits="GameFontHighlightLeft">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" x="2" y="1"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick>
+				local setting = self:GetChecked()
+				PlaySound(setting and "igMainMenuOptionCheckBoxOn" or "igMainMenuOptionCheckBoxOff")
+				self.value = setting
+				if self.dependentControls then
+					for _, control in ipairs(self.dependentControls) do
+						if control.type == CONTROLTYPE_CHECKBOX then
+							control:SetEnabled(setting)
+						elseif control.type == CONTROLTYPE_DROPDOWN then
+							if setting then
+								UIDropDownMenu_EnableDropDown(control)
+							else
+								UIDropDownMenu_DisableDropDown(control)
+							end
+						end
+					end
+				end
+				self:GetParent():Set(self.xrpTable, self.xrpSetting, setting)
+			</OnClick>
+			<OnEnable>
+				self.Text:SetTextColor(self.Text:GetFontObject():GetTextColor())
+				if self.dependentControls then
+					for _, control in ipairs(self.dependentControls) do
+						if control.type == CONTROLTYPE_CHECKBOX then
+							control:SetEnabled(self:GetChecked())
+						elseif control.type == CONTROLTYPE_DROPDOWN then
+							if self:GetChecked() then
+								UIDropDownMenu_EnableDropDown(control)
+							else
+								UIDropDownMenu_DisableDropDown(control)
+							end
+						end
+					end
+				end
+			</OnEnable>
+			<OnDisable>
+				self.Text:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b)
+				if self.dependentControls then
+					for _, control in ipairs(self.dependentControls) do
+						if control.type == CONTROLTYPE_CHECKBOX then
+							control:SetEnabled(false)
+						elseif control.type == CONTROLTYPE_DROPDOWN then
+							UIDropDownMenu_DisableDropDown(control)
+						end
+					end
+				end
+			</OnDisable>
 			<OnLoad>
-				function self:okay()
-					if not self.controls then return end
-					for _, control in ipairs(self.controls) do
-						if control.CustomOkay then
-							control:CustomOkay()
-						else
-							control.oldValue = control.value
-						end
-					end
+				self.dependentControls = {}
+				if self.dependsOn then
+					local depends = self:GetParent()[self.dependsOn].dependentControls
+					depends[#depends + 1] = self
 				end
-				function self:refresh()
-					if not self.controls then return end
-					for _, control in ipairs(self.controls) do
-						if control.CustomRefresh then
-							control:CustomRefresh()
-						else
-							local setting = self:Get(control.xrpTable, control.xrpSetting)
-							control.value = setting
-							if control.oldValue == nil then
-								control.oldValue = setting
-							end
-							if control.type == CONTROLTYPE_CHECKBOX then
-								control:SetChecked(setting)
-							elseif control.type == CONTROLTYPE_DROPDOWN then
-								UIDropDownMenu_Initialize(control, control.initialize, nil, nil, control.baseMenuList)
-								UIDropDownMenu_SetSelectedValue(control, setting)
-							end
-						end
-						if control.dependsOn then
-							if control.type == CONTROLTYPE_CHECKBOX then
-								control:SetEnabled(self[control.dependsOn]:GetChecked())
-							elseif control.type == CONTROLTYPE_DROPDOWN then
-								local setting = self[control.dependsOn]:GetChecked()
-								if setting then
-									UIDropDownMenu_EnableDropDown(control)
-								else
-									UIDropDownMenu_DisableDropDown(control)
-								end
-							end
-						end
-					end
+				if self.textString then
+					self.Text:SetText(self.textString)
 				end
-				function self:cancel()
-					if not self.controls then return end
-					for _, control in ipairs(self.controls) do
-						if control.CustomCancel then
-							control:CustomCancel()
-						else
-							self:Set(control.xrpTable, control.xrpSetting, control.oldValue)
-							control.value = control.oldValue
-							if control.type == CONTROLTYPE_CHECKBOX then
-								control:SetChecked(control.value)
-							elseif control.type == CONTROLTYPE_DROPDOWN then
-								UIDropDownMenu_Initialize(control, control.initialize, nil, nil, control.baseMenuList)
-								UIDropDownMenu_SetSelectedValue(control, control.value)
-							end
-						end
-						if control.dependsOn then
-							if control.type == CONTROLTYPE_CHECKBOX then
-								control:SetEnabled(self[control.dependsOn]:GetChecked())
-							elseif control.type == CONTROLTYPE_DROPDOWN then
-								local setting = self[control.dependsOn]:GetChecked()
-								if setting then
-									UIDropDownMenu_EnableDropDown(control)
-								else
-									UIDropDownMenu_DisableDropDown(control)
-								end
-							end
-						end
-					end
+			</OnLoad>
+		</Scripts>
+	</CheckButton>
+	<Frame name="XRPOptionsDropDownTemplate" parentArray="controls" inherits="XRPDropDownTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="type" value="CONTROLTYPE_DROPDOWN" type="global"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Label" inherits="GameFontHighlightLeft">
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentRight" relativePoint="RIGHT" x="-10" y="1"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				if self.dependsOn then
+					local depends = self:GetParent()[self.dependsOn].dependentControls
+					depends[#depends + 1] = self
 				end
-				function self:default()
-					if not self.controls then return end
-					for _, control in ipairs(self.controls) do
-						if control.CustomDefault then
-							control:CustomDefault()
-						else
-							self:Set(control.xrpTable, control.xrpSetting, control.defaultValue)
-							control.value = control.defaultValue
-							if control.type == CONTROLTYPE_CHECKBOX then
-								control:SetChecked(control.value)
-							elseif control.type == CONTROLTYPE_DROPDOWN then
-								UIDropDownMenu_Initialize(control, control.initialize, nil, nil, control.baseMenuList)
-								UIDropDownMenu_SetSelectedValue(control, control.value)
-							end
-						end
-						if control.dependsOn then
-							if control.type == CONTROLTYPE_CHECKBOX then
-								control:SetEnabled(self[control.dependsOn]:GetChecked())
-							elseif control.type == CONTROLTYPE_DROPDOWN then
-								local setting = self[control.dependsOn]:GetChecked()
-								if setting then
-									UIDropDownMenu_EnableDropDown(control)
-								else
-									UIDropDownMenu_DisableDropDown(control)
-								end
-							end
-						end
-					end
+				if self.textString then
+					UIDropDownMenu_SetText(self, self.textString)
 				end
+				if self.labelString then
+					self.Label:SetText(self.labelString)
+				end
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	<Frame name="XRPOptionsTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="parent" value="XRP"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Title" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="TOP">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="16" y="-16"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="SubText" inherits="GameFontHighlightSmall" nonspacewrap="true" maxLines="3" justifyH="LEFT" justifyV="TOP">
+					<Size x="32" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
+						<Anchor point="RIGHT" x="-32" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				if self.titleText then
+					self.Title:SetText(self.titleText)
+				end
+				if self.subText then
+					self.SubText:SetText(self.subText)
+				end
+				local parent = self:GetParent()
+				self.okay = parent.okay
+				self.refresh = parent.refresh
+				self.cancel = parent.cancel
+				self.default = parent.default
+				self.Get = parent.Get
+				self.Set = parent.Set
 				InterfaceOptions_AddCategory(self)
 			</OnLoad>
 		</Scripts>
 	</Frame>
-	<Frame name="XRPCoreOptionsTemplate" parentArray="panes" inherits="XRPOptionsTemplate" virtual="true">
+	<Frame name="XRPOptionsCoreTemplate" parentArray="panes" inherits="XRPOptionsTemplate" virtual="true">
 		<KeyValues>
 			<KeyValue key="name" value="General"/>
 			<KeyValue key="titleText" value="XRP: General"/>
@@ -303,21 +354,9 @@
 					<KeyValue key="defaultValue" value="false" type="boolean"/>
 				</KeyValues>
 			</CheckButton>
-			<CheckButton parentKey="MinimapHideTT" inherits="XRPOptionsCheckboxTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.MinimapDetached" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
-				</Anchors>
-				<KeyValues>
-					<KeyValue key="textString" value="Hide tooltip on minimap button"/>
-					<KeyValue key="dependsOn" value="MinimapEnabled"/>
-					<KeyValue key="xrpTable" value="minimap"/>
-					<KeyValue key="xrpSetting" value="hidett"/>
-					<KeyValue key="defaultValue" value="false" type="boolean"/>
-				</KeyValues>
-			</CheckButton>
 			<Frame name="XRPCCacheOptionsTime" parentKey="Time" inherits="XRPOptionsDropDownTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.MinimapHideTT" relativePoint="BOTTOMLEFT" x="-39" y="-8"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.MinimapDetached" relativePoint="BOTTOMLEFT" x="-39" y="-8"/>
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="labelString" value="Cache expiry time"/>
@@ -339,7 +378,7 @@
 			</CheckButton>
 		</Frames>
 	</Frame>
-	<Frame name="XRPChatOptionsTemplate" parentArray="panes" inherits="XRPOptionsTemplate" virtual="true">
+	<Frame name="XRPOptionsChatTemplate" parentArray="panes" inherits="XRPOptionsTemplate" virtual="true">
 		<KeyValues>
 			<KeyValue key="name" value="Chat"/>
 			<KeyValue key="titleText" value="XRP: Chat"/>
@@ -487,7 +526,7 @@
 			</CheckButton>
 		</Frames>
 	</Frame>
-	<Frame name="XRPTooltipOptionsTemplate" parentArray="panes" inherits="XRPOptionsTemplate" virtual="true">
+	<Frame name="XRPOptionsTooltipTemplate" parentArray="panes" inherits="XRPOptionsTemplate" virtual="true">
 		<KeyValues>
 			<KeyValue key="name" value="Tooltip"/>
 			<KeyValue key="titleText" value="XRP: Tooltip"/>
@@ -510,7 +549,7 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.TooltipEnabled" relativePoint="BOTTOMLEFT" x="24" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="textString" value="Show eye icon if tooltip subject is targeting you"/>
+					<KeyValue key="textString" value="Show eye icon if player is targeting you"/>
 					<KeyValue key="dependsOn" value="TooltipEnabled"/>
 					<KeyValue key="xrpTable" value="tooltip"/>
 					<KeyValue key="xrpSetting" value="watching"/>
@@ -565,21 +604,9 @@
 					<KeyValue key="defaultValue" value="false" type="boolean"/>
 				</KeyValues>
 			</CheckButton>
-			<CheckButton parentKey="TooltipFactionColor" inherits="XRPOptionsCheckboxTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.TooltipGuildRankIndex" relativePoint="BOTTOMLEFT" x="-24" y="-8"/>
-				</Anchors>
-				<KeyValues>
-					<KeyValue key="textString" value="Use faction coloring for roleplay names"/>
-					<KeyValue key="dependsOn" value="TooltipEnabled"/>
-					<KeyValue key="xrpTable" value="tooltip"/>
-					<KeyValue key="xrpSetting" value="faction"/>
-					<KeyValue key="defaultValue" value="false" type="boolean"/>
-				</KeyValues>
-			</CheckButton>
 			<CheckButton parentKey="TooltipNoHostile" inherits="XRPOptionsCheckboxTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.TooltipFactionColor" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.TooltipGuildRankIndex" relativePoint="BOTTOMLEFT" x="-24" y="-8"/>
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="textString" value="Disable roleplay information display on hostile subjects"/>
