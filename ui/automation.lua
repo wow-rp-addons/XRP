@@ -59,7 +59,7 @@ end
 
 local function ToggleButtons(self)
 	local form, profile = self.Form.contents, self.Profile.contents
-	local changes = xrpPrivate.auto[form] ~= (profile ~= "" and profile or nil)
+	local changes = xrpPrivate.auto[form] ~= profile
 	if next(xrpSaved.auto) and not xrpPrivate.auto["DEFAULT"] then
 		self.Warning:Show()
 		self.Warning:SetFormattedText("You should set a fallback profile for \"%s\".", formNames["DEFAULT"])
@@ -73,7 +73,6 @@ end
 local function Save_OnClick(self, button, down)
 	local parent = self:GetParent()
 	local form, profile = parent.Form.contents, parent.Profile.contents
-	profile = profile ~= "" and profile or nil
 	xrpPrivate.auto[form] = profile
 	ToggleButtons(parent)
 end
@@ -81,7 +80,7 @@ end
 local function Revert_OnClick(self, button, down)
 	local parent = self:GetParent()
 	local formProfile = xrpPrivate.auto[parent.Form.contents]
-	parent.Profile.contents = formProfile or ""
+	parent.Profile.contents = formProfile
 	parent.Profile.MenuText:SetText(formProfile or "None")
 	ToggleButtons(parent)
 end
@@ -95,17 +94,17 @@ do
 	local function Profile_Click(self, arg1, arg2, checked)
 		if not checked then
 			UIDROPDOWNMENU_OPEN_MENU.contents = arg1
-			UIDROPDOWNMENU_OPEN_MENU.MenuText:SetText(arg1 ~= "" and arg1 or "None")
+			UIDROPDOWNMENU_OPEN_MENU.MenuText:SetText(arg1 or "None")
 			ToggleButtons(UIDROPDOWNMENU_OPEN_MENU:GetParent())
 		end
 	end
 
-	local none = { text = "None", checked = Profile_Checked, arg1 = "", func = Profile_Click }
+	local none = { text = "None", checked = Profile_Checked, arg1 = nil, func = Profile_Click }
 	function Profile_PreClick(self, button, down)
 		local parent = self:GetParent()
 		parent.baseMenuList = { none }
-		for _, profile in ipairs(xrp.profiles:List()) do
-			parent.baseMenuList[#parent.baseMenuList + 1] = { text = profile, checked = Profile_Checked, arg1 = profile, func = Profile_Click }
+		for index, profile in ipairs(xrp.profiles:List()) do
+			parent.baseMenuList[index + 1] = { text = profile, checked = Profile_Checked, arg1 = profile, func = Profile_Click }
 		end
 	end
 end
@@ -119,7 +118,7 @@ do
 			UIDROPDOWNMENU_OPEN_MENU.contents = set
 			UIDROPDOWNMENU_OPEN_MENU.MenuText:SetText(MakeWords(set))
 			local Profile, setProfile = UIDROPDOWNMENU_OPEN_MENU:GetParent().Profile, xrpPrivate.auto[set]
-			Profile.contents = setProfile or ""
+			Profile.contents = setProfile
 			Profile.MenuText:SetText(setProfile or "None")
 			ToggleButtons(UIDROPDOWNMENU_OPEN_MENU:GetParent())
 		end
@@ -134,7 +133,7 @@ do
 
 	function Form_PreClick(self, button, down)
 		wipe(equipSets) -- Keep table reference the same.
-		equipSets[#equipSets + 1] = noset
+		equipSets[1] = noset
 		local numsets = GetNumEquipmentSets()
 		if numsets and numsets > 0 then
 			for i = 1, numsets do
@@ -162,7 +161,7 @@ do
 			UIDROPDOWNMENU_OPEN_MENU.contents = self.value
 			UIDROPDOWNMENU_OPEN_MENU.MenuText:SetText(MakeWords(self.value))
 			local Profile, formProfile = UIDROPDOWNMENU_OPEN_MENU:GetParent().Profile, xrpPrivate.auto[self.value]
-			Profile.contents = formProfile or ""
+			Profile.contents = formProfile
 			Profile.MenuText:SetText(formProfile or "None")
 			ToggleButtons(UIDROPDOWNMENU_OPEN_MENU:GetParent())
 		end
@@ -412,7 +411,7 @@ function xrpPrivate:SetupAutomationFrame(frame)
 	frame.Form.contents = "DEFAULT"
 	frame.Form.MenuText:SetText(MakeWords("DEFAULT"))
 	local defaultProfile = xrpPrivate.auto["DEFAULT"]
-	frame.Profile.contents = defaultProfile or ""
+	frame.Profile.contents = defaultProfile
 	frame.Profile.MenuText:SetText(defaultProfile or "None")
 	ToggleButtons(frame)
 end
