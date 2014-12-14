@@ -19,52 +19,25 @@ local addonName, xrpPrivate = ...
 
 local minimap
 
-local function minimap_UpdateIcon()
+local function Minimap_UpdateIcon()
 	if not minimap then return end
 	if xrp.units.target and xrp.units.target.fields.VA then
-		minimap.icon:SetTexture("Interface\\Icons\\INV_Misc_Book_03")
+		minimap.Icon:SetTexture("Interface\\Icons\\INV_Misc_Book_03")
 		return
 	end
 	local FC = xrp.current.fields.FC
 	if not FC or FC == "0" or FC == "1" then
-		minimap.icon:SetTexture("Interface\\Icons\\Ability_Malkorok_BlightofYshaarj_Red")
+		minimap.Icon:SetTexture("Interface\\Icons\\Ability_Malkorok_BlightofYshaarj_Red")
 	else
-		minimap.icon:SetTexture("Interface\\Icons\\Ability_Malkorok_BlightofYshaarj_Green")
+		minimap.Icon:SetTexture("Interface\\Icons\\Ability_Malkorok_BlightofYshaarj_Green")
 	end
 end
 
-local function minimap_ShowTooltip(self)
-	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT", 30, 4)
-	GameTooltip:SetText(xrp.current.fields.NA)
-	GameTooltip:AddLine(" ")
-	GameTooltip:AddLine(("Profile: |cffffffff%s|r"):format(xrpSaved.selected))
-	local FC = xrp.current.fields.FC
-	if FC and FC ~= "0" then
-		GameTooltip:AddLine(("Status: |cff%s%s|r"):format(FC == "1" and "99664d" or "66b380", xrp.values.FC[tonumber(FC)] or FC))
-	end
-	local CU = xrp.current.fields.CU
-	if CU then
-		GameTooltip:AddLine(" ")
-		GameTooltip:AddLine("Currently:")
-		GameTooltip:AddLine(("|cffe6b399%s|r"):format(CU or "None"), nil, nil, nil, true)
-	end
-	GameTooltip:AddLine(" ")
-	if xrp.units.target and xrp.units.target.fields.VA then
-		GameTooltip:AddLine("|cffffffffClick to view your target's profile.|r")
-	elseif not FC or FC == "0" or FC == "1" then
-		GameTooltip:AddLine("|cff66b380Click for in character.|r")
-	else
-		GameTooltip:AddLine("|cff99664dClick for out of character.|r")
-	end
-	GameTooltip:AddLine("|cffffffffRight click for the menu.|r")
-	GameTooltip:Show()
-end
-
-local minimap_OnClickHandler
+local Minimap_PreClick, Minimap_baseMenuList
 do
-	local menulist_status = {}
+	local Status_menuList = {}
 	do
-		local function minimap_StatusSelect(self, status, arg2, checked)
+		local function Status_Click(self, status, arg2, checked)
 			local FC = xrp.profiles.SELECTED.fields.FC
 			if not checked and (status ~= FC or (not FC and status ~= "0")) then
 				xrp.current.fields.FC = status ~= "0" and status or ""
@@ -73,66 +46,42 @@ do
 			end
 			CloseDropDownMenus()
 		end
-		local function minimap_StatusChecked(self)
+		local function Status_Checked(self)
 			return self.arg1 == (xrp.current.fields.FC or "0")
 		end
 
 		local FC = xrp.values.FC
 		for i = 0, #FC, 1 do
-			menulist_status[#menulist_status + 1] = { text = FC[i], checked = minimap_StatusChecked, arg1 = tostring(i), func = minimap_StatusSelect, }
+			Status_menuList[i + 1] = { text = FC[i], checked = Status_Checked, arg1 = tostring(i), func = Status_Click, }
 		end
 	end
 
-	local menulist_profiles = {}
-	local minimap_menulist = {
+	local Profiles_menuList = {}
+	Minimap_baseMenuList = {
 		{ text = "XRP", isTitle = true, notCheckable = true, },
-		{ text = "Profiles", notCheckable = true, hasArrow = true, menuList = menulist_profiles, },
-		{ text = "Character status", notCheckable = true, hasArrow = true, menuList = menulist_status, },
+		{ text = "Profiles", notCheckable = true, hasArrow = true, menuList = Profiles_menuList, },
+		{ text = "Character status", notCheckable = true, hasArrow = true, menuList = Status_menuList, },
 		{ text = "Currently...", notCheckable = true, func = function() StaticPopup_Show("XRP_CURRENTLY") end, },
 		{ text = "Editor...", notCheckable = true, func = function() xrp:Edit() end, },
 		{ text = "Viewer...", notCheckable = true, func = function() xrp:View() end, },
 		{ text = "Options...", notCheckable = true, func = function() xrp:Options() end, },
-		{ text = CANCEL, notCheckable = true, },
+		{ text = "Cancel", notCheckable = true, func = function() end, },
 	}
 
 	do
-		local function minimap_ProfileSelect(self, name, arg2, checked)
+		local function Profiles_Click(self, name, arg2, checked)
 			if not checked and xrp.profiles[name] then
 				xrp.profiles[name]:Activate()
 			end
 			CloseDropDownMenus()
 		end
 
-		function minimap_OnClickHandler(self, button, down)
-			if not down then
-				if button == "LeftButton" then
-					if xrp.units.target and xrp.units.target.fields.VA then
-						xrp:View("target")
-					else
-						local FC, FCnil = xrp.current.fields.FC, xrp.profiles.SELECTED.fields.FC
-						local IC, ICnil = FC ~= nil and FC ~= "1" and FC ~= "0", FCnil ~= nil and FCnil ~= "1" and FCnil ~= "0"
-						if FC ~= FCnil and IC ~= ICnil then
-							xrp.current.fields.FC = nil
-						elseif IC then
-							xrp.current.fields.FC = "1"
-						else
-							xrp.current.fields.FC = "2"
-						end
-					end
-					if not self.settings.hidett then
-						self:ShowTooltip()
-					end
-					CloseDropDownMenus()
-				elseif button == "RightButton" then
-					wipe(menulist_profiles)
-					local selected = xrpSaved.selected
-					for _, name in ipairs(xrp.profiles:List()) do
-						menulist_profiles[#menulist_profiles + 1] = { text = name, checked = selected == name, arg1 = name, func = minimap_ProfileSelect, }
-					end
-					ToggleDropDownMenu(nil, nil, self.Menu, self, -2, 5, minimap_menulist)
-					if not self.settings.hidett then
-						GameTooltip:Hide()
-					end
+		function Minimap_PreClick(self, button, down)
+			if button == "RightButton" then
+				wipe(Profiles_menuList)
+				local selected = xrpSaved.selected
+				for _, name in ipairs(xrp.profiles:List()) do
+					Profiles_menuList[#Profiles_menuList + 1] = { text = name, checked = selected == name, arg1 = name, func = Profiles_Click, }
 				end
 			end
 		end
@@ -141,44 +90,113 @@ end
 
 local attachedMinimap, detachedMinimap
 
+local GetAttachedMinimap
+do
+	local Minmap_UpdatePosition
+	do
+		local minimapShapes = {
+			["ROUND"] = { true, true, true, true },
+			["SQUARE"] = { false, false, false, false },
+			["CORNER-TOPLEFT"] = { false, false, false, true },
+			["CORNER-TOPRIGHT"] = { false, false, true, false },
+			["CORNER-BOTTOMLEFT"] = { false, true, false, false },
+			["CORNER-BOTTOMRIGHT"] = { true, false, false, false },
+			["SIDE-LEFT"] = { false, true, false, true },
+			["SIDE-RIGHT"] = { true, false, true, false },
+			["SIDE-TOP"] = { false, false, true, true },
+			["SIDE-BOTTOM"] = { true, true, false, false },
+			["TRICORNER-TOPLEFT"] = { false, true, true, true },
+			["TRICORNER-TOPRIGHT"] = { true, false, true, true },
+			["TRICORNER-BOTTOMLEFT"] = { true, true, false, true },
+			["TRICORNER-BOTTOMRIGHT"] = { true, true, true, false },
+		}
+		function Minimap_UpdatePosition(self)
+			local angle = math.rad(xrpPrivate.settings.minimap.angle)
+			local x, y, q = math.cos(angle), math.sin(angle), 1
+			if x < 0 then q = q + 1 end
+			if y > 0 then q = q + 2 end
+			if minimapShapes[GetMinimapShape and GetMinimapShape() or "ROUND"][q] then
+				x, y = x*80, y*80
+			else
+				-- 103.13708498985 = math.sqrt(2*(80)^2)-10
+				x = math.max(-80, math.min(x*103.13708498985, 80))
+				y = math.max(-80, math.min(y*103.13708498985, 80))
+			end
+			self:ClearAllPoints()
+			self:SetPoint("CENTER", Minimap, "CENTER", x, y)
+		end
+	end
+	local function Minimap_OnUpdate(self, elapsed)
+		local mx, my = Minimap:GetCenter()
+		local px, py = GetCursorPosition()
+		local scale = Minimap:GetEffectiveScale()
+		px, py = px / scale, py / scale
+		xrpPrivate.settings.minimap.angle = math.deg(math.atan2(py - my, px - mx)) % 360
+		Minimap_UpdatePosition(self)
+	end
+
+	function GetAttachedMinimap()
+		if not attachedMinimap then
+			attachedMinimap = CreateFrame("Button", "LibDBIcon10_XRP", Minimap, "XRPMinimap")
+			attachedMinimap.baseMenuList = Minimap_baseMenuList
+			attachedMinimap:SetScript("PreClick", Minimap_PreClick)
+			attachedMinimap:SetScript("OnEvent", Minimap_UpdateIcon)
+			attachedMinimap.OnUpdate = Minimap_OnUpdate
+			Minimap_UpdatePosition(attachedMinimap)
+		end
+		return attachedMinimap
+	end
+end
+
+local GetDetachedMinimap
+do
+	local function Minimap_OnDragStop(self)
+		if self.moving then
+			self:StopMovingOrSizing()
+			xrpPrivate.settings.minimap.point, xrpPrivate.settings.minimap.x, xrpPrivate.settings.minimap.y = select(3, self:GetPoint())
+			self:UnlockHighlight()
+			self.moving = nil
+		end
+	end
+
+	function GetDetachedMinimap()
+		if not detachedMinimap then
+			detachedMinimap = CreateFrame("Button", nil, UIParent, "XRPButton")
+			detachedMinimap.baseMenuList = Minimap_baseMenuList
+			detachedMinimap:SetScript("OnDragStop", Minimap_OnDragStop)
+			detachedMinimap:SetScript("PreClick", Minimap_PreClick)
+			detachedMinimap:SetScript("OnEvent", Minimap_UpdateIcon)
+			detachedMinimap:ClearAllPoints()
+			detachedMinimap:SetPoint(xrpPrivate.settings.minimap.point, UIParent, xrpPrivate.settings.minimap.point, xrpPrivate.settings.minimap.x, xrpPrivate.settings.minimap.y)
+		end
+		return detachedMinimap
+	end
+end
+
 xrpPrivate.settingsToggles.minimap = {
 	enabled = function(setting)
 		if setting then
 			if minimap == nil then
-				xrp:HookEvent("UPDATE", minimap_UpdateIcon)
-				xrp:HookEvent("RECEIVE", minimap_UpdateIcon)
+				xrp:HookEvent("UPDATE", Minimap_UpdateIcon)
+				xrp:HookEvent("RECEIVE", Minimap_UpdateIcon)
 			end
-			local detached = xrpPrivate.settings.minimap.detached
-			if detached then
-				if not detachedMinimap then
-					detachedMinimap = CreateFrame("Button", nil, UIParent, "XRPButton")
-					detachedMinimap.settings = xrpPrivate.settings.minimap
-					detachedMinimap.ShowTooltip = minimap_ShowTooltip
-					detachedMinimap:SetScript("OnClick", minimap_OnClickHandler)
-					detachedMinimap:SetScript("OnEvent", minimap_UpdateIcon)
-					detachedMinimap:UpdatePosition()
-				end
+			local needsUpdate
+			if xrpPrivate.settings.minimap.detached then
+				needsUpdate = true
 				if minimap and minimap == attachedMinimap then
 					minimap:UnregisterAllEvents()
 					minimap:Hide()
 				end
-				minimap = detachedMinimap
+				minimap = GetDetachedMinimap()
 			else
-				if not attachedMinimap then
-					attachedMinimap = CreateFrame("Button", "LibDBIcon10_XRP", Minimap, "XRPMinimap")
-					attachedMinimap.settings = xrpPrivate.settings.minimap
-					attachedMinimap.ShowTooltip = minimap_ShowTooltip
-					attachedMinimap:SetScript("OnClick", minimap_OnClickHandler)
-					attachedMinimap:SetScript("OnEvent", minimap_UpdateIcon)
-					attachedMinimap:UpdatePosition()
-				end
+				needsUpdate = true
 				if minimap and minimap == detachedMinimap then
 					minimap:UnregisterAllEvents()
 					minimap:Hide()
 				end
-				minimap = attachedMinimap
+				minimap = GetAttachedMinimap()
 			end
-			minimap_UpdateIcon()
+			Minimap_UpdateIcon()
 			minimap:RegisterEvent("PLAYER_TARGET_CHANGED")
 			minimap:Show()
 		elseif minimap ~= nil then
