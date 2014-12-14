@@ -19,23 +19,23 @@ local addonName, xrpPrivate = ...
 
 local cursor, rightclick
 
-local XRPCursor_TurnOrActionStart, XRPCursor_TurnOrActionStop
+local Cursor_TurnOrActionStart, Cursor_TurnOrActionStop
 do
 	-- There is no mouseover unit available during TurnOrAction*, but
 	-- if a unit is right-clicked, it will be the target unit by Stop.
-	local now, mouseover, autointeract
-	function XRPCursor_TurnOrActionStart()
+	local now, mouseover, autoInteract
+	function Cursor_TurnOrActionStart()
 		if not rightclick or InCombatLockdown() or not cursor:IsVisible() then return end
 		mouseover = cursor.current
 		now = GetTime()
 		if cursor.mountable then
-			autointeract = GetCVar("AutoInteract") == "1"
-			if autointeract then
+			autoInteract = GetCVar("AutoInteract") == "1"
+			if autoInteract then
 				SetCVar("AutoInteract", "0")
 			end
 		end
 	end
-	function XRPCursor_TurnOrActionStop()
+	function Cursor_TurnOrActionStop()
 		if not mouseover then return end
 		-- 0.75s interaction time is guessed as Blizzard number from
 		-- in-game testing. Used for consistency.
@@ -45,43 +45,43 @@ do
 			end
 			xrp:View("target")
 		end
-		if autointeract then
+		if autoInteract then
 			SetCVar("AutoInteract", "1")
 		end
 		mouseover = nil
-		autointeract = nil
+		autoInteract = nil
 	end
 end
 
-local function XRPCursor_OnEventHandler(self, event)
+local function Cursor_OnEvent(self, event)
 	if not rightclick or InCombatLockdown() or (xrpPrivate.settings.interact.disableinstance and (IsInInstance() or IsInActiveWorldPVP())) or (xrpPrivate.settings.interact.disablepvp and (UnitIsPVP("player") or UnitIsPVPFreeForAll("player"))) or GetMouseFocus() ~= WorldFrame or not xrp.units.mouseover then
 		self:Hide()
 		return
 	end
 	self.current = not UnitCanAttack("player", "mouseover") and xrp:UnitNameWithRealm("mouseover") or nil
 	-- Following two must be separate for UIErrorsFrame:Clear().
-	self.inparty = self.current and (UnitInParty("mouseover") or UnitInRaid("mouseover"))
 	self.mountable = self.current and UnitVehicleSeatCount("mouseover") > 0
-	if self.current and xrp.units.mouseover.fields.VA and not (self.mountable and self.inparty and IsItemInRange(88589, "mouseover")) then
+	self.mountInParty = self.mountable and (UnitInParty("mouseover") or UnitInRaid("mouseover"))
+	if self.current and xrp.units.mouseover.fields.VA and (not self.mountInParty or not IsItemInRange(88589, "mouseover")) then
 		self:Show()
 	else
 		self:Hide()
 	end
 end
 
-local XRPCursor_OnUpdateHandler
+local Cursor_OnUpdate
 do
 	local previousX, previousY
 	-- Crazy optimization crap since it's run every frame.
 	local UnitIsPlayer, InCombatLockdown, GetMouseFocus, WorldFrame, GetCursorPosition, IsItemInRange, UIParent, GetEffectiveScale = UnitIsPlayer, InCombatLockdown, GetMouseFocus, WorldFrame, GetCursorPosition, IsItemInRange, UIParent, UIParent.GetEffectiveScale
-	function XRPCursor_OnUpdateHandler(self, elapsed)
+	function Cursor_OnUpdate(self, elapsed)
 		if not UnitIsPlayer("mouseover") or InCombatLockdown() or GetMouseFocus() ~= WorldFrame then
 			self:Hide()
 			return
 		end
 		local x, y = GetCursorPosition()
 		if x == previousX and y == previousY then return end
-		if self.mountable and self.inparty and IsItemInRange(88589, "mouseover") then
+		if self.mountInParty and IsItemInRange(88589, "mouseover") then
 			self:Hide()
 			return
 		end
@@ -91,8 +91,8 @@ do
 	end
 end
 
-local function XRPCursor_RECEIVE(event, name)
-	if rightclick and name == cursor.current and not InCombatLockdown() and not cursor:IsVisible() and not (cursor.mountable and cursor.inparty and IsItemInRange(88589, "mouseover")) then
+local function Cursor_RECEIVE(event, name)
+	if rightclick and name == cursor.current and not InCombatLockdown() and not cursor:IsVisible() and (not cursor.mountInParty or not IsItemInRange(88589, "mouseover")) then
 		cursor:Show()
 	end
 end
@@ -101,7 +101,7 @@ end
 -- RP profile view bindings. Don't do it for hostile targets -- interact
 -- keybinds start attack there.
 local keybind
-local function XRPInteractUnit(unit)
+local function InteractUnit_Hook(unit)
 	if not keybind or InCombatLockdown() or not UnitIsPlayer(unit) or UnitCanAttack("player", unit) then return end
 	local mountable = UnitVehicleSeatCount(unit) > 0
 	if mountable and (((UnitInParty(unit) or UnitInRaid(unit)) and IsItemInRange(88589, unit)) or GetCVar("AutoInteract") == "1") then return end
@@ -128,11 +128,11 @@ xrpPrivate.settingsToggles.interact = {
 				cursorimage:SetTexture("Interface\\MINIMAP\\TRACKING\\Class")
 				cursorimage:SetAllPoints(cursor)
 				cursor:Hide()
-				cursor:SetScript("OnEvent", XRPCursor_OnEventHandler)
-				cursor:SetScript("OnUpdate", XRPCursor_OnUpdateHandler)
-				hooksecurefunc("TurnOrActionStart", XRPCursor_TurnOrActionStart)
-				hooksecurefunc("TurnOrActionStop", XRPCursor_TurnOrActionStop)
-				xrp:HookEvent("RECEIVE", XRPCursor_RECEIVE)
+				cursor:SetScript("OnEvent", Cursor_OnEvent)
+				cursor:SetScript("OnUpdate", Cursor_OnUpdate)
+				hooksecurefunc("TurnOrActionStart", Cursor_TurnOrActionStart)
+				hooksecurefunc("TurnOrActionStop", Cursor_TurnOrActionStop)
+				xrp:HookEvent("RECEIVE", Cursor_RECEIVE)
 			end
 			cursor:RegisterEvent("UPDATE_MOUSEOVER_UNIT")
 			rightclick = true
@@ -145,7 +145,7 @@ xrpPrivate.settingsToggles.interact = {
 	keybind = function(setting)
 		if setting then
 			if keybind == nil then
-				hooksecurefunc("InteractUnit", XRPInteractUnit)
+				hooksecurefunc("InteractUnit", InteractUnit_Hook)
 			end
 			keybind = true
 		elseif keybind ~= nil then

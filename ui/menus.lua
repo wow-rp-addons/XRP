@@ -25,7 +25,7 @@ local addonName, xrpPrivate = ...
 -- causing taint problems. This includes all unit menus with a "SET_FOCUS"
 -- button. The menus can be found in Blizzard's UnitPopups.lua.
 
-local function XRPUnitPopup(self)
+local function UnitPopup_Hook(self)
 	local button = self.value
 	if button == "XRP_VIEW_CHARACTER" then
 		xrp:View(xrp:NameWithRealm(UIDROPDOWNMENU_INIT_MENU.name, UIDROPDOWNMENU_INIT_MENU.server))
@@ -34,15 +34,14 @@ local function XRPUnitPopup(self)
 	end
 end
 
-local XRPMenuEntry = { text = "Roleplay Profile", dist = 0 }
+local Buttons_Profile = { text = "Roleplay Profile", dist = 0 }
 
 local isHooked, standard, units
-
 xrpPrivate.settingsToggles.menus = {
 	standard = function(setting)
 		if setting then
 			if not isHooked then
-				hooksecurefunc("UnitPopup_OnClick", XRPUnitPopup)
+				hooksecurefunc("UnitPopup_OnClick", UnitPopup_Hook)
 				isHooked = true
 			end
 			if standard == nil then
@@ -57,7 +56,7 @@ xrpPrivate.settingsToggles.menus = {
 				end
 			end
 			if not standard then
-				UnitPopupButtons["XRP_VIEW_CHARACTER"] = XRPMenuEntry
+				UnitPopupButtons["XRP_VIEW_CHARACTER"] = Buttons_Profile
 				table.insert(UnitPopupMenus["FRIEND"], 1, "XRP_VIEW_CHARACTER")
 				table.insert(UnitPopupMenus["GUILD"], 1, "XRP_VIEW_CHARACTER")
 				table.insert(UnitPopupMenus["CHAT_ROSTER"], 1, "XRP_VIEW_CHARACTER")
@@ -80,7 +79,7 @@ xrpPrivate.settingsToggles.menus = {
 	units = function(setting)
 		if setting then
 			if not isHooked then
-				hooksecurefunc("UnitPopup_OnClick", XRPUnitPopup)
+				hooksecurefunc("UnitPopup_OnClick", UnitPopup_Hook)
 				isHooked = true
 			end
 			if units == nil then
@@ -95,7 +94,7 @@ xrpPrivate.settingsToggles.menus = {
 				end
 			end
 			if not units then
-				UnitPopupButtons["XRP_VIEW_UNIT"] = XRPMenuEntry
+				UnitPopupButtons["XRP_VIEW_UNIT"] = Buttons_Profile
 				table.insert(UnitPopupMenus["PLAYER"], 1, "XRP_VIEW_UNIT")
 				table.insert(UnitPopupMenus["PARTY"], 1, "XRP_VIEW_UNIT")
 				table.insert(UnitPopupMenus["RAID_PLAYER"], 1, "XRP_VIEW_UNIT")
