@@ -20,7 +20,7 @@ local addonName, xrpPrivate = ...
 xrpPrivate.settingsToggles = {}
 
 local DATA_VERSION = 2
-local DATA_VERSION_ACCOUNT = 2
+local DATA_VERSION_ACCOUNT = 3
 
 local DEFAULT_SETTINGS = {
 	cache = {
@@ -57,7 +57,6 @@ local DEFAULT_SETTINGS = {
 	minimap = {
 		enabled = true,
 		angle = 200,
-		hidett = false,
 		detached = false,
 		point = "CENTER",
 		x = 0,
@@ -67,7 +66,6 @@ local DEFAULT_SETTINGS = {
 		enabled = true,
 		watching = false,
 		extraspace = false,
-		faction = false,
 		guildrank = false,
 		guildindex = false,
 		nohostile = true,
@@ -123,6 +121,10 @@ local upgradeAccountVars = {
 
 		xrpAccountSaved.settings = newsettings
 	end,
+	[3] = function() -- 6.0.3.0
+		xrpAccountSaved.settings.minimap.hidett = nil
+		xrpAccountSaved.settings.tooltip.faction = nil
+	end,
 }
 
 local upgradeVars = {
@@ -164,7 +166,6 @@ local function InitializeSavedVariables()
 
 			if xrp_settings.tooltip and xrp_settings.tooltip.reaction ~= nil then
 				-- 5.4.8.0
-				xrp_settings.tooltip.faction = not xrp_settings.tooltip.reaction
 				xrp_settings.tooltip.reaction = nil
 				xrp_settings.tooltip.norprace = not xrp_settings.tooltip.rprace
 				xrp_settings.tooltip.rprace = nil
@@ -174,7 +175,6 @@ local function InitializeSavedVariables()
 				-- 5.4.8.1
 				local minimap = {
 					angle = xrp_settings.minimap,
-					hidett = xrp_settings.hideminimaptt,
 					detached = xrp_settings.minimapdetached,
 					x = xrp_settings.minimapx,
 					y = xrp_settings.minimapy,
@@ -190,13 +190,13 @@ local function InitializeSavedVariables()
 
 			xrpAccountSaved = {
 				settings = xrp_settings,
-				dataVersion = 2,
+				dataVersion = 1, -- Leave this at 1.
 			}
 			xrp_settings = nil
 		else
 			xrpAccountSaved = {
 				settings = {},
-				dataVersion = 2,
+				dataVersion = DATA_VERSION_ACCOUNT,
 			}
 		end
 		for section, defaults in pairs(DEFAULT_SETTINGS) do
@@ -238,7 +238,7 @@ local function InitializeSavedVariables()
 				profiles = xrp_profiles,
 				selected = xrp_selectedprofile,
 				versions = xrp_versions or {},
-				dataVersion = 2,
+				dataVersion = 2, -- Leave this at 2.
 			}
 			for name, profile in pairs(xrpSaved.profiles) do
 				if type(profile.versions) ~= "table" then
@@ -286,7 +286,7 @@ local function InitializeSavedVariables()
 				},
 				selected = "Default",
 				versions = {},
-				dataVersion = 2,
+				dataVersion = DATA_VERSION,
 			}
 		end
 	end
