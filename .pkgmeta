@@ -1,5 +1,5 @@
 ignore:
-    - docs/CHANGELOG.txt
+    - docs/CHANGES.txt
     - .pkgmeta
-manual-changelog: docs/CHANGELOG.txt
+manual-changelog: docs/CHANGES.txt
 enable-nolib-creation: no
