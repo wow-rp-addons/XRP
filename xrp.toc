@@ -27,7 +27,6 @@ ui\minimap.xml
 ui\viewer.xml
 ui\editor.xml
 ui\options.xml
-ui\ui.lua
 extra\fixes.lua
 extra\libmsp_compat.lua
 extra\import.lua

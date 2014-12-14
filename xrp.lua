@@ -19,7 +19,19 @@ local addonName, xrpPrivate = ...
 
 xrp = {
 	values = {
-		GC = {},
+		GC = {
+			DEATHKNIGHT = "Death Knight",
+			DRUID = "Druid",
+			HUNTER = "Hunter",
+			MAGE = "Mage",
+			MONK = "Monk",
+			PALADIN = "Paladin",
+			PRIEST = "Priest",
+			ROGUE = "Rogue",
+			SHAMAN = "Shaman",
+			WARLOCK = "Warlock",
+			Warrior = "Warrior",
+		},
 		GR = {
 			Dwarf = "Dwarf",
 			Draenei = "Draenei",
@@ -57,7 +69,13 @@ xrp = {
 		},
 	},
 }
-FillLocalizedClassList(xrp.values.GC)
+
+-- Global strings for keybinds.
+BINDING_HEADER_XRP = "XRP"
+BINDING_NAME_XRP_EDITOR = "Open/close RP profile editor"
+BINDING_NAME_XRP_VIEWER = "View target's or mouseover's RP profile"
+BINDING_NAME_XRP_VIEWER_TARGET = "View target's RP profile"
+BINDING_NAME_XRP_VIEWER_MOUSEOVER = "View mouseover's RP profile"
 
 xrpPrivate.version = GetAddOnMetadata(addonName, "Version")
 
@@ -137,11 +155,11 @@ do
 			local newfields
 			do
 				local addonString = "%s/%s"
-				local fullVA = addonString:format(GetAddOnMetadata(addonName, "Title"), xrpPrivate.version)
+				local VA = { addonString:format(GetAddOnMetadata(addonName, "Title"), xrpPrivate.version) }
 				for _, addon in ipairs(addons) do
 					local name, title, notes, enabled, reason, secure, loadable = GetAddOnInfo(addon)
 					if enabled or loadable then
-						fullVA = fullVA..";"..addonString:format(name, GetAddOnMetadata(name, "Version"))
+						VA[#VA + 1] = addonString:format(name, GetAddOnMetadata(name, "Version"))
 					end
 				end
 				newfields = {
@@ -151,7 +169,7 @@ do
 					GS = tostring(UnitSex("player")),
 					GU = UnitGUID("player"),
 					NA = UnitName("player"), -- Fallback NA field.
-					VA = fullVA,
+					VA = table.concat(VA, ";"),
 				}
 			end
 			local fields, versions = xrpSaved.meta.fields, xrpSaved.meta.versions
