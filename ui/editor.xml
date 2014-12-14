@@ -227,7 +227,8 @@
 		<Size x="28" y="28"/>
 		<Scripts>
 			<OnClick>
-				StaticPopup_Show(self.popupName, self:GetParent().Profiles.contents)
+				local editor = self:GetParent()
+				StaticPopup_Show(self.popupName, editor.Profiles.contents, nil, editor)
 			</OnClick>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_CURSOR")
@@ -617,11 +618,6 @@
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT"/>
 				</Anchors>
-				<Scripts>
-					<OnClick>
-						self:GetParent():Save()
-					</OnClick>
-				</Scripts>
 			</Button>
 			<!-- Revert Button -->
 			<Button parentKey="RevertButton" inherits="MagicButtonTemplate" text="Revert">
@@ -708,6 +704,11 @@
 					</Layer>
 				</Layers>
 				<Frames>
+					<Button inherits="UIPanelCloseButton">
+						<Anchors>
+							<Anchor point="TOPRIGHT" x="-2" y="-3"/>
+						</Anchors>
+					</Button>
 					<!-- Form -->
 					<Frame name="$parentAutoForm" parentKey="Form" inherits="XRPEditorDropDownTemplate">
 						<Anchors>
@@ -732,11 +733,6 @@
 							</OnLoad>
 						</Scripts>
 					</Frame>
-					<Button inherits="UIPanelCloseButton">
-						<Anchors>
-							<Anchor point="TOPRIGHT" x="-2" y="-3"/>
-						</Anchors>
-					</Button>
 					<Button parentKey="Save" inherits="UIPanelButtonTemplate" text="Save">
 						<Size x="90" y="20"/>
 						<Anchors>

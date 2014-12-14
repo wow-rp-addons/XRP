@@ -38,6 +38,10 @@ StaticPopupDialogs["XRP_ERROR"] = {
 	preferredIndex = 3,
 }
 
+local function CloseParent(self)
+	self:GetParent():Hide()
+end
+
 StaticPopupDialogs["XRP_URL"] = {
 	text = (IsWindowsClient() or IsLinuxClient()) and "Copy the URL (Ctrl+C) and paste into your web browser." or IsMacClient() and "Copy the URL (Cmd+C) and paste into your web browser." or "Copy the URL and paste into your web browser.",
 	button1 = DONE,
@@ -52,12 +56,8 @@ StaticPopupDialogs["XRP_URL"] = {
 		self:SetText(url or "")
 		self:HighlightText()
 	end,
-	EditBoxOnEnterPressed = function(self)
-		self:GetParent():Hide()
-	end,
-	EditBoxOnEscapePressed = function(self)
-		self:GetParent():Hide()
-	end,
+	EditBoxOnEnterPressed = CloseParent,
+	EditBoxOnEscapePressed = CloseParent,
 	enterClicksFirstButton = true,
 	timeout = 0,
 	whileDead = true,
@@ -84,7 +84,7 @@ StaticPopupDialogs["XRP_CURRENTLY"] = {
 	button2 = RESET,
 	button3 = CANCEL,
 	hasEditBox = true,
-	OnShow = function(self, data)
+	OnShow = function(self)
 		self.editBox:SetWidth(self.editBox:GetWidth() + 150)
 		self.editBox:SetText(xrp.current.fields.CU or "")
 		self.editBox:HighlightText()
@@ -93,17 +93,17 @@ StaticPopupDialogs["XRP_CURRENTLY"] = {
 			self.button2:Disable()
 		end
 	end,
-	EditBoxOnTextChanged = function(self, data)
+	EditBoxOnTextChanged = function(self)
 		if self:GetText() ~= (xrp.current.fields.CU or "") then
 			self:GetParent().button1:Enable()
 		else
 			self:GetParent().button1:Disable()
 		end
 	end,
-	OnAccept = function(self, data, data2)
+	OnAccept = function(self)
 		xrp.current.fields.CU = self.editBox:GetText()
 	end,
-	OnCancel = function(self, data, data2) -- Reset button.
+	OnCancel = function(self) -- Reset button.
 		xrp.current.fields.CU = nil
 	end,
 	EditBoxOnEnterPressed = function(self)
@@ -113,9 +113,7 @@ StaticPopupDialogs["XRP_CURRENTLY"] = {
 			parent:Hide()
 		end
 	end,
-	EditBoxOnEscapePressed = function(self)
-		self:GetParent():Hide()
-	end,
+	EditBoxOnEscapePressed = CloseParent,
 	enterClicksFirstButton = true,
 	timeout = 0,
 	whileDead = true,
@@ -127,7 +125,7 @@ StaticPopupDialogs["XRP_CACHE_CLEAR"] = {
 	text = "Are you sure you wish to fully clear the cache?",
 	button1 = ACCEPT,
 	button2 = CANCEL,
-	OnAccept = function()
+	OnAccept = function(self)
 		xrpPrivate:CacheTidy(60)
 		StaticPopup_Show("XRP_NOTIFICATION", "The cache has been cleared.")
 	end,
@@ -141,7 +139,7 @@ StaticPopupDialogs["XRP_CACHE_CLEAR"] = {
 StaticPopupDialogs["XRP_CACHE_TIDY"] = {
 	text = "Old entries have been pruned from the cache.",
 	button1 = OKAY,
-	OnShow = function(self, data)
+	OnShow = function(self)
 		xrpPrivate:CacheTidy()
 	end,
 	enterClicksFirstButton = false,
@@ -151,44 +149,46 @@ StaticPopupDialogs["XRP_CACHE_TIDY"] = {
 	preferredIndex = 3,
 }
 
+local function ButtonToggle(self)
+	if self:GetText() ~= "" then
+		self:GetParent().button1:Enable()
+	else
+		self:GetParent().button1:Disable()
+	end
+end
+
+local function DisableButton(self)
+	self.button1:Disable()
+end
+
 StaticPopupDialogs["XRP_EDITOR_ADD"] = {
 	text = "Enter a name for the new profile:",
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	hasEditBox = true,
-	OnShow = function(self, data)
-		self.button1:Disable()
-	end,
-	EditBoxOnTextChanged = function(self, data)
-		if self:GetText() ~= "" then
-			self:GetParent().button1:Enable()
-		else
-			self:GetParent().button1:Disable()
-		end
-	end,
-	OnAccept = function(self, data, data2)
+	OnShow = DisableButton,
+	EditBoxOnTextChanged = ButtonToggle,
+	OnAccept = function(self, editor)
 		local name = self.editBox:GetText()
 		if not xrp.profiles:Add(name) then
 			StaticPopup_Show("XRP_ERROR", ("The name \"%s\" is unavailable or already in use."):format(name))
 		else
-			xrpPrivate.editor:Load(name)
+			editor:Load(name)
 		end
 	end,
-	EditBoxOnEnterPressed = function(self)
+	EditBoxOnEnterPressed = function(self, editor)
 		local parent = self:GetParent()
 		if parent.button1:IsEnabled() then
 			local name = self:GetText()
 			if not xrp.profiles:Add(name) then
 				StaticPopup_Show("XRP_ERROR", ("The name \"%s\" is unavailable or already in use."):format(name))
 			else
-				xrpPrivate.editor:Load(name)
+				editor:Load(name)
 			end
+			parent:Hide()
 		end
-		parent:Hide()
 	end,
-	EditBoxOnEscapePressed = function(self)
-		self:GetParent():Hide()
-	end,
+	EditBoxOnEscapePressed = CloseParent,
 	enterClicksFirstButton = true,
 	timeout = 0,
 	enterClicksFirstButton = true,
@@ -202,12 +202,12 @@ StaticPopupDialogs["XRP_EDITOR_DELETE"] = {
 	text = "Are you sure you want to remove \"%s\"?",
 	button1 = YES,
 	button2 = NO,
-	OnAccept = function(self, data, data2)
-		local name = xrpPrivate.editor.Profiles.contents
+	OnAccept = function(self, editor)
+		local name = editor.Profiles.contents
 		if not xrp.profiles[name]:Delete() then
 			StaticPopup_Show("XRP_ERROR", ("The profile\"%s\" is currently active. Active profiles cannot be removed."):format(name))
 		else
-			xrpPrivate.editor:Load(xrpSaved.selected)
+			editor:Load(xrpSaved.selected)
 		end
 	end,
 	enterClicksFirstButton = false,
@@ -222,39 +222,29 @@ StaticPopupDialogs["XRP_EDITOR_RENAME"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	hasEditBox = true,
-	OnShow = function(self, data)
-		self.button1:Disable()
-	end,
-	EditBoxOnTextChanged = function(self, data)
-		if self:GetText() ~= "" then
-			self:GetParent().button1:Enable()
-		else
-			self:GetParent().button1:Disable()
-		end
-	end,
-	OnAccept = function(self, data, data2)
+	OnShow = DisableButton,
+	EditBoxOnTextChanged = ButtonToggle,
+	OnAccept = function(self, editor)
 		local name = self.editBox:GetText()
-		if not xrp.profiles[xrpPrivate.editor.Profiles.contents]:Rename(name) then
+		if not xrp.profiles[editor.Profiles.contents]:Rename(name) then
 			StaticPopup_Show("XRP_ERROR", ("The name \"%s\" is unavailable or already in use."):format(name))
 		else
-			xrpPrivate.editor:Load(name)
+			editor:Load(name)
 		end
 	end,
-	EditBoxOnEnterPressed = function(self)
+	EditBoxOnEnterPressed = function(self, editor)
 		local parent = self:GetParent()
 		if parent.button1:IsEnabled() then
 			local name = self:GetText()
-			if not xrp.profiles[xrpPrivate.editor.Profiles.contents]:Rename(name) then
+			if not xrp.profiles[editor.Profiles.contents]:Rename(name) then
 				StaticPopup_Show("XRP_ERROR", ("The name \"%s\" is unavailable or already in use."):format(name))
 			else
-				xrpPrivate.editor:Load(name)
+				editor:Load(name)
 			end
+			parent:Hide()
 		end
-		parent:Hide()
 	end,
-	EditBoxOnEscapePressed = function(self)
-		self:GetParent():Hide()
-	end,
+	EditBoxOnEscapePressed = CloseParent,
 	enterClicksFirstButton = true,
 	timeout = 0,
 	whileDead = true,
@@ -267,39 +257,29 @@ StaticPopupDialogs["XRP_EDITOR_COPY"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	hasEditBox = true,
-	OnShow = function(self, data)
-		self.button1:Disable()
-	end,
-	EditBoxOnTextChanged = function(self, data)
-		if self:GetText() ~= "" then
-			self:GetParent().button1:Enable()
-		else
-			self:GetParent().button1:Disable()
-		end
-	end,
-	OnAccept = function(self, data, data2)
+	OnShow = DisableButton,
+	EditBoxOnTextChanged = ButtonToggle,
+	OnAccept = function(self, editor)
 		local name = self.editBox:GetText()
-		if not xrp.profiles[xrpPrivate.editor.Profiles.contents]:Copy(name) then
+		if not xrp.profiles[editor.Profiles.contents]:Copy(name) then
 			StaticPopup_Show("XRP_ERROR", ("The name \"%s\" is unavailable or already in use."):format(name))
 		else
-			xrpPrivate.editor:Load(name)
+			editor:Load(name)
 		end
 	end,
-	EditBoxOnEnterPressed = function(self)
+	EditBoxOnEnterPressed = function(self, editor)
 		local parent = self:GetParent()
 		if parent.button1:IsEnabled() then
 			local name = self:GetText()
-			if not xrp.profiles[xrpPrivate.editor.Profiles.contents]:Copy(name) then
+			if not xrp.profiles[editor.Profiles.contents]:Copy(name) then
 				StaticPopup_Show("XRP_ERROR", ("The name \"%s\" is unavailable or already in use."):format(name))
 			else
-				xrpPrivate.editor:Load(name)
+				editor:Load(name)
 			end
+			parent:Hide()
 		end
-		self:GetParent():Hide()
 	end,
-	EditBoxOnEscapePressed = function(self)
-		self:GetParent():Hide()
-	end,
+	EditBoxOnEscapePressed = CloseParent,
 	enterClicksFirstButton = true,
 	timeout = 0,
 	whileDead = true,

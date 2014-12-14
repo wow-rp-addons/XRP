@@ -61,18 +61,6 @@ function xrp:View(player)
 	end
 end
 
-function xrp:Edit(profile)
-	local editor = xrpPrivate:GetEditor()
-	if not profile and editor:IsShown() then
-		HideUIPanel(editor)
-		return
-	end
-	ShowUIPanel(editor)
-	if profile then
-		editor:Load(profile)
-	end
-end
-
 -- Global strings for keybinds.
 BINDING_HEADER_XRP = "XRP"
 BINDING_NAME_XRP_EDITOR = "Open/close RP profile editor"
