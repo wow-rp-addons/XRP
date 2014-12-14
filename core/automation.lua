@@ -29,7 +29,7 @@ xrpPrivate.auto = setmetatable({}, {
 		return profile
 	end,
 	__newindex = function(self, form, profile)
-		if not xrpSaved.profiles[profile] then return end
+		if profile and not xrpSaved.profiles[profile] then return end
 		xrpSaved.auto[form] = profile
 		RecheckForm()
 	end,
@@ -167,6 +167,8 @@ do
 		swap.race = nil
 		swap.class = nil
 		swap.equip = nil
+		-- This forces a form check immediately, for new profile assignments.
+		swap.timer = 0
 		TestForm(swap)
 	end
 	swap:SetScript("OnEvent", TestForm)
