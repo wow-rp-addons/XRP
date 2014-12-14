@@ -19,6 +19,8 @@ local addonName, xrpPrivate = ...
 
 local rpnames, replacements
 
+-- The following chat types are linked together by default. These *can* be
+-- overridden in the settings, but the UI won't allow for such by default.
 local LINKED_CHAT_MSG = {
 	["CHAT_MSG_TEXT_EMOTE"] = "CHAT_MSG_EMOTE",
 	["CHAT_MSG_OFFICER"] = "CHAT_MSG_GUILD",
@@ -29,8 +31,6 @@ local LINKED_CHAT_MSG = {
 	["CHAT_MSG_INSTANCE_CHAT_LEADER"] = "CHAT_MSG_INSTANCE_CHAT",
 }
 
--- /cry - I don't want to overwrite your functions, Blizzard, but you don't
--- leave me any choice.
 local function XRPGetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14)
 	-- Emotes from ourselves don't have our name in them, and Blizzard's
 	-- code can erroneously replace substrings of the emotes or of the
@@ -78,7 +78,7 @@ local function XRPGetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7
 	return nameformat:format(name)
 end
 
-local function XRPMessageFilter_TEXT_EMOTE(self, event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, ...)
+local function MessageFilter_TEXT_EMOTE(self, event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, ...)
 	if not arg12 or not rpnames then return false end
 
 	-- Blizzard doesn't include the realm name in TEXT_EMOTE events because
@@ -95,7 +95,7 @@ end
 -- This fixes spacing at the start of emotes when using apostrophes,
 -- commas, and colons. This requires a modified GetColoredName, so it has
 -- to go hand-in-hand with chat names.
-local function XRPMessageFilter_EMOTE(self, event, message, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, ...)
+local function MessageFilter_EMOTE(self, event, message, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, ...)
 	if not rpnames then
 		return false
 	end
@@ -116,7 +116,7 @@ end
 -- unavailable, unit name. Note that this has the minor oddity of saving the
 -- replaced value in the chat history, rather than the %xt/%xf replacement
 -- pattern.
-local function XRPParseText(line, send)
+local function ParseText_Hook(line, send)
 	if send == 1 and replacements then
 		local oldtext = line:GetText()
 		local text = oldtext
@@ -137,8 +137,8 @@ xrpPrivate.settingsToggles.chat = {
 	rpnames = function(setting)
 		if setting then
 			if rpnames == nil then
-				ChatFrame_AddMessageEventFilter("CHAT_MSG_EMOTE", XRPMessageFilter_EMOTE)
-				ChatFrame_AddMessageEventFilter("CHAT_MSG_TEXT_EMOTE", XRPMessageFilter_TEXT_EMOTE)
+				ChatFrame_AddMessageEventFilter("CHAT_MSG_EMOTE", MessageFilter_EMOTE)
+				ChatFrame_AddMessageEventFilter("CHAT_MSG_TEXT_EMOTE", MessageFilter_TEXT_EMOTE)
 			end
 			GetColoredName = XRPGetColoredName
 			rpnames = true
@@ -150,7 +150,7 @@ xrpPrivate.settingsToggles.chat = {
 	replacements = function(setting)
 		if setting then
 			if replacements == nil then
-				hooksecurefunc("ChatEdit_ParseText", XRPParseText)
+				hooksecurefunc("ChatEdit_ParseText", ParseText_Hook)
 			end
 			replacements = true
 		elseif replacements ~= nil then
