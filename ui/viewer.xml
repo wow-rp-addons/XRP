@@ -305,6 +305,8 @@
 					<KeyValue key="SetHeight" value="assert" type="global"/>
 					<KeyValue key="point" value="TOPRIGHT"/>
 					<KeyValue key="relativePoint" value="BOTTOMRIGHT"/>
+					<KeyValue key="xOffset" value="0" type="number"/>
+					<KeyValue key="yOffset" value="0" type="number"/>
 				</KeyValues>
 				<Size x="23" y="19"/>
 				<Anchors>
@@ -312,7 +314,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						ToggleDropDownMenu(nil, nil, self, self, 0, 0, self.baseMenuList)
+						ToggleDropDownMenu(nil, nil, self, self, nil, nil, self.baseMenuList)
 						PlaySound("igMainMenuOptionCheckBoxOn")
 					</OnClick>
 					<OnHide>
@@ -350,6 +352,7 @@
 				self.fields.VA = self.VA
 				self.current = UNKNOWN
 				self.failed = UNKNOWN
+				self.lastFieldSet = 0
 			</OnLoad>
 			<OnShow>
 				PlaySound("igCharacterInfoOpen")
