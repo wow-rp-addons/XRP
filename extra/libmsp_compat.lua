@@ -53,48 +53,48 @@ end)
 
 local nk = {} -- Used to hide character names inside table.
 
-local nonewindex = function() end
+local noFunc = function() end
 
-local mspchars = setmetatable({}, { __mode = "v" })
+local mspChars = setmetatable({}, { __mode = "v" })
 
-local fieldmt = {
+local fieldMeta = {
 	__index = function(self, field)
 		return xrpCache[self[nk]].fields[field] or ""
 	end,
-	__newindex = nonewindex,
+	__newindex = noFunc,
 	__metatable = false,
 }
 
-local vermt = {
+local verMeta = {
 	__index = function(self, field)
 		return xrpCache[self[nk]].versions[field]
 	end,
-	__newindex = nonewindex,
+	__newindex = noFunc,
 	__metatable = false,
 }
 
-local loadtime = GetTime()
-local timetable = setmetatable({}, {
+local loadTime = GetTime()
+local timeTable = setmetatable({}, {
 	__index = function()
-		return loadtime -- Worst-case scenario, they re-run msp:Request().
+		return loadTime -- Worst-case scenario, they re-run msp:Request().
 	end,
-	__newindex = nonewindex,
+	__newindex = noFunc,
 	__metatable = false,
 })
 
-local emptymt = { __newindex = nonewindex, __metatable = false, }
-local emptyt = setmetatable({}, emptymt)
+local emptyMeta = { __newindex = noFunc, __metatable = false, }
+local emptyTable = setmetatable({}, emptyMeta)
 
 local emptychar = setmetatable({
-	field = setmetatable({}, { __index = function() return "" end, __newindex = nonewindex, __metatable = false, }),
-	ver = emptyt,
-	time = emptyt,
-}, emptymt)
+	field = setmetatable({}, { __index = function() return "" end, __newindex = noFunc, __metatable = false, }),
+	ver = emptyTable,
+	time = emptyTable,
+}, emptyMeta)
 
 -- Some addons try to mess with the frames we don't actually have.
 msp.dummyframe = {
-	RegisterEvent = nonewindex,
-	UnregisterEvent = nonewindex,
+	RegisterEvent = noFunc,
+	UnregisterEvent = noFunc,
 }
 msp.dummyframex = msp.dummyframe
 
@@ -102,12 +102,12 @@ msp.char = setmetatable({}, {
 	__index = function (self, character)
 		local name = xrp:NameWithRealm(character) -- For pre-5.4.7 addons.
 		if xrpCache[name] then
-			mspchars[name] = { field = setmetatable({ [nk] = name }, fieldmt), ver = setmetatable({ [nk] = name }, vermt), time = timetable, }
-			return mspchars[name]
+			mspChars[name] = { field = setmetatable({ [nk] = name }, fieldMeta), ver = setmetatable({ [nk] = name }, verMeta), time = timeTable, }
+			return mspChars[name]
 		end
 		return emptychar -- LibMSP never returns nil.
 	end,
-	__newindex = nonewindex,
+	__newindex = noFunc,
 	__metatable = false,
 })
 
@@ -130,7 +130,7 @@ msp.myver = setmetatable({}, {
 	__index = function(self, field)
 		return xrp.current.versions[field]
 	end,
-	__newindex = nonewindex,
+	__newindex = noFunc,
 	__metatable = false,
 })
 

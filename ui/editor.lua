@@ -168,10 +168,9 @@ do
 			end
 		end
 
-		local none = { text = "None", checked = Checked, arg1 = nil, func = Parent_Click }
-
+		local NONE = { text = "None", checked = Checked, arg1 = nil, func = Parent_Click }
 		function Parent_PreClick(self, button, down)
-			self.baseMenuList = { none }
+			self.baseMenuList = { NONE }
 			local editingProfile = self:GetParent().Profiles.contents
 			for index, profile in ipairs(xrp.profiles:List()) do
 				if profile ~= editingProfile and not xrpPrivate:DoesParentLoop(editingProfile, profile) then

@@ -46,13 +46,13 @@ local function XRPGetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7
 		end
 	end
 
-	local chattype = event:sub(10)
-	if chattype:sub(1, 7) == "WHISPER" then
+	local chatType = event:sub(10)
+	if chatType:sub(1, 7) == "WHISPER" then
 		event = "CHAT_MSG_WHISPER"
-		chattype = "WHISPER"
-	elseif chattype:sub(1, 7) == "CHANNEL" then
+		chatType = "WHISPER"
+	elseif chatType:sub(1, 7) == "CHANNEL" then
 		event = "CHAT_MSG_CHANNEL"
-		chattype = ("CHANNEL%u"):format(arg8)
+		chatType = ("CHANNEL%u"):format(arg8)
 	end
 
 	-- RP name in channels is from case-insensitive NAME, not the number.
@@ -66,16 +66,16 @@ local function XRPGetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7
 
 	local character = arg12 and xrp.guids[arg12] or nil
 	local name = xrpPrivate.settings.chat[event] and character and not character.hide and xrp:StripEscapes(character.fields.NA) or Ambiguate(arg2, "guild")
-	local nameformat = ((event == "CHAT_MSG_EMOTE" or event == "CHAT_MSG_TEXT_EMOTE") and xrpPrivate.settings.chat.emotebraced and "[%s]" or "%s")..(event == "CHAT_MSG_EMOTE" and arg9 or "")
+	local nameFormat = ((event == "CHAT_MSG_EMOTE" or event == "CHAT_MSG_TEXT_EMOTE") and xrpPrivate.settings.chat.emotebraced and "[%s]" or "%s")..(event == "CHAT_MSG_EMOTE" and arg9 or "")
 
-	local info = ChatTypeInfo[chattype]
+	local info = ChatTypeInfo[chatType]
 	if info and info.colorNameByClass and arg12 then
 		local color = RAID_CLASS_COLORS[character.fields.GC]
 		if color and color.colorStr then
-			return nameformat:format(("|c%s%s|r"):format(color.colorStr, name))
+			return nameFormat:format(("|c%s%s|r"):format(color.colorStr, name))
 		end
 	end
-	return nameformat:format(name)
+	return nameFormat:format(name)
 end
 
 local function MessageFilter_TEXT_EMOTE(self, event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, ...)
@@ -118,15 +118,15 @@ end
 -- pattern.
 local function ParseText_Hook(line, send)
 	if send == 1 and replacements then
-		local oldtext = line:GetText()
-		local text = oldtext
+		local oldText = line:GetText()
+		local text = oldText
 		if text:find("%xt", nil, true) then
 			text = text:gsub("%%xt", UnitExists("target") and (xrp.units.target and xrp:StripEscapes(xrp.units.target.fields.NA) or UnitName("target")) or "nobody")
 		end
 		if text:find("%xf", nil, true) then
 			text = text:gsub("%%xf", UnitExists("focus") and (xrp.units.focus and xrp:StripEscapes(xrp.units.focus.fields.NA) or UnitName("focus")) or "nobody")
 		end
-		if text ~= oldtext then
+		if text ~= oldText then
 			line:SetText(text)
 		end
 	end

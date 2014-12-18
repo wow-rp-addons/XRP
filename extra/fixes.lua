@@ -19,15 +19,15 @@
 -- frames) section tends to horrifically taint most of the UI. Warn users about
 -- that.
 
-local cufopened = false
+local cufOpened = false
 CompactUnitFrameProfiles:HookScript("OnShow", function(self)
-	cufopened = true
+	cufOpened = true
 end)
 
 InterfaceOptionsFrame:HookScript("OnHide", function(self)
-	if cufopened then
+	if cufOpened then
 		StaticPopup_Show("XRP_RELOAD", "Accessing the raid profiles configuration may cause UI problems due to Blizzard bugs (inaccurately blaming XRP or others). You should reload your UI now to avoid this possibility.")
-		cufopened = false
+		cufOpened = false
 	end
 end)
 
