@@ -38,7 +38,6 @@
 	<EditBox name="XRPEditorSingleLineTemplate" autoFocus="false" inherits="InputBoxTemplate" virtual="true">
 		<KeyValues>
 			<KeyValue key="inherited" value="false" type="boolean"/>
-			<KeyValue key="contents" value=""/>
 		</KeyValues>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -60,7 +59,7 @@
 			<OnAttributeChanged>
 				if name == "contents" then
 					self.contents = value
-					self:SetText(value)
+					self:SetText(value or "")
 					self:SetCursorPosition(0)
 				elseif name == "inherited" then
 					if value == true and not self.inherited then
@@ -77,14 +76,15 @@
 			</OnTabPressed>
 			<OnTextChanged>
 				if userInput then
-					self.contents = self:GetText()
+					local text = self:GetText()
+					self.contents = text ~= "" and text or nil
 					self:GetParent():GetParent():CheckFields(self.field)
 				end
 			</OnTextChanged>
 			<OnEditFocusGained>
 				if self.inherited then
 					self:SetAttribute("inherited", false)
-					self:SetAttribute("contents", "")
+					self:SetAttribute("contents", nil)
 				end
 			</OnEditFocusGained>
 			<OnEditFocusLost>
@@ -157,7 +157,6 @@
 			<EditBox parentKey="EditBox" multiLine="true" letters="131071" countInvisibleLetters="true" autoFocus="false">
 				<KeyValues>
 					<KeyValue key="inherited" value="false" type="boolean"/>
-					<KeyValue key="contents" value=""/>
 				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT"/>
@@ -166,7 +165,7 @@
 					<OnAttributeChanged>
 						if name == "contents" then
 							self.contents = value
-							self:SetText(value)
+							self:SetText(value or "")
 							self:SetCursorPosition(0)
 						elseif name == "inherited" then
 							if value == true and not self.inherited then
@@ -186,7 +185,8 @@
 						local parent = self:GetParent()
 						ScrollingEdit_OnTextChanged(self, parent)
 						if userInput then
-							self.contents = self:GetText()
+							local text = self:GetText()
+							self.contents = text ~= "" and text or nil
 							parent:GetParent():GetParent():CheckFields(parent.field)
 						end
 					</OnTextChanged>
@@ -200,7 +200,7 @@
 					<OnEditFocusGained>
 						if self.inherited then
 							self:SetAttribute("inherited", false)
-							self:SetAttribute("contents", "")
+							self:SetAttribute("contents", nil)
 						end
 					</OnEditFocusGained>
 					<OnEditFocusLost>
@@ -477,7 +477,6 @@
 							<KeyValue key="field" value="FC"/>
 							<KeyValue key="fieldName" value="Character status"/>
 							<KeyValue key="inherited" value="false" type="boolean"/>
-							<KeyValue key="contents" value=""/>
 						</KeyValues>
 						<Frames>
 							<CheckButton parentKey="Inherit" inherits="XRPEditorInheritCheckTemplate">
@@ -493,7 +492,7 @@
 							<OnAttributeChanged>
 								if name == "contents" then
 									self.contents = value
-									self.MenuText:SetText(xrp.values[self.field][tonumber(value) or 0])
+									self.MenuText:SetText(xrp.values[self.field][value or "0"])
 								elseif name == "inherited" then
 									if value == true and not self.inherited then
 										self.MenuText:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b)
@@ -515,9 +514,6 @@
 			</Frame>
 			<!-- Saved Character Profiles -->
 			<Button name="$parentProfiles" parentKey="Profiles" inherits="XRPDropDownTemplate">
-				<KeyValues>
-					<KeyValue key="contents" value=""/>
-				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-225" y="-27"/>
 				</Anchors>
@@ -589,7 +585,7 @@
 				</Scripts>
 			</Button>
 			<!-- Parent Profile -->
-			<Button parentKey="Parent" inherits="MagicButtonTemplate" text="">
+			<Button parentKey="Parent" inherits="MagicButtonTemplate">
 				<Size x="192" y="22"/>
 				<KeyValues>
 					<KeyValue key="initialize" value="EasyMenu_Initialize" type="global"/>
@@ -597,7 +593,6 @@
 					<KeyValue key="SetHeight" value="assert" type="global"/>
 					<KeyValue key="xOffset" value="0" type="number"/>
 					<KeyValue key="yOffset" value="0" type="number"/>
-					<KeyValue key="contents" value=""/>
 				</KeyValues>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT"/>
