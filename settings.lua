@@ -166,6 +166,7 @@ local function InitializeSavedVariables()
 
 			if xrp_settings.tooltip and xrp_settings.tooltip.reaction ~= nil then
 				-- 5.4.8.0
+				xrp_settings.tooltip.faction = not xrp_settings.tooltip.reaction
 				xrp_settings.tooltip.reaction = nil
 				xrp_settings.tooltip.norprace = not xrp_settings.tooltip.rprace
 				xrp_settings.tooltip.rprace = nil
@@ -179,6 +180,7 @@ local function InitializeSavedVariables()
 					x = xrp_settings.minimapx,
 					y = xrp_settings.minimapy,
 					point = xrp_settings.minimappoint,
+					hidett = xrp_settings.hideminimaptt,
 				}
 				xrp_settings.minimap = minimap
 				xrp_settings.hideminimaptt = nil
@@ -238,7 +240,7 @@ local function InitializeSavedVariables()
 				profiles = xrp_profiles,
 				selected = xrp_selectedprofile,
 				versions = xrp_versions or {},
-				dataVersion = 2, -- Leave this at 2.
+				dataVersion = 1, -- Leave this at 1.
 			}
 			for name, profile in pairs(xrpSaved.profiles) do
 				if type(profile.versions) ~= "table" then

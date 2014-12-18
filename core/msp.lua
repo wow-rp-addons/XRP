@@ -57,7 +57,6 @@ msp.cache = setmetatable({}, {
 })
 
 function msp:UpdateBNList()
-	if not BNConnected() then return end
 	for i = 1, select(2, BNGetNumFriends()) do
 		for j = 1, BNGetNumFriendToons(i) do
 			local active, toonName, client, realmName, _, _, _, _, _, _, _, _, _, _, _, toonID = BNGetFriendToonInfo(i, j)
