@@ -36,7 +36,7 @@ StaticPopupDialogs["XRP_IMPORT_RELOAD"] = {
 }
 
 -- This is easy. Using a very similar storage format (i.e., MSP fields).
-local function import_MyRolePlay()
+local function ImportMyRolePlay()
 	if not mrpSaved then
 		return 0
 	end
@@ -53,7 +53,7 @@ local function import_MyRolePlay()
 							value = ""
 						end
 					elseif field == "FR" and tonumber(value) then
-						value = value ~= "0" and xrp.values.FR[tonumber(value)] or ""
+						value = value ~= "0" and xrp.values.FR[value] or ""
 					end
 					xrp.profiles[newname].fields[field] = value ~= "" and value or nil
 				end
@@ -64,16 +64,16 @@ local function import_MyRolePlay()
 	return imported
 end
 
-local import_totalRP2
+local ImportTotalRP2
 do
-	local trp2_height = {
+	local TRP2_HEIGHT = {
 		"Very short",
 		"Short",
 		"Average",
 		"Tall",
 		"Very tall",
 	}
-	local trp2_weight = {
+	local TRP2_WEIGHT = {
 		"Overweight",
 		"Regular",
 		"Muscular",
@@ -81,7 +81,7 @@ do
 	}
 
 	-- This is a bit more complex. And partly in French.
-	function import_totalRP2()
+	function ImportTotalRP2()
 		if not TRP2_Module_PlayerInfo or not xrp.profiles:Add("TRP2") then
 			return 0
 		end
@@ -120,8 +120,8 @@ do
 			xrp.profiles["TRP2"].fields.AG = profile.Registre.Age
 			xrp.profiles["TRP2"].fields.HH = profile.Registre.Habitation
 			xrp.profiles["TRP2"].fields.HB = profile.Registre.Origine
-			xrp.profiles["TRP2"].fields.AH = trp2_height[profile.Registre.Taille or 3]
-			xrp.profiles["TRP2"].fields.AW = trp2_weight[profile.Registre.Silhouette or 2]
+			xrp.profiles["TRP2"].fields.AH = TRP2_HEIGHT[profile.Registre.Taille or 3]
+			xrp.profiles["TRP2"].fields.AW = TRP2_WEIGHT[profile.Registre.Silhouette or 2]
 		end
 		return 1
 	end
@@ -132,14 +132,14 @@ import:SetScript("OnEvent", function(self, event)
 	if event == "PLAYER_LOGIN" then
 		local imported = false
 		if hasMRP then
-			local count = import_MyRolePlay()
+			local count = ImportMyRolePlay()
 			if count > 0 then
 				DisableAddOn("MyRolePlay")
 				imported = true
 			end
 		end
 		if hasTRP2 then
-			local count = import_totalRP2()
+			local count = ImportTotalRP2()
 			if count > 0 then
 				DisableAddOn("totalRP2")
 				imported = true

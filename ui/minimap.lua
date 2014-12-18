@@ -51,8 +51,9 @@ do
 		end
 
 		local FC = xrp.values.FC
-		for i = 0, #FC, 1 do
-			Status_menuList[i + 1] = { text = FC[i], checked = Status_Checked, arg1 = tostring(i), func = Status_Click, }
+		for i = 0, 4, 1 do
+			local iString = tostring(i)
+			Status_menuList[i + 1] = { text = FC[iString], checked = Status_Checked, arg1 = iString, func = Status_Click, }
 		end
 	end
 

@@ -93,7 +93,7 @@
 					GameTooltip:AddLine(("Profile: |cffffffff%s|r"):format(xrpSaved.selected))
 					local FC = xrp.current.fields.FC
 					if FC and FC ~= "0" then
-						GameTooltip:AddLine(("Status: |cff%s%s|r"):format(FC == "1" and "99664d" or "66b380", xrp.values.FC[tonumber(FC)] or FC))
+						GameTooltip:AddLine(("Status: |cff%s%s|r"):format(FC == "1" and "99664d" or "66b380", xrp.values.FC[FC]))
 					end
 					local CU = xrp.current.fields.CU
 					if CU then

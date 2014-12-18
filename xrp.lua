@@ -30,7 +30,7 @@ xrp = {
 			ROGUE = "Rogue",
 			SHAMAN = "Shaman",
 			WARLOCK = "Warlock",
-			Warrior = "Warrior",
+			WARRIOR = "Warrior",
 		},
 		GR = {
 			Dwarf = "Dwarf",
@@ -53,19 +53,19 @@ xrp = {
 			["3"] = "Female",
 		},
 		FR = {
-			[0] = "(None)",
-			[1] = "Normal roleplayer",
-			[2] = "Casual roleplayer",
-			[3] = "Full-time roleplayer",
-			[4] = "Beginner roleplayer",
-			[5] = "Mature roleplayer", -- This isn't standard (?) but is used sometimes.
+			["0"] = "(None)",
+			["1"] = "Normal roleplayer",
+			["2"] = "Casual roleplayer",
+			["3"] = "Full-time roleplayer",
+			["4"] = "Beginner roleplayer",
+			["5"] = "Mature roleplayer", -- This isn't standard (?) but is used sometimes.
 		},
 		FC = {
-			[0] = "(None)",
-			[1] = "Out of character",
-			[2] = "In character",
-			[3] = "Looking for contact",
-			[4] = "Storyteller",
+			["0"] = "(None)",
+			["1"] = "Out of character",
+			["2"] = "In character",
+			["3"] = "Looking for contact",
+			["4"] = "Storyteller",
 		},
 	},
 }

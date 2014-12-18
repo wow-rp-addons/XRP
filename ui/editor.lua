@@ -36,7 +36,7 @@ do
 		local name = editor.Profiles.contents
 		local profile, inherits = xrp.profiles[name].fields, xrp.profiles[name].inherits
 		for field, control in pairs(editor.fields) do
-			profile[field] = control.inherited and "" or control.contents
+			profile[field] = not control.inherited and control.contents or nil
 			inherits[field] = control.Inherit:GetChecked()
 		end
 		local parent = editor.Parent.contents
@@ -55,7 +55,7 @@ do
 
 		local profile, inherits = xrp.profiles[name].fields, xrp.profiles[name].inherits
 		for field, control in pairs(self.fields) do
-			control:SetAttribute("contents", profile[field] or "")
+			control:SetAttribute("contents", profile[field])
 			control:SetAttribute("inherited", false)
 			control.Inherit:SetChecked(inherits[field] ~= false)
 		end
@@ -81,14 +81,14 @@ local CheckFields
 do
 	local function FallbackFieldContents(field)
 		if field ~= "NA" and field ~= "RA" and field ~= "RC" then
-			return ""
+			return nil
 		end
 		local metafield = field == "RA" and "GR" or field == "RC" and "GC" or nil
-		return xrpSaved.meta.fields[field] or xrp.values[metafield][xrpSaved.meta.fields[metafield]] or ""
+		return xrpSaved.meta.fields[field] or xrp.values[metafield][xrpSaved.meta.fields[metafield]] or nil
 	end
 
 	local function CheckField(control, name, parent, profile, inherits, field)
-		if (not control.HasFocus or not control:HasFocus()) and (control.contents == "" or control.inherited) then
+		if (not control.HasFocus or not control:HasFocus()) and (not control.contents or control.inherited) then
 			if parent and control.Inherit:GetChecked() then
 				control:SetAttribute("inherited", true)
 				local parentcontent = xrp.profiles[parent].fields[field]
@@ -104,7 +104,7 @@ do
 				end
 			else
 				local fallback = FallbackFieldContents(field)
-				control:SetAttribute("inherited", fallback ~= "")
+				control:SetAttribute("inherited", fallback ~= nil)
 				control:SetAttribute("contents", fallback)
 			end
 		end
@@ -113,7 +113,7 @@ do
 		else
 			control.Inherit:Hide()
 		end
-		return (control.inherited and profile[field] ~= nil) or (not control.inherited and control.contents ~= (profile[field] or "")) or (control.Inherit:GetChecked()) ~= (inherits[field] ~= false) or nil
+		return (control.inherited and profile[field] ~= nil) or (not control.inherited and control.contents ~= profile[field]) or control.Inherit:GetChecked() ~= (inherits[field] ~= false) or nil
 	end
 
 	function CheckFields(self, field)
@@ -192,8 +192,9 @@ do
 
 		local FC = xrp.values.FC
 		FC_baseMenuList = {}
-		for i = 0, #FC, 1 do
-			FC_baseMenuList[i + 1] = { text = FC[i], checked = Checked, arg1 = i == 0 and "" or tostring(i), func = FC_Click }
+		for i = 0, 4, 1 do
+			local iString = tostring(i)
+			FC_baseMenuList[i + 1] = { text = FC[iString], checked = Checked, arg1 = i ~= 0 and iString or nil, func = FC_Click }
 		end
 	end
 end

@@ -169,10 +169,10 @@ do
 			if (fields.FR and fields.FR ~= "0") or (fields.FC and fields.FC ~= "0") then
 				local color = fields.FC == "1" and "ff99664d" or "ff66b380"
 				-- AAAAAAAAAAAAAAAAAAAAAAAA. The boolean logic.
-				local frline = ("|c%s%s|r"):format(color, TruncateLine((fields.FR == "0" or not fields.FR) and " " or tonumber(fields.FR) and xrp.values.FR[tonumber(fields.FR)] or xrp:StripEscapes(fields.FR), 35, 0, false))
+				local frline = ("|c%s%s|r"):format(color, TruncateLine((fields.FR == "0" or not fields.FR) and " " or xrp.values.FR[fields.FR] or xrp:StripEscapes(fields.FR), 35, 0, false))
 				local fcline
 				if fields.FC and fields.FC ~= "0" then
-					fcline = ("|c%s%s|r"):format(color, TruncateLine(tonumber(fields.FC) and xrp.values.FC[tonumber(fields.FC)] or xrp:StripEscapes(fields.FC), 35, 0, false))
+					fcline = ("|c%s%s|r"):format(color, TruncateLine(xrp.values.FC[fields.FC] or xrp:StripEscapes(fields.FC), 35, 0, false))
 				end
 				RenderLine(frline, fcline)
 			end
