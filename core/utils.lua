@@ -47,7 +47,7 @@ end
 do
 	-- Realms just needing title case spacing are handled via gsub. These are
 	-- more complex, such as lower case words, digits, or dashes.
-	local realms = {
+	local SPECIAL_REALMS = {
 		["AltarofStorms"] = "Altar of Storms",
 		["Area52"] = "Area 52",
 		["AzjolNerub"] = "Azjol-Nerub",
@@ -57,7 +57,7 @@ do
 
 	function xrp:RealmNameWithSpacing(realm)
 		-- gsub: spaces lower followed by upper (i.e., Wyrmrest Accord).
-		return realms[realm] or (realm:gsub("(%l)(%u)", "%1 %2"))
+		return SPECIAL_REALMS[realm] or (realm:gsub("(%l)(%u)", "%1 %2"))
 	end
 end
 

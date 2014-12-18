@@ -18,11 +18,11 @@
 local addonName, xrpPrivate = ...
 
 -- Cannot define commands in static table, as they make use of each other.
-local xrpcmds = {}
+local xrpCmds = {}
 
 do
 	local header = "|cffabd473%s|r %s"
-	xrpcmds.about = function(args)
+	xrpCmds.about = function(args)
 		print(header:format("XRP", "("..xrpPrivate.version..")"))
 		print(("|cff99b3e6Author:|r %s"):format(GetAddOnMetadata(addonName, "Author")))
 		print(("|cff99b3e6Version:|r %"):format(xrpPrivate.version))
@@ -33,7 +33,7 @@ do
 
 	local usage = header:format("Usage:", "%s")
 	local command = " - |cfffff569%s:|r %s"
-	xrpcmds.help = function(args)
+	xrpCmds.help = function(args)
 		if args == "about" then
 			print(usage:format("/xrp about"))
 			print("Show basic information about XRP.")
@@ -71,11 +71,11 @@ do
 	end
 end
 
-xrpcmds.edit = function(args)
+xrpCmds.edit = function(args)
 	xrp:Edit(args)
 end
 
-xrpcmds.profile = function(args)
+xrpCmds.profile = function(args)
 	if args == "list" then
 		print("Profiles:")
 		for _, profile in ipairs(xrp.profiles:List()) do
@@ -88,11 +88,11 @@ xrpcmds.profile = function(args)
 			print(("Failed to set profile to \"%s\"."):format(args))
 		end
 	else
-		xrpcmds.help("profile")
+		xrpCmds.help("profile")
 	end
 end
 
-xrpcmds.status = function(args)
+xrpCmds.status = function(args)
 	if args == "nil" then
 		xrp.current.fields.FC = nil
 	elseif args == "ooc" then
@@ -104,11 +104,11 @@ xrpcmds.status = function(args)
 	elseif args == "st" then
 		xrp.current.fields.FC = "4"
 	else
-		xrpcmds.help("status")
+		xrpCmds.help("status")
 	end
 end
 
-xrpcmds.view = function(args)
+xrpCmds.view = function(args)
 	if not args and UnitIsPlayer("target") then
 		args = "target"
 	elseif not args and UnitIsPlayer("mouseover") then
@@ -117,20 +117,20 @@ xrpcmds.view = function(args)
 	if type(args) == "string" then
 		xrp:View(args)
 	else
-		xrpcmds.help("view")
+		xrpCmds.help("view")
 	end
 end
 
 -- Aliases.
-xrpcmds.show = xrpcmds.view
+xrpCmds.show = xrpCmds.view
 
-SLASH_XRP1 =  "/xrp"
+SLASH_XRP1 = "/xrp"
 
 SlashCmdList["XRP"] = function(input, editBox)
 	local command, args = input:match("^([^%s]+)%s*(.*)$")
-	if xrpcmds[command] then
-		xrpcmds[command](args ~= "" and args or nil)
+	if xrpCmds[command:lower()] then
+		xrpCmds[command:lower()](args ~= "" and args or nil)
 	else
-		xrpcmds["help"](args ~= "" and args or nil)
+		xrpCmds["help"](args ~= "" and args or nil)
 	end
 end

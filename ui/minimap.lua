@@ -95,7 +95,7 @@ local GetAttachedMinimap
 do
 	local Minmap_UpdatePosition
 	do
-		local minimapShapes = {
+		local MINIMAP_SHAPES = {
 			["ROUND"] = { true, true, true, true },
 			["SQUARE"] = { false, false, false, false },
 			["CORNER-TOPLEFT"] = { false, false, false, true },
@@ -116,7 +116,7 @@ do
 			local x, y, q = math.cos(angle), math.sin(angle), 1
 			if x < 0 then q = q + 1 end
 			if y > 0 then q = q + 2 end
-			if minimapShapes[GetMinimapShape and GetMinimapShape() or "ROUND"][q] then
+			if MINIMAP_SHAPES[GetMinimapShape and GetMinimapShape() or "ROUND"][q] then
 				x, y = x*80, y*80
 			else
 				-- 103.13708498985 = math.sqrt(2*(80)^2)-10

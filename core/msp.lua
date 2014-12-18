@@ -48,7 +48,7 @@ msp.request = {}
 msp.cache = setmetatable({}, {
 	__index = function(self, character)
 		self[character] = {
-			nextcheck = 0,
+			nextCheck = 0,
 			received = false,
 			time = {},
 		}
@@ -79,14 +79,14 @@ do
 			if not character or character == "" or not filter[character] then
 				return false
 			end
-			local dofilter = filter[character] > (GetTime() - 2.500)
-			if not dofilter then
+			local doFilter = filter[character] > (GetTime() - 2.500)
+			if not doFilter then
 				filter[character] = nil
 			else
 				-- Same error message for offline and opposite faction.
 				xrpPrivate:FireEvent("FAIL", character, (not xrp.cache[character].fields.GF or xrp.cache[character].fields.GF == xrp.current.fields.GF) and "offline" or "faction")
 			end
-			return dofilter
+			return doFilter
 		end)
 
 		-- Most complex function ever.
@@ -137,26 +137,26 @@ do
 
 		local isGroup = channel ~= "WHISPER" and UnitRealmRelationship(Ambiguate(character, "none")) == LE_REALM_RELATION_COALESCED
 		local isInstance = isGroup and IsInGroup(LE_PARTY_CATEGORY_INSTANCE)
-		channel = channel ~= "GAME" and channel or (isGroup and (isInstance and "INSTANCE_CHAT" or "RAID") or "WHISPER")
+		channel = channel ~= "GAME" and channel or isGroup and (isInstance and "INSTANCE_CHAT" or "RAID") or "WHISPER"
 		local prepend = isGroup and isRequest and ("%s\30"):format(character) or ""
 		local queue = isGroup and "XRP-GROUP" or ("XRP-%s"):format(character)
 		local callback = not isGroup and msp_AddFilter or nil
-		local chunksize = 255 - #prepend
+		local chunkSize = 255 - #prepend
 
-		if #data <= chunksize then
+		if #data <= chunkSize then
 			libbw:SendAddonMessage(not isGroup and "MSP" or "GMSP", prepend..data, channel, character, "NORMAL", queue, callback, character)
 		else
-			chunksize = isGroup and (chunksize - 1) or chunksize
+			chunkSize = isGroup and (chunkSize - 1) or chunkSize
 			-- XC is most likely to add five or six extra characters, will
 			-- not add less than five, and only adds seven or more if the
 			-- profile is over 25000 characters or so. So let's say six.
-			data = ("XC=%u\1%s"):format(((#data + 6) / chunksize) + 1, data)
+			data = ("XC=%u\1%s"):format(((#data + 6) / chunkSize) + 1, data)
 			local position = 1
-			libbw:SendAddonMessage(not isGroup and "MSP\1" or "GMSP", (isGroup and "%s\1%s" or "%s%s"):format(prepend, data:sub(position, position + chunksize - 1)), channel, character, "BULK", queue, callback, character)
-			position = position + chunksize
-			while position + chunksize <= #data do
-				libbw:SendAddonMessage(not isGroup and "MSP\2" or "GMSP", (isGroup and "%s\2%s" or "%s%s"):format(prepend, data:sub(position, position + chunksize - 1)), channel, character, "BULK", queue, callback, character)
-				position = position + chunksize
+			libbw:SendAddonMessage(not isGroup and "MSP\1" or "GMSP", (isGroup and "%s\1%s" or "%s%s"):format(prepend, data:sub(position, position + chunkSize - 1)), channel, character, "BULK", queue, callback, character)
+			position = position + chunkSize
+			while position + chunkSize <= #data do
+				libbw:SendAddonMessage(not isGroup and "MSP\2" or "GMSP", (isGroup and "%s\2%s" or "%s%s"):format(prepend, data:sub(position, position + chunkSize - 1)), channel, character, "BULK", queue, callback, character)
+				position = position + chunkSize
 			end
 			libbw:SendAddonMessage(not isGroup and "MSP\3" or "GMSP", (isGroup and "%s\3%s" or "%s%s"):format(prepend, data:sub(position)), channel, character, "BULK", queue, callback, character)
 		end
@@ -177,12 +177,12 @@ msp:SetScript("OnUpdate", msp.OnUpdate)
 
 do
 	-- Tooltip order for ideal XRP viewer usage.
-	local ttfields = { "VP", "VA", "NA", "NH", "NI", "NT", "RA", "RC", "CU", "FR", "FC" }
+	local TT_FIELDS = { "VP", "VA", "NA", "NH", "NI", "NT", "RA", "RC", "CU", "FR", "FC" }
 	local tt
 	function msp:GetTT()
 		if not tt then
 			local current, tooltip = xrp.current, {}
-			for _, field in ipairs(ttfields) do
+			for _, field in ipairs(TT_FIELDS) do
 				tooltip[#tooltip + 1] = (not current.fields[field] and "%s" or "%s%u=%s"):format(field, current.versions[field], current.fields[field])
 			end
 			local newtt = table.concat(tooltip, "\1")
@@ -199,7 +199,7 @@ do
 end
 
 do
-	local req_timer = setmetatable({}, {
+	local requestTime = setmetatable({}, {
 		__index = function(self, character)
 			self[character] = {}
 			return self[character]
@@ -207,7 +207,7 @@ do
 		__mode = "v", -- Worst case, we rarely send too soon again.
 	})
 	-- This returns requested field output, or nil if no requests were
-	-- made. msp.cache[character].fieldupdated is set to true if a
+	-- made. msp.cache[character].fieldUpdated is set to true if a
 	-- field has changed, false if a field has not been changed.
 	function msp:Process(character, command)
 		local action, field, version, contents = command:match("(%p?)(%u%u)(%d*)=?(.*)")
@@ -220,11 +220,11 @@ do
 			-- string with our info for that field. (If it doesn't, it
 			-- means we're ignoring their request, probably because
 			-- they're spamming it at us.)
-			if req_timer[character][field] and req_timer[character][field] > now - 10 then
-				req_timer[character][field] = now
+			if requestTime[character][field] and requestTime[character][field] > now - 10 then
+				requestTime[character][field] = now
 				return nil
 			end
-			req_timer[character][field] = now
+			requestTime[character][field] = now
 			if field == "TT" then
 				-- Rebuild the TT to catch any version changes before checking
 				-- the version.
@@ -245,7 +245,7 @@ do
 		elseif action == "!" and ((not xrpCache[character] and version == 0) or (xrpCache[character] and version == (xrpCache[character].versions[field] or 0))) then
 			-- Told us we have latest of their field.
 			self.cache[character].time[field] = GetTime()
-			self.cache[character].fieldupdated = self.cache[character].fieldupdated or false
+			self.cache[character].fieldUpdated = self.cache[character].fieldUpdated or false
 			if xrpCache[character] and (field == "VP" or field == "TT") and self.cache[character].bnet == nil then
 				self.cache[character].bnet = tonumber(xrpCache[character].fields.VP) >= 2
 			end
@@ -267,8 +267,8 @@ do
 				-- exists (indicating MSP support is/was present -- this
 				-- function is the *only* place a character cache table is
 				-- created).
-				for gfield, _ in pairs(xrpPrivate.fields.unit) do
-					xrpCache[character].fields[gfield] = xrp.cache[character].fields[gfield]
+				for gField, _ in pairs(xrpPrivate.fields.unit) do
+					xrpCache[character].fields[gField] = xrp.cache[character].fields[gField]
 				end
 			end
 			local updated = false
@@ -296,12 +296,15 @@ do
 
 			if updated then
 				xrpPrivate:FireEvent("FIELD", character, field)
-				self.cache[character].fieldupdated = true
-				if field == "VP" and tonumber(contents) then
-					self.cache[character].bnet = tonumber(contents) >= 2
+				self.cache[character].fieldUpdated = true
+				if field == "VP" then
+					local numVP = tonumber(contents)
+					if numVP then
+						self.cache[character].bnet = numVP >= 2
+					end
 				end
 			else
-				self.cache[character].fieldupdated = self.cache[character].fieldupdated or false
+				self.cache[character].fieldUpdated = self.cache[character].fieldUpdated or false
 			end
 			return nil
 		end
@@ -321,16 +324,16 @@ msp.handlers = {
 				out[#out + 1] = response
 			end
 		end
-		-- If a field has been updated (i.e., changed content), fieldupdated
+		-- If a field has been updated (i.e., changed content), fieldUpdated
 		-- will be set to true; if a field was received, but the content has
-		-- not changed, fieldupdated will be set to false; if no fields were
-		-- received (i.e., only requests), fieldupdated is nil.
-		if self.cache[character].fieldupdated == true then
+		-- not changed, fieldUpdated will be set to false; if no fields were
+		-- received (i.e., only requests), fieldUpdated is nil.
+		if self.cache[character].fieldUpdated == true then
 			xrpPrivate:FireEvent("RECEIVE", character)
-			self.cache[character].fieldupdated = nil
-		elseif self.cache[character].fieldupdated == false then
+			self.cache[character].fieldUpdated = nil
+		elseif self.cache[character].fieldUpdated == false then
 			xrpPrivate:FireEvent("NOCHANGE", character)
-			self.cache[character].fieldupdated = nil
+			self.cache[character].fieldUpdated = nil
 		end
 		local hasCache = xrpCache[character] ~= nil
 		if out and #out > 0 then
@@ -346,9 +349,9 @@ msp.handlers = {
 		end
 	end,
 	["MSP\1"] = function(self, character, message, channel)
-		local totalchunks = tonumber(message:match("^XC=(%d+)\1"))
-		if totalchunks then
-			self.cache[character].totalchunks = totalchunks
+		local totalChunks = tonumber(message:match("^XC=(%d+)\1"))
+		if totalChunks then
+			self.cache[character].totalChunks = totalChunks
 			-- Drop XC if present.
 			message = message:gsub("^XC=%d+\1", "")
 		end
@@ -362,7 +365,7 @@ msp.handlers = {
 		end
 		self.cache[character].chunks = 1
 		self.cache[character][channel] = message
-		xrpPrivate:FireEvent("CHUNK", character, self.cache[character].chunks, self.cache[character].totalchunks)
+		xrpPrivate:FireEvent("CHUNK", character, self.cache[character].chunks, self.cache[character].totalChunks)
 	end,
 	["MSP\2"] = function(self, character, message, channel)
 		-- If we don't have a buffer (i.e., no prior received message),
@@ -389,7 +392,7 @@ msp.handlers = {
 			end
 		end
 		self.cache[character].chunks = (self.cache[character].chunks or 0) + 1
-		xrpPrivate:FireEvent("CHUNK", character, self.cache[character].chunks, self.cache[character].totalchunks)
+		xrpPrivate:FireEvent("CHUNK", character, self.cache[character].chunks, self.cache[character].totalChunks)
 	end,
 	["MSP\3"] = function(self, character, message, channel)
 		-- If we don't have a buffer (i.e., no prior received message),
@@ -401,11 +404,11 @@ msp.handlers = {
 		end
 		self.handlers["MSP"](self, character, type(self.cache[character][channel]) == "string" and (self.cache[character][channel]..message) or (table.concat(self.cache[character][channel])..message), channel)
 		-- CHUNK after RECEIVE would fire. Makes it easier to do something
-		-- useful when chunks == totalchunks.
+		-- useful when chunks == totalChunks.
 		xrpPrivate:FireEvent("CHUNK", character, (self.cache[character].chunks or 0) + 1, (self.cache[character].chunks or 0) + 1)
 
 		self.cache[character].chunks = nil
-		self.cache[character].totalchunks = nil
+		self.cache[character].totalChunks = nil
 		self.cache[character][channel] = nil
 	end,
 	["GMSP"] = function(self, character, message, channel)
@@ -426,7 +429,7 @@ msp:SetScript("OnEvent", function(self, event, prefix, message, channel, sender)
 		-- Ignore messages from ourselves (GMSP).
 		if character ~= xrpPrivate.playerWithRealm then
 			self.cache[character].received = true
-			self.cache[character].nextcheck = nil
+			self.cache[character].nextCheck = nil
 
 			self.handlers[prefix](self, character, message, channel)
 		end
@@ -437,7 +440,7 @@ msp:SetScript("OnEvent", function(self, event, prefix, message, channel, sender)
 
 		self.cache[character].bnet = true
 		self.cache[character].received = true
-		self.cache[character].nextcheck = nil
+		self.cache[character].nextCheck = nil
 
 		self.handlers[prefix](self, character, message, "BN")
 	elseif event == "BN_TOON_NAME_UPDATED" or event == "BN_FRIEND_TOON_ONLINE" then
@@ -445,24 +448,24 @@ msp:SetScript("OnEvent", function(self, event, prefix, message, channel, sender)
 		if client == "WoW" then
 			local character = xrp:NameWithRealm(toonName, realmName)
 			if not self.bnet[character] and not self.cache[character].received then
-				self.cache[character].nextcheck = 0
+				self.cache[character].nextCheck = 0
 			end
 			self.bnet[character] = prefix
 		end
 	elseif event == "GROUP_ROSTER_UPDATE" then
 		local units = IsInRaid() and self.raidUnits or self.partyUnits
-		local inGroup, newinGroup = self.inGroup, {}
+		local inGroup, newInGroup = self.inGroup, {}
 		for _, unit in ipairs(units) do
 			local name = xrp:UnitNameWithRealm(unit)
 			if not name then break end
 			if name ~= xrpPrivate.playerWithRealm then
 				if not inGroup[name] and not self.cache[name].received then
-					self.cache[name].nextcheck = 0
+					self.cache[name].nextCheck = 0
 				end
-				newinGroup[name] = true
+				newInGroup[name] = true
 			end
 		end
-		self.inGroup = newinGroup
+		self.inGroup = newInGroup
 	elseif event == "BN_CONNECTED" then
 		self:UpdateBNList()
 		self:RegisterEvent("BN_TOON_NAME_UPDATED")
@@ -530,7 +533,9 @@ xrpPrivate.fields = {
 }
 
 function xrpPrivate:QueueRequest(character, field)
-	if disabled or character == xrpPrivate.playerWithRealm or xrp:NameWithoutRealm(character) == UNKNOWN then return false end
+	if disabled or character == xrpPrivate.playerWithRealm or xrp:NameWithoutRealm(character) == UNKNOWN then
+		return false
+	end
 
 	if not msp.request[character] then
 		msp.request[character] = {}
@@ -546,24 +551,24 @@ function xrpPrivate:Request(character, fields)
 	if disabled or character == xrpPrivate.playerWithRealm or xrp:NameWithoutRealm(character) == UNKNOWN then return false end
 
 	local now = GetTime()
-	if not msp.cache[character].received and now < msp.cache[character].nextcheck then
+	if not msp.cache[character].received and now < msp.cache[character].nextCheck then
 		self:FireEvent("FAIL", character, "nomsp")
 		return false
 	elseif not msp.cache[character].received then
-		msp.cache[character].nextcheck = now + 120
+		msp.cache[character].nextCheck = now + 120
 	end
 
 	-- No need to strip repeated fields -- the logic below for not querying
 	-- fields repeatedly over a short time will handle that for us.
-	local reqtt = false
+	local reqTT = false
 	-- This entire for block is FRAGILE. Modifications not recommended.
 	for key = #fields, 1, -1 do
 		if fields[key] == "TT" or self.fields.tt[fields[key]] then
 			table.remove(fields, key)
-			reqtt = true
+			reqTT = true
 		end
 	end
-	if reqtt then
+	if reqTT then
 		-- Want TT at start of request.
 		table.insert(fields, 1, "TT")
 	end
@@ -587,68 +592,68 @@ end
 -- common events to fake running OnUpdates if there hasn't been any recent
 -- framedraws to keep sending/receiving properly while tabbed out (albeit with
 -- the possibility of some delay).
-local function fs_Create()
+local function CreateFSFrame()
 	local frame = CreateFrame("Frame")
 	frame:Hide()
 	frame:SetScript("OnShow", function(self)
 		local now = GetTime()
-		self.lastdraw = now
-		self.lastmsp = now
-		self.lastbwbn = now
-		self.lastbwgame = now
+		self.lastDraw = now
+		self.lastMSP = now
+		self.lastBWBN = now
+		self.lastBWGame = now
 	end)
 	frame:SetScript("OnUpdate", function(self, elapsed)
-		self.lastdraw = self.lastdraw + elapsed
+		self.lastDraw = self.lastDraw + elapsed
 	end)
 	frame:SetScript("OnEvent", function(self, event)
 		local now = GetTime()
-		if self.lastdraw < now - 5 then
+		if self.lastDraw < now - 5 then
 			-- No framedraw for 5+ seconds.
 			if msp:IsVisible() then
-				msp:OnUpdate(now - self.lastmsp)
-				self.lastmsp = now
+				msp:OnUpdate(now - self.lastMSP)
+				self.lastMSP = now
 			end
 			if libbw.BN:IsVisible() then
-				libbw.BN:OnUpdate(now - self.lastbwbn)
-				self.lastbwbn = now
+				libbw.BN:OnUpdate(now - self.lastBWBN)
+				self.lastBWBN = now
 			end
 			if libbw.GAME:IsVisible() then
-				libbw.GAME:OnUpdate(now - self.lastbwgame)
-				self.lastbwgame = now
+				libbw.GAME:OnUpdate(now - self.lastBWGame)
+				self.lastBWGame = now
 			end
 		end
 	end)
 	return frame
 end
 
-local fsframe
-local function fs_Check()
+local fsFrame
+local function FullscreenCheck()
 	if GetCVar("gxWindow") == "0" then
 		-- Is true fullscreen.
-		fsframe = fsframe or fs_Create()
-		fsframe:Show()
+		fsFrame = fsFrame or CreateFSFrame()
+		fsFrame:Show()
 		-- These events are relatively common while idling, so are used to
 		-- fake OnUpdate when tabbed out.
-		fsframe:RegisterEvent("CHAT_MSG_ADDON")
-		fsframe:RegisterEvent("CHAT_MSG_CHANNEL")
-		fsframe:RegisterEvent("CHAT_MSG_GUILD")
-		fsframe:RegisterEvent("CHAT_MSG_SAY")
-		fsframe:RegisterEvent("CHAT_MSG_EMOTE")
-		fsframe:RegisterEvent("GUILD_ROSTER_UPDATE")
-		fsframe:RegisterEvent("GUILD_TRADESKILL_UPDATE")
-		fsframe:RegisterEvent("GUILD_RANKS_UPDATE")
-		fsframe:RegisterEvent("PLAYER_GUILD_UPDATE")
-		fsframe:RegisterEvent("COMPANION_UPDATE")
+		fsFrame:RegisterEvent("CHAT_MSG_ADDON")
+		fsFrame:RegisterEvent("CHAT_MSG_CHANNEL")
+		fsFrame:RegisterEvent("CHAT_MSG_GUILD")
+		fsFrame:RegisterEvent("CHAT_MSG_SAY")
+		fsFrame:RegisterEvent("CHAT_MSG_EMOTE")
+		fsFrame:RegisterEvent("GUILD_ROSTER_UPDATE")
+		fsFrame:RegisterEvent("GUILD_TRADESKILL_UPDATE")
+		fsFrame:RegisterEvent("GUILD_RANKS_UPDATE")
+		fsFrame:RegisterEvent("PLAYER_GUILD_UPDATE")
+		fsFrame:RegisterEvent("COMPANION_UPDATE")
 		-- This would be nice to use, but actually having it happening
 		-- in-combat would be huge overhead.
-		--fsframe:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-	elseif fsframe then
+		--fsFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+	elseif fsFrame then
 		-- Is not true fullscreen, but the frame exists. Hide it, and
 		-- disable events.
-		fsframe:Hide()
-		fsframe:UnregisterAllEvents()
+		fsFrame:Hide()
+		fsFrame:UnregisterAllEvents()
 	end
 end
 
-hooksecurefunc("RestartGx", fs_Check)
-fs_Check()
+hooksecurefunc("RestartGx", FullscreenCheck)
+FullscreenCheck()
