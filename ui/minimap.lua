@@ -39,7 +39,7 @@ do
 	do
 		local function Status_Click(self, status, arg2, checked)
 			local FC = xrp.profiles.SELECTED.fields.FC
-			if not checked and (status ~= FC or (not FC and status ~= "0")) then
+			if not checked and (status ~= FC or not FC and status ~= "0") then
 				xrp.current.fields.FC = status ~= "0" and status or ""
 			elseif not checked then
 				xrp.current.fields.FC = nil
@@ -207,7 +207,7 @@ xrpPrivate.settingsToggles.minimap = {
 		end
 	end,
 	detached = function(setting)
-		if not xrpPrivate.settings.minimap.enabled or not minimap or (setting and minimap == detachedMinimap) or (not setting and minimap == attachedMinimap) then return end
-		xrpPrivate.settingsToggles.minimap.enabled(true)
+		if not xrpPrivate.settings.minimap.enabled or not minimap or setting and minimap == detachedMinimap or not setting and minimap == attachedMinimap then return end
+		xrpPrivate.settingsToggles.minimap.enabled(xrpPrivate.settings.minimap.enabled)
 	end,
 }

@@ -54,7 +54,7 @@ do
 end
 
 local function Cursor_OnEvent(self, event)
-	if not rightclick or InCombatLockdown() or (xrpPrivate.settings.interact.disableinstance and (IsInInstance() or IsInActiveWorldPVP())) or (xrpPrivate.settings.interact.disablepvp and (UnitIsPVP("player") or UnitIsPVPFreeForAll("player"))) or GetMouseFocus() ~= WorldFrame or not xrp.units.mouseover then
+	if not rightclick or InCombatLockdown() or xrpPrivate.settings.interact.disableinstance and (IsInInstance() or IsInActiveWorldPVP()) or xrpPrivate.settings.interact.disablepvp and (UnitIsPVP("player") or UnitIsPVPFreeForAll("player")) or GetMouseFocus() ~= WorldFrame or not xrp.units.mouseover then
 		self:Hide()
 		return
 	end
@@ -104,7 +104,7 @@ local keybind
 local function InteractUnit_Hook(unit)
 	if not keybind or InCombatLockdown() or not UnitIsPlayer(unit) or UnitCanAttack("player", unit) then return end
 	local mountable = UnitVehicleSeatCount(unit) > 0
-	if mountable and (((UnitInParty(unit) or UnitInRaid(unit)) and IsItemInRange(88589, unit)) or GetCVar("AutoInteract") == "1") then return end
+	if mountable and ((UnitInParty(unit) or UnitInRaid(unit)) and IsItemInRange(88589, unit) or GetCVar("AutoInteract") == "1") then return end
 	if mountable then
 		UIErrorsFrame:Clear() -- Hides errors on inteactable mount players.
 	end

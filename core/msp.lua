@@ -146,7 +146,7 @@ do
 		if #data <= chunkSize then
 			libbw:SendAddonMessage(not isGroup and "MSP" or "GMSP", prepend..data, channel, character, "NORMAL", queue, callback, character)
 		else
-			chunkSize = isGroup and (chunkSize - 1) or chunkSize
+			chunkSize = isGroup and chunkSize - 1 or chunkSize
 			-- XC is most likely to add five or six extra characters, will
 			-- not add less than five, and only adds seven or more if the
 			-- profile is over 25000 characters or so. So let's say six.
@@ -242,11 +242,11 @@ do
 			end
 			-- Field has content.
 			return ("%s%u=%s"):format(field, xrp.current.versions[field], xrp.current.fields[field])
-		elseif action == "!" and ((not xrpCache[character] and version == 0) or (xrpCache[character] and version == (xrpCache[character].versions[field] or 0))) then
+		elseif action == "!" and (not xrpCache[character] and version == 0 or xrpCache[character] and version == (xrpCache[character].versions[field] or 0)) then
 			-- Told us we have latest of their field.
 			self.cache[character].time[field] = GetTime()
 			self.cache[character].fieldUpdated = self.cache[character].fieldUpdated or false
-			if xrpCache[character] and (field == "VP" or field == "TT") and self.cache[character].bnet == nil then
+			if xrpCache[character] and field == "TT" and self.cache[character].bnet == nil then
 				self.cache[character].bnet = tonumber(xrpCache[character].fields.VP) >= 2
 			end
 			return nil
@@ -376,7 +376,7 @@ msp.handlers = {
 			self.cache[character][channel] = ""
 		end
 		if message:find("\1", nil, true) then
-			message = type(self.cache[character][channel]) == "string" and (self.cache[character][channel]..message) or (table.concat(self.cache[character][channel])..message)
+			message = (type(self.cache[character][channel]) == "string" and self.cache[character][channel] or table.concat(self.cache[character][channel])) .. message
 			for command in message:gmatch("([^\1]+)\1") do
 				if command:find("^[^%?]") then
 					self:Process(character, command)
@@ -402,7 +402,7 @@ msp.handlers = {
 			if not message then return end
 			self.cache[character][channel] = ""
 		end
-		self.handlers["MSP"](self, character, type(self.cache[character][channel]) == "string" and (self.cache[character][channel]..message) or (table.concat(self.cache[character][channel])..message), channel)
+		self.handlers["MSP"](self, character, (type(self.cache[character][channel]) == "string" and self.cache[character][channel] or table.concat(self.cache[character][channel])) .. message, channel)
 		-- CHUNK after RECEIVE would fire. Makes it easier to do something
 		-- useful when chunks == totalChunks.
 		xrpPrivate:FireEvent("CHUNK", character, (self.cache[character].chunks or 0) + 1, (self.cache[character].chunks or 0) + 1)
@@ -533,7 +533,7 @@ xrpPrivate.fields = {
 }
 
 function xrpPrivate:QueueRequest(character, field)
-	if disabled or character == xrpPrivate.playerWithRealm or xrp:NameWithoutRealm(character) == UNKNOWN then
+	if disabled or character == xrpPrivate.playerWithRealm or xrp:NameWithoutRealm(character) == UNKNOWN or msp.cache[character].time[field] and GetTime() < msp.cache[character].time[field] + self.fields.times[field] then
 		return false
 	end
 
@@ -548,7 +548,9 @@ function xrpPrivate:QueueRequest(character, field)
 end
 
 function xrpPrivate:Request(character, fields)
-	if disabled or character == xrpPrivate.playerWithRealm or xrp:NameWithoutRealm(character) == UNKNOWN then return false end
+	if disabled or character == xrpPrivate.playerWithRealm or xrp:NameWithoutRealm(character) == UNKNOWN then
+		return false
+	end
 
 	local now = GetTime()
 	if not msp.cache[character].received and now < msp.cache[character].nextCheck then

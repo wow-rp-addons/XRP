@@ -47,12 +47,15 @@ local function XRPGetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7
 	end
 
 	local chatType = event:sub(10)
-	if chatType:sub(1, 7) == "WHISPER" then
-		event = "CHAT_MSG_WHISPER"
-		chatType = "WHISPER"
-	elseif chatType:sub(1, 7) == "CHANNEL" then
-		event = "CHAT_MSG_CHANNEL"
-		chatType = ("CHANNEL%u"):format(arg8)
+	do
+		local shortType = chatType:sub(1, 7)
+		if shortType == "WHISPER" then
+			event = "CHAT_MSG_WHISPER"
+			chatType = "WHISPER"
+		elseif shortType == "CHANNEL" then
+			event = "CHAT_MSG_CHANNEL"
+			chatType = ("CHANNEL%u"):format(arg8)
+		end
 	end
 
 	-- RP name in channels is from case-insensitive NAME, not the number.
@@ -66,7 +69,7 @@ local function XRPGetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7
 
 	local character = arg12 and xrp.guids[arg12] or nil
 	local name = xrpPrivate.settings.chat[event] and character and not character.hide and xrp:StripEscapes(character.fields.NA) or Ambiguate(arg2, "guild")
-	local nameFormat = ((event == "CHAT_MSG_EMOTE" or event == "CHAT_MSG_TEXT_EMOTE") and xrpPrivate.settings.chat.emotebraced and "[%s]" or "%s")..(event == "CHAT_MSG_EMOTE" and arg9 or "")
+	local nameFormat = ((event == "CHAT_MSG_EMOTE" or event == "CHAT_MSG_TEXT_EMOTE") and xrpPrivate.settings.chat.emotebraced and "[%s]" or "%s") .. (event == "CHAT_MSG_EMOTE" and arg9 or "")
 
 	local info = ChatTypeInfo[chatType]
 	if info and info.colorNameByClass and arg12 then
@@ -79,7 +82,9 @@ local function XRPGetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7
 end
 
 local function MessageFilter_TEXT_EMOTE(self, event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, ...)
-	if not arg12 or not rpnames then return false end
+	if not arg12 or not rpnames then
+		return false
+	end
 
 	-- Blizzard doesn't include the realm name in TEXT_EMOTE events because
 	-- of bad string escaping practices.
@@ -104,7 +109,7 @@ local function MessageFilter_EMOTE(self, event, message, arg2, arg3, arg4, arg5,
 	-- string.byte to check first three bytes.
 	local b1, b2, b3 = message:byte(1, 3)
 	-- 39 = ' | 44 = , | 58 = : | 226/128/153 = ’
-	if b1 == 39 or b1 == 44 or b1 == 58 or (b1 == 226 and b2 == 128 and b3 == 153) then
+	if b1 == 39 or b1 == 44 or b1 == 58 or b1 == 226 and b2 == 128 and b3 == 153 then
 		-- arg9 isn't normally used for CHAT_MSG_EMOTE.
 		arg9 = message:match("([^%s]*).*")
 		message = message:match("[^%s]*%s*(.*)")

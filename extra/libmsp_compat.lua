@@ -135,7 +135,7 @@ msp.myver = setmetatable({}, {
 })
 
 function msp:Request(character, fields)
-	if not fields or fields == "" then
+	if not fields then
 		fields = { "TT" }
 	elseif type(fields) == "string" then
 		fields = { fields }

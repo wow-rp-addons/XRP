@@ -31,7 +31,7 @@ do
 	local function SetField(field, contents)
 		contents = contents and xrp:StripEscapes(contents) or nil
 		if field == "NA" then
-			contents = contents or Ambiguate(viewer.current, "none") or UNKNOWN
+			contents = contents or xrp:NameWithoutRealm(viewer.current) or UNKNOWN
 		elseif field == "VA" then
 			contents = contents and contents:gsub(";", ", ") or "Unknown/None"
 		elseif not contents then
@@ -53,7 +53,7 @@ do
 
 	function Load(character)
 		for _, field in ipairs(display) do
-			SetField(field, character[field] or (field == "RA" and xrp.values.GR[character.GR]) or (field == "RC" and xrp.values.GC[character.GC]) or nil)
+			SetField(field, character[field] or field == "RA" and xrp.values.GR[character.GR] or field == "RC" and xrp.values.GC[character.GC] or nil)
 		end
 		if xrp.characters[viewer.current].own then
 			viewer.Menu:Hide()
@@ -69,8 +69,8 @@ do
 	function FIELD(event, name, field)
 		if viewer.current == name and supported[field] then
 			SetField(field, xrp.characters[name].fields[field])
-		elseif viewer.current == name and (field == "GR" and not xrp.cache[name].fields.RA) or (field == "GC" and not xrp.cache[name].fields.RC) then
-			SetField((field == "GR" and "RA") or (field == "GC" and "RC"), (field == "GR" and xrp.values.GR[xrp.characters[name].fields.GR]) or (field == "GC" and xrp.values.GC[xrp.characters[name].fields.GC]) or nil)
+		elseif viewer.current == name and (field == "GR" and not xrp.cache[name].fields.RA or field == "GC" and not xrp.cache[name].fields.RC) then
+			SetField(field == "GR" and "RA" or field == "GC" and "RC", field == "GR" and xrp.values.GR[xrp.characters[name].fields.GR] or field == "GC" and xrp.values.GC[xrp.characters[name].fields.GC] or nil)
 		end
 	end
 end
@@ -83,20 +83,7 @@ local function RECEIVE(event, name)
 		end
 		local XC = viewer.XC:GetText()
 		if not XC or not XC:find("^Received") then
-			viewer.XC:SetText("Received!")
-		end
-	end
-end
-
-local function NOCHANGE(event, name)
-	if viewer.current == name then
-		if viewer.failed == name then
-			viewer.failed = nil
-			Load(xrp.characters[name].fields)
-		end
-		local XC = viewer.XC:GetText()
-		if not XC or not XC:find("^Received") then
-			viewer.XC:SetText("No changes.")
+			viewer.XC:SetText(event == "NOCHANGE" and "No changes." or "Received!")
 		end
 	end
 end
@@ -164,7 +151,7 @@ local function CreateViewer()
 	frame.Menu:SetScript("PreClick", Menu_PreClick)
 	xrp:HookEvent("FIELD", FIELD)
 	xrp:HookEvent("RECEIVE", RECEIVE)
-	xrp:HookEvent("NOCHANGE", NOCHANGE)
+	xrp:HookEvent("NOCHANGE", RECEIVE)
 	xrp:HookEvent("CHUNK", CHUNK)
 	xrp:HookEvent("FAIL", FAIL)
 	return frame
@@ -204,14 +191,11 @@ function xrp:View(player)
 	if isUnit and not isRefresh then
 		SetPortraitTexture(viewer.portrait, player)
 	elseif not isRefresh then
-		local GF = self.characters[player].fields.GF
-		SetPortraitToTexture(viewer.portrait, GF and ((GF == "Alliance" and "Interface\\Icons\\INV_BannerPVP_02") or (GF == "Horde" and "Interface\\Icons\\INV_BannerPVP_01")) or "Interface\\Icons\\INV_Misc_Book_17")
+		local faction = self.characters[player].fields.GF
+		SetPortraitToTexture(viewer.portrait, faction == "Alliance" and "Interface\\Icons\\INV_BannerPVP_02" or faction == "Horde" and "Interface\\Icons\\INV_BannerPVP_01" or "Interface\\Icons\\INV_Misc_Book_17")
 	end
 	ShowUIPanel(viewer)
-	if not viewer.Appearance:IsVisible() then
-		PanelTemplates_SetTab(viewer, 1)
-		viewer.Biography:Hide()
-		viewer.Appearance:Show()
-		PlaySound("igCharacterInfoTab")
+	if not viewer.panes[1]:IsVisible() then
+		viewer.Tab1:Click()
 	end
 end

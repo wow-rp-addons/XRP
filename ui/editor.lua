@@ -113,7 +113,7 @@ do
 		else
 			control.Inherit:Hide()
 		end
-		return (control.inherited and profile[field] ~= nil) or (not control.inherited and control.contents ~= profile[field]) or control.Inherit:GetChecked() ~= (inherits[field] ~= false) or nil
+		return control.inherited and profile[field] ~= nil or not control.inherited and control.contents ~= profile[field] or control.Inherit:GetChecked() ~= (inherits[field] ~= false) or nil
 	end
 
 	function CheckFields(self, field)
