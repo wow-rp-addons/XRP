@@ -166,7 +166,7 @@ do
 
 			RenderLine(currentUnit.info:format(not xrpPrivate.settings.tooltip.norprace and TruncateLine(xrp:StripEscapes(fields.RA), 40, 0, false) or currentUnit.race or UNKNOWN, not xrpPrivate.settings.tooltip.norpclass and TruncateLine(xrp:StripEscapes(fields.RC), 40, 0, false) or currentUnit.class or UNKNOWN, 40, 0, false))
 
-			if (fields.FR and fields.FR ~= "0") or (fields.FC and fields.FC ~= "0") then
+			if fields.FR and fields.FR ~= "0" or fields.FC and fields.FC ~= "0" then
 				local color = fields.FC == "1" and "ff99664d" or "ff66b380"
 				-- AAAAAAAAAAAAAAAAAAAAAAAA. The boolean logic.
 				local frline = ("|c%s%s|r"):format(color, TruncateLine((fields.FR == "0" or not fields.FR) and " " or xrp.values.FR[fields.FR] or xrp:StripEscapes(fields.FR), 35, 0, false))
@@ -230,7 +230,7 @@ do
 		local connected = UnitIsConnected(unit)
 
 		do
-			local color = REACTION_COLORS[(meAttack and attackMe and "hostile") or (faction == myFaction and not attackMe and not meAttack and "friendly") or ((faction == myFaction or faction == "Neutral") and "neutral") or "hostile"]
+			local color = REACTION_COLORS[(faction ~= myFaction and faction ~= "Neutral" or attackMe and meAttack) and "hostile" or (faction == "Neutral" or meAttack or attackMe) and "neutral" or "friendly"]
 			-- Can only ever be one of AFK, DND, or offline.
 			local isAFK = connected and UnitIsAFK(unit)
 			local isDND = connected and not isAFK and UnitIsDND(unit)
@@ -238,15 +238,15 @@ do
 		end
 
 		do
-			local watchIcon = (xrpPrivate.settings.tooltip.watching and UnitIsUnit("player", unit.."target") and "|TInterface\\LFGFrame\\BattlenetWorking0:32:32:10:-2|t") or nil
+			local watchIcon = xrpPrivate.settings.tooltip.watching and UnitIsUnit("player", unit .. "target") and "|TInterface\\LFGFrame\\BattlenetWorking0:32:32:10:-2|t" or nil
 			local ffa = UnitIsPVPFreeForAll(unit)
 			local pvpIcon = (UnitIsPVP(unit) or ffa) and ("|TInterface\\TargetingFrame\\UI-PVP-%s:20:20:4:-2:8:8:0:5:0:5:255:255:255|t"):format((ffa or faction == "Neutral") and "FFA" or faction) or nil
-			currentUnit.icons = watchIcon and pvpIcon and watchIcon..pvpIcon or watchIcon or pvpIcon
+			currentUnit.icons = watchIcon and pvpIcon and watchIcon .. pvpIcon or watchIcon or pvpIcon
 		end
 
 		do
 			local guildname, guildrank, guildindex = GetGuildInfo(unit)
-			currentUnit.guild = guildname and (xrpPrivate.settings.tooltip.guildrank and (xrpPrivate.settings.tooltip.guildindex and "%s (%u) of <%s>" or "%s of <%s>") or "<%s>"):format(xrpPrivate.settings.tooltip.guildrank and guildrank or guildname, xrpPrivate.settings.tooltip.guildindex and (guildindex + 1) or guildname, guildname) or nil
+			currentUnit.guild = guildname and (xrpPrivate.settings.tooltip.guildrank and (xrpPrivate.settings.tooltip.guildindex and "%s (%u) of <%s>" or "%s of <%s>") or "<%s>"):format(xrpPrivate.settings.tooltip.guildrank and guildrank or guildname, xrpPrivate.settings.tooltip.guildindex and guildindex + 1 or guildname, guildname) or nil
 		end
 
 		do
@@ -286,7 +286,7 @@ do
 
 		do
 			local name = UnitName(unit)
-			local color = REACTION_COLORS[(meAttack and attackMe and "hostile") or (faction == myFaction and not attackMe and not meAttack and "friendly") or ((faction == myFaction or faction == "Neutral") and "neutral") or "hostile"]
+			local color = REACTION_COLORS[(faction ~= myFaction and faction ~= "Neutral" or attackMe and meAttack) and "hostile" or (faction == "Neutral" or meAttack or attackMe) and "neutral" or "friendly"]
 			currentUnit.nameFormat = ("|c%s%s|r"):format(color, name)
 		end
 
@@ -317,7 +317,7 @@ do
 			end
 			-- Mages, death knights, and warlocks have minions, hunters have 
 			-- pets. Mages and death knights only have one pet family each.
-			local classID = (petType == UNITNAME_TITLE_MINION and ((race == "Elemental" and "MAGE") or (race == "Undead" and "DEATHKNIGHT") or "WARLOCK")) or (petType == UNITNAME_TITLE_PET and "HUNTER")
+			local classID = petType == UNITNAME_TITLE_MINION and (race == "Elemental" and "MAGE" or race == "Undead" and "DEATHKNIGHT" or "WARLOCK") or petType == UNITNAME_TITLE_PET and "HUNTER"
 			local level = UnitLevel(unit)
 
 			currentUnit.info = ("%s |c%s%s|r (%s)"):format((level < 1 and UNIT_LETHAL_LEVEL_TEMPLATE or UNIT_LEVEL_TEMPLATE):format(level), RAID_CLASS_COLORS[classID] and RAID_CLASS_COLORS[classID].colorStr or "ffffffff", race, PET)
