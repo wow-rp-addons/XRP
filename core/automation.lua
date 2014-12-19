@@ -21,8 +21,7 @@ local RecheckForm
 
 xrpPrivate.auto = setmetatable({}, {
 	__index = function(self, form)
-		local auto = xrpSaved.auto
-		local profile = auto[form]
+		local profile = xrpSaved.auto[form]
 		if not xrpSaved.profiles[profile] then
 			return nil
 		end
@@ -37,10 +36,10 @@ xrpPrivate.auto = setmetatable({}, {
 
 local GetCurrentForm
 do
-	local hasrace = select(2, UnitRace("player")) == "Worgen"
-	local class = select(2, UnitClassBase("player"))
-	if not (class == "DRUID" or class == "PRIEST" or class == "SHAMAN") then
-		class = nil
+	local isWorgen = select(2, UnitRace("player")) == "Worgen"
+	local playerClass = select(2, UnitClassBase("player"))
+	if not (playerClass == "DRUID" or playerClass == "PRIEST" or playerClass == "SHAMAN") then
+		playerClass = nil
 	end
 	local FORM_ID = {
 		[1] = "CAT",
@@ -74,67 +73,67 @@ do
 		["FLIGHT"] = true,
 		["MOONKIN"] = true,
 	}
-	local lastequipped
+	local lastEquipSet
 	function GetCurrentForm()
-		local classform
-		if class then
-			if class == "DRUID" then
-				classform = FORM_ID[GetShapeshiftFormID()]
-				if classform == "MOONKIN" then
+		local classForm
+		if playerClass then
+			if playerClass == "DRUID" then
+				classForm = FORM_ID[GetShapeshiftFormID()]
+				if classForm == "MOONKIN" then
 					for i = 1, NUM_GLYPH_SLOTS do
 						local spellID = select(4, GetGlyphSocketInfo(i))
 						if spellID == 114301 then
-							classform = "ASTRAL"
+							classForm = "ASTRAL"
 							break
 						end
 					end
-				elseif not classform and UnitBuff("player", "Treant Form") then
-					classform = "TREANT"
+				elseif not classForm and UnitBuff("player", "Treant Form") then
+					classForm = "TREANT"
 				end
-			elseif class == "PRIEST" or class == "SHAMAN" then
-				classform = FORM_ID[GetShapeshiftFormID()]
+			elseif playerClass == "PRIEST" or playerClass == "SHAMAN" then
+				classForm = FORM_ID[GetShapeshiftFormID()]
 			end
 		end
 
-		local raceform
-		if hasrace and not FORM_NO_RACE[classform] then
-			raceform = select(2, HasAlternateForm()) and "HUMAN" or "DEFAULT"
+		local raceForm
+		if isWorgen and not FORM_NO_RACE[classForm] then
+			raceForm = select(2, HasAlternateForm()) and "HUMAN" or "DEFAULT"
 		end
 
-		local equipset
-		if not FORM_NO_EQUIPMENT[classform] then
+		local equipSet
+		if not FORM_NO_EQUIPMENT[classForm] then
 			local numSets = GetNumEquipmentSets()
 			for i = 1, numSets do
 				local name, _, _, equipped = GetEquipmentSetInfo(i)
 				if equipped then
-					equipset = name
-					lastequipped = name
+					equipSet = name
+					lastEquipSet = name
 					break
 				end
 			end
-			if not equipset and numSets > 0 then
-				if not lastequipped then
+			if not equipSet and numSets > 0 then
+				if not lastEquipSet then
 					-- Guess what set to use if no set has been fully equipped
 					-- so far this session.
-					local best, bestscore, fullset = nil, 0, false
+					local best, bestScore, fullSet = nil, 0, false
 					for i = 1, numSets do
 						local name, _, _, _, numItems, numEquip, numInv = GetEquipmentSetInfo(i)
-						if numInv == numItems or not fullset then
+						if numInv == numItems or not fullSet then
 							local score = numItems / numEquip
-							if score > bestscore or (numInv == numItems and not fullset) then
-								bestscore = score
+							if score > bestScore or numInv == numItems and not fullSet then
+								bestScore = score
 								best = name
-								fullset = numInv == numItems
+								fullSet = numInv == numItems
 							end
 						end
 					end
-					lastequipped = best
+					lastEquipSet = best
 				end
-				equipset = lastequipped
+				equipSet = lastEquipSet
 			end
 		end
 
-		return raceform, classform, equipset
+		return raceForm, classForm, equipSet
 	end
 end
 
@@ -142,20 +141,20 @@ local swap = CreateFrame("Frame")
 swap.timer = 0
 do
 	local function TestForm(self, event, unit)
-		if InCombatLockdown() or (event == "UNIT_PORTRAIT_UPDATE" and unit ~= "player") then return end
+		if InCombatLockdown() or event == "UNIT_PORTRAIT_UPDATE" and unit ~= "player" then return end
 		if event == "PLAYER_REGEN_DISABLED" then
 			self:Hide()
 			return
 		end
 		local race, class, equip = GetCurrentForm()
-		local newform = self.class ~= class or self.race ~= race or self.equip ~= equip
-		if event == "PLAYER_REGEN_ENABLED" and (newform or self.timer > 0) then
+		local newForm = self.class ~= class or self.race ~= race or self.equip ~= equip
+		if event == "PLAYER_REGEN_ENABLED" and (newForm or self.timer > 0) then
 			self.timer = 6
 			self.race = race
 			self.class = class
 			self.equip = equip
 			self:Show()
-		elseif newform then
+		elseif newForm then
 			self.timer = 3
 			self.race = race
 			self.class = class
