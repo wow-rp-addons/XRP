@@ -17,10 +17,13 @@
 
 local addonName, xrpPrivate = ...
 
-local GR, GC = select(2, UnitRace("player")), select(2, UnitClassBase("player"))
+local isWorgen, playerClass = select(2, UnitRace("player")) == "Worgen", select(2, UnitClassBase("player"))
+if not (playerClass == "DRUID" or playerClass == "PRIEST" or playerClass == "SHAMAN") then
+	playerClass = nil
+end
 
-local formNames = {
-	["DEFAULT"] = "No equipment set",
+local FORM_NAMES = {
+	["DEFAULT"] = isWorgen and "Worgen" or playerClass and (playerClass == "PRIEST" and "Standard" or "Humanoid") or "No equipment set",
 	["CAT"] = "Cat Form",
 	["BEAR"] = "Bear Form",
 	["MOONKIN"] = "Moonkin Form",
@@ -35,25 +38,15 @@ local formNames = {
 	["DEFAULT\30SHADOWFORM"] = "Shadowform (Worgen)",
 	["HUMAN\30SHADOWFORM"] = "Shadowform (Human)",
 }
-if GR == "Worgen" then
-	formNames["DEFAULT"] = "Worgen"
-elseif GC == "PRIEST" then
-	formNames["DEFAULT"] = "Standard"
-elseif GC == "DRUID" or GC == "SHAMAN" then
-	formNames["DEFAULT"] = "Humanoid"
-end
-
-local hasRace = GR == "Worgen"
-local hasClass = GC == "DRUID" or GC == "PRIEST" or GC == "SHAMAN"
 
 local function MakeWords(text)
 	local form, equipment = text:match("^([^\29]+)\29?([^\29]*)$")
 	if not equipment or equipment == "" then
-		return formNames[form]
-	elseif not hasRace and not hasClass then
+		return FORM_NAMES[form]
+	elseif not isWorgen and not playerClass then
 		return ("%s"):format(equipment)
 	else
-		return ("%s: %s"):format(formNames[form], equipment)
+		return ("%s: %s"):format(FORM_NAMES[form], equipment)
 	end
 end
 
@@ -62,7 +55,7 @@ local function ToggleButtons(self)
 	local changes = xrpPrivate.auto[form] ~= profile
 	if next(xrpSaved.auto) and not xrpPrivate.auto["DEFAULT"] then
 		self.Warning:Show()
-		self.Warning:SetFormattedText("You should set a fallback profile for \"%s\".", formNames["DEFAULT"])
+		self.Warning:SetFormattedText("You should set a fallback profile for \"%s\".", FORM_NAMES["DEFAULT"])
 	else
 		self.Warning:Hide()
 	end
@@ -99,10 +92,10 @@ do
 		end
 	end
 
-	local none = { text = "None", checked = Profile_Checked, arg1 = nil, func = Profile_Click }
+	local NONE = { text = "None", checked = Profile_Checked, arg1 = nil, func = Profile_Click }
 	function Profile_PreClick(self, button, down)
 		local parent = self:GetParent()
-		parent.baseMenuList = { none }
+		parent.baseMenuList = { NONE }
 		for index, profile in ipairs(xrp.profiles:List()) do
 			parent.baseMenuList[index + 1] = { text = profile, checked = Profile_Checked, arg1 = profile, func = Profile_Click }
 		end
@@ -129,11 +122,11 @@ do
 		return (UIDROPDOWNMENU_MENU_VALUE or "DEFAULT")..self.value == UIDROPDOWNMENU_INIT_MENU.contents
 	end
 
-	local noset = not hasRace and not hasClass and { text = formNames["DEFAULT"], value = "", checked = equipSets_Check, func = equipSets_Click, } or nil
+	local noSet = not isWorgen and not playerClass and { text = FORM_NAMES["DEFAULT"], value = "", checked = equipSets_Check, func = equipSets_Click, } or nil
 
 	function Form_PreClick(self, button, down)
 		wipe(equipSets) -- Keep table reference the same.
-		equipSets[1] = noset
+		equipSets[1] = noSet
 		local numsets = GetNumEquipmentSets()
 		if numsets and numsets > 0 then
 			for i = 1, numsets do
@@ -145,7 +138,7 @@ do
 					func = equipSets_Click,
 				}
 			end
-		elseif not noset then
+		elseif not noSet then
 			equipSets[#equipSets + 1]  = {
 				text = "No equipment sets",
 				disabled = true,
@@ -172,11 +165,11 @@ do
 		return UIDROPDOWNMENU_INIT_MENU.contents == self.value
 	end
 
-	if GR == "Worgen" then
-		if GC == "DRUID" then
+	if isWorgen then
+		if playerClass == "DRUID" then
 			Form_baseMenuList = {
 				{ -- Worgen
-					text = formNames["DEFAULT"],
+					text = FORM_NAMES["DEFAULT"],
 					value = "DEFAULT",
 					func = forms_Click,
 					checked = forms_Check,
@@ -184,7 +177,7 @@ do
 					menuList = equipSets,
 				},
 				{ -- Human
-					text = formNames["HUMAN"],
+					text = FORM_NAMES["HUMAN"],
 					value = "HUMAN",
 					func = forms_Click,
 					checked = forms_Check,
@@ -192,25 +185,25 @@ do
 					menuList = equipSets,
 				},
 				{ -- Cat
-					text = formNames["CAT"],
+					text = FORM_NAMES["CAT"],
 					value = "CAT",
 					func = forms_Click,
 					checked = forms_Check,
 				},
 				{ -- Bear
-					text = formNames["BEAR"],
+					text = FORM_NAMES["BEAR"],
 					value = "BEAR",
 					func = forms_Click,
 					checked = forms_Check,
 				},
 				{ -- Moonkin
-					text = formNames["MOONKIN"],
+					text = FORM_NAMES["MOONKIN"],
 					value = "MOONKIN",
 					func = forms_Click,
 					checked = forms_Check,
 				},
 				{ -- Astral
-					text = formNames["ASTRAL"],
+					text = FORM_NAMES["ASTRAL"],
 					value = "ASTRAL",
 					func = forms_Click,
 					checked = forms_Check,
@@ -218,34 +211,34 @@ do
 					menuList = equipSets,
 				},
 				{ -- Travel
-					text = formNames["TRAVEL"],
+					text = FORM_NAMES["TRAVEL"],
 					value = "TRAVEL",
 					func = forms_Click,
 					checked = forms_Check,
 				},
 				{ -- Flight
-					text = formNames["FLIGHT"],
+					text = FORM_NAMES["FLIGHT"],
 					value = "FLIGHT",
 					func = forms_Click,
 					checked = forms_Check,
 				},
 				{ -- Aquatic
-					text = formNames["AQUATIC"],
+					text = FORM_NAMES["AQUATIC"],
 					value = "AQUATIC",
 					func = forms_Click,
 					checked = forms_Check,
 				},
 				{ -- Treant
-					text = formNames["TREANT"],
+					text = FORM_NAMES["TREANT"],
 					value = "TREANT",
 					func = forms_Click,
 					checked = forms_Check,
 				},
 			}
-		elseif GC == "PRIEST" then
+		elseif playerClass == "PRIEST" then
 			Form_baseMenuList = {
 				{ -- Worgen
-					text = formNames["DEFAULT"],
+					text = FORM_NAMES["DEFAULT"],
 					value = "DEFAULT",
 					func = forms_Click,
 					checked = forms_Check,
@@ -253,7 +246,7 @@ do
 					menuList = equipSets,
 				},
 				{ -- Human
-					text = formNames["HUMAN"],
+					text = FORM_NAMES["HUMAN"],
 					value = "HUMAN",
 					func = forms_Click,
 					checked = forms_Check,
@@ -261,7 +254,7 @@ do
 					menuList = equipSets,
 				},
 				{ -- Shadowform (Worgen)
-					text = formNames["DEFAULT\30SHADOWFORM"],
+					text = FORM_NAMES["DEFAULT\30SHADOWFORM"],
 					value = "DEFAULT\30SHADOWFORM",
 					func = forms_Click,
 					checked = forms_Check,
@@ -269,7 +262,7 @@ do
 					menuList = equipSets,
 				},
 				{ -- Shadowform (Human)
-					text = formNames["HUMAN\30SHADOWFORM"],
+					text = FORM_NAMES["HUMAN\30SHADOWFORM"],
 					value = "HUMAN\30SHADOWFORM",
 					func = forms_Click,
 					checked = forms_Check,
@@ -280,7 +273,7 @@ do
 		else
 			Form_baseMenuList = {
 				{ -- Worgen
-					text = formNames["DEFAULT"],
+					text = FORM_NAMES["DEFAULT"],
 					value = "DEFAULT",
 					func = forms_Click,
 					checked = forms_Check,
@@ -288,7 +281,7 @@ do
 					menuList = equipSets,
 				},
 				{ -- Human
-					text = formNames["HUMAN"],
+					text = FORM_NAMES["HUMAN"],
 					value = "HUMAN",
 					func = forms_Click,
 					checked = forms_Check,
@@ -298,10 +291,10 @@ do
 			}
 		end
 	else
-		if GR == "DRUID" then
+		if playerClass == "DRUID" then
 			Form_baseMenuList = {
 				{ -- Humanoid
-					text = formNames["DEFAULT"],
+					text = FORM_NAMES["DEFAULT"],
 					value = "DEFAULT",
 					func = forms_Click,
 					checked = forms_Check,
@@ -309,25 +302,25 @@ do
 					menuList = equipSets,
 				},
 				{ -- Cat
-					text = formNames["CAT"],
+					text = FORM_NAMES["CAT"],
 					value = "CAT",
 					func = forms_Click,
 					checked = forms_Check,
 				},
 				{ -- Bear
-					text = formNames["BEAR"],
+					text = FORM_NAMES["BEAR"],
 					value = "BEAR",
 					func = forms_Click,
 					checked = forms_Check,
 				},
 				{ -- Moonkin
-					text = formNames["MOONKIN"],
+					text = FORM_NAMES["MOONKIN"],
 					value = "MOONKIN",
 					func = forms_Click,
 					checked = forms_Check,
 				},
 				{ -- Astral
-					text = formNames["ASTRAL"],
+					text = FORM_NAMES["ASTRAL"],
 					value = "ASTRAL",
 					func = forms_Click,
 					checked = forms_Check,
@@ -335,34 +328,34 @@ do
 					menuList = equipSets,
 				},
 				{ -- Travel
-					text = formNames["TRAVEL"],
+					text = FORM_NAMES["TRAVEL"],
 					value = "TRAVEL",
 					func = forms_Click,
 					checked = forms_Check,
 				},
 				{ -- Flight
-					text = formNames["FLIGHT"],
+					text = FORM_NAMES["FLIGHT"],
 					value = "FLIGHT",
 					func = forms_Click,
 					checked = forms_Check,
 				},
 				{ -- Aquatic
-					text = formNames["AQUATIC"],
+					text = FORM_NAMES["AQUATIC"],
 					value = "AQUATIC",
 					func = forms_Click,
 					checked = forms_Check,
 				},
 				{ -- Treant
-					text = formNames["TREANT"],
+					text = FORM_NAMES["TREANT"],
 					value = "TREANT",
 					func = forms_Click,
 					checked = forms_Check,
 				}
 			}
-		elseif GC == "PRIEST" then
+		elseif playerClass == "PRIEST" then
 			Form_baseMenuList = {
 				{ -- Standard
-					text = formNames["DEFAULT"],
+					text = FORM_NAMES["DEFAULT"],
 					value = "DEFAULT",
 					func = forms_Click,
 					checked = forms_Check,
@@ -370,7 +363,7 @@ do
 					menuList = equipSets,
 				},
 				{ -- Shadowform
-					text = formNames["SHADOWFORM"],
+					text = FORM_NAMES["SHADOWFORM"],
 					value = "SHADOWFORM",
 					func = forms_Click,
 					checked = forms_Check,
@@ -378,10 +371,10 @@ do
 					menuList = equipSets,
 				},
 			}
-		elseif GC == "SHAMAN" then
+		elseif playerClass == "SHAMAN" then
 			Form_baseMenuList = {
 				{ -- Humanoid
-					text = formNames["DEFAULT"],
+					text = FORM_NAMES["DEFAULT"],
 					value = "DEFAULT",
 					func = forms_Click,
 					checked = forms_Check,
@@ -389,7 +382,7 @@ do
 					menuList = equipSets,
 				},
 				{ -- Ghost Wolf
-					text = formNames["GHOSTWOLF"],
+					text = FORM_NAMES["GHOSTWOLF"],
 					value = "GHOSTWOLF",
 					func = forms_Click,
 					checked = forms_Check,
@@ -401,7 +394,7 @@ do
 	end
 end
 
-local function OnShow(self)
+local function Automation_OnShow(self)
 	local selectedForm, needsUpdate = self.Form.contents, false
 	if selectedForm:find("\29", nil, true) then
 		if not GetEquipmentSetInfoByName(selectedForm:match("^.*\29(.+)$")) then
@@ -427,7 +420,7 @@ function xrpPrivate:SetupAutomationFrame(frame)
 	frame.Profile.ArrowButton:SetScript("PreClick", Profile_PreClick)
 	frame.Save:SetScript("OnClick", Save_OnClick)
 	frame.Revert:SetScript("OnClick", Revert_OnClick)
-	frame:SetScript("OnShow", OnShow)
+	frame:SetScript("OnShow", Automation_OnShow)
 
 	frame.Form.contents = "DEFAULT"
 	frame.Form.MenuText:SetText(MakeWords("DEFAULT"))
