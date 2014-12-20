@@ -52,6 +52,9 @@ do
 			print(command:format("ooc", "Set to in-character."))
 			print(command:format("lfc", "Set to looking for contact."))
 			print(command:format("st", "Set to storyteller."))
+		elseif args == "toggle" then
+			print(usage:format("/xrp toggle"))
+			print("Toggle IC/OOC status.")
 		elseif args == "view" or args == "show" then
 			print(usage:format("/xrp view [target|mouseover|<Character>]"))
 			print(command:format("<none>", "View your target or mouseover's profile, as available."))
@@ -66,6 +69,7 @@ do
 			print(command:format("help", "Display this help message."))
 			print(command:format("profile", "Set your current profile."))
 			print(command:format("status", "Set your character status."))
+			print(command:format("toggle", "Toggle IC/OOC status."))
 			print(command:format("view", "View a character's profile."))
 		end
 	end
@@ -106,6 +110,10 @@ xrpCmds.status = function(args)
 	else
 		xrpCmds.help("status")
 	end
+end
+
+xrpCmds.toggle = function(args)
+	xrp:StatusToggle()
 end
 
 xrpCmds.view = function(args)
