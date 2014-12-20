@@ -39,7 +39,7 @@ do
 		if not mouseover then return end
 		-- 0.75s interaction time is guessed as Blizzard number from
 		-- in-game testing. Used for consistency.
-		if GetTime() - now < 0.75 and mouseover == xrp:UnitNameWithRealm("target") then
+		if GetTime() - now < 0.75 and mouseover == xrp:UnitName("target") then
 			if cursor.mountable then
 				UIErrorsFrame:Clear() -- Hides errors on inteactable mount players.
 			end
@@ -58,7 +58,7 @@ local function Cursor_OnEvent(self, event)
 		self:Hide()
 		return
 	end
-	self.current = not UnitCanAttack("player", "mouseover") and xrp:UnitNameWithRealm("mouseover") or nil
+	self.current = not UnitCanAttack("player", "mouseover") and xrp:UnitName("mouseover") or nil
 	-- Following two must be separate for UIErrorsFrame:Clear().
 	self.mountable = self.current and UnitVehicleSeatCount("mouseover") > 0
 	self.mountInParty = self.mountable and (UnitInParty("mouseover") or UnitInRaid("mouseover"))

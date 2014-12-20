@@ -56,7 +56,7 @@ xrp.current = setmetatable({
 			else
 				return nil
 			end
-			return field == "AH" and xrp:ConvertHeight(contents, "msp") or field == "AW" and xrp:ConvertWeight(contents, "msp") or contents
+			return field == "AH" and xrp:Height(contents, "msp") or field == "AW" and xrp:Weight(contents, "msp") or contents
 		end,
 		__newindex = function(self, field, contents)
 			if xrpSaved.overrides.fields[field] == contents or xrpPrivate.fields.unit[field] or xrpPrivate.fields.meta[field] or xrpPrivate.fields.dummy[field] or not field:find("^%u%u$") then return end
@@ -107,8 +107,8 @@ xrp.current = setmetatable({
 		for field, contents in pairs(xrpSaved.overrides.fields) do
 			out[field] = contents ~= "" and contents or nil
 		end
-		out.AW = out.AW and xrp:ConvertWeight(out.AW, "msp") or nil
-		out.AH = out.AH and xrp:ConvertHeight(out.AH, "msp") or nil
+		out.AW = out.AW and xrp:Weight(out.AW, "msp") or nil
+		out.AH = out.AH and xrp:Height(out.AH, "msp") or nil
 		return out
 	end,
 }, { __newindex = noFunc, })

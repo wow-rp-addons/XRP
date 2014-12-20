@@ -17,14 +17,14 @@
 
 local addonName, xrpPrivate = ...
 
-function xrp:UnitNameWithRealm(unit)
+function xrp:UnitName(unit)
 	if not (unit == "player" or UnitIsPlayer(unit)) then
 		return nil
 	end
-	return self:NameWithRealm(UnitName(unit))
+	return self:Name(UnitName(unit))
 end
 
-function xrp:NameWithRealm(name, realm)
+function xrp:Name(name, realm)
 	if not name or name == "" then
 		return nil
 	elseif name:find(FULL_PLAYER_NAME:format(".+", ".+")) then
@@ -55,13 +55,13 @@ do
 		["SistersofElune"] = "Sisters of Elune",
 	}
 
-	function xrp:RealmNameWithSpacing(realm)
+	function xrp:RealmDisplayName(realm)
 		-- gsub: spaces lower followed by upper (i.e., Wyrmrest Accord).
 		return SPECIAL_REALMS[realm] or (realm:gsub("(%l)(%u)", "%1 %2"))
 	end
 end
 
-function xrp:StripEscapes(text)
+function xrp:Strip(text)
 	if type(text) ~= "string" then
 		return nil
 	end
@@ -71,20 +71,7 @@ function xrp:StripEscapes(text)
 	return text:gsub("||", "|"):gsub("|n", ""):gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|r", ""):gsub("|H.-|h(.-)|h", "%1"):gsub("|T.-|t", ""):gsub("|K.-|k.-|k", ""):gsub("|", "||"):trim()
 end
 
-function xrp:LinkURLs(text)
-	if type(text) ~= "string" then
-		return nil
-	end
-	-- Garbled mess? Not as much.
-	-- 1) Add http:// to .com URLs.
-	-- 2) Add http:// to .net URLs.
-	-- 3) Add http:// to .org URLs.
-	-- 4) Strip excess added http://.
-	-- 5) Make all links into hyperlinks.
-	return (text:gsub("([ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789%-%.]+%.com[^%w])", "http://%1"):gsub("([ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789%-%.]+%.net[^%w])", "http://%1"):gsub("([ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789%-%.]+%.org[^%w])", "http://%1"):gsub("(bit%.ly%/)", "http://%1"):gsub("(https?://)http://", "%1"):gsub("(https?://[ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789%%%-%.%_%~%:%/%?#%[%]%@%!%$%&%'%(%)%*%+%,%;%=]+)", "|H%1|h|cffc845fa[%1]|r|h"))
-end
-
-function xrp:ConvertWeight(weight, units)
+function xrp:Weight(weight, units)
 	if not weight then
 		return nil
 	end
@@ -114,7 +101,7 @@ function xrp:ConvertWeight(weight, units)
 	end
 end
 
-function xrp:ConvertHeight(height, units)
+function xrp:Height(height, units)
 	if not height then
 		return nil
 	end
@@ -167,7 +154,7 @@ function xrp:ConvertHeight(height, units)
 	end
 end
 
-function xrp:StatusToggle(desiredStatus)
+function xrp:Status(desiredStatus)
 	local profileStatus = xrpPrivate.profiles[xrpSaved.selected].fields.FC
 	if not profileStatus then
 		local inherit = xrpPrivate.profiles[xrpSaved.selected].inherits.FC

@@ -62,7 +62,7 @@
 					if xrp.units.target and xrp.units.target.fields.VA then
 						xrp:View("target")
 					else
-						xrp:StatusToggle()
+						xrp:Status()
 					end
 					self:GetScript("OnEnter")(self, true)
 					CloseDropDownMenus()

@@ -29,7 +29,7 @@ do
 	}
 
 	local function SetField(field, contents)
-		contents = contents and xrp:StripEscapes(contents) or nil
+		contents = contents and xrp:Strip(contents) or nil
 		if field == "NA" then
 			contents = contents or xrp:NameWithoutRealm(viewer.current) or UNKNOWN
 		elseif field == "VA" then
@@ -39,11 +39,12 @@ do
 		elseif field == "NI" then
 			contents = ("\"%s\""):format(contents)
 		elseif field == "AH" then
-			contents = xrp:ConvertHeight(contents, "user")
+			contents = xrp:Height(contents, "user")
 		elseif field == "AW" then
-			contents = xrp:ConvertWeight(contents, "user")
+			contents = xrp:Weight(contents, "user")
 		elseif field == "CU" or field == "DE" or field == "MO" or field == "HI" then
-			contents = xrp:LinkURLs(contents)
+			-- Link URLs in scrolling fields.
+			contents = contents:gsub("([ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789%-%.]+%.com[^%w])", "http://%1"):gsub("([ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789%-%.]+%.net[^%w])", "http://%1"):gsub("([ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789%-%.]+%.org[^%w])", "http://%1"):gsub("(bit%.ly%/)", "http://%1"):gsub("(https?://)http://", "%1"):gsub("(https?://[ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789%%%-%.%_%~%:%/%?#%[%]%@%!%$%&%'%(%)%*%+%,%;%=]+)", "|H%1|h|cffc845fa[%1]|r|h")
 		end
 		viewer.fields[field]:SetText(contents)
 		if field == "DE" or field == "HI" then
@@ -180,9 +181,9 @@ function xrp:View(player)
 	if not isUnit then
 		local unit = Ambiguate(player, "none")
 		isUnit = UnitExists(unit)
-		player = isUnit and unit or self:NameWithRealm(player):gsub("^%l", string.upper)
+		player = isUnit and unit or self:Name(player):gsub("^%l", string.upper)
 	end
-	local newCurrent = isUnit and self:UnitNameWithRealm(player) or player
+	local newCurrent = isUnit and self:UnitName(player) or player
 	local isRefresh = viewer.current == newCurrent
 	viewer.current = newCurrent
 	viewer.failed = nil

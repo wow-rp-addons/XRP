@@ -102,7 +102,7 @@ do
 	local characters = setmetatable({}, weak)
 	xrp.characters = setmetatable({}, {
 		__index = function(self, character)
-			character = xrp:NameWithRealm(character)
+			character = xrp:Name(character)
 			if not character then
 				return nil
 			end
@@ -117,7 +117,7 @@ do
 
 	xrp.units = setmetatable({}, {
 		__index = function (self, unit)
-			local character = xrp:UnitNameWithRealm(unit)
+			local character = xrp:UnitName(unit)
 			if not character then
 				return nil
 			end
@@ -178,7 +178,7 @@ do
 			-- This will return nil if the GUID hasn't been seen by the client
 			-- yet in the session.
 			local class, GC, race, GR, GS, character, realm = GetPlayerInfoByGUID(GU)
-			character = xrp:NameWithRealm(character, realm)
+			character = xrp:Name(character, realm)
 			if not character or character == "" then
 				return nil
 			end
@@ -219,7 +219,7 @@ do
 			if not character or character == "" then
 				return nil
 			end
-			character = xrp:NameWithRealm(character)
+			character = xrp:Name(character)
 			if not characters[character] then
 				characters[character] = setmetatable({ [ck] = character, [rk] = false }, characterMeta)
 			end

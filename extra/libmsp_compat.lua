@@ -100,7 +100,7 @@ msp.dummyframex = msp.dummyframe
 
 msp.char = setmetatable({}, {
 	__index = function (self, character)
-		local name = xrp:NameWithRealm(character) -- For pre-5.4.7 addons.
+		local name = xrp:Name(character) -- For pre-5.4.7 addons.
 		if xrpCache[name] then
 			mspChars[name] = { field = setmetatable({ [nk] = name }, fieldMeta), ver = setmetatable({ [nk] = name }, verMeta), time = timeTable, }
 			return mspChars[name]
@@ -142,11 +142,11 @@ function msp:Request(character, fields)
 	elseif type(fields) ~= "table" then
 		return false
 	end
-	return xrpPrivate:Request(xrp:NameWithRealm(character), fields)
+	return xrpPrivate:Request(xrp:Name(character), fields)
 end
 
 function msp:NameWithRealm(...)
-	return xrp:NameWithRealm(...)
+	return xrp:Name(...)
 end
 
 -- Used by GHI... Working with the cache since GHI expects values to be

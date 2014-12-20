@@ -39,7 +39,7 @@ do
 	do
 		local function Status_Click(self, status, arg2, checked)
 			if not checked then
-				xrp:StatusToggle(status)
+				xrp:Status(status)
 			end
 			CloseDropDownMenus()
 		end
