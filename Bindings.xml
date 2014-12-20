@@ -15,16 +15,16 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-	<Binding name="XRP_EDITOR" header="XRP">
+	<Binding name="XRP_EDITOR" header="XRP" category="ADDONS">
 		xrp:Edit()
 	</Binding>
-	<Binding name="XRP_VIEWER">
+	<Binding name="XRP_VIEWER" category="ADDONS">
 		xrp:View(xrp.units.target and "target" or xrp.units.mouseover and "mouseover" or "player")
 	</Binding>
-	<Binding name="XRP_VIEWER_TARGET">
+	<Binding name="XRP_VIEWER_TARGET" category="ADDONS">
 		xrp:View("target")
 	</Binding>
-	<Binding name="XRP_VIEWER_MOUSEOVER">
+	<Binding name="XRP_VIEWER_MOUSEOVER" category="ADDONS">
 		xrp:View("mouseover")
 	</Binding>
 </Bindings>
