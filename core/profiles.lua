@@ -49,8 +49,8 @@ xrp.current = setmetatable({
 				contents = xrpSaved.overrides.fields[field] ~= "" and xrpSaved.overrides.fields[field] or nil
 			elseif profiles[selected].fields[field] then
 				contents = profiles[selected].fields[field]
-			elseif profiles[xrp.profiles[selected].inherits[field]] then
-				contents = profiles[xrp.profiles[selected].inherits[field]].fields[field]
+			elseif profiles[xrpPrivate.profiles[selected].inherits[field]] then
+				contents = profiles[xrpPrivate.profiles[selected].inherits[field]].fields[field]
 			elseif xrpSaved.meta.fields[field] then
 				contents = xrpSaved.meta.fields[field]
 			else
@@ -69,7 +69,7 @@ xrp.current = setmetatable({
 	versions = setmetatable({}, {
 		__index = function (self, field)
 			local selected = xrpSaved.selected
-			return xrpSaved.overrides.versions[field] or xrpSaved.profiles[selected].versions[field] or (xrpSaved.profiles[xrp.profiles[selected].inherits[field]] and xrpSaved.profiles[xrp.profiles[selected].inherits[field]].versions[field]) or xrpSaved.meta.versions[field] or nil
+			return xrpSaved.overrides.versions[field] or xrpSaved.profiles[selected].versions[field] or (xrpSaved.profiles[xrpPrivate.profiles[selected].inherits[field]] and xrpSaved.profiles[xrpPrivate.profiles[selected].inherits[field]].versions[field]) or xrpSaved.meta.versions[field] or nil
 		end,
 		__newindex = noFunc,
 		__metatable = false,
@@ -95,7 +95,7 @@ xrp.current = setmetatable({
 			end
 			for _, profile in ipairs(parents) do
 				for field, contents in pairs(profiles[profile].fields) do
-					if xrp.profiles[selected].inherits[field] == profile then
+					if xrpPrivate.profiles[selected].inherits[field] == profile then
 						out[field] = contents
 					end
 				end
@@ -117,7 +117,6 @@ local nk = {}
 local FORBIDDEN_NAMES = {
 	Add = true,
 	List = true,
-	SELECTED = true,
 }
 
 local profileMeta
@@ -236,10 +235,10 @@ do
 			contents = type(contents) == "string" and contents ~= "" and contents or nil
 			if profiles[name] and profiles[name].fields[field] ~= contents then
 				local selected = xrpSaved.selected
-				local isUsed = name == selected or name == xrp.profiles[selected].inherits[field]
+				local isUsed = name == selected or name == xrpPrivate.profiles[selected].inherits[field]
 				profiles[name].fields[field] = contents
 				profiles[name].versions[field] = contents ~= nil and xrpPrivate:NewVersion(field) or nil
-				if isUsed or name == xrp.profiles[selected].inherits[field] then
+				if isUsed or name == xrpPrivate.profiles[selected].inherits[field] then
 					xrpPrivate:FireEvent("UPDATE", field)
 				end
 			end
@@ -274,9 +273,9 @@ do
 			if xrpPrivate.fields.unit[field] or xrpPrivate.fields.meta[field] or xrpPrivate.fields.dummy[field] or not field:find("^%u%u$") then return end
 			local name, selected = self[nk], xrpSaved.selected
 			if state ~= xrpSaved.profiles[name].inherits[field] then
-				local current = xrp.profiles[selected].inherits[field]
+				local current = xrpPrivate.profiles[selected].inherits[field]
 				xrpSaved.profiles[name].inherits[field] = state
-				if current ~= xrp.profiles[selected].inherits[field] then
+				if current ~= xrpPrivate.profiles[selected].inherits[field] then
 					xrpPrivate:FireEvent("UPDATE", field)
 				end
 			end
@@ -357,12 +356,10 @@ local profilesFunctions = {
 
 local profs = setmetatable({}, { __mode = "v" })
 
-xrp.profiles = setmetatable({}, {
+xrpPrivate.profiles = setmetatable({}, {
 	__index = function(self, name)
 		if profilesFunctions[name] then
 			return profilesFunctions[name]
-		elseif name == "SELECTED" then
-			return xrp.profiles[xrpSaved.selected]
 		elseif not xrpSaved.profiles[name] then
 			return nil
 		end

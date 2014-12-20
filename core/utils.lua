@@ -168,10 +168,10 @@ function xrp:ConvertHeight(height, units)
 end
 
 function xrp:StatusToggle(desiredStatus)
-	local profileStatus = xrp.profiles.SELECTED.fields.FC
+	local profileStatus = xrpPrivate.profiles[xrpSaved.selected].fields.FC
 	if not profileStatus then
-		local inherit = xrp.profiles.SELECTED.inherits.FC
-		profileStatus = xrp.profiles[inherit].fields.FC
+		local inherit = xrpPrivate.profiles[xrpSaved.selected].inherits.FC
+		profileStatus = xrpPrivate.profiles[inherit].fields.FC
 	end
 	if not desiredStatus then
 		local currentStatus = xrp.current.fields.FC

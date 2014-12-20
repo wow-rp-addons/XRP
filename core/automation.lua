@@ -224,7 +224,7 @@ swap:SetScript("OnUpdate", function(self, elapsed)
 	end
 
 	--print("Swapping to: "..auto[form])
-	xrp.profiles[auto[form]]:Activate(true)
+	xrpPrivate.profiles[auto[form]]:Activate(true)
 end)
 swap:Hide()
 
