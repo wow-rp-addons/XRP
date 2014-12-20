@@ -149,7 +149,7 @@ do
 	}
 	init:SetScript("OnEvent", function(self, event, addon)
 		if event == "ADDON_LOADED" and addon == addonName then
-			xrpPrivate.playerWithRealm = xrp:UnitNameWithRealm("player")
+			xrpPrivate.playerWithRealm = xrp:UnitName("player")
 			xrpPrivate.player, xrpPrivate.realm = xrpPrivate.playerWithRealm:match(FULL_PLAYER_NAME:format("(.+)", "(.+)"))
 			xrpPrivate:SavedVariableSetup()
 

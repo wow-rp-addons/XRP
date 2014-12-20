@@ -28,7 +28,7 @@ local addonName, xrpPrivate = ...
 local function UnitPopup_Hook(self)
 	local button = self.value
 	if button == "XRP_VIEW_CHARACTER" then
-		xrp:View(xrp:NameWithRealm(UIDROPDOWNMENU_INIT_MENU.name, UIDROPDOWNMENU_INIT_MENU.server))
+		xrp:View(xrp:Name(UIDROPDOWNMENU_INIT_MENU.name, UIDROPDOWNMENU_INIT_MENU.server))
 	elseif button == "XRP_VIEW_UNIT" then
 		xrp:View(UIDROPDOWNMENU_INIT_MENU.unit)
 	end

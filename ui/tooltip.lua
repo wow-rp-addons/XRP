@@ -138,14 +138,14 @@ do
 
 		if currentUnit.type == "player" then
 
-			RenderLine(currentUnit.nameFormat:format(TruncateLine(xrp:StripEscapes(fields.NA), 65, 0, false) or xrp:NameWithoutRealm(currentUnit.name)), currentUnit.icons)
+			RenderLine(currentUnit.nameFormat:format(TruncateLine(xrp:Strip(fields.NA), 65, 0, false) or xrp:NameWithoutRealm(currentUnit.name)), currentUnit.icons)
 
 			if fields.NI then
-				RenderLine(("|cff6070a0Nickname:|r |cff99b3e6\"%s\"|r"):format(TruncateLine(xrp:StripEscapes(fields.NI), 70, 10, false)))
+				RenderLine(("|cff6070a0Nickname:|r |cff99b3e6\"%s\"|r"):format(TruncateLine(xrp:Strip(fields.NI), 70, 10, false)))
 			end
 
 			if fields.NT then
-				RenderLine(("|cffcccccc%s|r"):format(TruncateLine(xrp:StripEscapes(fields.NT), 70)))
+				RenderLine(("|cffcccccc%s|r"):format(TruncateLine(xrp:Strip(fields.NT), 70)))
 			end
 
 			if xrpPrivate.settings.tooltip.extraspace then
@@ -161,18 +161,18 @@ do
 			end
 
 			if fields.CU then
-				RenderLine(("|cffa08050Currently:|r |cffe6b399%s|r"):format(TruncateLine(xrp:StripEscapes(fields.CU), 70, 11)))
+				RenderLine(("|cffa08050Currently:|r |cffe6b399%s|r"):format(TruncateLine(xrp:Strip(fields.CU), 70, 11)))
 			end
 
-			RenderLine(currentUnit.info:format(not xrpPrivate.settings.tooltip.norprace and TruncateLine(xrp:StripEscapes(fields.RA), 40, 0, false) or currentUnit.race or UNKNOWN, not xrpPrivate.settings.tooltip.norpclass and TruncateLine(xrp:StripEscapes(fields.RC), 40, 0, false) or currentUnit.class or UNKNOWN, 40, 0, false))
+			RenderLine(currentUnit.info:format(not xrpPrivate.settings.tooltip.norprace and TruncateLine(xrp:Strip(fields.RA), 40, 0, false) or currentUnit.race or UNKNOWN, not xrpPrivate.settings.tooltip.norpclass and TruncateLine(xrp:Strip(fields.RC), 40, 0, false) or currentUnit.class or UNKNOWN, 40, 0, false))
 
 			if fields.FR and fields.FR ~= "0" or fields.FC and fields.FC ~= "0" then
 				local color = fields.FC == "1" and "ff99664d" or "ff66b380"
 				-- AAAAAAAAAAAAAAAAAAAAAAAA. The boolean logic.
-				local frline = ("|c%s%s|r"):format(color, TruncateLine((fields.FR == "0" or not fields.FR) and " " or xrp.values.FR[fields.FR] or xrp:StripEscapes(fields.FR), 35, 0, false))
+				local frline = ("|c%s%s|r"):format(color, TruncateLine((fields.FR == "0" or not fields.FR) and " " or xrp.values.FR[fields.FR] or xrp:Strip(fields.FR), 35, 0, false))
 				local fcline
 				if fields.FC and fields.FC ~= "0" then
-					fcline = ("|c%s%s|r"):format(color, TruncateLine(xrp.values.FC[fields.FC] or xrp:StripEscapes(fields.FC), 35, 0, false))
+					fcline = ("|c%s%s|r"):format(color, TruncateLine(xrp.values.FC[fields.FC] or xrp:Strip(fields.FC), 35, 0, false))
 				end
 				RenderLine(frline, fcline)
 			end
@@ -180,7 +180,7 @@ do
 			RenderLine(currentUnit.location)
 		elseif currentUnit.type == "pet" then
 			RenderLine(currentUnit.nameFormat, currentUnit.icons)
-			RenderLine(currentUnit.titleRealm:format(fields.NA and TruncateLine(xrp:StripEscapes(fields.NA), 60, 0, false) or xrp:NameWithoutRealm(currentUnit.name)))
+			RenderLine(currentUnit.titleRealm:format(fields.NA and TruncateLine(xrp:Strip(fields.NA), 60, 0, false) or xrp:NameWithoutRealm(currentUnit.name)))
 			RenderLine(currentUnit.info)
 		end
 		-- In rare cases (test case: target without RP addon, is PvP flagged)
@@ -217,7 +217,7 @@ do
 	local NO_RP_PROFILE = { fields = {} }
 
 	function SetPlayerUnit(unit)
-		currentUnit.name = xrp:UnitNameWithRealm(unit)
+		currentUnit.name = xrp:UnitName(unit)
 
 		local faction = UnitFactionGroup(unit)
 		local myFaction = xrp.current.fields.GF
@@ -254,7 +254,7 @@ do
 			if realm == xrpPrivate.realm then
 				realm = nil
 			end
-			currentUnit.titleRealm = (realm and "|c%s%s (%s)|r" or "|c%s%s|r"):format(FACTION_COLORS[faction], UnitPVPName(unit) or xrp:NameWithoutRealm(currentUnit.name), realm and xrp:RealmNameWithSpacing(realm))
+			currentUnit.titleRealm = (realm and "|c%s%s (%s)|r" or "|c%s%s|r"):format(FACTION_COLORS[faction], UnitPVPName(unit) or xrp:NameWithoutRealm(currentUnit.name), realm and xrp:RealmDisplayName(realm))
 		end
 
 		currentUnit.race = UnitRace(unit) or UnitCreatureType(unit)
@@ -306,9 +306,9 @@ do
 			if not owner then return end
 			local realm = owner:match(FULL_PLAYER_NAME:format(".+", "(.+)"))
 
-			currentUnit.titleRealm = (realm and "|c%s%s (%s)|r" or "|c%s%s|r"):format(FACTION_COLORS[faction], petType, realm and xrp:RealmNameWithSpacing(realm))
+			currentUnit.titleRealm = (realm and "|c%s%s (%s)|r" or "|c%s%s|r"):format(FACTION_COLORS[faction], petType, realm and xrp:RealmDisplayName(realm))
 
-			currentUnit.name = xrp:NameWithRealm(owner)
+			currentUnit.name = xrp:Name(owner)
 			local race = UnitCreatureFamily(unit) or UnitCreatureType(unit)
 			if race == "Ghoul" or race == "Water Elemental" or race == "MT - Water Elemental" then
 				race = UnitCreatureType(unit)

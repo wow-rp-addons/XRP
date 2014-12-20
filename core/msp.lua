@@ -61,7 +61,7 @@ function msp:UpdateBNList()
 		for j = 1, BNGetNumFriendToons(i) do
 			local active, toonName, client, realmName, _, _, _, _, _, _, _, _, _, _, _, toonID = BNGetFriendToonInfo(i, j)
 			if client == "WoW" then
-				local character = xrp:NameWithRealm(toonName, realmName)
+				local character = xrp:Name(toonName, realmName)
 				self.bnet[character] = toonID
 			end
 		end
@@ -422,7 +422,7 @@ msp:SetScript("OnEvent", function(self, event, prefix, message, channel, sender)
 	if event == "CHAT_MSG_ADDON" and self.handlers[prefix] then
 		-- Sometimes won't have the realm attached because I dunno. Always
 		-- works correctly for different-realm messages.
-		local character = xrp:NameWithRealm(sender)
+		local character = xrp:Name(sender)
 		--print(GetTime()..": In: "..character..": "..message:gsub("\1", ";"))
 		--print("Receiving from: "..character)
 
@@ -435,7 +435,7 @@ msp:SetScript("OnEvent", function(self, event, prefix, message, channel, sender)
 		end
 	elseif event == "BN_CHAT_MSG_ADDON" and self.handlers[prefix] then
 		local active, toonName, client, realmName = BNGetToonInfo(sender)
-		local character = xrp:NameWithRealm(toonName, realmName)
+		local character = xrp:Name(toonName, realmName)
 		self.bnet[character] = sender
 
 		self.cache[character].bnet = true
@@ -446,7 +446,7 @@ msp:SetScript("OnEvent", function(self, event, prefix, message, channel, sender)
 	elseif event == "BN_TOON_NAME_UPDATED" or event == "BN_FRIEND_TOON_ONLINE" then
 		local active, toonName, client, realmName = BNGetToonInfo(prefix)
 		if client == "WoW" then
-			local character = xrp:NameWithRealm(toonName, realmName)
+			local character = xrp:Name(toonName, realmName)
 			if not self.bnet[character] and not self.cache[character].received then
 				self.cache[character].nextCheck = 0
 			end
@@ -456,7 +456,7 @@ msp:SetScript("OnEvent", function(self, event, prefix, message, channel, sender)
 		local units = IsInRaid() and self.raidUnits or self.partyUnits
 		local inGroup, newInGroup = self.inGroup, {}
 		for _, unit in ipairs(units) do
-			local name = xrp:UnitNameWithRealm(unit)
+			local name = xrp:UnitName(unit)
 			if not name then break end
 			if name ~= xrpPrivate.playerWithRealm then
 				if not inGroup[name] and not self.cache[name].received then

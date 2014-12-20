@@ -113,7 +113,7 @@ xrpCmds.status = function(args)
 end
 
 xrpCmds.toggle = function(args)
-	xrp:StatusToggle()
+	xrp:Status()
 end
 
 xrpCmds.view = function(args)
