@@ -68,8 +68,8 @@ do
 
 	do
 		local function Profiles_Click(self, name, arg2, checked)
-			if not checked and xrp.profiles[name] then
-				xrp.profiles[name]:Activate()
+			if not checked and xrpPrivate.profiles[name] then
+				xrpPrivate.profiles[name]:Activate()
 			end
 			CloseDropDownMenus()
 		end
@@ -78,7 +78,7 @@ do
 			if button == "RightButton" then
 				wipe(Profiles_menuList)
 				local selected = xrpSaved.selected
-				for _, name in ipairs(xrp.profiles:List()) do
+				for _, name in ipairs(xrpPrivate.profiles:List()) do
 					Profiles_menuList[#Profiles_menuList + 1] = { text = name, checked = selected == name, arg1 = name, func = Profiles_Click, }
 				end
 			end
