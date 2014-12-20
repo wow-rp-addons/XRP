@@ -15,7 +15,10 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-	<Binding name="XRP_EDITOR" header="XRP" category="ADDONS">
+	<Binding name="XRP_STATUS_TOGGLE" header="XRP" category="ADDONS">
+		xrp:StatusToggle()
+	</Binding>
+	<Binding name="XRP_EDITOR" category="ADDONS">
 		xrp:Edit()
 	</Binding>
 	<Binding name="XRP_VIEWER" category="ADDONS">

@@ -38,11 +38,8 @@ do
 	local Status_menuList = {}
 	do
 		local function Status_Click(self, status, arg2, checked)
-			local FC = xrp.profiles.SELECTED.fields.FC
-			if not checked and (status ~= FC or not FC and status ~= "0") then
-				xrp.current.fields.FC = status ~= "0" and status or ""
-			elseif not checked then
-				xrp.current.fields.FC = nil
+			if not checked then
+				xrp:StatusToggle(status)
 			end
 			CloseDropDownMenus()
 		end

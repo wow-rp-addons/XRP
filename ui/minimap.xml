@@ -62,15 +62,7 @@
 					if xrp.units.target and xrp.units.target.fields.VA then
 						xrp:View("target")
 					else
-						local FC, FCnil = xrp.current.fields.FC, xrp.profiles.SELECTED.fields.FC
-						local IC, ICnil = FC ~= nil and FC ~= "1" and FC ~= "0", FCnil ~= nil and FCnil ~= "1" and FCnil ~= "0"
-						if FC ~= FCnil and IC ~= ICnil then
-							xrp.current.fields.FC = nil
-						elseif IC then
-							xrp.current.fields.FC = "1"
-						else
-							xrp.current.fields.FC = "2"
-						end
+						xrp:StatusToggle()
 					end
 					self:GetScript("OnEnter")(self, true)
 					CloseDropDownMenus()
