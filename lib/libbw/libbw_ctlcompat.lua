@@ -33,12 +33,28 @@ ChatThrottleLib.version = CTL_VERSION
 ChatThrottleLib.libbw = true
 
 function ChatThrottleLib:SendAddonMessage(priorityName, prefix, text, kind, target, queueName, callbackFn, callbackArg)
-	-- TODO: CTL error messages.
+	if not priorityName or not prefix or not text or not kind or (priorityName ~= "ALERT" and priorityName ~= "NORMAL" and priorityName ~= "BULK") then
+		error('Usage: ChatThrottleLib:SendAddonMessage("{BULK||NORMAL||ALERT}", "prefix", "text", "chattype"[, "target"])', 2)
+	end
+	if callbackFn and type(callbackFn) ~= "function" then
+		error('ChatThrottleLib:SendAddonMessage(): callbackFn: expected function, got '..type(callbackFn), 2)
+	end
+	if #text > 255 then
+		error("ChatThrottleLib:SendAddonMessage(): message length cannot exceed 255 bytes", 2)
+	end
 	return libbw:SendAddonMessage(prefix, text, kind, target, priorityName, queueName, callbackFn, callbackArg)
 end
 
 function ChatThrottleLib:SendChatMessage(priorityName, prefix, text, kind, language, target, queueName, callbackFn, callbackArg)
-	-- TODO: CTL error messages.
+	if not priorityName or not prefix or not text or (priorityName ~= "ALERT" and priorityName ~= "NORMAL" and priorityName ~= "BULK") then
+		error('Usage: ChatThrottleLib:SendChatMessage("{BULK||NORMAL||ALERT}", "prefix", "text"[, "chattype"[, "language"[, "destination"]]]', 2)
+	end
+	if callbackFn and type(callbackFn) ~= "function" then
+		error('ChatThrottleLib:ChatMessage(): callbackFn: expected function, got '..type(callbackFn), 2)
+	end
+	if #text > 255 then
+		error("ChatThrottleLib:SendChatMessage(): message length cannot exceed 255 bytes", 2)
+	end
 	return libbw:SendChatMessage(text, kind, language, target, priorityName, queueName or prefix, callbackFn, callbackArg)
 end
 
