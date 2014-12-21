@@ -39,11 +39,11 @@ msp.callback = {
 	received = {},
 }
 
-xrp:HookEvent("RECEIVE", function(event, character)
-	for _, func in ipairs(msp.callback.received) do
-		pcall(func, character)
-		local ambiguated = Ambiguate(character, "none")
-		if ambiguated ~= character then
+xrp:HookEvent("RECEIVE", function(event, name)
+	for i, func in ipairs(msp.callback.received) do
+		pcall(func, name)
+		local ambiguated = Ambiguate(name, "none")
+		if ambiguated ~= name then
 			-- Some unmaintained code expects names without realms for
 			-- same-realm.
 			pcall(func, ambiguated)
@@ -53,23 +53,29 @@ end)
 
 local nk = {} -- Used to hide character names inside table.
 
-local noFunc = function() end
-
-local mspChars = setmetatable({}, { __mode = "v" })
+local mspChars = setmetatable({}, xrpPrivate.weakMeta)
 
 local fieldMeta = {
 	__index = function(self, field)
-		return xrpCache[self[nk]].fields[field] or ""
+		local name = self[nk]
+		if name == xrpPrivate.playerWithRealm then
+			return xrp.current.fields[field]
+		end
+		return xrpCache[name] and xrpCache[name].fields[field] or ""
 	end,
-	__newindex = noFunc,
+	__newindex = xrpPrivate.noFunc,
 	__metatable = false,
 }
 
 local verMeta = {
 	__index = function(self, field)
-		return xrpCache[self[nk]].versions[field]
+		local name = self[nk]
+		if name == xrpPrivate.playerWithRealm then
+			return xrp.current.versions[field]
+		end
+		return xrpCache[name] and xrpCache[name].versions[field] or nil
 	end,
-	__newindex = noFunc,
+	__newindex = xrpPrivate.noFunc,
 	__metatable = false,
 }
 
@@ -78,36 +84,36 @@ local timeTable = setmetatable({}, {
 	__index = function()
 		return loadTime -- Worst-case scenario, they re-run msp:Request().
 	end,
-	__newindex = noFunc,
+	__newindex = xrpPrivate.noFunc,
 	__metatable = false,
 })
 
-local emptyMeta = { __newindex = noFunc, __metatable = false, }
+local emptyMeta = { __newindex = xrpPrivate.noFunc, __metatable = false, }
 local emptyTable = setmetatable({}, emptyMeta)
 
 local emptychar = setmetatable({
-	field = setmetatable({}, { __index = function() return "" end, __newindex = noFunc, __metatable = false, }),
+	field = setmetatable({}, { __index = function() return "" end, __newindex = xrpPrivate.noFunc, __metatable = false, }),
 	ver = emptyTable,
 	time = emptyTable,
 }, emptyMeta)
 
 -- Some addons try to mess with the frames we don't actually have.
 msp.dummyframe = {
-	RegisterEvent = noFunc,
-	UnregisterEvent = noFunc,
+	RegisterEvent = xrpPrivate.noFunc,
+	UnregisterEvent = xrpPrivate.noFunc,
 }
 msp.dummyframex = msp.dummyframe
 
 msp.char = setmetatable({}, {
-	__index = function (self, character)
-		local name = xrp:Name(character) -- For pre-5.4.7 addons.
+	__index = function (self, name)
+		name = xrp:Name(name) -- For pre-5.4.7 addons.
 		if xrpCache[name] then
 			mspChars[name] = { field = setmetatable({ [nk] = name }, fieldMeta), ver = setmetatable({ [nk] = name }, verMeta), time = timeTable, }
 			return mspChars[name]
 		end
 		return emptychar -- LibMSP never returns nil.
 	end,
-	__newindex = noFunc,
+	__newindex = xrpPrivate.noFunc,
 	__metatable = false,
 })
 
@@ -130,11 +136,11 @@ msp.myver = setmetatable({}, {
 	__index = function(self, field)
 		return xrp.current.versions[field]
 	end,
-	__newindex = noFunc,
+	__newindex = xrpPrivate.noFunc,
 	__metatable = false,
 })
 
-function msp:Request(character, fields)
+function msp:Request(name, fields)
 	if not fields then
 		fields = { "TT" }
 	elseif type(fields) == "string" then
@@ -142,7 +148,7 @@ function msp:Request(character, fields)
 	elseif type(fields) ~= "table" then
 		return false
 	end
-	return xrpPrivate:Request(xrp:Name(character), fields)
+	return xrpPrivate:Request(xrp:Name(name), fields)
 end
 
 function msp:NameWithRealm(...)
@@ -152,8 +158,9 @@ end
 -- Used by GHI... Working with the cache since GHI expects values to be
 -- present if we know about someone. Real weird, since this is all-but-
 -- explicitly noted as an internal LibMSP function in the library...
-function msp:PlayerKnownAbout(character)
-	return xrpCache[character] ~= nil
+function msp:PlayerKnownAbout(name)
+	name = xrp:Name(name)
+	return name == xrpPrivate.playerWithRealm or xrpCache[name] ~= nil
 end
 
 -- Dummy function. Updates are processed as they're set in XRP. Benefits of
