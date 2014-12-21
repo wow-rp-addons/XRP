@@ -84,7 +84,7 @@ do
 				filter[character] = nil
 			else
 				-- Same error message for offline and opposite faction.
-				xrpPrivate:FireEvent("FAIL", character, (not xrp.cache[character].fields.GF or xrp.cache[character].fields.GF == xrp.current.fields.GF) and "offline" or "faction")
+				xrpPrivate:FireEvent("FAIL", character, (not xrpCache[character] or not xrpCache[character].fields.GF or xrpCache[character].fields.GF == xrp.current.fields.GF) and "offline" or "faction")
 			end
 			return doFilter
 		end)
@@ -268,7 +268,9 @@ do
 				-- function is the *only* place a character cache table is
 				-- created).
 				for gField, _ in pairs(xrpPrivate.fields.unit) do
-					xrpCache[character].fields[gField] = xrp.cache[character].fields[gField]
+					if xrpPrivate.gCache[character] then
+						xrpCache[character].fields[gField] = xrpPrivate.gCache[character][gField]
+					end
 				end
 			end
 			local updated = false

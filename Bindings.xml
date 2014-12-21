@@ -15,14 +15,14 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-	<Binding name="XRP_STATUS_TOGGLE" header="XRP" category="ADDONS">
+	<Binding name="XRP_STATUS" header="XRP" category="ADDONS">
 		xrp:Status()
 	</Binding>
 	<Binding name="XRP_EDITOR" category="ADDONS">
 		xrp:Edit()
 	</Binding>
 	<Binding name="XRP_VIEWER" category="ADDONS">
-		xrp:View(xrp.units.target and "target" or xrp.units.mouseover and "mouseover" or "player")
+		xrp:View(xrp.characters.byUnit.target and "target" or xrp.characters.byUnit.mouseover and "mouseover" or "player")
 	</Binding>
 	<Binding name="XRP_VIEWER_TARGET" category="ADDONS">
 		xrp:View("target")

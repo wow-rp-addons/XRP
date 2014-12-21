@@ -59,7 +59,7 @@
 		<Scripts>
 			<OnClick>
 				if button == "LeftButton" then
-					if xrp.units.target and xrp.units.target.fields.VA then
+					if xrp.characters.byUnit.target and xrp.characters.byUnit.target.fields.VA then
 						xrp:View("target")
 					else
 						xrp:Status()
@@ -94,7 +94,7 @@
 						GameTooltip:AddLine(("|cffe6b399%s|r"):format(CU or "None"), nil, nil, nil, true)
 					end
 					GameTooltip:AddLine(" ")
-					if xrp.units.target and xrp.units.target.fields.VA then
+					if xrp.characters.byUnit.target and xrp.characters.byUnit.target.fields.VA then
 						GameTooltip:AddLine("|cffffeeaaClick to view your target's profile.|r")
 					elseif not FC or FC == "0" or FC == "1" then
 						GameTooltip:AddLine("|cff66b380Click for in character.|r")

@@ -272,7 +272,7 @@ do
 		end
 
 		currentUnit.type = "player"
-		RenderTooltip((not xrpPrivate.settings.tooltip.noopfaction or faction == myFaction or faction == "Neutral") and (not xrpPrivate.settings.tooltip.nohostile or not attackMe or not meAttack) and xrp.units[unit] or NO_RP_PROFILE)
+		RenderTooltip((not xrpPrivate.settings.tooltip.noopfaction or faction == myFaction or faction == "Neutral") and (not xrpPrivate.settings.tooltip.nohostile or not attackMe or not meAttack) and xrp.characters.byUnit[unit] or NO_RP_PROFILE)
 	end
 
 	function SetPetUnit(unit)
@@ -324,7 +324,7 @@ do
 		end
 
 		currentUnit.type = "pet"
-		RenderTooltip((not xrpPrivate.settings.tooltip.noopfaction or faction == myFaction or faction == "Neutral") and (not xrpPrivate.settings.tooltip.nohostile or not attackMe or not meAttack) and xrp.characters[currentUnit.name] or NO_RP_PROFILE)
+		RenderTooltip((not xrpPrivate.settings.tooltip.noopfaction or faction == myFaction or faction == "Neutral") and (not xrpPrivate.settings.tooltip.nohostile or not attackMe or not meAttack) and xrp.characters.byName[currentUnit.name] or NO_RP_PROFILE)
 	end
 end
 
@@ -334,9 +334,9 @@ local function RECEIVE(event, character)
 	if not enabled or character ~= currentUnit.name then return end
 	local tooltip, unit = GameTooltip:GetUnit()
 	if tooltip and currentUnit.type == "player" then
-		RenderTooltip(unit and xrp.units[unit] or xrp.characters[character])
+		RenderTooltip(unit and xrp.characters.byUnit[unit] or xrp.characters.byName[character])
 	elseif tooltip and currentUnit.type == "pet" then
-		RenderTooltip(xrp.characters[character])
+		RenderTooltip(xrp.characters.byName[character])
 	else
 		return
 	end
