@@ -103,34 +103,29 @@ do
 		local equipSet
 		if not FORM_NO_EQUIPMENT[classForm] then
 			local numSets = GetNumEquipmentSets()
+			local bestMatch, bestScore = nil, 0
 			for i = 1, numSets do
-				local name, _, _, equipped = GetEquipmentSetInfo(i)
+				local name, icon, setID, equipped, numItems, numEquip, numInv, numMissing = GetEquipmentSetInfo(i)
 				if equipped then
-					equipSet = name
 					lastEquipSet = name
 					break
-				end
-			end
-			if not equipSet and numSets > 0 then
-				if not lastEquipSet then
-					-- Guess what set to use if no set has been fully equipped
-					-- so far this session.
-					local best, bestScore, fullSet = nil, 0, false
-					for i = 1, numSets do
-						local name, _, _, _, numItems, numEquip, numInv = GetEquipmentSetInfo(i)
-						if numInv == numItems or not fullSet then
-							local score = numItems / numEquip
-							if score > bestScore or numInv == numItems and not fullSet then
-								bestScore = score
-								best = name
-								fullSet = numInv == numItems
-							end
-						end
+				elseif not lastEquipSet and numItems > 0 then
+					local score
+					if numEquip == numItems then
+						-- Sets with all items equipped (but slots that should
+						-- be empty aren't) are penalized slightly. No way to
+						-- find out how many slots should be empty.
+						numEquip = numEquip - 1
 					end
-					lastEquipSet = best
+					-- Sets with items not in inventory are penalized.
+					local score = numEquip / (numItems + numMissing)
+					if score > bestScore then
+						bestScore = score
+						bestMatch = name
+					end
 				end
-				equipSet = lastEquipSet
 			end
+			equipSet = lastEquipSet or bestMatch
 		end
 
 		return raceForm, classForm, equipSet
