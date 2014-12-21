@@ -138,7 +138,7 @@ do
 
 		if currentUnit.type == "player" then
 
-			RenderLine(currentUnit.nameFormat:format(TruncateLine(xrp:Strip(fields.NA), 65, 0, false) or xrp:NameWithoutRealm(currentUnit.name)), currentUnit.icons)
+			RenderLine(currentUnit.nameFormat:format(TruncateLine(xrp:Strip(fields.NA), 65, 0, false) or xrp:Ambiguate(currentUnit.name)), currentUnit.icons)
 
 			if fields.NI then
 				RenderLine(("|cff6070a0Nickname:|r |cff99b3e6\"%s\"|r"):format(TruncateLine(xrp:Strip(fields.NI), 70, 10, false)))
@@ -180,7 +180,7 @@ do
 			RenderLine(currentUnit.location)
 		elseif currentUnit.type == "pet" then
 			RenderLine(currentUnit.nameFormat, currentUnit.icons)
-			RenderLine(currentUnit.titleRealm:format(fields.NA and TruncateLine(xrp:Strip(fields.NA), 60, 0, false) or xrp:NameWithoutRealm(currentUnit.name)))
+			RenderLine(currentUnit.titleRealm:format(fields.NA and TruncateLine(xrp:Strip(fields.NA), 60, 0, false) or xrp:Ambiguate(currentUnit.name)))
 			RenderLine(currentUnit.info)
 		end
 		-- In rare cases (test case: target without RP addon, is PvP flagged)
@@ -254,7 +254,7 @@ do
 			if realm == xrpPrivate.realm then
 				realm = nil
 			end
-			currentUnit.titleRealm = (realm and "|c%s%s (%s)|r" or "|c%s%s|r"):format(FACTION_COLORS[faction], UnitPVPName(unit) or xrp:NameWithoutRealm(currentUnit.name), realm and xrp:RealmDisplayName(realm))
+			currentUnit.titleRealm = (realm and "|c%s%s (%s)|r" or "|c%s%s|r"):format(FACTION_COLORS[faction], UnitPVPName(unit) or xrp:Ambiguate(currentUnit.name), realm and xrp:RealmDisplayName(realm))
 		end
 
 		currentUnit.race = UnitRace(unit) or UnitCreatureType(unit)
