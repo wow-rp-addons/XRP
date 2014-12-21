@@ -17,6 +17,26 @@
 
 local addonName, xrpPrivate = ...
 
+local function CloseParent(self)
+	self:GetParent():Hide()
+end
+
+local function ClickButton(self)
+	self:GetParent().button1:Click()
+end
+
+local function ButtonToggle(self)
+	if self:GetText() ~= "" then
+		self:GetParent().button1:Enable()
+	else
+		self:GetParent().button1:Disable()
+	end
+end
+
+local function DisableButton(self)
+	self.button1:Disable()
+end
+
 StaticPopupDialogs["XRP_NOTIFICATION"] = {
 	text = "%s",
 	button1 = OKAY,
@@ -37,10 +57,6 @@ StaticPopupDialogs["XRP_ERROR"] = {
 	hideOnEscape = true,
 	preferredIndex = 3,
 }
-
-local function CloseParent(self)
-	self:GetParent():Hide()
-end
 
 StaticPopupDialogs["XRP_URL"] = {
 	text = (IsWindowsClient() or IsLinuxClient()) and "Copy the URL (Ctrl+C) and paste into your web browser." or IsMacClient() and "Copy the URL (Cmd+C) and paste into your web browser." or "Copy the URL and paste into your web browser.",
@@ -106,13 +122,7 @@ StaticPopupDialogs["XRP_CURRENTLY"] = {
 	OnCancel = function(self) -- Reset button.
 		xrp.current.fields.CU = nil
 	end,
-	EditBoxOnEnterPressed = function(self)
-		local parent = self:GetParent()
-		if parent.button1:IsEnabled() then
-			xrp.current.fields.CU = self:GetText()
-			parent:Hide()
-		end
-	end,
+	EditBoxOnEnterPressed = ClickButton,
 	EditBoxOnEscapePressed = CloseParent,
 	enterClicksFirstButton = true,
 	timeout = 0,
@@ -149,18 +159,6 @@ StaticPopupDialogs["XRP_CACHE_TIDY"] = {
 	preferredIndex = 3,
 }
 
-local function ButtonToggle(self)
-	if self:GetText() ~= "" then
-		self:GetParent().button1:Enable()
-	else
-		self:GetParent().button1:Disable()
-	end
-end
-
-local function DisableButton(self)
-	self.button1:Disable()
-end
-
 StaticPopupDialogs["XRP_EDITOR_ADD"] = {
 	text = "Enter a name for the new profile:",
 	button1 = ACCEPT,
@@ -176,21 +174,8 @@ StaticPopupDialogs["XRP_EDITOR_ADD"] = {
 			editor:Load(name)
 		end
 	end,
-	EditBoxOnEnterPressed = function(self, editor)
-		local parent = self:GetParent()
-		if parent.button1:IsEnabled() then
-			local name = self:GetText()
-			if not xrpPrivate.profiles:Add(name) then
-				StaticPopup_Show("XRP_ERROR", ("The name \"%s\" is unavailable or already in use."):format(name))
-			else
-				editor:Load(name)
-			end
-			parent:Hide()
-		end
-	end,
+	EditBoxOnEnterPressed = ClickButton,
 	EditBoxOnEscapePressed = CloseParent,
-	enterClicksFirstButton = true,
-	timeout = 0,
 	enterClicksFirstButton = true,
 	timeout = 0,
 	whileDead = true,
@@ -232,18 +217,7 @@ StaticPopupDialogs["XRP_EDITOR_RENAME"] = {
 			editor:Load(name)
 		end
 	end,
-	EditBoxOnEnterPressed = function(self, editor)
-		local parent = self:GetParent()
-		if parent.button1:IsEnabled() then
-			local name = self:GetText()
-			if not xrpPrivate.profiles[editor.Profiles.contents]:Rename(name) then
-				StaticPopup_Show("XRP_ERROR", ("The name \"%s\" is unavailable or already in use."):format(name))
-			else
-				editor:Load(name)
-			end
-			parent:Hide()
-		end
-	end,
+	EditBoxOnEnterPressed = ClickButton,
 	EditBoxOnEscapePressed = CloseParent,
 	enterClicksFirstButton = true,
 	timeout = 0,
@@ -267,18 +241,7 @@ StaticPopupDialogs["XRP_EDITOR_COPY"] = {
 			editor:Load(name)
 		end
 	end,
-	EditBoxOnEnterPressed = function(self, editor)
-		local parent = self:GetParent()
-		if parent.button1:IsEnabled() then
-			local name = self:GetText()
-			if not xrpPrivate.profiles[editor.Profiles.contents]:Copy(name) then
-				StaticPopup_Show("XRP_ERROR", ("The name \"%s\" is unavailable or already in use."):format(name))
-			else
-				editor:Load(name)
-			end
-			parent:Hide()
-		end
-	end,
+	EditBoxOnEnterPressed = ClickButton,
 	EditBoxOnEscapePressed = CloseParent,
 	enterClicksFirstButton = true,
 	timeout = 0,
