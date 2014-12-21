@@ -17,8 +17,6 @@
 
 local addonName, xrpPrivate = ...
 
-local rpnames, replacements
-
 -- The following chat types are linked together by default. These *can* be
 -- overridden in the settings, but the UI won't allow for such by default.
 local LINKED_CHAT_MSG = {
@@ -31,6 +29,7 @@ local LINKED_CHAT_MSG = {
 	["CHAT_MSG_INSTANCE_CHAT_LEADER"] = "CHAT_MSG_INSTANCE_CHAT",
 }
 
+local rpnames
 local function XRPGetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14)
 	-- Emotes from ourselves don't have our name in them, and Blizzard's
 	-- code can erroneously replace substrings of the emotes or of the
@@ -71,8 +70,7 @@ local function XRPGetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7
 	local name = xrpPrivate.settings.chat[event] and character and not character.hide and xrp:Strip(character.fields.NA) or Ambiguate(arg2, "guild")
 	local nameFormat = ((event == "CHAT_MSG_EMOTE" or event == "CHAT_MSG_TEXT_EMOTE") and xrpPrivate.settings.chat.emotebraced and "[%s]" or "%s") .. (event == "CHAT_MSG_EMOTE" and arg9 or "")
 
-	local info = ChatTypeInfo[chatType]
-	if info and info.colorNameByClass and arg12 then
+	if arg12 and ChatTypeInfo[chatType] and ChatTypeInfo[chatType].colorNameByClass then
 		local color = RAID_CLASS_COLORS[character.fields.GC]
 		if color and color.colorStr then
 			return nameFormat:format(("|c%s%s|r"):format(color.colorStr, name))
@@ -121,6 +119,7 @@ end
 -- unavailable, unit name. Note that this has the minor oddity of saving the
 -- replaced value in the chat history, rather than the %xt/%xf replacement
 -- pattern.
+local replacements
 local function ParseText_Hook(line, send)
 	if send == 1 and replacements then
 		local oldText = line:GetText()

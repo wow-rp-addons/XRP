@@ -17,14 +17,12 @@
 
 local addonName, xrpPrivate = ...
 
-local noFunc = function() end
-local weak = { __mode = "v" }
-local gCache = setmetatable({}, weak)
+local gCache = setmetatable({}, xrpPrivate.weakMeta)
 xrpPrivate.gCache = gCache
 
 local nk = {}
-local characterMeta
 
+local characterMeta
 do
 	local fieldsMeta = {
 		__index = function(self, field)
@@ -37,9 +35,8 @@ do
 			end
 			-- Any access to a field is treated as an implicit request to fetch
 			-- it (but msp won't do it if it's fresh, and will compile quick,
-			-- successive requests into one go). Also try avoiding requests
-			-- when we absolutely know they will fail. Never request data we
-			-- already have, and know is good.
+			-- successive requests into one go). Never request data we already
+			-- have, and know is good.
 			if gCache[name] and gCache[name][field] then
 				return gCache[name][field]
 			end
@@ -49,7 +46,7 @@ do
 			end
 			return nil
 		end,
-		__newindex = noFunc,
+		__newindex = xrpPrivate.noFunc,
 		__metatable = false,
 	}
 
@@ -59,20 +56,15 @@ do
 			if component == "fields" then
 				rawset(self, "fields", setmetatable({ [nk] = name }, fieldsMeta))
 				return self.fields
+			elseif component == "name" then
+				return name
+			elseif not xrpCache[name] then
+				return nil
 			elseif component == "bookmark" then
-				if not xrpCache[name] then
-					return nil
-				end
 				return xrpCache[name].bookmark
 			elseif component == "hide" then
-				if not xrpCache[name] then
-					return nil
-				end
 				return xrpCache[name].hide
 			elseif component == "own" then
-				if not xrpCache[name] then
-					return nil
-				end
 				return xrpCache[name].own
 			end
 		end,
@@ -113,9 +105,9 @@ local RACE_FACTION = {
 	Pandaren = nil, -- Can't tell faction.
 }
 
-local charTables = setmetatable({}, weak)
+local charTables = setmetatable({}, xrpPrivate.weakMeta)
 
-xrp.characters = {
+xrp.characters = setmetatable({
 	byName = setmetatable({}, {
 		__index = function(self, name)
 			name = xrp:Name(name)
@@ -127,7 +119,7 @@ xrp.characters = {
 			end
 			return charTables[name]
 		end,
-		__newindex = noFunc,
+		__newindex = xrpPrivate.noFunc,
 		__metatable = false,
 	}),
 	byUnit = setmetatable({}, {
@@ -168,7 +160,7 @@ xrp.characters = {
 			end
 			return charTables[name]
 		end,
-		__newindex = noFunc,
+		__newindex = xrpPrivate.noFunc,
 		__metatable = false,
 	}),
 	byGUID = setmetatable({}, {
@@ -205,7 +197,7 @@ xrp.characters = {
 			end
 			return charTables[name]
 		end,
-		__newindex = noFunc,
+		__newindex = xrpPrivate.noFunc,
 		__metatable = false,
 	}),
-}
+}, { __newindex = xrpPrivate.noFunc, __metatable = false, })

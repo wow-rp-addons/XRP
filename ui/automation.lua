@@ -44,7 +44,7 @@ local function MakeWords(text)
 	if not equipment or equipment == "" then
 		return FORM_NAMES[form]
 	elseif not isWorgen and not playerClass then
-		return ("%s"):format(equipment)
+		return equipment
 	else
 		return ("%s: %s"):format(FORM_NAMES[form], equipment)
 	end
@@ -96,8 +96,8 @@ do
 	function Profile_PreClick(self, button, down)
 		local parent = self:GetParent()
 		parent.baseMenuList = { NONE }
-		for index, profile in ipairs(xrpPrivate.profiles:List()) do
-			parent.baseMenuList[index + 1] = { text = profile, checked = Profile_Checked, arg1 = profile, func = Profile_Click }
+		for i, profile in ipairs(xrpPrivate.profiles:List()) do
+			parent.baseMenuList[i + 1] = { text = profile, checked = Profile_Checked, arg1 = profile, func = Profile_Click }
 		end
 	end
 end
@@ -133,7 +133,7 @@ do
 				local name = GetEquipmentSetInfo(i)
 				equipSets[#equipSets + 1] = {
 					text = name,
-					value = "\29"..name,
+					value = "\29" .. name,
 					checked = equipSets_Check,
 					func = equipSets_Click,
 				}

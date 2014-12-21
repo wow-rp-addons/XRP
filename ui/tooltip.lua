@@ -220,7 +220,7 @@ do
 		currentUnit.name = xrp:UnitName(unit)
 
 		local faction = UnitFactionGroup(unit)
-		local myFaction = xrp.current.fields.GF
+		local playerFaction = xrp.current.fields.GF
 		if not faction or not FACTION_COLORS[faction] then
 			faction = "Neutral"
 		end
@@ -230,7 +230,7 @@ do
 		local connected = UnitIsConnected(unit)
 
 		do
-			local color = REACTION_COLORS[(faction ~= myFaction and faction ~= "Neutral" or attackMe and meAttack) and "hostile" or (faction == "Neutral" or meAttack or attackMe) and "neutral" or "friendly"]
+			local color = REACTION_COLORS[(faction ~= playerFaction and faction ~= "Neutral" or attackMe and meAttack) and "hostile" or (faction == "Neutral" or meAttack or attackMe) and "neutral" or "friendly"]
 			-- Can only ever be one of AFK, DND, or offline.
 			local isAFK = connected and UnitIsAFK(unit)
 			local isDND = connected and not isAFK and UnitIsDND(unit)
@@ -272,21 +272,21 @@ do
 		end
 
 		currentUnit.type = "player"
-		RenderTooltip((not xrpPrivate.settings.tooltip.noopfaction or faction == myFaction or faction == "Neutral") and (not xrpPrivate.settings.tooltip.nohostile or not attackMe or not meAttack) and xrp.characters.byUnit[unit] or NO_RP_PROFILE)
+		RenderTooltip((not xrpPrivate.settings.tooltip.noopfaction or faction == playerFaction or faction == "Neutral") and (not xrpPrivate.settings.tooltip.nohostile or not attackMe or not meAttack) and xrp.characters.byUnit[unit] or NO_RP_PROFILE)
 	end
 
 	function SetPetUnit(unit)
 		local faction = UnitFactionGroup(unit)
-		local myFaction = xrp.current.fields.GF
+		local playerFaction = xrp.current.fields.GF
 		if not faction or not FACTION_COLORS[faction] then
-			faction = UnitIsUnit(unit, "playerpet") and myFaction or "Neutral"
+			faction = UnitIsUnit(unit, "playerpet") and playerFaction or "Neutral"
 		end
 		local attackMe = UnitCanAttack(unit, "player")
 		local meAttack = UnitCanAttack("player", unit)
 
 		do
 			local name = UnitName(unit)
-			local color = REACTION_COLORS[(faction ~= myFaction and faction ~= "Neutral" or attackMe and meAttack) and "hostile" or (faction == "Neutral" or meAttack or attackMe) and "neutral" or "friendly"]
+			local color = REACTION_COLORS[(faction ~= playerFaction and faction ~= "Neutral" or attackMe and meAttack) and "hostile" or (faction == "Neutral" or meAttack or attackMe) and "neutral" or "friendly"]
 			currentUnit.nameFormat = ("|c%s%s|r"):format(color, name)
 		end
 
@@ -324,12 +324,11 @@ do
 		end
 
 		currentUnit.type = "pet"
-		RenderTooltip((not xrpPrivate.settings.tooltip.noopfaction or faction == myFaction or faction == "Neutral") and (not xrpPrivate.settings.tooltip.nohostile or not attackMe or not meAttack) and xrp.characters.byName[currentUnit.name] or NO_RP_PROFILE)
+		RenderTooltip((not xrpPrivate.settings.tooltip.noopfaction or faction == playerFaction or faction == "Neutral") and (not xrpPrivate.settings.tooltip.nohostile or not attackMe or not meAttack) and xrp.characters.byName[currentUnit.name] or NO_RP_PROFILE)
 	end
 end
 
 local enabled
-
 local function RECEIVE(event, character)
 	if not enabled or character ~= currentUnit.name then return end
 	local tooltip, unit = GameTooltip:GetUnit()

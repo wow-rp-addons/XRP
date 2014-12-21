@@ -24,10 +24,12 @@ end
 
 function xrpPrivate:DoesParentLoop(profile, parent)
 	local profiles = xrpSaved.profiles
-	-- Walk through the new parentage to make sure there's no looping.
+	-- Walk through the parentage to see if there would be looping.
 	local count = 0
 	while parent and count < 16 do
-		if parent == profile then return true end
+		if parent == profile then
+			return true
+		end
 		count = count + 1
 		if profiles[parent] and profiles[parent].parent then
 			parent = profiles[parent].parent
@@ -38,13 +40,12 @@ function xrpPrivate:DoesParentLoop(profile, parent)
 	return false
 end
 
-local noFunc = function() end
-
 xrp.current = setmetatable({
 	fields = setmetatable({}, {
 		__index = function(self, field)
 			local profiles, selected = xrpSaved.profiles, xrpSaved.selected
 			local contents
+			-- Find the contents.
 			if xrpSaved.overrides.fields[field] then
 				contents = xrpSaved.overrides.fields[field] ~= "" and xrpSaved.overrides.fields[field] or nil
 			elseif profiles[selected].fields[field] then
@@ -54,9 +55,16 @@ xrp.current = setmetatable({
 			elseif xrpSaved.meta.fields[field] then
 				contents = xrpSaved.meta.fields[field]
 			else
+				-- No contents at all.
 				return nil
 			end
-			return field == "AH" and xrp:Height(contents, "msp") or field == "AW" and xrp:Weight(contents, "msp") or contents
+			-- Convert height/weight to MSP-style.
+			if field == "AH" then
+				contents = xrp:Height(contents, "msp")
+			elseif field == "AW" then
+				contents = xrp:Weight(contents, "msp")
+			end
+			return contents
 		end,
 		__newindex = function(self, field, contents)
 			if xrpSaved.overrides.fields[field] == contents or xrpPrivate.fields.unit[field] or xrpPrivate.fields.meta[field] or xrpPrivate.fields.dummy[field] or not field:find("^%u%u$") then return end
@@ -69,16 +77,23 @@ xrp.current = setmetatable({
 	versions = setmetatable({}, {
 		__index = function (self, field)
 			local selected = xrpSaved.selected
-			return xrpSaved.overrides.versions[field] or xrpSaved.profiles[selected].versions[field] or (xrpSaved.profiles[xrpPrivate.profiles[selected].inherits[field]] and xrpSaved.profiles[xrpPrivate.profiles[selected].inherits[field]].versions[field]) or xrpSaved.meta.versions[field] or nil
+			-- Override or active profile.
+			local version = xrpSaved.overrides.versions[field] or xrpSaved.profiles[selected].versions[field]
+			if not version then
+				-- Inherited profile or inherited meta.
+				local inherit = xrpPrivate.profiles[selected].inherits[field]
+				version = xrpSaved.profiles[inherit] and xrpSaved.profiles[inherit].versions[field] or xrpSaved.meta.versions[field]
+			end
+			return version or nil
 		end,
-		__newindex = noFunc,
+		__newindex = xrpPrivate.noFunc,
 		__metatable = false,
 	}),
 	overrides = setmetatable({}, {
 		__index = function(self, field)
 			return xrpSaved.overrides.fields[field] ~= nil
 		end,
-		__newindex = noFunc,
+		__newindex = xrpPrivate.noFunc,
 		__metatable = false,
 	}),
 	List = function(self)
@@ -93,7 +108,7 @@ xrp.current = setmetatable({
 				parents[#parents + 1] = inherit
 				inherit = profiles[inherit].parent
 			end
-			for _, profile in ipairs(parents) do
+			for i, profile in ipairs(parents) do
 				for field, contents in pairs(profiles[profile].fields) do
 					if xrpPrivate.profiles[selected].inherits[field] == profile then
 						out[field] = contents
@@ -111,7 +126,7 @@ xrp.current = setmetatable({
 		out.AH = out.AH and xrp:Height(out.AH, "msp") or nil
 		return out
 	end,
-}, { __newindex = noFunc, })
+}, { __newindex = xrpPrivate.noFunc, __metatable = false, })
 
 local nk = {}
 local FORBIDDEN_NAMES = {
@@ -141,7 +156,7 @@ do
 					inherit = nil
 				end
 			end
-			for _, profile in pairs(profiles) do
+			for profileName, profile in pairs(profiles) do
 				if profile.parent == name then
 					profile.parent = profiles[name].parent or nil
 				end
@@ -159,13 +174,13 @@ do
 		end,
 		Rename = function(self, newName)
 			local name, profiles = self[nk], xrpSaved.profiles
-			if type(newName) ~= "string" or FORBIDDEN_NAMES[newName] or type(profiles[newName]) == "table" or type(profiles[name]) ~= "table" then
+			if type(newName) ~= "string" or FORBIDDEN_NAMES[newName] or profiles[newName] ~= nil or type(profiles[name]) ~= "table" then
 				return false
 			end
 			-- Rename profile to the nonexistant table provided.
 			profiles[newName] = profiles[name]
 			-- Update parentage of other profiles
-			for _, profile in pairs(profiles) do
+			for profileName, profile in pairs(profiles) do
 				if profile.parent == name then
 					profile.parent = newName
 				end
@@ -179,7 +194,7 @@ do
 		end,
 		Copy = function(self, newName)
 			local name, profiles = self[nk], xrpSaved.profiles
-			if type(newName) ~= "string" or FORBIDDEN_NAMES[newName] or type(profiles[newName]) == "table" or type(profiles[name]) ~= "table" then
+			if type(newName) ~= "string" or FORBIDDEN_NAMES[newName] or profiles[newName] ~= nil or type(profiles[name]) ~= "table" then
 				return false
 			end
 			-- Copy profile into the empty table called.
@@ -243,7 +258,6 @@ do
 				end
 			end
 		end,
-		__metatable = false,
 	}
 
 	local inheritsMeta = {
@@ -280,7 +294,6 @@ do
 				end
 			end
 		end,
-		__metatable = false,
 	}
 
 	profileMeta = {
@@ -312,7 +325,7 @@ do
 			-- the chain anywherer(for firing UPDATE event).
 			local selected = xrpSaved.selected
 			local isUsed = name == selected
-			count, inherit = 0, profiles[selected].parent
+			local count, inherit = 0, profiles[selected].parent
 			while inherit and not isUsed and count < 16 do
 				count = count + 1
 				if inherit == name then
@@ -328,13 +341,12 @@ do
 				xrpPrivate:FireEvent("UPDATE")
 			end
 		end,
-		__metatable = false,
 	}
 end
 
 local profilesFunctions = {
 	Add = function(self, name)
-		if xrpSaved.profiles[name] or FORBIDDEN_NAMES[name] then
+		if xrpSaved.profiles[name] ~= nil or FORBIDDEN_NAMES[name] then
 			return false
 		end
 		xrpSaved.profiles[name] = {
@@ -346,15 +358,15 @@ local profilesFunctions = {
 	end,
 	List = function(self)
 		local list = {}
-		for name, _ in pairs(xrpSaved.profiles) do
-			list[#list + 1] = name
+		for profileName, profile in pairs(xrpSaved.profiles) do
+			list[#list + 1] = profileName
 		end
 		table.sort(list)
 		return list
 	end,
 }
 
-local profs = setmetatable({}, { __mode = "v" })
+local profileTables = setmetatable({}, xrpPrivate.weakMeta)
 
 xrpPrivate.profiles = setmetatable({}, {
 	__index = function(self, name)
@@ -363,11 +375,10 @@ xrpPrivate.profiles = setmetatable({}, {
 		elseif not xrpSaved.profiles[name] then
 			return nil
 		end
-		if not profs[name] then
-			profs[name] = setmetatable({ [nk] = name }, profileMeta)
+		if not profileTables[name] then
+			profileTables[name] = setmetatable({ [nk] = name }, profileMeta)
 		end
-		return profs[name]
+		return profileTables[name]
 	end,
-	__newindex = noFunc,
-	__metatable = false,
+	__newindex = xrpPrivate.noFunc,
 })

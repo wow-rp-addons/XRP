@@ -59,7 +59,7 @@ msp.cache = setmetatable({}, {
 function msp:UpdateBNList()
 	for i = 1, select(2, BNGetNumFriends()) do
 		for j = 1, BNGetNumFriendToons(i) do
-			local active, toonName, client, realmName, _, _, _, _, _, _, _, _, _, _, _, toonID = BNGetFriendToonInfo(i, j)
+			local active, toonName, client, realmName, realmID, faction, race, class, blank, zoneName, level, gameText, broadcastText, broadcastTime, isConnected, toonID = BNGetFriendToonInfo(i, j)
 			if client == "WoW" then
 				local character = xrp:Name(toonName, realmName)
 				self.bnet[character] = toonID
@@ -72,7 +72,7 @@ do
 	local msp_AddFilter
 	do
 		-- Filter visible "No such..." errors from addon messages.
-		local filter = setmetatable({}, { __mode = "v" })
+		local filter = setmetatable({}, xrpPrivate.weakMeta)
 
 		ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", function(self, event, message)
 			local character = message:match(ERR_CHAT_PLAYER_NOT_FOUND_S:format("(.+)"))
@@ -163,18 +163,6 @@ do
 	end
 end
 
-function msp:OnUpdate(elapsed)
-	if next(self.request) then
-		for character, fields in pairs(self.request) do
-			xrpPrivate:Request(character, fields)
-			self.request[character] = nil
-		end
-	end
-	self:Hide()
-end
-msp:Hide()
-msp:SetScript("OnUpdate", msp.OnUpdate)
-
 do
 	-- Tooltip order for ideal XRP viewer usage.
 	local TT_FIELDS = { "VP", "VA", "NA", "NH", "NI", "NT", "RA", "RC", "CU", "FR", "FC" }
@@ -230,24 +218,29 @@ do
 				-- the version.
 				local tt = self:GetTT()
 				if version == xrpSaved.versions.TT then
-					return ("!TT%u"):format(xrpSaved.versions.TT)
+					return ("!TT%u"):format(version)
 				end
 				return tt
-			elseif version == (xrp.current.versions[field] or 0) then
-				-- They already have the latest.
-				return not xrp.current.versions[field] and field or ("!%s%u"):format(field, xrp.current.versions[field])
-			elseif not xrp.current.fields[field] then
+			end
+			local currentVersion = xrp.current.versions[field]
+			if not currentVersion then
 				-- Field is empty. Empty fields are always version 0 in XRP.
 				return field
+			elseif version == currentVersion then
+				-- They already have the latest.
+				return ("!%s%u"):format(field, version)
 			end
-			-- Field has content.
-			return ("%s%u=%s"):format(field, xrp.current.versions[field], xrp.current.fields[field])
+			-- Field has new content.
+			return ("%s%u=%s"):format(field, currentVersion, xrp.current.fields[field])
 		elseif action == "!" and (not xrpCache[character] and version == 0 or xrpCache[character] and version == (xrpCache[character].versions[field] or 0)) then
 			-- Told us we have latest of their field.
 			self.cache[character].time[field] = GetTime()
 			self.cache[character].fieldUpdated = self.cache[character].fieldUpdated or false
 			if xrpCache[character] and field == "TT" and self.cache[character].bnet == nil then
-				self.cache[character].bnet = tonumber(xrpCache[character].fields.VP) >= 2
+				local numVP = tonumber(xrpCache[character].fields.VP)
+				if numVP then
+					self.cache[character].bnet = numVP >= 2
+				end
 			end
 			return nil
 		elseif action == "" then
@@ -267,8 +260,8 @@ do
 				-- exists (indicating MSP support is/was present -- this
 				-- function is the *only* place a character cache table is
 				-- created).
-				for gField, _ in pairs(xrpPrivate.fields.unit) do
-					if xrpPrivate.gCache[character] then
+				if xrpPrivate.gCache[character] then
+					for gField, isUnitField in pairs(xrpPrivate.fields.unit) do
 						xrpCache[character].fields[gField] = xrpPrivate.gCache[character][gField]
 					end
 				end
@@ -337,11 +330,10 @@ msp.handlers = {
 			xrpPrivate:FireEvent("NOCHANGE", character)
 			self.cache[character].fieldUpdated = nil
 		end
-		local hasCache = xrpCache[character] ~= nil
 		if out and #out > 0 then
 			self:Send(character, out, channel)
 		end
-		if hasCache then
+		if xrpCache[character] ~= nil then
 			-- Cache timer. Last receive marked for clearing old entries.
 			xrpCache[character].lastreceive = time()
 		elseif not self.cache[character].time.TT then
@@ -358,7 +350,8 @@ msp.handlers = {
 			message = message:gsub("^XC=%d+\1", "")
 		end
 		-- This only does partial processing -- queries (i.e., ?TT) are
-		-- processed only after full reception.
+		-- processed only after full reception. Mixed queries/responses are not
+		-- common, but also not forbidden by the spec.
 		for command in message:gmatch("([^\1]+)\1") do
 			if command:find("^[^%?]") then
 				self:Process(character, command)
@@ -377,6 +370,7 @@ msp.handlers = {
 			if not message then return end
 			self.cache[character][channel] = ""
 		end
+		-- Only merge the contents if there's an end-of-command to process.
 		if message:find("\1", nil, true) then
 			message = (type(self.cache[character][channel]) == "string" and self.cache[character][channel] or table.concat(self.cache[character][channel])) .. message
 			for command in message:gmatch("([^\1]+)\1") do
@@ -415,7 +409,7 @@ msp.handlers = {
 	end,
 	["GMSP"] = function(self, character, message, channel)
 		local target, prefix, message = message:match(message:find("\30", nil, true) and "^(.+)\30([\1\2\3]?)(.+)$" or "^(.-)([\1\2\3]?)(.+)$")
-		if target ~= "" and target ~= xrpPrivate.playerWithRealm then return end
+		if not (target == "" or target == xrpPrivate.playerWithRealm) then return end
 		self.handlers[prefix ~= "" and ("MSP%s"):format(prefix) or "MSP"](self, character, message, channel)
 	end,
 }
@@ -457,7 +451,7 @@ msp:SetScript("OnEvent", function(self, event, prefix, message, channel, sender)
 	elseif event == "GROUP_ROSTER_UPDATE" then
 		local units = IsInRaid() and self.raidUnits or self.partyUnits
 		local inGroup, newInGroup = self.inGroup, {}
-		for _, unit in ipairs(units) do
+		for i, unit in ipairs(units) do
 			local name = xrp:UnitName(unit)
 			if not name then break end
 			if name ~= xrpPrivate.playerWithRealm then
@@ -480,7 +474,7 @@ msp:SetScript("OnEvent", function(self, event, prefix, message, channel, sender)
 end)
 
 if not disabled then
-	for prefix, _ in pairs(msp.handlers) do
+	for prefix, func in pairs(msp.handlers) do
 		RegisterAddonMessagePrefix(prefix)
 	end
 	msp:RegisterEvent("CHAT_MSG_ADDON")
@@ -508,6 +502,18 @@ do
 	msp.partyUnits = partyUnits
 	msp.inGroup = {}
 end
+
+function msp:OnUpdate(elapsed)
+	if next(self.request) then
+		for character, fields in pairs(self.request) do
+			xrpPrivate:Request(character, fields)
+			self.request[character] = nil
+		end
+	end
+	self:Hide()
+end
+msp:Hide()
+msp:SetScript("OnUpdate", msp.OnUpdate)
 
 xrpPrivate.msp = 2
 
@@ -578,9 +584,10 @@ function xrpPrivate:Request(character, fields)
 	end
 
 	local out = {}
-	for _, field in ipairs(fields) do
+	for i, field in ipairs(fields) do
 		if not msp.cache[character].time[field] or now > msp.cache[character].time[field] + self.fields.times[field] then
-			out[#out + 1] = ((not xrpCache[character] or not xrpCache[character].versions[field]) and "?%s" or "?%s%u"):format(field, xrpCache[character] and xrpCache[character].versions[field] or 0)
+			local noVersion = not xrpCache[character] or not xrpCache[character].versions[field]
+			out[#out + 1] = (noVersion and "?%s" or "?%s%u"):format(field, noVersion or xrpCache[character].versions[field])
 			msp.cache[character].time[field] = now
 		end
 	end
