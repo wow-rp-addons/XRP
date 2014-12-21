@@ -37,7 +37,7 @@ function xrp:Name(name, realm)
 end
 
 -- Dumb version of Ambiguate() which always strips.
-function xrp:NameWithoutRealm(name)
+function xrp:Ambiguate(name)
 	if type(name) ~= "string" then
 		return UNKNOWN
 	end

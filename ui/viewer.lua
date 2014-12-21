@@ -31,7 +31,7 @@ do
 	local function SetField(field, contents)
 		contents = contents and xrp:Strip(contents) or nil
 		if field == "NA" then
-			contents = contents or xrp:NameWithoutRealm(viewer.current) or UNKNOWN
+			contents = contents or xrp:Ambiguate(viewer.current) or UNKNOWN
 		elseif field == "VA" then
 			contents = contents and contents:gsub(";", ", ") or "Unknown/None"
 		elseif not contents then
@@ -189,7 +189,7 @@ function xrp:View(player)
 	viewer.failed = nil
 	viewer.XC:SetText("")
 	Load(isUnit and self.characters.byUnit[player].fields or self.characters.byName[player].fields)
-	if isUnit and not isRefresh then
+	if isUnit then
 		SetPortraitTexture(viewer.portrait, player)
 	elseif not isRefresh then
 		local faction = self.characters.byName[player].fields.GF

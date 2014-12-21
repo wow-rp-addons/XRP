@@ -535,7 +535,7 @@ xrpPrivate.fields = {
 }
 
 function xrpPrivate:QueueRequest(character, field)
-	if disabled or character == xrpPrivate.playerWithRealm or xrp:NameWithoutRealm(character) == UNKNOWN or msp.cache[character].time[field] and GetTime() < msp.cache[character].time[field] + self.fields.times[field] then
+	if disabled or character == xrpPrivate.playerWithRealm or xrp:Ambiguate(character) == UNKNOWN or msp.cache[character].time[field] and GetTime() < msp.cache[character].time[field] + self.fields.times[field] then
 		return false
 	end
 
@@ -550,7 +550,7 @@ function xrpPrivate:QueueRequest(character, field)
 end
 
 function xrpPrivate:Request(character, fields)
-	if disabled or character == xrpPrivate.playerWithRealm or xrp:NameWithoutRealm(character) == UNKNOWN then
+	if disabled or character == xrpPrivate.playerWithRealm or xrp:Ambiguate(character) == UNKNOWN then
 		return false
 	end
 
