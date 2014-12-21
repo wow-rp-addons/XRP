@@ -151,6 +151,17 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.]]
 )
 
+about:SetScript("OnShow", function(self)
+	if not self.core then
+		xrpPrivate:Options()
+	end
+	if self:Get("cache", "autoclean") then
+		self.CacheTidy:Hide()
+	else
+		self.CacheTidy:Show()
+	end
+end)
+
 InterfaceOptions_AddCategory(about)
 
 local ChatChannels_CustomRefresh
@@ -252,7 +263,7 @@ do
 	}
 end
 
-function xrp:Options(pane)
+function xrpPrivate:Options(pane)
 	if not about.core then
 		about.core = CreateFrame("Frame", nil, about, "XRPOptionsCoreTemplate")
 		about.core.Height.baseMenuList = Height_baseMenuList
