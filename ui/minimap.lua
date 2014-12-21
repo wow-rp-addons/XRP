@@ -62,7 +62,7 @@ do
 		{ text = "Currently...", notCheckable = true, func = function() StaticPopup_Show("XRP_CURRENTLY") end, },
 		{ text = "Editor...", notCheckable = true, func = function() xrp:Edit() end, },
 		{ text = "Viewer...", notCheckable = true, func = function() xrp:View() end, },
-		{ text = "Options...", notCheckable = true, func = function() xrp:Options() end, },
+		{ text = "Options...", notCheckable = true, func = function() xrpPrivate:Options() end, },
 		{ text = "Cancel", notCheckable = true, func = function() end, },
 	}
 

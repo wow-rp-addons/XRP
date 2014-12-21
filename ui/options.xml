@@ -77,18 +77,6 @@
 				</Scripts>
 			</Button>
 		</Frames>
-		<Scripts>
-			<OnShow>
-				if not self.core then
-					xrp:Options()
-				end
-				if self:Get("cache", "autoclean") then
-					self.CacheTidy:Hide()
-				else
-					self.CacheTidy:Show()
-				end
-			</OnShow>
-		</Scripts>
 	</Frame>
 	<CheckButton name="XRPOptionsCheckboxTemplate" parentArray="controls" inherits="XRPCheckBoxArtTemplate" virtual="true">
 		<KeyValues>
