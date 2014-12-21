@@ -72,7 +72,7 @@ xrp = {
 
 -- Global strings for keybinds.
 BINDING_HEADER_XRP = "XRP"
-BINDING_NAME_XRP_STATUS_TOGGLE = "Toggle IC/OOC status"
+BINDING_NAME_XRP_STATUS = "Toggle IC/OOC status"
 BINDING_NAME_XRP_EDITOR = "Open/close RP profile editor"
 BINDING_NAME_XRP_VIEWER = "View target's or mouseover's RP profile"
 BINDING_NAME_XRP_VIEWER_TARGET = "View target's RP profile"

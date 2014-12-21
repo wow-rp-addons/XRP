@@ -67,7 +67,7 @@ local function XRPGetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7
 		event = LINKED_CHAT_MSG[event]
 	end
 
-	local character = arg12 and xrp.guids[arg12] or nil
+	local character = arg12 and xrp.characters.byGUID[arg12] or nil
 	local name = xrpPrivate.settings.chat[event] and character and not character.hide and xrp:Strip(character.fields.NA) or Ambiguate(arg2, "guild")
 	local nameFormat = ((event == "CHAT_MSG_EMOTE" or event == "CHAT_MSG_TEXT_EMOTE") and xrpPrivate.settings.chat.emotebraced and "[%s]" or "%s") .. (event == "CHAT_MSG_EMOTE" and arg9 or "")
 
@@ -126,10 +126,10 @@ local function ParseText_Hook(line, send)
 		local oldText = line:GetText()
 		local text = oldText
 		if text:find("%xt", nil, true) then
-			text = text:gsub("%%xt", UnitExists("target") and (xrp.units.target and xrp:Strip(xrp.units.target.fields.NA) or UnitName("target")) or "nobody")
+			text = text:gsub("%%xt", UnitExists("target") and (xrp.characters.byUnit.target and xrp:Strip(xrp.characters.byUnit.target.fields.NA) or UnitName("target")) or "nobody")
 		end
 		if text:find("%xf", nil, true) then
-			text = text:gsub("%%xf", UnitExists("focus") and (xrp.units.focus and xrp:Strip(xrp.units.focus.fields.NA) or UnitName("focus")) or "nobody")
+			text = text:gsub("%%xf", UnitExists("focus") and (xrp.characters.byUnit.focus and xrp:Strip(xrp.characters.byUnit.focus.fields.NA) or UnitName("focus")) or "nobody")
 		end
 		if text ~= oldText then
 			line:SetText(text)

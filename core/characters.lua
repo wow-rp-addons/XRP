@@ -20,8 +20,9 @@ local addonName, xrpPrivate = ...
 local noFunc = function() end
 local weak = { __mode = "v" }
 local gCache = setmetatable({}, weak)
+xrpPrivate.gCache = gCache
 
-local ck, rk = {}, {}
+local nk = {}
 local characterMeta
 
 do
@@ -30,8 +31,8 @@ do
 			if xrpPrivate.fields.dummy[field] or not field:find("^%u%u$") then
 				return nil
 			end
-			local character = self[ck]
-			if character == xrpPrivate.playerWithRealm then
+			local name = self[nk]
+			if name == xrpPrivate.playerWithRealm then
 				return xrp.current.fields[field]
 			end
 			-- Any access to a field is treated as an implicit request to fetch
@@ -39,14 +40,12 @@ do
 			-- successive requests into one go). Also try avoiding requests
 			-- when we absolutely know they will fail. Never request data we
 			-- already have, and know is good.
-			if gCache[character] and gCache[character][field] then
-				return gCache[character][field]
+			if gCache[name] and gCache[name][field] then
+				return gCache[name][field]
 			end
-			if self[rk] then
-				xrpPrivate:QueueRequest(character, field)
-			end
-			if xrpCache[character] and xrpCache[character].fields[field] then
-				return xrpCache[character].fields[field]
+			xrpPrivate:QueueRequest(name, field)
+			if xrpCache[name] and xrpCache[name].fields[field] then
+				return xrpCache[name].fields[field]
 			end
 			return nil
 		end,
@@ -56,41 +55,41 @@ do
 
 	characterMeta = {
 		__index = function(self, component)
-			local character = self[ck]
+			local name = self[nk]
 			if component == "fields" then
-				rawset(self, "fields", setmetatable({ [ck] = character, [rk] = self[rk] }, fieldsMeta))
+				rawset(self, "fields", setmetatable({ [nk] = name }, fieldsMeta))
 				return self.fields
 			elseif component == "bookmark" then
-				if not xrpCache[character] then
+				if not xrpCache[name] then
 					return nil
 				end
-				return xrpCache[character].bookmark
+				return xrpCache[name].bookmark
 			elseif component == "hide" then
-				if not xrpCache[character] then
+				if not xrpCache[name] then
 					return nil
 				end
-				return xrpCache[character].hide
+				return xrpCache[name].hide
 			elseif component == "own" then
-				if not xrpCache[character] then
+				if not xrpCache[name] then
 					return nil
 				end
-				return xrpCache[character].own
+				return xrpCache[name].own
 			end
 		end,
 		__newindex = function(self, component, value)
-			local character = self[ck]
-			if not xrpCache[character] then return end
+			local name = self[nk]
+			if not xrpCache[name] then return end
 			if component == "bookmark" then
-				if value and not xrpCache[character].bookmark then
-					xrpCache[character].bookmark = time()
-				elseif not value and xrpCache[character].bookmark then
-					xrpCache[character].bookmark = nil
+				if value and not xrpCache[name].bookmark then
+					xrpCache[name].bookmark = time()
+				elseif not value and xrpCache[name].bookmark then
+					xrpCache[name].bookmark = nil
 				end
 			elseif component == "hide" then
-				if value and not xrpCache[character].hide then
-					xrpCache[character].hide = true
-				elseif not value and xrpCache[character].hide then
-					xrpCache[character].hide = nil
+				if value and not xrpCache[name].hide then
+					xrpCache[name].hide = true
+				elseif not value and xrpCache[name].hide then
+					xrpCache[name].hide = nil
 				end
 			end
 		end,
@@ -98,142 +97,115 @@ do
 	}
 end
 
-do
-	local characters = setmetatable({}, weak)
-	xrp.characters = setmetatable({}, {
-		__index = function(self, character)
-			character = xrp:Name(character)
-			if not character then
+local RACE_FACTION = {
+	Human = "Alliance",
+	Dwarf = "Alliance",
+	Gnome = "Alliance",
+	NightElf = "Alliance",
+	Draenei = "Alliance",
+	Worgen = "Alliance",
+	Orc = "Horde",
+	Tauren = "Horde",
+	Troll = "Horde",
+	Scourge = "Horde",
+	BloodElf = "Horde",
+	Goblin = "Horde",
+	Pandaren = nil, -- Can't tell faction.
+}
+
+local charTables = setmetatable({}, weak)
+
+xrp.characters = {
+	byName = setmetatable({}, {
+		__index = function(self, name)
+			name = xrp:Name(name)
+			if not name then
 				return nil
 			end
-			if not characters[character] then
-				characters[character] = setmetatable({ [ck] = character, [rk] = true }, characterMeta)
+			if not charTables[name] then
+				charTables[name] = setmetatable({ [nk] = name }, characterMeta)
 			end
-			return characters[character]
+			return charTables[name]
 		end,
 		__newindex = noFunc,
 		__metatable = false,
-	})
-
-	xrp.units = setmetatable({}, {
+	}),
+	byUnit = setmetatable({}, {
 		__index = function (self, unit)
-			local character = xrp:UnitName(unit)
-			if not character then
+			local name = xrp:UnitName(unit)
+			if not name then
 				return nil
 			end
 			-- These values may only update once per session (varying with
 			-- garbage collection). This could create minor confusion if
 			-- someone changes faction, race, sex, or GUID while we're still
 			-- logged in. Unlikely, but possible.
-			if not gCache[character] then
+			if not gCache[name] then
 				local GU = UnitGUID(unit)
 				local class, GC, race, GR, GS = GetPlayerInfoByGUID(GU)
-				gCache[character] = {
+				gCache[name] = {
 					GC = GC,
 					GF = UnitFactionGroup(unit),
 					GR = GR,
 					GS = tostring(GS),
 					GU = GU,
 				}
-				if xrpCache[character] and character ~= xrpPrivate.playerWithRealm then
-					for field, contents in pairs(gCache[character]) do
+				if xrpCache[name] and name ~= xrpPrivate.playerWithRealm then
+					for field, contents in pairs(gCache[name]) do
 						-- We DO want to overwrite these, to account for race,
 						-- faction, or sex changes.
-						xrpCache[character].fields[field] = contents
+						xrpCache[name].fields[field] = contents
 					end
 				end
-			elseif not gCache[character].GF then -- GUID won't always get faction.
-				gCache[character].GF = UnitFactionGroup(unit)
-				if xrpCache[character] and character ~= xrpPrivate.playerWithRealm then
-					xrpCache[character].fields.GF = gCache[character].GF
+			elseif not gCache[name].GF then -- GUID won't always get faction.
+				gCache[name].GF = UnitFactionGroup(unit)
+				if xrpCache[name] and name ~= xrpPrivate.playerWithRealm then
+					xrpCache[name].fields.GF = gCache[name].GF
 				end
 			end
-			if not characters[character] then
-				characters[character] = setmetatable({ [ck] = character, [rk] = true }, characterMeta)
+			if not charTables[name] then
+				charTables[name] = setmetatable({ [nk] = name }, characterMeta)
 			end
-			return characters[character]
+			return charTables[name]
 		end,
 		__newindex = noFunc,
 		__metatable = false,
-	})
-
-	local RACE_FACTION = {
-		Human = "Alliance",
-		Dwarf = "Alliance",
-		Gnome = "Alliance",
-		NightElf = "Alliance",
-		Draenei = "Alliance",
-		Worgen = "Alliance",
-		Orc = "Horde",
-		Tauren = "Horde",
-		Troll = "Horde",
-		Scourge = "Horde",
-		BloodElf = "Horde",
-		Goblin = "Horde",
-		Pandaren = nil, -- Can't tell faction.
-	}
-
-	xrp.guids = setmetatable({}, {
+	}),
+	byGUID = setmetatable({}, {
 		__index = function (self, GU)
 			-- This will return nil if the GUID hasn't been seen by the client
 			-- yet in the session.
-			local class, GC, race, GR, GS, character, realm = GetPlayerInfoByGUID(GU)
-			character = xrp:Name(character, realm)
-			if not character or character == "" then
+			local class, GC, race, GR, GS, name, realm = GetPlayerInfoByGUID(GU)
+			name = xrp:Name(name, realm)
+			if not name or name == "" then
 				return nil
 			end
 			-- These values may only update once per session (varying with
 			-- garbage collection). This could create minor confusion if
 			-- someone changes faction, race, sex, or GUID while we're still
 			-- logged in. Unlikely, but possible.
-			if not gCache[character] then
-				gCache[character] = {
+			if not gCache[name] then
+				gCache[name] = {
 					GC = GC,
 					GF = RACE_FACTION[GR],
 					GR = GR,
 					GS = tostring(GS),
 					GU = GU,
 				}
-				if xrpCache[character] and character ~= xrpPrivate.playerWithRealm then
-					for field, contents in pairs(gCache[character]) do
+				if xrpCache[name] and name ~= xrpPrivate.playerWithRealm then
+					for field, contents in pairs(gCache[name]) do
 						-- We DO want to overwrite these, to account for race,
 						-- faction, or sex changes.
-						xrpCache[character].fields[field] = contents
+						xrpCache[name].fields[field] = contents
 					end
 				end
 			end
-			if not characters[character] then
-				characters[character] = setmetatable({ [ck] = character, [rk] = true }, characterMeta)
+			if not charTables[name] then
+				charTables[name] = setmetatable({ [nk] = name }, characterMeta)
 			end
-			return characters[character]
+			return charTables[name]
 		end,
 		__newindex = noFunc,
 		__metatable = false,
-	})
-end
-
-do
-	local characters = setmetatable({}, weak)
-	xrp.cache = setmetatable({}, {
-		__index = function(self, character)
-			if not character or character == "" then
-				return nil
-			end
-			character = xrp:Name(character)
-			if not characters[character] then
-				characters[character] = setmetatable({ [ck] = character, [rk] = false }, characterMeta)
-			end
-			return characters[character]
-		end,
-		__newindex = noFunc,
-		__call = function(self)
-			local out = {}
-			for character, _ in pairs(xrpCache) do
-				out[#out + 1] = character
-			end
-			table.sort(out)
-			return out
-		end,
-		__metatable = false,
-	})
-end
+	}),
+}

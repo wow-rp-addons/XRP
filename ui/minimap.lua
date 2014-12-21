@@ -21,7 +21,7 @@ local minimap
 
 local function Minimap_UpdateIcon()
 	if not minimap then return end
-	if xrp.units.target and xrp.units.target.fields.VA then
+	if xrp.characters.byUnit.target and xrp.characters.byUnit.target.fields.VA then
 		minimap.Icon:SetTexture("Interface\\Icons\\INV_Misc_Book_03")
 		return
 	end

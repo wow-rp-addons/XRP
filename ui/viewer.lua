@@ -56,7 +56,7 @@ do
 		for _, field in ipairs(display) do
 			SetField(field, character[field] or field == "RA" and xrp.values.GR[character.GR] or field == "RC" and xrp.values.GC[character.GC] or nil)
 		end
-		if xrp.characters[viewer.current].own then
+		if xrp.characters.byName[viewer.current].own then
 			viewer.Menu:Hide()
 		else
 			viewer.Menu:Show()
@@ -69,9 +69,9 @@ do
 	end
 	function FIELD(event, name, field)
 		if viewer.current == name and supported[field] then
-			SetField(field, xrp.characters[name].fields[field])
-		elseif viewer.current == name and (field == "GR" and not xrp.cache[name].fields.RA or field == "GC" and not xrp.cache[name].fields.RC) then
-			SetField(field == "GR" and "RA" or field == "GC" and "RC", field == "GR" and xrp.values.GR[xrp.characters[name].fields.GR] or field == "GC" and xrp.values.GC[xrp.characters[name].fields.GC] or nil)
+			SetField(field, xrp.characters.byName[name].fields[field])
+		elseif viewer.current == name and (field == "GR" and not xrp.characters.byName[name].fields.RA or field == "GC" and not xrp.characters.byName[name].fields.RC) then
+			SetField(field == "GR" and "RA" or field == "GC" and "RC", field == "GR" and xrp.values.GR[xrp.characters.byName[name].fields.GR] or field == "GC" and xrp.values.GC[xrp.characters.byName[name].fields.GC] or nil)
 		end
 	end
 end
@@ -80,7 +80,7 @@ local function RECEIVE(event, name)
 	if viewer.current == name then
 		if viewer.failed == name then
 			viewer.failed = nil
-			Load(xrp.characters[name].fields)
+			Load(xrp.characters.byName[name].fields)
 		end
 		local XC = viewer.XC:GetText()
 		if not XC or not XC:find("^Received") then
@@ -117,16 +117,16 @@ local Menu_baseMenuList
 do
 	local function Menu_Checked(self)
 		if self.arg1 == 1 then
-			return xrp.characters[UIDROPDOWNMENU_INIT_MENU:GetParent().current].bookmark ~= nil
+			return xrp.characters.byName[UIDROPDOWNMENU_INIT_MENU:GetParent().current].bookmark ~= nil
 		elseif self.arg1 == 2 then
-			return xrp.characters[UIDROPDOWNMENU_INIT_MENU:GetParent().current].hide ~= nil
+			return xrp.characters.byName[UIDROPDOWNMENU_INIT_MENU:GetParent().current].hide ~= nil
 		end
 	end
 	local function Menu_Click(self, arg1, arg2, checked)
 		if arg1 == 1 then
-			xrp.characters[UIDROPDOWNMENU_OPEN_MENU:GetParent().current].bookmark = not checked
+			xrp.characters.byName[UIDROPDOWNMENU_OPEN_MENU:GetParent().current].bookmark = not checked
 		elseif arg1 == 2 then
-			xrp.characters[UIDROPDOWNMENU_OPEN_MENU:GetParent().current].hide = not checked
+			xrp.characters.byName[UIDROPDOWNMENU_OPEN_MENU:GetParent().current].hide = not checked
 		elseif arg1 == 3 then
 			xrp:View(UIDROPDOWNMENU_OPEN_MENU:GetParent().current)
 		end
@@ -173,7 +173,7 @@ function xrp:View(player)
 			viewer.failed = nil
 			viewer.current = xrpPrivate.playerWithRealm
 			SetPortraitTexture(viewer.portrait, "player")
-			Load(self.units.player.fields)
+			Load(self.characters.byUnit.player.fields)
 		end
 		ShowUIPanel(viewer)
 		return
@@ -188,11 +188,11 @@ function xrp:View(player)
 	viewer.current = newCurrent
 	viewer.failed = nil
 	viewer.XC:SetText("")
-	Load(isUnit and self.units[player].fields or self.characters[player].fields)
+	Load(isUnit and self.characters.byUnit[player].fields or self.characters.byName[player].fields)
 	if isUnit and not isRefresh then
 		SetPortraitTexture(viewer.portrait, player)
 	elseif not isRefresh then
-		local faction = self.characters[player].fields.GF
+		local faction = self.characters.byName[player].fields.GF
 		SetPortraitToTexture(viewer.portrait, faction == "Alliance" and "Interface\\Icons\\INV_BannerPVP_02" or faction == "Horde" and "Interface\\Icons\\INV_BannerPVP_01" or "Interface\\Icons\\INV_Misc_Book_17")
 	end
 	ShowUIPanel(viewer)
