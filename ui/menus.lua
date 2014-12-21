@@ -25,7 +25,7 @@ local addonName, xrpPrivate = ...
 -- causing taint problems. This includes all unit menus with a "SET_FOCUS"
 -- button. The menus can be found in Blizzard's UnitPopups.lua.
 
-local function UnitPopup_Hook(self)
+local function UnitPopup_OnClick_Hook(self)
 	local button = self.value
 	if button == "XRP_VIEW_CHARACTER" then
 		xrp:View(xrp:Name(UIDROPDOWNMENU_INIT_MENU.name, UIDROPDOWNMENU_INIT_MENU.server))
@@ -41,7 +41,7 @@ xrpPrivate.settingsToggles.menus = {
 	standard = function(setting)
 		if setting then
 			if not isHooked then
-				hooksecurefunc("UnitPopup_OnClick", UnitPopup_Hook)
+				hooksecurefunc("UnitPopup_OnClick", UnitPopup_OnClick_Hook)
 				isHooked = true
 			end
 			if standard == nil then
@@ -79,7 +79,7 @@ xrpPrivate.settingsToggles.menus = {
 	units = function(setting)
 		if setting then
 			if not isHooked then
-				hooksecurefunc("UnitPopup_OnClick", UnitPopup_Hook)
+				hooksecurefunc("UnitPopup_OnClick", UnitPopup_OnClick_Hook)
 				isHooked = true
 			end
 			if units == nil then

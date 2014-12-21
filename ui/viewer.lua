@@ -39,9 +39,9 @@ do
 		elseif field == "NI" then
 			contents = ("\"%s\""):format(contents)
 		elseif field == "AH" then
-			contents = xrp:Height(contents, "user")
+			contents = xrp:Height(contents)
 		elseif field == "AW" then
-			contents = xrp:Weight(contents, "user")
+			contents = xrp:Weight(contents)
 		elseif field == "CU" or field == "DE" or field == "MO" or field == "HI" then
 			-- Link URLs in scrolling fields.
 			contents = contents:gsub("([ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789%-%.]+%.com[^%w])", "http://%1"):gsub("([ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789%-%.]+%.net[^%w])", "http://%1"):gsub("([ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789%-%.]+%.org[^%w])", "http://%1"):gsub("(bit%.ly%/)", "http://%1"):gsub("(https?://)http://", "%1"):gsub("(https?://[ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789%%%-%.%_%~%:%/%?#%[%]%@%!%$%&%'%(%)%*%+%,%;%=]+)", "|H%1|h|cffc845fa[%1]|r|h")

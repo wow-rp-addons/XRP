@@ -122,11 +122,7 @@ xrpCmds.view = function(args)
 	elseif not args and UnitIsPlayer("mouseover") then
 		args = "mouseover"
 	end
-	if type(args) == "string" then
-		xrp:View(args)
-	else
-		xrpCmds.help("view")
-	end
+	xrp:View(args)
 end
 
 -- Aliases.

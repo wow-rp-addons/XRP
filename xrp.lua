@@ -79,6 +79,8 @@ BINDING_NAME_XRP_VIEWER_TARGET = "View target's RP profile"
 BINDING_NAME_XRP_VIEWER_MOUSEOVER = "View mouseover's RP profile"
 
 xrpPrivate.version = GetAddOnMetadata(addonName, "Version")
+xrpPrivate.noFunc = function() end
+xrpPrivate.weakMeta = { __mode = "v" }
 
 do
 	local events = {}
@@ -87,7 +89,7 @@ do
 		if type(events[event]) ~= "table" then
 			return false
 		end
-		for _, func in ipairs(events[event]) do
+		for i, func in ipairs(events[event]) do
 			pcall(func, event, ...)
 		end
 		return true
@@ -157,7 +159,7 @@ do
 			do
 				local addonString = "%s/%s"
 				local VA = { addonString:format(GetAddOnMetadata(addonName, "Title"), xrpPrivate.version) }
-				for _, addon in ipairs(addons) do
+				for i, addon in ipairs(addons) do
 					local name, title, notes, enabled, reason, secure, loadable = GetAddOnInfo(addon)
 					if enabled or loadable then
 						VA[#VA + 1] = addonString:format(name, GetAddOnMetadata(name, "Version"))
@@ -221,7 +223,7 @@ do
 			do
 				local current = xrp.current
 				local fields, versions = current:List(), {}
-				for field, _ in pairs(fields) do
+				for field, contents in pairs(fields) do
 					versions[field] = current.versions[field]
 				end
 				xrpCache[xrpPrivate.playerWithRealm] = {

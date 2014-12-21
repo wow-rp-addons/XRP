@@ -63,7 +63,7 @@ do
 		{ text = "Editor...", notCheckable = true, func = function() xrp:Edit() end, },
 		{ text = "Viewer...", notCheckable = true, func = function() xrp:View() end, },
 		{ text = "Options...", notCheckable = true, func = function() xrpPrivate:Options() end, },
-		{ text = "Cancel", notCheckable = true, func = function() end, },
+		{ text = "Cancel", notCheckable = true, func = xrpPrivate.noFunc, },
 	}
 
 	do
@@ -178,16 +178,13 @@ xrpPrivate.settingsToggles.minimap = {
 				xrp:HookEvent("UPDATE", Minimap_UpdateIcon)
 				xrp:HookEvent("RECEIVE", Minimap_UpdateIcon)
 			end
-			local needsUpdate
 			if xrpPrivate.settings.minimap.detached then
-				needsUpdate = true
 				if minimap and minimap == attachedMinimap then
 					minimap:UnregisterAllEvents()
 					minimap:Hide()
 				end
 				minimap = GetDetachedMinimap()
 			else
-				needsUpdate = true
 				if minimap and minimap == detachedMinimap then
 					minimap:UnregisterAllEvents()
 					minimap:Hide()

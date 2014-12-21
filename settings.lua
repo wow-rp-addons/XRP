@@ -321,9 +321,9 @@ function xrpPrivate:LoadSettings()
 end
 
 function xrpPrivate:CacheTidy(timer)
-	if type(timer) ~= "number" or timer < 60 then
+	if type(timer) ~= "number" or timer < 30 then
 		timer = self.settings.cache.time
-		if type(timer) ~= "number" or timer < 60 then
+		if type(timer) ~= "number" or timer < 30 then
 			return false
 		end
 	end
@@ -342,7 +342,7 @@ function xrpPrivate:CacheTidy(timer)
 			end
 		end
 	end
-	if timer <= 300 then
+	if timer <= 60 then
 		-- Explicitly collect garbage, as there may be a hell of a lot of it
 		-- (the user probably clicked "Clear Cache" in the options).
 		collectgarbage()

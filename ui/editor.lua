@@ -153,8 +153,8 @@ do
 		function Profiles_PreClick(self, button, down)
 			local parent = self:GetParent()
 			parent.baseMenuList = {}
-			for index, profile in ipairs(xrpPrivate.profiles:List()) do
-				parent.baseMenuList[index] = { text = profile, checked = Checked, arg1 = profile, func = Profiles_Click }
+			for i, profile in ipairs(xrpPrivate.profiles:List()) do
+				parent.baseMenuList[i] = { text = profile, checked = Checked, arg1 = profile, func = Profiles_Click }
 			end
 		end
 	end
@@ -172,7 +172,7 @@ do
 		function Parent_PreClick(self, button, down)
 			self.baseMenuList = { NONE }
 			local editingProfile = self:GetParent().Profiles.contents
-			for index, profile in ipairs(xrpPrivate.profiles:List()) do
+			for i, profile in ipairs(xrpPrivate.profiles:List()) do
 				if profile ~= editingProfile and not xrpPrivate:DoesParentLoop(editingProfile, profile) then
 					self.baseMenuList[#self.baseMenuList + 1] = { text = profile, checked = Checked, arg1 = profile, func = Parent_Click }
 				end

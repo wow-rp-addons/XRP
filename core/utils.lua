@@ -89,7 +89,10 @@ function xrp:Weight(weight, units)
 		return weight
 	end
 
-	units = (not units or units == "user") and xrpPrivate.settings.display.weight or units
+	if not units then
+		units = xrpPrivate.settings.display.weight
+	end
+
 	if units == "msp" then -- MSP internal format: kg without units as string.
 		return ("%.1f"):format(number + 0.05)
 	elseif units == "kg" then
@@ -134,7 +137,10 @@ function xrp:Height(height, units)
 		return height
 	end
 
-	units = (not units or units == "user") and xrpPrivate.settings.display.height or units
+	if not units then
+		units = xrpPrivate.settings.display.height
+	end
+
 	if units == "msp" then -- MSP internal format: cm without units as string.
 		return ("%u"):format(number + 0.5)
 	elseif units == "cm" then
