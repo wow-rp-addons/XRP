@@ -90,7 +90,7 @@ local attachedMinimap, detachedMinimap
 
 local GetAttachedMinimap
 do
-	local Minmap_UpdatePosition
+	local Minimap_UpdatePosition
 	do
 		local MINIMAP_SHAPES = {
 			["ROUND"] = { true, true, true, true },
