@@ -132,7 +132,7 @@ SLASH_XRP1 = "/xrp"
 
 SlashCmdList["XRP"] = function(input, editBox)
 	local command, args = input:match("^([^%s]+)%s*(.*)$")
-	if xrpCmds[command:lower()] then
+	if command and xrpCmds[command:lower()] then
 		xrpCmds[command:lower()](args ~= "" and args or nil)
 	else
 		xrpCmds["help"](args ~= "" and args or nil)
