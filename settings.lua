@@ -20,15 +20,15 @@ local addonName, xrpPrivate = ...
 xrpPrivate.settingsToggles = {}
 
 local DATA_VERSION = 2
-local DATA_VERSION_ACCOUNT = 3
+local DATA_VERSION_ACCOUNT = 4
 
 local DEFAULT_SETTINGS = {
 	cache = {
-		autoclean = true,
+		autoClean = true,
 		time = 864000,
 	},
 	chat = {
-		rpnames = true,
+		names = true,
 		["CHAT_MSG_SAY"] = true,
 		["CHAT_MSG_YELL"] = true,
 		["CHAT_MSG_EMOTE"] = true, -- CHAT_MSG_TEXT_EMOTE.
@@ -37,17 +37,20 @@ local DEFAULT_SETTINGS = {
 		["CHAT_MSG_PARTY"] = false, -- CHAT_MSG_PARTY_LEADER
 		["CHAT_MSG_RAID"] = false, -- CHAT_MSG_RAID_LEADER
 		["CHAT_MSG_INSTANCE_CHAT"] = false, -- CHAT_MSG_INSTANCE_CHAT_LEADER
-		emotebraced = false,
+		emoteBraced = false,
 		replacements = true,
 	},
 	display = {
 		height = "ft",
+		preloadEditor = false,
+		preloadViewer = false,
 		weight = "lb",
 	},
 	interact = {
-		rightclick = true,
-		disableinstance = false,
-		disablepvp = false,
+		cursor = true,
+		rightClick = true,
+		disableInstance = false,
+		disablePvP = false,
 		keybind = true,
 	},
 	menus = {
@@ -65,13 +68,13 @@ local DEFAULT_SETTINGS = {
 	tooltip = {
 		enabled = true,
 		watching = false,
-		extraspace = false,
-		guildrank = false,
-		guildindex = false,
-		nohostile = true,
-		noopfaction = false,
-		norpclass = false,
-		norprace = false,
+		extraSpace = false,
+		guildRank = false,
+		guildIndex = false,
+		noHostile = true,
+		noOpFaction = false,
+		noClass = false,
+		noRace = false,
 	},
 }
 
@@ -107,7 +110,7 @@ local upgradeAccountVars = {
 
 		newsettings.minimap = settings.minimap or {}
 		-- Minimap button was getting hidden by garrison button.
-		newsettings.minimap.angle = 200
+		newsettings.minimap.angle = DEFAULT_SETTINGS.minimap.angle
 
 		newsettings.tooltip = settings.tooltip or {}
 
@@ -124,6 +127,54 @@ local upgradeAccountVars = {
 	[3] = function() -- 6.0.3.0
 		xrpAccountSaved.settings.minimap.hidett = nil
 		xrpAccountSaved.settings.tooltip.faction = nil
+	end,
+	[4] = function() -- 6.0.3.0
+		local settings = xrpAccountSaved.settings
+		if settings.display.preloadEditor == nil then
+			settings.display.preloadEditor = DEFAULT_SETTINGS.display.preloadEditor
+			settings.display.preloadViewer = DEFAULT_SETTINGS.display.preloadViewer
+
+			settings.cache.autoClean = settings.cache.autoclean
+			settings.cache.autoclean = nil
+
+			settings.chat.names = settings.chat.rpnames
+			settings.chat.rpnames = nil
+
+			settings.chat.emoteBraced = settings.chat.emotebraced
+			settings.chat.emotebraced = nil
+
+			settings.interact.cursor = settings.interact.rightclick
+			settings.interact.rightClick = DEFAULT_SETTINGS.interact.rightClick
+			settings.interact.rightclick = nil
+
+			settings.interact.disableInstance = settings.interact.disableinstance
+			settings.interact.disableinstance = nil
+
+			settings.interact.disablePvP = settings.interact.disablepvp
+			settings.interact.disablepvp = nil
+
+			settings.tooltip.extraSpace = settings.tooltip.extraspace
+			settings.tooltip.extraspace = nil
+
+			settings.tooltip.guildRank = settings.tooltip.guildrank
+			settings.tooltip.guildrank = nil
+
+			settings.tooltip.guildIndex = settings.tooltip.guildindex
+			settings.tooltip.guildindex = nil
+
+			settings.tooltip.noHostile = settings.tooltip.nohostile
+			settings.tooltip.nohostile = nil
+
+			settings.tooltip.noOpFaction = settings.tooltip.noopfaction
+			settings.tooltip.noopfaction = nil
+
+			settings.tooltip.noClass = settings.tooltip.norpclass
+			settings.tooltip.norpclass = nil
+
+			settings.tooltip.noRace = settings.tooltip.norprace
+			settings.tooltip.norprace = nil
+		end
+		C_Timer.After(6, function() print("XRP has been updated to 6.0.3.0. Please note that if you were formerly disabling the tooltip or chat names via the addons menu, those options are now found in the XRP interface options.") end)
 	end,
 }
 
@@ -228,7 +279,6 @@ local function InitializeSavedVariables()
 				xrp_defaults = nil
 			end
 			xrpSaved = {
-				auto = {},
 				meta = {
 					fields = {},
 					versions = {},

@@ -191,7 +191,7 @@ do
 			end
 			xrpSaved.overrides.logout = nil
 
-			if xrpPrivate.settings.cache.autoclean then
+			if xrpPrivate.settings.cache.autoClean then
 				xrpPrivate:CacheTidy()
 			end
 

@@ -29,7 +29,7 @@ local LINKED_CHAT_MSG = {
 	["CHAT_MSG_INSTANCE_CHAT_LEADER"] = "CHAT_MSG_INSTANCE_CHAT",
 }
 
-local rpnames
+local names
 local function XRPGetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14)
 	-- Emotes from ourselves don't have our name in them, and Blizzard's
 	-- code can erroneously replace substrings of the emotes or of the
@@ -68,7 +68,7 @@ local function XRPGetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7
 
 	local character = arg12 and xrp.characters.byGUID[arg12] or nil
 	local name = xrpPrivate.settings.chat[event] and character and not character.hide and xrp:Strip(character.fields.NA) or Ambiguate(arg2, "guild")
-	local nameFormat = ((event == "CHAT_MSG_EMOTE" or event == "CHAT_MSG_TEXT_EMOTE") and xrpPrivate.settings.chat.emotebraced and "[%s]" or "%s") .. (event == "CHAT_MSG_EMOTE" and arg9 or "")
+	local nameFormat = ((event == "CHAT_MSG_EMOTE" or event == "CHAT_MSG_TEXT_EMOTE") and xrpPrivate.settings.chat.emoteBraced and "[%s]" or "%s") .. (event == "CHAT_MSG_EMOTE" and arg9 or "")
 
 	if arg12 and ChatTypeInfo[chatType] and ChatTypeInfo[chatType].colorNameByClass then
 		local color = RAID_CLASS_COLORS[character.fields.GC]
@@ -80,7 +80,7 @@ local function XRPGetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7
 end
 
 local function MessageFilter_TEXT_EMOTE(self, event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, ...)
-	if not arg12 or not rpnames then
+	if not arg12 or not names then
 		return false
 	end
 
@@ -99,7 +99,7 @@ end
 -- commas, and colons. This requires a modified GetColoredName, so it has
 -- to go hand-in-hand with chat names.
 local function MessageFilter_EMOTE(self, event, message, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, ...)
-	if not rpnames then
+	if not names then
 		return false
 	end
 	-- Some addons, but not commonly real people, use a fancy unicode
@@ -138,17 +138,17 @@ end
 
 local BlizzardGetColoredName = GetColoredName
 xrpPrivate.settingsToggles.chat = {
-	rpnames = function(setting)
+	names = function(setting)
 		if setting then
-			if rpnames == nil then
+			if names == nil then
 				ChatFrame_AddMessageEventFilter("CHAT_MSG_EMOTE", MessageFilter_EMOTE)
 				ChatFrame_AddMessageEventFilter("CHAT_MSG_TEXT_EMOTE", MessageFilter_TEXT_EMOTE)
 			end
 			GetColoredName = XRPGetColoredName
-			rpnames = true
-		elseif rpnames ~= nil then
+			names = true
+		elseif names ~= nil then
 			GetColoredName = BlizzardGetColoredName
-			rpnames = false
+			names = false
 		end
 	end,
 	replacements = function(setting)

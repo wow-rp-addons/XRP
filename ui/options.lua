@@ -155,7 +155,7 @@ about:SetScript("OnShow", function(self)
 	if not self.core then
 		xrpPrivate:Options()
 	end
-	if self:Get("cache", "autoclean") then
+	if self:Get("cache", "autoClean") then
 		self.CacheTidy:Hide()
 	else
 		self.CacheTidy:Show()
@@ -268,7 +268,6 @@ function xrpPrivate:Options(pane)
 		about.core = CreateFrame("Frame", nil, about, "XRPOptionsCoreTemplate")
 		about.core.Height.baseMenuList = Height_baseMenuList
 		about.core.Weight.baseMenuList = Weight_baseMenuList
-		about.core.Time.baseMenuList = Time_baseMenuList
 		about.chat = CreateFrame("Frame", nil, about, "XRPOptionsChatTemplate")
 		about.chat.Channels.CustomOkay = ChatChannels_CustomOkay
 		about.chat.Channels.CustomRefresh = ChatChannels_CustomRefresh
@@ -277,6 +276,8 @@ function xrpPrivate:Options(pane)
 		about.chat.Channels.baseMenuList = {}
 		about.chat.Channels.settingsList = {}
 		about.tooltip = CreateFrame("Frame", nil, about, "XRPOptionsTooltipTemplate")
+		about.advanced = CreateFrame("Frame", nil, about, "XRPOptionsAdvancedTemplate")
+		about.advanced.Time.baseMenuList = Time_baseMenuList
 		for _, frame in ipairs(about.panes) do
 			frame:refresh()
 		end
