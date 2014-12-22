@@ -1,17 +1,26 @@
-6.0.3.0_rc1 (2014-12-13):
+6.0.3.0_rc2 (2014-12-21):
 
-	- rc1: beta5 and earlier users should restart WoW when installing.
+	- rc2: Bugfixes and API changes to be had all around. No changes requiring
+	  anything special if upgrading from rc1 (upgrading from previous versions
+	  should restart WoW), but downgrading from rc2 to previous versions may
+	  lose some settings (not profiles, just configuration settings).
 
 	- Old versions of XRP should be removed from the Interface/AddOns folder
-	  prior to upgrading. This version of XRP has been reorganized into a
-	  single addon folder, rather than multiple smaller addons.
+	  prior to upgrading from 6.0.2.1 (automated installers often handle this
+	  on their own), and the game client should be restarted (rather than
+	  logout or UI reload) after upgrading.
 
-		- Many automated installers do this on their own, you may only need to
-		  worry about this if you manually install/update XRP.
+		- The internal file layout of XRP has changed drastically,
+		  consolidated into a single folder. If in doubt, please check that
+		  you have a single "xrp" folder in your Interface/AddOns folder.
 
-	- Support for RP profiles over Battle.net and party/raid has been added.
-	  This is supported in XRP 6.0.3.0+, with a library allowing other RP
-	  addons to support these coming soon.
+		- If you were previously disabling chat names or tooltip replacements
+		  by disabling those modules as addons, you can now disable them from
+		  the XRP interface options panel instead.
+
+	- Support for RP profiles over Battle.net and crossrealm party/raid has
+	  been added.  This is supported in XRP 6.0.3.0+, with a library allowing
+	  other RP addons to support these coming soon.
 
 	- ChatThrottleLib has been replaced by a new bandwidth library. If you
 	  encounter any errors related to ChatThrottleLib after upgrading, please
@@ -23,9 +32,6 @@
 	  useful information. In light of this, the option to hide the minimap
 	  tooltip has been removed.
 
-	- The detached minimap button is now moved by shift+right click and drag,
-	  rather than unlocking it.
-
 	- The interface options panels have been redone completely. Settings now
 	  update dynamically (rather than needing to press "Okay" to see changes),
 	  and the layout of the options has changed.
@@ -33,28 +39,20 @@
 	- The option to use (hard-to-read) faction colors instead of
 	  green/yellow/red reaction colors on tooltips has been removed.
 
-	- The internal naming of the editor, automation config, and viewer frames
-	  has changed. If you were making use of these (such as with an addon that
-	  allows movement of UI panels), you may need to reconfigure it. If you
-	  don't know what this means, you probably don't need to worry.
+	- The internal naming of the editor and viewer frames has changed. If you
+	  were making use of these (such as with an addon that allows movement of
+	  UI panels), you may need to reconfigure it. If you don't know what this
+	  means, you probably don't need to worry.
+
+		- To enable moving via external addons, you may also need to enable
+		  the viewer/editor frame preloading in the advanced section of the
+		  XRP options. Usually these are only loaded when needed, but frame
+		  moving addons may require them to be present at start.
 
 	- Bugfixes:
 
 		- Attached minimap button positioning has been reset and the default
 		  changed to hopefully avoid being obstructed by the Garrison button.
-
-		- The order of fields selected by pressing tab in the editor has been
-		  fixed to match the display order.
-
-		- The editor will now properly display the fallback values for name,
-		  race, and class (in grey) when they are not set for a profile or its
-		  parents.
-
-		- The viewer currently/description/motto/history fields will now
-		  correctly hide their scrollbars when appropriate.
-
-		- The viewer should no longer scroll a single pixel for descriptions
-		  or histories of a particular length.
 
 		- Roleplay names will now be used in channel leave/join messages, if
 		  they are enabled for that channel.
@@ -65,6 +63,4 @@
 		- Instances of "Character is not found." errors should be reduced or
 		  eliminated.
 
-		- Added a warning if the raid profiles dialog is opened when the
-		  interface options is closed about possible tainting caused by
-		  Blizzard bugs.
+		- Numerous other minor bugs have been fixed.
