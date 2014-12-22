@@ -200,3 +200,12 @@ function xrp:View(player)
 		viewer.Tab1:Click()
 	end
 end
+
+if not xrpPrivate.settingsToggles.display then
+	xrpPrivate.settingsToggles.display = {}
+end
+xrpPrivate.settingsToggles.display.preloadViewer = function(setting)
+	if setting and not viewer then
+		viewer = CreateViewer()
+	end
+end

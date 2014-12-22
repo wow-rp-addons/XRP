@@ -148,7 +148,7 @@ do
 				RenderLine(("|cffcccccc%s|r"):format(TruncateLine(xrp:Strip(fields.NT), 70)))
 			end
 
-			if xrpPrivate.settings.tooltip.extraspace then
+			if xrpPrivate.settings.tooltip.extraSpace then
 				RenderLine(" ")
 			end
 
@@ -156,7 +156,7 @@ do
 
 			RenderLine(currentUnit.titleRealm, fields.VA and ("|cff7f7f7f%s|r"):format(ParseVersion(fields.VA)) or nil)
 
-			if xrpPrivate.settings.tooltip.extraspace then
+			if xrpPrivate.settings.tooltip.extraSpace then
 				RenderLine(" ")
 			end
 
@@ -164,7 +164,7 @@ do
 				RenderLine(("|cffa08050Currently:|r |cffe6b399%s|r"):format(TruncateLine(xrp:Strip(fields.CU), 70, 11)))
 			end
 
-			RenderLine(currentUnit.info:format(not xrpPrivate.settings.tooltip.norprace and TruncateLine(xrp:Strip(fields.RA), 40, 0, false) or currentUnit.race or UNKNOWN, not xrpPrivate.settings.tooltip.norpclass and TruncateLine(xrp:Strip(fields.RC), 40, 0, false) or currentUnit.class or UNKNOWN, 40, 0, false))
+			RenderLine(currentUnit.info:format(not xrpPrivate.settings.tooltip.noRace and TruncateLine(xrp:Strip(fields.RA), 40, 0, false) or currentUnit.race or UNKNOWN, not xrpPrivate.settings.tooltip.noClass and TruncateLine(xrp:Strip(fields.RC), 40, 0, false) or currentUnit.class or UNKNOWN, 40, 0, false))
 
 			if fields.FR and fields.FR ~= "0" or fields.FC and fields.FC ~= "0" then
 				local color = fields.FC == "1" and "ff99664d" or "ff66b380"
@@ -245,8 +245,8 @@ do
 		end
 
 		do
-			local guildname, guildrank, guildindex = GetGuildInfo(unit)
-			currentUnit.guild = guildname and (xrpPrivate.settings.tooltip.guildrank and (xrpPrivate.settings.tooltip.guildindex and "%s (%u) of <%s>" or "%s of <%s>") or "<%s>"):format(xrpPrivate.settings.tooltip.guildrank and guildrank or guildname, xrpPrivate.settings.tooltip.guildindex and guildindex + 1 or guildname, guildname) or nil
+			local guildName, guildRank, guildIndex = GetGuildInfo(unit)
+			currentUnit.guild = guildName and (xrpPrivate.settings.tooltip.guildRank and (xrpPrivate.settings.tooltip.guildIndex and "%s (%u) of <%s>" or "%s of <%s>") or "<%s>"):format(xrpPrivate.settings.tooltip.guildRank and guildRank or guildName, xrpPrivate.settings.tooltip.guildIndex and guildIndex + 1 or guildName, guildName) or nil
 		end
 
 		do
@@ -272,7 +272,7 @@ do
 		end
 
 		currentUnit.type = "player"
-		RenderTooltip((not xrpPrivate.settings.tooltip.noopfaction or faction == playerFaction or faction == "Neutral") and (not xrpPrivate.settings.tooltip.nohostile or not attackMe or not meAttack) and xrp.characters.byUnit[unit] or NO_RP_PROFILE)
+		RenderTooltip((not xrpPrivate.settings.tooltip.noOpFaction or faction == playerFaction or faction == "Neutral") and (not xrpPrivate.settings.tooltip.noHostile or not attackMe or not meAttack) and xrp.characters.byUnit[unit] or NO_RP_PROFILE)
 	end
 
 	function SetPetUnit(unit)
@@ -324,7 +324,7 @@ do
 		end
 
 		currentUnit.type = "pet"
-		RenderTooltip((not xrpPrivate.settings.tooltip.noopfaction or faction == playerFaction or faction == "Neutral") and (not xrpPrivate.settings.tooltip.nohostile or not attackMe or not meAttack) and xrp.characters.byName[currentUnit.name] or NO_RP_PROFILE)
+		RenderTooltip((not xrpPrivate.settings.tooltip.noOpFaction or faction == playerFaction or faction == "Neutral") and (not xrpPrivate.settings.tooltip.noHostile or not attackMe or not meAttack) and xrp.characters.byName[currentUnit.name] or NO_RP_PROFILE)
 	end
 end
 
