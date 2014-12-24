@@ -25,7 +25,7 @@ do
 	xrpCmds.about = function(args)
 		print(header:format("XRP", "("..xrpPrivate.version..")"))
 		print(("|cff99b3e6Author:|r %s"):format(GetAddOnMetadata(addonName, "Author")))
-		print(("|cff99b3e6Version:|r %"):format(xrpPrivate.version))
+		print(("|cff99b3e6Version:|r %s"):format(xrpPrivate.version))
 		print("License: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>")
 		print("This is free software: you are free to change and redistribute it.")
 		print("There is NO WARRANTY, to the extent permitted by law.")
