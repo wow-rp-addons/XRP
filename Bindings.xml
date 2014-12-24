@@ -22,12 +22,20 @@
 		xrp:Edit()
 	</Binding>
 	<Binding name="XRP_VIEWER" category="ADDONS">
-		xrp:View(xrp.characters.byUnit.target and "target" or xrp.characters.byUnit.mouseover and "mouseover" or "player")
+		if xrp.characters.byUnit.target then
+			xrp:View("target")
+		elseif xrp.characters.byUnit.mouseover then
+			xrp:View("mouseover")
+		end
 	</Binding>
 	<Binding name="XRP_VIEWER_TARGET" category="ADDONS">
-		xrp:View("target")
+		if xrp.characters.byUnit.target then
+			xrp:View("target")
+		end
 	</Binding>
 	<Binding name="XRP_VIEWER_MOUSEOVER" category="ADDONS">
-		xrp:View("mouseover")
+		if xrp.characters.byUnit.mouseover then
+			xrp:View("mouseover")
+		end
 	</Binding>
 </Bindings>
