@@ -58,6 +58,8 @@ do
 				return self.fields
 			elseif component == "name" then
 				return name
+			elseif component == "own" and name == xrpPrivate.playerWithRealm then
+				return true
 			elseif not xrpCache[name] then
 				return nil
 			elseif component == "bookmark" then
