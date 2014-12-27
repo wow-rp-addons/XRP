@@ -69,7 +69,7 @@ xrp.current = setmetatable({
 		__newindex = function(self, field, contents)
 			if xrpSaved.overrides.fields[field] == contents or xrpPrivate.fields.unit[field] or xrpPrivate.fields.meta[field] or xrpPrivate.fields.dummy[field] or not field:find("^%u%u$") then return end
 			xrpSaved.overrides.fields[field] = contents
-			xrpSaved.overrides.versions[field] = contents ~= nil and xrpPrivate:NewVersion(field) or nil
+			xrpSaved.overrides.versions[field] = contents and xrpPrivate:NewVersion(field) or nil
 			xrpPrivate:FireEvent("UPDATE", field)
 		end,
 		__metatable = false,

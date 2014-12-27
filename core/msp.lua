@@ -144,7 +144,7 @@ do
 		local chunkSize = 255 - #prepend
 
 		if #data <= chunkSize then
-			libbw:SendAddonMessage(not isGroup and "MSP" or "GMSP", prepend..data, channel, character, "NORMAL", queue, callback, character)
+			libbw:SendAddonMessage(not isGroup and "MSP" or "GMSP", prepend .. data, channel, character, "NORMAL", queue, callback, character)
 		else
 			chunkSize = isGroup and chunkSize - 1 or chunkSize
 			-- XC is most likely to add five or six extra characters, will
@@ -170,8 +170,8 @@ do
 	function msp:GetTT()
 		if not tt then
 			local current, tooltip = xrp.current, {}
-			for _, field in ipairs(TT_FIELDS) do
-				tooltip[#tooltip + 1] = (not current.fields[field] and "%s" or "%s%u=%s"):format(field, current.versions[field], current.fields[field])
+			for i, field in ipairs(TT_FIELDS) do
+				tooltip[#tooltip + 1] = not current.fields[field] and field or ("%s%u=%s"):format(field, current.versions[field], current.fields[field])
 			end
 			local newtt = table.concat(tooltip, "\1")
 			tt = ("%s\1TT%u"):format(newtt, newtt ~= xrpSaved.oldtt and xrpPrivate:NewVersion("TT") or xrpSaved.versions.TT)
@@ -232,11 +232,11 @@ do
 			end
 			-- Field has new content.
 			return ("%s%u=%s"):format(field, currentVersion, xrp.current.fields[field])
-		elseif action == "!" and (not xrpCache[character] and version == 0 or xrpCache[character] and version == (xrpCache[character].versions[field] or 0)) then
+		elseif action == "!" and version == (xrpCache[character] and xrpCache[character].versions[field] or 0) then
 			-- Told us we have latest of their field.
 			self.cache[character].time[field] = GetTime()
 			self.cache[character].fieldUpdated = self.cache[character].fieldUpdated or false
-			if xrpCache[character] and field == "TT" and self.cache[character].bnet == nil then
+			if field == "TT" and xrpCache[character] and self.cache[character].bnet == nil then
 				local numVP = tonumber(xrpCache[character].fields.VP)
 				if numVP then
 					self.cache[character].bnet = numVP >= 2
@@ -267,12 +267,12 @@ do
 				end
 			end
 			local updated = false
-			if xrpCache[character] and xrpCache[character].fields[field] and contents == "" and not xrpPrivate.fields.unit[field] then
+			if contents == "" and xrpCache[character] and xrpCache[character].fields[field] and not xrpPrivate.fields.unit[field] then
 				-- If it's newly blank, empty it in the cache. Never
 				-- empty G*, but do update them (following elseif).
 				xrpCache[character].fields[field] = nil
 				updated = true
-			elseif contents ~= "" and xrpCache[character].fields[field] ~= contents then
+			elseif contents ~= "" and contents ~= xrpCache[character].fields[field] then
 				xrpCache[character].fields[field] = contents
 				updated = true
 				if field == "VA" then
@@ -330,7 +330,7 @@ msp.handlers = {
 			xrpPrivate:FireEvent("NOCHANGE", character)
 			self.cache[character].fieldUpdated = nil
 		end
-		if out and #out > 0 then
+		if out then
 			self:Send(character, out, channel)
 		end
 		if xrpCache[character] ~= nil then
@@ -355,12 +355,12 @@ msp.handlers = {
 		for command in message:gmatch("([^\1]+)\1") do
 			if command:find("^[^%?]") then
 				self:Process(character, command)
-				message = message:gsub(command:gsub("(%W)","%%%1").."\1", "")
+				message = message:gsub(command:gsub("(%W)","%%%1") .. "\1", "")
 			end
 		end
 		self.cache[character].chunks = 1
 		self.cache[character][channel] = message
-		xrpPrivate:FireEvent("CHUNK", character, self.cache[character].chunks, self.cache[character].totalChunks)
+		xrpPrivate:FireEvent("CHUNK", character, 1, totalChunks)
 	end,
 	["MSP\2"] = function(self, character, message, channel)
 		-- If we don't have a buffer (i.e., no prior received message),
@@ -376,7 +376,7 @@ msp.handlers = {
 			for command in message:gmatch("([^\1]+)\1") do
 				if command:find("^[^%?]") then
 					self:Process(character, command)
-					message = message:gsub(command:gsub("(%W)","%%%1").."\1", "")
+					message = message:gsub(command:gsub("(%W)","%%%1") .. "\1", "")
 				end
 			end
 			self.cache[character][channel] = message
@@ -387,8 +387,9 @@ msp.handlers = {
 				self.cache[character][channel][#self.cache[character][channel] + 1] = message
 			end
 		end
-		self.cache[character].chunks = (self.cache[character].chunks or 0) + 1
-		xrpPrivate:FireEvent("CHUNK", character, self.cache[character].chunks, self.cache[character].totalChunks)
+		local chunks = (self.cache[character].chunks or 0) + 1
+		self.cache[character].chunks = chunks
+		xrpPrivate:FireEvent("CHUNK", character, chunks, self.cache[character].totalChunks)
 	end,
 	["MSP\3"] = function(self, character, message, channel)
 		-- If we don't have a buffer (i.e., no prior received message),

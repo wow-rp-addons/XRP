@@ -23,7 +23,7 @@ local xrpCmds = {}
 do
 	local header = "|cffabd473%s|r %s"
 	xrpCmds.about = function(args)
-		print(header:format("XRP", "("..xrpPrivate.version..")"))
+		print(header:format("XRP", "(" .. xrpPrivate.version .. ")"))
 		print(("|cff99b3e6Author:|r %s"):format(GetAddOnMetadata(addonName, "Author")))
 		print(("|cff99b3e6Version:|r %s"):format(xrpPrivate.version))
 		print("License: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>")
@@ -82,7 +82,7 @@ end
 xrpCmds.profile = function(args)
 	if args == "list" then
 		print("Profiles:")
-		for _, profile in ipairs(xrpPrivate.profiles:List()) do
+		for i, profile in ipairs(xrpPrivate.profiles:List()) do
 			print(profile)
 		end
 	elseif type(args) == "string" then
