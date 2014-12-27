@@ -230,7 +230,7 @@ do
 					fields = fields,
 					versions = versions,
 					own = true,
-					lastreceive = time(),
+					lastReceive = time(),
 				}
 			end
 			if next(xrpSaved.overrides.fields) then
