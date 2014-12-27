@@ -21,7 +21,7 @@ local about = CreateFrame("Frame", nil, InterfaceOptionsFramePanelContainer, "XR
 
 function about:okay()
 	if not self.controls then return end
-	for _, control in ipairs(self.controls) do
+	for i, control in ipairs(self.controls) do
 		if control.CustomOkay then
 			control:CustomOkay()
 		else
@@ -32,7 +32,7 @@ end
 
 function about:refresh()
 	if not self.controls then return end
-	for _, control in ipairs(self.controls) do
+	for i, control in ipairs(self.controls) do
 		if control.CustomRefresh then
 			control:CustomRefresh()
 		else
@@ -65,7 +65,7 @@ end
 
 function about:cancel()
 	if not self.controls then return end
-	for _, control in ipairs(self.controls) do
+	for i, control in ipairs(self.controls) do
 		if control.CustomCancel then
 			control:CustomCancel()
 		else
@@ -95,7 +95,7 @@ end
 
 function about:default()
 	if not self.controls then return end
-	for _, control in ipairs(self.controls) do
+	for i, control in ipairs(self.controls) do
 		if control.CustomDefault then
 			control:CustomDefault()
 		else
@@ -198,8 +198,8 @@ do
 
 	function ChatChannels_CustomRefresh(self)
 		wipe(self.baseMenuList)
-		local channelList, seenChannels = ChannelsTable(GetChannelList()), {}
-		for _, name in ipairs(channelList) do
+		local seenChannels = {}
+		for i, name in ipairs(ChannelsTable(GetChannelList())) do
 			local channel = "CHAT_MSG_CHANNEL_"..name:upper()
 			AddChannel(channel, self.baseMenuList, self.settingsList)
 			seenChannels[channel] = true
@@ -278,7 +278,7 @@ function xrpPrivate:Options(pane)
 		about.tooltip = CreateFrame("Frame", nil, about, "XRPOptionsTooltipTemplate")
 		about.advanced = CreateFrame("Frame", nil, about, "XRPOptionsAdvancedTemplate")
 		about.advanced.Time.baseMenuList = Time_baseMenuList
-		for _, frame in ipairs(about.panes) do
+		for i, frame in ipairs(about.panes) do
 			frame:refresh()
 		end
 		InterfaceOptionsFrame_OpenToCategory("XRP")

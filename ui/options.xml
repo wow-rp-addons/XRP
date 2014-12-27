@@ -101,7 +101,7 @@
 				PlaySound(setting and "igMainMenuOptionCheckBoxOn" or "igMainMenuOptionCheckBoxOff")
 				self.value = setting
 				if self.dependentControls then
-					for _, control in ipairs(self.dependentControls) do
+					for i, control in ipairs(self.dependentControls) do
 						if control.type == CONTROLTYPE_CHECKBOX then
 							control:SetEnabled(setting)
 						elseif control.type == CONTROLTYPE_DROPDOWN then
@@ -118,7 +118,7 @@
 			<OnEnable>
 				self.Text:SetTextColor(self.Text:GetFontObject():GetTextColor())
 				if self.dependentControls then
-					for _, control in ipairs(self.dependentControls) do
+					for i, control in ipairs(self.dependentControls) do
 						if control.type == CONTROLTYPE_CHECKBOX then
 							control:SetEnabled(self:GetChecked())
 						elseif control.type == CONTROLTYPE_DROPDOWN then
@@ -134,7 +134,7 @@
 			<OnDisable>
 				self.Text:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b)
 				if self.dependentControls then
-					for _, control in ipairs(self.dependentControls) do
+					for i, control in ipairs(self.dependentControls) do
 						if control.type == CONTROLTYPE_CHECKBOX then
 							control:SetEnabled(false)
 						elseif control.type == CONTROLTYPE_DROPDOWN then

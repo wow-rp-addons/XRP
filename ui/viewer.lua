@@ -53,7 +53,7 @@ do
 	end
 
 	function Load(character)
-		for _, field in ipairs(display) do
+		for i, field in ipairs(display) do
 			SetField(field, character[field] or field == "RA" and xrp.values.GR[character.GR] or field == "RC" and xrp.values.GC[character.GC] or nil)
 		end
 		if xrp.characters.byName[viewer.current].own then
@@ -64,7 +64,7 @@ do
 	end
 
 	local supported = {}
-	for _, field in ipairs(display) do
+	for i, field in ipairs(display) do
 		supported[field] = true
 	end
 	function FIELD(event, name, field)

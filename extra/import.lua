@@ -24,9 +24,7 @@ StaticPopupDialogs["XRP_IMPORT_RELOAD"] = {
 	text = "Available profiles have been imported and may be found in the editor's profile list. You should reload your UI now.",
 	button1 = "Reload UI",
 	button2 = CANCEL,
-	OnAccept = function()
-		ReloadUI()
-	end,
+	OnAccept = ReloadUI,
 	enterClicksFirstButton = false,
 	timeout = 0,
 	whileDead = true,
@@ -41,9 +39,9 @@ local function ImportMyRolePlay()
 		return 0
 	end
 	local imported = 0
-	for name, profile in pairs(mrpSaved.Profiles) do
-		local newname = "MRP-"..name
-		if xrpPrivate.profiles:Add(newname) then
+	for profileName, profile in pairs(mrpSaved.Profiles) do
+		local newProfileName = "MRP-" .. profileName
+		if xrpPrivate.profiles:Add(newProfileName) then
 			for field, value in pairs(profile) do
 				if not xrpPrivate.fields.unit[field] and not xrpPrivate.fields.meta[field] and not xrpPrivate.fields.dummy[field] and field:find("^%u%u$") then
 					if field == "FC" then
@@ -55,7 +53,7 @@ local function ImportMyRolePlay()
 					elseif field == "FR" and tonumber(value) then
 						value = value ~= "0" and xrp.values.FR[value] or ""
 					end
-					xrpPrivate.profiles[newname].fields[field] = value ~= "" and value or nil
+					xrpPrivate.profiles[newProfileName].fields[field] = value ~= "" and value or nil
 				end
 			end
 			imported = imported + 1

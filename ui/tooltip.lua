@@ -204,15 +204,15 @@ end
 local SetPlayerUnit, SetPetUnit
 do
 	local FACTION_COLORS = {
-		Horde = "ffff6468", -- Dark: ffe60d12
-		Alliance = "ff868eff", -- Dark: ff4a54e8
-		Neutral = "ffffdb5c", -- Dark: ffe6b300
+		Horde = "ff6468", -- Dark: e60d12
+		Alliance = "868eff", -- Dark: 4a54e8
+		Neutral = "ffdb5c", -- Dark: e6b300
 	}
 
 	local REACTION_COLORS = {
-		friendly = "ff00991a",
-		neutral = "ffe6b300",
-		hostile = "ffcc4d38",
+		friendly = "00991a",
+		neutral = "e6b300",
+		hostile = "cc4d38",
 	}
 	local NO_RP_PROFILE = { fields = {} }
 
@@ -234,7 +234,7 @@ do
 			-- Can only ever be one of AFK, DND, or offline.
 			local isAFK = connected and UnitIsAFK(unit)
 			local isDND = connected and not isAFK and UnitIsDND(unit)
-			currentUnit.nameFormat = ("|c%s%%s|r%s"):format(color, not connected and " |cff888888<Offline>|r" or isAFK and " |cff99994d<Away>|r" or isDND and " |cff994d4d<Busy>|r" or "")
+			currentUnit.nameFormat = ("|cff%s%%s|r%s"):format(color, not connected and " |cff888888<Offline>|r" or isAFK and " |cff99994d<Away>|r" or isDND and " |cff994d4d<Busy>|r" or "")
 		end
 
 		do
@@ -254,7 +254,7 @@ do
 			if realm == xrpPrivate.realm then
 				realm = nil
 			end
-			currentUnit.titleRealm = (realm and "|c%s%s (%s)|r" or "|c%s%s|r"):format(FACTION_COLORS[faction], UnitPVPName(unit) or xrp:Ambiguate(currentUnit.name), realm and xrp:RealmDisplayName(realm))
+			currentUnit.titleRealm = (realm and "|cff%s%s (%s)|r" or "|cff%s%s|r"):format(FACTION_COLORS[faction], UnitPVPName(unit) or xrp:Ambiguate(currentUnit.name), realm and xrp:RealmDisplayName(realm))
 		end
 
 		currentUnit.race = UnitRace(unit) or UnitCreatureType(unit)
@@ -287,7 +287,7 @@ do
 		do
 			local name = UnitName(unit)
 			local color = REACTION_COLORS[(faction ~= playerFaction and faction ~= "Neutral" or attackMe and meAttack) and "hostile" or (faction == "Neutral" or meAttack or attackMe) and "neutral" or "friendly"]
-			currentUnit.nameFormat = ("|c%s%s|r"):format(color, name)
+			currentUnit.nameFormat = ("|cff%s%s|r"):format(color, name)
 		end
 
 		do
@@ -306,7 +306,7 @@ do
 			if not owner then return end
 			local realm = owner:match(FULL_PLAYER_NAME:format(".+", "(.+)"))
 
-			currentUnit.titleRealm = (realm and "|c%s%s (%s)|r" or "|c%s%s|r"):format(FACTION_COLORS[faction], petType, realm and xrp:RealmDisplayName(realm))
+			currentUnit.titleRealm = (realm and "|cff%s%s (%s)|r" or "|cff%s%s|r"):format(FACTION_COLORS[faction], petType, realm and xrp:RealmDisplayName(realm))
 
 			currentUnit.name = xrp:Name(owner)
 			local race = UnitCreatureFamily(unit) or UnitCreatureType(unit)
