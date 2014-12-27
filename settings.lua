@@ -20,7 +20,7 @@ local addonName, xrpPrivate = ...
 xrpPrivate.settingsToggles = {}
 
 local DATA_VERSION = 2
-local DATA_VERSION_ACCOUNT = 4
+local DATA_VERSION_ACCOUNT = 5
 
 local DEFAULT_SETTINGS = {
 	cache = {
@@ -81,55 +81,53 @@ local DEFAULT_SETTINGS = {
 local upgradeAccountVars = {
 	[2] = function() -- 6.0.3.0
 		local settings = xrpAccountSaved.settings
-		local newsettings = {}
+		local newSettings = {}
 
-		newsettings.cache = {
+		newSettings.cache = {
 			autoclean = settings.cachetidy,
 			time = settings.cachetime,
 		}
 
-		newsettings.chat = settings.chatnames or {}
-		newsettings.chat.replacements = settings.integration.replacements
+		newSettings.chat = settings.chatnames or {}
+		newSettings.chat.replacements = settings.integration.replacements
 
-		newsettings.display = {
+		newSettings.display = {
 			height = settings.height,
 			weight = settings.weight,
 		}
 
-		newsettings.interact = {
+		newSettings.interact = {
 			rightclick = settings.integration.rightclick,
 			disableinstance = settings.integration.disableinstance,
 			disablepvp = settings.integration.disablepvp,
 			keybind = settings.integration.interact,
 		}
 
-		newsettings.menus = {
+		newSettings.menus = {
 			standard = settings.integration.menus,
 			units = settings.integration.unitmenus,
 		}
 
-		newsettings.minimap = settings.minimap or {}
+		newSettings.minimap = settings.minimap or {}
 		-- Minimap button was getting hidden by garrison button.
-		newsettings.minimap.angle = DEFAULT_SETTINGS.minimap.angle
+		newSettings.minimap.angle = DEFAULT_SETTINGS.minimap.angle
 
-		newsettings.tooltip = settings.tooltip or {}
+		newSettings.tooltip = settings.tooltip or {}
 
 		for section, defaults in pairs(DEFAULT_SETTINGS) do
 			for option, setting in pairs(defaults) do
-				if newsettings[section][option] == nil then
-					newsettings[section][option] = setting
+				if newSettings[section][option] == nil then
+					newSettings[section][option] = setting
 				end
 			end
 		end
 
-		xrpAccountSaved.settings = newsettings
+		xrpAccountSaved.settings = newSettings
 	end,
-	[3] = function() -- 6.0.3.0
-		xrpAccountSaved.settings.minimap.hidett = nil
-		xrpAccountSaved.settings.tooltip.faction = nil
-	end,
-	[4] = function() -- 6.0.3.0
+	[5] = function() -- 6.0.3.0
 		local settings = xrpAccountSaved.settings
+		settings.minimap.hidett = nil
+		settings.tooltip.faction = nil
 		if settings.display.preloadEditor == nil then
 			settings.display.preloadEditor = DEFAULT_SETTINGS.display.preloadEditor
 			settings.display.preloadViewer = DEFAULT_SETTINGS.display.preloadViewer
@@ -174,7 +172,19 @@ local upgradeAccountVars = {
 			settings.tooltip.noRace = settings.tooltip.norprace
 			settings.tooltip.norprace = nil
 		end
-		C_Timer.After(6, function() print("XRP has been updated to 6.0.3.0. Please note that if you were formerly disabling the tooltip or chat names via the addons menu, those options are now found in the XRP interface options.") end)
+		local now = time()
+		for name, data in pairs(xrpCache) do
+			if not data.lastReceive then
+				if not data.lastreceive or data.lastreceive == 2147483647 then
+					data.lastReceive = now
+					data.lastreceive = nil
+				else
+					data.lastReceive = data.lastreceive
+					data.lastreceive = nil
+				end
+			end
+		end
+		C_Timer.After(6, function() print("XRP has been updated to 6.0.3.0. Please note that if you were formerly disabling the tooltip or chat names via the addons menu, those settings are now found in the XRP interface options.") end)
 	end,
 }
 
@@ -348,13 +358,17 @@ function xrpPrivate:SavedVariableSetup()
 	InitializeSavedVariables()
 	if (xrpAccountSaved.dataVersion or 1) < DATA_VERSION_ACCOUNT then
 		for i = (xrpAccountSaved.dataVersion or 1) + 1, DATA_VERSION_ACCOUNT do
-			upgradeAccountVars[i]()
+			if upgradeAccountVars[i] then
+				upgradeAccountVars[i]()
+			end
 		end
 		xrpAccountSaved.dataVersion = DATA_VERSION_ACCOUNT
 	end
 	if (xrpSaved.dataVersion or 1) < DATA_VERSION then
 		for i = (xrpSaved.dataVersion or 1) + 1, DATA_VERSION do
-			upgradeVars[i]()
+			if upgradeVars[i] then
+				upgradeVars[i]()
+			end
 		end
 		xrpSaved.dataVersion = DATA_VERSION
 	end
@@ -380,15 +394,13 @@ function xrpPrivate:CacheTidy(timer)
 	local now = time()
 	local before = now - timer
 	for character, data in pairs(xrpCache) do
-		if not data.lastreceive then
-			data.lastreceive = now
-		elseif not data.bookmark and data.lastreceive < before then
-			if data.hide == nil then
+		if not data.bookmark and data.lastReceive < before then
+			if not data.hide then
 				xrpCache[character] = nil
 			else
 				data.fields = {}
 				data.versions = {}
-				data.lastreceive = now
+				data.lastReceive = now
 			end
 		end
 	end

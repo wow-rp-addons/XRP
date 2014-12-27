@@ -335,7 +335,7 @@ msp.handlers = {
 		end
 		if xrpCache[character] ~= nil then
 			-- Cache timer. Last receive marked for clearing old entries.
-			xrpCache[character].lastreceive = time()
+			xrpCache[character].lastReceive = time()
 		elseif not self.cache[character].time.TT then
 			-- If we don't have any info for them and haven't requested the
 			-- tooltip in this session, also send a tooltip request
