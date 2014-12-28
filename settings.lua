@@ -19,7 +19,7 @@ local addonName, xrpPrivate = ...
 
 xrpPrivate.settingsToggles = {}
 
-local DATA_VERSION = 2
+local DATA_VERSION = 3
 local DATA_VERSION_ACCOUNT = 5
 
 local DEFAULT_SETTINGS = {
@@ -189,10 +189,11 @@ local upgradeAccountVars = {
 }
 
 local upgradeVars = {
-	[2] = function() -- 6.0.3.0
+	[3] = function() -- 6.0.3.0
 		if type(xrpSaved.auto) ~= "table" then
 			xrpSaved.auto = {}
 		end
+		xrpSaved.versions.VP = nil
 	end,
 }
 
