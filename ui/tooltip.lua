@@ -129,22 +129,21 @@ do
 		end
 	end
 
-	local HIDDEN = { VA = "Hidden/0" }
-
-	function RenderTooltip(character)
+	function RenderTooltip()
 		oldlines = GameTooltip:NumLines()
 		numline = 0
-		local fields = character.hide and HIDDEN or character.fields
+		local showProfile = not (currentUnit.noProfile or currentUnit.character.hide)
+		local fields = currentUnit.character.fields
 
 		if currentUnit.type == "player" then
 
-			RenderLine(currentUnit.nameFormat:format(TruncateLine(xrp:Strip(fields.NA), 65, 0, false) or xrp:Ambiguate(currentUnit.name)), currentUnit.icons)
+			RenderLine(currentUnit.nameFormat:format(showProfile and TruncateLine(xrp:Strip(fields.NA), 65, 0, false) or xrp:Ambiguate(currentUnit.character.name)), currentUnit.icons)
 
-			if fields.NI then
+			if showProfile and fields.NI then
 				RenderLine(("|cff6070a0Nickname:|r |cff99b3e6\"%s\"|r"):format(TruncateLine(xrp:Strip(fields.NI), 70, 10, false)))
 			end
 
-			if fields.NT then
+			if showProfile and fields.NT then
 				RenderLine(("|cffcccccc%s|r"):format(TruncateLine(xrp:Strip(fields.NT), 70)))
 			end
 
@@ -154,19 +153,19 @@ do
 
 			RenderLine(currentUnit.guild)
 
-			RenderLine(currentUnit.titleRealm, fields.VA and ("|cff7f7f7f%s|r"):format(ParseVersion(fields.VA)) or nil)
+			RenderLine(currentUnit.titleRealm, (showProfile or currentUnit.character.hide) and fields.VA and ("|cff7f7f7f%s|r"):format(ParseVersion(currentUnit.character.hide and "Hidden/0" or fields.VA)) or nil)
 
 			if xrpPrivate.settings.tooltip.extraSpace then
 				RenderLine(" ")
 			end
 
-			if fields.CU then
+			if showProfile and fields.CU then
 				RenderLine(("|cffa08050Currently:|r |cffe6b399%s|r"):format(TruncateLine(xrp:Strip(fields.CU), 70, 11)))
 			end
 
-			RenderLine(currentUnit.info:format(not xrpPrivate.settings.tooltip.noRace and TruncateLine(xrp:Strip(fields.RA), 40, 0, false) or currentUnit.race or UNKNOWN, not xrpPrivate.settings.tooltip.noClass and TruncateLine(xrp:Strip(fields.RC), 40, 0, false) or currentUnit.class or UNKNOWN, 40, 0, false))
+			RenderLine(currentUnit.info:format(showProfile and not xrpPrivate.settings.tooltip.noRace and TruncateLine(xrp:Strip(fields.RA), 40, 0, false) or xrp.values.GR[fields.GR] or UNKNOWN, showProfile and not xrpPrivate.settings.tooltip.noClass and TruncateLine(xrp:Strip(fields.RC), 40, 0, false) or xrp.values.GC[fields.GC] or UNKNOWN, 40, 0, false))
 
-			if fields.FR and fields.FR ~= "0" or fields.FC and fields.FC ~= "0" then
+			if showProfile and (fields.FR and fields.FR ~= "0" or fields.FC and fields.FC ~= "0") then
 				local color = fields.FC == "1" and "ff99664d" or "ff66b380"
 				-- AAAAAAAAAAAAAAAAAAAAAAAA. The boolean logic.
 				local frline = ("|c%s%s|r"):format(color, TruncateLine((fields.FR == "0" or not fields.FR) and " " or xrp.values.FR[fields.FR] or xrp:Strip(fields.FR), 35, 0, false))
@@ -180,7 +179,7 @@ do
 			RenderLine(currentUnit.location)
 		elseif currentUnit.type == "pet" then
 			RenderLine(currentUnit.nameFormat, currentUnit.icons)
-			RenderLine(currentUnit.titleRealm:format(fields.NA and TruncateLine(xrp:Strip(fields.NA), 60, 0, false) or xrp:Ambiguate(currentUnit.name)))
+			RenderLine(currentUnit.titleRealm:format(showProfile and fields.NA and TruncateLine(xrp:Strip(fields.NA), 60, 0, false) or xrp:Ambiguate(currentUnit.character.name)))
 			RenderLine(currentUnit.info)
 		end
 		-- In rare cases (test case: target without RP addon, is PvP flagged)
@@ -214,12 +213,11 @@ do
 		neutral = "e6b300",
 		hostile = "cc4d38",
 	}
-	local NO_RP_PROFILE = { fields = {} }
 
 	function SetPlayerUnit(unit)
-		currentUnit.name = xrp:UnitName(unit)
+		currentUnit.character = xrp.characters.byUnit[unit]
 
-		local faction = UnitFactionGroup(unit)
+		local faction = currentUnit.character.fields.GF
 		local playerFaction = xrp.current.fields.GF
 		if not faction or not FACTION_COLORS[faction] then
 			faction = "Neutral"
@@ -250,18 +248,16 @@ do
 		end
 
 		do
-			local realm = currentUnit.name:match(FULL_PLAYER_NAME:format(".+", "(.+)"))
+			local realm = currentUnit.character.name:match(FULL_PLAYER_NAME:format(".+", "(.+)"))
 			if realm == xrpPrivate.realm then
 				realm = nil
 			end
-			currentUnit.titleRealm = (realm and "|cff%s%s (%s)|r" or "|cff%s%s|r"):format(FACTION_COLORS[faction], UnitPVPName(unit) or xrp:Ambiguate(currentUnit.name), realm and xrp:RealmDisplayName(realm))
+			currentUnit.titleRealm = (realm and "|cff%s%s (%s)|r" or "|cff%s%s|r"):format(FACTION_COLORS[faction], UnitPVPName(unit) or xrp:Ambiguate(currentUnit.character.name), realm and xrp:RealmDisplayName(realm))
 		end
 
-		currentUnit.race = UnitRace(unit) or UnitCreatureType(unit)
 		do
 			local level = UnitLevel(unit)
 			local class, classID = UnitClassBase(unit)
-			currentUnit.class = class
 			currentUnit.info = ("%s %%s |c%s%%s|r (%s)"):format((level < 1 and UNIT_LETHAL_LEVEL_TEMPLATE or UNIT_LEVEL_TEMPLATE):format(level), RAID_CLASS_COLORS[classID] and RAID_CLASS_COLORS[classID].colorStr or "ffffffff", PLAYER)
 		end
 
@@ -271,8 +267,10 @@ do
 			currentUnit.location = location and ("|cffffeeaaZone:|r %s"):format(location) or nil
 		end
 
+		currentUnit.noProfile = xrpPrivate.settings.tooltip.noOpFaction and faction ~= playerFaction and faction ~= "Neutral" or xrpPrivate.settings.tooltip.noHostile and attackMe and meAttack
 		currentUnit.type = "player"
-		RenderTooltip((not xrpPrivate.settings.tooltip.noOpFaction or faction == playerFaction or faction == "Neutral") and (not xrpPrivate.settings.tooltip.noHostile or not attackMe or not meAttack) and xrp.characters.byUnit[unit] or NO_RP_PROFILE)
+
+		RenderTooltip()
 	end
 
 	function SetPetUnit(unit)
@@ -308,7 +306,7 @@ do
 
 			currentUnit.titleRealm = (realm and "|cff%s%s (%s)|r" or "|cff%s%s|r"):format(FACTION_COLORS[faction], petType, realm and xrp:RealmDisplayName(realm))
 
-			currentUnit.name = xrp:Name(owner)
+			currentUnit.character = xrp.characters.byName[owner]
 			local race = UnitCreatureFamily(unit) or UnitCreatureType(unit)
 			if race == "Ghoul" or race == "Water Elemental" or race == "MT - Water Elemental" then
 				race = UnitCreatureType(unit)
@@ -323,19 +321,19 @@ do
 			currentUnit.info = ("%s |c%s%s|r (%s)"):format((level < 1 and UNIT_LETHAL_LEVEL_TEMPLATE or UNIT_LEVEL_TEMPLATE):format(level), RAID_CLASS_COLORS[classID] and RAID_CLASS_COLORS[classID].colorStr or "ffffffff", race, PET)
 		end
 
+		currentUnit.noProfile = xrpPrivate.settings.tooltip.noOpFaction and faction ~= playerFaction and faction ~= "Neutral" or xrpPrivate.settings.tooltip.noHostile and attackMe and meAttack
 		currentUnit.type = "pet"
-		RenderTooltip((not xrpPrivate.settings.tooltip.noOpFaction or faction == playerFaction or faction == "Neutral") and (not xrpPrivate.settings.tooltip.noHostile or not attackMe or not meAttack) and xrp.characters.byName[currentUnit.name] or NO_RP_PROFILE)
+
+		RenderTooltip()
 	end
 end
 
 local enabled
 local function RECEIVE(event, name)
-	if not enabled or name ~= currentUnit.name then return end
+	if not enabled or not currentUnit.character or name ~= currentUnit.character.name then return end
 	local tooltip, unit = GameTooltip:GetUnit()
-	if tooltip and currentUnit.type == "player" then
-		RenderTooltip(unit and xrp.characters.byUnit[unit] or xrp.characters.byName[name])
-	elseif tooltip and currentUnit.type == "pet" then
-		RenderTooltip(xrp.characters.byName[name])
+	if tooltip then
+		RenderTooltip()
 	else
 		return
 	end
@@ -350,7 +348,7 @@ end
 local NoUnit
 local function OnTooltipSetUnit(self)
 	if not enabled then return end
-	currentUnit.type = nil
+	currentUnit.character = nil
 	local tooltip, unit = self:GetUnit()
 	if not unit then
 		NoUnit:Show()
