@@ -46,13 +46,13 @@ msp.bnet = {}
 msp.request = {}
 -- Session cache. Do NOT make weak.
 msp.cache = setmetatable({}, {
-	__index = function(self, character)
-		self[character] = {
+	__index = function(self, name)
+		self[name] = {
 			nextCheck = 0,
 			received = false,
 			time = {},
 		}
-		return self[character]
+		return self[name]
 	end,
 })
 
@@ -61,8 +61,8 @@ function msp:UpdateBNList()
 		for j = 1, BNGetNumFriendToons(i) do
 			local active, toonName, client, realmName, realmID, faction, race, class, blank, zoneName, level, gameText, broadcastText, broadcastTime, isConnected, toonID = BNGetFriendToonInfo(i, j)
 			if client == "WoW" then
-				local character = xrp:Name(toonName, realmName)
-				self.bnet[character] = toonID
+				local name = xrp:Name(toonName, realmName)
+				self.bnet[name] = toonID
 			end
 		end
 	end
@@ -75,46 +75,46 @@ do
 		local filter = setmetatable({}, xrpPrivate.weakMeta)
 
 		ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", function(self, event, message)
-			local character = message:match(ERR_CHAT_PLAYER_NOT_FOUND_S:format("(.+)"))
-			if not character or character == "" or not filter[character] then
+			local name = message:match(ERR_CHAT_PLAYER_NOT_FOUND_S:format("(.+)"))
+			if not name or name == "" or not filter[name] then
 				return false
 			end
-			local doFilter = filter[character] > (GetTime() - 2.500)
+			local doFilter = filter[name] > (GetTime() - 2.500)
 			if not doFilter then
-				filter[character] = nil
+				filter[name] = nil
 			else
 				-- Same error message for offline and opposite faction.
-				xrpPrivate:FireEvent("FAIL", character, (not xrpCache[character] or not xrpCache[character].fields.GF or xrpCache[character].fields.GF == xrp.current.fields.GF) and "offline" or "faction")
+				xrpPrivate:FireEvent("FAIL", name, (not xrpCache[name] or not xrpCache[name].fields.GF or xrpCache[name].fields.GF == xrp.current.fields.GF) and "offline" or "faction")
 			end
 			return doFilter
 		end)
 
 		-- Most complex function ever.
-		function msp_AddFilter(character)
-			filter[character] = GetTime()
+		function msp_AddFilter(name)
+			filter[name] = GetTime()
 		end
 	end
 
-	function msp:Send(character, data, channel, isRequest)
+	function msp:Send(name, data, channel, isRequest)
 		data = table.concat(data, "\1")
-		--print("Sending to: "..character)
-		--print(GetTime()..": Out: "..character..": "..data:gsub("\1", ";"))
+		--print("Sending to: "..name)
+		--print(GetTime()..": Out: "..name..": "..data:gsub("\1", ";"))
 
 		-- Check whether sending by BN is available and preferred.
-		if (not channel or channel == "BN") and self.bnet[character] then
-			if not select(15, BNGetToonInfo(self.bnet[character])) then
-				self.bnet[character] = nil
+		if (not channel or channel == "BN") and self.bnet[name] then
+			if not select(15, BNGetToonInfo(self.bnet[name])) then
+				self.bnet[name] = nil
 			elseif not channel then
-				if self.cache[character].bnet == false then
+				if self.cache[name].bnet == false then
 					channel = "GAME"
-				elseif self.cache[character].bnet == true then
+				elseif self.cache[name].bnet == true then
 					channel = "BN"
 				end
 			end
 		end
 
-		if (not channel or channel == "BN") and self.bnet[character] then
-			local presenceID = self.bnet[character]
+		if (not channel or channel == "BN") and self.bnet[name] then
+			local presenceID = self.bnet[name]
 			local queue = ("XRP-%u"):format(presenceID)
 			if #data <= 4078 then
 				libbw:BNSendGameData(presenceID, "MSP", data, "NORMAL", queue)
@@ -135,16 +135,16 @@ do
 		end
 		if channel == "BN" then return end
 
-		local isGroup = channel ~= "WHISPER" and UnitRealmRelationship(Ambiguate(character, "none")) == LE_REALM_RELATION_COALESCED
+		local isGroup = channel ~= "WHISPER" and UnitRealmRelationship(Ambiguate(name, "none")) == LE_REALM_RELATION_COALESCED
 		local isInstance = isGroup and IsInGroup(LE_PARTY_CATEGORY_INSTANCE)
 		channel = channel ~= "GAME" and channel or isGroup and (isInstance and "INSTANCE_CHAT" or "RAID") or "WHISPER"
-		local prepend = isGroup and isRequest and ("%s\30"):format(character) or ""
-		local queue = isGroup and "XRP-GROUP" or ("XRP-%s"):format(character)
+		local prepend = isGroup and isRequest and name .. "\30" or ""
+		local queue = isGroup and "XRP-GROUP" or "XRP-" .. name
 		local callback = not isGroup and msp_AddFilter or nil
 		local chunkSize = 255 - #prepend
 
 		if #data <= chunkSize then
-			libbw:SendAddonMessage(not isGroup and "MSP" or "GMSP", prepend .. data, channel, character, "NORMAL", queue, callback, character)
+			libbw:SendAddonMessage(not isGroup and "MSP" or "GMSP", prepend .. data, channel, name, "NORMAL", queue, callback, name)
 		else
 			chunkSize = isGroup and chunkSize - 1 or chunkSize
 			-- XC is most likely to add five or six extra characters, will
@@ -152,13 +152,13 @@ do
 			-- profile is over 25000 characters or so. So let's say six.
 			data = ("XC=%u\1%s"):format(((#data + 6) / chunkSize) + 1, data)
 			local position = 1
-			libbw:SendAddonMessage(not isGroup and "MSP\1" or "GMSP", (isGroup and "%s\1%s" or "%s%s"):format(prepend, data:sub(position, position + chunkSize - 1)), channel, character, "BULK", queue, callback, character)
+			libbw:SendAddonMessage(not isGroup and "MSP\1" or "GMSP", (isGroup and "%s\1%s" or "%s%s"):format(prepend, data:sub(position, position + chunkSize - 1)), channel, name, "BULK", queue, callback, name)
 			position = position + chunkSize
 			while position + chunkSize <= #data do
-				libbw:SendAddonMessage(not isGroup and "MSP\2" or "GMSP", (isGroup and "%s\2%s" or "%s%s"):format(prepend, data:sub(position, position + chunkSize - 1)), channel, character, "BULK", queue, callback, character)
+				libbw:SendAddonMessage(not isGroup and "MSP\2" or "GMSP", (isGroup and "%s\2%s" or "%s%s"):format(prepend, data:sub(position, position + chunkSize - 1)), channel, name, "BULK", queue, callback, name)
 				position = position + chunkSize
 			end
-			libbw:SendAddonMessage(not isGroup and "MSP\3" or "GMSP", (isGroup and "%s\3%s" or "%s%s"):format(prepend, data:sub(position)), channel, character, "BULK", queue, callback, character)
+			libbw:SendAddonMessage(not isGroup and "MSP\3" or "GMSP", (isGroup and "%s\3%s" or "%s%s"):format(prepend, data:sub(position)), channel, name, "BULK", queue, callback, name)
 		end
 	end
 end
@@ -188,16 +188,16 @@ end
 
 do
 	local requestTime = setmetatable({}, {
-		__index = function(self, character)
-			self[character] = {}
-			return self[character]
+		__index = function(self, name)
+			self[name] = {}
+			return self[name]
 		end,
 		__mode = "v", -- Worst case, we rarely send too soon again.
 	})
 	-- This returns requested field output, or nil if no requests were
-	-- made. msp.cache[character].fieldUpdated is set to true if a
+	-- made. msp.cache[name].fieldUpdated is set to true if a
 	-- field has changed, false if a field has not been changed.
-	function msp:Process(character, command)
+	function msp:Process(name, command)
 		local action, field, version, contents = command:match("(%p?)(%u%u)(%d*)=?(.*)")
 		version = tonumber(version) or 0
 		if not field then
@@ -208,11 +208,11 @@ do
 			-- string with our info for that field. (If it doesn't, it
 			-- means we're ignoring their request, probably because
 			-- they're spamming it at us.)
-			if requestTime[character][field] and requestTime[character][field] > now - 10 then
-				requestTime[character][field] = now
+			if requestTime[name][field] and requestTime[name][field] > now - 10 then
+				requestTime[name][field] = now
 				return nil
 			end
-			requestTime[character][field] = now
+			requestTime[name][field] = now
 			if field == "TT" then
 				-- Rebuild the TT to catch any version changes before checking
 				-- the version.
@@ -232,21 +232,21 @@ do
 			end
 			-- Field has new content.
 			return ("%s%u=%s"):format(field, currentVersion, xrp.current.fields[field])
-		elseif action == "!" and version == (xrpCache[character] and xrpCache[character].versions[field] or 0) then
+		elseif action == "!" and version == (xrpCache[name] and xrpCache[name].versions[field] or 0) then
 			-- Told us we have latest of their field.
-			self.cache[character].time[field] = GetTime()
-			self.cache[character].fieldUpdated = self.cache[character].fieldUpdated or false
-			if field == "TT" and xrpCache[character] and self.cache[character].bnet == nil then
-				local numVP = tonumber(xrpCache[character].fields.VP)
+			self.cache[name].time[field] = GetTime()
+			self.cache[name].fieldUpdated = self.cache[name].fieldUpdated or false
+			if field == "TT" and xrpCache[name] and self.cache[name].bnet == nil then
+				local numVP = tonumber(xrpCache[name].fields.VP)
 				if numVP then
-					self.cache[character].bnet = numVP >= 2
+					self.cache[name].bnet = numVP >= 2
 				end
 			end
 			return nil
 		elseif action == "" then
 			-- Gave us a field.
-			if not xrpCache[character] and (contents ~= "" or version ~= 0) then
-				xrpCache[character] = {
+			if not xrpCache[name] and (contents ~= "" or version ~= 0) then
+				xrpCache[name] = {
 					fields = {},
 					versions = {},
 				}
@@ -260,46 +260,46 @@ do
 				-- exists (indicating MSP support is/was present -- this
 				-- function is the *only* place a character cache table is
 				-- created).
-				if xrpPrivate.gCache[character] then
+				if xrpPrivate.gCache[name] then
 					for gField, isUnitField in pairs(xrpPrivate.fields.unit) do
-						xrpCache[character].fields[gField] = xrpPrivate.gCache[character][gField]
+						xrpCache[name].fields[gField] = xrpPrivate.gCache[name][gField]
 					end
 				end
 			end
 			local updated = false
-			if contents == "" and xrpCache[character] and xrpCache[character].fields[field] and not xrpPrivate.fields.unit[field] then
+			if contents == "" and xrpCache[name] and xrpCache[name].fields[field] and not xrpPrivate.fields.unit[field] then
 				-- If it's newly blank, empty it in the cache. Never
 				-- empty G*, but do update them (following elseif).
-				xrpCache[character].fields[field] = nil
+				xrpCache[name].fields[field] = nil
 				updated = true
-			elseif contents ~= "" and contents ~= xrpCache[character].fields[field] then
-				xrpCache[character].fields[field] = contents
+			elseif contents ~= "" and contents ~= xrpCache[name].fields[field] then
+				xrpCache[name].fields[field] = contents
 				updated = true
 				if field == "VA" then
 					xrpPrivate:AddonUpdate(contents:match("^XRP/([^;]+)"))
 				end
 			end
 			if version ~= 0 then
-				xrpCache[character].versions[field] = version
-			elseif xrpCache[character] then
-				xrpCache[character].versions[field] = nil
+				xrpCache[name].versions[field] = version
+			elseif xrpCache[name] then
+				xrpCache[name].versions[field] = nil
 			end
 			-- Save time regardless of contents or version. This prevents
 			-- querying again too soon. Query time is also set prior to initial
 			-- send -- so timer will count from send OR receive as appropriate.
-			self.cache[character].time[field] = GetTime()
+			self.cache[name].time[field] = GetTime()
 
 			if updated then
-				xrpPrivate:FireEvent("FIELD", character, field)
-				self.cache[character].fieldUpdated = true
+				xrpPrivate:FireEvent("FIELD", name, field)
+				self.cache[name].fieldUpdated = true
 				if field == "VP" then
 					local numVP = tonumber(contents)
 					if numVP then
-						self.cache[character].bnet = numVP >= 2
+						self.cache[name].bnet = numVP >= 2
 					end
 				end
 			else
-				self.cache[character].fieldUpdated = self.cache[character].fieldUpdated or false
+				self.cache[name].fieldUpdated = self.cache[name].fieldUpdated or false
 			end
 			return nil
 		end
@@ -308,10 +308,10 @@ end
 
 local TT_REQ = { "?TT" }
 msp.handlers = {
-	["MSP"] = function(self, character, message, channel)
+	["MSP"] = function(self, name, message, channel)
 		local out
 		for command in message:gmatch("([^\1]+)\1*") do
-			local response = self:Process(character, command)
+			local response = self:Process(name, command)
 			if response then
 				if not out then
 					out = {}
@@ -323,29 +323,29 @@ msp.handlers = {
 		-- will be set to true; if a field was received, but the content has
 		-- not changed, fieldUpdated will be set to false; if no fields were
 		-- received (i.e., only requests), fieldUpdated is nil.
-		if self.cache[character].fieldUpdated == true then
-			xrpPrivate:FireEvent("RECEIVE", character)
-			self.cache[character].fieldUpdated = nil
-		elseif self.cache[character].fieldUpdated == false then
-			xrpPrivate:FireEvent("NOCHANGE", character)
-			self.cache[character].fieldUpdated = nil
+		if self.cache[name].fieldUpdated == true then
+			xrpPrivate:FireEvent("RECEIVE", name)
+			self.cache[name].fieldUpdated = nil
+		elseif self.cache[name].fieldUpdated == false then
+			xrpPrivate:FireEvent("NOCHANGE", name)
+			self.cache[name].fieldUpdated = nil
 		end
 		if out then
-			self:Send(character, out, channel)
+			self:Send(name, out, channel)
 		end
-		if xrpCache[character] ~= nil then
+		if xrpCache[name] ~= nil then
 			-- Cache timer. Last receive marked for clearing old entries.
-			xrpCache[character].lastReceive = time()
-		elseif not self.cache[character].time.TT then
+			xrpCache[name].lastReceive = time()
+		elseif not self.cache[name].time.TT then
 			-- If we don't have any info for them and haven't requested the
 			-- tooltip in this session, also send a tooltip request
-			self:Send(character, TT_REQ, channel, true)
+			self:Send(name, TT_REQ, channel, true)
 		end
 	end,
-	["MSP\1"] = function(self, character, message, channel)
+	["MSP\1"] = function(self, name, message, channel)
 		local totalChunks = tonumber(message:match("^XC=(%d+)\1"))
 		if totalChunks then
-			self.cache[character].totalChunks = totalChunks
+			self.cache[name].totalChunks = totalChunks
 			-- Drop XC if present.
 			message = message:gsub("^XC=%d+\1", "")
 		end
@@ -354,64 +354,64 @@ msp.handlers = {
 		-- common, but also not forbidden by the spec.
 		for command in message:gmatch("([^\1]+)\1") do
 			if command:find("^[^%?]") then
-				self:Process(character, command)
+				self:Process(name, command)
 				message = message:gsub(command:gsub("(%W)","%%%1") .. "\1", "")
 			end
 		end
-		self.cache[character].chunks = 1
-		self.cache[character][channel] = message
-		xrpPrivate:FireEvent("CHUNK", character, 1, totalChunks)
+		self.cache[name].chunks = 1
+		self.cache[name][channel] = message
+		xrpPrivate:FireEvent("CHUNK", name, 1, totalChunks)
 	end,
-	["MSP\2"] = function(self, character, message, channel)
+	["MSP\2"] = function(self, name, message, channel)
 		-- If we don't have a buffer (i.e., no prior received message),
 		-- still try to process as many full commands as we can.
-		if not self.cache[character][channel] then
+		if not self.cache[name][channel] then
 			message = message:match("^.-\1(.+)$")
 			if not message then return end
-			self.cache[character][channel] = ""
+			self.cache[name][channel] = ""
 		end
 		-- Only merge the contents if there's an end-of-command to process.
 		if message:find("\1", nil, true) then
-			message = (type(self.cache[character][channel]) == "string" and self.cache[character][channel] or table.concat(self.cache[character][channel])) .. message
+			message = (type(self.cache[name][channel]) == "string" and self.cache[name][channel] or table.concat(self.cache[name][channel])) .. message
 			for command in message:gmatch("([^\1]+)\1") do
 				if command:find("^[^%?]") then
-					self:Process(character, command)
+					self:Process(name, command)
 					message = message:gsub(command:gsub("(%W)","%%%1") .. "\1", "")
 				end
 			end
-			self.cache[character][channel] = message
+			self.cache[name][channel] = message
 		else
-			if type(self.cache[character][channel]) == "string" then
-				self.cache[character][channel] = { self.cache[character][channel], message }
+			if type(self.cache[name][channel]) == "string" then
+				self.cache[name][channel] = { self.cache[name][channel], message }
 			else
-				self.cache[character][channel][#self.cache[character][channel] + 1] = message
+				self.cache[name][channel][#self.cache[name][channel] + 1] = message
 			end
 		end
-		local chunks = (self.cache[character].chunks or 0) + 1
-		self.cache[character].chunks = chunks
-		xrpPrivate:FireEvent("CHUNK", character, chunks, self.cache[character].totalChunks)
+		local chunks = (self.cache[name].chunks or 0) + 1
+		self.cache[name].chunks = chunks
+		xrpPrivate:FireEvent("CHUNK", name, chunks, self.cache[name].totalChunks)
 	end,
-	["MSP\3"] = function(self, character, message, channel)
+	["MSP\3"] = function(self, name, message, channel)
 		-- If we don't have a buffer (i.e., no prior received message),
 		-- still try to process as many full commands as we can.
-		if not self.cache[character][channel] then
+		if not self.cache[name][channel] then
 			message = message:match("^.-\1(.+)$")
 			if not message then return end
-			self.cache[character][channel] = ""
+			self.cache[name][channel] = ""
 		end
-		self.handlers["MSP"](self, character, (type(self.cache[character][channel]) == "string" and self.cache[character][channel] or table.concat(self.cache[character][channel])) .. message, channel)
+		self.handlers["MSP"](self, name, (type(self.cache[name][channel]) == "string" and self.cache[name][channel] or table.concat(self.cache[name][channel])) .. message, channel)
 		-- CHUNK after RECEIVE would fire. Makes it easier to do something
 		-- useful when chunks == totalChunks.
-		xrpPrivate:FireEvent("CHUNK", character, (self.cache[character].chunks or 0) + 1, (self.cache[character].chunks or 0) + 1)
+		xrpPrivate:FireEvent("CHUNK", name, (self.cache[name].chunks or 0) + 1, (self.cache[name].chunks or 0) + 1)
 
-		self.cache[character].chunks = nil
-		self.cache[character].totalChunks = nil
-		self.cache[character][channel] = nil
+		self.cache[name].chunks = nil
+		self.cache[name].totalChunks = nil
+		self.cache[name][channel] = nil
 	end,
-	["GMSP"] = function(self, character, message, channel)
+	["GMSP"] = function(self, name, message, channel)
 		local target, prefix, message = message:match(message:find("\30", nil, true) and "^(.+)\30([\1\2\3]?)(.+)$" or "^(.-)([\1\2\3]?)(.+)$")
 		if not (target == "" or target == xrpPrivate.playerWithRealm) then return end
-		self.handlers[prefix ~= "" and ("MSP%s"):format(prefix) or "MSP"](self, character, message, channel)
+		self.handlers[prefix ~= "" and ("MSP%s"):format(prefix) or "MSP"](self, name, message, channel)
 	end,
 }
 
@@ -419,35 +419,35 @@ msp:SetScript("OnEvent", function(self, event, prefix, message, channel, sender)
 	if event == "CHAT_MSG_ADDON" and self.handlers[prefix] then
 		-- Sometimes won't have the realm attached because I dunno. Always
 		-- works correctly for different-realm messages.
-		local character = xrp:Name(sender)
-		--print(GetTime()..": In: "..character..": "..message:gsub("\1", ";"))
-		--print("Receiving from: "..character)
+		local name = xrp:Name(sender)
+		--print(GetTime()..": In: "..name..": "..message:gsub("\1", ";"))
+		--print("Receiving from: "..name)
 
 		-- Ignore messages from ourselves (GMSP).
-		if character ~= xrpPrivate.playerWithRealm then
-			self.cache[character].received = true
-			self.cache[character].nextCheck = nil
+		if name ~= xrpPrivate.playerWithRealm then
+			self.cache[name].received = true
+			self.cache[name].nextCheck = nil
 
-			self.handlers[prefix](self, character, message, channel)
+			self.handlers[prefix](self, name, message, channel)
 		end
 	elseif event == "BN_CHAT_MSG_ADDON" and self.handlers[prefix] then
 		local active, toonName, client, realmName = BNGetToonInfo(sender)
-		local character = xrp:Name(toonName, realmName)
-		self.bnet[character] = sender
+		local name = xrp:Name(toonName, realmName)
+		self.bnet[name] = sender
 
-		self.cache[character].bnet = true
-		self.cache[character].received = true
-		self.cache[character].nextCheck = nil
+		self.cache[name].bnet = true
+		self.cache[name].received = true
+		self.cache[name].nextCheck = nil
 
-		self.handlers[prefix](self, character, message, "BN")
+		self.handlers[prefix](self, name, message, "BN")
 	elseif event == "BN_TOON_NAME_UPDATED" or event == "BN_FRIEND_TOON_ONLINE" then
 		local active, toonName, client, realmName = BNGetToonInfo(prefix)
 		if client == "WoW" then
-			local character = xrp:Name(toonName, realmName)
-			if not self.bnet[character] and not self.cache[character].received then
-				self.cache[character].nextCheck = 0
+			local name = xrp:Name(toonName, realmName)
+			if not self.bnet[name] and not self.cache[name].received then
+				self.cache[name].nextCheck = 0
 			end
-			self.bnet[character] = prefix
+			self.bnet[name] = prefix
 		end
 	elseif event == "GROUP_ROSTER_UPDATE" then
 		local units = IsInRaid() and self.raidUnits or self.partyUnits
@@ -506,9 +506,9 @@ end
 
 function msp:OnUpdate(elapsed)
 	if next(self.request) then
-		for character, fields in pairs(self.request) do
-			xrpPrivate:Request(character, fields)
-			self.request[character] = nil
+		for name, fields in pairs(self.request) do
+			xrpPrivate:Request(name, fields)
+			self.request[name] = nil
 		end
 	end
 	self:Hide()
@@ -541,32 +541,32 @@ xrpPrivate.fields = {
 	}),
 }
 
-function xrpPrivate:QueueRequest(character, field)
-	if disabled or character == xrpPrivate.playerWithRealm or xrp:Ambiguate(character) == UNKNOWN or msp.cache[character].time[field] and GetTime() < msp.cache[character].time[field] + self.fields.times[field] then
+function xrpPrivate:QueueRequest(name, field)
+	if disabled or name == xrpPrivate.playerWithRealm or xrp:Ambiguate(name) == UNKNOWN or msp.cache[name].time[field] and GetTime() < msp.cache[name].time[field] + self.fields.times[field] then
 		return false
 	end
 
-	if not msp.request[character] then
-		msp.request[character] = {}
+	if not msp.request[name] then
+		msp.request[name] = {}
 	end
 
-	msp.request[character][#msp.request[character] + 1] = field
+	msp.request[name][#msp.request[name] + 1] = field
 	msp:Show()
 
 	return true
 end
 
-function xrpPrivate:Request(character, fields)
-	if disabled or character == xrpPrivate.playerWithRealm or xrp:Ambiguate(character) == UNKNOWN then
+function xrpPrivate:Request(name, fields)
+	if disabled or name == xrpPrivate.playerWithRealm or xrp:Ambiguate(name) == UNKNOWN then
 		return false
 	end
 
 	local now = GetTime()
-	if not msp.cache[character].received and now < msp.cache[character].nextCheck then
-		self:FireEvent("FAIL", character, "nomsp")
+	if not msp.cache[name].received and now < msp.cache[name].nextCheck then
+		self:FireEvent("FAIL", name, "nomsp")
 		return false
-	elseif not msp.cache[character].received then
-		msp.cache[character].nextCheck = now + 120
+	elseif not msp.cache[name].received then
+		msp.cache[name].nextCheck = now + 120
 	end
 
 	-- No need to strip repeated fields -- the logic below for not querying
@@ -586,14 +586,14 @@ function xrpPrivate:Request(character, fields)
 
 	local out = {}
 	for i, field in ipairs(fields) do
-		if not msp.cache[character].time[field] or now > msp.cache[character].time[field] + self.fields.times[field] then
-			local noVersion = not xrpCache[character] or not xrpCache[character].versions[field]
-			out[#out + 1] = (noVersion and "?%s" or "?%s%u"):format(field, noVersion or xrpCache[character].versions[field])
-			msp.cache[character].time[field] = now
+		if not msp.cache[name].time[field] or now > msp.cache[name].time[field] + self.fields.times[field] then
+			local noVersion = not xrpCache[name] or not xrpCache[name].versions[field]
+			out[#out + 1] = (noVersion and "?%s" or "?%s%u"):format(field, noVersion or xrpCache[name].versions[field])
+			msp.cache[name].time[field] = now
 		end
 	end
 	if #out > 0 then
-		msp:Send(character, out, nil, true)
+		msp:Send(name, out, nil, true)
 		return true
 	end
 	return false
