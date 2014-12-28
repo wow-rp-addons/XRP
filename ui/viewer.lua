@@ -31,7 +31,7 @@ do
 	local function SetField(field, contents)
 		contents = contents and xrp:Strip(contents) or nil
 		if field == "NA" then
-			contents = contents or xrp:Ambiguate(viewer.current.name) or UNKNOWN
+			contents = contents or UNKNOWN
 		elseif field == "VA" then
 			contents = contents and contents:gsub(";", ", ") or "Unknown/None"
 		elseif not contents then
@@ -55,7 +55,7 @@ do
 	function Load(character)
 		local fields = character.fields
 		for i, field in ipairs(DISPLAY) do
-			SetField(field, fields[field] or field == "RA" and xrp.values.GR[fields.GR] or field == "RC" and xrp.values.GC[fields.GC] or nil)
+			SetField(field, fields[field] or field == "NA" and xrp:Ambiguate(character.name) or field == "RA" and xrp.values.GR[fields.GR] or field == "RC" and xrp.values.GC[fields.GC] or nil)
 		end
 		if character.own then
 			viewer.Menu:Hide()
@@ -75,17 +75,17 @@ do
 	for i, field in ipairs(DISPLAY) do
 		SUPPORTED[field] = true
 	end
-	local METASUPPORTED = {
+	local META_SUPPORTED = {
 		GR = "RA",
 		GC = "RC",
 	}
 	function FIELD(event, name, field)
-		if METASUPPORTED[field] then
-			field = METASUPPORTED[field]
+		if META_SUPPORTED[field] then
+			field = META_SUPPORTED[field]
 		end
 		if viewer.current.name == name and SUPPORTED[field] then
 			local fields = viewer.current.fields
-			SetField(field, fields[field] or field == "RA" and xrp.values.GR[fields.GR] or field == "RC" and xrp.values.GC[fields.GC])
+			SetField(field, fields[field] or field == "RA" and xrp.values.GR[fields.GR] or field == "RC" and xrp.values.GC[fields.GC] or nil)
 		end
 	end
 end
