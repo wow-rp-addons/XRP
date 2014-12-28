@@ -22,7 +22,7 @@ local viewer
 local Load, FIELD
 do
 	-- This will request fields in the order listed.
-	local display = {
+	local DISPLAY = {
 		"VA", "NA", "NH", "NI", "NT", "RA", "RC", "CU", -- In TT.
 		"AE", "AH", "AW", "AG", "HH", "HB", "MO", -- Not in TT.
 		"DE", "HI", -- High-bandwidth.
@@ -31,7 +31,7 @@ do
 	local function SetField(field, contents)
 		contents = contents and xrp:Strip(contents) or nil
 		if field == "NA" then
-			contents = contents or xrp:Ambiguate(viewer.current) or UNKNOWN
+			contents = contents or xrp:Ambiguate(viewer.current.name) or UNKNOWN
 		elseif field == "VA" then
 			contents = contents and contents:gsub(";", ", ") or "Unknown/None"
 		elseif not contents then
@@ -53,34 +53,47 @@ do
 	end
 
 	function Load(character)
-		for i, field in ipairs(display) do
-			SetField(field, character[field] or field == "RA" and xrp.values.GR[character.GR] or field == "RC" and xrp.values.GC[character.GC] or nil)
+		local fields = character.fields
+		for i, field in ipairs(DISPLAY) do
+			SetField(field, fields[field] or field == "RA" and xrp.values.GR[fields.GR] or field == "RC" and xrp.values.GC[fields.GC] or nil)
 		end
-		if xrp.characters.byName[viewer.current].own then
+		if character.own then
 			viewer.Menu:Hide()
 		else
 			viewer.Menu:Show()
 		end
+		viewer.XC:SetText("")
+		viewer.failed = nil
+		if character == viewer.current then
+			return false
+		end
+		viewer.current = character
+		return true
 	end
 
-	local supported = {}
-	for i, field in ipairs(display) do
-		supported[field] = true
+	local SUPPORTED = {}
+	for i, field in ipairs(DISPLAY) do
+		SUPPORTED[field] = true
 	end
+	local METASUPPORTED = {
+		GR = "RA",
+		GC = "RC",
+	}
 	function FIELD(event, name, field)
-		if viewer.current == name and supported[field] then
-			SetField(field, xrp.characters.byName[name].fields[field])
-		elseif viewer.current == name and (field == "GR" and not xrp.characters.byName[name].fields.RA or field == "GC" and not xrp.characters.byName[name].fields.RC) then
-			SetField(field == "GR" and "RA" or field == "GC" and "RC", field == "GR" and xrp.values.GR[xrp.characters.byName[name].fields.GR] or field == "GC" and xrp.values.GC[xrp.characters.byName[name].fields.GC] or nil)
+		if METASUPPORTED[field] then
+			field = METASUPPORTED[field]
+		end
+		if viewer.current.name == name and SUPPORTED[field] then
+			local fields = viewer.current.fields
+			SetField(field, fields[field] or field == "RA" and xrp.values.GR[fields.GR] or field == "RC" and xrp.values.GC[fields.GC])
 		end
 	end
 end
 
 local function RECEIVE(event, name)
-	if viewer.current == name then
-		if viewer.failed == name then
-			viewer.failed = nil
-			Load(xrp.characters.byName[name].fields)
+	if viewer.current.name == name then
+		if viewer.failed then
+			Load(viewer.current)
 		end
 		local XC = viewer.XC:GetText()
 		if not XC or not XC:find("^Received") then
@@ -90,7 +103,7 @@ local function RECEIVE(event, name)
 end
 
 local function CHUNK(event, name, chunk, totalchunks)
-	if viewer.current == name then
+	if viewer.current.name == name then
 		local XC = viewer.XC:GetText()
 		if chunk ~= totalchunks or not XC or XC:find("^Receiv") then
 			viewer.XC:SetFormattedText(totalchunks and (chunk == totalchunks and "Received! (%u/%u)" or "Receiving... (%u/%u)") or "Receiving... (%u/??)", chunk, totalchunks)
@@ -99,8 +112,8 @@ local function CHUNK(event, name, chunk, totalchunks)
 end
 
 local function FAIL(event, name, reason)
-	if viewer.current == name then
-		viewer.failed = viewer.current
+	if viewer.current.name == name then
+		viewer.failed = true
 		if not viewer.XC:GetText() then
 			if reason == "offline" then
 				viewer.XC:SetText("Character is not online.")
@@ -117,18 +130,18 @@ local Menu_baseMenuList
 do
 	local function Menu_Checked(self)
 		if self.arg1 == 1 then
-			return xrp.characters.byName[UIDROPDOWNMENU_INIT_MENU:GetParent().current].bookmark ~= nil
+			return UIDROPDOWNMENU_INIT_MENU:GetParent().current.bookmark ~= nil
 		elseif self.arg1 == 2 then
-			return xrp.characters.byName[UIDROPDOWNMENU_INIT_MENU:GetParent().current].hide ~= nil
+			return UIDROPDOWNMENU_INIT_MENU:GetParent().current.hide ~= nil
 		end
 	end
 	local function Menu_Click(self, arg1, arg2, checked)
 		if arg1 == 1 then
-			xrp.characters.byName[UIDROPDOWNMENU_OPEN_MENU:GetParent().current].bookmark = not checked
+			UIDROPDOWNMENU_OPEN_MENU:GetParent().current.bookmark = not checked
 		elseif arg1 == 2 then
-			xrp.characters.byName[UIDROPDOWNMENU_OPEN_MENU:GetParent().current].hide = not checked
+			UIDROPDOWNMENU_OPEN_MENU:GetParent().current.hide = not checked
 		elseif arg1 == 3 then
-			xrp:View(UIDROPDOWNMENU_OPEN_MENU:GetParent().current)
+			Load(UIDROPDOWNMENU_OPEN_MENU:GetParent().current)
 		end
 	end
 	Menu_baseMenuList = {
@@ -169,11 +182,9 @@ function xrp:View(player)
 			HideUIPanel(viewer)
 			return
 		end
-		if viewer.current == UNKNOWN then
-			viewer.failed = nil
-			viewer.current = xrpPrivate.playerWithRealm
+		if not viewer.current then
 			SetPortraitTexture(viewer.portrait, "player")
-			Load(self.characters.byUnit.player.fields)
+			Load(self.characters.byUnit.player)
 		end
 		ShowUIPanel(viewer)
 		return
@@ -183,15 +194,10 @@ function xrp:View(player)
 		isUnit = UnitExists(unit)
 		player = isUnit and unit or self:Name(player):gsub("^%l", string.upper)
 	end
-	local newCurrent = isUnit and self:UnitName(player) or player
-	local isRefresh = viewer.current == newCurrent
-	viewer.current = newCurrent
-	viewer.failed = nil
-	viewer.XC:SetText("")
-	Load(isUnit and self.characters.byUnit[player].fields or self.characters.byName[player].fields)
+	local isNew = Load(isUnit and self.characters.byUnit[player] or self.characters.byName[player])
 	if isUnit then
 		SetPortraitTexture(viewer.portrait, player)
-	elseif not isRefresh then
+	elseif isNew then
 		local faction = self.characters.byName[player].fields.GF
 		SetPortraitToTexture(viewer.portrait, faction == "Alliance" and "Interface\\Icons\\INV_BannerPVP_02" or faction == "Horde" and "Interface\\Icons\\INV_BannerPVP_01" or "Interface\\Icons\\INV_Misc_Book_17")
 	end
