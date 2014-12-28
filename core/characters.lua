@@ -17,7 +17,7 @@
 
 local addonName, xrpPrivate = ...
 
-local gCache = setmetatable({}, xrpPrivate.weakMeta)
+local gCache = {}
 xrpPrivate.gCache = gCache
 
 local nk = {}
