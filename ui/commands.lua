@@ -21,9 +21,8 @@ local addonName, xrpPrivate = ...
 local xrpCmds = {}
 
 do
-	local header = "|cffabd473%s|r %s"
 	xrpCmds.about = function(args)
-		print(header:format("XRP", "(" .. xrpPrivate.version .. ")"))
+		print("|cffabd473XRP|r")
 		print(("|cff99b3e6Author:|r %s"):format(GetAddOnMetadata(addonName, "Author")))
 		print(("|cff99b3e6Version:|r %s"):format(xrpPrivate.version))
 		print("License: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>")
@@ -31,7 +30,7 @@ do
 		print("There is NO WARRANTY, to the extent permitted by law.")
 	end
 
-	local usage = header:format("Usage:", "%s")
+	local usage = "|cffabd473Usage:|r %s"
 	local command = " - |cfffff569%s:|r %s"
 	xrpCmds.help = function(args)
 		if args == "about" then
