@@ -72,7 +72,7 @@ do
 	local msp_AddFilter
 	do
 		-- Filter visible "No such..." errors from addon messages.
-		local filter = setmetatable({}, xrpPrivate.weakMeta)
+		local filter = {}
 
 		ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", function(self, event, message)
 			local name = message:match(ERR_CHAT_PLAYER_NOT_FOUND_S:format("(.+)"))
@@ -208,7 +208,7 @@ do
 			-- string with our info for that field. (If it doesn't, it
 			-- means we're ignoring their request, probably because
 			-- they're spamming it at us.)
-			if requestTime[name][field] and requestTime[name][field] > now - 10 then
+			if requestTime[name][field] and requestTime[name][field] > now - 5 then
 				requestTime[name][field] = now
 				return nil
 			end
