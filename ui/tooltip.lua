@@ -329,13 +329,13 @@ do
 end
 
 local enabled
-local function RECEIVE(event, character)
-	if not enabled or character ~= currentUnit.name then return end
+local function RECEIVE(event, name)
+	if not enabled or name ~= currentUnit.name then return end
 	local tooltip, unit = GameTooltip:GetUnit()
 	if tooltip and currentUnit.type == "player" then
-		RenderTooltip(unit and xrp.characters.byUnit[unit] or xrp.characters.byName[character])
+		RenderTooltip(unit and xrp.characters.byUnit[unit] or xrp.characters.byName[name])
 	elseif tooltip and currentUnit.type == "pet" then
-		RenderTooltip(xrp.characters.byName[character])
+		RenderTooltip(xrp.characters.byName[name])
 	else
 		return
 	end

@@ -393,10 +393,10 @@ function xrpPrivate:CacheTidy(timer)
 	end
 	local now = time()
 	local before = now - timer
-	for character, data in pairs(xrpCache) do
+	for name, data in pairs(xrpCache) do
 		if not data.bookmark and data.lastReceive < before then
 			if not data.hide then
-				xrpCache[character] = nil
+				xrpCache[name] = nil
 			else
 				data.fields = {}
 				data.versions = {}
