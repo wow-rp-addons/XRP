@@ -350,8 +350,6 @@
 				self.fields.NI = self.NI
 				self.fields.NH = self.NH
 				self.fields.VA = self.VA
-				self.current = UNKNOWN
-				self.failed = UNKNOWN
 				self.lastFieldSet = 0
 			</OnLoad>
 			<OnShow>
