@@ -1,5 +1,0 @@
-ignore:
-    - docs/CHANGES.txt
-    - .pkgmeta
-manual-changelog: docs/CHANGES.txt
-enable-nolib-creation: no
