@@ -1,14 +1,12 @@
-6.0.3.0_rc2 (2014-12-21):
+6.0.3.0_rc3 (2014-12-28):
 
-	- rc2: Bugfixes and API changes to be had all around. No changes requiring
-	  anything special if upgrading from rc1 (upgrading from previous versions
-	  should restart WoW), but downgrading from rc2 to previous versions may
-	  lose some settings (not profiles, just configuration settings).
+	- rc3: No compatibility-breaking changes. Bugfixes and some minor code
+	  cleanups. Probably the last rc.
 
 	- Old versions of XRP should be removed from the Interface/AddOns folder
-	  prior to upgrading from 6.0.2.1 (automated installers often handle this
-	  on their own), and the game client should be restarted (rather than
-	  logout or UI reload) after upgrading.
+	  prior to upgrading from 6.0.2.1 or lower (automated installers often
+	  handle this on their own), and the game client should be restarted
+	  (rather than logout or UI reload) after upgrading.
 
 		- The internal file layout of XRP has changed drastically,
 		  consolidated into a single folder. If in doubt, please check that
@@ -20,7 +18,7 @@
 
 	- Support for RP profiles over Battle.net and crossrealm party/raid has
 	  been added.  This is supported in XRP 6.0.3.0+, with a library allowing
-	  other RP addons to support these coming soon.
+	  authors of other RP addons to support them coming soon.
 
 	- ChatThrottleLib has been replaced by a new bandwidth library. If you
 	  encounter any errors related to ChatThrottleLib after upgrading, please
@@ -29,12 +27,11 @@
 	- Profile automation config is now accessed through the editor.
 
 	- The minimap tooltip has drastically changed, and now has generally
-	  useful information. In light of this, the option to hide the minimap
-	  tooltip has been removed.
+	  useful information, rather than simply a help tooltip.
 
-	- The interface options panels have been redone completely. Settings now
-	  update dynamically (rather than needing to press "Okay" to see changes),
-	  and the layout of the options has changed.
+	- The interface options have been redone completely. Settings now update
+	  dynamically (rather than needing to press "Okay" to see changes), and
+	  the layout of the options has changed.
 
 	- The option to use (hard-to-read) faction colors instead of
 	  green/yellow/red reaction colors on tooltips has been removed.
