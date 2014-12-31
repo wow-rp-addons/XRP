@@ -1,7 +1,10 @@
 NEW_VERSION = $(shell git describe --abbrev=0 --tags)
+HEAD_VERSION = $(shell git describe)
 CURSE_API_KEY = $(shell git config --get curse.apikey)
 
 all: build/xrp_$(NEW_VERSION).zip build/xrp_$(NEW_VERSION).zip.SHA512SUM build/xrp_$(NEW_VERSION).CHANGELOG
+
+head: build/xrp_$(HEAD_VERSION).zip
 
 upload: upload-curse upload-stormlord
 
