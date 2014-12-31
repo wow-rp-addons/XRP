@@ -61,8 +61,7 @@ function msp:UpdateBNList()
 		for j = 1, BNGetNumFriendToons(i) do
 			local active, toonName, client, realmName, realmID, faction, race, class, blank, zoneName, level, gameText, broadcastText, broadcastTime, isConnected, toonID = BNGetFriendToonInfo(i, j)
 			if client == "WoW" then
-				local name = xrp:Name(toonName, realmName)
-				self.bnet[name] = toonID
+				self.bnet[xrp:Name(toonName, realmName)] = toonID
 			end
 		end
 	end
@@ -123,9 +122,8 @@ do
 				-- less than five, and only adds six or more if the profile is
 				-- over 40000 characters or so. So let's say five.
 				data = ("XC=%u\1%s"):format(((#data + 5) / 4078) + 1, data)
-				local position = 1
-				libbw:BNSendGameData(presenceID, "MSP\1", data:sub(position, position + 4077), "BULK", queue)
-				position = position + 4078
+				libbw:BNSendGameData(presenceID, "MSP\1", data:sub(1, 4078), "BULK", queue)
+				local position = 4079
 				while position + 4078 <= #data do
 					libbw:BNSendGameData(presenceID, "MSP\2", data:sub(position, position + 4077), "BULK", queue)
 					position = position + 4078
@@ -151,9 +149,8 @@ do
 			-- not add less than five, and only adds seven or more if the
 			-- profile is over 25000 characters or so. So let's say six.
 			data = ("XC=%u\1%s"):format(((#data + 6) / chunkSize) + 1, data)
-			local position = 1
-			libbw:SendAddonMessage(not isGroup and "MSP\1" or "GMSP", (isGroup and "%s\1%s" or "%s%s"):format(prepend, data:sub(position, position + chunkSize - 1)), channel, name, "BULK", queue, callback, name)
-			position = position + chunkSize
+			libbw:SendAddonMessage(not isGroup and "MSP\1" or "GMSP", (isGroup and "%s\1%s" or "%s%s"):format(prepend, data:sub(1, chunkSize)), channel, name, "BULK", queue, callback, name)
+			local position = chunkSize + 1
 			while position + chunkSize <= #data do
 				libbw:SendAddonMessage(not isGroup and "MSP\2" or "GMSP", (isGroup and "%s\2%s" or "%s%s"):format(prepend, data:sub(position, position + chunkSize - 1)), channel, name, "BULK", queue, callback, name)
 				position = position + chunkSize
@@ -250,16 +247,9 @@ do
 					fields = {},
 					versions = {},
 				}
-				-- What this does is pull the G-fields from the unitcache,
-				-- accessed through xrp.cache, into the actual cache, but only
-				-- if the character has MSP. This keeps the saved cache a bit
-				-- more lightweight.
-				--
-				-- The G-fields are also put into the saved cache when they're
-				-- initially generated, if the cache table for that character
-				-- exists (indicating MSP support is/was present -- this
-				-- function is the *only* place a character cache table is
-				-- created).
+				-- This is the only place a cache table is created by XRP. If
+				-- we already have any data about them in the gCache (unit
+				-- cache), pull that into the real cache.
 				if xrpPrivate.gCache[name] then
 					for gField, isUnitField in pairs(xrpPrivate.fields.unit) do
 						xrpCache[name].fields[gField] = xrpPrivate.gCache[name][gField]
@@ -475,7 +465,7 @@ msp:SetScript("OnEvent", function(self, event, prefix, message, channel, sender)
 end)
 
 if not disabled then
-	for prefix, func in pairs(msp.handlers) do
+	for prefix, handler in pairs(msp.handlers) do
 		RegisterAddonMessagePrefix(prefix)
 	end
 	msp:RegisterEvent("CHAT_MSG_ADDON")
