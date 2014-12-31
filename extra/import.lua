@@ -97,7 +97,7 @@ do
 			DE = ("%sPiercings/Tattoos: %s\n\n"):format(DE, profile.Registre.Piercing)
 		end
 		if profile.Physique and profile.Physique.PhysiqueTexte then
-			DE = ("%s%s"):format(DE, profile.Physique.PhysiqueTexte)
+			DE = DE .. profile.Physique.PhysiqueTexte
 		end
 		xrpPrivate.profiles["TRP2"].fields.DE = DE ~= "" and DE:match("^(.-)\n+$") or nil
 		if profile.Histoire then
