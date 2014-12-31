@@ -193,6 +193,7 @@ xrpPrivate.settingsToggles.minimap = {
 			end
 			Minimap_UpdateIcon()
 			minimap:RegisterEvent("PLAYER_TARGET_CHANGED")
+			minimap:RegisterEvent("PLAYER_ENTERING_WORLD")
 			minimap:Show()
 		elseif minimap ~= nil then
 			minimap:UnregisterAllEvents()
