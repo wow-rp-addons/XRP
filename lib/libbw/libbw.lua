@@ -66,7 +66,7 @@ libbw.version = LIBBW_VERSION
 libbw.BN.BPS = 4078
 libbw.BN.BURST = 8156
 libbw.GAME.BPS = 1100
-libbw.GAME.BURST = 3570
+libbw.GAME.BURST = 3600
 
 -- The above defaults are tuned for safe speed. The absolute maximum without
 -- immediate issues are higher. DO NOT use these values in production, they
@@ -134,6 +134,8 @@ function libbw:SendAddonMessage(prefix, text, kind, target, priorityName, queueN
 		error("libbw:SendAddonMessage(): message length cannot exceed 255 bytes", 2)
 	end
 
+	kind = kind:upper()
+
 	if not self.ctlcompat and ChatThrottleLib then
 		if not self.usectl then
 			self.usectl = true
@@ -144,7 +146,7 @@ function libbw:SendAddonMessage(prefix, text, kind, target, priorityName, queueN
 		end
 		-- CTL likes to drop RAID messages, despite the game falling back
 		-- automatically to PARTY.
-		if kind:upper() == "RAID" and not IsInRaid() then
+		if kind == "RAID" and not IsInRaid() then
 			kind = "PARTY"
 		end
 		ChatThrottleLib:SendAddonMessage(priorityName, prefix, text, kind, target, queueName, callbackFn, callbackArg)
@@ -192,6 +194,8 @@ function libbw:SendChatMessage(text, kind, languageID, target, priorityName, que
 		error("libbw:SendChatMessage(): message length cannot exceed 255 bytes", 2)
 	end
 
+	kind = kind:upper()
+
 	if not self.ctlcompat and ChatThrottleLib then
 		if not self.usectl then
 			self.usectl = true
@@ -202,7 +206,7 @@ function libbw:SendChatMessage(text, kind, languageID, target, priorityName, que
 		end
 		-- CTL likes to drop RAID messages, despite the game falling back
 		-- automatically to PARTY.
-		if kind:upper() == "RAID" and not IsInRaid() then
+		if kind == "RAID" and not IsInRaid() then
 			kind = "PARTY"
 		end
 		ChatThrottleLib:SendChatMessage(queueName or "libbw", priorityName, prefix, text, kind, target, queueName, callbackFn, callbackArg)
@@ -233,7 +237,6 @@ function libbw:SendChatMessage(text, kind, languageID, target, priorityName, que
 
 	self:Enqueue(priorityName, queueName or prefix..kind..(target or ""), message)
 end
-
 
 function libbw.Hook_BNSendGameData(presenceID, prefix, text)
 	local self = libbw.BN
@@ -325,7 +328,7 @@ do
 			else
 				priority.queues.queue = priority.queues.queue.next
 			end
-			local doSend, kind = true, (message[fnMap[message.f]] or ""):upper()
+			local doSend, kind = true, (message[fnMap[message.f]] or "")
 			if (kind == "RAID" or kind == "PARTY" or kind == "INSTANCE_CHAT") and not IsInGroup() then
 				doSend = false
 			end
