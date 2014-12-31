@@ -257,6 +257,11 @@ do
 			end
 			return nil
 		elseif action == "" then
+			-- If we're stumbling through a partial (garbled) request, don't
+			-- update TT version or time. Full TT may not have been received.
+			if field == "TT" and self.cache[name].partialRequest then
+				return nil
+			end
 			-- Gave us a field.
 			if not xrpCache[name] and (contents ~= "" or version ~= 0) then
 				xrpCache[name] = {
@@ -375,6 +380,7 @@ msp.handlers = {
 			message = message:match("^.-\1(.+)$")
 			if not message then return end
 			self.cache[name][channel] = ""
+			self.cache[name].partialRequest = true
 		end
 		-- Only merge the contents if there's an end-of-command to process.
 		if message:find("\1", nil, true) then
@@ -404,6 +410,7 @@ msp.handlers = {
 			message = message:match("^.-\1(.+)$")
 			if not message then return end
 			self.cache[name][channel] = ""
+			self.cache[name].partialRequest = true
 		end
 		self.handlers["MSP"](self, name, (type(self.cache[name][channel]) == "string" and self.cache[name][channel] or table.concat(self.cache[name][channel])) .. message, channel)
 		-- CHUNK after RECEIVE would fire. Makes it easier to do something
@@ -413,6 +420,7 @@ msp.handlers = {
 		self.cache[name].chunks = nil
 		self.cache[name].totalChunks = nil
 		self.cache[name][channel] = nil
+		self.cache[name].partialRequest = nil
 	end,
 	["GMSP"] = function(self, name, message, channel)
 		local target, prefix, message = message:match(message:find("\30", nil, true) and "^(.+)\30([\1\2\3]?)(.+)$" or "^(.-)([\1\2\3]?)(.+)$")
