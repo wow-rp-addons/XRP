@@ -166,12 +166,12 @@ do
 			RenderLine(currentUnit.info:format(showProfile and not xrpPrivate.settings.tooltip.noRace and TruncateLine(xrp:Strip(fields.RA), 40, 0, false) or xrp.values.GR[fields.GR] or UNKNOWN, showProfile and not xrpPrivate.settings.tooltip.noClass and TruncateLine(xrp:Strip(fields.RC), 40, 0, false) or xrp.values.GC[fields.GC] or UNKNOWN, 40, 0, false))
 
 			if showProfile and (fields.FR and fields.FR ~= "0" or fields.FC and fields.FC ~= "0") then
-				local color = fields.FC == "1" and "ff99664d" or "ff66b380"
+				local color = fields.FC == "1" and "99664d" or "66b380"
 				-- AAAAAAAAAAAAAAAAAAAAAAAA. The boolean logic.
-				local frline = ("|c%s%s|r"):format(color, TruncateLine((fields.FR == "0" or not fields.FR) and " " or xrp.values.FR[fields.FR] or xrp:Strip(fields.FR), 35, 0, false))
+				local frline = ("|cff%s%s|r"):format(color, TruncateLine((fields.FR == "0" or not fields.FR) and " " or xrp.values.FR[fields.FR] or xrp:Strip(fields.FR), 35, 0, false))
 				local fcline
 				if fields.FC and fields.FC ~= "0" then
-					fcline = ("|c%s%s|r"):format(color, TruncateLine(xrp.values.FC[fields.FC] or xrp:Strip(fields.FC), 35, 0, false))
+					fcline = ("|cff%s%s|r"):format(color, TruncateLine(xrp.values.FC[fields.FC] or xrp:Strip(fields.FC), 35, 0, false))
 				end
 				RenderLine(frline, fcline)
 			end
