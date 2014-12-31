@@ -20,6 +20,8 @@ if not (hasMRP or hasTRP2) then return end
 
 local addonName, xrpPrivate = ...
 
+local MRP_NO_IMPORT = { TT = true, VA = true, VP = true, GC = true, GR = true, GS = true, GU = true }
+
 StaticPopupDialogs["XRP_IMPORT_RELOAD"] = {
 	text = "Available profiles have been imported and may be found in the editor's profile list. You should reload your UI now.",
 	button1 = "Reload UI",
@@ -43,7 +45,7 @@ local function ImportMyRolePlay()
 		local newProfileName = "MRP-" .. profileName
 		if xrpPrivate.profiles:Add(newProfileName) then
 			for field, value in pairs(profile) do
-				if not xrpPrivate.fields.unit[field] and not xrpPrivate.fields.meta[field] and not xrpPrivate.fields.dummy[field] and field:find("^%u%u$") then
+				if not MRP_NO_IMPORT[field] and field:find("^%u%u$") then
 					if field == "FC" then
 						if not tonumber(value) and value ~= "" then
 							value = "2"

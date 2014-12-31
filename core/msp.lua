@@ -37,6 +37,22 @@ else
 	StaticPopup_Show("XRP_MSP_DISABLE", msp_RPAddOn, msp_RPAddOn)
 end
 
+-- Fields in tooltip.
+local TT_FIELDS = { VP = true, VA = true, NA = true, NH = true, NI = true, NT = true, RA = true, RC = true, FR = true, FC = true, CU = true }
+
+-- These fields are (or should) be generated from UnitSomething() functions.
+local UNIT_FIELDS = { GC = true, GF = true, GR = true, GS = true, GU = true }
+
+-- 15 seconds for tooltip, 30 seconds for other fields.
+local FIELD_TIMES = setmetatable({ TT = 15 }, {
+	__index = function(self, field)
+		if TT_FIELDS[field] then
+			return self.TT
+		end
+		return 30
+	end,
+})
+
 -- This is the core of the MSP send/recieve implementation. The API is nothing
 -- like LibMSP and is not accessible outside this file.
 local msp = CreateFrame("Frame")
@@ -162,12 +178,12 @@ end
 
 do
 	-- Tooltip order for ideal XRP viewer usage.
-	local TT_FIELDS = { "VP", "VA", "NA", "NH", "NI", "NT", "RA", "RC", "CU", "FR", "FC" }
+	local TT_LIST = { "VP", "VA", "NA", "NH", "NI", "NT", "RA", "RC", "CU", "FR", "FC" }
 	local tt
 	function msp:GetTT()
 		if not tt then
 			local current, tooltip = xrp.current, {}
-			for i, field in ipairs(TT_FIELDS) do
+			for i, field in ipairs(TT_LIST) do
 				tooltip[#tooltip + 1] = not current.fields[field] and field or ("%s%u=%s"):format(field, current.versions[field], current.fields[field])
 			end
 			local newtt = table.concat(tooltip, "\1")
@@ -177,7 +193,7 @@ do
 		return tt
 	end
 	xrp:HookEvent("UPDATE", function(event, field)
-		if tt and (not field or xrpPrivate.fields.tt[field]) then
+		if tt and (not field or TT_FIELDS[field]) then
 			tt = nil
 		end
 	end)
@@ -251,13 +267,13 @@ do
 				-- we already have any data about them in the gCache (unit
 				-- cache), pull that into the real cache.
 				if xrpPrivate.gCache[name] then
-					for gField, isUnitField in pairs(xrpPrivate.fields.unit) do
+					for gField, isUnitField in pairs(UNIT_FIELDS) do
 						xrpCache[name].fields[gField] = xrpPrivate.gCache[name][gField]
 					end
 				end
 			end
 			local updated = false
-			if contents == "" and xrpCache[name] and xrpCache[name].fields[field] and not xrpPrivate.fields.unit[field] then
+			if contents == "" and xrpCache[name] and xrpCache[name].fields[field] and not UNIT_FIELDS[field] then
 				-- If it's newly blank, empty it in the cache. Never
 				-- empty G*, but do update them (following elseif).
 				xrpCache[name].fields[field] = nil
@@ -508,31 +524,8 @@ msp:SetScript("OnUpdate", msp.OnUpdate)
 
 xrpPrivate.msp = 2
 
-xrpPrivate.fields = {
-	-- Fields in tooltip.
-	tt = { VP = true, VA = true, NA = true, NH = true, NI = true, NT = true, RA = true, RC = true, FR = true, FC = true, CU = true },
-	-- These fields are (or should) be generated from UnitSomething()
-	-- functions. GF is an XRP-original, storing non-localized faction (since
-	-- we cache between sessions and can have data on both factions at once).
-	unit = { GC = true, GF = true, GR = true, GS = true, GU = true },
-	-- Metadata fields, not to be user-set.
-	meta = { VA = true, VP = true },
-	-- Dummy fields are used for extra XRP communication, not to be
-	-- user-exposed.
-	dummy = { XC = true },
-	-- 30 seconds for non-TT fields.
-	times = setmetatable({ TT = 15, }, {
-		__index = function(self, field)
-			if xrpPrivate.fields.tt[field] then
-				return self.TT
-			end
-			return 30
-		end,
-	}),
-}
-
 function xrpPrivate:QueueRequest(name, field)
-	if disabled or name == xrpPrivate.playerWithRealm or xrp:Ambiguate(name) == UNKNOWN or msp.cache[name].time[field] and GetTime() < msp.cache[name].time[field] + self.fields.times[field] then
+	if disabled or name == xrpPrivate.playerWithRealm or xrp:Ambiguate(name) == UNKNOWN or msp.cache[name].time[field] and GetTime() < msp.cache[name].time[field] + FIELD_TIMES[field] then
 		return false
 	end
 
@@ -564,7 +557,7 @@ function xrpPrivate:Request(name, fields)
 	local reqTT = false
 	-- This entire for block is FRAGILE. Modifications not recommended.
 	for key = #fields, 1, -1 do
-		if fields[key] == "TT" or self.fields.tt[fields[key]] then
+		if fields[key] == "TT" or TT_FIELDS[fields[key]] then
 			table.remove(fields, key)
 			reqTT = true
 		end
@@ -576,7 +569,7 @@ function xrpPrivate:Request(name, fields)
 
 	local out = {}
 	for i, field in ipairs(fields) do
-		if not msp.cache[name].time[field] or now > msp.cache[name].time[field] + self.fields.times[field] then
+		if not msp.cache[name].time[field] or now > msp.cache[name].time[field] + FIELD_TIMES[field] then
 			local noVersion = not xrpCache[name] or not xrpCache[name].versions[field]
 			out[#out + 1] = (noVersion and "?%s" or "?%s%u"):format(field, noVersion or xrpCache[name].versions[field])
 			msp.cache[name].time[field] = now

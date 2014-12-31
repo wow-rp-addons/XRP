@@ -26,7 +26,7 @@ local characterMeta
 do
 	local fieldsMeta = {
 		__index = function(self, field)
-			if xrpPrivate.fields.dummy[field] or not field:find("^%u%u$") then
+			if not field:find("^%u%u$") then
 				return nil
 			end
 			local name = self[nk]

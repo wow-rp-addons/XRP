@@ -17,6 +17,8 @@
 
 local addonName, xrpPrivate = ...
 
+local NO_PROFILE = { TT = true, VP = true, VA = true, GC = true, GF = true, GR = true, GS = true, GU = true }
+
 function xrpPrivate:NewVersion(field)
 	xrpSaved.versions[field] = (xrpSaved.versions[field] or 0) + 1
 	return xrpSaved.versions[field]
@@ -67,7 +69,7 @@ xrp.current = setmetatable({
 			return contents
 		end,
 		__newindex = function(self, field, contents)
-			if xrpSaved.overrides.fields[field] == contents or xrpPrivate.fields.unit[field] or xrpPrivate.fields.meta[field] or xrpPrivate.fields.dummy[field] or not field:find("^%u%u$") then return end
+			if xrpSaved.overrides.fields[field] == contents or NO_PROFILE[field] or not field:find("^%u%u$") then return end
 			xrpSaved.overrides.fields[field] = contents
 			xrpSaved.overrides.versions[field] = contents and xrpPrivate:NewVersion(field) or nil
 			xrpPrivate:FireEvent("UPDATE", field)
@@ -239,13 +241,13 @@ do
 
 	local fieldsMeta = {
 		__index = function(self, field)
-			if xrpPrivate.fields.unit[field] or xrpPrivate.fields.meta[field] or xrpPrivate.fields.dummy[field] or not field:find("^%u%u$") then
+			if NO_PROFILE[field] or not field:find("^%u%u$") then
 				return nil
 			end
 			return xrpSaved.profiles[self[nk]].fields[field] or nil
 		end,
 		__newindex = function(self, field, contents)
-			if xrpPrivate.fields.unit[field] or xrpPrivate.fields.meta[field] or xrpPrivate.fields.dummy[field] or not field:find("^%u%u$") then return end
+			if NO_PROFILE[field] or not field:find("^%u%u$") then return end
 			local name, profiles = self[nk], xrpSaved.profiles
 			contents = type(contents) == "string" and contents ~= "" and contents or nil
 			if profiles[name] and profiles[name].fields[field] ~= contents then
@@ -263,7 +265,7 @@ do
 	local inheritsMeta = {
 		__index = function(self, field)
 			local name, profiles = self[nk], xrpSaved.profiles
-			if xrpPrivate.fields.unit[field] or xrpPrivate.fields.meta[field] or xrpPrivate.fields.dummy[field] or not field:find("^%u%u$") or profiles[name].inherits[field] == false then
+			if NO_PROFILE[field] or not field:find("^%u%u$") or profiles[name].inherits[field] == false then
 				return false
 			end
 			local inherit = profiles[name].parent
@@ -284,7 +286,7 @@ do
 			return true
 		end,
 		__newindex = function(self, field, state)
-			if xrpPrivate.fields.unit[field] or xrpPrivate.fields.meta[field] or xrpPrivate.fields.dummy[field] or not field:find("^%u%u$") then return end
+			if NO_PROFILE[field] or not field:find("^%u%u$") then return end
 			local name, selected = self[nk], xrpSaved.selected
 			if state ~= xrpSaved.profiles[name].inherits[field] then
 				local current = xrpPrivate.profiles[selected].inherits[field]
