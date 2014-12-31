@@ -62,5 +62,4 @@ function ChatThrottleLib.Hook_SendChatMessage()
 end
 ChatThrottleLib.Hook_SendAddonMessage = ChatThrottleLib.Hook_SendChatMessage
 
-_G.ChatThrottleLib = ChatThrottleLib
 libbw.GAME.ctlcompat = true
