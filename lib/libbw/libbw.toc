@@ -1,9 +1,0 @@
-## Interface: 60000
-## Title: LibBW
-## Version: 1
-## Author: Bor of Wyrmrest Accord (US)
-## Notes: Chat bandwidth library.
-## X-Category: Library
-## X-License: ISC
-
-libbw.xml

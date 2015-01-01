@@ -12,7 +12,7 @@ xrp.lua
 settings.lua
 core\utils.lua
 core\profiles.lua
-lib\libbw\libbw.xml
+lib\libbw.lua
 core\msp.lua
 core\characters.lua
 core\automation.lua
