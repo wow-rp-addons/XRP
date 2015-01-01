@@ -1,5 +1,5 @@
 --[[
-	(C) 2014 Justin Snelgrove <jj@stormlord.ca>
+	© Justin Snelgrove
 
 	Permission to use, copy, modify, and/or distribute this software for any
 	purpose with or without fee is hereby granted, provided that the above
@@ -25,9 +25,10 @@
 	The public functions provided are:
 		- libbw:BNSendGameData(presenceID, prefix, message)
 		- libbw:SendAddonMessage(prefix, message, type[, target])
+		- libbw:SendChatMessage(message, type, languageID[, target])
 
 	The minimal arguments are identical to the global methods provided by
-	default. In addition, both functions take up to four additional arguments:
+	Blizzard. In addition, each function takes up to four additional arguments:
 		- priority: ALERT, NORMAL, BULK (defaults to NORMAL)
 		- queue: Aribtrary value. Messages in the same queue are sent
 		  in-order regardless of prefix, others are not guaranteed to be so.
@@ -62,7 +63,10 @@ end
 libbw.version = LIBBW_VERSION
 
 -- libbw does not guess protocol overhead -- while some values appear smaller
--- than ChatThrottleLib defaults, they're effectively on-par or higher.
+-- than ChatThrottleLib defaults, they're effectively on-par or higher. BURST
+-- should never be less than twice the maximum message length (no less than
+-- 8156 for BN and 510 for GAME), or else messages may get severely delayed or
+-- just never sent (blocking all messages) when in-combat.
 libbw.BN.BPS = 4078
 libbw.BN.BURST = 8156
 libbw.GAME.BPS = 1100
@@ -80,12 +84,11 @@ libbw.GAME.BURST = 3600
 
 function libbw:BNSendGameData(presenceID, prefix, text, priorityName, queueName, callbackFn, callbackArg)
 	self = self.BN
-	priorityName = priorityName or "NORMAL"
-	if not presenceID or not prefix or not text or not self.priorities[priorityName] or type(presenceID) ~= "number" then
+	if type(presenceID) ~= "number" or not prefix or not text then
 		error("Usage: libbw:BNSendGameData(presenceID, \"prefix\", \"text\")", 2)
 	end
 	if callbackFn and type(callbackFn) ~= "function" then
-		error("libbw:BNSendGameData(): callbackFn: expected function, got "..type(callbackFn), 2)
+		error("libbw:BNSendGameData(): callbackFn: expected function, got " .. type(callbackFn), 2)
 	end
 
 	local length = #text
@@ -95,10 +98,7 @@ function libbw:BNSendGameData(presenceID, prefix, text, priorityName, queueName,
 	end
 
 	if not self.queueing and length <= self:UpdateAvail() then
-		self.avail = self.avail - length
-		self.sending = true
 		local didSend = BNSendGameData(presenceID, prefix, text)
-		self.sending = false
 		if callbackFn then
 			pcall(callbackFn, callbackArg, didSend)
 		end
@@ -120,12 +120,11 @@ end
 
 function libbw:SendAddonMessage(prefix, text, kind, target, priorityName, queueName, callbackFn, callbackArg)
 	self = self.GAME
-	priorityName = priorityName or "NORMAL"
-	if not prefix or not text or not kind or (not target and (kind == "WHISPER" or kind == "CHANNEL")) or not self.priorities[priorityName] then
+	if not prefix or not text or not kind or not target and (kind == "WHISPER" or kind == "CHANNEL") then
 		error("Usage: libbw:SendAddonMessage(\"prefix\", \"text\", \"type\"[, \"target\"])", 2)
 	end
 	if callbackFn and type(callbackFn) ~= "function" then
-		error("libbw:SendAddonMessage(): callbackFn: expected function, got "..type(callbackFn), 2)
+		error("libbw:SendAddonMessage(): callbackFn: expected function, got " .. type(callbackFn), 2)
 	end
 
 	local length = #text
@@ -136,28 +135,21 @@ function libbw:SendAddonMessage(prefix, text, kind, target, priorityName, queueN
 
 	kind = kind:upper()
 
-	if not self.ctlcompat and ChatThrottleLib then
-		if not self.usectl then
-			self.usectl = true
-			-- These settings cause CTL to resemble libbw in output.
-			ChatThrottleLib.MAX_CPS = self.BPS + 100
-			ChatThrottleLib.BURST = self.BURST + 400
-			ChatThrottleLib.MIN_FPS = 0
-		end
+	if self.ctl and not ChatThrottleLib.libbw then
 		-- CTL likes to drop RAID messages, despite the game falling back
 		-- automatically to PARTY.
 		if kind == "RAID" and not IsInRaid() then
 			kind = "PARTY"
+		end
+		if priorityName ~= "NORMAL" and priorityName ~= "ALERT" and priorityName ~= "BULK" then
+			priorityName = "NORMAL"
 		end
 		ChatThrottleLib:SendAddonMessage(priorityName, prefix, text, kind, target, queueName, callbackFn, callbackArg)
 		return
 	end
 
 	if not self.queueing and length <= self:UpdateAvail() then
-		self.avail = self.avail - length
-		self.sending = true
 		SendAddonMessage(prefix, text, kind, target)
-		self.sending = false
 		if callbackFn then
 			pcall(callbackFn, callbackArg, true)
 		end
@@ -175,17 +167,16 @@ function libbw:SendAddonMessage(prefix, text, kind, target, priorityName, queueN
 		callbackArg = callbackArg,
 	}
 
-	self:Enqueue(priorityName, queueName or prefix..kind..(target or ""), message)
+	self:Enqueue(priorityName, queueName or prefix .. kind .. (target or ""), message)
 end
 
 function libbw:SendChatMessage(text, kind, languageID, target, priorityName, queueName, callbackFn, callbackArg)
 	self = self.GAME
-	priorityName = priorityName or "NORMAL"
-	if not text or (not target and (kind == "WHISPER" or kind == "CHANNEL")) or (languageID and type(languageID) ~= "number") or not self.priorities[priorityName] then
+	if not text or not target and (kind == "WHISPER" or kind == "CHANNEL") or languageID and type(languageID) ~= "number" then
 		error("Usage: libbw:SendChatMessage(\"text\"[, \"type\"[, languageID [, \"target\"]]])", 2)
 	end
 	if callbackFn and type(callbackFn) ~= "function" then
-		error("libbw:SendChatMessage(): callbackFn: expected function, got "..type(callbackFn), 2)
+		error("libbw:SendChatMessage(): callbackFn: expected function, got " .. type(callbackFn), 2)
 	end
 
 	local length = #text
@@ -196,28 +187,21 @@ function libbw:SendChatMessage(text, kind, languageID, target, priorityName, que
 
 	kind = kind:upper()
 
-	if not self.ctlcompat and ChatThrottleLib then
-		if not self.usectl then
-			self.usectl = true
-			-- These settings cause CTL to resemble libbw in output.
-			ChatThrottleLib.MAX_CPS = self.BPS + 100
-			ChatThrottleLib.BURST = self.BURST + 400
-			ChatThrottleLib.MIN_FPS = 0
-		end
+	if self.ctl and not ChatThrottleLib.libbw then
 		-- CTL likes to drop RAID messages, despite the game falling back
 		-- automatically to PARTY.
 		if kind == "RAID" and not IsInRaid() then
 			kind = "PARTY"
 		end
-		ChatThrottleLib:SendChatMessage(queueName or "libbw", priorityName, prefix, text, kind, target, queueName, callbackFn, callbackArg)
+		if priorityName ~= "NORMAL" and priorityName ~= "ALERT" and priorityName ~= "BULK" then
+			priorityName = "NORMAL"
+		end
+		ChatThrottleLib:SendChatMessage(priorityName, "libbw", text, kind, languageID, target, queueName, callbackFn, callbackArg)
 		return
 	end
 
 	if not self.queueing and length <= self:UpdateAvail() then
-		self.avail = self.avail - length
-		self.sending = true
 		SendChatMessage(text, kind, languageID, target)
-		self.sending = false
 		if callbackFn then
 			pcall(callbackFn, callbackArg, true)
 		end
@@ -235,34 +219,24 @@ function libbw:SendChatMessage(text, kind, languageID, target, priorityName, que
 		callbackArg = callbackArg,
 	}
 
-	self:Enqueue(priorityName, queueName or prefix..kind..(target or ""), message)
+	self:Enqueue(priorityName, queueName or kind .. (target or ""), message)
 end
 
+-- Hooks won't be run if function calls error (improper arguments).
 function libbw.Hook_BNSendGameData(presenceID, prefix, text)
 	local self = libbw.BN
-	if self.sending or not presenceID or not prefix or not text then
-		return
-	end
-	self.avail = self.avail - (#text + #prefix)
+	self.avail = self.avail - #text
 end
-
 function libbw.Hook_SendAddonMessage(prefix, text, kind, target)
 	local self = libbw.GAME
-	if self.sending or not prefix or not text or not kind then
-		return
-	end
-	self.avail = self.avail - (#text + #prefix)
+	self.avail = self.avail - #text
 end
-
 function libbw.Hook_SendChatMessage(text, kind, languageID, target)
 	local self = libbw.GAME
-	if self.sending or not text then
-		return
-	end
 	self.avail = self.avail - #text
 end
 
-if not libbw.hooked then 
+if not libbw.hooked then
 	hooksecurefunc("BNSendGameData", function(...)
 		return libbw.Hook_BNSendGameData(...)
 	end)
@@ -270,7 +244,7 @@ if not libbw.hooked then
 		return libbw.Hook_SendAddonMessage(...)
 	end)
 	hooksecurefunc("SendChatMessage", function(...)
-		return libbw.Hook_SendAddonMessage(...)
+		return libbw.Hook_SendChatMessage(...)
 	end)
 	libbw.hooked = true
 end
@@ -297,7 +271,7 @@ local function libbw_UpdateAvail(self)
 end
 
 local function libbw_Enqueue(self, priorityName, queueName, message)
-	local priority = self.priorities[priorityName]
+	local priority = self.priorities[priorityName] or self.priorities["NORMAL"]
 	local queue = priority.byQueueName[queueName]
 	if not queue then
 		self:Show()
@@ -312,7 +286,7 @@ end
 
 local libbw_Despool
 do
-	local fnMap = {
+	local fnKindMap = {
 		[SendChatMessage] = 2,
 		[SendAddonMessage] = 3,
 	}
@@ -322,22 +296,19 @@ do
 		while ring.queue and priority.avail >= ring.queue[1].length do
 			local message = table.remove(ring.queue, 1)
 			if not ring.queue[1] then  -- did we remove last message in this queue?
-				local queue = priority.queues.queue
-				priority.queues:Remove(queue)
+				local queue = ring.queue
+				ring:Remove(queue)
 				priority.byQueueName[queue.name] = nil
 			else
-				priority.queues.queue = priority.queues.queue.next
+				ring.queue = ring.queue.next
 			end
-			local doSend, kind = true, (message[fnMap[message.f]] or "")
-			if (kind == "RAID" or kind == "PARTY" or kind == "INSTANCE_CHAT") and not IsInGroup() then
+			local doSend, kind = true, message[fnKindMap[message.f]]
+			if kind and ((kind == "RAID" or kind == "PARTY") and not IsInGroup() or kind == "INSTANCE_CHAT" and not IsInGroup(LE_PARTY_CATEGORY_INSTANCE)) then
 				doSend = false
 			end
 			local didSend = false
 			if doSend then
-				priority.avail = priority.avail - message.length
-				self.sending = true
-				didSend = message.f(unpack(message, 1, #message)) ~= false
-				self.sending = false
+				didSend = message.f(unpack(message, 1, 4)) ~= false
 			end
 			-- notify caller of delivery (even if we didn't send it)
 			if message.callbackFn then
@@ -357,14 +328,14 @@ local function libbw_OnUpdate(self, elapsed)
 	if self.avail <= 0 then return end
 
 	local n = 0
-	for _, priority in pairs(self.priorities) do
-		if priority.queues.queue or priority.avail < 0 then 
-			n = n + 1 
+	for name, priority in pairs(self.priorities) do
+		if priority.queues.queue or priority.avail < 0 then
+			n = n + 1
 		end
 	end
 
 	if n == 0 then
-		for _, priority in pairs(self.priorities) do
+		for name, priority in pairs(self.priorities) do
 			self.avail = self.avail + priority.avail
 			priority.avail = 0
 		end
@@ -375,7 +346,7 @@ local function libbw_OnUpdate(self, elapsed)
 
 	local avail = self.avail / n
 	self.avail = 0
-	for _, priority in pairs(self.priorities) do
+	for name, priority in pairs(self.priorities) do
 		if priority.queues.queue or priority.avail < 0 then
 			priority.avail = priority.avail + avail
 			if priority.queues.queue and priority.avail >= priority.queues.queue[1].length then
@@ -462,3 +433,76 @@ libbw.GAME.OnUpdate = libbw_OnUpdate -- Allows for running without framedraws.
 libbw.GAME:SetScript("OnUpdate", libbw_OnUpdate)
 libbw.GAME:SetScript("OnEvent", libbw_OnEvent)
 libbw.GAME:RegisterEvent("PLAYER_ENTERING_WORLD")
+
+-- The following code provides a compatibility layer for addons using
+-- ChatThrottleLib. It won't load (and libbw will feed messages into CTL) if
+-- there's a newer version of CTL around than this layer is compatible with.
+local CTL_VERSION = 23
+
+if ChatThrottleLib and not ChatThrottleLib.libbw and ChatThrottleLib.version > CTL_VERSION then
+	-- Newer CTL already loaded, route through it.
+	libbw.GAME.ctl = true
+	return
+end
+
+if type(ChatThrottleLib) ~= "table" then
+	ChatThrottleLib = {}
+else
+	-- Remove any old libbw metatable, if present, before (re-)building the
+	-- compatibility layer.
+	setmetatable(ChatThrottleLib, nil)
+end
+ChatThrottleLib.version = nil -- Handled in metatable.
+ChatThrottleLib.libbw = true
+
+function ChatThrottleLib:SendAddonMessage(priorityName, prefix, text, kind, target, queueName, callbackFn, callbackArg)
+	if not priorityName or not prefix or not text or not kind or (priorityName ~= "ALERT" and priorityName ~= "NORMAL" and priorityName ~= "BULK") then
+		error('Usage: ChatThrottleLib:SendAddonMessage("{BULK||NORMAL||ALERT}", "prefix", "text", "chattype"[, "target"])', 2)
+	end
+	if callbackFn and type(callbackFn) ~= "function" then
+		error('ChatThrottleLib:SendAddonMessage(): callbackFn: expected function, got ' .. type(callbackFn), 2)
+	end
+	if #text > 255 then
+		error("ChatThrottleLib:SendAddonMessage(): message length cannot exceed 255 bytes", 2)
+	end
+	return libbw:SendAddonMessage(prefix, text, kind, target, priorityName, queueName, callbackFn, callbackArg)
+end
+
+function ChatThrottleLib:SendChatMessage(priorityName, prefix, text, kind, language, target, queueName, callbackFn, callbackArg)
+	if not priorityName or not prefix or not text or (priorityName ~= "ALERT" and priorityName ~= "NORMAL" and priorityName ~= "BULK") then
+		error('Usage: ChatThrottleLib:SendChatMessage("{BULK||NORMAL||ALERT}", "prefix", "text"[, "chattype"[, "language"[, "destination"]]]', 2)
+	end
+	if callbackFn and type(callbackFn) ~= "function" then
+		error('ChatThrottleLib:SendChatMessage(): callbackFn: expected function, got ' .. type(callbackFn), 2)
+	end
+	if #text > 255 then
+		error("ChatThrottleLib:SendChatMessage(): message length cannot exceed 255 bytes", 2)
+	end
+	return libbw:SendChatMessage(text, kind, language, target, priorityName, queueName or prefix .. (kind or "SAY") .. (target or ""), callbackFn, callbackArg)
+end
+
+function ChatThrottleLib.Hook_SendChatMessage()
+end
+ChatThrottleLib.Hook_SendAddonMessage = ChatThrottleLib.Hook_SendChatMessage
+
+-- This metatable catches changes to the CTL version, in case of a newer
+-- version of CTL replacing this compatibility layer.
+setmetatable(ChatThrottleLib, {
+	__index = function(self, key)
+		if key == "version" then
+			return CTL_VERSION
+		elseif key == "securelyHooked" then
+			return true
+		end
+	end,
+	__newindex = function(self, key, value)
+		if key == "version" and value > CTL_VERSION then
+			self.libbw = nil
+			libbw.GAME.ctl = true
+			setmetatable(self, nil)
+		end
+		rawset(self, key, value)
+	end,
+})
+
+libbw.GAME.ctl = nil
