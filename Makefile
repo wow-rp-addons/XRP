@@ -15,7 +15,7 @@ build/xrp_%.zip:
 	git rev-parse $* > /dev/null
 	mkdir -p $(@D)/tmp-$*/
 	git archive --prefix=xrp/ $* | tar -xC $(@D)/tmp-$*/
-	cd $(@D)/tmp-$*/ && zip -q -D -X -l -9 -r $(CURDIR)/$@ xrp/ -x xrp/Makefile xrp/docs/CHANGES.txt xrp/.gitignore
+	cd $(@D)/tmp-$*/ && zip -q -D -X -l -9 -r $(CURDIR)/$@ xrp/ -x xrp/lib/libmspx.lua xrp/Makefile xrp/docs/CHANGES.txt xrp/.gitignore
 	rm -rf $(@D)/tmp-$*/
 
 build/xrp_%.zip.SHA512SUM: build/xrp_%.zip
