@@ -118,6 +118,7 @@ do
 		-- Check whether sending by BN is available and preferred.
 		if (not channel or channel == "BN") and self.bnet[name] then
 			if not select(15, BNGetToonInfo(self.bnet[name])) then
+				-- presenceID is no longer valid. Probably offline.
 				self.bnet[name] = nil
 			elseif not channel then
 				if self.cache[name].bnet == false then
@@ -150,8 +151,7 @@ do
 		if channel == "BN" then return end
 
 		local isGroup = channel ~= "WHISPER" and UnitRealmRelationship(Ambiguate(name, "none")) == LE_REALM_RELATION_COALESCED
-		local isInstance = isGroup and IsInGroup(LE_PARTY_CATEGORY_INSTANCE)
-		channel = channel ~= "GAME" and channel or isGroup and (isInstance and "INSTANCE_CHAT" or "RAID") or "WHISPER"
+		channel = channel ~= "GAME" and channel or isGroup and (IsInGroup(LE_PARTY_CATEGORY_INSTANCE) and "INSTANCE_CHAT" or "RAID") or "WHISPER"
 		local prepend = isGroup and isRequest and name .. "\30" or ""
 		local queue = isGroup and "XRP-GROUP" or "XRP-" .. name
 		local callback = not isGroup and msp_AddFilter or nil
@@ -250,9 +250,9 @@ do
 			self.cache[name].time[field] = GetTime()
 			self.cache[name].fieldUpdated = self.cache[name].fieldUpdated or false
 			if field == "TT" and xrpCache[name] and self.cache[name].bnet == nil then
-				local numVP = tonumber(xrpCache[name].fields.VP)
-				if numVP then
-					self.cache[name].bnet = numVP >= 2
+				local VP = tonumber(xrpCache[name].fields.VP)
+				if VP then
+					self.cache[name].bnet = VP >= 2
 				end
 			end
 			return nil
@@ -304,9 +304,9 @@ do
 				xrpPrivate:FireEvent("FIELD", name, field)
 				self.cache[name].fieldUpdated = true
 				if field == "VP" then
-					local numVP = tonumber(contents)
-					if numVP then
-						self.cache[name].bnet = numVP >= 2
+					local VP = tonumber(contents)
+					if VP then
+						self.cache[name].bnet = VP >= 2
 					end
 				end
 			else
@@ -424,7 +424,7 @@ msp.handlers = {
 	end,
 	["GMSP"] = function(self, name, message, channel)
 		local target, prefix, message = message:match(message:find("\30", nil, true) and "^(.+)\30([\1\2\3]?)(.+)$" or "^(.-)([\1\2\3]?)(.+)$")
-		if not (target == "" or target == xrpPrivate.playerWithRealm) then return end
+		if target ~= "" and target ~= xrpPrivate.playerWithRealm then return end
 		self.handlers[prefix ~= "" and ("MSP%s"):format(prefix) or "MSP"](self, name, message, channel)
 	end,
 }
