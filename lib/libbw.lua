@@ -70,7 +70,7 @@ libbw.version = LIBBW_VERSION
 libbw.BN.BPS = 4078
 libbw.BN.BURST = 8156
 libbw.GAME.BPS = 1100
-libbw.GAME.BURST = 3600
+libbw.GAME.BURST = 3500
 
 -- The above defaults are tuned for safe speed. The absolute maximum without
 -- immediate issues are higher. DO NOT use these values in production, they
