@@ -71,7 +71,7 @@ local verMeta = {
 	__index = function(self, field)
 		local name = self[nk]
 		if name == xrpPrivate.playerWithRealm then
-			return xrp.current.versions[field]
+			return xrpPrivate.current.versions[field]
 		end
 		return xrpCache[name] and xrpCache[name].versions[field] or nil
 	end,
@@ -134,7 +134,7 @@ msp.my = setmetatable({}, {
 -- that entirely automatically.
 msp.myver = setmetatable({}, {
 	__index = function(self, field)
-		return xrp.current.versions[field]
+		return xrpPrivate.current.versions[field]
 	end,
 	__newindex = xrpPrivate.noFunc,
 	__metatable = false,
