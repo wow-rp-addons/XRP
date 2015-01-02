@@ -70,7 +70,7 @@ libbw.version = LIBBW_VERSION
 libbw.BN.BPS = 4078
 libbw.BN.BURST = 8156
 libbw.GAME.BPS = 1100
-libbw.GAME.BURST = 3500
+libbw.GAME.BURST = 3600
 
 -- The above defaults are tuned for safe speed. The absolute maximum without
 -- immediate issues are higher. DO NOT use these values in production, they
@@ -98,7 +98,10 @@ function libbw:BNSendGameData(presenceID, prefix, text, priorityName, queueName,
 	end
 
 	if not self.queueing and length <= self:UpdateAvail() then
+		self.avail = self.avail - length
+		self.sending = true
 		local didSend = BNSendGameData(presenceID, prefix, text)
+		self.sending = false
 		if callbackFn then
 			pcall(callbackFn, callbackArg, didSend)
 		end
@@ -149,7 +152,10 @@ function libbw:SendAddonMessage(prefix, text, kind, target, priorityName, queueN
 	end
 
 	if not self.queueing and length <= self:UpdateAvail() then
+		self.avail = self.avail - length
+		self.sending = true
 		SendAddonMessage(prefix, text, kind, target)
+		self.sending = false
 		if callbackFn then
 			pcall(callbackFn, callbackArg, true)
 		end
@@ -201,7 +207,10 @@ function libbw:SendChatMessage(text, kind, languageID, target, priorityName, que
 	end
 
 	if not self.queueing and length <= self:UpdateAvail() then
+		self.avail = self.avail - length
+		self.sending = true
 		SendChatMessage(text, kind, languageID, target)
+		self.sending = false
 		if callbackFn then
 			pcall(callbackFn, callbackArg, true)
 		end
@@ -225,14 +234,17 @@ end
 -- Hooks won't be run if function calls error (improper arguments).
 function libbw.Hook_BNSendGameData(presenceID, prefix, text)
 	local self = libbw.BN
+	if self.sending then return end
 	self.avail = self.avail - #text
 end
 function libbw.Hook_SendAddonMessage(prefix, text, kind, target)
 	local self = libbw.GAME
+	if self.sending then return end
 	self.avail = self.avail - #text
 end
 function libbw.Hook_SendChatMessage(text, kind, languageID, target)
 	local self = libbw.GAME
+	if self.sending then return end
 	self.avail = self.avail - #text
 end
 
@@ -308,7 +320,10 @@ do
 			end
 			local didSend = false
 			if doSend then
+				priority.avail = priority.avail - message.length
+				self.sending = true
 				didSend = message.f(unpack(message, 1, 4)) ~= false
+				self.sending = false
 			end
 			-- notify caller of delivery (even if we didn't send it)
 			if message.callbackFn then
