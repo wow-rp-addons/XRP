@@ -1,4 +1,4 @@
-6.0.3.0 (2015-01-02):
+6.0.3.1 (2015-01-02):
 
 	- !! IMPORTANT !!
 	  ===============
@@ -71,3 +71,5 @@
 		- Issues with profile swapping for non-Worgen druids have been fixed.
 
 		- Numerous other minor bugs have been fixed.
+
+		- From 6.0.3.0: Disconnects should stop now again. I'm an idiot.
