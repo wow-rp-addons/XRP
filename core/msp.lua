@@ -84,7 +84,7 @@ function msp:UpdateBNList()
 end
 
 do
-	local msp_AddFilter
+	local AddFilter
 	do
 		-- Filter visible "No such..." errors from addon messages.
 		local filter = {}
@@ -105,7 +105,7 @@ do
 		end)
 
 		-- Most complex function ever.
-		function msp_AddFilter(name)
+		function AddFilter(name)
 			filter[name] = GetTime()
 		end
 	end
@@ -154,7 +154,7 @@ do
 		channel = channel ~= "GAME" and channel or isGroup and (IsInGroup(LE_PARTY_CATEGORY_INSTANCE) and "INSTANCE_CHAT" or "RAID") or "WHISPER"
 		local prepend = isGroup and isRequest and name .. "\30" or ""
 		local queue = isGroup and "XRP-GROUP" or "XRP-" .. name
-		local callback = not isGroup and msp_AddFilter or nil
+		local callback = not isGroup and AddFilter or nil
 		local chunkSize = 255 - #prepend
 
 		if #data <= chunkSize then
@@ -303,14 +303,14 @@ do
 			if updated then
 				xrpPrivate:FireEvent("FIELD", name, field)
 				self.cache[name].fieldUpdated = true
-				if field == "VP" then
-					local VP = tonumber(contents)
-					if VP then
-						self.cache[name].bnet = VP >= 2
-					end
-				end
 			else
 				self.cache[name].fieldUpdated = self.cache[name].fieldUpdated or false
+			end
+			if field == "VP" and (updated or self.cache[name].bnet == nil) then
+				local VP = tonumber(contents)
+				if VP then
+					self.cache[name].bnet = VP >= 2
+				end
 			end
 			return nil
 		end
@@ -374,17 +374,18 @@ msp.handlers = {
 		xrpPrivate:FireEvent("CHUNK", name, 1, totalChunks)
 	end,
 	["MSP\2"] = function(self, name, message, channel)
+		local buffer = self.cache[name][channel]
 		-- If we don't have a buffer (i.e., no prior received message),
 		-- still try to process as many full commands as we can.
-		if not self.cache[name][channel] then
+		if not buffer then
 			message = message:match("^.-\1(.+)$")
 			if not message then return end
-			self.cache[name][channel] = ""
+			buffer = ""
 			self.cache[name].partialRequest = true
 		end
 		-- Only merge the contents if there's an end-of-command to process.
 		if message:find("\1", nil, true) then
-			message = (type(self.cache[name][channel]) == "string" and self.cache[name][channel] or table.concat(self.cache[name][channel])) .. message
+			message = (type(buffer) == "string" and buffer or table.concat(buffer)) .. message
 			for command in message:gmatch("([^\1]+)\1") do
 				if command:find("^[^%?]") then
 					self:Process(name, command)
@@ -393,10 +394,10 @@ msp.handlers = {
 			end
 			self.cache[name][channel] = message
 		else
-			if type(self.cache[name][channel]) == "string" then
-				self.cache[name][channel] = { self.cache[name][channel], message }
+			if type(buffer) == "string" then
+				self.cache[name][channel] = { buffer, message }
 			else
-				self.cache[name][channel][#self.cache[name][channel] + 1] = message
+				buffer[#buffer + 1] = message
 			end
 		end
 		local chunks = (self.cache[name].chunks or 0) + 1
@@ -404,15 +405,16 @@ msp.handlers = {
 		xrpPrivate:FireEvent("CHUNK", name, chunks, self.cache[name].totalChunks)
 	end,
 	["MSP\3"] = function(self, name, message, channel)
+		local buffer = self.cache[name][channel]
 		-- If we don't have a buffer (i.e., no prior received message),
 		-- still try to process as many full commands as we can.
-		if not self.cache[name][channel] then
+		if not buffer then
 			message = message:match("^.-\1(.+)$")
 			if not message then return end
-			self.cache[name][channel] = ""
+			buffer = ""
 			self.cache[name].partialRequest = true
 		end
-		self.handlers["MSP"](self, name, (type(self.cache[name][channel]) == "string" and self.cache[name][channel] or table.concat(self.cache[name][channel])) .. message, channel)
+		self.handlers["MSP"](self, name, (type(buffer) == "string" and buffer or table.concat(buffer)) .. message, channel)
 		-- CHUNK after RECEIVE would fire. Makes it easier to do something
 		-- useful when chunks == totalChunks.
 		xrpPrivate:FireEvent("CHUNK", name, (self.cache[name].chunks or 0) + 1, (self.cache[name].chunks or 0) + 1)
@@ -578,8 +580,11 @@ function xrpPrivate:Request(name, fields)
 	local out = {}
 	for i, field in ipairs(fields) do
 		if not msp.cache[name].time[field] or now > msp.cache[name].time[field] + FIELD_TIMES[field] then
-			local noVersion = not xrpCache[name] or not xrpCache[name].versions[field]
-			out[#out + 1] = (noVersion and "?%s" or "?%s%u"):format(field, noVersion or xrpCache[name].versions[field])
+			if not xrpCache[name] or not xrpCache[name].versions[field] then
+				out[#out + 1] = "?" .. field
+			else
+				out[#out + 1] = ("?%s%u"):format(field, xrpCache[name].versions[field])
+			end
 			msp.cache[name].time[field] = now
 		end
 	end
