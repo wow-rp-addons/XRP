@@ -182,7 +182,7 @@ do
 	local tt
 	function msp:GetTT()
 		if not tt then
-			local current, tooltip = xrp.current, {}
+			local current, tooltip = xrpPrivate.current, {}
 			for i, field in ipairs(TT_LIST) do
 				tooltip[#tooltip + 1] = not current.fields[field] and field or ("%s%u=%s"):format(field, current.versions[field], current.fields[field])
 			end
@@ -235,7 +235,7 @@ do
 				end
 				return tt
 			end
-			local currentVersion = xrp.current.versions[field]
+			local currentVersion = xrpPrivate.current.versions[field]
 			if not currentVersion then
 				-- Field is empty. Empty fields are always version 0 in XRP.
 				return field

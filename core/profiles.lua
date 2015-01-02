@@ -76,6 +76,16 @@ xrp.current = setmetatable({
 		end,
 		__metatable = false,
 	}),
+	overrides = setmetatable({}, {
+		__index = function(self, field)
+			return xrpSaved.overrides.fields[field] ~= nil
+		end,
+		__newindex = xrpPrivate.noFunc,
+		__metatable = false,
+	}),
+}, { __newindex = xrpPrivate.noFunc, __metatable = false, })
+
+xrpPrivate.current = setmetatable({
 	versions = setmetatable({}, {
 		__index = function (self, field)
 			local selected = xrpSaved.selected
@@ -87,13 +97,6 @@ xrp.current = setmetatable({
 				version = xrpSaved.profiles[inherit] and xrpSaved.profiles[inherit].versions[field] or xrpSaved.meta.versions[field]
 			end
 			return version or nil
-		end,
-		__newindex = xrpPrivate.noFunc,
-		__metatable = false,
-	}),
-	overrides = setmetatable({}, {
-		__index = function(self, field)
-			return xrpSaved.overrides.fields[field] ~= nil
 		end,
 		__newindex = xrpPrivate.noFunc,
 		__metatable = false,
@@ -128,7 +131,7 @@ xrp.current = setmetatable({
 		out.AH = out.AH and xrp:Height(out.AH, "msp") or nil
 		return out
 	end,
-}, { __newindex = xrpPrivate.noFunc, __metatable = false, })
+}, { __index = xrp.current, __newindex = xrpPrivate.noFunc, })
 
 local nk = {}
 local FORBIDDEN_NAMES = {
