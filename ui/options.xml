@@ -624,7 +624,7 @@
 		<KeyValues>
 			<KeyValue key="name" value="Advanced"/>
 			<KeyValue key="titleText" value="XRP: Advanced"/>
-			<KeyValue key="subText" value="Configure advanced XRP options. Please don't change these unless you know why you're changing them."/>
+			<KeyValue key="subText" value="Configure advanced XRP options. Please exercise caution when changing these."/>
 		</KeyValues>
 		<Frames>
 			<CheckButton parentKey="PreloadEditor" inherits="XRPOptionsCheckboxTemplate">
@@ -649,9 +649,21 @@
 					<KeyValue key="defaultValue" value="false" type="boolean"/>
 				</KeyValues>
 			</CheckButton>
+			<CheckButton parentKey="MovableViewer" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.PreloadViewer" relativePoint="BOTTOMLEFT" x="24" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="textString" value="Make viewer movable by default"/>
+					<KeyValue key="dependsOn" value="PreloadViewer"/>
+					<KeyValue key="xrpTable" value="display"/>
+					<KeyValue key="xrpSetting" value="movableViewer"/>
+					<KeyValue key="defaultValue" value="false" type="boolean"/>
+				</KeyValues>
+			</CheckButton>
 			<Frame name="XRPOptionsCoreCacheTime" parentKey="Time" inherits="XRPOptionsDropDownTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.PreloadViewer" relativePoint="BOTTOMLEFT" x="-15" y="-8"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.MovableViewer" relativePoint="BOTTOMLEFT" x="-39" y="-8"/>
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="labelString" value="Cache expiry time"/>
