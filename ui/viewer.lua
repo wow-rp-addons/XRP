@@ -159,7 +159,7 @@ local function Menu_PreClick(self, button, down)
 	end
 end
 
-local function CreateViewer()
+local function CreateViewer(isPreload)
 	local frame = CreateFrame("Frame", "XRPViewer", UIParent, "XRPViewerTemplate")
 	frame.Menu.baseMenuList = Menu_baseMenuList
 	frame.Menu:SetScript("PreClick", Menu_PreClick)
@@ -168,6 +168,9 @@ local function CreateViewer()
 	xrp:HookEvent("NOCHANGE", RECEIVE)
 	xrp:HookEvent("CHUNK", CHUNK)
 	xrp:HookEvent("FAIL", FAIL)
+	if isPreload then
+		xrpPrivate.settingsToggles.display.movableViewer(xrpPrivate.settings.display.movableViewer, frame)
+	end
 	return frame
 end
 
@@ -211,7 +214,47 @@ if not xrpPrivate.settingsToggles.display then
 	xrpPrivate.settingsToggles.display = {}
 end
 xrpPrivate.settingsToggles.display.preloadViewer = function(setting)
-	if setting and not viewer then
-		viewer = CreateViewer()
+	if setting then
+		if not viewer then
+			viewer = CreateViewer(true)
+		else
+			xrpPrivate.settingsToggles.display.movableViewer(xrpPrivate.settings.display.movableViewer)
+		end
+	elseif viewer then
+		xrpPrivate.settingsToggles.display.movableViewer(false)
+	end
+end
+xrpPrivate.settingsToggles.display.movableViewer = function(setting, frame)
+	if not viewer and not frame then return end
+	if not frame then
+		frame = viewer
+	end
+	local wasVisible = frame:IsVisible()
+	if wasVisible then
+		HideUIPanel(frame)
+	end
+	if setting then
+		frame:SetAttribute("UIPanelLayout-defined", false)
+		frame:SetAttribute("UIPanelLayout-enabled", false)
+		frame:SetMovable(true)
+		frame:SetClampedToScreen(true)
+		frame:SetFrameStrata("HIGH")
+		if not frame:GetPoint() then
+			frame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 50, -125)
+		end
+		if not frame.TitleRegion then
+			frame.TitleRegion = frame:CreateTitleRegion()
+		end
+		frame.TitleRegion:SetAllPoints(frame:GetName() .. "TitleBg")
+	elseif frame.TitleRegion ~= nil then
+		frame:SetAttribute("UIPanelLayout-defined", true)
+		frame:SetAttribute("UIPanelLayout-enabled", true)
+		frame:SetMovable(false)
+		frame:SetClampedToScreen(false)
+		frame:SetFrameStrata("MEDIUM")
+		frame.TitleRegion:SetPoint("BOTTOMLEFT", frame, "TOPLEFT")
+	end
+	if wasVisible then
+		ShowUIPanel(viewer)
 	end
 end

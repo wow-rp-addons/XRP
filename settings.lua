@@ -42,6 +42,7 @@ local DEFAULT_SETTINGS = {
 	},
 	display = {
 		height = "ft",
+		movableViewer = false,
 		preloadEditor = false,
 		preloadViewer = false,
 		weight = "lb",
@@ -210,6 +211,7 @@ local upgradeAccountVars = {
 			settings.tooltip.noRace = settings.tooltip.norprace
 			settings.tooltip.norprace = nil
 		end
+		settings.display.movableViewer = DEFAULT_SETTINGS.display.movableViewer
 	end,
 }
 
