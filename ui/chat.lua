@@ -29,8 +29,13 @@ local LINKED_CHAT_MSG = {
 	["CHAT_MSG_INSTANCE_CHAT_LEADER"] = "CHAT_MSG_INSTANCE_CHAT",
 }
 
-local names
 local function XRPGetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14)
+	-- Some stupid addons feed an empty string in instead of either a GUID or
+	-- nil.
+	if arg12 == "" then
+		arg12 = nil
+	end
+
 	-- Emotes from ourselves don't have our name in them, and Blizzard's
 	-- code can erroneously replace substrings of the emotes or of the
 	-- target's name with our (colored/RP) name. Being sure to return a
@@ -79,8 +84,9 @@ local function XRPGetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7
 	return nameFormat:format(name)
 end
 
+local names
 local function MessageFilter_TEXT_EMOTE(self, event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, ...)
-	if not arg12 or not names then
+	if not arg12 or not names or arg12 == "" then
 		return false
 	end
 
