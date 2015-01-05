@@ -164,14 +164,19 @@ function xrp:Status(desiredStatus)
 	local profileStatus = xrpPrivate.profiles[xrpSaved.selected].fields.FC
 	if not profileStatus then
 		local inherit = xrpPrivate.profiles[xrpSaved.selected].inherits.FC
-		profileStatus = xrpPrivate.profiles[inherit].fields.FC
+		if xrpPrivate.profiles[inherit] then
+			profileStatus = xrpPrivate.profiles[inherit].fields.FC
+		end
+		if not profileStatus then
+			profileStatus = "0"
+		end
 	end
 	if not desiredStatus then
 		local currentStatus = xrp.current.fields.FC
 		local currentIC, profileIC = currentStatus ~= nil and currentStatus ~= "1" and currentStatus ~= "0", profileStatus ~= nil and profileStatus ~= "1" and profileStatus ~= "0"
 		desiredStatus = currentStatus ~= profileStatus and currentIC ~= profileIC and profileStatus or currentIC and "1" or "2"
 	end
-	if desiredStatus ~= profileStatus or not profileStatus and desiredStatus ~= "0" then
+	if desiredStatus ~= profileStatus then
 		xrp.current.fields.FC = desiredStatus ~= "0" and desiredStatus or ""
 	else
 		xrp.current.fields.FC = nil
