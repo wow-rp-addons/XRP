@@ -20,7 +20,7 @@ local addonName, xrpPrivate = ...
 xrpPrivate.settingsToggles = {}
 
 local DATA_VERSION = 3
-local DATA_VERSION_ACCOUNT = 5
+local DATA_VERSION_ACCOUNT = 6
 
 local DEFAULT_SETTINGS = {
 	cache = {
@@ -131,47 +131,22 @@ local upgradeAccountVars = {
 		if settings.display.preloadEditor == nil then
 			settings.display.preloadEditor = DEFAULT_SETTINGS.display.preloadEditor
 			settings.display.preloadViewer = DEFAULT_SETTINGS.display.preloadViewer
+		end
 
+		if settings.cache.autoclean ~= nil then
 			settings.cache.autoClean = settings.cache.autoclean
 			settings.cache.autoclean = nil
-
+		end
+		if settings.chat.rpnames ~= nil then
 			settings.chat.names = settings.chat.rpnames
 			settings.chat.rpnames = nil
-
-			settings.chat.emoteBraced = settings.chat.emotebraced
-			settings.chat.emotebraced = nil
-
+		end
+		if settings.interact.rightclick ~= nil then
 			settings.interact.cursor = settings.interact.rightclick
 			settings.interact.rightClick = DEFAULT_SETTINGS.interact.rightClick
 			settings.interact.rightclick = nil
-
-			settings.interact.disableInstance = settings.interact.disableinstance
-			settings.interact.disableinstance = nil
-
-			settings.interact.disablePvP = settings.interact.disablepvp
-			settings.interact.disablepvp = nil
-
-			settings.tooltip.extraSpace = settings.tooltip.extraspace
-			settings.tooltip.extraspace = nil
-
-			settings.tooltip.guildRank = settings.tooltip.guildrank
-			settings.tooltip.guildrank = nil
-
-			settings.tooltip.guildIndex = settings.tooltip.guildindex
-			settings.tooltip.guildindex = nil
-
-			settings.tooltip.noHostile = settings.tooltip.nohostile
-			settings.tooltip.nohostile = nil
-
-			settings.tooltip.noOpFaction = settings.tooltip.noopfaction
-			settings.tooltip.noopfaction = nil
-
-			settings.tooltip.noClass = settings.tooltip.norpclass
-			settings.tooltip.norpclass = nil
-
-			settings.tooltip.noRace = settings.tooltip.norprace
-			settings.tooltip.norprace = nil
 		end
+
 		local now = time()
 		for name, data in pairs(xrpCache) do
 			if not data.lastReceive then
@@ -184,7 +159,57 @@ local upgradeAccountVars = {
 				end
 			end
 		end
-		C_Timer.After(6, function() print("XRP has been updated to 6.0.3.0. Please note that if you were formerly disabling the tooltip or chat names via the addons menu, those settings are now found in the XRP interface options.") end)
+		C_Timer.After(6, function() print("XRP has been updated to 6.0.3.0+. Please note that if you were formerly disabling the tooltip or chat names via the addons menu, those settings are now found in the XRP interface options.") end)
+	end,
+	[6] = function() -- 6.0.3.2
+		local settings = xrpAccountSaved.settings
+		if settings.cache.autoclean ~= nil then
+			settings.cache.autoclean = nil
+		end
+		if settings.chat.emotebraced ~= nil then
+			settings.chat.emoteBraced = settings.chat.emotebraced
+			settings.chat.emotebraced = nil
+		end
+		if settings.interact.rightclick ~= nil then
+			settings.interact.cursor = settings.interact.rightclick
+			settings.interact.rightclick = nil
+		end
+		if settings.interact.disableinstance ~= nil then
+			settings.interact.disableInstance = settings.interact.disableinstance
+			settings.interact.disableinstance = nil
+		end
+		if settings.interact.disablepvp ~= nil then
+			settings.interact.disablePvP = settings.interact.disablepvp
+			settings.interact.disablepvp = nil
+		end
+		if settings.tooltip.extraspace ~= nil then
+			settings.tooltip.extraSpace = settings.tooltip.extraspace
+			settings.tooltip.extraspace = nil
+		end
+		if settings.tooltip.guildrank ~= nil then
+			settings.tooltip.guildRank = settings.tooltip.guildrank
+			settings.tooltip.guildrank = nil
+		end
+		if settings.tooltip.guildindex ~= nil then
+			settings.tooltip.guildIndex = settings.tooltip.guildindex
+			settings.tooltip.guildindex = nil
+		end
+		if settings.tooltip.nohostile ~= nil then
+			settings.tooltip.noHostile = settings.tooltip.nohostile
+			settings.tooltip.nohostile = nil
+		end
+		if settings.tooltip.noopfaction ~= nil then
+			settings.tooltip.noOpFaction = settings.tooltip.noopfaction
+			settings.tooltip.noopfaction = nil
+		end
+		if settings.tooltip.norpclass ~= nil then
+			settings.tooltip.noClass = settings.tooltip.norpclass
+			settings.tooltip.norpclass = nil
+		end
+		if settings.tooltip.norprace ~= nil then
+			settings.tooltip.noRace = settings.tooltip.norprace
+			settings.tooltip.norprace = nil
+		end
 	end,
 }
 
