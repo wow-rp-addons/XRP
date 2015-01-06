@@ -149,7 +149,7 @@ function libbw:SendAddonMessage(prefix, text, kind, target, priorityName, fifoNa
 		if priorityName ~= "NORMAL" and priorityName ~= "ALERT" and priorityName ~= "BULK" then
 			priorityName = "NORMAL"
 		end
-		ChatThrottleLib:SendAddonMessage(priorityName, prefix, text, kind, target, fifoName, callbackFn, callbackArg)
+		ChatThrottleLib:SendAddonMessage(priorityName, prefix, text, kind, target, fifoName or prefix .. kind .. (target or ""), callbackFn, callbackArg)
 		return
 	end
 
@@ -206,7 +206,7 @@ function libbw:SendChatMessage(text, kind, languageID, target, priorityName, fif
 		if priorityName ~= "NORMAL" and priorityName ~= "ALERT" and priorityName ~= "BULK" then
 			priorityName = "NORMAL"
 		end
-		ChatThrottleLib:SendChatMessage(priorityName, "libbw", text, kind, languageID, target, fifoName, callbackFn, callbackArg)
+		ChatThrottleLib:SendChatMessage(priorityName, "libbw", text, kind, languageID, target, fifoName or kind .. (target or ""), callbackFn, callbackArg)
 		return
 	end
 
