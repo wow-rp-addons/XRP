@@ -82,7 +82,7 @@ libbw.GAME.BURST = 3600
 --libbw.GAME.BPS = 1800
 --libbw.GAME.BURST = 5000
 
-function libbw:BNSendGameData(presenceID, prefix, text, priorityName, queueName, callbackFn, callbackArg)
+function libbw:BNSendGameData(presenceID, prefix, text, priorityName, fifoName, callbackFn, callbackArg)
 	self = self.BN
 	if type(presenceID) ~= "number" or not prefix or not text then
 		error("Usage: libbw:BNSendGameData(presenceID, \"prefix\", \"text\")", 2)
@@ -98,6 +98,8 @@ function libbw:BNSendGameData(presenceID, prefix, text, priorityName, queueName,
 	end
 
 	if not self.queueing and length <= self:UpdateAvail() then
+		-- Remember, there's a good reason the avail update isn't just handled
+		-- in the hook.
 		self.avail = self.avail - length
 		self.sending = true
 		local didSend = BNSendGameData(presenceID, prefix, text)
@@ -118,10 +120,10 @@ function libbw:BNSendGameData(presenceID, prefix, text, priorityName, queueName,
 		callbackArg = callbackArg,
 	}
 
-	self:Enqueue(priorityName, queueName or ("%s%u"):format(prefix, presenceID), message)
+	self:Enqueue(priorityName, fifoName or ("%s%u"):format(prefix, presenceID), message)
 end
 
-function libbw:SendAddonMessage(prefix, text, kind, target, priorityName, queueName, callbackFn, callbackArg)
+function libbw:SendAddonMessage(prefix, text, kind, target, priorityName, fifoName, callbackFn, callbackArg)
 	self = self.GAME
 	if not prefix or not text or not kind or not target and (kind == "WHISPER" or kind == "CHANNEL") then
 		error("Usage: libbw:SendAddonMessage(\"prefix\", \"text\", \"type\"[, \"target\"])", 2)
@@ -147,11 +149,13 @@ function libbw:SendAddonMessage(prefix, text, kind, target, priorityName, queueN
 		if priorityName ~= "NORMAL" and priorityName ~= "ALERT" and priorityName ~= "BULK" then
 			priorityName = "NORMAL"
 		end
-		ChatThrottleLib:SendAddonMessage(priorityName, prefix, text, kind, target, queueName, callbackFn, callbackArg)
+		ChatThrottleLib:SendAddonMessage(priorityName, prefix, text, kind, target, fifoName, callbackFn, callbackArg)
 		return
 	end
 
 	if not self.queueing and length <= self:UpdateAvail() then
+		-- Remember, there's a good reason the avail update isn't just handled
+		-- in the hook.
 		self.avail = self.avail - length
 		self.sending = true
 		SendAddonMessage(prefix, text, kind, target)
@@ -173,10 +177,10 @@ function libbw:SendAddonMessage(prefix, text, kind, target, priorityName, queueN
 		callbackArg = callbackArg,
 	}
 
-	self:Enqueue(priorityName, queueName or prefix .. kind .. (target or ""), message)
+	self:Enqueue(priorityName, fifoName or prefix .. kind .. (target or ""), message)
 end
 
-function libbw:SendChatMessage(text, kind, languageID, target, priorityName, queueName, callbackFn, callbackArg)
+function libbw:SendChatMessage(text, kind, languageID, target, priorityName, fifoName, callbackFn, callbackArg)
 	self = self.GAME
 	if not text or not target and (kind == "WHISPER" or kind == "CHANNEL") or languageID and type(languageID) ~= "number" then
 		error("Usage: libbw:SendChatMessage(\"text\"[, \"type\"[, languageID [, \"target\"]]])", 2)
@@ -202,11 +206,13 @@ function libbw:SendChatMessage(text, kind, languageID, target, priorityName, que
 		if priorityName ~= "NORMAL" and priorityName ~= "ALERT" and priorityName ~= "BULK" then
 			priorityName = "NORMAL"
 		end
-		ChatThrottleLib:SendChatMessage(priorityName, "libbw", text, kind, languageID, target, queueName, callbackFn, callbackArg)
+		ChatThrottleLib:SendChatMessage(priorityName, "libbw", text, kind, languageID, target, fifoName, callbackFn, callbackArg)
 		return
 	end
 
 	if not self.queueing and length <= self:UpdateAvail() then
+		-- Remember, there's a good reason the avail update isn't just handled
+		-- in the hook.
 		self.avail = self.avail - length
 		self.sending = true
 		SendChatMessage(text, kind, languageID, target)
@@ -228,7 +234,7 @@ function libbw:SendChatMessage(text, kind, languageID, target, priorityName, que
 		callbackArg = callbackArg,
 	}
 
-	self:Enqueue(priorityName, queueName or kind .. (target or ""), message)
+	self:Enqueue(priorityName, fifoName or kind .. (target or ""), message)
 end
 
 -- Hooks won't be run if function calls error (improper arguments).
@@ -282,17 +288,17 @@ local function libbw_UpdateAvail(self)
 	return avail
 end
 
-local function libbw_Enqueue(self, priorityName, queueName, message)
+local function libbw_Enqueue(self, priorityName, fifoName, message)
 	local priority = self.priorities[priorityName] or self.priorities["NORMAL"]
-	local queue = priority.byQueueName[queueName]
-	if not queue then
+	local fifo = priority.byName[fifoName]
+	if not fifo then
 		self:Show()
-		queue = {}
-		queue.name = queueName
-		priority.byQueueName[queueName] = queue
-		priority.queues:Add(queue)
+		fifo = {}
+		fifo.name = fifoName
+		priority.byName[fifoName] = fifo
+		priority.queue:Add(fifo)
 	end
-	queue[#queue + 1] = message
+	fifo[#fifo + 1] = message
 	self.queueing = true
 end
 
@@ -304,15 +310,15 @@ do
 	}
 
 	function libbw_Despool(self, priority)
-		local ring = priority.queues
-		while ring.queue and priority.avail >= ring.queue[1].length do
-			local message = table.remove(ring.queue, 1)
-			if not ring.queue[1] then  -- did we remove last message in this queue?
-				local queue = ring.queue
-				ring:Remove(queue)
-				priority.byQueueName[queue.name] = nil
+		local queue = priority.queue
+		while queue.nextFifo and priority.avail >= queue.nextFifo[1].length do
+			local message = table.remove(queue.nextFifo, 1)
+			if not queue.nextFifo[1] then  -- did we remove last message in this queue?
+				local fifo = queue.nextFifo
+				queue:Remove(fifo)
+				priority.byName[fifo.name] = nil
 			else
-				ring.queue = ring.queue.next
+				queue.nextFifo = queue.nextFifo.next
 			end
 			local doSend, kind = true, message[fnKindMap[message.f]]
 			if kind and ((kind == "RAID" or kind == "PARTY") and not IsInGroup() or kind == "INSTANCE_CHAT" and not IsInGroup(LE_PARTY_CATEGORY_INSTANCE)) then
@@ -320,6 +326,9 @@ do
 			end
 			local didSend = false
 			if doSend then
+				-- Remember, there's a REALLY BIG reason the avail update isn't
+				-- just handled in the hook. Especially here, since it's a
+				-- different avail.
 				priority.avail = priority.avail - message.length
 				self.sending = true
 				didSend = message.f(unpack(message, 1, 4)) ~= false
@@ -334,7 +343,7 @@ do
 end
 
 local function libbw_OnUpdate(self, elapsed)
-	self.timer = (self.timer or 0) + elapsed
+	self.timer = self.timer + elapsed
 	if self.timer < 0.08 then return end
 	self.timer = 0
 
@@ -344,7 +353,7 @@ local function libbw_OnUpdate(self, elapsed)
 
 	local n = 0
 	for name, priority in pairs(self.priorities) do
-		if priority.queues.queue or priority.avail < 0 then
+		if priority.queue.nextFifo or priority.avail < 0 then
 			n = n + 1
 		end
 	end
@@ -362,9 +371,9 @@ local function libbw_OnUpdate(self, elapsed)
 	local avail = self.avail / n
 	self.avail = 0
 	for name, priority in pairs(self.priorities) do
-		if priority.queues.queue or priority.avail < 0 then
+		if priority.queue.nextFifo or priority.avail < 0 then
 			priority.avail = priority.avail + avail
-			if priority.queues.queue and priority.avail >= priority.queues.queue[1].length then
+			if priority.queue.nextFifo and priority.avail >= priority.queue.nextFifo[1].length then
 				self:Despool(priority)
 			end
 		end
@@ -380,32 +389,32 @@ local function libbw_OnEvent(self, event)
 end
 
 do
-	local queuesMeta = {
+	local queueMeta = {
 		__index = {
-			Add = function(self, newQueue)
-				if self.queue then
+			Add = function(self, newFifo)
+				if self.nextFifo then
 					-- Append new at the end of the chain.
-					newQueue.prev = self.queue.prev
-					newQueue.prev.next = newQueue
-					newQueue.next = self.queue
-					newQueue.next.prev = newQueue
+					newFifo.prev = self.nextFifo.prev
+					newFifo.prev.next = newFifo
+					newFifo.next = self.nextFifo
+					newFifo.next.prev = newFifo
 				else
 					-- New is only.
-					newQueue.next = newQueue
-					newQueue.prev = newQueue
-					self.queue = newQueue
+					newFifo.next = newFifo
+					newFifo.prev = newFifo
+					self.nextFifo = newFifo
 				end
 			end,
-			Remove = function (self, delQueue)
+			Remove = function (self, delFifo)
 				-- Remove it from the chain.
-				delQueue.next.prev = delQueue.prev
-				delQueue.prev.next = delQueue.next
-				if self.queue == delQueue then
+				delFifo.next.prev = delFifo.prev
+				delFifo.prev.next = delFifo.next
+				if self.nextFifo == delFifo then
 					-- Removed is current.
-					self.queue = delQueue.next
-					if self.queue == delQueue then
+					self.nextFifo = delFifo.next
+					if self.nextFifo == delFifo then
 						-- Removed is current and only.
-						self.queue = nil
+						self.nextFifo = nil
 					end
 				end
 			end,
@@ -413,15 +422,15 @@ do
 	}
 
 	libbw.BN.priorities = {
-		ALERT = { byQueueName = {}, queues = setmetatable({}, queuesMeta), avail = 0 },
-		NORMAL = { byQueueName = {}, queues = setmetatable({}, queuesMeta), avail = 0 },
-		BULK = { byQueueName = {}, queues = setmetatable({}, queuesMeta), avail = 0 },
+		ALERT = { byName = {}, queue = setmetatable({}, queueMeta), avail = 0 },
+		NORMAL = { byName = {}, queue = setmetatable({}, queueMeta), avail = 0 },
+		BULK = { byName = {}, queue = setmetatable({}, queueMeta), avail = 0 },
 	}
 
 	libbw.GAME.priorities = {
-		ALERT = { byQueueName = {}, queues = setmetatable({}, queuesMeta), avail = 0 },
-		NORMAL = { byQueueName = {}, queues = setmetatable({}, queuesMeta), avail = 0 },
-		BULK = { byQueueName = {}, queues = setmetatable({}, queuesMeta), avail = 0 },
+		ALERT = { byName = {}, queue = setmetatable({}, queueMeta), avail = 0 },
+		NORMAL = { byName = {}, queue = setmetatable({}, queueMeta), avail = 0 },
+		BULK = { byName = {}, queue = setmetatable({}, queueMeta), avail = 0 },
 	}
 end
 
@@ -433,6 +442,7 @@ do
 	libbw.GAME.LastAvailUpdate = now
 end
 
+libbw.BN.timer = 0
 libbw.BN.Enqueue = libbw_Enqueue
 libbw.BN.Despool = libbw_Despool
 libbw.BN.UpdateAvail = libbw_UpdateAvail
@@ -441,6 +451,7 @@ libbw.BN:SetScript("OnUpdate", libbw_OnUpdate)
 libbw.BN:SetScript("OnEvent", libbw_OnEvent)
 libbw.BN:RegisterEvent("PLAYER_ENTERING_WORLD")
 
+libbw.GAME.timer = 0
 libbw.GAME.Enqueue = libbw_Enqueue
 libbw.GAME.Despool = libbw_Despool
 libbw.GAME.UpdateAvail = libbw_UpdateAvail
