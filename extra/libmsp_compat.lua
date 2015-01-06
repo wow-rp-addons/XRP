@@ -15,9 +15,9 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-if msp ~= nil then return end
-
 local addonName, xrpPrivate = ...
+
+if msp_RPAddOn ~= GetAddOnMetadata(addonName, "Title") then return end
 
 -- This file provides emulation of reference LibMSP for XRP. This is used by
 -- some addons (such as GHI) to interact with a RP profile. For the most part,
@@ -29,9 +29,23 @@ local addonName, xrpPrivate = ...
 -- table which will run requests automatically. Doing so also makes it behave
 -- more like reference LibMSP.
 
-local msp = {}
-msp.version = 9 -- Let's just say we're 9.
-msp.versionx = 1 -- ...and version 1 LibMSPX.
+if msp then
+	if msp.versionx then
+		-- libmspx
+		msp.dummyframex:UnregisterAllEvents()
+	else
+		-- LibMSP
+		msp.dummyframe:UnregisterAllEvents()
+	end
+	wipe(msp)
+else
+	msp = {}
+end
+
+-- XRP is active and the in-control RP addon, so we really don't want other
+-- versions of MSP overwriting this.
+msp.version = 999
+msp.versionx = 999
 msp.protocolversion = xrpPrivate.msp
 
 -- Run MSP callbacks with appropriate arguments on XRP events.
@@ -140,6 +154,14 @@ msp.myver = setmetatable({}, {
 	__metatable = false,
 })
 
+msp.bnet = setmetatable({}, {
+	__index = function(self, name)
+		return xrpPrivate.bnet[name]
+	end,
+	__newindex = xrpPrivate.noFunc,
+	__metatable = false,
+})
+
 function msp:Request(name, fields)
 	if not fields then
 		fields = { "TT" }
@@ -151,7 +173,7 @@ function msp:Request(name, fields)
 	return xrpPrivate:Request(xrp:Name(name), fields)
 end
 
-function msp:NameWithRealm(...)
+function msp:Name(...)
 	return xrp:Name(...)
 end
 
@@ -174,4 +196,12 @@ function msp:Send()
 	return 0
 end
 
-_G.msp = msp
+setmetatable(msp, {
+	__index = function(self, key)
+		if key == "player" then
+			return xrpPrivate.playerWithRealm
+		end
+	end,
+	__newindex = xrpPrivate.noFunc,
+	__metatable = false,
+})

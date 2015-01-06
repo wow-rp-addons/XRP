@@ -101,7 +101,7 @@ do
 			end,
 			__mode = "v",
 		})
-		function Process(self, name, command)
+		function Process(self, name, command, isGroup)
 			local action, field, version, contents = command:match("(%p?)(%u%u)(%d*)=?(.*)")
 			version = tonumber(version) or 0
 			if not field then return end
@@ -109,11 +109,17 @@ do
 				local now = GetTime()
 				-- This mitigates some potential 'denial of service' attacks
 				-- against MSP.
-				if requestTime[name][field] and requestTime[name][field] > now - 5 then
-					requestTime[name][field] = now
+				if isGroup then
+					if requestTime.GROUP[field] and requestTime.GROUP[field] > now then
+						return
+					end
+					requestTime.GROUP[field] = now + 2
+				end
+				if requestTime[name][field] and requestTime[name][field] > now then
+					requestTime[name][field] = now + 5
 					return
 				end
-				requestTime[name][field] = now
+				requestTime[name][field] = now + 5
 				if not self.reply then
 					self.reply = {}
 				end
@@ -152,7 +158,7 @@ do
 		["MSP"] = function(self, name, message, channel)
 			if message:find("\1", nil, true) then
 				for command in message:gmatch("([^\1]+)\1*") do
-					Process(self, name, command)
+					Process(self, name, command, channel ~= "WHISPER" and channel ~= "BN")
 				end
 			else
 				Process(self, name, message)
@@ -289,7 +295,7 @@ do
 		elseif event == "BN_DISCONNECTED" then
 			self:UnregisterEvent("BN_TOON_NAME_UPDATED")
 			self:UnregisterEvent("BN_FRIEND_TOON_ONLINE")
-			msp.bnet = {}
+			wipe(msp.bnet)
 		end
 	end)
 	mspFrame:RegisterEvent("CHAT_MSG_ADDON")
@@ -467,7 +473,7 @@ do
 			local presenceID = self.bnet[name]
 			local queue = ("MSP-%u"):format(presenceID)
 			if #payload <= 4078 then
-				libbw:BNSendGameData(presenceID, "MSP", payload, "NORMAL", queue)
+				libbw:BNSendGameData(presenceID, "MSP", payload, isResponse and "NORMAL" or "ALERT", queue)
 				bnParts = 1
 			else
 				-- This line adds chunk metadata for addons which use it.
@@ -496,18 +502,18 @@ do
 		local callback = not isGroup and AddFilter or nil
 		local chunkSize = 255 - #prepend
 		if #payload <= chunkSize then
-			libbw:SendAddonMessage(not isGroup and "MSP" or "GMSP", prepend .. payload, channel, name, "NORMAL", queue, callback, name)
+			libbw:SendAddonMessage(not isGroup and "MSP" or "GMSP", prepend .. payload, channel, name, isResponse and "NORMAL" or "ALERT", queue, callback, name)
 			mspParts = 1
 		else
 			chunkSize = isGroup and (chunkSize - 1) or chunkSize
 			-- This line adds chunk metadata for addons which use it.
 			payload = ("XC=%u\1%s"):format(((#payload + 6) / chunkSize) + 1, payload)
-			libbw:SendAddonMessage(not isGroup and "MSP\1" or "GMSP", (isGroup and "%s\1%s" or "%s%s"):format(prepend, payload:sub(1, 255)), channel, name, "BULK", queue, callback, name)
-			local position = 256
+			libbw:SendAddonMessage(not isGroup and "MSP\1" or "GMSP", (isGroup and "%s\1%s" or "%s%s"):format(prepend, payload:sub(1, chunkSize)), channel, name, "BULK", queue, callback, name)
+			local position = chunkSize + 1
 			mspParts = 2
-			while position + 255 <= #payload do
+			while position + chunkSize <= #payload do
 				libbw:SendAddonMessage(not isGroup and "MSP\2" or "GMSP", (isGroup and "%s\2%s" or "%s%s"):format(prepend, payload:sub(position, position + 254)), channel, name, "BULK", queue, callback, name)
-				position = position + 255
+				position = position + chunkSize
 				mspParts = mspParts + 1
 			end
 			libbw:SendAddonMessage(not isGroup and "MSP\3" or "GMSP", (isGroup and "%s\3%s" or "%s%s"):format(prepend, payload:sub(position)), channel, name, "BULK", queue, callback, name)
@@ -522,5 +528,6 @@ function msp:PlayerKnownAbout(name)
 	if not name or name == "" then
 		return false
 	end
+	-- msp:Name() is called on this in the msp.char metatable.
 	return self.char[name].supported ~= nil
 end
