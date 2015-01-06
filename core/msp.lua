@@ -58,6 +58,7 @@ local FIELD_TIMES = setmetatable({ TT = 15 }, {
 local msp = CreateFrame("Frame")
 -- Battle.net friends mapping.
 msp.bnet = {}
+xrpPrivate.bnet = msp.bnet
 -- Requested field queue
 msp.request = {}
 -- Session cache. Do NOT make weak.
@@ -133,7 +134,7 @@ do
 			local presenceID = self.bnet[name]
 			local queue = ("XRP-%u"):format(presenceID)
 			if #data <= 4078 then
-				libbw:BNSendGameData(presenceID, "MSP", data, "NORMAL", queue)
+				libbw:BNSendGameData(presenceID, "MSP", data, isRequest and "ALERT" or "NORMAL", queue)
 			else
 				-- XC is most likely to add five extra characters, will not add
 				-- less than five, and only adds six or more if the profile is
@@ -158,7 +159,7 @@ do
 		local chunkSize = 255 - #prepend
 
 		if #data <= chunkSize then
-			libbw:SendAddonMessage(not isGroup and "MSP" or "GMSP", prepend .. data, channel, name, "NORMAL", queue, callback, name)
+			libbw:SendAddonMessage(not isGroup and "MSP" or "GMSP", prepend .. data, channel, name, isRequest and "ALERT" or "NORMAL", queue, callback, name)
 		else
 			chunkSize = isGroup and chunkSize - 1 or chunkSize
 			-- XC is most likely to add five or six extra characters, will
@@ -210,7 +211,7 @@ do
 	-- This returns requested field output, or nil if no requests were
 	-- made. msp.cache[name].fieldUpdated is set to true if a
 	-- field has changed, false if a field has not been changed.
-	function msp:Process(name, command)
+	function msp:Process(name, command, isGroup)
 		local action, field, version, contents = command:match("(%p?)(%u%u)(%d*)=?(.*)")
 		version = tonumber(version) or 0
 		if not field then
@@ -221,11 +222,19 @@ do
 			-- string with our info for that field. (If it doesn't, it
 			-- means we're ignoring their request, probably because
 			-- they're spamming it at us.)
-			if requestTime[name][field] and requestTime[name][field] > now - 5 then
-				requestTime[name][field] = now
+			if isGroup then
+				-- If it's in GMSP, ignore every 2s to try and catch
+				-- simultaneous requests (such as from names-in-chat).
+				if requestTime.GROUP[field] and requestTime.GROUP[field] > now then
+					return nil
+				end
+				requestTime.GROUP[field] = now + 2
+			end
+			if requestTime[name][field] and requestTime[name][field] > now then
+				requestTime[name][field] = now + 5
 				return nil
 			end
-			requestTime[name][field] = now
+			requestTime[name][field] = now + 5
 			if field == "TT" then
 				-- Rebuild the TT to catch any version changes before checking
 				-- the version.
@@ -322,7 +331,7 @@ msp.handlers = {
 	["MSP"] = function(self, name, message, channel)
 		local out
 		for command in message:gmatch("([^\1]+)\1*") do
-			local response = self:Process(name, command)
+			local response = self:Process(name, command, channel ~= "WHISPER" and channel ~= "BN")
 			if response then
 				if not out then
 					out = {}
@@ -486,7 +495,7 @@ msp:SetScript("OnEvent", function(self, event, prefix, message, channel, sender)
 	elseif event == "BN_DISCONNECTED" then
 		self:UnregisterEvent("BN_TOON_NAME_UPDATED")
 		self:UnregisterEvent("BN_FRIEND_TOON_ONLINE")
-		self.bnet = {}
+		wipe(self.bnet)
 	end
 end)
 
