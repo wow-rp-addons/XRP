@@ -1,10 +1,42 @@
-6.0.3.1 (2015-01-02):
+6.0.3.2 (2015-01-05):
+
+	- This release only includes minor changes and bugfixes. Please see the
+	  section below these notes if you are upgrading from 6.0.2.1 or earlier.
+
+	- New: There is now a setting in the Advanced section of XRP's options to
+	  make the Viewer movable by clicking/dragging its title bar. This option
+	  requires the frame be preloaded, also set in the Advanced section.
+
+	- Bug fix: Profiles with no default character status set (set to "(None)")
+	  will no longer trigger an error when clicking the minimap button.
+
+	- Bug fix: Certain settings will no longer revert to default when
+	  upgrading from 6.0.2.1, and will be set to your pre-6.0.3.0 selection.
+	  If you had intentionally changed those settings since upgrading, you may
+	  need to toggle them again.
+
+	- Fix: An interaction with Scrap (and potentially with other addons)
+	  producing an error in some circumstances has been fixed.
+
+	- Bandwidth usage in crossrealm party/raid situations with multiple XRP
+	  users from multiple different realms should be slightly reduced.
+
+	- Profile data requests may occur more quickly in high-bandwidth
+	  situations.
+
+	- Raid warnings will now show roleplay names, if roleplay names are
+	  enabled for raid.
+
+	- LibMSP compatibility layer has been updated to work better.
+
+For 6.0.2.1 or earlier users:
 
 	- !! IMPORTANT !!
 	  ===============
-	  Please read the below three points prior to upgrading. There are a large
-	  number of changes in this version of XRP, and the change to the folder
-	  setup may require a bit more attention when upgrading than usual.
+	  Please read the below three points prior to upgrading from XRP 6.0.2.1
+	  or earlier. There are a large number of changes since that version of
+	  XRP, and the change to the folder setup may require a bit more attention
+	  when upgrading than usual.
 
 	- Old versions of XRP should be removed from the Interface/AddOns folder
 	  prior to upgrading from 6.0.2.1 or lower (automated installers should
@@ -31,45 +63,5 @@
 		  encounter any errors related to ChatThrottleLib (or libbw) after
 		  upgrading, please report them immediately.
 
-		- Profile automation config is now accessed through the editor.
-
-		- The minimap tooltip has drastically changed, and now has generally
-		  useful information, rather than simply a help tooltip.
-
-		- The interface options have been redone completely. Settings now
-		  update dynamically (rather than needing to press "Okay" to see
-		  changes), and the layout of the options has changed.
-
-		- The option to use (hard-to-read) faction colors instead of
-		  green/yellow/red reaction colors on tooltips has been removed.
-
-		- The internal naming of the editor and viewer frames has changed. If
-		  you were making use of these (such as with an addon that allows
-		  movement of UI panels), you may need to reconfigure it. If you don't
-		  know what this means, you probably don't need to worry.
-
-			- To enable moving via external addons, you may also need to
-			  enable the viewer/editor frame preloading in the advanced
-			  section of the XRP options. Usually these are only loaded when
-			  needed, but frame moving addons may require them to be present
-			  at start.
-
-	- Bugfixes:
-
-		- Attached minimap button positioning has been reset and the default
-		  changed to hopefully avoid being obstructed by the Garrison button.
-
-		- Roleplay names will now be used in channel leave/join messages, if
-		  they are enabled for that channel.
-
-		- Some mage water elementals should no longer be referred to as "MT -
-		  Water Elemental", instead of the proper "Elemental" in the tooltip.
-
-		- Instances of "Character is not found." errors should be reduced or
-		  eliminated.
-
-		- Issues with profile swapping for non-Worgen druids have been fixed.
-
-		- Numerous other minor bugs have been fixed.
-
-		- From 6.0.3.0: Disconnects should stop now again. I'm an idiot.
+	- The full list of changes for 6.0.3.0 can be found in the notes for that
+	  release or 6.0.3.1.
