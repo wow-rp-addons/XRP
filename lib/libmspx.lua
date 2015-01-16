@@ -204,7 +204,7 @@ do
 			self.char[name].buffer[channel] = nil
 		end,
 		["GMSP"] = function(self, name, message, channel)
-			local target, prefix, message = message:match(message:find("\30", nil, true) and "^(.+)\30([\1\2\3]?)(.+)$" or "^(.-)([\1\2\3]?)(.+)$")
+			local target, prefix, message = message:match(message:find("\30", nil, true) and "^(.-)\30([\1\2\3]?)(.+)$" or "^(.-)([\1\2\3]?)(.+)$")
 			if target ~= "" and target ~= self.player then return end
 			handlers[prefix ~= "" and ("MSP%s"):format(prefix) or "MSP"](self, name, message, channel)
 		end,
