@@ -229,9 +229,32 @@
 			<KeyValue key="subText" value="Configure the core XRP options, dealing with viewing, display, and caching. Note that some of these options may require a UI reload (/reload) to fully enable/disable in some cases."/>
 		</KeyValues>
 		<Frames>
-			<CheckButton parentKey="Cursor" inherits="XRPOptionsCheckboxTemplate">
+			<CheckButton parentKey="MovableViewer" inherits="XRPOptionsCheckboxTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.SubText" relativePoint="BOTTOMLEFT" x="-2" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="textString" value="Enable profile viewer movement via click/drag on title bar"/>
+					<KeyValue key="xrpTable" value="display"/>
+					<KeyValue key="xrpSetting" value="movableViewer"/>
+					<KeyValue key="defaultValue" value="false" type="boolean"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="CloseOnEscapeViewer" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.MovableViewer" relativePoint="BOTTOMLEFT" x="24" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="textString" value="Close profile viewer by pressing escape"/>
+					<KeyValue key="dependsOn" value="MovableViewer"/>
+					<KeyValue key="xrpTable" value="display"/>
+					<KeyValue key="xrpSetting" value="closeOnEscapeViewer"/>
+					<KeyValue key="defaultValue" value="true" type="boolean"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="Cursor" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.CloseOnEscapeViewer" relativePoint="BOTTOMLEFT" x="-24" y="-8"/>
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="textString" value="Display book icon next to cursor if character has a roleplay profile"/>
@@ -638,32 +661,9 @@
 					<KeyValue key="defaultValue" value="false" type="boolean"/>
 				</KeyValues>
 			</CheckButton>
-			<CheckButton parentKey="PreloadViewer" inherits="XRPOptionsCheckboxTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.PreloadEditor" relativePoint="BOTTOMLEFT" y="-8"/>
-				</Anchors>
-				<KeyValues>
-					<KeyValue key="textString" value="Preload viewer frame (for frame-moving addons)"/>
-					<KeyValue key="xrpTable" value="display"/>
-					<KeyValue key="xrpSetting" value="preloadViewer"/>
-					<KeyValue key="defaultValue" value="false" type="boolean"/>
-				</KeyValues>
-			</CheckButton>
-			<CheckButton parentKey="MovableViewer" inherits="XRPOptionsCheckboxTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.PreloadViewer" relativePoint="BOTTOMLEFT" x="24" y="-8"/>
-				</Anchors>
-				<KeyValues>
-					<KeyValue key="textString" value="Make viewer movable by default"/>
-					<KeyValue key="dependsOn" value="PreloadViewer"/>
-					<KeyValue key="xrpTable" value="display"/>
-					<KeyValue key="xrpSetting" value="movableViewer"/>
-					<KeyValue key="defaultValue" value="false" type="boolean"/>
-				</KeyValues>
-			</CheckButton>
 			<Frame name="XRPOptionsCoreCacheTime" parentKey="Time" inherits="XRPOptionsDropDownTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.MovableViewer" relativePoint="BOTTOMLEFT" x="-39" y="-8"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.PreloadEditor" relativePoint="BOTTOMLEFT" x="-15" y="-8"/>
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="labelString" value="Cache expiry time"/>

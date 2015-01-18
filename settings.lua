@@ -20,7 +20,7 @@ local addonName, xrpPrivate = ...
 xrpPrivate.settingsToggles = {}
 
 local DATA_VERSION = 3
-local DATA_VERSION_ACCOUNT = 6
+local DATA_VERSION_ACCOUNT = 7
 
 local DEFAULT_SETTINGS = {
 	cache = {
@@ -41,10 +41,10 @@ local DEFAULT_SETTINGS = {
 		replacements = true,
 	},
 	display = {
+		closeOnEscapeViewer = true,
 		height = "ft",
 		movableViewer = false,
 		preloadEditor = false,
-		preloadViewer = false,
 		weight = "lb",
 	},
 	interact = {
@@ -212,6 +212,18 @@ local upgradeAccountVars = {
 			settings.tooltip.norprace = nil
 		end
 		settings.display.movableViewer = DEFAULT_SETTINGS.display.movableViewer
+	end,
+	[7] = function() -- 6.0.3.3
+		if xrpAccountSaved.settings.display.preloadViewer == true and xrpAccountSaved.settings.display.movableViewer == true then
+			-- Preserve current behaviour for users with viewer made movable.
+			xrpAccountSaved.settings.display.closeOnEscapeViewer = false
+		else
+			-- Make sure movable viewer is disabled if it would be disabled
+			-- for them (i.e., preload disabled or movable disabled).
+			xrpAccountSaved.settings.display.movableViewer = false
+			xrpAccountSaved.settings.display.closeOnEscapeViewer = DEFAULT_SETTINGS.display.closeOnEscapeViewer
+		end
+		xrpAccountSaved.settings.display.preloadViewer = nil
 	end,
 }
 

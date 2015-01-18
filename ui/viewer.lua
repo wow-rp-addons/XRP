@@ -17,7 +17,7 @@
 
 local addonName, xrpPrivate = ...
 
-local viewer
+local viewer = XRPViewer
 
 local Load, FIELD
 do
@@ -159,27 +159,17 @@ local function Menu_PreClick(self, button, down)
 	end
 end
 
-local function CreateViewer(isPreload)
-	local frame = CreateFrame("Frame", "XRPViewer", UIParent, "XRPViewerTemplate")
-	frame.Menu.baseMenuList = Menu_baseMenuList
-	frame.Menu:SetScript("PreClick", Menu_PreClick)
-	xrp:HookEvent("FIELD", FIELD)
-	xrp:HookEvent("RECEIVE", RECEIVE)
-	xrp:HookEvent("NOCHANGE", RECEIVE)
-	xrp:HookEvent("CHUNK", CHUNK)
-	xrp:HookEvent("FAIL", FAIL)
-	if isPreload then
-		xrpPrivate.settingsToggles.display.movableViewer(xrpPrivate.settings.display.movableViewer, frame)
-	end
-	return frame
-end
+viewer.Menu.baseMenuList = Menu_baseMenuList
+viewer.Menu:SetScript("PreClick", Menu_PreClick)
+xrp:HookEvent("FIELD", FIELD)
+xrp:HookEvent("RECEIVE", RECEIVE)
+xrp:HookEvent("NOCHANGE", RECEIVE)
+xrp:HookEvent("CHUNK", CHUNK)
+xrp:HookEvent("FAIL", FAIL)
 
 function xrp:View(player)
 	local isUnit = UnitExists(player)
 	if isUnit and not UnitIsPlayer(player) then return end
-	if not viewer then
-		viewer = CreateViewer()
-	end
 	if not player then
 		if viewer:IsShown() then
 			HideUIPanel(viewer)
@@ -213,48 +203,52 @@ end
 if not xrpPrivate.settingsToggles.display then
 	xrpPrivate.settingsToggles.display = {}
 end
-xrpPrivate.settingsToggles.display.preloadViewer = function(setting)
-	if setting then
-		if not viewer then
-			viewer = CreateViewer(true)
-		else
-			xrpPrivate.settingsToggles.display.movableViewer(xrpPrivate.settings.display.movableViewer)
-		end
-	elseif viewer then
-		xrpPrivate.settingsToggles.display.movableViewer(false)
-	end
-end
-xrpPrivate.settingsToggles.display.movableViewer = function(setting, frame)
-	if not viewer and not frame then return end
-	if not frame then
-		frame = viewer
-	end
-	local wasVisible = frame:IsVisible()
+xrpPrivate.settingsToggles.display.movableViewer = function(setting)
+	local wasVisible = viewer:IsVisible()
 	if wasVisible then
-		HideUIPanel(frame)
+		HideUIPanel(viewer)
 	end
 	if setting then
-		frame:SetAttribute("UIPanelLayout-defined", false)
-		frame:SetAttribute("UIPanelLayout-enabled", false)
-		frame:SetMovable(true)
-		frame:SetClampedToScreen(true)
-		frame:SetFrameStrata("HIGH")
-		if not frame:GetPoint() then
-			frame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 50, -125)
+		viewer:SetAttribute("UIPanelLayout-defined", false)
+		viewer:SetAttribute("UIPanelLayout-enabled", false)
+		viewer:SetMovable(true)
+		viewer:SetClampedToScreen(true)
+		viewer:SetFrameStrata("HIGH")
+		if not viewer:GetPoint() then
+			viewer:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 50, -125)
 		end
-		if not frame.TitleRegion then
-			frame.TitleRegion = frame:CreateTitleRegion()
+		if not viewer.TitleRegion then
+			viewer.TitleRegion = viewer:CreateTitleRegion()
 		end
-		frame.TitleRegion:SetAllPoints(frame:GetName() .. "TitleBg")
-	elseif frame.TitleRegion ~= nil then
-		frame:SetAttribute("UIPanelLayout-defined", true)
-		frame:SetAttribute("UIPanelLayout-enabled", true)
-		frame:SetMovable(false)
-		frame:SetClampedToScreen(false)
-		frame:SetFrameStrata("MEDIUM")
-		frame.TitleRegion:SetPoint("BOTTOMLEFT", frame, "TOPLEFT")
+		viewer.TitleRegion:SetAllPoints(viewer:GetName() .. "TitleBg")
+		xrpPrivate.settingsToggles.display.closeOnEscapeViewer(xrpPrivate.settings.display.closeOnEscapeViewer)
+	elseif viewer.TitleRegion then
+		viewer:SetAttribute("UIPanelLayout-defined", true)
+		viewer:SetAttribute("UIPanelLayout-enabled", true)
+		viewer:SetMovable(false)
+		viewer:SetClampedToScreen(false)
+		viewer:SetFrameStrata("MEDIUM")
+		viewer.TitleRegion:SetPoint("BOTTOMLEFT", viewer, "TOPLEFT")
+		xrpPrivate.settingsToggles.display.closeOnEscapeViewer(false)
 	end
 	if wasVisible then
 		ShowUIPanel(viewer)
+	end
+end
+local closeOnEscape
+xrpPrivate.settingsToggles.display.closeOnEscapeViewer = function(setting)
+	if setting and viewer.TitleRegion then
+		if not closeOnEscape then
+			UISpecialFrames[#UISpecialFrames + 1] = "XRPViewer"
+			closeOnEscape = true
+		end
+	elseif closeOnEscape then
+		for i, frame in ipairs(UISpecialFrames) do
+			if frame == "XRPViewer" then
+				table.remove(UISpecialFrames, i)
+				break
+			end
+		end
+		closeOnEscape = false
 	end
 end
