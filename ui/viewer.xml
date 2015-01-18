@@ -107,7 +107,7 @@
 			</EditBox>
 		</ScrollChild>
 	</ScrollFrame>
-	<Frame name="XRPViewerTemplate" inherits="ButtonFrameTemplate" hidden="true" enableMouse="true" virtual="true">
+	<Frame name="XRPViewer" parent="UIParent" inherits="ButtonFrameTemplate" hidden="true" enableMouse="true">
 		<Size x="439" y="525"/>
 		<Layers>
 			<Layer level="OVERLAY">
