@@ -102,6 +102,16 @@ local function RECEIVE(event, name)
 	end
 end
 
+local function UPDATE(event, field)
+	if viewer.current.name == xrpPrivate.playerWithRealm then
+		if field then
+			FIELD("FIELD", xrpPrivate.playerWithRealm, field)
+		else
+			Load(viewer.current)
+		end
+	end
+end
+
 local function CHUNK(event, name, chunk, totalchunks)
 	if viewer.current.name == name then
 		local XC = viewer.XC:GetText()
@@ -164,6 +174,7 @@ viewer.Menu:SetScript("PreClick", Menu_PreClick)
 xrp:HookEvent("FIELD", FIELD)
 xrp:HookEvent("RECEIVE", RECEIVE)
 xrp:HookEvent("NOCHANGE", RECEIVE)
+xrp:HookEvent("UPDATE", UPDATE)
 xrp:HookEvent("CHUNK", CHUNK)
 xrp:HookEvent("FAIL", FAIL)
 
