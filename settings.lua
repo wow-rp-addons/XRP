@@ -434,7 +434,9 @@ function xrpPrivate:CacheTidy(timer)
 	local now = time()
 	local before = now - timer
 	for name, data in pairs(xrpCache) do
-		if not data.bookmark and data.lastReceive < before then
+		if type(data.lastReceive) ~= "number" then
+			data.lastReceive = now
+		elseif not data.bookmark and data.lastReceive < before then
 			if not data.hide then
 				xrpCache[name] = nil
 			else

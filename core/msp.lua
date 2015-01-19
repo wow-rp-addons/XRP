@@ -276,6 +276,7 @@ do
 				xrpCache[name] = {
 					fields = {},
 					versions = {},
+					lastReceive = time(),
 				}
 				-- This is the only place a cache table is created by XRP. If
 				-- we already have any data about them in the gCache (unit
