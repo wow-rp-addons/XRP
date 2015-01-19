@@ -72,6 +72,7 @@ msp.cache = setmetatable({}, {
 		return self[name]
 	end,
 })
+msp.groupOut = {}
 
 function msp:UpdateBNList()
 	for i = 1, select(2, BNGetNumFriends()) do
@@ -108,6 +109,14 @@ do
 		-- Most complex function ever.
 		function AddFilter(name)
 			filter[name] = GetTime()
+		end
+	end
+
+	local function GroupSent(fields)
+		if not fields or type(fields) ~= "table" then return end
+		for i, field in ipairs(fields) do
+			--print("Cleared:", field)
+			msp.groupOut[field] = nil
 		end
 	end
 
@@ -151,28 +160,114 @@ do
 		end
 		if channel == "BN" then return end
 
-		local isGroup = channel ~= "WHISPER" and UnitRealmRelationship(Ambiguate(name, "none")) == LE_REALM_RELATION_COALESCED
-		channel = channel ~= "GAME" and channel or isGroup and (IsInGroup(LE_PARTY_CATEGORY_INSTANCE) and "INSTANCE_CHAT" or "RAID") or "WHISPER"
-		local prepend = isGroup and isRequest and name .. "\30" or ""
-		local queue = isGroup and "XRP-GROUP" or "XRP-" .. name
-		local callback = not isGroup and AddFilter or nil
-		local chunkSize = 255 - #prepend
+		if channel == "WHISPER" or UnitRealmRelationship(Ambiguate(name, "none")) ~= LE_REALM_RELATION_COALESCED then
+			local queue = "XRP-" .. name
+			if #data <= 255 then
+				libbw:SendAddonMessage("MSP", data, "WHISPER", name, isRequest and "ALERT" or "NORMAL", queue, AddFilter, name)
+			else
+				-- XC is most likely to add five or six extra characters, will
+				-- not add less than five, and only adds seven or more if the
+				-- profile is over 25000 characters or so. So let's say six.
+				data = ("XC=%u\1%s"):format(((#data + 6) / 255) + 1, data)
 
-		if #data <= chunkSize then
-			libbw:SendAddonMessage(not isGroup and "MSP" or "GMSP", prepend .. data, channel, name, isRequest and "ALERT" or "NORMAL", queue, callback, name)
-		else
-			chunkSize = isGroup and chunkSize - 1 or chunkSize
-			-- XC is most likely to add five or six extra characters, will
-			-- not add less than five, and only adds seven or more if the
-			-- profile is over 25000 characters or so. So let's say six.
-			data = ("XC=%u\1%s"):format(((#data + 6) / chunkSize) + 1, data)
-			libbw:SendAddonMessage(not isGroup and "MSP\1" or "GMSP", (isGroup and "%s\1%s" or "%s%s"):format(prepend, data:sub(1, chunkSize)), channel, name, "BULK", queue, callback, name)
-			local position = chunkSize + 1
-			while position + chunkSize <= #data do
-				libbw:SendAddonMessage(not isGroup and "MSP\2" or "GMSP", (isGroup and "%s\2%s" or "%s%s"):format(prepend, data:sub(position, position + chunkSize - 1)), channel, name, "BULK", queue, callback, name)
-				position = position + chunkSize
+				libbw:SendAddonMessage("MSP\1", data:sub(1, 255), "WHISPER", name, "BULK", queue, AddFilter, name)
+				local position = 256
+				while position + 255 <= #data do
+
+					libbw:SendAddonMessage("MSP\2", data:sub(position, position + 254), "WHISPER", name, "BULK", queue, AddFilter, name)
+					position = position + 255
+				end
+				libbw:SendAddonMessage("MSP\3", data:sub(position), "WHISPER", name, "BULK", queue, AddFilter, name)
 			end
-			libbw:SendAddonMessage(not isGroup and "MSP\3" or "GMSP", (isGroup and "%s\3%s" or "%s%s"):format(prepend, data:sub(position)), channel, name, "BULK", queue, callback, name)
+		else -- GMSP
+			channel = channel ~= "GAME" and channel or IsInGroup(LE_PARTY_CATEGORY_INSTANCE) and "INSTANCE_CHAT" or "RAID"
+			local prepend = isRequest and name .. "\30" or ""
+			local chunkSize = 255 - #prepend
+
+			if #data <= chunkSize then
+				libbw:SendAddonMessage("GMSP", prepend .. data, channel, name, isRequest and "ALERT" or "NORMAL", "XRP-GROUP")
+			else
+				chunkSize = chunkSize - 1
+
+				-- XC is most likely to add five or six extra characters, will
+				-- not add less than five, and only adds seven or more if the
+				-- profile is over 25000 characters or so. So let's say six.
+				data = ("XC=%u\1%s"):format(((#data + 6) / chunkSize) + 1, data)
+
+				-- Which fields are in which messages is tracked so that they
+				-- won't get re-queued (to the XRP-GROUP single queue) while
+				-- they're still being transmitted.
+				local chunkFields, nextField
+				local chunk = data:sub(1, chunkSize)
+				if not isRequest then
+					chunkFields = {}
+					for field in chunk:gmatch("(%u%u)[^\1]*\1") do
+						if field ~= "XC" then
+							chunkFields[#chunkFields + 1] = field
+							self.groupOut[field] = true
+							--print("Added:", field)
+						end
+					end
+					nextField = chunk:match("\1(%u%u?)[^\1]*$") or chunk:match("^(%u%u)")
+				end
+
+				libbw:SendAddonMessage("GMSP", ("%s\1%s"):format(prepend, chunk), channel, name, "BULK", "XRP-GROUP", chunkFields and GroupSent or nil, chunkFields)
+				chunkFields = nil
+
+				local position = chunkSize + 1
+				while position + chunkSize <= #data do
+					chunk = data:sub(position, position + chunkSize - 1)
+
+					if not isRequest then
+						local hasEnd = chunk:find("\1", nil, true)
+						if nextField then
+							if #nextField == 1 then
+								nextField = nextField .. chunk:sub(1, 1)
+							end
+							if hasEnd then
+								chunkFields = { nextField }
+								self.groupOut[nextField] = true
+								--print("Added next:", nextField)
+								nextField = nil
+							end
+						end
+						if hasEnd then
+							chunkFields = chunkFields or {}
+							for field in chunk:match("^[^\1]-\1(.*)"):gmatch("(%u%u)[^\1]*\1") do
+								chunkFields[#chunkFields + 1] = field
+								self.groupOut[field] = true
+								--print("Added:", field)
+							end
+						end
+						nextField = nextField or chunk:match("\1(%u%u?)[^\1]*$") or chunk:match("^(%u%u)")
+					end
+
+					libbw:SendAddonMessage("GMSP", ("%s\2%s"):format(prepend, chunk), channel, name, "BULK", "XRP-GROUP", chunkFields and GroupSent or nil, chunkFields)
+					chunkFields = nil
+					position = position + chunkSize
+				end
+
+				chunk = data:sub(position)
+
+				if not isRequest then
+					if nextField then
+						if #nextField == 1 then
+							nextField = nextField .. chunk:sub(1, 1)
+						end
+						chunkFields = { nextField }
+						self.groupOut[nextField] = true
+						--print("Added next:", nextField)
+					end
+					chunkFields = chunkFields or {}
+					for field in chunk:gmatch("\1(%u%u)[^\1]*") do
+						chunkFields[#chunkFields + 1] = field
+						self.groupOut[field] = true
+						--print("Added:", field)
+					end
+				end
+
+				libbw:SendAddonMessage("GMSP", ("%s\3%s"):format(prepend, chunk), channel, name, "BULK", "XRP-GROUP", chunkFields and GroupSent or nil, chunkFields)
+			end
 		end
 	end
 end
@@ -225,10 +320,10 @@ do
 			if isGroup then
 				-- If it's in GMSP, ignore every 2s to try and catch
 				-- simultaneous requests (such as from names-in-chat).
-				if requestTime.GROUP[field] and requestTime.GROUP[field] > now then
+				if self.groupOut[field] or (requestTime.GROUP[field] and requestTime.GROUP[field] > now) then
 					return nil
 				end
-				requestTime.GROUP[field] = now + 2
+				requestTime.GROUP[field] = now + 2.5
 			end
 			if requestTime[name][field] and requestTime[name][field] > now then
 				requestTime[name][field] = now + 5
