@@ -41,7 +41,7 @@
 						<Anchor point="TOPLEFT" relativeKey="$parent.Version" relativePoint="BOTTOMLEFT" y="-15"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="Copyright" inherits="GameFontWhite" text="(C) 2014 Bor Blasthammer &lt;bor@blasthammer.net&gt;">
+				<FontString parentKey="Copyright" inherits="GameFontWhite" text="(C) 2014-2015 Bor Blasthammer &lt;bor@blasthammer.net&gt;">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.CopyHeader" relativePoint="BOTTOMLEFT" y="-10"/>
 					</Anchors>
