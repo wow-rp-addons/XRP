@@ -1,42 +1,29 @@
-6.0.3.2 (2015-01-05):
+6.0.3.3 (2015-01-19):
 
 	- This release only includes minor changes and bugfixes. Please see the
 	  section below these notes if you are upgrading from 6.0.2.1 or earlier.
 
-	- New: There is now a setting in the Advanced section of XRP's options to
-	  make the Viewer movable by clicking/dragging its title bar. This option
-	  requires the frame be preloaded, also set in the Advanced section.
+	- The option for a movable profile viewer has been moved to a more
+	  prominent location.
 
-	- Bug fix: Profiles with no default character status set (set to "(None)")
-	  will no longer trigger an error when clicking the minimap button.
+	- When freely movable, there is now an option to close the profile viewer
+	  by pressing Escape.
 
-	- Bug fix: Certain settings will no longer revert to default when
-	  upgrading from 6.0.2.1, and will be set to your pre-6.0.3.0 selection.
-	  If you had intentionally changed those settings since upgrading, you may
-	  need to toggle them again.
+	- Bug fix: A rare circumstance that could cause a Lua error at start has
+	  been fixed.
 
-	- Fix: An interaction with Scrap (and potentially with other addons)
-	  producing an error in some circumstances has been fixed.
-
-	- Bandwidth usage in crossrealm party/raid situations with multiple XRP
-	  users from multiple different realms should be slightly reduced.
-
-	- Profile data requests may occur more quickly in high-bandwidth
-	  situations.
-
-	- Raid warnings will now show roleplay names, if roleplay names are
-	  enabled for raid.
-
-	- LibMSP compatibility layer has been updated to work better.
+	- Protocol: GMSP bandwidth usage has been reduced in some circumstances.
+	  Fields will no longer re-send until they've finished being sent in the
+	  first place, in addition to the other precautions.
 
 For 6.0.2.1 or earlier users:
 
 	- !! IMPORTANT !!
 	  ===============
-	  Please read the below three points prior to upgrading from XRP 6.0.2.1
-	  or earlier. There are a large number of changes since that version of
-	  XRP, and the change to the folder setup may require a bit more attention
-	  when upgrading than usual.
+	  Please read the below points prior to upgrading from XRP 6.0.2.1 or
+	  earlier. There are a large number of changes since that version of XRP,
+	  and the change to the folder setup may require a bit more attention when
+	  upgrading than usual.
 
 	- Old versions of XRP should be removed from the Interface/AddOns folder
 	  prior to upgrading from 6.0.2.1 or lower (automated installers should
@@ -51,17 +38,6 @@ For 6.0.2.1 or earlier users:
 		- If you were previously disabling chat names or tooltip replacements
 		  by disabling those modules as addons, you can now disable them from
 		  the XRP interface options panel instead.
-
-	- New stuff:
-
-		- Support for RP profiles over Battle.net and crossrealm party/raid
-		  has been added. This is supported in XRP 6.0.3.0+ currently, with an
-		  implementation usable by authors of other addons currently being
-		  tested.
-
-		- ChatThrottleLib has been replaced by a new bandwidth library. If you
-		  encounter any errors related to ChatThrottleLib (or libbw) after
-		  upgrading, please report them immediately.
 
 	- The full list of changes for 6.0.3.0 can be found in the notes for that
 	  release or 6.0.3.1.
