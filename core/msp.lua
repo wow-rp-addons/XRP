@@ -96,7 +96,7 @@ do
 			if not name or name == "" or not filter[name] then
 				return false
 			end
-			local doFilter = filter[name] > (GetTime() - 2.500)
+			local doFilter = filter[name] > GetTime()
 			if not doFilter then
 				filter[name] = nil
 			else
@@ -108,7 +108,7 @@ do
 
 		-- Most complex function ever.
 		function AddFilter(name)
-			filter[name] = GetTime()
+			filter[name] = GetTime() + 2.500
 		end
 	end
 
@@ -420,6 +420,7 @@ msp.handlers = {
 		elseif not self.cache[name].time.TT then
 			-- If we don't have any info for them and haven't requested the
 			-- tooltip in this session, also send a tooltip request
+			msp.cache[name].time.TT = GetTime()
 			self:Send(name, TT_REQ, channel, true)
 		end
 	end,
