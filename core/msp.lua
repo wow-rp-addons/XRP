@@ -413,8 +413,12 @@ msp.handlers = {
 			xrpCache[name].lastReceive = time()
 		elseif not self.cache[name].time.TT then
 			-- If we don't have any info for them and haven't requested the
-			-- tooltip in this session, also send a tooltip request
-			msp.cache[name].time.TT = GetTime()
+			-- tooltip in this session, also send a tooltip request.
+			local now = GetTime()
+			msp.cache[name].time.TT = now
+			for field, isTT in pairs(TT_FIELDS) do
+				msp.cache[name].time[field] = now
+			end
 			self:Send(name, TT_REQ, channel, true)
 		end
 	end,
@@ -682,6 +686,11 @@ function xrpPrivate:Request(name, fields)
 				out[#out + 1] = ("?%s%u"):format(field, xrpCache[name].versions[field])
 			end
 			msp.cache[name].time[field] = now
+			if field == "TT" then
+				for ttField, isTT in pairs(TT_FIELDS) do
+					msp.cache[name].time[ttField] = now
+				end
+			end
 		end
 	end
 	if #out > 0 then
