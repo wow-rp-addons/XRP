@@ -58,6 +58,8 @@ if not libbw then
 		GAME = CreateFrame("Frame"), -- Handles SendAddonMessage/etc.
 		hooked = false,
 	}
+	libbw.BN:Hide()
+	libbw.GAME:Hide()
 end
 
 libbw.version = LIBBW_VERSION
@@ -446,7 +448,6 @@ libbw.BN.timer = 0
 libbw.BN.Enqueue = libbw_Enqueue
 libbw.BN.Despool = libbw_Despool
 libbw.BN.UpdateAvail = libbw_UpdateAvail
-libbw.BN.OnUpdate = libbw_OnUpdate -- Allows for running without framedraws.
 libbw.BN:SetScript("OnUpdate", libbw_OnUpdate)
 libbw.BN:SetScript("OnEvent", libbw_OnEvent)
 libbw.BN:RegisterEvent("PLAYER_ENTERING_WORLD")
@@ -455,10 +456,14 @@ libbw.GAME.timer = 0
 libbw.GAME.Enqueue = libbw_Enqueue
 libbw.GAME.Despool = libbw_Despool
 libbw.GAME.UpdateAvail = libbw_UpdateAvail
-libbw.GAME.OnUpdate = libbw_OnUpdate -- Allows for running without framedraws.
 libbw.GAME:SetScript("OnUpdate", libbw_OnUpdate)
 libbw.GAME:SetScript("OnEvent", libbw_OnEvent)
 libbw.GAME:RegisterEvent("PLAYER_ENTERING_WORLD")
+
+if libfakedraw then
+	libfakedraw:RegisterFrame(libbw.BN)
+	libfakedraw:RegisterFrame(libbw.GAME)
+end
 
 -- The following code provides a compatibility layer for addons using
 -- ChatThrottleLib. It won't load (and libbw will feed messages into CTL) if
@@ -468,6 +473,9 @@ local CTL_VERSION = 23
 if ChatThrottleLib and not ChatThrottleLib.libbw and ChatThrottleLib.version > CTL_VERSION then
 	-- Newer CTL already loaded, route through it.
 	libbw.GAME.ctl = true
+	if libfakedraw then -- And register it for fakedraws.
+		libfrakedraw:RegisterFrame(ChatThrottleLib.Frame)
+	end
 	return
 end
 
@@ -522,9 +530,16 @@ setmetatable(ChatThrottleLib, {
 		end
 	end,
 	__newindex = function(self, key, value)
-		if key == "version" and value > CTL_VERSION then
+		if key == "version" then
 			self.libbw = nil
 			libbw.GAME.ctl = true
+			if libfakedraw then -- Register CTL for fakedraws.
+				if not self.Frame then
+					self.Frame = CreateFrame("Frame")
+					self.Frame:Hide()
+				end
+				libfakedraw:RegisterFrame(ChatThrottleLib.Frame)
+			end
 			setmetatable(self, nil)
 		end
 		rawset(self, key, value)
