@@ -37,6 +37,9 @@ else
 	StaticPopup_Show("XRP_MSP_DISABLE", msp_RPAddOn, msp_RPAddOn)
 end
 
+-- Protocol version two indicates Battle.net support.
+xrpPrivate.msp = 2
+
 -- Fields in tooltip.
 local TT_FIELDS = { VP = true, VA = true, NA = true, NH = true, NI = true, NT = true, RA = true, RC = true, FR = true, FC = true, CU = true }
 
@@ -72,18 +75,8 @@ msp.cache = setmetatable({}, {
 		return self[name]
 	end,
 })
+-- Group outgoing field tracking.
 msp.groupOut = {}
-
-function msp:UpdateBNList()
-	for i = 1, select(2, BNGetNumFriends()) do
-		for j = 1, BNGetNumFriendToons(i) do
-			local active, toonName, client, realmName, realmID, faction, race, class, blank, zoneName, level, gameText, broadcastText, broadcastTime, isConnected, toonID = BNGetFriendToonInfo(i, j)
-			if client == "WoW" then
-				self.bnet[xrp:Name(toonName, realmName)] = toonID
-			end
-		end
-	end
-end
 
 do
 	local AddFilter
@@ -583,6 +576,17 @@ msp:SetScript("OnEvent", function(self, event, prefix, message, channel, sender)
 	end
 end)
 
+function msp:UpdateBNList()
+	for i = 1, select(2, BNGetNumFriends()) do
+		for j = 1, BNGetNumFriendToons(i) do
+			local active, toonName, client, realmName, realmID, faction, race, class, blank, zoneName, level, gameText, broadcastText, broadcastTime, isConnected, toonID = BNGetFriendToonInfo(i, j)
+			if client == "WoW" then
+				self.bnet[xrp:Name(toonName, realmName)] = toonID
+			end
+		end
+	end
+end
+
 if not disabled then
 	for prefix, handler in pairs(msp.handlers) do
 		RegisterAddonMessagePrefix(prefix)
@@ -625,8 +629,6 @@ end)
 msp:Hide()
 
 libfakedraw:RegisterFrame(msp)
-
-xrpPrivate.msp = 2
 
 function xrpPrivate:QueueRequest(name, field)
 	if disabled or name == xrpPrivate.playerWithRealm or xrp:Ambiguate(name) == UNKNOWN or msp.cache[name].time[field] and GetTime() < msp.cache[name].time[field] + FIELD_TIMES[field] then
