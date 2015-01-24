@@ -215,6 +215,7 @@ do
 								messageFields[#messageFields + 1] = field
 							end
 							self.groupOut[field] = true
+							--print("Added:", field)
 						end
 					end
 				end
@@ -591,7 +592,7 @@ do
 	msp.inGroup = {}
 end
 
-function msp:OnUpdate(elapsed)
+msp:SetScript("OnUpdate", function(self, elapsed)
 	if next(self.request) then
 		for name, fields in pairs(self.request) do
 			xrpPrivate:Request(name, fields)
@@ -599,9 +600,10 @@ function msp:OnUpdate(elapsed)
 		end
 	end
 	self:Hide()
-end
+end)
 msp:Hide()
-msp:SetScript("OnUpdate", msp.OnUpdate)
+
+libfakedraw:RegisterFrame(msp)
 
 xrpPrivate.msp = 2
 
@@ -665,74 +667,3 @@ function xrpPrivate:Request(name, fields)
 	end
 	return false
 end
-
--- The following is a workaround for the fact that OnUpdate scripts won't fire
--- when the user is tabbed out in fullscreen (non-windowed) mode. It uses some
--- common events to fake running OnUpdates if there hasn't been any recent
--- framedraws to keep sending/receiving properly while tabbed out (albeit with
--- the possibility of some delay).
-local function CreateFSFrame()
-	local frame = CreateFrame("Frame")
-	frame:Hide()
-	frame:SetScript("OnShow", function(self)
-		local now = GetTime()
-		self.lastDraw = now
-		self.lastMSP = now
-		self.lastBWBN = now
-		self.lastBWGame = now
-	end)
-	frame:SetScript("OnUpdate", function(self, elapsed)
-		self.lastDraw = self.lastDraw + elapsed
-	end)
-	frame:SetScript("OnEvent", function(self, event)
-		local now = GetTime()
-		if self.lastDraw < now - 5 then
-			-- No framedraw for 5+ seconds.
-			if msp:IsVisible() then
-				msp:OnUpdate(now - self.lastMSP)
-				self.lastMSP = now
-			end
-			if libbw.BN:IsVisible() then
-				libbw.BN:OnUpdate(now - self.lastBWBN)
-				self.lastBWBN = now
-			end
-			if libbw.GAME:IsVisible() then
-				libbw.GAME:OnUpdate(now - self.lastBWGame)
-				self.lastBWGame = now
-			end
-		end
-	end)
-	return frame
-end
-
-local fsFrame
-local function FullscreenCheck()
-	if GetCVar("gxWindow") == "0" then
-		-- Is true fullscreen.
-		fsFrame = fsFrame or CreateFSFrame()
-		fsFrame:Show()
-		-- These events are relatively common while idling, so are used to
-		-- fake OnUpdate when tabbed out.
-		fsFrame:RegisterEvent("CHAT_MSG_ADDON")
-		fsFrame:RegisterEvent("CHAT_MSG_CHANNEL")
-		fsFrame:RegisterEvent("CHAT_MSG_GUILD")
-		fsFrame:RegisterEvent("CHAT_MSG_SAY")
-		fsFrame:RegisterEvent("CHAT_MSG_EMOTE")
-		fsFrame:RegisterEvent("GUILD_ROSTER_UPDATE")
-		fsFrame:RegisterEvent("GUILD_TRADESKILL_UPDATE")
-		fsFrame:RegisterEvent("GUILD_RANKS_UPDATE")
-		fsFrame:RegisterEvent("PLAYER_GUILD_UPDATE")
-		fsFrame:RegisterEvent("COMPANION_UPDATE")
-		-- This would be nice to use, but actually having it happening
-		-- in-combat would be huge overhead.
-		--fsFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-	elseif fsFrame then
-		-- Is not true fullscreen, but the frame exists. Hide it, and
-		-- disable events.
-		fsFrame:Hide()
-		fsFrame:UnregisterAllEvents()
-	end
-end
-
-hooksecurefunc("RestartGx", FullscreenCheck)
-FullscreenCheck()
