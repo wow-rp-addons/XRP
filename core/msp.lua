@@ -329,7 +329,7 @@ do
 		elseif action == "" then
 			-- If we're stumbling through a partial (garbled) request, don't
 			-- update TT version or time. Full TT may not have been received.
-			if field == "TT" and self.cache[name].partialRequest then
+			if field == "TT" and self.cache[name].partialMessage then
 				return nil
 			end
 			-- Gave us a field.
@@ -447,24 +447,37 @@ msp.handlers = {
 	end,
 	["MSP\2"] = function(self, name, message, channel)
 		local buffer = self.cache[name][channel]
-		-- If we don't have a buffer (i.e., no prior received message),
-		-- still try to process as many full commands as we can.
+		-- If we don't have a buffer (i.e., no prior received message), still
+		-- try to process as many full commands as we can.
 		if not buffer then
 			message = message:match("^.-\1(.+)$")
 			if not message then return end
-			buffer = ""
-			self.cache[name].partialRequest = true
+			buffer = { "", partial = true }
+			self.cache[name][channel] = buffer
 		end
 		-- Only merge the contents if there's an end-of-command to process.
 		if message:find("\1", nil, true) then
-			message = (type(buffer) == "string" and buffer or table.concat(buffer)) .. message
+			if type(buffer) == "string" then
+				message = buffer .. message
+			else
+				if buffer.partial then
+					self.cache[name].partialMessage = true
+				end
+				buffer[#buffer + 1] = message
+				message = table.concat(buffer)
+			end
 			for command in message:gmatch("([^\1]+)\1") do
 				if command:find("^[^%?]") then
 					self:Process(name, command)
 					message = message:gsub(command:gsub("(%W)","%%%1") .. "\1", "")
 				end
 			end
-			self.cache[name][channel] = message
+			if self.cache[name].partialMessage then
+				self.cache[name].partialMessage = nil
+				self.cache[name][channel] = { message, partial = true }
+			else
+				self.cache[name][channel] = message
+			end
 		else
 			if type(buffer) == "string" then
 				self.cache[name][channel] = { buffer, message }
@@ -478,15 +491,23 @@ msp.handlers = {
 	end,
 	["MSP\3"] = function(self, name, message, channel)
 		local buffer = self.cache[name][channel]
-		-- If we don't have a buffer (i.e., no prior received message),
-		-- still try to process as many full commands as we can.
+		-- If we don't have a buffer (i.e., no prior received message), still
+		-- try to process as many full commands as we can.
 		if not buffer then
 			message = message:match("^.-\1(.+)$")
 			if not message then return end
 			buffer = ""
-			self.cache[name].partialRequest = true
+			self.cache[name].partialMessage = true
 		end
-		self.handlers["MSP"](self, name, (type(buffer) == "string" and buffer or table.concat(buffer)) .. message, channel)
+		if type(buffer) == "string" then
+			self.handlers["MSP"](self, name, buffer .. message, channel)
+		else
+			if buffer.partial then
+				self.cache[name].partialMessage = true
+			end
+			buffer[#buffer + 1] = message
+			self.handlers["MSP"](self, name, table.concat(buffer), channel)
+		end
 		-- CHUNK after RECEIVE would fire. Makes it easier to do something
 		-- useful when chunks == totalChunks.
 		xrpPrivate:FireEvent("CHUNK", name, (self.cache[name].chunks or 0) + 1, (self.cache[name].chunks or 0) + 1)
@@ -494,7 +515,7 @@ msp.handlers = {
 		self.cache[name].chunks = nil
 		self.cache[name].totalChunks = nil
 		self.cache[name][channel] = nil
-		self.cache[name].partialRequest = nil
+		self.cache[name].partialMessage = nil
 	end,
 	["GMSP"] = function(self, name, message, channel)
 		local target, prefix, message = message:match(message:find("\30", nil, true) and "^(.-)\30([\1\2\3]?)(.+)$" or "^(.-)([\1\2\3]?)(.+)$")
