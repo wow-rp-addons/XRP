@@ -71,8 +71,8 @@ libbw.version = LIBBW_VERSION
 -- just never sent (blocking all messages) when in-combat.
 libbw.BN.BPS = 4078
 libbw.BN.BURST = 8156
-libbw.GAME.BPS = 1100
-libbw.GAME.BURST = 3600
+libbw.GAME.BPS = 1200
+libbw.GAME.BURST = 4000
 
 -- The above defaults are tuned for safe speed. The absolute maximum without
 -- immediate issues are higher. DO NOT use these values in production, they
@@ -94,10 +94,10 @@ function libbw:BNSendGameData(presenceID, prefix, text, priorityName, fifoName, 
 	end
 
 	local length = #text
-
 	if length > 4078 then
 		error("libbw:BNSendGameData(): message length cannot exceed 4078 bytes", 2)
 	end
+	length = length + #prefix + #tostring(presenceID)
 
 	if not self.queueing and length <= self:UpdateAvail() then
 		-- Remember, there's a good reason the avail update isn't just handled
@@ -135,9 +135,12 @@ function libbw:SendAddonMessage(prefix, text, kind, target, priorityName, fifoNa
 	end
 
 	local length = #text
-
 	if length > 255 then
 		error("libbw:SendAddonMessage(): message length cannot exceed 255 bytes", 2)
+	end
+	length = length + #prefix + #kind
+	if target then
+		length = length + #tostring(target)
 	end
 
 	kind = kind:upper()
@@ -192,12 +195,16 @@ function libbw:SendChatMessage(text, kind, languageID, target, priorityName, fif
 	end
 
 	local length = #text
-
 	if length > 255 then
 		error("libbw:SendChatMessage(): message length cannot exceed 255 bytes", 2)
 	end
-
-	kind = kind:upper()
+	if target then
+		length = length + #tostring(target)
+	end
+	if kind then
+		length = length + #kind
+		kind = kind:upper()
+	end
 
 	if self.ctl and not ChatThrottleLib.libbw then
 		-- CTL likes to drop RAID messages, despite the game falling back
@@ -243,17 +250,26 @@ end
 function libbw.Hook_BNSendGameData(presenceID, prefix, text)
 	local self = libbw.BN
 	if self.sending then return end
-	self.avail = self.avail - #text
+	self.avail = self.avail - #text - #prefix
 end
 function libbw.Hook_SendAddonMessage(prefix, text, kind, target)
 	local self = libbw.GAME
 	if self.sending then return end
-	self.avail = self.avail - #text
+	self.avail = self.avail - #text - #kind - #prefix
+	if target then
+		self.avail = self.avail - #tostring(target)
+	end
 end
 function libbw.Hook_SendChatMessage(text, kind, languageID, target)
 	local self = libbw.GAME
 	if self.sending then return end
 	self.avail = self.avail - #text
+	if kind then
+		self.avail = self.avail - #kind
+	end
+	if target then
+		self.avail = self.avail - #tostring(target)
+	end
 end
 
 if not libbw.hooked then
