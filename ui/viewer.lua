@@ -179,31 +179,37 @@ xrp:HookEvent("CHUNK", CHUNK)
 xrp:HookEvent("FAIL", FAIL)
 
 function xrp:View(player)
-	local isUnit = UnitExists(player)
-	if isUnit and not UnitIsPlayer(player) then return end
-	if not player then
-		if viewer:IsShown() then
-			HideUIPanel(viewer)
-			return
+	local isUnit, character
+	if type(player) == "table" and player.name and player.fields then
+		character = player
+	else
+		if not player then
+			if viewer:IsShown() then
+				HideUIPanel(viewer)
+				return
+			end
+			if not viewer.current then
+				player = "player"
+			else
+				ShowUIPanel(viewer)
+				return
+			end
 		end
-		if not viewer.current then
-			SetPortraitTexture(viewer.portrait, "player")
-			Load(self.characters.byUnit.player)
+		isUnit = UnitExists(player)
+		if isUnit and not UnitIsPlayer(player) then return end
+		if not isUnit then
+			local unit = Ambiguate(player, "none")
+			isUnit = UnitExists(unit)
+			player = isUnit and unit or self:Name(player):gsub("^%l", string.upper)
 		end
-		ShowUIPanel(viewer)
-		return
+		character = isUnit and self.characters.byUnit[player] or self.characters.byName[player]
 	end
-	if not isUnit then
-		local unit = Ambiguate(player, "none")
-		isUnit = UnitExists(unit)
-		player = isUnit and unit or self:Name(player):gsub("^%l", string.upper)
-	end
-	local isNew = Load(isUnit and self.characters.byUnit[player] or self.characters.byName[player])
+	local isNew = Load(character)
 	if isUnit then
 		SetPortraitTexture(viewer.portrait, player)
 	elseif isNew then
-		local faction = self.characters.byName[player].fields.GF
-		SetPortraitToTexture(viewer.portrait, faction == "Alliance" and "Interface\\Icons\\INV_BannerPVP_02" or faction == "Horde" and "Interface\\Icons\\INV_BannerPVP_01" or "Interface\\Icons\\INV_Misc_Book_17")
+		local GF = character.fields.GF
+		SetPortraitToTexture(viewer.portrait, GF == "Alliance" and "Interface\\Icons\\INV_BannerPVP_02" or GF == "Horde" and "Interface\\Icons\\INV_BannerPVP_01" or "Interface\\Icons\\INV_Misc_Book_17")
 	end
 	ShowUIPanel(viewer)
 	if not viewer.panes[1]:IsVisible() then
