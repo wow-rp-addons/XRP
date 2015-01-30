@@ -20,7 +20,7 @@ local addonName, xrpPrivate = ...
 local gCache = {}
 xrpPrivate.gCache = gCache
 
-local nk = {}
+local nk, rq = {}, {}
 
 local characterMeta
 do
@@ -40,7 +40,9 @@ do
 			if gCache[name] and gCache[name][field] then
 				return gCache[name][field]
 			end
-			xrpPrivate:QueueRequest(name, field)
+			if self[rq] then
+				xrpPrivate:QueueRequest(name, field)
+			end
 			if xrpCache[name] and xrpCache[name].fields[field] then
 				return xrpCache[name].fields[field]
 			end
@@ -54,7 +56,7 @@ do
 		__index = function(self, component)
 			local name = self[nk]
 			if component == "fields" then
-				rawset(self, "fields", setmetatable({ [nk] = name }, fieldsMeta))
+				rawset(self, "fields", setmetatable({ [nk] = name, [rq] = self[rq] }, fieldsMeta))
 				return self.fields
 			elseif component == "name" then
 				return name
@@ -68,6 +70,8 @@ do
 				return xrpCache[name].hide
 			elseif component == "own" then
 				return xrpCache[name].own
+			elseif component == "date" then
+				return xrpCache[name].lastReceive
 			end
 		end,
 		__newindex = function(self, component, value)
@@ -107,19 +111,20 @@ local RACE_FACTION = {
 	Pandaren = nil, -- Can't tell faction.
 }
 
-local charTables = setmetatable({}, xrpPrivate.weakMeta)
+local requestTables = setmetatable({}, xrpPrivate.weakMeta)
+local noRequestTables = setmetatable({}, xrpPrivate.weakMeta)
 
-xrp.characters = setmetatable({
+xrp.characters = {
 	byName = setmetatable({}, {
 		__index = function(self, name)
 			name = xrp:Name(name)
 			if not name then
 				return nil
 			end
-			if not charTables[name] then
-				charTables[name] = setmetatable({ [nk] = name }, characterMeta)
+			if not requestTables[name] then
+				requestTables[name] = setmetatable({ [nk] = name, [rq] = true }, characterMeta)
 			end
-			return charTables[name]
+			return requestTables[name]
 		end,
 		__newindex = xrpPrivate.noFunc,
 		__metatable = false,
@@ -130,10 +135,9 @@ xrp.characters = setmetatable({
 			if not name then
 				return nil
 			end
-			-- These values may only update once per session (varying with
-			-- garbage collection). This could create minor confusion if
-			-- someone changes faction, race, sex, or GUID while we're still
-			-- logged in. Unlikely, but possible.
+			-- These values may only update once per session. This could create
+			-- minor confusion if someone changes faction, race, sex, or GUID
+			-- while we're still logged in. Unlikely, but possible.
 			if not gCache[name] then
 				local GU = UnitGUID(unit)
 				local class, GC, race, GR, GS = GetPlayerInfoByGUID(GU)
@@ -157,10 +161,10 @@ xrp.characters = setmetatable({
 					xrpCache[name].fields.GF = gCache[name].GF
 				end
 			end
-			if not charTables[name] then
-				charTables[name] = setmetatable({ [nk] = name }, characterMeta)
+			if not requestTables[name] then
+				requestTables[name] = setmetatable({ [nk] = name, [rq] = true }, characterMeta)
 			end
-			return charTables[name]
+			return requestTables[name]
 		end,
 		__newindex = xrpPrivate.noFunc,
 		__metatable = false,
@@ -174,10 +178,9 @@ xrp.characters = setmetatable({
 			if not name or name == "" then
 				return nil
 			end
-			-- These values may only update once per session (varying with
-			-- garbage collection). This could create minor confusion if
-			-- someone changes faction, race, sex, or GUID while we're still
-			-- logged in. Unlikely, but possible.
+			-- These values may only update once per session. This could create
+			-- minor confusion if someone changes faction, race, sex, or GUID
+			-- while we're still logged in. Unlikely, but possible.
 			if not gCache[name] then
 				gCache[name] = {
 					GC = GC,
@@ -194,12 +197,28 @@ xrp.characters = setmetatable({
 					end
 				end
 			end
-			if not charTables[name] then
-				charTables[name] = setmetatable({ [nk] = name }, characterMeta)
+			if not requestTables[name] then
+				requestTables[name] = setmetatable({ [nk] = name, [rq] = true }, characterMeta)
 			end
-			return charTables[name]
+			return requestTables[name]
 		end,
 		__newindex = xrpPrivate.noFunc,
 		__metatable = false,
 	}),
-}, { __newindex = xrpPrivate.noFunc, __metatable = false, })
+	noRequest = {
+		byName = setmetatable({}, {
+			__index = function(self, name)
+				name = xrp:Name(name)
+				if not name then
+					return nil
+				end
+				if not noRequestTables[name] then
+					noRequestTables[name] = setmetatable({ [nk] = name, [rq] = false }, characterMeta)
+				end
+				return noRequestTables[name]
+			end,
+			__newindex = xrpPrivate.noFunc,
+			__metatable = false,
+		}),
+	},
+}
