@@ -1,29 +1,25 @@
-6.0.3.3 (2015-01-19):
+6.1.0.0_beta1 (2015-01-31):
 
-	- This release only includes minor changes and bugfixes. Please see the
-	  section below these notes if you are upgrading from 6.0.2.1 or earlier.
+	- A major new UI component has been added, the long-promised bookmarks
+	  panel. This panel is accessible from the minimap button, from the
+	  '/xrp bookmarks' chat command, and from a newly-added keybinding.
 
-	- The option for a movable profile viewer has been moved to a more
-	  prominent location.
+		- The bookmarks panel provides some limited mechanisms to filter and
+		  search through all profiles XRP has cached, including a few
+		  predefined views (your bookmarks, your own characters, recently seen
+		  profiles, and all profiles).
 
-	- When freely movable, there is now an option to close the profile viewer
-	  by pressing Escape.
+	- Bookmarks and hidden profiles are now marked and stored outside of the
+	  cache. Hard-resetting the cache (not something possible in XRP's UI)
+	  will no longer remove the bookmark or hidden profile markings.
 
-	- Bug fix: A rare circumstance that could cause a Lua error at start has
-	  been fixed.
+	- Bugfix: An issue in the bandwidth library which could, in circumstances
+	  XRP alone would never trigger, cause disconnects. This has been fixed.
 
-	- Protocol: GMSP bandwidth usage has been reduced in some circumstances.
-	  Fields will no longer re-send until they've finished being sent in the
-	  first place, in addition to the other precautions.
+	- Bugfix: An issue where the character's GUID field (GU) would not always
+	  be properly set has been fixed.
 
 For 6.0.2.1 or earlier users:
-
-	- !! IMPORTANT !!
-	  ===============
-	  Please read the below points prior to upgrading from XRP 6.0.2.1 or
-	  earlier. There are a large number of changes since that version of XRP,
-	  and the change to the folder setup may require a bit more attention when
-	  upgrading than usual.
 
 	- Old versions of XRP should be removed from the Interface/AddOns folder
 	  prior to upgrading from 6.0.2.1 or lower (automated installers should
