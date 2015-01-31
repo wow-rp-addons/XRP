@@ -17,6 +17,25 @@
 
 local addonName, xrpPrivate = ...
 
+-- These fields are not searched in a full-text search.
+local FILTER_IGNORE = { CO = true, FC = true, FR = true, GC = true, GF = true, GR = true, GS = true, GU = true, IC = true, VA = true, VP = true }
+
+local RACE_FACTION = {
+	Human = "Alliance",
+	Dwarf = "Alliance",
+	Gnome = "Alliance",
+	NightElf = "Alliance",
+	Draenei = "Alliance",
+	Worgen = "Alliance",
+	Orc = "Horde",
+	Tauren = "Horde",
+	Troll = "Horde",
+	Scourge = "Horde",
+	BloodElf = "Horde",
+	Goblin = "Horde",
+	Pandaren = nil, -- Can't tell faction.
+}
+
 local gCache = {}
 xrpPrivate.gCache = gCache
 
@@ -95,21 +114,89 @@ do
 	}
 end
 
-local RACE_FACTION = {
-	Human = "Alliance",
-	Dwarf = "Alliance",
-	Gnome = "Alliance",
-	NightElf = "Alliance",
-	Draenei = "Alliance",
-	Worgen = "Alliance",
-	Orc = "Horde",
-	Tauren = "Horde",
-	Troll = "Horde",
-	Scourge = "Horde",
-	BloodElf = "Horde",
-	Goblin = "Horde",
-	Pandaren = nil, -- Can't tell faction.
-}
+local Filter
+do
+	local function SortString(sortType, name, cache)
+		if sortType == "date" then
+			return ("%u\30%s"):format(cache.lastReceive, name)
+		elseif sortType == "NA" then
+			return ("%s\30%s"):format((xrp:Strip(cache.fields.NA) or name):lower(), name)
+		elseif sortType == "realm" then
+			return ("%s\30%s"):format(name:match(FULL_PLAYER_NAME:format(".+", "(.+)")), name)
+		end
+		return "\30" .. name
+	end
+
+	local function SortAsc(a, b)
+		return a > b
+	end
+
+	function Filter(self, request)
+		local results = {}
+		if type(request) ~= "table" then
+			return results
+		end
+		local totalCount = 0
+		local before = request.maxAge and (time() - request.maxAge)
+		local bookmarks = xrpAccountSaved.bookmarks
+		local hidden = xrpAccountSaved.hidden
+		for name, cache in pairs(xrpCache) do
+			totalCount = totalCount + 1
+			local toAdd = true
+			if request.bookmark and not bookmarks[name] then
+				toAdd = false
+			elseif not request.showHidden and hidden[name] then
+				toAdd = false
+			elseif request.own and not cache.own then
+				toAdd = false
+			elseif request.faction and request.faction[cache.fields.GF or "UNKNOWN"] then
+				toAdd = false
+			elseif request.class and request.class[cache.fields.GC or "UNKNOWN"] then
+				toAdd = false
+			elseif request.race and request.race[cache.fields.GR or "UNKNOWN"] then
+				toAdd = false
+			elseif before and cache.lastReceive < before then
+				toAdd = false
+			end
+			if toAdd and not request.fullText and request.text then
+				local searchText = request.text:lower()
+				local nameText = name:match(FULL_PLAYER_NAME:format("(.+)", ".+")):lower()
+				if not nameText:find(searchText, nil, true) then
+					toAdd = false
+				end
+			elseif toAdd and request.text then
+				local found = false
+				local searchText = request.text:lower()
+				for field, contents in pairs(cache.fields) do
+					if not FILTER_IGNORE[field] and contents:lower():find(searchText, nil, true) then
+						found = true
+						break
+					end
+				end
+				if not found then
+					toAdd = false
+				end
+			end
+			if toAdd then
+				results[#results + 1] = SortString(request.sortType, name, cache)
+			end
+		end
+		local sortAscending = request.sortReverse
+		if request.sortType == "date" then -- Default to newest first for date.
+			sortAscending = not sortAscending
+		end
+		if sortAscending then
+			table.sort(results, SortAsc)
+		else
+			table.sort(results)
+		end
+		for i, result in ipairs(results) do
+			results[i] = self.byName[result:match("^.-\30(.+)$")]
+		end
+		results.totalCount = totalCount
+		return results
+	end
+end
 
 local requestTables = setmetatable({}, xrpPrivate.weakMeta)
 local noRequestTables = setmetatable({}, xrpPrivate.weakMeta)
@@ -205,6 +292,7 @@ xrp.characters = {
 		__newindex = xrpPrivate.noFunc,
 		__metatable = false,
 	}),
+	Filter = Filter,
 	noRequest = {
 		byName = setmetatable({}, {
 			__index = function(self, name)
@@ -220,5 +308,6 @@ xrp.characters = {
 			__newindex = xrpPrivate.noFunc,
 			__metatable = false,
 		}),
+		Filter = Filter,
 	},
 }

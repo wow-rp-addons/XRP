@@ -60,8 +60,9 @@ do
 		{ text = "Profiles", notCheckable = true, hasArrow = true, menuList = Profiles_menuList, },
 		{ text = "Character status", notCheckable = true, hasArrow = true, menuList = Status_menuList, },
 		{ text = "Currently...", notCheckable = true, func = function() StaticPopup_Show("XRP_CURRENTLY") end, },
-		{ text = "Editor...", notCheckable = true, func = function() xrp:Edit() end, },
+		{ text = "Bookmarks...", notCheckable = true, func = function() xrp:Bookmarks(true) end, },
 		{ text = "Viewer...", notCheckable = true, func = function() xrp:View() end, },
+		{ text = "Editor...", notCheckable = true, func = function() xrp:Edit() end, },
 		{ text = "Options...", notCheckable = true, func = function() xrpPrivate:Options() end, },
 		{ text = "Cancel", notCheckable = true, func = xrpPrivate.noFunc, },
 	}

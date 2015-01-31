@@ -1,0 +1,392 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\..\FrameXML\UI.xsd">
+<!--
+	© Justin Snelgrove
+
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+	<!-- Here there be dragons. XML dragons, the most dangerous sort. -->
+	<!-- It's dangerous to go alone, take a syntax highlighter. -->
+	<!-- No, seriously, though. This is the easiest way to get a good UI. -->
+	<Button name="XRPBookmarksEntryTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="initialize" value="EasyMenu_Initialize" type="global"/>
+			<KeyValue key="displayMode" value="MENU"/>
+			<!-- This is kinda a hack. -->
+			<KeyValue key="SetHeight" value="assert" type="global"/>
+		</KeyValues>
+		<Size x="0" y="72"/>
+		<Anchors>
+			<Anchor point="LEFT" x="4"/>
+			<Anchor point="RIGHT" x="-4"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="GF">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="-1" y="15"/>
+					</Anchors>
+					<Size x="90" y="44"/>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture atlas="PetList-ButtonBackground" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="Selected" atlas="GarrMission_FollowerListButton-Select" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="NA" inherits="GameFontNormal" maxLines="1" justifyH="LEFT">
+					<Size x="200" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="10" y="-6"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Name" inherits="GameFontWhiteSmall" maxLines="1" justifyH="RIGHT">
+					<Size x="80" y="0"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-10" y="-6"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Realm" inherits="GameFontWhiteSmall" maxLines="1" justifyH="LEFT">
+					<Size x="100" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.NA" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="ClassIcon" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-Classes">
+					<Size x="18" y="18"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="10" y="4"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="RC" inherits="GameFontWhite" maxLines="1" justifyH="LEFT">
+					<Size x="180" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.ClassIcon" relativePoint="RIGHT" x="4"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="RaceIcon" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-Races">
+					<Size x="18" y="18"/>
+					<Anchors>
+						<Anchor point="BOTTOM" relativeKey="$parent.ClassIcon" relativePoint="TOP" y="1"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="RA" inherits="GameFontWhite" maxLines="1" justifyH="LEFT">
+					<Size x="180" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.RaceIcon" relativePoint="RIGHT" x="4"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Date" inherits="GameFontWhiteSmall" maxLines="1" justifyH="RIGHT">
+					<Size x="100" y="0"/>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="-10" y="6"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<HighlightTexture atlas="GarrMission_FollowerListButton-Highlight" useAtlasSize="true">
+			<Anchors>
+				<Anchor point="TOPRIGHT"/>
+				<Anchor point="BOTTOMLEFT"/>
+			</Anchors>
+		</HighlightTexture>
+		<Scripts>
+			<OnClick>
+				if not self.character then return end
+				if button == "RightButton" then
+					local bookmarks = self:GetParent():GetParent():GetParent()
+					self.Selected:Show()
+					if self.character.own then
+						bookmarks.baseMenuList[3].disabled = true
+						bookmarks.baseMenuList[4].disabled = true
+					else
+						bookmarks.baseMenuList[3].disabled = nil
+						bookmarks.baseMenuList[4].disabled = nil
+					end
+					ToggleDropDownMenu(nil, nil, self, "cursor", nil, nil, bookmarks.baseMenuList)
+					PlaySound("igMainMenuOptionCheckBoxOn")
+				end
+			</OnClick>
+			<OnHide>
+				if type(self) == "number" then
+					UIDROPDOWNMENU_OPEN_MENU.Selected:Hide()
+				else
+					self.Selected:Hide()
+				end
+			</OnHide>
+			<OnLoad>
+				self:RegisterForClicks("anyUp")
+				self.onHide = self:GetScript("OnHide")
+			</OnLoad>
+		</Scripts>
+	</Button>
+	<Button name="XRPBookmarksTabTemplate" inherits="XRPTabButtonTemplate" virtual="true">
+		<Scripts>
+			<OnClick>
+				CloseDropDownMenus()
+				local bookmarks = self:GetParent()
+				bookmarks.request.offset = bookmarks.List.scrollBar:GetValue()
+				local now = GetTime()
+				bookmarks.request.lastRefresh = now
+				bookmarks.request = self.request
+				if self.resetOffset and now - 30 &gt; self.request.lastRefresh then
+					self.request.offset = 0
+				end
+				bookmarks:Refresh()
+				PanelTemplates_SetTab(bookmarks, self:GetID())
+				bookmarks.TitleText:SetText(self.titleText)
+				PlaySound("igCharacterInfoTab")
+			</OnClick>
+		</Scripts>
+	</Button>
+	<Frame name="XRPBookmarksTemplate" inherits="ButtonFrameTemplate" hidden="true" enableMouse="true" virtual="true">
+		<Size x="338" y="489"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Count" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" x="8" y="10"/>
+					</Anchors>
+					<Color r="0.5" g="0.5" b="0.5"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<ScrollFrame name="$parentList" parentKey="List" inherits="HybridScrollFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Inset" x="4" y="-2"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset" x="-22" y="2"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="NoResults" inherits="GameFontNormalLarge" maxLines="1" text="No profiles found">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Slider parentKey="scrollBar" inherits="HybridScrollBarTemplate">
+						<Scripts>
+							<OnValueChanged>
+								HybridScrollFrame_OnValueChanged(self, value)
+								CloseDropDownMenus()
+							</OnValueChanged>
+						</Scripts>
+					</Slider>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						self:EnableMouse(true)
+						self.scrollBar.doNotHide = true
+					</OnLoad>
+				</Scripts>
+			</ScrollFrame>
+			<Button parentKey="RefreshButton">
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-8" y="-27"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK" textureSubLevel="5">
+						<Texture parentKey="Icon" file="Interface\Buttons\UI-RefreshButton">
+							<Size x="16" y="16"/>
+							<Anchors>
+								<Anchor point="CENTER" x="-1"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<NormalTexture file="Interface\Buttons\UI-SquareButton-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-SquareButton-Down"/>
+				<DisabledTexture file="Interface\Buttons\UI-SquareButton-Disabled"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+				<Scripts>
+					<OnMouseDown>
+						self.Icon:SetPoint("CENTER", self, "CENTER", -2, -1)
+					</OnMouseDown>
+					<OnMouseUp>
+						self.Icon:SetPoint("CENTER", self, "CENTER", -1, 0)
+					</OnMouseUp>
+					<OnClick>
+						PlaySound("igMainMenuOptionCheckBoxOn")
+						local bookmarks = self:GetParent()
+						bookmarks.request.offset = 0
+						bookmarks:Refresh()
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentFilterButton" parentKey="FilterButton" inherits="UIMenuButtonStretchTemplate" text="FILTER">
+				<Size x="93" y="28"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.RefreshButton" relativePoint="LEFT" x="-5" y="-1"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon" file="Interface\ChatFrame\ChatFrameExpandArrow">
+							<Size x="10" y="12"/>
+							<Anchors>
+								<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="RIGHT" x="-5"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame name="$parentMenu" parentKey="Menu" hidden="true">
+						<KeyValues>
+							<KeyValue key="initialize" value="EasyMenu_Initialize" type="global"/>
+							<KeyValue key="displayMode" value="MENU"/>
+							<!-- This is kinda a hack. -->
+							<KeyValue key="SetHeight" value="assert" type="global"/>
+							<KeyValue key="point" value="TOPLEFT"/>
+							<KeyValue key="relativePoint" value="BOTTOMLEFT"/>
+							<KeyValue key="xOffset" value="74" type="number"/>
+							<KeyValue key="yOffset" value="15" type="number"/>
+						</KeyValues>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString name="$parentText" parentKey="Text" inherits="GameFontNormal"/>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Frame name="$parentIcon" parentKey="Icon"/>
+						</Frames>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnClick>
+						ToggleDropDownMenu(nil, nil, self.Menu, self, nil, nil, self.baseMenuList)
+						PlaySound("igMainMenuOptionCheckBoxOn")
+					</OnClick>
+					<OnHide>
+						CloseDropDownMenus()
+					</OnHide>
+				</Scripts>
+			</Button>
+			<EditBox inherits="SearchBoxTemplate" parentKey="FilterText" letters="80">
+				<Size x="130" y="22"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.FilterButton" relativePoint="LEFT" x="-5" y="1"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="FullTextWarning" inherits="GameFontWhiteSmall" maxLines="1" text="Press enter to search.">
+							<Size x="120" y="0"/>
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="TOP" y="-1"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="Instructions" justifyH="LEFT" justivyV="TOP" inherits="GameFontDisable" setAllPoints="true">
+							<Color r="0.35" g="0.35" b="0.35"/>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnterPressed>
+						self:ClearFocus()
+						local bookmarks = self:GetParent()
+						if not bookmarks.request.fullText then return end
+						local text = self:GetText()
+						if text == "" then
+							text = nil
+						end
+						bookmarks.request.text = text
+						bookmarks:Refresh()
+					</OnEnterPressed>
+					<OnTextChanged>
+						SearchBoxTemplate_OnTextChanged(self)
+						local bookmarks = self:GetParent()
+						if bookmarks.request.fullText and userInput then return end
+						local text = self:GetText()
+						if text == "" then
+							text = nil
+						end
+						bookmarks.request.text = text
+						bookmarks:Refresh()
+					</OnTextChanged>
+				</Scripts>
+				<FontString inherits="GameFontHighlight"/>
+			</EditBox>
+			<Button name="$parentTab1" parentKey="Tab1" inherits="XRPBookmarksTabTemplate" id="1" text="Bookmarks">
+				<KeyValues>
+					<KeyValue key="titleText" value="Bookmarks"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" y="1"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentTab2" parentKey="Tab2" inherits="XRPBookmarksTabTemplate" id="2" text="Own">
+				<KeyValues>
+					<KeyValue key="titleText" value="Own Characters"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Tab1" relativePoint="RIGHT" x="-16"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentTab3" parentKey="Tab3" inherits="XRPBookmarksTabTemplate" id="3" text="Recent">
+				<KeyValues>
+					<KeyValue key="titleText" value="Recently Seen (3 hours)"/>
+					<KeyValue key="resetOffset" value="true" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Tab2" relativePoint="RIGHT" x="-16"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentTab4" parentKey="Tab4" inherits="XRPBookmarksTabTemplate" id="4" text="All">
+				<KeyValues>
+					<KeyValue key="titleText" value="All Profiles"/>
+					<KeyValue key="resetOffset" value="true" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Tab3" relativePoint="RIGHT" x="-16"/>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Attributes>
+			<Attribute name="UIPanelLayout-defined" type="boolean" value="true"/>
+			<Attribute name="UIPanelLayout-enabled" type="boolean" value="true"/>
+			<Attribute name="UIPanelLayout-area" type="string" value="left"/>
+			<Attribute name="UIPanelLayout-pushable" type="number" value="1"/>
+			<Attribute name="UIPanelLayout-height" type="number" value="509"/>
+			<Attribute name="UIPanelLayout-whileDead" type="boolean" value="true"/>
+		</Attributes>
+		<Scripts>
+			<OnLoad>
+				PanelTemplates_SetNumTabs(self, 4)
+				PanelTemplates_SetTab(self, 1)
+				SetPortraitToTexture(self.portrait, "Interface\\Icons\\INV_Misc_Book_05")
+				self.TitleText:SetText("Bookmarks")
+			</OnLoad>
+			<OnShow>
+				PlaySound("igCharacterInfoOpen")
+			</OnShow>
+			<OnHide>
+				PlaySound("igCharacterInfoClose")
+			</OnHide>
+		</Scripts>
+	</Frame>
+	<Script file="bookmarks.lua"/>
+</Ui>

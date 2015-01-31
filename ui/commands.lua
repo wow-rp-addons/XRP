@@ -78,6 +78,10 @@ xrpCmds.edit = function(args)
 	xrp:Edit(args)
 end
 
+xrpCmds.bookmarks = function(args)
+	xrp:Bookmarks(true)
+end
+
 xrpCmds.profile = function(args)
 	if args == "list" then
 		print("Profiles:")

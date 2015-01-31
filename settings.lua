@@ -44,6 +44,7 @@ local DEFAULT_SETTINGS = {
 		closeOnEscapeViewer = true,
 		height = "ft",
 		movableViewer = false,
+		preloadBookmarks = false,
 		preloadEditor = false,
 		weight = "lb",
 	},
@@ -245,6 +246,7 @@ local upgradeAccountVars = {
 				end
 			end
 		end
+		xrpAccountSaved.settings.display.preloadBookmarks = DEFAULT_SETTINGS.display.preloadBookmarks
 	end,
 }
 

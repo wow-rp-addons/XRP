@@ -18,8 +18,8 @@
 	<Binding name="XRP_STATUS" header="XRP" category="ADDONS">
 		xrp:Status()
 	</Binding>
-	<Binding name="XRP_EDITOR" category="ADDONS">
-		xrp:Edit()
+	<Binding name="XRP_BOOKMARKS" category="ADDONS">
+		xrp:Bookmarks()
 	</Binding>
 	<Binding name="XRP_VIEWER" category="ADDONS">
 		if xrp.characters.byUnit.target then
@@ -37,5 +37,8 @@
 		if xrp.characters.byUnit.mouseover then
 			xrp:View("mouseover")
 		end
+	</Binding>
+	<Binding name="XRP_EDITOR" category="ADDONS">
+		xrp:Edit()
 	</Binding>
 </Bindings>
