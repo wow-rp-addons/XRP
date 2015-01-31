@@ -42,4 +42,4 @@ upload-curse-%: build/xrp_%.zip build/xrp_%.CHANGELOG
 upload-stormlord-%: build/xrp_%.zip build/xrp_%.zip.SHA512
 	scp $^ asgard.stormlord.ca:~/pub/xrp/
 
-.PHONY: all clean upload upload-curse upload-stormlord upload-% upload-curse-% upload-stormlord-%
+.PHONY: all clean head upload upload-curse upload-stormlord upload-% upload-curse-% upload-stormlord-%
