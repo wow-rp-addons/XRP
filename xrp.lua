@@ -155,7 +155,7 @@ do
 			xrpPrivate.player, xrpPrivate.realm = xrpPrivate.playerWithRealm:match(FULL_PLAYER_NAME:format("(.+)", "(.+)"))
 			xrpPrivate:SavedVariableSetup()
 
-			local newfields
+			local newFields
 			do
 				local addonString = "%s/%s"
 				local VA = { addonString:format(GetAddOnMetadata(addonName, "Title"), xrpPrivate.version) }
@@ -165,18 +165,17 @@ do
 						VA[#VA + 1] = addonString:format(name, GetAddOnMetadata(name, "Version"))
 					end
 				end
-				newfields = {
+				newFields = {
 					GC = select(2, UnitClassBase("player")),
 					GF = UnitFactionGroup("player"),
 					GR = select(2, UnitRace("player")),
 					GS = tostring(UnitSex("player")),
-					GU = UnitGUID("player"),
 					NA = UnitName("player"), -- Fallback NA field.
 					VA = table.concat(VA, ";"),
 				}
 			end
 			local fields, versions = xrpSaved.meta.fields, xrpSaved.meta.versions
-			for field, contents in pairs(newfields) do
+			for field, contents in pairs(newFields) do
 				if contents ~= fields[field] then
 					fields[field] = contents
 					versions[field] = xrpPrivate:NewVersion(field)
@@ -215,7 +214,17 @@ do
 			if fields.GF == "Neutral" then
 				self:RegisterEvent("NEUTRAL_FACTION_SELECT_RESULT")
 			end
+			self:RegisterEvent("PLAYER_LOGIN")
 			self:RegisterEvent("PLAYER_LOGOUT")
+		elseif event == "PLAYER_LOGIN" then
+			-- UnitGUID() does not work prior to first PLAYER_LOGIN (but does
+			-- work after ReloadUI()).
+			local GU = UnitGUID("player")
+			if xrpSaved.meta.fields.GU ~= GU then
+				xrpSaved.meta.fields.GU = GU
+				xrpSaved.meta.versions.GU = xrpPrivate:NewVersion("GU")
+			end
+			self:UnregisterEvent("PLAYER_LOGIN")
 		elseif event == "PLAYER_LOGOUT" then
 			-- Note: This code must be thoroughly tested if any changes are
 			-- made. If there are any errors in here, they are not visible in
