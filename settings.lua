@@ -20,7 +20,7 @@ local addonName, xrpPrivate = ...
 xrpPrivate.settingsToggles = {}
 
 local DATA_VERSION = 3
-local DATA_VERSION_ACCOUNT = 7
+local DATA_VERSION_ACCOUNT = 8
 
 local DEFAULT_SETTINGS = {
 	cache = {
@@ -225,6 +225,27 @@ local upgradeAccountVars = {
 		end
 		xrpAccountSaved.settings.display.preloadViewer = nil
 	end,
+	[8] = function() -- 6.0.3.4
+		if not xrpAccountSaved.bookmarks then
+			xrpAccountSaved.bookmarks = {}
+		end
+		if not xrpAccountSaved.hidden then
+			xrpAccountSaved.hidden = {}
+		end
+		for name, cache in pairs(xrpCache) do
+			if cache.bookmark then
+				xrpAccountSaved.bookmarks[name] = cache.bookmark
+				cache.bookmark = nil
+			end
+			if cache.hide then
+				xrpAccountSaved.hidden[name] = true
+				cache.hide = nil
+				if not next(cache.fields) then
+					xrpCache[name] = nil
+				end
+			end
+		end
+	end,
 }
 
 local upgradeVars = {
@@ -298,6 +319,8 @@ local function InitializeSavedVariables()
 			xrp_settings = nil
 		else
 			xrpAccountSaved = {
+				bookmarks = {},
+				hidden = {},
 				settings = {},
 				dataVersion = DATA_VERSION_ACCOUNT,
 			}
@@ -433,17 +456,12 @@ function xrpPrivate:CacheTidy(timer)
 	end
 	local now = time()
 	local before = now - timer
+	local bookmarks = xrpAccountSaved.bookmarks
 	for name, data in pairs(xrpCache) do
 		if type(data.lastReceive) ~= "number" then
 			data.lastReceive = now
-		elseif not data.bookmark and data.lastReceive < before then
-			if not data.hide then
-				xrpCache[name] = nil
-			else
-				data.fields = {}
-				data.versions = {}
-				data.lastReceive = now
-			end
+		elseif not bookmarks[name] and data.lastReceive < before then
+			xrpCache[name] = nil
 		end
 	end
 	if timer <= 60 then
