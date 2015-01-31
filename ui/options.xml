@@ -655,15 +655,26 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.SubText" relativePoint="BOTTOMLEFT" x="-2" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="textString" value="Preload editor frame (for frame-moving addons)"/>
+					<KeyValue key="textString" value="Preload editor frame (for frame-positioning addons)"/>
 					<KeyValue key="xrpTable" value="display"/>
 					<KeyValue key="xrpSetting" value="preloadEditor"/>
 					<KeyValue key="defaultValue" value="false" type="boolean"/>
 				</KeyValues>
 			</CheckButton>
+			<CheckButton parentKey="PreloadBookmarks" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.PreloadEditor" relativePoint="BOTTOMLEFT" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="textString" value="Preload bookmarks frame (for frame-positioning addons)"/>
+					<KeyValue key="xrpTable" value="display"/>
+					<KeyValue key="xrpSetting" value="preloadBookmarks"/>
+					<KeyValue key="defaultValue" value="false" type="boolean"/>
+				</KeyValues>
+			</CheckButton>
 			<Frame name="XRPOptionsCoreCacheTime" parentKey="Time" inherits="XRPOptionsDropDownTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.PreloadEditor" relativePoint="BOTTOMLEFT" x="-15" y="-8"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.PreloadBookmarks" relativePoint="BOTTOMLEFT" x="-15" y="-8"/>
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="labelString" value="Cache expiry time"/>

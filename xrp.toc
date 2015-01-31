@@ -26,6 +26,7 @@ ui\tooltip.lua
 ui\templates.xml
 ui\minimap.xml
 ui\viewer.xml
+ui\bookmarks.xml
 ui\editor.xml
 ui\options.xml
 extra\fixes.lua
