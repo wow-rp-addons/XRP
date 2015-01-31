@@ -42,7 +42,7 @@ function xrpPrivate:DoesParentLoop(profile, parent)
 	return false
 end
 
-xrp.current = setmetatable({
+xrp.current = {
 	fields = setmetatable({}, {
 		__index = function(self, field)
 			local profiles, selected = xrpSaved.profiles, xrpSaved.selected
@@ -83,7 +83,7 @@ xrp.current = setmetatable({
 		__newindex = xrpPrivate.noFunc,
 		__metatable = false,
 	}),
-}, { __newindex = xrpPrivate.noFunc, __metatable = false, })
+}
 
 xrpPrivate.current = setmetatable({
 	versions = setmetatable({}, {
@@ -131,7 +131,7 @@ xrpPrivate.current = setmetatable({
 		out.AH = out.AH and xrp:Height(out.AH, "msp") or nil
 		return out
 	end,
-}, { __index = xrp.current, __newindex = xrpPrivate.noFunc, })
+}, { __index = xrp.current })
 
 local nk = {}
 local FORBIDDEN_NAMES = {

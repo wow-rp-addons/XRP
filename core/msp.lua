@@ -635,7 +635,9 @@ msp:SetScript("OnUpdate", function(self, elapsed)
 end)
 msp:Hide()
 
-libfakedraw:RegisterFrame(msp)
+if libfakedraw then
+	libfakedraw:RegisterFrame(msp)
+end
 
 function xrpPrivate:QueueRequest(name, field)
 	if disabled or name == xrpPrivate.playerWithRealm or xrp:Ambiguate(name) == UNKNOWN or msp.cache[name].time[field] and GetTime() < msp.cache[name].time[field] + FIELD_TIMES[field] then

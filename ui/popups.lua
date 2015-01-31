@@ -95,7 +95,7 @@ StaticPopupDialogs["XRP_RELOAD"] = {
 }
 
 StaticPopupDialogs["XRP_CURRENTLY"] = {
-	text = "What are you currently doing?\n(This will reset ten minutes after logout.)",
+	text = "What are you currently doing?\n(This will reset ten minutes after logout; use the editor to set this more permanently.)",
 	button1 = ACCEPT,
 	button2 = RESET,
 	button3 = CANCEL,
