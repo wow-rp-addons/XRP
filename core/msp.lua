@@ -381,7 +381,10 @@ do
 	end
 end
 
-local TT_REQ = { "?TT" }
+-- Using GU is more efficient outgoing (~4 bytes less), but some addons don't
+-- properly expose it always, and it's about as efficient for the other side if
+-- we just ask for all the fields.
+local TT_REQ = { "?TT", "?GC", "?GF", "?GR", "?GS" }
 msp.handlers = {
 	["MSP"] = function(self, name, message, channel)
 		local out
@@ -649,6 +652,9 @@ function xrpPrivate:QueueRequest(name, field)
 	return true
 end
 
+-- As also in TT_REQ, these are only slightly less efficient than using GF+GU,
+-- but are much more reliable.
+local UNIT_REQUEST = { "GC", "GF", "GR", "GS" }
 function xrpPrivate:Request(name, fields)
 	if disabled or name == xrpPrivate.playerWithRealm or xrp:Ambiguate(name) == UNKNOWN then
 		return false
@@ -675,6 +681,21 @@ function xrpPrivate:Request(name, fields)
 	if reqTT then
 		-- Want TT at start of request.
 		table.insert(fields, 1, "TT")
+	end
+
+	if not xrpPrivate.gCache[name] then
+		if not xrpCache[name] then
+			for i, field in ipairs(UNIT_REQUEST) do
+				fields[#fields + 1] = field
+			end
+		else
+			local cached = xrpCache[name].fields
+			for i, field in ipairs(UNIT_REQUEST) do
+				if not cached[field] then
+					fields[#fields + 1] = field
+				end
+			end
+		end
 	end
 
 	local out = {}
