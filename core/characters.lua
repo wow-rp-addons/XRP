@@ -65,9 +65,9 @@ do
 			elseif not xrpCache[name] then
 				return nil
 			elseif component == "bookmark" then
-				return xrpCache[name].bookmark
+				return xrpAccountSaved.bookmarks[name]
 			elseif component == "hide" then
-				return xrpCache[name].hide
+				return xrpAccountSaved.hidden[name]
 			elseif component == "own" then
 				return xrpCache[name].own
 			elseif component == "date" then
@@ -78,16 +78,16 @@ do
 			local name = self[nk]
 			if not xrpCache[name] then return end
 			if component == "bookmark" then
-				if value and not xrpCache[name].bookmark then
-					xrpCache[name].bookmark = time()
-				elseif not value and xrpCache[name].bookmark then
-					xrpCache[name].bookmark = nil
+				if value and not xrpAccountSaved.bookmarks[name] then
+					xrpAccountSaved.bookmarks[name] = time()
+				elseif not value and xrpAccountSaved.bookmarks[name] then
+					xrpAccountSaved.bookmarks[name] = nil
 				end
 			elseif component == "hide" then
-				if value and not xrpCache[name].hide then
-					xrpCache[name].hide = true
-				elseif not value and xrpCache[name].hide then
-					xrpCache[name].hide = nil
+				if value and not xrpAccountSaved.hidden[name] then
+					xrpAccountSaved.hidden[name] = true
+				elseif not value and xrpAccountSaved.hidden[name] then
+					xrpAccountSaved.hidden[name] = nil
 				end
 			end
 		end,
