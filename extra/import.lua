@@ -134,14 +134,14 @@ import:SetScript("OnEvent", function(self, event)
 		if hasMRP then
 			local count = ImportMyRolePlay()
 			if count > 0 then
-				DisableAddOn("MyRolePlay")
+				DisableAddOn("MyRolePlay", xrpPrivate.player)
 				imported = true
 			end
 		end
 		if hasTRP2 then
 			local count = ImportTotalRP2()
 			if count > 0 then
-				DisableAddOn("totalRP2")
+				DisableAddOn("totalRP2", xrpPrivate.player)
 				imported = true
 			end
 		end
