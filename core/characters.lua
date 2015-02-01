@@ -91,6 +91,8 @@ do
 				return xrpCache[name].own
 			elseif component == "date" then
 				return xrpCache[name].lastReceive
+			elseif component == "noRequest" then
+				return not self[rq]
 			end
 		end,
 		__newindex = function(self, component, value)
