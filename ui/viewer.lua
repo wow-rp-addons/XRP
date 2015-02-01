@@ -157,7 +157,12 @@ do
 			local character = UIDROPDOWNMENU_OPEN_MENU:GetParent().current
 			AddOrRemoveFriend(Ambiguate(character.name, "none"), xrp:Strip(character.fields.NA))
 		elseif arg1 == 4 then
-			Load(UIDROPDOWNMENU_OPEN_MENU:GetParent().current)
+			local viewer = UIDROPDOWNMENU_OPEN_MENU:GetParent()
+			if viewer.current.noRequest then
+				Load(xrp.characters.byName[viewer.current.name])
+			else
+				Load(viewer.current)
+			end
 		end
 	end
 	Menu_baseMenuList = {
@@ -183,7 +188,7 @@ local function Menu_PreClick(self, button, down)
 		end
 		self.baseMenuList[3].disabled = isFriend
 	end
-	if viewer.lastFieldSet + 30 > GetTime() then
+	if not viewer.current.noRequest and viewer.lastFieldSet + 30 > GetTime() then
 		self.baseMenuList[4].disabled = true
 	else
 		self.baseMenuList[4].disabled = nil
