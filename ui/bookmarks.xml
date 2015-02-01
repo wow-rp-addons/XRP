@@ -121,9 +121,23 @@
 					if self.character.own then
 						bookmarks.baseMenuList[3].disabled = true
 						bookmarks.baseMenuList[4].disabled = true
+						bookmarks.baseMenuList[5].disabled = true
 					else
-						bookmarks.baseMenuList[3].disabled = nil
+						local GF = self.character.fields.GF
+						if GF and GF ~= xrp.current.fields.GF then
+							bookmarks.baseMenuList[3].disabled = true
+						else
+							local name = Ambiguate(self.character.name, "none")
+							local isFriend
+							for i = 1, GetNumFriends() do
+								if GetFriendInfo(i) == name then
+									isFriend = true
+								end
+							end
+							bookmarks.baseMenuList[3].disabled = isFriend
+						end
 						bookmarks.baseMenuList[4].disabled = nil
+						bookmarks.baseMenuList[5].disabled = nil
 					end
 					ToggleDropDownMenu(nil, nil, self, "cursor", nil, nil, bookmarks.baseMenuList)
 					PlaySound("igMainMenuOptionCheckBoxOn")

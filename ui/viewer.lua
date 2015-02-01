@@ -139,6 +139,9 @@ end
 local Menu_baseMenuList
 do
 	local function Menu_Checked(self)
+		if self.disabled then
+			return false
+		end
 		if self.arg1 == 1 then
 			return UIDROPDOWNMENU_INIT_MENU:GetParent().current.bookmark ~= nil
 		elseif self.arg1 == 2 then
@@ -151,21 +154,39 @@ do
 		elseif arg1 == 2 then
 			UIDROPDOWNMENU_OPEN_MENU:GetParent().current.hide = not checked
 		elseif arg1 == 3 then
+			local character = UIDROPDOWNMENU_OPEN_MENU:GetParent().current
+			AddOrRemoveFriend(Ambiguate(character.name, "none"), xrp:Strip(character.fields.NA))
+		elseif arg1 == 4 then
 			Load(UIDROPDOWNMENU_OPEN_MENU:GetParent().current)
 		end
 	end
 	Menu_baseMenuList = {
 		{ text = "Bookmark", arg1 = 1, isNotRadio = true, checked = Menu_Checked, func = Menu_Click, },
 		{ text = "Hide profile", arg1 = 2, isNotRadio = true, checked = Menu_Checked, func = Menu_Click, },
-		{ text = "Refresh", arg1 = 3, notCheckable = true, func = Menu_Click, },
+		{ text = "Add friend", arg1 = 3, notCheckable = true, func = Menu_Click, },
+		{ text = "Refresh", arg1 = 4, notCheckable = true, func = Menu_Click, },
 	}
 end
 
 local function Menu_PreClick(self, button, down)
-	if self:GetParent().lastFieldSet + 30 > GetTime() then
+	local viewer = self:GetParent()
+	local GF = viewer.current.fields.GF
+	if GF and GF ~= xrp.current.fields.GF then
 		self.baseMenuList[3].disabled = true
 	else
-		self.baseMenuList[3].disabled = nil
+		local name = Ambiguate(viewer.current.name, "none")
+		local isFriend
+		for i = 1, GetNumFriends() do
+			if GetFriendInfo(i) == name then
+				isFriend = true
+			end
+		end
+		self.baseMenuList[3].disabled = isFriend
+	end
+	if viewer.lastFieldSet + 30 > GetTime() then
+		self.baseMenuList[4].disabled = true
+	else
+		self.baseMenuList[4].disabled = nil
 	end
 end
 

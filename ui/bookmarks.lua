@@ -161,9 +161,12 @@ end
 local Bookmarks_baseMenuList
 do
 	local function Menu_Checked(self)
-		if self.arg1 == 3 then
+		if self.disabled then
+			return false
+		end
+		if self.arg1 == 4 then
 			return UIDROPDOWNMENU_INIT_MENU.character and UIDROPDOWNMENU_INIT_MENU.character.bookmark ~= nil
-		elseif self.arg1 == 4 then
+		elseif self.arg1 == 5 then
 			return UIDROPDOWNMENU_INIT_MENU.character and UIDROPDOWNMENU_INIT_MENU.character.hide ~= nil
 		end
 	end
@@ -173,12 +176,15 @@ do
 		elseif arg1 == 2 then
 			xrp:View(UIDROPDOWNMENU_OPEN_MENU.character.name)
 		elseif arg1 == 3 then
+			local character = UIDROPDOWNMENU_OPEN_MENU.character
+			AddOrRemoveFriend(Ambiguate(character.name, "none"), xrp:Strip(character.fields.NA))
+		elseif arg1 == 4 then
 			UIDROPDOWNMENU_OPEN_MENU.character.bookmark = not checked
 			if bookmarks.request.bookmark then
 				bookmarks.request.offset = bookmarks.List.scrollBar:GetValue()
 				bookmarks:Refresh()
 			end
-		elseif arg1 == 4 then
+		elseif arg1 == 5 then
 			UIDROPDOWNMENU_OPEN_MENU.character.hide = not checked
 			if not bookmarks.request.showHidden then
 				bookmarks.request.offset = bookmarks.List.scrollBar:GetValue()
@@ -189,8 +195,9 @@ do
 	Bookmarks_baseMenuList = {
 		{ text = "View (cached)", arg1 = 1, notCheckable = true, checked = Menu_Checked, func = Menu_Click, },
 		{ text = "View (live)", arg1 = 2, notCheckable = true, checked = Menu_Checked, func = Menu_Click, },
-		{ text = "Bookmark", arg1 = 3, isNotRadio = true, checked = Menu_Checked, func = Menu_Click, },
-		{ text = "Hide profile", arg1 = 4, isNotRadio = true, checked = Menu_Checked, func = Menu_Click, },
+		{ text = "Add friend", arg1 = 3, notCheckable = true, func = Menu_Click, },
+		{ text = "Bookmark", arg1 = 4, isNotRadio = true, checked = Menu_Checked, func = Menu_Click, },
+		{ text = "Hide profile", arg1 = 5, isNotRadio = true, checked = Menu_Checked, func = Menu_Click, },
 		{ text = "Cancel", notCheckable = true, func = xrpPrivate.noFunc, },
 	}
 end
@@ -229,8 +236,8 @@ do
 		lists.race = { "Human", "Dwarf", "NightElf", "Gnome", "Draenei", "Worgen", "Pandaren", "Orc", "Scourge", "Tauren", "Troll", "BloodElf", "Goblin" }
 	end
 	local factionMenu = {
-		{ text = "Check All", notCheckable = true, keepShownOnClick = true, arg1 = "faction", arg2 = "ALL", func = Filter_Click, },
-		{ text = "Uncheck All", notCheckable = true, keepShownOnClick = true, arg1 = "faction", arg2 = "NONE", func = Filter_Click, },
+		{ text = "Check all", notCheckable = true, keepShownOnClick = true, arg1 = "faction", arg2 = "ALL", func = Filter_Click, },
+		{ text = "Uncheck all", notCheckable = true, keepShownOnClick = true, arg1 = "faction", arg2 = "NONE", func = Filter_Click, },
 	}
 	for i, faction in ipairs(lists.faction) do
 		factionMenu[#factionMenu + 1] = { text = xrp.values.GF[faction], isNotRadio = true, keepShownOnClick = true, arg1 = "faction", arg2 = faction, checked = Filter_Checked, func = Filter_Click, }
@@ -238,8 +245,8 @@ do
 	factionMenu[#factionMenu + 1] = { text = "Unknown", isNotRadio = true, keepShownOnClick = true, arg1 = "faction", arg2 = "UNKNOWN", checked = Filter_Checked, func = Filter_Click, }
 
 	local raceMenu = {
-		{ text = "Check All", notCheckable = true, keepShownOnClick = true, arg1 = "race", arg2 = "ALL", func = Filter_Click, },
-		{ text = "Uncheck All", notCheckable = true, keepShownOnClick = true, arg1 = "race", arg2 = "NONE", func = Filter_Click, },
+		{ text = "Check all", notCheckable = true, keepShownOnClick = true, arg1 = "race", arg2 = "ALL", func = Filter_Click, },
+		{ text = "Uncheck all", notCheckable = true, keepShownOnClick = true, arg1 = "race", arg2 = "NONE", func = Filter_Click, },
 	}
 	for i, race in ipairs(lists.race) do
 		raceMenu[#raceMenu + 1] = { text = xrp.values.GR[race], isNotRadio = true, keepShownOnClick = true, arg1 = "race", arg2 = race, checked = Filter_Checked, func = Filter_Click, }
@@ -248,8 +255,8 @@ do
 
 	lists.class = { "DEATHKNIGHT", "DRUID", "HUNTER", "MAGE", "MONK", "PALADIN", "PRIEST", "ROGUE", "SHAMAN", "WARLOCK", "WARRIOR" }
 	local classMenu = {
-		{ text = "Check All", notCheckable = true, keepShownOnClick = true, arg1 = "class", arg2 = "ALL", func = Filter_Click, },
-		{ text = "Uncheck All", notCheckable = true, keepShownOnClick = true, arg1 = "class", arg2 = "NONE", func = Filter_Click, },
+		{ text = "Check all", notCheckable = true, keepShownOnClick = true, arg1 = "class", arg2 = "ALL", func = Filter_Click, },
+		{ text = "Uncheck all", notCheckable = true, keepShownOnClick = true, arg1 = "class", arg2 = "NONE", func = Filter_Click, },
 	}
 	for i, class in ipairs(lists.class) do
 		classMenu[#classMenu + 1] = { text = xrp.values.GC[class], isNotRadio = true, keepShownOnClick = true, arg1 = "class", arg2 = class, checked = Filter_Checked, func = Filter_Click, }
@@ -267,7 +274,7 @@ do
 	end
 	local sortMenu = {
 		{ text = "Name", keepShownOnClick = true, arg1 = "sortType", arg2 = nil, checked = Filter_Radio_Checked, func = Filter_Radio_Click, },
-		{ text = "Roleplay Name", keepShownOnClick = true, arg1 = "sortType", arg2 = "NA", checked = Filter_Radio_Checked, func = Filter_Radio_Click, },
+		{ text = "Roleplay name", keepShownOnClick = true, arg1 = "sortType", arg2 = "NA", checked = Filter_Radio_Checked, func = Filter_Radio_Click, },
 		{ text = "Realm", keepShownOnClick = true, arg1 = "sortType", arg2 = "realm", checked = Filter_Radio_Checked, func = Filter_Radio_Click, },
 		{ text = "Date", keepShownOnClick = true, arg1 = "sortType", arg2 = "date", checked = Filter_Radio_Checked, func = Filter_Radio_Click, },
 	}
@@ -302,11 +309,11 @@ do
 		{ text = "Faction", notCheckable = true, hasArrow = true, menuList = factionMenu, },
 		{ text = "Race", notCheckable = true, hasArrow = true, menuList = raceMenu, },
 		{ text = "Class", notCheckable = true, hasArrow = true, menuList = classMenu, },
-		{ text = "Sort By", notCheckable = true, hasArrow = true, menuList = sortMenu, },
-		{ text = "Full Text Search", isNotRadio = true, keepShownOnClick = true, arg1 = "fullText", checked = Filter_Toggle_Checked, func = Filter_Toggle_Click, },
-		{ text = "Reverse Sorting", isNotRadio = true, keepShownOnClick = true, arg1 = "sortReverse", checked = Filter_Toggle_Checked, func = Filter_Toggle_Click, },
-		{ text = "Include Hidden", isNotRadio = true, keepShownOnClick = true, arg1 = "showHidden", checked = Filter_Toggle_Checked, func = Filter_Toggle_Click, },
-		{ text = "Reset Filters", notCheckable = true, func = Filter_Reset, },
+		{ text = "Sort by", notCheckable = true, hasArrow = true, menuList = sortMenu, },
+		{ text = "Full-text search", isNotRadio = true, keepShownOnClick = true, arg1 = "fullText", checked = Filter_Toggle_Checked, func = Filter_Toggle_Click, },
+		{ text = "Reverse sorting", isNotRadio = true, keepShownOnClick = true, arg1 = "sortReverse", checked = Filter_Toggle_Checked, func = Filter_Toggle_Click, },
+		{ text = "Include hidden", isNotRadio = true, keepShownOnClick = true, arg1 = "showHidden", checked = Filter_Toggle_Checked, func = Filter_Toggle_Click, },
+		{ text = "Reset filters", notCheckable = true, func = Filter_Reset, },
 	}
 end
 
