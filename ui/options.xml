@@ -83,9 +83,7 @@
 			<KeyValue key="type" value="CONTROLTYPE_CHECKBOX" type="global"/>
 		</KeyValues>
 		<Size x="26" y="26"/>
-		<HitRectInsets>
-			<AbsInset left="0" right="-500" top="0" bottom="0"/>
-		</HitRectInsets>
+		<HitRectInsets left="0" right="-500" top="0" bottom="0"/>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Text" inherits="GameFontHighlightLeft">
