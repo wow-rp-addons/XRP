@@ -529,7 +529,6 @@
 					<KeyValue key="popupName" value="XRP_EDITOR_ADD"/>
 					<KeyValue key="tooltipText" value="Add"/>
 				</KeyValues>
-				<Size x="28" y="28"/>
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.Profiles" relativePoint="RIGHT" x="34" y="2"/>
 				</Anchors>
@@ -643,15 +642,9 @@
 					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" y="-28"/>
 				</Anchors>
 				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background-Dark" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-					<BackgroundInsets>
-						<AbsInset left="11" right="12" top="12" bottom="11"/>
-					</BackgroundInsets>
-					<TileSize>
-						<AbsValue val="32"/>
-					</TileSize>
-					<EdgeSize>
-						<AbsValue val="32"/>
-					</EdgeSize>
+					<BackgroundInsets left="11" right="12" top="12" bottom="11"/>
+					<TileSize val="32"/>
+					<EdgeSize val="32"/>
 				</Backdrop>
 				<Layers>
 					<Layer level="ARTWORK">
@@ -757,7 +750,7 @@
 		<Attributes>
 			<Attribute name="UIPanelLayout-defined" type="boolean" value="true"/>
 			<Attribute name="UIPanelLayout-enabled" type="boolean" value="true"/>
-			<Attribute name="UIPanelLayout-area" type="string" value="left"/>
+			<Attribute name="UIPanelLayout-area" value="left"/>
 			<Attribute name="UIPanelLayout-pushable" type="number" value="4"/>
 			<Attribute name="UIPanelLayout-height" type="number" value="545"/>
 			<Attribute name="UIPanelLayout-whileDead" type="boolean" value="true"/>

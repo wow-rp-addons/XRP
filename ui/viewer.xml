@@ -336,7 +336,7 @@
 		<Attributes>
 			<Attribute name="UIPanelLayout-defined" type="boolean" value="true"/>
 			<Attribute name="UIPanelLayout-enabled" type="boolean" value="true"/>
-			<Attribute name="UIPanelLayout-area" type="string" value="left"/>
+			<Attribute name="UIPanelLayout-area" value="left"/>
 			<Attribute name="UIPanelLayout-pushable" type="number" value="2"/>
 			<Attribute name="UIPanelLayout-height" type="number" value="545"/>
 			<Attribute name="UIPanelLayout-whileDead" type="boolean" value="true"/>
