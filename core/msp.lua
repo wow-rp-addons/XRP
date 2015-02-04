@@ -59,9 +59,6 @@ local FIELD_TIMES = setmetatable({ TT = 15 }, {
 -- This is the core of the MSP send/recieve implementation. The API is nothing
 -- like LibMSP and is not accessible outside this file.
 local msp = CreateFrame("Frame")
--- Battle.net friends mapping.
-msp.bnet = {}
-xrpPrivate.bnet = msp.bnet
 -- Requested field queue
 msp.request = {}
 -- Session cache. Do NOT make weak.
@@ -117,12 +114,11 @@ do
 		--print("Sending to: "..name)
 		--print(GetTime()..": Out: "..name..": "..data:gsub("\1", ";"))
 
+		local presenceID
 		-- Check whether sending by BN is available and preferred.
-		if (not channel or channel == "BN") and self.bnet[name] then
-			if not select(15, BNGetToonInfo(self.bnet[name])) then
-				-- presenceID is no longer valid. Probably offline.
-				self.bnet[name] = nil
-			elseif not channel then
+		if not channel or channel == "BN" then
+			presenceID = self:GetPresenceID(name)
+			if not channel and presenceID then
 				if self.cache[name].bnet == false then
 					channel = "GAME"
 				elseif self.cache[name].bnet == true then
@@ -131,8 +127,7 @@ do
 			end
 		end
 
-		if (not channel or channel == "BN") and self.bnet[name] then
-			local presenceID = self.bnet[name]
+		if (not channel or channel == "BN") and presenceID then
 			local queue = ("XRP-%u"):format(presenceID)
 			if #data <= 4078 then
 				libbw:BNSendGameData(presenceID, "MSP", data, isRequest and "ALERT" or "NORMAL", queue)
@@ -542,7 +537,9 @@ msp:SetScript("OnEvent", function(self, event, prefix, message, channel, sender)
 	elseif event == "BN_CHAT_MSG_ADDON" and self.handlers[prefix] then
 		local active, toonName, client, realmName = BNGetToonInfo(sender)
 		local name = xrp:Name(toonName, realmName)
-		self.bnet[name] = sender
+		if self.bnet then
+			self.bnet[name] = sender
+		end
 
 		self.cache[name].bnet = true
 		self.cache[name].received = true
@@ -550,10 +547,11 @@ msp:SetScript("OnEvent", function(self, event, prefix, message, channel, sender)
 
 		self.handlers[prefix](self, name, message, "BN")
 	elseif event == "BN_TOON_NAME_UPDATED" or event == "BN_FRIEND_TOON_ONLINE" then
+		if not self.bnet then return end
 		local active, toonName, client, realmName = BNGetToonInfo(prefix)
-		if client == "WoW" then
+		if client == "WoW" and realmName ~= "" then
 			local name = xrp:Name(toonName, realmName)
-			if not self.bnet[name] and not self.cache[name].received then
+			if self.cache[name].nextCheck then
 				self.cache[name].nextCheck = 0
 			end
 			self.bnet[name] = prefix
@@ -573,25 +571,45 @@ msp:SetScript("OnEvent", function(self, event, prefix, message, channel, sender)
 		end
 		self.inGroup = newInGroup
 	elseif event == "BN_CONNECTED" then
-		self:UpdateBNList()
+		self:RebuildBNList()
 		self:RegisterEvent("BN_TOON_NAME_UPDATED")
 		self:RegisterEvent("BN_FRIEND_TOON_ONLINE")
 	elseif event == "BN_DISCONNECTED" then
 		self:UnregisterEvent("BN_TOON_NAME_UPDATED")
 		self:UnregisterEvent("BN_FRIEND_TOON_ONLINE")
-		wipe(self.bnet)
+		self.bnet = nil
 	end
 end)
 
-function msp:UpdateBNList()
+function msp:RebuildBNList()
+	self.bnet = {}
 	for i = 1, select(2, BNGetNumFriends()) do
 		for j = 1, BNGetNumFriendToons(i) do
 			local active, toonName, client, realmName, realmID, faction, race, class, blank, zoneName, level, gameText, broadcastText, broadcastTime, isConnected, toonID = BNGetFriendToonInfo(i, j)
-			if client == "WoW" then
-				self.bnet[xrp:Name(toonName, realmName)] = toonID
+			if isConnected and client == "WoW" and realmName ~= "" then
+				local name = xrp:Name(toonName, realmName)
+				if self.cache[name].nextCheck then
+					self.cache[name].nextCheck = 0
+				end
+				self.bnet[name] = toonID
 			end
 		end
 	end
+	if not next(self.bnet) then
+		self.bnet = nil
+		return false
+	end
+	return true
+end
+
+function msp:GetPresenceID(name)
+	if not BNConnected() or not self.bnet and not self:RebuildBNList() then
+		return nil
+	end
+	if self.bnet[name] and select(15, BNGetToonInfo(self.bnet[name])) then
+		return self.bnet[name]
+	end
+	return nil
 end
 
 if not disabled then
@@ -602,7 +620,6 @@ if not disabled then
 	msp:RegisterEvent("BN_CHAT_MSG_ADDON")
 	msp:RegisterEvent("GROUP_ROSTER_UPDATE")
 	if BNConnected() then
-		msp:UpdateBNList()
 		msp:RegisterEvent("BN_TOON_NAME_UPDATED")
 		msp:RegisterEvent("BN_FRIEND_TOON_ONLINE")
 	end
