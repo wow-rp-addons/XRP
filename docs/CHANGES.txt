@@ -1,4 +1,7 @@
-6.1.0.0_beta1 (2015-01-31):
+6.1.0.0_beta2 (2015-02-03):
+
+	- This version has been tested with both 6.0.3 (live) and 6.1.0 (PTR), and
+	  works correctly with both versions.
 
 	- A major new UI component has been added, the long-promised bookmarks
 	  panel. This panel is accessible from the minimap button, from the
@@ -9,15 +12,28 @@
 		  predefined views (your bookmarks, your own characters, recently seen
 		  profiles, and all profiles).
 
-	- Bookmarks and hidden profiles are now marked and stored outside of the
-	  cache. Hard-resetting the cache (not something possible in XRP's UI)
-	  will no longer remove the bookmark or hidden profile markings.
+	- (beta2) A profile exporter, which allows you to copy a plain-text
+	  version of a profile, has been added. This exporter is accessed through
+	  the editor, the viewer, and the bookmarks panel.
+
+	- (beta2) The viewer and bookmarks panel now have an option to add a
+	  character to one's in-game friends list directly from either of those
+	  panels. The friends are added with a note indicating their roleplay
+	  name, and may be removed through the standard social panel.
+
+	- (beta2) Bugfix: Hidden profiles will no longer trigger the cursor book
+	  icon or profile view-on-right-click. They may still be accessed through
+	  other methods.
 
 	- Bugfix: An issue in the bandwidth library which could, in circumstances
 	  XRP alone would never trigger, cause disconnects. This has been fixed.
 
 	- Bugfix: An issue where the character's GUID field (GU) would not always
 	  be properly set has been fixed.
+
+	- (beta2) Bugfix: The importer (from other addons) will now properly only
+	  disable those addons for the current character, rather than all
+	  characters.
 
 For 6.0.2.1 or earlier users:
 
