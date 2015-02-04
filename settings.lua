@@ -458,11 +458,14 @@ function xrpPrivate:CacheTidy(timer)
 	end
 	local now = time()
 	local before = now - timer
+	local beforeOwn = now - math.max(timer * 3, 604800)
 	local bookmarks = xrpAccountSaved.bookmarks
 	for name, data in pairs(xrpCache) do
 		if type(data.lastReceive) ~= "number" then
 			data.lastReceive = now
-		elseif not bookmarks[name] and data.lastReceive < before then
+		elseif not data.own and not bookmarks[name] and data.lastReceive < before then
+			xrpCache[name] = nil
+		elseif data.own and not bookmarks[name] and data.lastReceive < beforeOwn then
 			xrpCache[name] = nil
 		end
 	end
