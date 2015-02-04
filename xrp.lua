@@ -88,6 +88,27 @@ xrpPrivate.version = GetAddOnMetadata(addonName, "Version")
 xrpPrivate.noFunc = function() end
 xrpPrivate.weakMeta = { __mode = "v" }
 
+-- Fields to export and their formats.
+xrpPrivate.EXPORT_FIELDS = { "NA", "NI", "NT", "NH", "RA", "RC", "AE", "AH", "AW", "AG", "HH", "HB", "CU", "MO", "DE", "HI" }
+xrpPrivate.EXPORT_FORMATS = {
+	NA = "Name: %s\n",
+	NI = "Nickname: \"%s\"\n",
+	NT = "Title: %s\n",
+	NH = "House/Clan/Tribe: %s\n",
+	RA = "Race: %s\n",
+	RC = "Class: %s\n",
+	AE = "Eyes: %s\n",
+	AH = "Height: %s\n",
+	AW = "Weight: %s\n",
+	AG = "Age: %s\n",
+	HH = "Home: %s\n",
+	HB = "Birthplace: %s\n",
+	CU = "\nCurrently:\n%s\n",
+	MO = "\nMotto:\n%s\n",
+	DE = "\nDescription:\n------------\n%s\n",
+	HI = "\nHistory:\n--------\n%s\n",
+}
+
 do
 	local events = {}
 

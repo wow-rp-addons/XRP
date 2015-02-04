@@ -198,4 +198,109 @@
 			</Layer>
 		</Layers>
 	</ScrollFrame>
+	<!-- This isn't strictly a template, but it fits here. -->
+	<Frame name="XRPExport" toplevel="true" parent="UIParent" hidden="true" enableMouse="true" frameStrata="HIGH">
+		<Size x="500" y="350"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background-Dark" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets left="11" right="11" top="12" bottom="10"/>
+			<TileSize val="32"/>
+			<EdgeSize val="32"/>
+		</Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Header" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size x="300" y="68"/>
+					<Anchors>
+						<Anchor point="TOP" y="12"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="HeaderText" inherits="GameFontNormal" text="Export Profile">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Header" y="-14"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Instructions" inherits="GameFontWhite" text="Press Ctrl+C to copy or Escape to close.">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" x="16" y="18"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-2" y="-3"/>
+				</Anchors>
+			</Button>
+			<ScrollFrame name="$parentText" parentKey="Text" inherits="XRPScrollFrameArtTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="20" y="-35"/>
+					<Anchor point="BOTTOMRIGHT" x="-34" y="42"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.ScrollBar:ClearAllPoints()
+						self.ScrollBar:SetPoint("TOPLEFT", self, "TOPRIGHT", 7, -9)
+						self.ScrollBar:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", 7, 7)
+						self.ScrollBar.ScrollDownButton:SetPoint("TOP", self.ScrollBar, "BOTTOM", 0, 4)
+						self.ScrollBar.ScrollUpButton:SetPoint("BOTTOM", self.ScrollBar, "TOP", 0, -4)
+						self.ScrollBar.ScrollUpButton:Disable()
+						self.scrollBarHideable = 1
+						self.ScrollBar:Hide()
+						self.EditBox:SetWidth(self:GetWidth() - 18)
+					</OnLoad>
+				</Scripts>
+				<ScrollChild>
+					<EditBox parentKey="EditBox" multiLine="true" letters="262142" countInvisibleLetters="true" autoFocus="false">
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+						</Anchors>
+						<Scripts>
+							<OnCursorChanged>
+								self:HighlightText()
+							</OnCursorChanged>
+							<OnTextChanged>
+								if userInput then
+									self:SetText(self:GetParent():GetParent().currentText or "")
+									self:HighlightText()
+								end
+							</OnTextChanged>
+							<OnEscapePressed>
+								self:GetParent():GetParent():Hide()
+							</OnEscapePressed>
+						</Scripts>
+						<FontString inherits="GameFontWhite"/>
+					</EditBox>
+				</ScrollChild>
+			</ScrollFrame>
+			<Button inherits="UIPanelButtonTemplate" text="Close">
+				<Size x="96" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-28" y="14"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="HideParentPanel"/>
+				</Scripts>
+			</Button>
+		</Frames>
+			<Scripts>
+			<OnLoad>
+				if IsMacClient() then
+					self.Instructions:SetText("Press Cmd+C to copy or Escape to close.")
+				end
+			</OnLoad>
+			<OnShow>
+				self.Text.EditBox:SetFocus()
+				self.Text.EditBox:HighlightText()
+				PlaySound("igCharacterInfoOpen")
+			</OnShow>
+			<OnHide>
+				self.currentText = nil
+				PlaySound("igCharacterInfoClose")
+			</OnHide>
+		</Scripts>
+	</Frame>
 </Ui>

@@ -198,13 +198,19 @@ do
 	end
 end
 
+local function ExportProfile_OnClick(self, button, down)
+	local profile = self:GetParent().Profiles.contents
+	xrp:ExportPopup(profile, xrpPrivate.profiles[profile]:Export())
+end
+
 local function CreateEditor()
 	local frame = CreateFrame("Frame", "XRPEditor", UIParent, "XRPEditorTemplate")
 	frame.Load = Load
 	frame.CheckFields = CheckFields
 	frame.fields.FC.baseMenuList = FC_baseMenuList
-	frame.Parent:SetScript("PreClick", Parent_PreClick)
 	frame.Profiles.ArrowButton:SetScript("PreClick", Profiles_PreClick)
+	frame.ExportProfile:SetScript("OnClick", ExportProfile_OnClick)
+	frame.Parent:SetScript("PreClick", Parent_PreClick)
 	frame.SaveButton:SetScript("OnClick", Save_OnClick)
 	xrpPrivate:SetupAutomationFrame(frame.Automation)
 	frame:Load(xrpSaved.selected)
