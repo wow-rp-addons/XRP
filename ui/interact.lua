@@ -54,15 +54,20 @@ do
 end
 
 local function Cursor_OnEvent(self, event)
-	if not cursor or InCombatLockdown() or xrpPrivate.settings.interact.disableInstance and (IsInInstance() or IsInActiveWorldPVP()) or xrpPrivate.settings.interact.disablePvP and (UnitIsPVP("player") or UnitIsPVPFreeForAll("player")) or GetMouseFocus() ~= WorldFrame or not xrp.characters.byUnit.mouseover then
+	if not cursor or InCombatLockdown() or xrpPrivate.settings.interact.disableInstance and (IsInInstance() or IsInActiveWorldPVP()) or xrpPrivate.settings.interact.disablePvP and (UnitIsPVP("player") or UnitIsPVPFreeForAll("player")) or GetMouseFocus() ~= WorldFrame then
 		self:Hide()
 		return
 	end
-	self.current = not UnitCanAttack("player", "mouseover") and xrp:UnitName("mouseover") or nil
+	local character = xrp.characters.byUnit.mouseover
+	if not character or character.hide then
+		self:Hide()
+		return
+	end
+	self.current = not UnitCanAttack("player", "mouseover") and character.name or nil
 	-- Following two must be separate for UIErrorsFrame:Clear().
 	self.mountable = rightClick and self.current and UnitVehicleSeatCount("mouseover") > 0
 	self.mountInParty = self.mountable and (UnitInParty("mouseover") or UnitInRaid("mouseover"))
-	if self.current and xrp.characters.byUnit.mouseover.fields.VA and (not self.mountInParty or not IsItemInRange(88589, "mouseover")) then
+	if self.current and character.fields.VA and (not self.mountInParty or not IsItemInRange(88589, "mouseover")) then
 		self:Show()
 	else
 		self:Hide()
