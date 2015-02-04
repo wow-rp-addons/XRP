@@ -154,14 +154,6 @@ msp.myver = setmetatable({}, {
 	__metatable = false,
 })
 
-msp.bnet = setmetatable({}, {
-	__index = function(self, name)
-		return xrpPrivate.bnet[name]
-	end,
-	__newindex = xrpPrivate.noFunc,
-	__metatable = false,
-})
-
 function msp:Request(name, fields)
 	if not fields then
 		fields = { "TT" }
