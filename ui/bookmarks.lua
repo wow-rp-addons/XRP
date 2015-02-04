@@ -164,9 +164,9 @@ do
 		if self.disabled then
 			return false
 		end
-		if self.arg1 == 4 then
+		if self.arg1 == 5 then
 			return UIDROPDOWNMENU_INIT_MENU.character and UIDROPDOWNMENU_INIT_MENU.character.bookmark ~= nil
-		elseif self.arg1 == 5 then
+		elseif self.arg1 == 6 then
 			return UIDROPDOWNMENU_INIT_MENU.character and UIDROPDOWNMENU_INIT_MENU.character.hide ~= nil
 		end
 	end
@@ -177,14 +177,17 @@ do
 			xrp:View(UIDROPDOWNMENU_OPEN_MENU.character.name)
 		elseif arg1 == 3 then
 			local character = UIDROPDOWNMENU_OPEN_MENU.character
-			AddOrRemoveFriend(Ambiguate(character.name, "none"), xrp:Strip(character.fields.NA))
+			xrp:ExportPopup(xrp:Ambiguate(character.name), character.exportText)
 		elseif arg1 == 4 then
+			local character = UIDROPDOWNMENU_OPEN_MENU.character
+			AddOrRemoveFriend(Ambiguate(character.name, "none"), xrp:Strip(character.fields.NA))
+		elseif arg1 == 5 then
 			UIDROPDOWNMENU_OPEN_MENU.character.bookmark = not checked
 			if bookmarks.request.bookmark then
 				bookmarks.request.offset = bookmarks.List.scrollBar:GetValue()
 				bookmarks:Refresh()
 			end
-		elseif arg1 == 5 then
+		elseif arg1 == 6 then
 			UIDROPDOWNMENU_OPEN_MENU.character.hide = not checked
 			if not bookmarks.request.showHidden then
 				bookmarks.request.offset = bookmarks.List.scrollBar:GetValue()
@@ -193,11 +196,12 @@ do
 		end
 	end
 	Bookmarks_baseMenuList = {
-		{ text = "View (cached)", arg1 = 1, notCheckable = true, checked = Menu_Checked, func = Menu_Click, },
-		{ text = "View (live)", arg1 = 2, notCheckable = true, checked = Menu_Checked, func = Menu_Click, },
-		{ text = "Add friend", arg1 = 3, notCheckable = true, func = Menu_Click, },
-		{ text = "Bookmark", arg1 = 4, isNotRadio = true, checked = Menu_Checked, func = Menu_Click, },
-		{ text = "Hide profile", arg1 = 5, isNotRadio = true, checked = Menu_Checked, func = Menu_Click, },
+		{ text = "View (cached)...", arg1 = 1, notCheckable = true, checked = Menu_Checked, func = Menu_Click, },
+		{ text = "View (live)...", arg1 = 2, notCheckable = true, checked = Menu_Checked, func = Menu_Click, },
+		{ text = "Export...", arg1 = 3, notCheckable = true, checked = Menu_Checked, func = Menu_Click, },
+		{ text = "Add friend", arg1 = 4, notCheckable = true, func = Menu_Click, },
+		{ text = "Bookmark", arg1 = 5, isNotRadio = true, checked = Menu_Checked, func = Menu_Click, },
+		{ text = "Hide profile", arg1 = 6, isNotRadio = true, checked = Menu_Checked, func = Menu_Click, },
 		{ text = "Cancel", notCheckable = true, func = xrpPrivate.noFunc, },
 	}
 end

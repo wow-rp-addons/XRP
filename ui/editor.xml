@@ -515,7 +515,7 @@
 			<!-- Saved Character Profiles -->
 			<Button name="$parentProfiles" parentKey="Profiles" inherits="XRPDropDownTemplate">
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-225" y="-27"/>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-243" y="-27"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
@@ -563,6 +563,15 @@
 					<Anchor point="LEFT" relativeKey="$parent.RenameProfile" relativePoint="RIGHT"/>
 				</Anchors>
 			</Button>
+			<!-- E Profile Button -->
+			<Button parentKey="ExportProfile" inherits="XRPEditorProfileControlTemplate" text=" E ">
+				<KeyValues>
+					<KeyValue key="tooltipText" value="Export"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.CopyProfile" relativePoint="RIGHT"/>
+				</Anchors>
+			</Button>
 			<!-- Auto Button -->
 			<Button parentKey="AutoButton" inherits="XRPEditorProfileControlTemplate" text="Auto">
 				<KeyValues>
@@ -570,7 +579,7 @@
 				</KeyValues>
 				<Size x="50" y="28"/>
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.CopyProfile" relativePoint="RIGHT" x="22"/>
+					<Anchor point="LEFT" relativeKey="$parent.ExportProfile" relativePoint="RIGHT" x="12"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>

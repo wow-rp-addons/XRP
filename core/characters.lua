@@ -93,6 +93,33 @@ do
 				return xrpCache[name].lastReceive
 			elseif component == "noRequest" then
 				return not self[rq]
+			elseif component == "exportText" then
+				local EXPORT_FIELDS, EXPORT_FORMATS = xrpPrivate.EXPORT_FIELDS, xrpPrivate.EXPORT_FORMATS
+				local fields
+				if name == xrpPrivate.playerWithRealm then
+					fields = xrpPrivate.current.fields
+				else
+					fields = xrpCache[name].fields
+				end
+				local shortName, realm = name:match(FULL_PLAYER_NAME:format("(.+)", "(.+)"))
+				realm = xrp:RealmDisplayName(realm)
+				local export = { shortName, " (", realm, ")\n" }
+				for i = 1, #shortName + #realm + 3 do
+					export[#export + 1] = "="
+				end
+				export[#export + 1] = "\n"
+				for i, field in ipairs(EXPORT_FIELDS) do
+					if fields[field] then
+						local fieldText = fields[field]
+						if field == "AH" then
+							fieldText = xrp:Height(fieldText)
+						elseif field == "AW" then
+							fieldText = xrp:Weight(fieldText)
+						end
+						export[#export + 1] = EXPORT_FORMATS[field]:format(fieldText)
+					end
+				end
+				return table.concat(export)
 			end
 		end,
 		__newindex = function(self, component, value)

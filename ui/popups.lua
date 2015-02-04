@@ -17,6 +17,17 @@
 
 local addonName, xrpPrivate = ...
 
+function xrp:ExportPopup(title, text)
+	if not title or not text then return end
+	XRPExport.currentText = text
+	XRPExport.Text.EditBox:SetText(text)
+	XRPExport.HeaderText:SetFormattedText("Export: %s", title)
+	if XRPExport:IsShown() then
+		HideUIPanel(XRPExport)
+	end
+	ShowUIPanel(XRPExport)
+end
+
 local function CloseParent(self)
 	self:GetParent():Hide()
 end

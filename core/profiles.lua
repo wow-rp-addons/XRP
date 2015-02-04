@@ -240,6 +240,50 @@ do
 			end
 			return list
 		end,
+		Export = function(self)
+			local name = self[nk]
+			local EXPORT_FIELDS, EXPORT_FORMATS = xrpPrivate.EXPORT_FIELDS, xrpPrivate.EXPORT_FORMATS
+			local fields, profiles = {}, xrpSaved.profiles
+			for field, contents in pairs(xrpSaved.meta.fields) do
+				fields[field] = contents
+			end
+			do
+				local parents, count, inherit = {}, 0, profiles[name].parent
+				while inherit and count < 16 do
+					count = count + 1
+					parents[#parents + 1] = inherit
+					inherit = profiles[inherit].parent
+				end
+				for i, profile in ipairs(parents) do
+					for field, contents in pairs(profiles[profile].fields) do
+						if xrpPrivate.profiles[name].inherits[field] == profile then
+							fields[field] = contents
+						end
+					end
+				end
+			end
+			for field, contents in pairs(profiles[name].fields) do
+				fields[field] = contents
+			end
+			local realm = xrp:RealmDisplayName(xrpPrivate.realm)
+			local export = { xrpPrivate.player, " (", realm, ") - ", name, "\n" }
+			for i = 1, #xrpPrivate.player + #realm + #name + 6 do
+				export[#export + 1] = "="
+			end
+			export[#export + 1] = "\n"
+			for i, field in ipairs(EXPORT_FIELDS) do
+				if fields[field] then
+					local fieldText = fields[field]
+					if field == "AH" then
+						fieldText = xrp:Height(fieldText)
+					elseif field == "AW" then
+						fieldText = xrp:Weight(fieldText)
+					end
+					export[#export + 1] = EXPORT_FORMATS[field]:format(fieldText)
+				end
+			end
+			return table.concat(export)
+		end,
 	}
 
 	local fieldsMeta = {
