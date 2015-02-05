@@ -189,9 +189,12 @@ do
 				local fields
 				if not isRequest then
 					fields = {}
-					local total = #chunkString
+					local total, totalFields = #chunkString, #dataTable
 					for i, chunk in ipairs(dataTable) do
-						total = total + #chunk + 1 -- +1 for the \1 byte.
+						total = total + #chunk
+						if i ~= totalFields then
+							total = total + 1 -- +1 for the \1 separator byte.
+						end
 						local field = chunk:match("^(%u%u)")
 						if field then
 							local messageNum = math.ceil(total/chunkSize)
@@ -512,8 +515,13 @@ msp.handlers = {
 		self.cache[name].partialMessage = nil
 	end,
 	["GMSP"] = function(self, name, message, channel)
-		local target, prefix, message = message:match(message:find("\30", nil, true) and "^(.-)\30([\1\2\3]?)(.+)$" or "^(.-)([\1\2\3]?)(.+)$")
-		if target ~= "" and target ~= xrpPrivate.playerWithRealm then return end
+		local target, prefix
+		if message:find("\30", nil, true) then
+			target, prefix, message = message:match("^(.-)\30([\1\2\3]?)(.+)$")
+		else
+			prefix, message = message:match("^([\1\2\3]?)(.+)$")
+		end
+		if target and target ~= xrpPrivate.playerWithRealm then return end
 		self.handlers[prefix ~= "" and ("MSP%s"):format(prefix) or "MSP"](self, name, message, channel)
 	end,
 }
