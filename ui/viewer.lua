@@ -57,17 +57,6 @@ do
 		for i, field in ipairs(DISPLAY) do
 			SetField(field, fields[field] or field == "NA" and xrp:Ambiguate(character.name) or field == "RA" and xrp.values.GR[fields.GR] or field == "RC" and xrp.values.GC[fields.GC] or nil)
 		end
-		if character.own then
-			viewer.Menu.baseMenuList[2].disabled = true
-			viewer.Menu.baseMenuList[3].disabled = true
-			viewer.Menu.baseMenuList[4].disabled = true
-			viewer.Menu.baseMenuList[5].disabled = true
-		else
-			viewer.Menu.baseMenuList[2].disabled = nil
-			viewer.Menu.baseMenuList[3].disabled = nil
-			viewer.Menu.baseMenuList[4].disabled = nil
-			viewer.Menu.baseMenuList[5].disabled = nil
-		end
 		viewer.XC:SetText("")
 		viewer.failed = nil
 		if character == viewer.current then
@@ -206,6 +195,13 @@ local function Menu_PreClick(self, button, down)
 		self.baseMenuList[2].disabled = true
 	else
 		self.baseMenuList[2].disabled = nil
+	end
+	if isOwn or not viewer.current.fields.VA then
+		self.baseMenuList[4].disabled = true
+		self.baseMenuList[5].disabled = true
+	else
+		self.baseMenuList[4].disabled = nil
+		self.baseMenuList[5].disabled = nil
 	end
 end
 
