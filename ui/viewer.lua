@@ -149,9 +149,9 @@ do
 			return false
 		end
 		if self.arg1 == 4 then
-			return UIDROPDOWNMENU_INIT_MENU:GetParent().current.bookmark ~= nil
+			return viewer.current.bookmark ~= nil
 		elseif self.arg1 == 5 then
-			return UIDROPDOWNMENU_INIT_MENU:GetParent().current.hide ~= nil
+			return viewer.current.hide ~= nil
 		end
 	end
 	local function Menu_Click(self, arg1, arg2, checked)
