@@ -66,7 +66,6 @@ msp.cache = setmetatable({}, {
 	__index = function(self, name)
 		self[name] = {
 			nextCheck = 0,
-			received = false,
 			time = {},
 		}
 		return self[name]
@@ -376,7 +375,7 @@ do
 	end
 end
 
--- Using GU is more efficient outgoing (~4 bytes less), but some addons don't
+-- Using GU is more efficient outgoing (~8 bytes less), but some addons don't
 -- properly expose it always, and it's about as efficient for the other side if
 -- we just ask for all the fields.
 local TT_REQ = { "?TT", "?GC", "?GF", "?GR", "?GS" }
@@ -529,7 +528,6 @@ msp:SetScript("OnEvent", function(self, event, prefix, message, channel, sender)
 
 		-- Ignore messages from ourselves (GMSP).
 		if name ~= xrpPrivate.playerWithRealm then
-			self.cache[name].received = true
 			self.cache[name].nextCheck = nil
 
 			self.handlers[prefix](self, name, message, channel)
@@ -542,7 +540,6 @@ msp:SetScript("OnEvent", function(self, event, prefix, message, channel, sender)
 		end
 
 		self.cache[name].bnet = true
-		self.cache[name].received = true
 		self.cache[name].nextCheck = nil
 
 		self.handlers[prefix](self, name, message, "BN")
@@ -563,7 +560,7 @@ msp:SetScript("OnEvent", function(self, event, prefix, message, channel, sender)
 			local name = xrp:UnitName(unit)
 			if not name then break end
 			if name ~= xrpPrivate.playerWithRealm then
-				if not inGroup[name] and not self.cache[name].received then
+				if not inGroup[name] and self.cache[name].nextCheck then
 					self.cache[name].nextCheck = 0
 				end
 				newInGroup[name] = true
@@ -680,10 +677,10 @@ function xrpPrivate:Request(name, fields)
 	end
 
 	local now = GetTime()
-	if not msp.cache[name].received and now < msp.cache[name].nextCheck then
+	if msp.cache[name].nextCheck and now < msp.cache[name].nextCheck then
 		self:FireEvent("FAIL", name, "nomsp")
 		return false
-	elseif not msp.cache[name].received then
+	elseif msp.cache[name].nextCheck then
 		msp.cache[name].nextCheck = now + 120
 	end
 
