@@ -1,4 +1,4 @@
-6.1.0.0_beta2 (2015-02-03):
+6.1.0.0_beta3 (2015-02-07):
 
 	- This version has been tested with both 6.0.3 (live) and 6.1.0 (PTR), and
 	  works correctly with both versions.
@@ -15,6 +15,11 @@
 	- (beta2) A profile exporter, which allows you to copy a plain-text
 	  version of a profile, has been added. This exporter is accessed through
 	  the editor, the viewer, and the bookmarks panel.
+
+	- (beta3) A simple in-game help system has been added to the bookmarks
+	  frame and the editor frame. It is accessed by clicking the large yellow
+	  button marked "i". The viewer will have this system added in a future
+	  release.
 
 	- (beta2) The viewer and bookmarks panel now have an option to add a
 	  character to one's in-game friends list directly from either of those
@@ -35,6 +40,16 @@
 	  disable those addons for the current character, rather than all
 	  characters.
 
+	- (beta3) Bugfix: Crossrealm profiles over Battle.net will now work
+	  correctly on the first login after client launch.
+
+	- (beta3) Bugfix: Fixed a rare Lua error from the viewer menu interacting
+	  with Blizzard code elsewhere. Enabling/disabling of these menu items,
+	  where appropriate, has also been improved.
+
+	- (beta3) Bugfix: Fixed an extremely rare situation which could lead to
+	  fields not properly being sent over group channels.
+
 For 6.0.2.1 or earlier users:
 
 	- Old versions of XRP should be removed from the Interface/AddOns folder
@@ -50,6 +65,9 @@ For 6.0.2.1 or earlier users:
 		- If you were previously disabling chat names or tooltip replacements
 		  by disabling those modules as addons, you can now disable them from
 		  the XRP interface options panel instead.
+
+		- Your profiles and settings are unaffected by these changes -- they
+		  will still all be there after upgrading.
 
 	- The full list of changes for 6.0.3.0 can be found in the notes for that
 	  release or 6.0.3.1.
