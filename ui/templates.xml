@@ -198,6 +198,27 @@
 			</Layer>
 		</Layers>
 	</ScrollFrame>
+	<Button name="XRPHelpButtonTemplate" parentKey="HelpButton" inherits="MainHelpPlateButton" virtual="true">
+		<Anchors>
+			<Anchor point="TOPLEFT" x="39" y="20"/>
+		</Anchors>
+		<Scripts>
+			<OnClick>
+				local frame = self:GetParent()
+				if not HelpPlate_IsShowing(frame.helpPlates) then
+					HelpPlate_Show(frame.helpPlates, frame, self, true)
+				else
+					HelpPlate_Hide(true)
+				end
+			</OnClick>
+			<OnHide>
+				if HelpPlate_IsShowing(self:GetParent().helpPlates) then
+					HelpPlate_Hide()
+				end
+				Main_HelpPlate_Button_OnLeave(self)
+			</OnHide>
+		</Scripts>
+	</Button>
 	<!-- This isn't strictly a template, but it fits here. -->
 	<Frame name="XRPExport" toplevel="true" parent="UIParent" hidden="true" enableMouse="true" frameStrata="HIGH">
 		<Size x="500" y="350"/>

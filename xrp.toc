@@ -17,6 +17,7 @@ lib\libbw.lua
 core\msp.lua
 core\characters.lua
 core\automation.lua
+ui\help.lua
 ui\popups.lua
 ui\commands.lua
 ui\chat.lua

@@ -203,10 +203,27 @@ local function ExportProfile_OnClick(self, button, down)
 	xrp:ExportPopup(profile, xrpPrivate.profiles[profile]:Export())
 end
 
+local function HelpButton_PreClick(self, button, down)
+	if editor.panes[1]:IsVisible() then
+		if editor.Automation:IsVisible() then
+			editor.helpPlates = xrpPrivate.Help.EditorAppearanceAuto
+		else
+			editor.helpPlates = xrpPrivate.Help.EditorAppearanceNoAuto
+		end
+	else
+		if editor.Automation:IsVisible() then
+			editor.helpPlates = xrpPrivate.Help.EditorBiographyAuto
+		else
+			editor.helpPlates = xrpPrivate.Help.EditorBiographyNoAuto
+		end
+	end
+end
+
 local function CreateEditor()
 	local frame = CreateFrame("Frame", "XRPEditor", UIParent, "XRPEditorTemplate")
 	frame.Load = Load
 	frame.CheckFields = CheckFields
+	frame.HelpButton:SetScript("PreClick", HelpButton_PreClick)
 	frame.fields.FC.baseMenuList = FC_baseMenuList
 	frame.Profiles.ArrowButton:SetScript("PreClick", Profiles_PreClick)
 	frame.ExportProfile:SetScript("OnClick", ExportProfile_OnClick)
