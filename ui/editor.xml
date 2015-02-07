@@ -253,6 +253,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Button name="$parentHelpButton" inherits="XRPHelpButtonTemplate"/>
 			<Frame parentKey="Appearance" parentArray="panes" hidden="false">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.Inset" relativePoint="TOPLEFT"/>

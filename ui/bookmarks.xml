@@ -188,6 +188,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Button name="$parentHelpButton" inherits="XRPHelpButtonTemplate"/>
 			<ScrollFrame name="$parentList" parentKey="List" inherits="HybridScrollFrameTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.Inset" x="4" y="-2"/>
