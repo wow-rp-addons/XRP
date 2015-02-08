@@ -321,10 +321,17 @@ do
 	}
 end
 
+local function HelpButton_PreClick(self, button, down)
+	if not bookmarks.results or #bookmarks.results == 0 then
+		bookmarks.Tab4:Click()
+	end
+end
+
 local function CreateBookmarks()
 	local frame = CreateFrame("Frame", "XRPBookmarks", UIParent, "XRPBookmarksTemplate")
 	frame.Refresh = Bookmarks_Refresh
 	frame.helpPlates = xrpPrivate.Help.Bookmarks
+	frame.HelpButton:SetScript("PreClick", HelpButton_PreClick)
 	frame.List.update = Bookmarks_Scroll_update
 	frame.Tab1.request = { bookmark = true, sortType = "NA", defaultSortType = "NA", offset = 0, lastRefresh = 0, faction = {}, race = {}, class = {} }
 	frame.Tab2.request = { own = true, sortType = "NA", defaultSortType = "NA", offset = 0, lastRefresh = 0, faction = {}, race = {}, class = {} }

@@ -26,7 +26,7 @@ local BOOKMARKS_HELP = {
 	FrameSize = { width = 338, height = 499 },
 	{
 		ButtonPos = { x = 291, y = 1 },
-		HighLightBox = { x = 58, y = -7, width = 273, height = 30 },
+		HighLightBox = { x = 58, y = -7, width = 238, height = 30 },
 		ToolTipDir = "RIGHT",
 		ToolTipText = "You can filter the list of profiles in a number of ways, including by class, race, and faction.\n\nThe results of your filter choices can be sorted by character name, roleplay name, realm then character name, or date.\n\nYou can also perform a full-profile search by enabling the full-text filter. This may be slow if you have many profiles cached, so you'll have to press enter to trigger the search after typing.",
 	},
@@ -43,8 +43,8 @@ local BOOKMARKS_HELP = {
 		ToolTipText = "The number of profiles matching your filter results is indicated here.\n\nHidden profiles are not shown by default, so even the \"All\" view may not list everything initially!",
 	},
 	{
-		ButtonPos = { x = 263, y = -460 },
-		HighLightBox = { x = 10, y = -466, width = 290, height = 35 },
+		ButtonPos = { x = 265, y = -460 },
+		HighLightBox = { x = 10, y = -466, width = 263, height = 35 },
 		ToolTipDir = "UP",
 		ToolTipText = "Each of these tabs provides a predefined filter, \"Bookmarks\" and \"All\" being self-explanatory.\n\nThe \"Own\" tab lists your own characters from this WoW account, and the \"Recent\" tab lists profiles XRP has seen in the past three hours, sorted by most recent first.",
 	},
@@ -72,9 +72,9 @@ local EDITOR_MAIN_HELP = {
 }
 
 local EDITOR_AUTO_BUTTON_HELP = {
-	ButtonPos = { x = 385, y = 3 },
+	ButtonPos = { x = 360, y = -10 },
 	HighLightBox = { x = 381, y = -3, width = 52, height = 32 },
-	ToolTipDir = "DOWN",
+	ToolTipDir = "LEFT",
 	ToolTipText = "The \"Auto\" button shows the controls for XRP's automated profile switching.\n\nIf you open this help system with these controls visible, more information will be available.",
 }
 
@@ -213,8 +213,8 @@ local EDITOR_BIOGRAPHY_HELP = {
 	},
 }
 
-local LARGE_SIZE = { width = 439, height = 535 }
-local AUTO_SIZE = { width = 648, height = 535 }
+local LARGE_SIZE = { width = 439, height = 500 }
+local AUTO_SIZE = { width = 648, height = 500 }
 
 local EDITOR_APPEARANCE_NOAUTO_HELP
 do

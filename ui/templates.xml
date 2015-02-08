@@ -31,6 +31,13 @@
 						pane:Hide()
 					end
 				end
+				if parent.helpPlates and HelpPlate_IsShowing(parent.helpPlates) then
+					local preclick = parent.HelpButton:GetScript("PreClick")
+					if preclick then
+						preclick(parent.HelpButton, "LeftButton", false)
+					end
+					HelpPlate_Show(parent.helpPlates, parent, self, true)
+				end
 				PlaySound("igCharacterInfoTab")
 			</OnClick>
 		</Scripts>
@@ -204,9 +211,9 @@
 		</Anchors>
 		<Scripts>
 			<OnClick>
-				local frame = self:GetParent()
-				if not HelpPlate_IsShowing(frame.helpPlates) then
-					HelpPlate_Show(frame.helpPlates, frame, self, true)
+				local parent = self:GetParent()
+				if not HelpPlate_IsShowing(parent.helpPlates) then
+					HelpPlate_Show(parent.helpPlates, parent, self, true)
 				else
 					HelpPlate_Hide(true)
 				end
