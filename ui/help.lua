@@ -37,8 +37,8 @@ local BOOKMARKS_HELP = {
 		ToolTipText = "Each of these entries displays a profile XRP has cached, matching your filter selections.\n\nTo interact with these entries, right-click on them and a menu with a number of options will appear.\n\nIn this menu, you can access the cached profile, export the profile, or even add the character directly to your friends list.",
 	},
 	{
-		ButtonPos = { x = 150, y = -430 },
-		HighLightBox = { x = 5, y = -443, width = 170, height = 20 },
+		ButtonPos = { x = 170, y = -430 },
+		HighLightBox = { x = 5, y = -443, width = 180, height = 20 },
 		ToolTipDir = "UP",
 		ToolTipText = "The number of profiles matching your filter results is indicated here.\n\nHidden profiles are not shown by default, so even the \"All\" view may not list everything initially!",
 	},
@@ -58,10 +58,16 @@ local EDITOR_MAIN_HELP = {
 		ToolTipText = "These controls manage the profile you're editing.\n\nThe dropdown selects a profile to edit, and the buttons, from left to right, are add profile, delete profile, rename profile, copy profile, and export profile.\n\nYou can add, delete, rename, and copy profiles at will. The only exception is that XRP won't let you delete your currently-active profile!",
 	},
 	{
+		ButtonPos = { x = 360, y = -10 },
+		HighLightBox = { x = 381, y = -3, width = 52, height = 32 },
+		ToolTipDir = "LEFT",
+		ToolTipText = "The \"Auto\" button shows the controls for XRP's automated profile switching.\n\nIf you open this help system with these controls visible, more information will be available.",
+	},
+	{
 		ButtonPos = { x = 174, y = -466 },
 		HighLightBox = { x = 5, y = -477, width = 190, height = 24 },
 		ToolTipDir = "UP",
-		ToolTipText = "This button allows you to select a parent profile for the profile you're editing.\n\nHaving a parent profile lets you select fields, using the checkboxes next to the field names, to inherit from the parent profile if they're empty on this profile. Any inherited fields will show in a light grey text color, rather than white.\n\nYou can even use profile that has a parent as a different profile's parent, up to 16 levels deep.",
+		ToolTipText = "This button allows you to select a parent profile for the profile you're editing.\n\nHaving a parent profile lets you select fields, using the checkboxes next to the field names, to inherit from the parent profile if they're empty on this profile. Any inherited fields will show in a light grey text color, rather than white.\n\nYou can even use a profile that has a parent as a different profile's parent, up to 16 levels deep.",
 	},
 	{
 		ButtonPos = { x = 218, y = -466 },
@@ -69,13 +75,6 @@ local EDITOR_MAIN_HELP = {
 		ToolTipDir = "UP",
 		ToolTipText = "This pair of buttons is only available when you've made changes to the profile you're editing.\n\nIf you've made changes, pressing \"Revert\" will discard any changes you've made since the profile was last saved.\n\nPressing \"Save\" will save any changes you've made, including field text changes and parent/inheritance changes.",
 	},
-}
-
-local EDITOR_AUTO_BUTTON_HELP = {
-	ButtonPos = { x = 360, y = -10 },
-	HighLightBox = { x = 381, y = -3, width = 52, height = 32 },
-	ToolTipDir = "LEFT",
-	ToolTipText = "The \"Auto\" button shows the controls for XRP's automated profile switching.\n\nIf you open this help system with these controls visible, more information will be available.",
 }
 
 local EDITOR_AUTO_HELP = {
@@ -89,13 +88,13 @@ local EDITOR_AUTO_HELP = {
 		ButtonPos = { x = 610, y = -100 },
 		HighLightBox = { x = 456, y = -103, width = 177, height = 38 },
 		ToolTipDir = "RIGHT",
-		ToolTipText = "Select a profile to use with the form/set you've selected above.\n\nA profile can be used for any number of forms/sets.",
+		ToolTipText = "Select a profile to use with the form/set you've selected above.\n\nA profile can be used for any number of forms/sets, and XRP will try to pick the closest match to your current form/set when you switch.",
 	},
 	{
 		ButtonPos = { x = 610, y = -135 },
 		HighLightBox = { x = 456, y = -146, width = 177, height = 23 },
 		ToolTipDir = "DOWN",
-		ToolTipText = "When available, these buttons control the saving of a selection. Reverting will reset the selection back to the last-saved choice.\n\nWhen saving, if the profile would be active due to your current form, it will immediately become active.\n\nWhen activating automatically at other times, there is a brief delay after changing forms/sets.",
+		ToolTipText = "When available, these buttons control the saving of a selection. Reverting will reset the selection back to the last-saved choice.\n\nWhen saving, if the profile would be active due to your current form, it will immediately be activated.\n\nWhen activating automatically at other times, there is a brief delay after changing forms/sets or after leaving combat.",
 	},
 }
 
@@ -225,7 +224,6 @@ do
 	for i, helpPlate in ipairs(EDITOR_MAIN_HELP) do
 		plates[#plates + 1] = helpPlate
 	end
-	plates[#plates + 1] = EDITOR_AUTO_BUTTON_HELP
 	for i, helpPlate in ipairs(EDITOR_APPEARANCE_HELP) do
 		plates[#plates + 1] = helpPlate
 	end
@@ -258,7 +256,6 @@ do
 	for i, helpPlate in ipairs(EDITOR_MAIN_HELP) do
 		plates[#plates + 1] = helpPlate
 	end
-	plates[#plates + 1] = EDITOR_AUTO_BUTTON_HELP
 	for i, helpPlate in ipairs(EDITOR_BIOGRAPHY_HELP) do
 		plates[#plates + 1] = helpPlate
 	end
@@ -282,10 +279,46 @@ do
 	EDITOR_BIOGRAPHY_AUTO_HELP = plates
 end
 
+local VIEWER_HELP = {
+	FramePos = FRAME_POS,
+	FrameSize = LARGE_SIZE,
+	{
+		ButtonPos = { x = 358, y = 34 },
+		HighLightBox = { x = 394, y = 22, width = 22, height = 22 },
+		ToolTipDir = "DOWN",
+		ToolTipText = "This button accesses the viewer's menu. In this menu you can refresh the profile (once every 30 seconds), add the character to your bookmarks or friends list, or even export the profile to plain text.",
+	},
+	{
+		ButtonPos = { x = 388, y = -38 },
+		HighLightBox = { x = 12, y = -45, width = 414, height = 67 },
+		ToolTipDir = "RIGHT",
+		ToolTipText = "The shorter fields displayed here may not always be able to show the full text of a field. If that happens, mousing over the field will display a tooltip with the full text.\n\nAdditionally, the height and weight fields are, whenever possible, automatically converted to match the units you've selected in XRP's interface options.",
+	},
+	{
+		ButtonPos = { x = 388, y = -108 },
+		HighLightBox = { x = 12, y = -115, width = 414, height = 355 },
+		ToolTipDir = "RIGHT",
+		ToolTipText = "The longer fields displayed here will have scroll bars appear if the text is too lengthy to fit in the field as-is.\n\nIn addition, most internet links will be displayed in |cffc845faepic purple|r. When clicked, a box will pop up, allowing you to copy the link.",
+	},
+	{
+		ButtonPos = { x = 174, y = -466 },
+		HighLightBox = { x = 3, y = -477, width = 190, height = 22 },
+		ToolTipDir = "UP",
+		ToolTipText = "The names and versions of certain addons active for the profile's subject are displayed here.",
+	},
+	{
+		ButtonPos = { x = 218, y = -466 },
+		HighLightBox = { x = 242, y = -477, width = 190, height = 22 },
+		ToolTipDir = "UP",
+		ToolTipText = "The incoming status of the profile currently being viewed is displayed here. In general, it will show whether the profile is in the process of receiving or whether it has been received.",
+	},
+}
+
 xrpPrivate.Help = {
 	Bookmarks = BOOKMARKS_HELP,
 	EditorAppearanceNoAuto = EDITOR_APPEARANCE_NOAUTO_HELP,
 	EditorAppearanceAuto = EDITOR_APPEARANCE_AUTO_HELP,
 	EditorBiographyNoAuto = EDITOR_BIOGRAPHY_NOAUTO_HELP,
 	EditorBiographyAuto = EDITOR_BIOGRAPHY_AUTO_HELP,
+	Viewer = VIEWER_HELP,
 }

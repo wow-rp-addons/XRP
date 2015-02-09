@@ -205,6 +205,7 @@ local function Menu_PreClick(self, button, down)
 	end
 end
 
+viewer.helpPlates = xrpPrivate.Help.Viewer
 viewer.Menu.baseMenuList = Menu_baseMenuList
 viewer.Menu:SetScript("PreClick", Menu_PreClick)
 xrp:HookEvent("FIELD", FIELD)

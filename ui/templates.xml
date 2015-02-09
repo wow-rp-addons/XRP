@@ -35,8 +35,8 @@
 					local preclick = parent.HelpButton:GetScript("PreClick")
 					if preclick then
 						preclick(parent.HelpButton, "LeftButton", false)
+						HelpPlate_Show(parent.helpPlates, parent, self, true)
 					end
-					HelpPlate_Show(parent.helpPlates, parent, self, true)
 				end
 				PlaySound("igCharacterInfoTab")
 			</OnClick>
@@ -213,6 +213,7 @@
 			<OnClick>
 				local parent = self:GetParent()
 				if not HelpPlate_IsShowing(parent.helpPlates) then
+					CloseDropDownMenus()
 					HelpPlate_Show(parent.helpPlates, parent, self, true)
 				else
 					HelpPlate_Hide(true)
