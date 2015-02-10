@@ -19,6 +19,8 @@ local addonName, xrpPrivate = ...
 
 local currentUnit = {}
 
+local TooltipFrame, replace
+
 local RenderTooltip
 do
 	local function TruncateLine(text, length, offset, double)
@@ -103,7 +105,9 @@ do
 		-- lines without needing to completely redo the tooltip from scratch
 		-- (and lose the tooltip's state of what it's looking at if we do).
 		--
-		-- First case: If there's already a line to replace.
+		-- First case: If there's already a line to replace. This only happens
+		-- if using the GameTooltip, as XRPTooltip is cleared before rendering
+		-- starts.
 		if numline <= oldlines then
 			local leftline = GTTL:format(numline)
 			local rightline = GTTR:format(numline)
@@ -119,23 +123,30 @@ do
 			else
 				_G[rightline]:Hide()
 			end
-		-- Second case: If there are no more lines to replace.
-		else
+		else -- Second case: If there are no more lines to replace.
 			if right then
-				GameTooltip:AddDoubleLine(left or " ", right, 1, 1, 1, 1, 1, 1)
+				TooltipFrame:AddDoubleLine(left or " ", right, 1, 1, 1, 1, 1, 1)
 			elseif left then
-				GameTooltip:AddLine(left, 1, 1, 1)
+				TooltipFrame:AddLine(left, 1, 1, 1)
 			end
 		end
 	end
 
 	function RenderTooltip()
-		oldlines = GameTooltip:NumLines()
+		if not replace then
+			TooltipFrame:ClearLines()
+			TooltipFrame:SetOwner(GameTooltip, "ANCHOR_TOPRIGHT")
+		end
+		oldlines = TooltipFrame:NumLines()
 		numline = 0
 		local showProfile = not (currentUnit.noProfile or currentUnit.character.hide)
 		local fields = currentUnit.character.fields
 
 		if currentUnit.type == "player" then
+			if not replace and (not showProfile or not fields.VA) then
+				TooltipFrame:Hide()
+				return
+			end
 
 			RenderLine(currentUnit.nameFormat:format(showProfile and TruncateLine(xrp:Strip(fields.NA), 65, 0, false) or xrp:Ambiguate(currentUnit.character.name)), currentUnit.icons)
 
@@ -151,19 +162,21 @@ do
 				RenderLine(" ")
 			end
 
-			RenderLine(currentUnit.guild)
+			if replace then
+				RenderLine(currentUnit.guild)
 
-			RenderLine(currentUnit.titleRealm, (showProfile or currentUnit.character.hide) and fields.VA and ("|cff7f7f7f%s|r"):format(ParseVersion(currentUnit.character.hide and "Hidden/0" or fields.VA)) or nil)
+				RenderLine(currentUnit.titleRealm, (showProfile or currentUnit.character.hide) and fields.VA and ("|cff7f7f7f%s|r"):format(ParseVersion(currentUnit.character.hide and "Hidden/0" or fields.VA)) or nil)
 
-			if xrpPrivate.settings.tooltip.extraSpace then
-				RenderLine(" ")
+				if xrpPrivate.settings.tooltip.extraSpace then
+					RenderLine(" ")
+				end
 			end
 
 			if showProfile and fields.CU then
 				RenderLine(("|cffa08050Currently:|r |cffe6b399%s|r"):format(TruncateLine(xrp:Strip(fields.CU), 70, 11)))
 			end
 
-			RenderLine(currentUnit.info:format(showProfile and not xrpPrivate.settings.tooltip.noRace and TruncateLine(xrp:Strip(fields.RA), 40, 0, false) or xrp.values.GR[fields.GR] or UNKNOWN, showProfile and not xrpPrivate.settings.tooltip.noClass and TruncateLine(xrp:Strip(fields.RC), 40, 0, false) or xrp.values.GC[fields.GC] or UNKNOWN, 40, 0, false))
+			RenderLine(currentUnit.info:format(showProfile and not xrpPrivate.settings.tooltip.noRace and TruncateLine(xrp:Strip(fields.RA), 40, 0, false) or xrp.values.GR[fields.GR] or UNKNOWN, showProfile and not xrpPrivate.settings.tooltip.noClass and TruncateLine(xrp:Strip(fields.RC), 40, 0, false) or xrp.values.GC[fields.GC] or UNKNOWN, 40, 0, false), not replace and ("|cff7f7f7f%s|r"):format(ParseVersion(fields.VA)) or nil)
 
 			if showProfile and (fields.FR and fields.FR ~= "0" or fields.FC and fields.FC ~= "0") then
 				local color = fields.FC == "1" and "99664d" or "66b380"
@@ -175,28 +188,32 @@ do
 				end
 				RenderLine(frline, fcline)
 			end
-
-			RenderLine(currentUnit.location)
+			if replace then
+				RenderLine(currentUnit.location)
+			end
 		elseif currentUnit.type == "pet" then
 			RenderLine(currentUnit.nameFormat, currentUnit.icons)
 			RenderLine(currentUnit.titleRealm:format(showProfile and fields.NA and TruncateLine(xrp:Strip(fields.NA), 60, 0, false) or xrp:Ambiguate(currentUnit.character.name)))
 			RenderLine(currentUnit.info)
 		end
-		-- In rare cases (test case: target without RP addon, is PvP flagged)
-		-- there will be some leftover lines at the end of the tooltip. This
-		-- hides them, if they exist.
-		while numline < oldlines do
-			numline = numline + 1
-			_G[GTTL:format(numline)]:Hide()
-			_G[GTTR:format(numline)]:Hide()
+
+		if replace then
+			-- In rare cases (test case: target without RP addon, is PvP
+			-- flagged) there will be some leftover lines at the end of the
+			-- tooltip. This hides them, if they exist.
+			while numline < oldlines do
+				numline = numline + 1
+				_G[GTTL:format(numline)]:Hide()
+				_G[GTTR:format(numline)]:Hide()
+			end
+
+			if currentUnit.icons and (currentUnit.type == "pet" or fields.NI or fields.NT or currentUnit.guild or not fields.VA) then
+				GameTooltipTextRight2:SetText(" ")
+				GameTooltipTextRight2:Show()
+			end
 		end
 
-		if currentUnit.icons and (currentUnit.type == "pet" or fields.NI or fields.NT or currentUnit.guild or not fields.VA) then
-			GameTooltipTextRight2:SetText(" ")
-			GameTooltipTextRight2:Show()
-		end
-
-		GameTooltip:Show()
+		TooltipFrame:Show()
 	end
 end
 
@@ -229,25 +246,33 @@ do
 
 		do
 			local color = REACTION_COLORS[(faction ~= playerFaction and faction ~= "Neutral" or attackMe and meAttack) and "hostile" or (faction == "Neutral" or meAttack or attackMe) and "neutral" or "friendly"]
-			-- Can only ever be one of AFK, DND, or offline.
-			local isAFK = connected and UnitIsAFK(unit)
-			local isDND = connected and not isAFK and UnitIsDND(unit)
-			currentUnit.nameFormat = ("|cff%s%%s|r%s"):format(color, not connected and " |cff888888<Offline>|r" or isAFK and " |cff99994d<Away>|r" or isDND and " |cff994d4d<Busy>|r" or "")
+			if replace then
+				-- Can only ever be one of AFK, DND, or offline.
+				local isAFK = connected and UnitIsAFK(unit)
+				local isDND = connected and not isAFK and UnitIsDND(unit)
+				currentUnit.nameFormat = ("|cff%s%%s|r%s"):format(color, not connected and " |cff888888<Offline>|r" or isAFK and " |cff99994d<Away>|r" or isDND and " |cff994d4d<Busy>|r" or "")
+			else
+				currentUnit.nameFormat = ("|cff%s%%s|r"):format(color)
+			end
 		end
 
 		do
 			local watchIcon = xrpPrivate.settings.tooltip.watching and UnitIsUnit("player", unit .. "target") and "|TInterface\\LFGFrame\\BattlenetWorking0:32:32:10:-2|t" or nil
-			local ffa = UnitIsPVPFreeForAll(unit)
-			local pvpIcon = (UnitIsPVP(unit) or ffa) and ("|TInterface\\TargetingFrame\\UI-PVP-%s:20:20:4:-2:8:8:0:5:0:5:255:255:255|t"):format((ffa or faction == "Neutral") and "FFA" or faction) or nil
-			currentUnit.icons = watchIcon and pvpIcon and watchIcon .. pvpIcon or watchIcon or pvpIcon
+			if replace then
+				local ffa = UnitIsPVPFreeForAll(unit)
+				local pvpIcon = (UnitIsPVP(unit) or ffa) and ("|TInterface\\TargetingFrame\\UI-PVP-%s:20:20:4:-2:8:8:0:5:0:5:255:255:255|t"):format((ffa or faction == "Neutral") and "FFA" or faction) or nil
+				currentUnit.icons = watchIcon and pvpIcon and watchIcon .. pvpIcon or watchIcon or pvpIcon
+			else
+				currentUnit.icons = watchIcon
+			end
 		end
 
-		do
+		if replace then
 			local guildName, guildRank, guildIndex = GetGuildInfo(unit)
 			currentUnit.guild = guildName and (xrpPrivate.settings.tooltip.guildRank and (xrpPrivate.settings.tooltip.guildIndex and "%s (%u) of <%s>" or "%s of <%s>") or "<%s>"):format(xrpPrivate.settings.tooltip.guildRank and guildRank or guildName, xrpPrivate.settings.tooltip.guildIndex and guildIndex + 1 or guildName, guildName) or nil
 		end
 
-		do
+		if replace then
 			local realm = currentUnit.character.name:match(FULL_PLAYER_NAME:format(".+", "(.+)"))
 			if realm == xrpPrivate.realm then
 				realm = nil
@@ -255,13 +280,16 @@ do
 			currentUnit.titleRealm = (realm and "|cff%s%s (%s)|r" or "|cff%s%s|r"):format(FACTION_COLORS[faction], UnitPVPName(unit) or xrp:Ambiguate(currentUnit.character.name), realm and xrp:RealmDisplayName(realm))
 		end
 
-		do
+		if replace then
 			local level = UnitLevel(unit)
 			local class, classID = UnitClassBase(unit)
 			currentUnit.info = ("%s %%s |c%s%%s|r (%s)"):format((level < 1 and UNIT_LETHAL_LEVEL_TEMPLATE or UNIT_LEVEL_TEMPLATE):format(level), RAID_CLASS_COLORS[classID] and RAID_CLASS_COLORS[classID].colorStr or "ffffffff", PLAYER)
+		else
+			local class, classID = UnitClassBase(unit)
+			currentUnit.info = ("%%s |c%s%%s|r"):format(RAID_CLASS_COLORS[classID] and RAID_CLASS_COLORS[classID].colorStr or "ffffffff")
 		end
 
-		do
+		if replace then
 			-- Ew, screen-scraping.
 			local location = connected and not UnitIsVisible(unit) and GameTooltipTextLeft3:GetText() or nil
 			currentUnit.location = location and ("|cffffeeaaZone:|r %s"):format(location) or nil
@@ -329,7 +357,7 @@ do
 end
 
 local enabled
-local function RECEIVE(event, name)
+local function Tooltip_RECEIVE(event, name)
 	if not enabled or not currentUnit.character or name ~= currentUnit.character.name then return end
 	local tooltip, unit = GameTooltip:GetUnit()
 	if tooltip then
@@ -341,12 +369,30 @@ local function RECEIVE(event, name)
 	-- visible if we don't do this. It still bounces back into visibility if
 	-- it's partly faded out, but it'll just fade again.
 	if not GameTooltip:IsUnit("mouseover") then
-		GameTooltip:FadeOut()
+		TooltipFrame:FadeOut()
+	end
+end
+
+local function XRPTooltip_OnUpdate(self, elapsed)
+	if not self.fading and not UnitExists("mouseover") then
+		self.fading = true
+		TooltipFrame:FadeOut()
+	end
+end
+
+local function XRPTooltip_OnHide(self)
+	self.fading = nil
+	GameTooltip_OnHide(self)
+end
+
+local function GameTooltip_OnHide_Hook(self)
+	if enabled and not replace then
+		TooltipFrame:Hide()
 	end
 end
 
 local NoUnit
-local function OnTooltipSetUnit(self)
+local function Tooltip_OnTooltipSetUnit_Hook(self)
 	if not enabled then return end
 	currentUnit.character = nil
 	local tooltip, unit = self:GetUnit()
@@ -354,8 +400,10 @@ local function OnTooltipSetUnit(self)
 		NoUnit:Show()
 	elseif UnitIsPlayer(unit) then
 		SetPlayerUnit(unit)
-	elseif UnitIsOtherPlayersPet(unit) or UnitIsUnit("playerpet", unit) then
+	elseif replace and (UnitIsOtherPlayersPet(unit) or UnitIsUnit("playerpet", unit)) then
 		SetPetUnit(unit)
+	elseif not replace then
+		TooltipFrame:Hide()
 	end
 end
 
@@ -367,10 +415,13 @@ local function NoUnit_OnUpdate(self, elapsed)
 	self:Hide()
 	local tooltip, unit = GameTooltip:GetUnit()
 	if not unit then
+		if not replace then
+			TooltipFrame:Hide()
+		end
 		return
 	elseif UnitIsPlayer(unit) then
 		SetPlayerUnit(unit)
-	elseif UnitIsOtherPlayersPet(unit) or UnitIsUnit("playerpet", unit) then
+	elseif replace and (UnitIsOtherPlayersPet(unit) or UnitIsUnit("playerpet", unit)) then
 		SetPetUnit(unit)
 	end
 end
@@ -382,12 +433,29 @@ xrpPrivate.settingsToggles.tooltip = {
 				NoUnit = CreateFrame("Frame")
 				NoUnit:Hide()
 				NoUnit:SetScript("OnUpdate", NoUnit_OnUpdate)
-				xrp:HookEvent("RECEIVE", RECEIVE)
-				GameTooltip:HookScript("OnTooltipSetUnit", OnTooltipSetUnit)
+				xrp:HookEvent("RECEIVE", Tooltip_RECEIVE)
+				GameTooltip:HookScript("OnTooltipSetUnit", Tooltip_OnTooltipSetUnit_Hook)
 			end
+			NoUnit:UnregisterEvent("UPDATE_MOUSEOVER_UNIT")
 			enabled = true
+			xrpPrivate.settingsToggles.tooltip.replace(xrpPrivate.settings.tooltip.replace)
 		elseif enabled ~= nil then
 			enabled = false
+		end
+	end,
+	replace = function(setting)
+		if setting then
+			TooltipFrame = GameTooltip
+			replace = true
+		else
+			if not XRPTooltip then
+				CreateFrame("GameTooltip", "XRPTooltip", UIParent, "GameTooltipTemplate")
+				XRPTooltip:SetScript("OnUpdate", XRPTooltip_OnUpdate)
+				XRPTooltip:SetScript("OnHIde", XRPTooltip_OnHide)
+				GameTooltip:HookScript("OnHide", GameTooltip_OnHide_Hook)
+			end
+			TooltipFrame = XRPTooltip
+			replace = false
 		end
 	end,
 }

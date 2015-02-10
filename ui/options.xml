@@ -537,15 +537,27 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.SubText" relativePoint="BOTTOMLEFT" x="-2" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="textString" value="Enable tooltip replacement"/>
+					<KeyValue key="textString" value="Enable tooltip"/>
 					<KeyValue key="xrpTable" value="tooltip"/>
 					<KeyValue key="xrpSetting" value="enabled"/>
 					<KeyValue key="defaultValue" value="true" type="boolean"/>
 				</KeyValues>
 			</CheckButton>
-			<CheckButton parentKey="TooltipWatching" inherits="XRPOptionsCheckboxTemplate">
+			<CheckButton parentKey="TooltipReplace" inherits="XRPOptionsCheckboxTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.TooltipEnabled" relativePoint="BOTTOMLEFT" x="24" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="textString" value="Replace default tooltip for players and pets"/>
+					<KeyValue key="dependsOn" value="TooltipEnabled"/>
+					<KeyValue key="xrpTable" value="tooltip"/>
+					<KeyValue key="xrpSetting" value="replace"/>
+					<KeyValue key="defaultValue" value="true" type="boolean"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="TooltipWatching" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.TooltipReplace" relativePoint="BOTTOMLEFT" y="-8"/>
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="textString" value="Show eye icon if player is targeting you"/>
@@ -573,7 +585,7 @@
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="textString" value="Display guild rank in tooltip"/>
-					<KeyValue key="dependsOn" value="TooltipEnabled"/>
+					<KeyValue key="dependsOn" value="TooltipReplace"/>
 					<KeyValue key="xrpTable" value="tooltip"/>
 					<KeyValue key="xrpSetting" value="guildRank"/>
 					<KeyValue key="defaultValue" value="false" type="boolean"/>
