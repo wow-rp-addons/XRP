@@ -36,10 +36,16 @@ do
 		if args == "about" then
 			print(usage:format("/xrp about"))
 			print("Show basic information about XRP.")
+		elseif args == "bookmarks" then
+			print(usage:format("/xrp bookmarks"))
+			print("Toggle the bookmarks frame open/closed.")
 		elseif args == "edit" then
 			print(usage:format("/xrp edit [<Profile>]"))
 			print(command:format("<none>", "Toggle the editor open/closed."))
 			print(command:format("<Profile>", "Open a profile for editing."))
+		elseif args == "export" then
+			print(usage:format("/xrp export <Character>"))
+			print(command:format("<Character>", "Export the cached profile of the named character."))
 		elseif args == "profile" then
 			print(usage:format("/xrp profile [list|<Profile>]"))
 			print(command:format("list", "List all profiles."))
@@ -64,7 +70,9 @@ do
 			print(usage:format("/xrp <command> [argument]"))
 			print("Use /xrp help [command] for more usage information.")
 			print(command:format("about", "Display basic information about XRP."))
+			print(command:format("bookmarks", "Toggle the bookmarks frame."))
 			print(command:format("edit", "Access the editor."))
+			print(command:format("export", "Export a profile to plain text."))
 			print(command:format("help", "Display this help message."))
 			print(command:format("profile", "Set your current profile."))
 			print(command:format("status", "Set your character status."))
@@ -80,6 +88,13 @@ end
 
 xrpCmds.bookmarks = function(args)
 	xrp:Bookmarks(true)
+end
+
+xrpCmds.export = function(args)
+	local name = xrp:Name(args:match("^[^%s]+"))
+	if not name then return end
+	name = name:gsub("^%l", string.upper)
+	xrp:ExportPopup(xrp:Ambiguate(name), xrp.characters.noRequest.byName[name].exportText)
 end
 
 xrpCmds.profile = function(args)
