@@ -273,13 +273,7 @@ do
 			export[#export + 1] = "\n"
 			for i, field in ipairs(EXPORT_FIELDS) do
 				if fields[field] then
-					local fieldText = fields[field]
-					if field == "AH" then
-						fieldText = xrp:Height(fieldText)
-					elseif field == "AW" then
-						fieldText = xrp:Weight(fieldText)
-					end
-					export[#export + 1] = EXPORT_FORMATS[field]:format(fieldText)
+					export[#export + 1] = EXPORT_FORMATS[field]:format(fields[field])
 				end
 			end
 			return table.concat(export)
