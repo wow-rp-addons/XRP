@@ -20,7 +20,7 @@ local addonName, xrpPrivate = ...
 xrpPrivate.settingsToggles = {}
 
 local DATA_VERSION = 3
-local DATA_VERSION_ACCOUNT = 8
+local DATA_VERSION_ACCOUNT = 9
 
 local DEFAULT_SETTINGS = {
 	cache = {
@@ -69,6 +69,7 @@ local DEFAULT_SETTINGS = {
 	},
 	tooltip = {
 		enabled = true,
+		replace = true,
 		watching = false,
 		extraSpace = false,
 		guildRank = false,
@@ -226,7 +227,7 @@ local upgradeAccountVars = {
 		end
 		xrpAccountSaved.settings.display.preloadViewer = nil
 	end,
-	[8] = function() -- 6.0.3.4
+	[8] = function() -- 6.1.0.0
 		if not xrpAccountSaved.bookmarks then
 			xrpAccountSaved.bookmarks = {}
 		end
@@ -247,6 +248,9 @@ local upgradeAccountVars = {
 			end
 		end
 		xrpAccountSaved.settings.display.preloadBookmarks = DEFAULT_SETTINGS.display.preloadBookmarks
+	end,
+	[9] = function() -- 6.1.0.0
+		xrpAccountSaved.settings.tooltip.replace = DEFAULT_SETTINGS.tooltip.replace
 	end,
 }
 
