@@ -61,6 +61,9 @@ do
 		viewer.failed = nil
 		if character == viewer.current then
 			return false
+		elseif viewer.current and character.name == viewer.current.name then
+			viewer.current = character
+			return false
 		end
 		viewer.current = character
 		return true
@@ -219,6 +222,9 @@ function xrp:View(player)
 	local isUnit, character
 	if type(player) == "table" and player.name and player.fields then
 		character = player
+		local unit = Ambiguate(character.name, "none")
+		isUnit = UnitExists(unit)
+		player = isUnit and unit or character.name
 	else
 		if not player then
 			if viewer:IsShown() then
@@ -249,7 +255,7 @@ function xrp:View(player)
 		SetPortraitToTexture(viewer.portrait, GF == "Alliance" and "Interface\\Icons\\INV_BannerPVP_02" or GF == "Horde" and "Interface\\Icons\\INV_BannerPVP_01" or "Interface\\Icons\\INV_Misc_Book_17")
 	end
 	ShowUIPanel(viewer)
-	if not viewer.panes[1]:IsVisible() then
+	if isNew and not viewer.panes[1]:IsVisible() then
 		viewer.Tab1:Click()
 	end
 end
@@ -274,7 +280,7 @@ xrpPrivate.settingsToggles.display.movableViewer = function(setting)
 		if not viewer.TitleRegion then
 			viewer.TitleRegion = viewer:CreateTitleRegion()
 		end
-		viewer.TitleRegion:SetAllPoints(viewer:GetName() .. "TitleBg")
+		viewer.TitleRegion:SetAllPoints("XRPViewerTitleBg")
 		xrpPrivate.settingsToggles.display.closeOnEscapeViewer(xrpPrivate.settings.display.closeOnEscapeViewer)
 	elseif viewer.TitleRegion then
 		viewer:SetAttribute("UIPanelLayout-defined", true)
