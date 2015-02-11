@@ -39,9 +39,7 @@
 					GameTooltip:SetText(text)
 				end
 			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide()
-			</OnLeave>
+			<OnLeave function="GameTooltip_Hide"/>
 			<OnLoad>
 				self:Disable()
 				self.Label:SetText(self.fieldName)
