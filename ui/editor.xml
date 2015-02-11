@@ -26,9 +26,7 @@
 				GameTooltip:SetText("Use parent profile if blank.")
 				GameTooltip:Show()
 			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide()
-			</OnLeave>
+			<OnLeave function="GameTooltip_Hide"/>
 			<OnClick>
 				local parent = self:GetParent()
 				parent:GetParent():GetParent():CheckFields(parent.field)
@@ -194,9 +192,7 @@
 					<OnUpdate>
 						ScrollingEdit_OnUpdate(self, elapsed, self:GetParent())
 					</OnUpdate>
-					<OnEscapePressed>
-						self:ClearFocus()
-					</OnEscapePressed>
+					<OnEscapePressed function="EditBox_ClearFocus"/>
 					<OnEditFocusGained>
 						if self.inherited then
 							self:SetAttribute("inherited", false)
@@ -235,9 +231,7 @@
 				GameTooltip:SetText(self.tooltipText)
 				GameTooltip:Show()
 			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide()
-			</OnLeave>
+			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</Button>
 	<Frame name="XRPEditorTemplate" toplevel="true" inherits="ButtonFrameTemplate" hidden="true" enableMouse="true" frameStrata="MEDIUM" virtual="true">

@@ -28,10 +28,6 @@ function xrp:ExportPopup(title, text)
 	ShowUIPanel(XRPExport)
 end
 
-local function CloseParent(self)
-	self:GetParent():Hide()
-end
-
 local function ClickButton(self)
 	self:GetParent().button1:Click()
 end
@@ -83,8 +79,8 @@ StaticPopupDialogs["XRP_URL"] = {
 		self:SetText(url or "")
 		self:HighlightText()
 	end,
-	EditBoxOnEnterPressed = CloseParent,
-	EditBoxOnEscapePressed = CloseParent,
+	EditBoxOnEnterPressed = HideParentPanel,
+	EditBoxOnEscapePressed = HideParentPanel,
 	enterClicksFirstButton = true,
 	timeout = 0,
 	whileDead = true,
@@ -134,7 +130,7 @@ StaticPopupDialogs["XRP_CURRENTLY"] = {
 		xrp.current.fields.CU = nil
 	end,
 	EditBoxOnEnterPressed = ClickButton,
-	EditBoxOnEscapePressed = CloseParent,
+	EditBoxOnEscapePressed = HideParentPanel,
 	enterClicksFirstButton = true,
 	timeout = 0,
 	whileDead = true,
@@ -186,7 +182,7 @@ StaticPopupDialogs["XRP_EDITOR_ADD"] = {
 		end
 	end,
 	EditBoxOnEnterPressed = ClickButton,
-	EditBoxOnEscapePressed = CloseParent,
+	EditBoxOnEscapePressed = HideParentPanel,
 	enterClicksFirstButton = true,
 	timeout = 0,
 	whileDead = true,
@@ -229,7 +225,7 @@ StaticPopupDialogs["XRP_EDITOR_RENAME"] = {
 		end
 	end,
 	EditBoxOnEnterPressed = ClickButton,
-	EditBoxOnEscapePressed = CloseParent,
+	EditBoxOnEscapePressed = HideParentPanel,
 	enterClicksFirstButton = true,
 	timeout = 0,
 	whileDead = true,
@@ -253,7 +249,7 @@ StaticPopupDialogs["XRP_EDITOR_COPY"] = {
 		end
 	end,
 	EditBoxOnEnterPressed = ClickButton,
-	EditBoxOnEscapePressed = CloseParent,
+	EditBoxOnEscapePressed = HideParentPanel,
 	enterClicksFirstButton = true,
 	timeout = 0,
 	whileDead = true,

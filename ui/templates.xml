@@ -288,9 +288,7 @@
 							<Anchor point="TOPLEFT"/>
 						</Anchors>
 						<Scripts>
-							<OnCursorChanged>
-								self:HighlightText()
-							</OnCursorChanged>
+							<OnCursorChanged function="EditBox_HighlightText"/>
 							<OnTextChanged>
 								if userInput then
 									self:SetText(self:GetParent():GetParent().currentText or "")
