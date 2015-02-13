@@ -78,11 +78,11 @@ function xrp:Weight(weight, units)
 	local number = tonumber(weight)
 	if not number then
 		-- Match "50kg", "50 kg", "50 kilograms", etc..
-		number = tonumber(weight:lower():match("^%s*(%d+)%s*kg")) or tonumber(weight:lower():match("^%s*(%d+)%s*kilo"))
+		number = tonumber(weight:lower():match("^%s*([%d%.]+)%s*kgs?%.?%s*$")) or tonumber(weight:lower():match("^%s*([%d%.]+)%s*kilo[grams]+%s*$"))
 	end
 	if not number then
 		-- Match "50lbs", "50 lbs", "50 pounds", etc.
-		number = ((tonumber(weight:lower():match("^%s*(%d+)%s*lb")) or tonumber(weight:lower():match("^%s*(%d+)%s*pound"))) or 0) / 2.20462
+		number = ((tonumber(weight:lower():match("^%s*([%d%.]+)%s*lbs?%.?%s*$")) or tonumber(weight:lower():match("^%s*([%d%.]+)%s*pounds?%s*$"))) or 0) / 2.20462
 		number = number ~= 0 and number or nil
 	end
 	if not number then
@@ -115,21 +115,21 @@ function xrp:Height(height, units)
 	end
 	if not number then
 		-- Match "100cm", "100 cm", "100 centimeters", "100 centimetres", etc.
-		number = tonumber(height:lower():match("^%s*(%d+)%s*cm")) or tonumber(height:lower():match("^%s*(%d+)%s*centimet"))
+		number = tonumber(height:lower():match("^%s*([%d%.]+)%s*cm%.?%s*$")) or tonumber(height:lower():match("^%s*([%d%.]+)%s*centimet[ers]+%s*$"))
 	end
 	if not number then
 		-- Match "1.05m", "1.05 m", "1.05 meters", "1.05 metres" etc..
-		number = (tonumber(height:lower():match("^%s*(%d+%.?%d*)%s*m")) or 0) * 100
+		number = (tonumber(height:lower():match("^%s*([%d%.]+)%s*m%.?%s*$")) or tonumber(height:lower():match("^%s*([%d%.]+)%s*met[ers]+%s*$")) or 0) * 100
 		number = number ~= 0 and number or nil
 	end
 	if not number then
 		-- Match "4'9", "4'9"", "4 ft 9 in", etc.
-		local feet, inches = height:lower():match("^%s*(%d+)%s*'%s*(%d*)")
+		local feet, inches = height:lower():match("^%s*(%d+)%s*'%s*(%d*)%s*\"?%s*$")
 		if not feet then
-			feet, inches = height:lower():match("^%s*(%d+)%s*ft%.?%s*(%d*)")
+			feet, inches = height:lower():match("^%s*([%d%.]+)%s*ft%.?%s*(%d*)[in%.%s]*$")
 		end
 		if not feet then
-			feet, inches = height:lower():match("^%s*(%d+)%s*feet%s*(%d*)")
+			feet, inches = height:lower():match("^%s*([%d%.]+)%s*feet%s*(%d*)[inches%s]*$")
 		end
 		number = feet and (((tonumber(feet) * 12) + (tonumber(inches) or 0)) * 2.54) or nil
 	end
