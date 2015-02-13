@@ -20,6 +20,9 @@
 	<!-- No, seriously, though. This is the easiest way to get a good UI. -->
 	<CheckButton name="XRPEditorInheritCheckTemplate" inherits="XRPCheckBoxArtTemplate" virtual="true">
 		<Size x="12" y="12"/>
+		<Anchors>
+			<Anchor point="LEFT" relativeKey="$parent.Label" relativePoint="RIGHT"/>
+		</Anchors>
 		<Scripts>
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_CURSOR")
@@ -33,9 +36,32 @@
 			</OnClick>
 		</Scripts>
 	</CheckButton>
+	<Frame name="XRPEditorWarningTemplate" hidden="true" virtual="true">
+		<Size x="10" y="10"/>
+		<Anchors>
+			<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="2" y="-1"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString inherits="GameFontNormalSmall" text="!">
+					<Color r="1" g="0" b="0"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter>
+				GameTooltip:SetOwner(self, "ANCHOR_CURSOR")
+				local parent = self:GetParent()
+				GameTooltip:SetText(("|cffcc0000Warning:|r %s is over %u characters."):format(parent.fieldName, parent.safeLength))
+				GameTooltip:Show()
+			</OnEnter>
+			<OnLeave function="GameTooltip_Hide"/>
+		</Scripts>
+	</Frame>
 	<EditBox name="XRPEditorSingleLineTemplate" autoFocus="false" inherits="InputBoxTemplate" virtual="true">
 		<KeyValues>
 			<KeyValue key="inherited" value="false" type="boolean"/>
+			<KeyValue key="safeLength" value="120" type="number"/>
 		</KeyValues>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -47,11 +73,8 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<CheckButton parentKey="Inherit" inherits="XRPEditorInheritCheckTemplate">
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.Label" relativePoint="RIGHT"/>
-				</Anchors>
-			</CheckButton>
+			<CheckButton parentKey="Inherit" inherits="XRPEditorInheritCheckTemplate"/>
+			<Frame parentKey="Warning" inherits="XRPEditorWarningTemplate"/>
 		</Frames>
 		<Scripts>
 			<OnAttributeChanged>
@@ -59,6 +82,11 @@
 					self.contents = value
 					self:SetText(value or "")
 					self:SetCursorPosition(0)
+					if value and #value > self.safeLength then
+						self.Warning:Show()
+					else
+						self.Warning:Hide()
+					end
 				elseif name == "inherited" then
 					if value == true and not self.inherited then
 						self:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b)
@@ -76,6 +104,11 @@
 				if userInput then
 					local text = self:GetText()
 					self.contents = text ~= "" and text or nil
+					if #text > self.safeLength then
+						self.Warning:Show()
+					else
+						self.Warning:Hide()
+					end
 					self:GetParent():GetParent():CheckFields(self.field)
 				end
 			</OnTextChanged>
@@ -101,6 +134,9 @@
 		<FontString inherits="GameFontWhite"/>
 	</EditBox>
 	<ScrollFrame name="XRPEditorMultiLineTemplate" inherits="XRPScrollFrameArtTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="safeLength" value="4000" type="number"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Label" inherits="GameFontNormalSmall">
@@ -111,11 +147,12 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<CheckButton parentKey="Inherit" inherits="XRPEditorInheritCheckTemplate">
+			<CheckButton parentKey="Inherit" inherits="XRPEditorInheritCheckTemplate"/>
+			<Frame parentKey="Warning" inherits="XRPEditorWarningTemplate">
 				<Anchors>
-					<Anchor point="LEFT" relativekey="$parent.Label" relativePoint="RIGHT"/>
+					<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="7" y="5"/>
 				</Anchors>
-			</CheckButton>
+			</Frame>
 			<Button parentKey="FocusButton" setAllPoints="true">
 				<Scripts>
 					<OnClick>
@@ -142,7 +179,9 @@
 
 				self.Label:SetText(self.fieldName)
 				self.EditBox.field = self.field
+				self.EditBox.safeLength = self.safeLength
 				self.EditBox.Inherit = self.Inherit
+				self.EditBox.Warning = self.Warning
 
 				local editor = self:GetParent():GetParent()
 				if not editor.fields then
@@ -165,6 +204,11 @@
 							self.contents = value
 							self:SetText(value or "")
 							self:SetCursorPosition(0)
+							if value and #value > self.safeLength then
+								self.Warning:Show()
+							else
+								self.Warning:Hide()
+							end
 						elseif name == "inherited" then
 							if value == true and not self.inherited then
 								self:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b)
@@ -185,6 +229,11 @@
 						if userInput then
 							local text = self:GetText()
 							self.contents = text ~= "" and text or nil
+							if #text > self.safeLength then
+								self.Warning:Show()
+							else
+								self.Warning:Hide()
+							end
 							parent:GetParent():GetParent():CheckFields(parent.field)
 						end
 					</OnTextChanged>
@@ -260,6 +309,7 @@
 							<KeyValue key="field" value="NA"/>
 							<KeyValue key="fieldName" value="Name"/>
 							<KeyValue key="nextField" value="NI"/>
+							<KeyValue key="safeLength" value="65" type="number"/>
 						</KeyValues>
 						<Size x="186" y="20"/>
 						<Anchors>
@@ -272,6 +322,7 @@
 							<KeyValue key="field" value="NI"/>
 							<KeyValue key="fieldName" value="Nickname"/>
 							<KeyValue key="nextField" value="AH"/>
+							<KeyValue key="safeLength" value="60" type="number"/>
 						</KeyValues>
 						<Size x="136" y="20"/>
 						<Anchors>
@@ -296,6 +347,7 @@
 							<KeyValue key="field" value="NT"/>
 							<KeyValue key="fieldName" value="Title"/>
 							<KeyValue key="nextField" value="NH"/>
+							<KeyValue key="safeLength" value="130" type="number"/>
 						</KeyValues>
 						<Size x="186" y="20"/>
 						<Anchors>
@@ -344,6 +396,7 @@
 							<KeyValue key="field" value="RA"/>
 							<KeyValue key="fieldName" value="Race"/>
 							<KeyValue key="nextField" value="RC"/>
+							<KeyValue key="safeLength" value="40" type="number"/>
 						</KeyValues>
 						<Size x="131" y="20"/>
 						<Anchors>
@@ -356,6 +409,7 @@
 							<KeyValue key="field" value="RC"/>
 							<KeyValue key="fieldName" value="Class"/>
 							<KeyValue key="nextField" value="CU"/>
+							<KeyValue key="safeLength" value="40" type="number"/>
 						</KeyValues>
 						<Size x="131" y="20"/>
 						<Anchors>
@@ -368,6 +422,7 @@
 							<KeyValue key="field" value="CU"/>
 							<KeyValue key="fieldName" value="Currently"/>
 							<KeyValue key="nextField" value="DE"/>
+							<KeyValue key="safeLength" value="120" type="number"/>
 						</KeyValues>
 						<Size x="407" y="20"/>
 						<Anchors>
@@ -436,6 +491,7 @@
 							<KeyValue key="field" value="MO"/>
 							<KeyValue key="fieldName" value="Motto"/>
 							<KeyValue key="nextField" value="HI"/>
+							<KeyValue key="safeLength" value="250" type="number"/>
 						</KeyValues>
 						<Size x="407" y="20"/>
 						<Anchors>
@@ -460,6 +516,7 @@
 							<KeyValue key="field" value="FR"/>
 							<KeyValue key="fieldName" value="Roleplaying style"/>
 							<KeyValue key="nextField" value="AG"/>
+							<KeyValue key="safeLength" value="35" type="number"/>
 						</KeyValues>
 						<Size x="199" y="20"/>
 						<Anchors>
@@ -568,10 +625,7 @@
 				</Anchors>
 			</Button>
 			<!-- Auto Button -->
-			<Button parentKey="AutoButton" inherits="XRPEditorProfileControlTemplate" text="Auto">
-				<KeyValues>
-					<KeyValue key="tooltipText" value="Setup automated profile swapping."/>
-				</KeyValues>
+			<Button parentKey="AutoButton" inherits="UIPanelButtonTemplate" text="Auto">
 				<Size x="50" y="28"/>
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.ExportProfile" relativePoint="RIGHT" x="12"/>

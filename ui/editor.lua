@@ -55,8 +55,8 @@ do
 
 		local profile, inherits = xrpPrivate.profiles[name].fields, xrpPrivate.profiles[name].inherits
 		for field, control in pairs(self.fields) do
-			control:SetAttribute("contents", profile[field])
 			control:SetAttribute("inherited", false)
+			control:SetAttribute("contents", profile[field])
 			control.Inherit:SetChecked(inherits[field] ~= false)
 		end
 
@@ -237,8 +237,7 @@ end
 function xrp:Edit(profile)
 	if not editor then
 		editor = CreateEditor()
-	end
-	if not profile and editor:IsShown() then
+	elseif not profile and editor:IsShown() then
 		HideUIPanel(editor)
 		return
 	end
