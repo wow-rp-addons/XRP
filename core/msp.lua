@@ -17,8 +17,6 @@
 
 local addonName, xrpPrivate = ...
 
--- Claim MSP rights ASAP to try heading off other addons. Since we start with
--- "x", this probably won't help much.
 local disabled = false
 if not msp_RPAddOn then
 	msp_RPAddOn = GetAddOnMetadata(addonName, "Title")
@@ -56,10 +54,8 @@ local FIELD_TIMES = setmetatable({ TT = 15 }, {
 	end,
 })
 
--- This is the core of the MSP send/recieve implementation. The API is nothing
--- like LibMSP and is not accessible outside this file.
 local msp = CreateFrame("Frame")
--- Requested field queue
+-- Requested field queue.
 msp.request = {}
 -- Session cache. Do NOT make weak.
 msp.cache = setmetatable({}, {
@@ -89,13 +85,12 @@ do
 			if not doFilter then
 				filter[name] = nil
 			else
-				-- Same error message for offline and opposite faction.
+				-- Same error message from offline and from opposite faction.
 				xrpPrivate:FireEvent("FAIL", name, (not xrpCache[name] or not xrpCache[name].fields.GF or xrpCache[name].fields.GF == xrp.current.fields.GF) and "offline" or "faction")
 			end
 			return doFilter
 		end)
 
-		-- Most complex function ever.
 		function AddFilter(name)
 			filter[name] = GetTime() + 2.500
 		end
@@ -114,7 +109,6 @@ do
 		--print(GetTime()..": Out: "..name..": "..data:gsub("\1", ";"))
 
 		local presenceID
-		-- Check whether sending by BN is available and preferred.
 		if not channel or channel == "BN" then
 			presenceID = self:GetPresenceID(name)
 			if not channel and presenceID then
@@ -131,9 +125,7 @@ do
 			if #data <= 4078 then
 				libbw:BNSendGameData(presenceID, "MSP", data, isRequest and "ALERT" or "NORMAL", queue)
 			else
-				-- XC is most likely to add five extra characters, will not add
-				-- less than five, and only adds six or more if the profile is
-				-- over 40000 characters or so. So let's say five.
+				-- Guess five added characters from metadata.
 				data = ("XC=%u\1%s"):format(((#data + 5) / 4078) + 1, data)
 				libbw:BNSendGameData(presenceID, "MSP\1", data:sub(1, 4078), "BULK", queue)
 				local position = 4079
@@ -146,14 +138,13 @@ do
 		end
 		if channel == "BN" then return end
 
+		-- Second condition is always true for non-group targets.
 		if channel == "WHISPER" or UnitRealmRelationship(Ambiguate(name, "none")) ~= LE_REALM_RELATION_COALESCED then
 			local queue = "XRP-" .. name
 			if #data <= 255 then
 				libbw:SendAddonMessage("MSP", data, "WHISPER", name, isRequest and "ALERT" or "NORMAL", queue, AddFilter, name)
 			else
-				-- XC is most likely to add five or six extra characters, will
-				-- not add less than five, and only adds seven or more if the
-				-- profile is over 25000 characters or so. So let's say six.
+				-- Guess six added characters from metadata.
 				data = ("XC=%u\1%s"):format(((#data + 6) / 255) + 1, data)
 
 				libbw:SendAddonMessage("MSP\1", data:sub(1, 255), "WHISPER", name, "BULK", queue, AddFilter, name)
@@ -177,9 +168,7 @@ do
 			else
 				chunkSize = chunkSize - 1
 
-				-- XC is most likely to add five or six extra characters, will
-				-- not add less than five, and only adds seven or more if the
-				-- profile is over 25000 characters or so. So let's say six.
+				-- Guess six added characters from metadata.
 				local chunkString = ("XC=%u\1"):format(((#data + 6) / chunkSize) + 1)
 				data = chunkString .. data
 
@@ -229,7 +218,6 @@ do
 end
 
 do
-	-- Tooltip order for ideal XRP viewer usage.
 	local TT_LIST = { "VP", "VA", "NA", "NH", "NI", "NT", "RA", "RC", "CU", "FR", "FC" }
 	local tt
 	function msp:GetTT()
@@ -259,9 +247,6 @@ do
 		end,
 		__mode = "v", -- Worst case, we rarely send too soon again.
 	})
-	-- This returns requested field output, or nil if no requests were
-	-- made. msp.cache[name].fieldUpdated is set to true if a
-	-- field has changed, false if a field has not been changed.
 	function msp:Process(name, command, isGroup)
 		local action, field, version, contents = command:match("(%p?)(%u%u)(%d*)=?(.*)")
 		version = tonumber(version) or 0
@@ -269,13 +254,11 @@ do
 			return nil
 		elseif action == "?" then
 			local now = GetTime()
-			-- Queried our fields. This should end in returning a
-			-- string with our info for that field. (If it doesn't, it
-			-- means we're ignoring their request, probably because
-			-- they're spamming it at us.)
+			-- Queried our fields. This should end in returning a string,
+			-- unless they're spamming requests.
 			if isGroup then
-				-- If it's in GMSP, ignore every 2s to try and catch
-				-- simultaneous requests (such as from names-in-chat).
+				-- In group, ignore every 2.5s to try and catch simultaneous
+				-- requests (such as from names-in-chat).
 				if self.groupOut[field] or requestTime.GROUP[field] and requestTime.GROUP[field] > now then
 					return nil
 				end
@@ -297,13 +280,11 @@ do
 			end
 			local currentVersion = xrpPrivate.current.versions[field]
 			if not currentVersion then
-				-- Field is empty. Empty fields are always version 0 in XRP.
+				-- Empty fields are versionless.
 				return field
 			elseif version == currentVersion then
-				-- They already have the latest.
 				return ("!%s%u"):format(field, version)
 			end
-			-- Field has new content.
 			return ("%s%u=%s"):format(field, currentVersion, xrp.current.fields[field])
 		elseif action == "!" and version == (xrpCache[name] and xrpCache[name].versions[field] or 0) then
 			-- Told us we have latest of their field.
@@ -317,8 +298,8 @@ do
 			end
 			return nil
 		elseif action == "" then
-			-- If we're stumbling through a partial (garbled) request, don't
-			-- update TT version or time. Full TT may not have been received.
+			-- If working with a partial message, don't update TT version or
+			-- time. Full TT may not have been received.
 			if field == "TT" and self.cache[name].partialMessage then
 				return nil
 			elseif not xrpCache[name] and (contents ~= "" or version ~= 0) then
@@ -328,9 +309,6 @@ do
 					versions = {},
 					lastReceive = time(),
 				}
-				-- This is the only place a cache table is created by XRP. If
-				-- we already have any data about them in the gCache (unit
-				-- cache), pull that into the real cache.
 				if xrpPrivate.gCache[name] then
 					for gField, isUnitField in pairs(UNIT_FIELDS) do
 						xrpCache[name].fields[gField] = xrpPrivate.gCache[name][gField]
@@ -339,8 +317,7 @@ do
 			end
 			local updated = false
 			if contents == "" and xrpCache[name] and xrpCache[name].fields[field] and not UNIT_FIELDS[field] then
-				-- If it's newly blank, empty it in the cache. Never
-				-- empty G*, but do update them (following elseif).
+				-- Unit fields are never cleared from the cache.
 				xrpCache[name].fields[field] = nil
 				updated = true
 			elseif contents ~= "" and contents ~= xrpCache[name].fields[field] then
@@ -425,12 +402,9 @@ msp.handlers = {
 		local totalChunks = tonumber(message:match("^XC=(%d+)\1"))
 		if totalChunks then
 			self.cache[name].totalChunks = totalChunks
-			-- Drop XC if present.
 			message = message:gsub("^XC=%d+\1", "")
 		end
-		-- This only does partial processing -- queries (i.e., ?TT) are
-		-- processed only after full reception. Mixed queries/responses are not
-		-- common, but also not forbidden by the spec.
+		-- Queries (i.e., "?TT") are processed only after receive finishes.
 		for command in message:gmatch("([^\1]+)\1") do
 			if command:find("^[^%?]") then
 				self:Process(name, command)
