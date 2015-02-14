@@ -355,9 +355,6 @@ function xrp:Bookmarks(showBookmarks)
 	ShowUIPanel(bookmarks)
 end
 
-if not xrpPrivate.settingsToggles.display then
-	xrpPrivate.settingsToggles.display = {}
-end
 xrpPrivate.settingsToggles.display.preloadBookmarks = function(setting)
 	if setting and not bookmarks then
 		bookmarks = CreateBookmarks()

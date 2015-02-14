@@ -17,7 +17,9 @@
 
 local addonName, xrpPrivate = ...
 
-xrpPrivate.settingsToggles = {}
+xrpPrivate.settingsToggles = {
+	display = {},
+}
 
 local DATA_VERSION = 3
 local DATA_VERSION_ACCOUNT = 9
@@ -265,77 +267,20 @@ local upgradeVars = {
 
 local function InitializeSavedVariables()
 	if not xrpCache then
-		if type(xrp_cache) == "table" then
-			xrpCache = xrp_cache
-			xrp_cache = nil
-		else
-			xrpCache = {}
-		end
+		xrpCache = {}
 	end
 	if not xrpAccountSaved then
-		if type(xrp_settings) == "table" then
-			if type(xrp_settings.defaults == "table") then
-				-- 5.4.8.0_rc3
-				xrp_settings.defaults = nil
-			end
-
-			if xrp_settings.chatnames then
-				if xrp_settings.chatnames["CHAT_MSG_TEXT_EMOTE"] ~= nil then
-					-- 5.4.8.0_beta2
-					xrp_settings.chatnames["CHAT_MSG_TEXT_EMOTE"] = nil
-					xrp_settings.chatnames["CHAT_MSG_WHISPER_INFORM"] = nil
-				end
-				if xrp_settings.chatnames["CHAT_MSG_INSTANCE"] ~= nil then
-					-- 5.4.8.0_rc6
-					xrp_settings.chatnames["CHAT_MSG_INSTANCE_CHAT"] = xrp_settings.chatnames["CHAT_MSG_INSTANCE"]
-					xrp_settings.chatnames["CHAT_MSG_INSTANCE"] = nil
-				end
-			end
-
-			if xrp_settings.tooltip and xrp_settings.tooltip.reaction ~= nil then
-				-- 5.4.8.0
-				xrp_settings.tooltip.faction = not xrp_settings.tooltip.reaction
-				xrp_settings.tooltip.reaction = nil
-				xrp_settings.tooltip.norprace = not xrp_settings.tooltip.rprace
-				xrp_settings.tooltip.rprace = nil
-			end
-
-			if type(xrp_settings.minimap) == "number" then
-				-- 5.4.8.1
-				local minimap = {
-					angle = xrp_settings.minimap,
-					detached = xrp_settings.minimapdetached,
-					x = xrp_settings.minimapx,
-					y = xrp_settings.minimapy,
-					point = xrp_settings.minimappoint,
-					hidett = xrp_settings.hideminimaptt,
-				}
-				xrp_settings.minimap = minimap
-				xrp_settings.hideminimaptt = nil
-				xrp_settings.minimapdetached = nil
-				xrp_settings.minimapx = nil
-				xrp_settings.minimapy = nil
-				xrp_settings.minimappoint = nil
-			end
-
-			xrpAccountSaved = {
-				settings = xrp_settings,
-				dataVersion = 1, -- Leave this at 1.
-			}
-			xrp_settings = nil
-		else
-			xrpAccountSaved = {
-				bookmarks = {},
-				hidden = {},
-				settings = {},
-				dataVersion = DATA_VERSION_ACCOUNT,
-			}
-		end
+		xrpAccountSaved = {
+			bookmarks = {},
+			hidden = {},
+			settings = {},
+			dataVersion = DATA_VERSION_ACCOUNT,
+		}
 		for section, defaults in pairs(DEFAULT_SETTINGS) do
 			if not xrpAccountSaved.settings[section] then
 				xrpAccountSaved.settings[section] = {}
 			end
-			for option, setting in pairs(DEFAULT_SETTINGS[section]) do
+			for option, setting in pairs(defaults) do
 				if xrpAccountSaved.settings[section][option] == nil then
 					xrpAccountSaved.settings[section][option] = setting
 				end
@@ -344,19 +289,6 @@ local function InitializeSavedVariables()
 	end
 	if not xrpSaved then
 		if type(xrp_profiles) == "table" then
-			if type(xrp_defaults) == "table" then
-				-- 5.4.8.0_rc6
-				for profile, contents in pairs(xrp_profiles) do
-					if type(contents) == "table" then
-						xrp_profiles[profile] = {
-							fields = contents,
-							inherits = xrp_defaults[profile] or {},
-							versions = {},
-						}
-					end
-				end
-				xrp_defaults = nil
-			end
 			xrpSaved = {
 				meta = {
 					fields = {},
@@ -388,15 +320,11 @@ local function InitializeSavedVariables()
 				if name == "Add" or name == "List" then
 					xrpSaved.profiles[name.." Renamed"] = profile
 					if xrpSaved.selected == name then
-						xrpSaved.selected = name.." Renamed"
+						xrpSaved.selected = name .. " Renamed"
 					end
 					xrpSaved.profiles[name] = nil
 				end
 			end
-			xrp_overrides = nil
-			xrp_profiles = nil
-			xrp_selectedprofile = nil
-			xrp_versions = nil
 		else
 			xrpSaved = {
 				auto = {},
