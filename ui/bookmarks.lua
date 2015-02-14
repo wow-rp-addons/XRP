@@ -17,7 +17,7 @@
 
 local addonName, xrpPrivate = ...
 
-local bookmarks
+local results
 
 -- Unlike CLASS_ICON_TCOORDS these aren't in a global.
 local RACE_ICON_TCOORDS = {
@@ -49,10 +49,9 @@ local RACE_ICON_TCOORDS = {
 	["PANDAREN_FEMALE"] = { 0.750, 0.875, 0.5, 0.75 },
 }
 
-local function Bookmarks_Scroll_update(self)
+function XRPBookmarks.List:update()
 	local offset = HybridScrollFrame_GetOffset(self)
 	local buttons = self.buttons
-	local results = self:GetParent().results
 	local matches = #results
 
 	if matches == 0 then
@@ -132,20 +131,14 @@ local function Bookmarks_Scroll_update(self)
 		end
 	end
 
-	bookmarks.Count:SetFormattedText("Listing %u of %u profiles.", matches, results.totalCount)
+	XRPBookmarks.Count:SetFormattedText("Listing %u of %u profiles.", matches, results.totalCount)
 
 	HybridScrollFrame_Update(self, 72 * matches, 72)
 end
 
-local function Bookmarks_OnUpdate(self, elapsed)
-	self:SetScript("OnUpdate", nil)
-	HybridScrollFrame_CreateButtons(self.List, "XRPBookmarksEntryTemplate")
-	self:Refresh()
-end
-
-local function Bookmarks_Refresh(self)
-	self.results = xrp.characters.noRequest:Filter(self.request)
-	self.List.range = #self.results * 72
+function XRPBookmarks:Refresh()
+	results = xrp.characters.noRequest:Filter(self.request)
+	self.List.range = #results * 72
 	self.List:update()
 	self.List.scrollBar:SetValue(self.request.offset)
 	if self.request.fullText then
@@ -158,7 +151,6 @@ local function Bookmarks_Refresh(self)
 	self.FilterText:SetText(self.request.text or "")
 end
 
-local Bookmarks_baseMenuList
 do
 	local function Menu_Checked(self)
 		if self.disabled then
@@ -182,19 +174,19 @@ do
 			AddOrRemoveFriend(Ambiguate(character.name, "none"), xrp:Strip(character.fields.NA))
 		elseif arg1 == 5 then
 			UIDROPDOWNMENU_OPEN_MENU.character.bookmark = not checked
-			if bookmarks.request.bookmark then
-				bookmarks.request.offset = bookmarks.List.scrollBar:GetValue()
-				bookmarks:Refresh()
+			if XRPBookmarks.request.bookmark then
+				XRPBookmarks.request.offset = XRPBookmarks.List.scrollBar:GetValue()
+				XRPBookmarks:Refresh()
 			end
 		elseif arg1 == 6 then
 			UIDROPDOWNMENU_OPEN_MENU.character.hide = not checked
-			if not bookmarks.request.showHidden then
-				bookmarks.request.offset = bookmarks.List.scrollBar:GetValue()
-				bookmarks:Refresh()
+			if not XRPBookmarks.request.showHidden then
+				XRPBookmarks.request.offset = XRPBookmarks.List.scrollBar:GetValue()
+				XRPBookmarks:Refresh()
 			end
 		end
 	end
-	Bookmarks_baseMenuList = {
+	XRPBookmarks.baseMenuList = {
 		{ text = "View (cached)...", arg1 = 1, notCheckable = true, checked = Menu_Checked, func = Menu_Click, },
 		{ text = "View (live)...", arg1 = 2, notCheckable = true, checked = Menu_Checked, func = Menu_Click, },
 		{ text = "Export...", arg1 = 3, notCheckable = true, checked = Menu_Checked, func = Menu_Click, },
@@ -205,30 +197,29 @@ do
 	}
 end
 
-local Filter_baseMenuList
 do
 	local lists = {}
 	local function Filter_Checked(self)
-		return not bookmarks.request[self.arg1][self.arg2]
+		return not XRPBookmarks.request[self.arg1][self.arg2]
 	end
 	local function Filter_Click(self, arg1, arg2, checked)
 		if arg2 == "ALL" then
 			for i, value in pairs(lists[arg1]) do
-				bookmarks.request[arg1][value] = nil
+				XRPBookmarks.request[arg1][value] = nil
 			end
-			bookmarks.request[arg1].UNKNOWN = nil
-			UIDropDownMenu_Refresh(bookmarks.FilterButton.Menu, nil, UIDROPDOWNMENU_MENU_LEVEL)
+			XRPBookmarks.request[arg1].UNKNOWN = nil
+			UIDropDownMenu_Refresh(XRPBookmarks.FilterButton.Menu, nil, UIDROPDOWNMENU_MENU_LEVEL)
 		elseif arg2 == "NONE" then
 			for i, value in pairs(lists[arg1]) do
-				bookmarks.request[arg1][value] = true
+				XRPBookmarks.request[arg1][value] = true
 			end
-			bookmarks.request[arg1].UNKNOWN = true
-			UIDropDownMenu_Refresh(bookmarks.FilterButton.Menu, nil, UIDROPDOWNMENU_MENU_LEVEL)
+			XRPBookmarks.request[arg1].UNKNOWN = true
+			UIDropDownMenu_Refresh(XRPBookmarks.FilterButton.Menu, nil, UIDROPDOWNMENU_MENU_LEVEL)
 		else
-			bookmarks.request[arg1][arg2] = not checked
+			XRPBookmarks.request[arg1][arg2] = not checked
 		end
-		bookmarks.request.offset = 0
-		bookmarks:Refresh()
+		XRPBookmarks.request.offset = 0
+		XRPBookmarks:Refresh()
 	end
 	local faction = UnitFactionGroup("player")
 	if faction == "Horde" then
@@ -267,13 +258,13 @@ do
 	classMenu[#classMenu + 1] = { text = "Unknown", isNotRadio = true, keepShownOnClick = true, arg1 = "class", arg2 = "UNKNOWN", checked = Filter_Checked, func = Filter_Click, }
 
 	local function Filter_Radio_Checked(self)
-		return bookmarks.request[self.arg1] == self.arg2
+		return XRPBookmarks.request[self.arg1] == self.arg2
 	end
 	local function Filter_Radio_Click(self, arg1, arg2, checked)
-		bookmarks.request[arg1] = arg2
-		bookmarks.request.offset = 0
-		bookmarks:Refresh()
-		UIDropDownMenu_Refresh(bookmarks.FilterButton.Menu, nil, UIDROPDOWNMENU_MENU_LEVEL)
+		XRPBookmarks.request[arg1] = arg2
+		XRPBookmarks.request.offset = 0
+		XRPBookmarks:Refresh()
+		UIDropDownMenu_Refresh(XRPBookmarks.FilterButton.Menu, nil, UIDROPDOWNMENU_MENU_LEVEL)
 	end
 	local sortMenu = {
 		{ text = "Name", keepShownOnClick = true, arg1 = "sortType", arg2 = nil, checked = Filter_Radio_Checked, func = Filter_Radio_Click, },
@@ -283,15 +274,15 @@ do
 	}
 
 	local function Filter_Toggle_Checked(self)
-		return bookmarks.request[self.arg1] == true
+		return XRPBookmarks.request[self.arg1] == true
 	end
 	local function Filter_Toggle_Click(self, arg1, arg2, checked)
-		bookmarks.request[arg1] = checked or nil
-		bookmarks.request.offset = 0
-		bookmarks:Refresh()
+		XRPBookmarks.request[arg1] = checked or nil
+		XRPBookmarks.request.offset = 0
+		XRPBookmarks:Refresh()
 	end
 	local function Filter_Reset(self, arg1, arg2, checked)
-		local request = bookmarks.request
+		local request = XRPBookmarks.request
 		request.text = nil
 		for faction, filtered in pairs(request.faction) do
 			request.faction[faction] = nil
@@ -305,10 +296,10 @@ do
 		request.sortType = request.defaultSortType
 		request.fullText = nil
 		request.sortReverse = nil
-		bookmarks.request.offset = 0
-		bookmarks:Refresh()
+		request.offset = 0
+		XRPBookmarks:Refresh()
 	end
-	Filter_baseMenuList = {
+	XRPBookmarks.FilterButton.baseMenuList = {
 		{ text = "Faction", notCheckable = true, hasArrow = true, menuList = factionMenu, },
 		{ text = "Race", notCheckable = true, hasArrow = true, menuList = raceMenu, },
 		{ text = "Class", notCheckable = true, hasArrow = true, menuList = classMenu, },
@@ -320,43 +311,25 @@ do
 	}
 end
 
-local function HelpButton_PreClick(self, button, down)
-	if not bookmarks.results or #bookmarks.results == 0 then
-		bookmarks.Tab4:Click()
+XRPBookmarks.HelpButton:SetScript("PreClick", function(self, button, down)
+	if not results or #results == 0 then
+		XRPBookmarks.Tab4:Click()
 	end
-end
+end)
 
-local function CreateBookmarks()
-	local frame = CreateFrame("Frame", "XRPBookmarks", UIParent, "XRPBookmarksTemplate")
-	frame.Refresh = Bookmarks_Refresh
-	frame.helpPlates = xrpPrivate.Help.Bookmarks
-	frame.HelpButton:SetScript("PreClick", HelpButton_PreClick)
-	frame.List.update = Bookmarks_Scroll_update
-	frame.Tab1.request = { bookmark = true, sortType = "NA", defaultSortType = "NA", offset = 0, lastRefresh = 0, faction = {}, race = {}, class = {} }
-	frame.Tab2.request = { own = true, sortType = "NA", defaultSortType = "NA", offset = 0, lastRefresh = 0, faction = {}, race = {}, class = {} }
-	frame.Tab3.request = { maxAge = 10800, sortType = "date", defaultSortType = "date", offset = 0, lastRefresh = 0, faction = {}, race = {}, class = {} }
-	frame.Tab4.request = { offset = 0, lastRefresh = 0, faction = {}, race = {}, class = {} }
-	frame.request = frame.Tab1.request
-	frame.baseMenuList = Bookmarks_baseMenuList
-	frame.FilterButton.baseMenuList = Filter_baseMenuList
-	frame:SetScript("OnUpdate", Bookmarks_OnUpdate)
-	return frame
-end
+XRPBookmarks.helpPlates = xrpPrivate.Help.Bookmarks
+XRPBookmarks.Tab1.request = { bookmark = true, sortType = "NA", defaultSortType = "NA", offset = 0, lastRefresh = 0, faction = {}, race = {}, class = {} }
+XRPBookmarks.Tab2.request = { own = true, sortType = "NA", defaultSortType = "NA", offset = 0, lastRefresh = 0, faction = {}, race = {}, class = {} }
+XRPBookmarks.Tab3.request = { maxAge = 10800, sortType = "date", defaultSortType = "date", offset = 0, lastRefresh = 0, faction = {}, race = {}, class = {} }
+XRPBookmarks.Tab4.request = { offset = 0, lastRefresh = 0, faction = {}, race = {}, class = {} }
+XRPBookmarks.request = XRPBookmarks.Tab1.request
 
 function xrp:Bookmarks(showBookmarks)
-	if not bookmarks then
-		bookmarks = CreateBookmarks()
-	elseif bookmarks:IsShown() then
-		HideUIPanel(bookmarks)
+	if XRPBookmarks:IsShown() then
+		HideUIPanel(XRPBookmarks)
 		return
 	elseif showBookmarks then
-		bookmarks.Tab1:Click()
+		XRPBookmarks.Tab1:Click()
 	end
-	ShowUIPanel(bookmarks)
-end
-
-xrpPrivate.settingsToggles.display.preloadBookmarks = function(setting)
-	if setting and not bookmarks then
-		bookmarks = CreateBookmarks()
-	end
+	ShowUIPanel(XRPBookmarks)
 end

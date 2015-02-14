@@ -17,11 +17,7 @@
 
 local addonName, xrpPrivate = ...
 
-local editor
-
-local Save_OnClick, Load
 do
-
 	local function ClearAllFocus()
 		local focused = GetCurrentKeyBoardFocus()
 		if focused then
@@ -29,28 +25,27 @@ do
 		end
 	end
 
-	function Save_OnClick(self)
+	XRPEditor.SaveButton:SetScript("OnClick", function(self, button, down)
 		ClearAllFocus()
 
-		local editor = self:GetParent()
-		local name = editor.Profiles.contents
+		local name = XRPEditor.Profiles.contents
 		local profile, inherits = xrpPrivate.profiles[name].fields, xrpPrivate.profiles[name].inherits
-		for field, control in pairs(editor.fields) do
+		for field, control in pairs(XRPEditor.fields) do
 			profile[field] = not control.inherited and control.contents or nil
 			inherits[field] = control.Inherit:GetChecked()
 		end
-		local parent = editor.Parent.contents
+		local parent = XRPEditor.Parent.contents
 		xrpPrivate.profiles[name].parent = parent
 		if xrpPrivate.profiles[name].parent ~= parent then
 			local value = xrpPrivate.profiles[name].parent
-			editor.Parent.contents = value
-			editor.Parent:SetFormattedText("Parent: %s",  value or "None")
+			XRPEditor.Parent.contents = value
+			XRPEditor.Parent:SetFormattedText("Parent: %s",  value or "None")
 		end
 
-		editor:CheckFields()
-	end
+		XRPEditor:CheckFields()
+	end)
 
-	function Load(self, name)
+	function XRPEditor:Load(name)
 		ClearAllFocus()
 
 		local profile, inherits = xrpPrivate.profiles[name].fields, xrpPrivate.profiles[name].inherits
@@ -77,7 +72,6 @@ do
 	end
 end
 
-local CheckFields
 do
 	local function FallbackFieldContents(field)
 		if field ~= "NA" and field ~= "RA" and field ~= "RC" then
@@ -116,7 +110,7 @@ do
 		return control.inherited and profile[field] ~= nil or not control.inherited and control.contents ~= profile[field] or control.Inherit:GetChecked() ~= (inherits[field] ~= false) or nil
 	end
 
-	function CheckFields(self, field)
+	function XRPEditor:CheckFields(field)
 		local name, parent = self.Profiles.contents, self.Parent.contents
 		if not xrpPrivate.profiles[name] then return end
 		local profile, inherits = xrpPrivate.profiles[name].fields, xrpPrivate.profiles[name].inherits
@@ -137,7 +131,6 @@ do
 	end
 end
 
-local Profiles_PreClick, Parent_PreClick, FC_baseMenuList
 do
 	local function Checked(self)
 		return self.arg1 == UIDROPDOWNMENU_INIT_MENU.contents
@@ -146,17 +139,17 @@ do
 	do
 		local function Profiles_Click(self, arg1, arg2, checked)
 			if not checked then
-				UIDROPDOWNMENU_OPEN_MENU:GetParent():Load(arg1)
+				XRPEditor:Load(arg1)
 			end
 		end
 
-		function Profiles_PreClick(self, button, down)
+		XRPEditor.Profiles.ArrowButton:SetScript("PreClick", function(self, button, down)
 			local parent = self:GetParent()
 			parent.baseMenuList = {}
 			for i, profile in ipairs(xrpPrivate.profiles:List()) do
 				parent.baseMenuList[i] = { text = profile, checked = Checked, arg1 = profile, func = Profiles_Click }
 			end
-		end
+		end)
 	end
 
 	do
@@ -164,20 +157,20 @@ do
 			if not checked then
 				UIDROPDOWNMENU_OPEN_MENU.contents = arg1
 				UIDROPDOWNMENU_OPEN_MENU:SetFormattedText("Parent: %s", arg1 or "None")
-				UIDROPDOWNMENU_OPEN_MENU:GetParent():CheckFields()
+				XRPEditor:CheckFields()
 			end
 		end
 
 		local NONE = { text = "None", checked = Checked, arg1 = nil, func = Parent_Click }
-		function Parent_PreClick(self, button, down)
+		XRPEditor.Parent:SetScript("PreClick", function(self, button, down)
 			self.baseMenuList = { NONE }
-			local editingProfile = self:GetParent().Profiles.contents
+			local editingProfile = XRPEditor.Profiles.contents
 			for i, profile in ipairs(xrpPrivate.profiles:List()) do
 				if profile ~= editingProfile and not xrpPrivate:DoesParentLoop(editingProfile, profile) then
 					self.baseMenuList[#self.baseMenuList + 1] = { text = profile, checked = Checked, arg1 = profile, func = Parent_Click }
 				end
 			end
-		end
+		end)
 	end
 
 	do
@@ -185,70 +178,48 @@ do
 			if not checked or UIDROPDOWNMENU_OPEN_MENU.inherited then
 				UIDROPDOWNMENU_OPEN_MENU:SetAttribute("contents", arg1)
 				UIDROPDOWNMENU_OPEN_MENU:SetAttribute("inherited", false)
-				UIDROPDOWNMENU_OPEN_MENU:GetParent():GetParent():CheckFields("FC")
+				XRPEditor:CheckFields("FC")
 			end
 		end
 
 		local FC = xrp.values.FC
-		FC_baseMenuList = {}
+		local baseMenuList = {}
 		for i = 0, 4, 1 do
 			local iString = tostring(i)
-			FC_baseMenuList[i + 1] = { text = FC[iString], checked = Checked, arg1 = i ~= 0 and iString or nil, func = FC_Click }
+			baseMenuList[i + 1] = { text = FC[iString], checked = Checked, arg1 = i ~= 0 and iString or nil, func = FC_Click }
 		end
+		XRPEditor.fields.FC.baseMenuList = baseMenuList
 	end
 end
 
-local function ExportProfile_OnClick(self, button, down)
-	local profile = self:GetParent().Profiles.contents
+XRPEditor.ExportProfile:SetScript("OnClick", function(self, button, down)
+	local profile = XRPEditor.Profiles.contents
 	xrp:ExportPopup(profile, xrpPrivate.profiles[profile]:Export())
-end
+end)
 
-local function HelpButton_PreClick(self, button, down)
-	if editor.panes[1]:IsVisible() then
-		if editor.Automation:IsVisible() then
-			editor.helpPlates = xrpPrivate.Help.EditorAppearanceAuto
+XRPEditor.HelpButton:SetScript("PreClick", function(self, button, down)
+	if XRPEditor.panes[1]:IsVisible() then
+		if XRPEditor.Automation:IsVisible() then
+			XRPEditor.helpPlates = xrpPrivate.Help.EditorAppearanceAuto
 		else
-			editor.helpPlates = xrpPrivate.Help.EditorAppearanceNoAuto
+			XRPEditor.helpPlates = xrpPrivate.Help.EditorAppearanceNoAuto
 		end
 	else
-		if editor.Automation:IsVisible() then
-			editor.helpPlates = xrpPrivate.Help.EditorBiographyAuto
+		if XRPEditor.Automation:IsVisible() then
+			XRPEditor.helpPlates = xrpPrivate.Help.EditorBiographyAuto
 		else
-			editor.helpPlates = xrpPrivate.Help.EditorBiographyNoAuto
+			XRPEditor.helpPlates = xrpPrivate.Help.EditorBiographyNoAuto
 		end
 	end
-end
-
-local function CreateEditor()
-	local frame = CreateFrame("Frame", "XRPEditor", UIParent, "XRPEditorTemplate")
-	frame.Load = Load
-	frame.CheckFields = CheckFields
-	frame.HelpButton:SetScript("PreClick", HelpButton_PreClick)
-	frame.fields.FC.baseMenuList = FC_baseMenuList
-	frame.Profiles.ArrowButton:SetScript("PreClick", Profiles_PreClick)
-	frame.ExportProfile:SetScript("OnClick", ExportProfile_OnClick)
-	frame.Parent:SetScript("PreClick", Parent_PreClick)
-	frame.SaveButton:SetScript("OnClick", Save_OnClick)
-	xrpPrivate:SetupAutomationFrame(frame.Automation)
-	frame:Load(xrpSaved.selected)
-	return frame
-end
+end)
 
 function xrp:Edit(profile)
-	if not editor then
-		editor = CreateEditor()
-	elseif not profile and editor:IsShown() then
-		HideUIPanel(editor)
+	if not profile and XRPEditor:IsShown() then
+		HideUIPanel(XRPEditor)
 		return
 	end
-	ShowUIPanel(editor)
+	ShowUIPanel(XRPEditor)
 	if profile then
-		editor:Load(profile)
-	end
-end
-
-xrpPrivate.settingsToggles.display.preloadEditor = function(setting)
-	if setting and not editor then
-		editor = CreateEditor()
+		XRPEditor:Load(profile)
 	end
 end

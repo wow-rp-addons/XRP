@@ -283,7 +283,7 @@
 			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</Button>
-	<Frame name="XRPEditorTemplate" toplevel="true" inherits="ButtonFrameTemplate" hidden="true" enableMouse="true" frameStrata="MEDIUM" virtual="true">
+	<Frame name="XRPEditor" toplevel="true" parent="UIParent" inherits="ButtonFrameTemplate" hidden="true" enableMouse="true" frameStrata="MEDIUM">
 		<Size x="439" y="525"/>
 		<Layers>
 			<Layer level="OVERLAY">
@@ -823,7 +823,7 @@
 			<OnShow>
 				SetPortraitTexture(self.portrait, "player")
 				PlaySound("igCharacterInfoOpen")
-				if self.RevertButton:GetButtonState() == "DISABLED" and self.Profiles.contents ~= xrpSaved.selected then
+				if not self.Profiles.contents or self.RevertButton:GetButtonState() == "DISABLED" and self.Profiles.contents ~= xrpSaved.selected then
 					self:Load(xrpSaved.selected)
 				end
 			</OnShow>

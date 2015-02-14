@@ -46,8 +46,6 @@ local DEFAULT_SETTINGS = {
 		closeOnEscapeViewer = true,
 		height = "ft",
 		movableViewer = false,
-		preloadBookmarks = false,
-		preloadEditor = false,
 		weight = "lb",
 	},
 	interact = {
@@ -133,10 +131,6 @@ local upgradeAccountVars = {
 		local settings = xrpAccountSaved.settings
 		settings.minimap.hidett = nil
 		settings.tooltip.faction = nil
-		if settings.display.preloadEditor == nil then
-			settings.display.preloadEditor = DEFAULT_SETTINGS.display.preloadEditor
-			settings.display.preloadViewer = DEFAULT_SETTINGS.display.preloadViewer
-		end
 
 		if settings.cache.autoclean ~= nil then
 			settings.cache.autoClean = settings.cache.autoclean
@@ -249,10 +243,11 @@ local upgradeAccountVars = {
 				end
 			end
 		end
-		xrpAccountSaved.settings.display.preloadBookmarks = DEFAULT_SETTINGS.display.preloadBookmarks
 	end,
 	[9] = function() -- 6.1.0.0
 		xrpAccountSaved.settings.tooltip.replace = DEFAULT_SETTINGS.tooltip.replace
+		xrpAccountSaved.settings.display.preloadBookmarks = nil
+		xrpAccountSaved.settings.display.preloadEditor = nil
 	end,
 }
 
