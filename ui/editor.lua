@@ -247,9 +247,6 @@ function xrp:Edit(profile)
 	end
 end
 
-if not xrpPrivate.settingsToggles.display then
-	xrpPrivate.settingsToggles.display = {}
-end
 xrpPrivate.settingsToggles.display.preloadEditor = function(setting)
 	if setting and not editor then
 		editor = CreateEditor()

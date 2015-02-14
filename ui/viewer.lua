@@ -256,9 +256,6 @@ function xrp:View(player)
 	end
 end
 
-if not xrpPrivate.settingsToggles.display then
-	xrpPrivate.settingsToggles.display = {}
-end
 xrpPrivate.settingsToggles.display.movableViewer = function(setting)
 	local wasVisible = viewer:IsVisible()
 	if wasVisible then
