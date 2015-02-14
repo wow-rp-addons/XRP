@@ -163,8 +163,7 @@ do
 	local function Menu_Checked(self)
 		if self.disabled then
 			return false
-		end
-		if self.arg1 == 5 then
+		elseif self.arg1 == 5 then
 			return UIDROPDOWNMENU_INIT_MENU.character and UIDROPDOWNMENU_INIT_MENU.character.bookmark ~= nil
 		elseif self.arg1 == 6 then
 			return UIDROPDOWNMENU_INIT_MENU.character and UIDROPDOWNMENU_INIT_MENU.character.hide ~= nil
@@ -345,16 +344,12 @@ local function CreateBookmarks()
 end
 
 function xrp:Bookmarks(showBookmarks)
-	local isNew = false
 	if not bookmarks then
-		isNew = true
 		bookmarks = CreateBookmarks()
-	end
-	if bookmarks:IsShown() then
+	elseif bookmarks:IsShown() then
 		HideUIPanel(bookmarks)
 		return
-	end
-	if not isNew and showBookmarks then
+	elseif showBookmarks then
 		bookmarks.Tab1:Click()
 	end
 	ShowUIPanel(bookmarks)

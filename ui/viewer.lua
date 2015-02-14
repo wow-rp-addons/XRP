@@ -30,9 +30,7 @@ do
 
 	local function SetField(field, contents)
 		contents = contents and xrp:Strip(contents) or nil
-		if field == "NA" then
-			contents = contents or UNKNOWN
-		elseif field == "VA" then
+		if field == "VA" then
 			contents = contents and contents:gsub(";", ", ") or "Unknown/None"
 		elseif not contents then
 			contents = ""
@@ -139,8 +137,7 @@ do
 	local function Menu_Checked(self)
 		if self.disabled then
 			return false
-		end
-		if self.arg1 == 4 then
+		elseif self.arg1 == 4 then
 			return viewer.current.bookmark ~= nil
 		elseif self.arg1 == 5 then
 			return viewer.current.hide ~= nil
@@ -230,8 +227,7 @@ function xrp:View(player)
 			if viewer:IsShown() then
 				HideUIPanel(viewer)
 				return
-			end
-			if not viewer.current then
+			elseif not viewer.current then
 				player = "player"
 			else
 				ShowUIPanel(viewer)

@@ -97,9 +97,7 @@ do
 	local oldlines, numline = 0, 0
 	local GTTL, GTTR = "GameTooltipTextLeft%u", "GameTooltipTextRight%u"
 	local function RenderLine(left, right)
-		if not left and not right then
-			return
-		end
+		if not left and not right then return end
 		numline = numline + 1
 		-- This is a bit scary-looking, but it's a sane way to replace tooltip
 		-- lines without needing to completely redo the tooltip from scratch
@@ -362,14 +360,12 @@ local function Tooltip_RECEIVE(event, name)
 	local tooltip, unit = GameTooltip:GetUnit()
 	if tooltip then
 		RenderTooltip()
-	else
-		return
-	end
-	-- If the mouse has already left the unit, the tooltip will get stuck
-	-- visible if we don't do this. It still bounces back into visibility if
-	-- it's partly faded out, but it'll just fade again.
-	if not GameTooltip:IsUnit("mouseover") then
-		TooltipFrame:FadeOut()
+		-- If the mouse has already left the unit, the tooltip will get stuck
+		-- visible if we don't do this. It still bounces back into visibility
+		-- if it's partly faded out, but it'll just fade again.
+		if not GameTooltip:IsUnit("mouseover") then
+			TooltipFrame:FadeOut()
+		end
 	end
 end
 

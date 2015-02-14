@@ -51,15 +51,9 @@ do
 			local name = self[nk]
 			if name == xrpPrivate.playerWithRealm then
 				return xrp.current.fields[field]
-			end
-			-- Any access to a field is treated as an implicit request to fetch
-			-- it (but msp won't do it if it's fresh, and will compile quick,
-			-- successive requests into one go). Never request data we already
-			-- have, and know is good.
-			if gCache[name] and gCache[name][field] then
+			elseif gCache[name] and gCache[name][field] then
 				return gCache[name][field]
-			end
-			if self[rq] then
+			elseif self[rq] then
 				xrpPrivate:QueueRequest(name, field)
 			end
 			if xrpCache[name] and xrpCache[name].fields[field] then
@@ -236,8 +230,7 @@ xrp.characters = {
 			name = xrp:Name(name)
 			if not name then
 				return nil
-			end
-			if not requestTables[name] then
+			elseif not requestTables[name] then
 				requestTables[name] = setmetatable({ [nk] = name, [rq] = true }, characterMeta)
 			end
 			return requestTables[name]
@@ -250,11 +243,7 @@ xrp.characters = {
 			local name = xrp:UnitName(unit)
 			if not name then
 				return nil
-			end
-			-- These values may only update once per session. This could create
-			-- minor confusion if someone changes faction, race, sex, or GUID
-			-- while we're still logged in. Unlikely, but possible.
-			if not gCache[name] then
+			elseif not gCache[name] then
 				local GU = UnitGUID(unit)
 				local class, GC, race, GR, GS = GetPlayerInfoByGUID(GU)
 				gCache[name] = {
@@ -291,13 +280,9 @@ xrp.characters = {
 			-- yet in the session.
 			local class, GC, race, GR, GS, name, realm = GetPlayerInfoByGUID(GU)
 			name = xrp:Name(name, realm)
-			if not name or name == "" then
+			if not name then
 				return nil
-			end
-			-- These values may only update once per session. This could create
-			-- minor confusion if someone changes faction, race, sex, or GUID
-			-- while we're still logged in. Unlikely, but possible.
-			if not gCache[name] then
+			elseif not gCache[name] then
 				gCache[name] = {
 					GC = GC,
 					GF = RACE_FACTION[GR],
@@ -328,8 +313,7 @@ xrp.characters = {
 				name = xrp:Name(name)
 				if not name then
 					return nil
-				end
-				if not noRequestTables[name] then
+				elseif not noRequestTables[name] then
 					noRequestTables[name] = setmetatable({ [nk] = name, [rq] = false }, characterMeta)
 				end
 				return noRequestTables[name]

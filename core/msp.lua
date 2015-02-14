@@ -210,19 +210,19 @@ do
 					end
 				end
 
-				local messageFields = fields and fields[1] or nil
-				libbw:SendAddonMessage("GMSP", ("%s\1%s"):format(prepend, data:sub(1, chunkSize)), channel, name, "BULK", "XRP-GROUP", messageFields and GroupSent or nil, messageFields)
+				local messageFields = fields and fields[1]
+				libbw:SendAddonMessage("GMSP", ("%s\1%s"):format(prepend, data:sub(1, chunkSize)), channel, name, "BULK", "XRP-GROUP", messageFields and GroupSent, messageFields)
 
 				local position, messageNum = chunkSize + 1, 2
 				while position + chunkSize <= #data do
-					messageFields = fields and fields[messageNum] or nil
-					libbw:SendAddonMessage("GMSP", ("%s\2%s"):format(prepend, data:sub(position, position + chunkSize - 1)), channel, name, "BULK", "XRP-GROUP", messageFields and GroupSent or nil, messageFields)
+					messageFields = fields and fields[messageNum]
+					libbw:SendAddonMessage("GMSP", ("%s\2%s"):format(prepend, data:sub(position, position + chunkSize - 1)), channel, name, "BULK", "XRP-GROUP", messageFields and GroupSent, messageFields)
 					position = position + chunkSize
 					messageNum = messageNum + 1
 				end
 
-				messageFields = fields and fields[messageNum] or nil
-				libbw:SendAddonMessage("GMSP", ("%s\3%s"):format(prepend, data:sub(position)), channel, name, "BULK", "XRP-GROUP", messageFields and GroupSent or nil, messageFields)
+				messageFields = fields and fields[messageNum]
+				libbw:SendAddonMessage("GMSP", ("%s\3%s"):format(prepend, data:sub(position)), channel, name, "BULK", "XRP-GROUP", messageFields and GroupSent, messageFields)
 			end
 		end
 	end
@@ -321,9 +321,8 @@ do
 			-- update TT version or time. Full TT may not have been received.
 			if field == "TT" and self.cache[name].partialMessage then
 				return nil
-			end
-			-- Gave us a field.
-			if not xrpCache[name] and (contents ~= "" or version ~= 0) then
+			elseif not xrpCache[name] and (contents ~= "" or version ~= 0) then
+				-- This is the only place a cache table is created by XRP.
 				xrpCache[name] = {
 					fields = {},
 					versions = {},
@@ -527,7 +526,8 @@ msp.handlers = {
 }
 
 msp:SetScript("OnEvent", function(self, event, prefix, message, channel, sender)
-	if event == "CHAT_MSG_ADDON" and self.handlers[prefix] then
+	if event == "CHAT_MSG_ADDON" then
+		if not self.handlers[prefix] then return end
 		-- Sometimes won't have the realm attached because I dunno. Always
 		-- works correctly for different-realm messages.
 		local name = xrp:Name(sender)
@@ -540,7 +540,8 @@ msp:SetScript("OnEvent", function(self, event, prefix, message, channel, sender)
 
 			self.handlers[prefix](self, name, message, channel)
 		end
-	elseif event == "BN_CHAT_MSG_ADDON" and self.handlers[prefix] then
+	elseif event == "BN_CHAT_MSG_ADDON" then
+		if not self.handlers[prefix] then return end
 		local active, toonName, client, realmName = BNGetToonInfo(sender)
 		local name = xrp:Name(toonName, realmName)
 		if self.bnet then
@@ -587,7 +588,7 @@ msp:SetScript("OnEvent", function(self, event, prefix, message, channel, sender)
 end)
 
 function msp:RebuildBNList()
-	self.bnet = {}
+	local bnet = {}
 	for i = 1, select(2, BNGetNumFriends()) do
 		for j = 1, BNGetNumFriendToons(i) do
 			local active, toonName, client, realmName, realmID, faction, race, class, blank, zoneName, level, gameText, broadcastText, broadcastTime, isConnected, toonID = BNGetFriendToonInfo(i, j)
@@ -596,22 +597,21 @@ function msp:RebuildBNList()
 				if self.cache[name].nextCheck then
 					self.cache[name].nextCheck = 0
 				end
-				self.bnet[name] = toonID
+				bnet[name] = toonID
 			end
 		end
 	end
-	if not next(self.bnet) then
-		self.bnet = nil
+	if not next(bnet) then
 		return false
 	end
+	self.bnet = bnet
 	return true
 end
 
 function msp:GetPresenceID(name)
-	if not BNConnected() or not self.bnet and not self:RebuildBNList() then
+	if not BNConnected() or not self.bnet and not self:RebuildBNList() or not self.bnet[name] then
 		return nil
-	end
-	if self.bnet[name] and select(15, BNGetToonInfo(self.bnet[name])) then
+	elseif select(15, BNGetToonInfo(self.bnet[name])) then
 		return self.bnet[name]
 	end
 	return nil
@@ -623,14 +623,14 @@ if not disabled then
 	end
 	msp:RegisterEvent("CHAT_MSG_ADDON")
 	msp:RegisterEvent("BN_CHAT_MSG_ADDON")
-	msp:RegisterEvent("GROUP_ROSTER_UPDATE")
-	if BNConnected() then
-		msp:RegisterEvent("BN_TOON_NAME_UPDATED")
-		msp:RegisterEvent("BN_FRIEND_TOON_ONLINE")
-	end
-	msp:RegisterEvent("BN_CONNECTED")
-	msp:RegisterEvent("BN_DISCONNECTED")
 end
+msp:RegisterEvent("GROUP_ROSTER_UPDATE")
+if BNConnected() then
+	msp:RegisterEvent("BN_TOON_NAME_UPDATED")
+	msp:RegisterEvent("BN_FRIEND_TOON_ONLINE")
+end
+msp:RegisterEvent("BN_CONNECTED")
+msp:RegisterEvent("BN_DISCONNECTED")
 
 do
 	local raidUnits, partyUnits = {}, {}
@@ -647,11 +647,9 @@ do
 end
 
 msp:SetScript("OnUpdate", function(self, elapsed)
-	if next(self.request) then
-		for name, fields in pairs(self.request) do
-			xrpPrivate:Request(name, fields)
-			self.request[name] = nil
-		end
+	for name, fields in pairs(self.request) do
+		xrpPrivate:Request(name, fields)
+		self.request[name] = nil
 	end
 	self:Hide()
 end)
