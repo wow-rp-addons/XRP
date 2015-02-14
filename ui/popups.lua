@@ -22,9 +22,6 @@ function xrp:ExportPopup(title, text)
 	XRPExport.currentText = text
 	XRPExport.Text.EditBox:SetText(text)
 	XRPExport.HeaderText:SetFormattedText("Export: %s", title)
-	if XRPExport:IsShown() then
-		HideUIPanel(XRPExport)
-	end
 	ShowUIPanel(XRPExport)
 end
 

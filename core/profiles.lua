@@ -47,7 +47,6 @@ xrp.current = {
 		__index = function(self, field)
 			local profiles, selected = xrpSaved.profiles, xrpSaved.selected
 			local contents
-			-- Find the contents.
 			if xrpSaved.overrides.fields[field] then
 				contents = xrpSaved.overrides.fields[field] ~= "" and xrpSaved.overrides.fields[field] or nil
 			elseif profiles[selected].fields[field] then
@@ -57,10 +56,8 @@ xrp.current = {
 			elseif xrpSaved.meta.fields[field] then
 				contents = xrpSaved.meta.fields[field]
 			else
-				-- No contents at all.
 				return nil
 			end
-			-- Convert height/weight to MSP-style.
 			if field == "AH" then
 				contents = xrp:Height(contents, "msp")
 			elseif field == "AW" then
@@ -182,15 +179,12 @@ do
 			if type(newName) ~= "string" or FORBIDDEN_NAMES[newName] or profiles[newName] ~= nil or type(profiles[name]) ~= "table" then
 				return false
 			end
-			-- Rename profile to the nonexistant table provided.
 			profiles[newName] = profiles[name]
-			-- Update parentage of other profiles
 			for profileName, profile in pairs(profiles) do
 				if profile.parent == name then
 					profile.parent = newName
 				end
 			end
-			-- Select the new name if this is our active profile.
 			if xrpSaved.selected == name then
 				xrpSaved.selected = newName
 			end
@@ -202,7 +196,6 @@ do
 			if type(newName) ~= "string" or FORBIDDEN_NAMES[newName] or profiles[newName] ~= nil or type(profiles[name]) ~= "table" then
 				return false
 			end
-			-- Copy profile into the empty table called.
 			profiles[newName] = {
 				fields = {},
 				inherits = {},
@@ -344,8 +337,7 @@ do
 			local name = self[nk]
 			if not xrpSaved.profiles[name] then
 				return nil
-			end
-			if profileFunctions[component] then
+			elseif profileFunctions[component] then
 				return profileFunctions[component]
 			elseif component == "fields" then
 				rawset(self, "fields", setmetatable({ [nk] = name }, fieldsMeta))
@@ -365,7 +357,7 @@ do
 			if xrpPrivate:DoesParentLoop(name, value) then return end
 
 			-- Walk through the selected profile's parentage to see if we're in
-			-- the chain anywherer(for firing UPDATE event).
+			-- the chain anywhere (for firing UPDATE event).
 			local selected = xrpSaved.selected
 			local isUsed = name == selected
 			local count, inherit = 0, profiles[selected].parent
