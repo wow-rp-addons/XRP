@@ -1,7 +1,22 @@
-6.1.0.0_beta3 (2015-02-07):
+6.1.0.0_rc1 (2015-02-14):
 
 	- This version has been tested with both 6.0.3 (live) and 6.1.0 (PTR), and
 	  works correctly with both versions.
+
+	- (rc1) A new tooltip mode, separating the roleplay information from the
+	  main tooltip has been added. Disable "replace tooltip for players and
+	  pets" in the interface options to enable this mode.
+
+	- (rc1) Length warnings have been added to fields in the editor. These are
+	  just recommendations, not hard limits.
+
+	- (rc1) Height/weight conversion has been made a bit less overzealous.
+
+	- (rc1) Help system has been added to the viewer. Other frames have had
+	  some texts changed and overlay positions fixed.
+
+	- (rc1) Frame preloading has been removed. All major frames are now
+	  created at UI load time.
 
 	- A major new UI component has been added, the long-promised bookmarks
 	  panel. This panel is accessible from the minimap button, from the
@@ -12,23 +27,22 @@
 		  predefined views (your bookmarks, your own characters, recently seen
 		  profiles, and all profiles).
 
-	- (beta2) A profile exporter, which allows you to copy a plain-text
-	  version of a profile, has been added. This exporter is accessed through
-	  the editor, the viewer, and the bookmarks panel.
+	- A profile exporter, which allows you to copy a plain-text version of a
+	  profile, has been added. This exporter is accessed through the editor,
+	  the viewer, and the bookmarks panel.
 
-	- (beta3) A simple in-game help system has been added to the bookmarks
-	  frame and the editor frame. It is accessed by clicking the large yellow
-	  button marked "i". The viewer will have this system added in a future
-	  release.
+	- A simple in-game help system has been added to the bookmarks, editor,
+	  and viewer frames. It is accessed by clicking the large yellow button
+	  marked "i".
 
-	- (beta2) The viewer and bookmarks panel now have an option to add a
-	  character to one's in-game friends list directly from either of those
-	  panels. The friends are added with a note indicating their roleplay
-	  name, and may be removed through the standard social panel.
+	- The viewer and bookmarks panel now have an option to add a character to
+	  one's in-game friends list directly from either of those panels. The
+	  friends are added with a note indicating their roleplay name, and may be
+	  removed through the standard social panel.
 
-	- (beta2) Bugfix: Hidden profiles will no longer trigger the cursor book
-	  icon or profile view-on-right-click. They may still be accessed through
-	  other methods.
+	- Bugfix: Hidden profiles will no longer trigger the cursor book icon or
+	  profile view-on-right-click. They may still be accessed through other
+	  methods.
 
 	- Bugfix: An issue in the bandwidth library which could, in circumstances
 	  XRP alone would never trigger, cause disconnects. This has been fixed.
@@ -36,19 +50,18 @@
 	- Bugfix: An issue where the character's GUID field (GU) would not always
 	  be properly set has been fixed.
 
-	- (beta2) Bugfix: The importer (from other addons) will now properly only
-	  disable those addons for the current character, rather than all
-	  characters.
+	- Bugfix: The importer (from other addons) will now properly only disable
+	  those addons for the current character, rather than all characters.
 
-	- (beta3) Bugfix: Crossrealm profiles over Battle.net will now work
-	  correctly on the first login after client launch.
+	- Bugfix: Crossrealm profiles over Battle.net will now work correctly on
+	  the first login after client launch.
 
-	- (beta3) Bugfix: Fixed a rare Lua error from the viewer menu interacting
-	  with Blizzard code elsewhere. Enabling/disabling of these menu items,
-	  where appropriate, has also been improved.
+	- Bugfix: Fixed a rare Lua error from the viewer menu interacting with
+	  Blizzard code elsewhere. Enabling/disabling of these menu items, where
+	  appropriate, has also been improved.
 
-	- (beta3) Bugfix: Fixed an extremely rare situation which could lead to
-	  fields not properly being sent over group channels.
+	- Bugfix: Fixed an extremely rare situation which could lead to fields not
+	  properly being sent over group channels.
 
 For 6.0.2.1 or earlier users:
 
