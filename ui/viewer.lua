@@ -17,7 +17,7 @@
 
 local addonName, xrpPrivate = ...
 
-local viewer = XRPViewer
+local current, failed
 
 local Load, FIELD
 do
@@ -44,9 +44,9 @@ do
 			-- Link URLs in scrolling fields.
 			contents = contents:gsub("([ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789%-%.]+%.com[^%w])", "http://%1"):gsub("([ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789%-%.]+%.net[^%w])", "http://%1"):gsub("([ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789%-%.]+%.org[^%w])", "http://%1"):gsub("(bit%.ly%/)", "http://%1"):gsub("(https?://)http://", "%1"):gsub("(https?://[ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789%%%-%.%_%~%:%/%?#%[%]%@%!%$%&%'%(%)%*%+%,%;%=]+)", "|H%1|h|cffc845fa[%1]|r|h")
 		end
-		viewer.fields[field]:SetText(contents)
+		XRPViewer.fields[field]:SetText(contents)
 		if field == "DE" or field == "HI" then
-			viewer.lastFieldSet = GetTime()
+			XRPViewer.nextRefresh = GetTime() + 30
 		end
 	end
 
@@ -55,15 +55,15 @@ do
 		for i, field in ipairs(DISPLAY) do
 			SetField(field, fields[field] or field == "NA" and xrp:Ambiguate(character.name) or field == "RA" and xrp.values.GR[fields.GR] or field == "RC" and xrp.values.GC[fields.GC] or nil)
 		end
-		viewer.XC:SetText("")
-		viewer.failed = nil
-		if character == viewer.current then
+		XRPViewer.XC:SetText("")
+		failed = nil
+		if character == current then
 			return false
-		elseif viewer.current and character.name == viewer.current.name then
-			viewer.current = character
+		elseif current and character.name == current.name then
+			current = character
 			return false
 		end
-		viewer.current = character
+		current = character
 		return true
 	end
 
@@ -79,91 +79,87 @@ do
 		if META_SUPPORTED[field] then
 			field = META_SUPPORTED[field]
 		end
-		if viewer.current.name == name and SUPPORTED[field] then
-			local fields = viewer.current.fields
+		if current.name == name and SUPPORTED[field] then
+			local fields = current.fields
 			SetField(field, fields[field] or field == "RA" and xrp.values.GR[fields.GR] or field == "RC" and xrp.values.GC[fields.GC] or nil)
 		end
 	end
 end
 
 local function RECEIVE(event, name)
-	if viewer.current.name == name then
-		if viewer.failed then
-			Load(viewer.current)
+	if current.name == name then
+		if failed then
+			Load(current)
 		end
-		local XC = viewer.XC:GetText()
+		local XC = XRPViewer.XC:GetText()
 		if not XC or not XC:find("^Received") then
-			viewer.XC:SetText(event == "NOCHANGE" and "No changes." or "Received!")
+			XRPViewer.XC:SetText(event == "NOCHANGE" and "No changes." or "Received!")
 		end
 	end
 end
 
 local function UPDATE(event, field)
-	if viewer.current.name == xrpPrivate.playerWithRealm then
+	if current.name == xrpPrivate.playerWithRealm then
 		if field then
 			FIELD("FIELD", xrpPrivate.playerWithRealm, field)
 		else
-			Load(viewer.current)
+			Load(current)
 		end
 	end
 end
 
 local function CHUNK(event, name, chunk, totalchunks)
-	if viewer.current.name == name then
-		local XC = viewer.XC:GetText()
+	if current.name == name then
+		local XC = XRPViewer.XC:GetText()
 		if chunk ~= totalchunks or not XC or XC:find("^Receiv") then
-			viewer.XC:SetFormattedText(totalchunks and (chunk == totalchunks and "Received! (%u/%u)" or "Receiving... (%u/%u)") or "Receiving... (%u/??)", chunk, totalchunks)
+			XRPViewer.XC:SetFormattedText(totalchunks and (chunk == totalchunks and "Received! (%u/%u)" or "Receiving... (%u/%u)") or "Receiving... (%u/??)", chunk, totalchunks)
 		end
 	end
 end
 
 local function FAIL(event, name, reason)
-	if viewer.current.name == name then
-		viewer.failed = true
-		if not viewer.XC:GetText() then
+	if current.name == name then
+		failed = true
+		if not XRPViewer.XC:GetText() then
 			if reason == "offline" then
-				viewer.XC:SetText("Character is not online.")
+				XRPViewer.XC:SetText("Character is not online.")
 			elseif reason == "faction" then
-				viewer.XC:SetText("Character is opposite faction.")
+				XRPViewer.XC:SetText("Character is opposite faction.")
 			elseif reason == "nomsp" then
-				viewer.XC:SetText("No RP addon appears to be active.")
+				XRPViewer.XC:SetText("No RP addon appears to be active.")
 			end
 		end
 	end
 end
 
-local Menu_baseMenuList
 do
 	local function Menu_Checked(self)
 		if self.disabled then
 			return false
 		elseif self.arg1 == 4 then
-			return viewer.current.bookmark ~= nil
+			return current.bookmark ~= nil
 		elseif self.arg1 == 5 then
-			return viewer.current.hide ~= nil
+			return current.hide ~= nil
 		end
 	end
 	local function Menu_Click(self, arg1, arg2, checked)
 		if arg1 == 1 then
-			local current = UIDROPDOWNMENU_OPEN_MENU:GetParent().current
 			xrp:ExportPopup(xrp:Ambiguate(current.name), current.exportText)
 		elseif arg1 == 2 then
-			local viewer = UIDROPDOWNMENU_OPEN_MENU:GetParent()
-			if viewer.current.noRequest then
-				Load(xrp.characters.byName[viewer.current.name])
+			if current.noRequest then
+				Load(xrp.characters.byName[current.name])
 			else
-				Load(viewer.current)
+				Load(current)
 			end
 		elseif arg1 == 3 then
-			local character = UIDROPDOWNMENU_OPEN_MENU:GetParent().current
-			AddOrRemoveFriend(Ambiguate(character.name, "none"), xrp:Strip(character.fields.NA))
+			AddOrRemoveFriend(Ambiguate(current.name, "none"), xrp:Strip(current.fields.NA))
 		elseif arg1 == 4 then
-			UIDROPDOWNMENU_OPEN_MENU:GetParent().current.bookmark = not checked
+			current.bookmark = not checked
 		elseif arg1 == 5 then
-			UIDROPDOWNMENU_OPEN_MENU:GetParent().current.hide = not checked
+			current.hide = not checked
 		end
 	end
-	Menu_baseMenuList = {
+	XRPViewer.Menu.baseMenuList = {
 		{ text = "Export...", arg1 = 1, notCheckable = true, func = Menu_Click, },
 		{ text = "Refresh", arg1 = 2, notCheckable = true, func = Menu_Click, },
 		{ text = "Add friend", arg1 = 3, notCheckable = true, func = Menu_Click, },
@@ -173,14 +169,13 @@ do
 	}
 end
 
-local function Menu_PreClick(self, button, down)
-	local viewer = self:GetParent()
-	local GF = viewer.current.fields.GF
-	local isOwn = viewer.current.own
+XRPViewer.Menu:SetScript("PreClick", function(self, button, down)
+	local GF = current.fields.GF
+	local isOwn = current.own
 	if GF and GF ~= xrp.current.fields.GF then
 		self.baseMenuList[3].disabled = true
 	else
-		local name = Ambiguate(viewer.current.name, "none")
+		local name = Ambiguate(current.name, "none")
 		local isFriend = isOwn
 		if not isFriend then
 			for i = 1, GetNumFriends() do
@@ -191,23 +186,21 @@ local function Menu_PreClick(self, button, down)
 		end
 		self.baseMenuList[3].disabled = isFriend
 	end
-	if isOwn or not viewer.current.noRequest and viewer.lastFieldSet + 30 > GetTime() then
+	if isOwn or not current.noRequest and XRPViewer.nextRefresh > GetTime() then
 		self.baseMenuList[2].disabled = true
 	else
 		self.baseMenuList[2].disabled = nil
 	end
-	if isOwn or not viewer.current.fields.VA then
+	if isOwn or not current.fields.VA then
 		self.baseMenuList[4].disabled = true
 		self.baseMenuList[5].disabled = true
 	else
 		self.baseMenuList[4].disabled = nil
 		self.baseMenuList[5].disabled = nil
 	end
-end
+end)
 
-viewer.helpPlates = xrpPrivate.Help.Viewer
-viewer.Menu.baseMenuList = Menu_baseMenuList
-viewer.Menu:SetScript("PreClick", Menu_PreClick)
+XRPViewer.helpPlates = xrpPrivate.Help.Viewer
 xrp:HookEvent("FIELD", FIELD)
 xrp:HookEvent("RECEIVE", RECEIVE)
 xrp:HookEvent("NOCHANGE", RECEIVE)
@@ -224,13 +217,13 @@ function xrp:View(player)
 		player = isUnit and unit or character.name
 	else
 		if not player then
-			if viewer:IsShown() then
-				HideUIPanel(viewer)
+			if XRPViewer:IsShown() then
+				HideUIPanel(XRPViewer)
 				return
-			elseif not viewer.current then
+			elseif not current then
 				player = "player"
 			else
-				ShowUIPanel(viewer)
+				ShowUIPanel(XRPViewer)
 				return
 			end
 		end
@@ -245,52 +238,52 @@ function xrp:View(player)
 	end
 	local isNew = Load(character)
 	if isUnit then
-		SetPortraitTexture(viewer.portrait, player)
+		SetPortraitTexture(XRPViewer.portrait, player)
 	elseif isNew then
 		local GF = character.fields.GF
-		SetPortraitToTexture(viewer.portrait, GF == "Alliance" and "Interface\\Icons\\INV_BannerPVP_02" or GF == "Horde" and "Interface\\Icons\\INV_BannerPVP_01" or "Interface\\Icons\\INV_Misc_Book_17")
+		SetPortraitToTexture(XRPViewer.portrait, GF == "Alliance" and "Interface\\Icons\\INV_BannerPVP_02" or GF == "Horde" and "Interface\\Icons\\INV_BannerPVP_01" or "Interface\\Icons\\INV_Misc_Book_17")
 	end
-	ShowUIPanel(viewer)
-	if isNew and not viewer.panes[1]:IsVisible() then
-		viewer.Tab1:Click()
+	ShowUIPanel(XRPViewer)
+	if isNew and not XRPViewer.panes[1]:IsVisible() then
+		XRPViewer.Tab1:Click()
 	end
 end
 
 xrpPrivate.settingsToggles.display.movableViewer = function(setting)
-	local wasVisible = viewer:IsVisible()
+	local wasVisible = XRPViewer:IsVisible()
 	if wasVisible then
-		HideUIPanel(viewer)
+		HideUIPanel(XRPViewer)
 	end
 	if setting then
-		viewer:SetAttribute("UIPanelLayout-defined", false)
-		viewer:SetAttribute("UIPanelLayout-enabled", false)
-		viewer:SetMovable(true)
-		viewer:SetClampedToScreen(true)
-		viewer:SetFrameStrata("HIGH")
-		if not viewer:GetPoint() then
-			viewer:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 50, -125)
+		XRPViewer:SetAttribute("UIPanelLayout-defined", false)
+		XRPViewer:SetAttribute("UIPanelLayout-enabled", false)
+		XRPViewer:SetMovable(true)
+		XRPViewer:SetClampedToScreen(true)
+		XRPViewer:SetFrameStrata("HIGH")
+		if not XRPViewer:GetPoint() then
+			XRPViewer:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 50, -125)
 		end
-		if not viewer.TitleRegion then
-			viewer.TitleRegion = viewer:CreateTitleRegion()
+		if not XRPViewer.TitleRegion then
+			XRPViewer.TitleRegion = XRPViewer:CreateTitleRegion()
 		end
-		viewer.TitleRegion:SetAllPoints("XRPViewerTitleBg")
+		XRPViewer.TitleRegion:SetAllPoints("XRPViewerTitleBg")
 		xrpPrivate.settingsToggles.display.closeOnEscapeViewer(xrpPrivate.settings.display.closeOnEscapeViewer)
-	elseif viewer.TitleRegion then
-		viewer:SetAttribute("UIPanelLayout-defined", true)
-		viewer:SetAttribute("UIPanelLayout-enabled", true)
-		viewer:SetMovable(false)
-		viewer:SetClampedToScreen(false)
-		viewer:SetFrameStrata("MEDIUM")
-		viewer.TitleRegion:SetPoint("BOTTOMLEFT", viewer, "TOPLEFT")
+	elseif XRPViewer.TitleRegion then
+		XRPViewer:SetAttribute("UIPanelLayout-defined", true)
+		XRPViewer:SetAttribute("UIPanelLayout-enabled", true)
+		XRPViewer:SetMovable(false)
+		XRPViewer:SetClampedToScreen(false)
+		XRPViewer:SetFrameStrata("MEDIUM")
+		XRPViewer.TitleRegion:SetPoint("BOTTOMLEFT", XRPViewer, "TOPLEFT")
 		xrpPrivate.settingsToggles.display.closeOnEscapeViewer(false)
 	end
 	if wasVisible then
-		ShowUIPanel(viewer)
+		ShowUIPanel(XRPViewer)
 	end
 end
 local closeOnEscape
 xrpPrivate.settingsToggles.display.closeOnEscapeViewer = function(setting)
-	if setting and viewer.TitleRegion then
+	if setting and XRPViewer.TitleRegion then
 		if not closeOnEscape then
 			UISpecialFrames[#UISpecialFrames + 1] = "XRPViewer"
 			closeOnEscape = true
