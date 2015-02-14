@@ -18,19 +18,19 @@
 
 local addonName, xrpPrivate = ...
 
-local minimap
+local XRPMinimap
 
 local function Minimap_UpdateIcon()
-	if not minimap then return end
+	if not XRPMinimap then return end
 	if xrp.characters.byUnit.target and xrp.characters.byUnit.target.fields.VA then
-		minimap.Icon:SetTexture("Interface\\Icons\\INV_Misc_Book_03")
+		XRPMinimap.Icon:SetTexture("Interface\\Icons\\INV_Misc_Book_03")
 		return
 	end
 	local FC = xrp.current.fields.FC
 	if not FC or FC == "0" or FC == "1" then
-		minimap.Icon:SetTexture("Interface\\Icons\\Ability_Malkorok_BlightofYshaarj_Red")
+		XRPMinimap.Icon:SetTexture("Interface\\Icons\\Ability_Malkorok_BlightofYshaarj_Red")
 	else
-		minimap.Icon:SetTexture("Interface\\Icons\\Ability_Malkorok_BlightofYshaarj_Green")
+		XRPMinimap.Icon:SetTexture("Interface\\Icons\\Ability_Malkorok_BlightofYshaarj_Green")
 	end
 end
 
@@ -88,7 +88,7 @@ do
 	end
 end
 
-local attachedMinimap, detachedMinimap
+local AttachedMinimapFrame, DetachedMinimapFrame
 
 local GetAttachedMinimap
 do
@@ -136,15 +136,15 @@ do
 	end
 
 	function GetAttachedMinimap()
-		if not attachedMinimap then
-			attachedMinimap = CreateFrame("Button", "LibDBIcon10_XRP", Minimap, "XRPMinimap")
-			attachedMinimap.baseMenuList = Minimap_baseMenuList
-			attachedMinimap:SetScript("PreClick", Minimap_PreClick)
-			attachedMinimap:SetScript("OnEvent", Minimap_UpdateIcon)
-			attachedMinimap.OnUpdate = Minimap_OnUpdate
-			Minimap_UpdatePosition(attachedMinimap)
+		if not AttachedMinimapFrame then
+			AttachedMinimapFrame = CreateFrame("Button", "LibDBIcon10_XRP", Minimap, "XRPMinimapTemplate")
+			AttachedMinimapFrame.baseMenuList = Minimap_baseMenuList
+			AttachedMinimapFrame:SetScript("PreClick", Minimap_PreClick)
+			AttachedMinimapFrame:SetScript("OnEvent", Minimap_UpdateIcon)
+			AttachedMinimapFrame.OnUpdate = Minimap_OnUpdate
+			Minimap_UpdatePosition(AttachedMinimapFrame)
 		end
-		return attachedMinimap
+		return AttachedMinimapFrame
 	end
 end
 
@@ -160,51 +160,51 @@ do
 	end
 
 	function GetDetachedMinimap()
-		if not detachedMinimap then
-			detachedMinimap = CreateFrame("Button", nil, UIParent, "XRPButton")
-			detachedMinimap.baseMenuList = Minimap_baseMenuList
-			detachedMinimap:SetScript("OnDragStop", Minimap_OnDragStop)
-			detachedMinimap:SetScript("PreClick", Minimap_PreClick)
-			detachedMinimap:SetScript("OnEvent", Minimap_UpdateIcon)
-			detachedMinimap:ClearAllPoints()
-			detachedMinimap:SetPoint(xrpPrivate.settings.minimap.point, UIParent, xrpPrivate.settings.minimap.point, xrpPrivate.settings.minimap.x, xrpPrivate.settings.minimap.y)
+		if not DetachedMinimapFrame then
+			DetachedMinimapFrame = CreateFrame("Button", nil, UIParent, "XRPButtonTemplate")
+			DetachedMinimapFrame.baseMenuList = Minimap_baseMenuList
+			DetachedMinimapFrame:SetScript("OnDragStop", Minimap_OnDragStop)
+			DetachedMinimapFrame:SetScript("PreClick", Minimap_PreClick)
+			DetachedMinimapFrame:SetScript("OnEvent", Minimap_UpdateIcon)
+			DetachedMinimapFrame:ClearAllPoints()
+			DetachedMinimapFrame:SetPoint(xrpPrivate.settings.minimap.point, UIParent, xrpPrivate.settings.minimap.point, xrpPrivate.settings.minimap.x, xrpPrivate.settings.minimap.y)
 		end
-		return detachedMinimap
+		return DetachedMinimapFrame
 	end
 end
 
 xrpPrivate.settingsToggles.minimap = {
 	enabled = function(setting)
 		if setting then
-			if minimap == nil then
+			if XRPMinimap == nil then
 				xrp:HookEvent("UPDATE", Minimap_UpdateIcon)
 				xrp:HookEvent("RECEIVE", Minimap_UpdateIcon)
 			end
 			if xrpPrivate.settings.minimap.detached then
-				if minimap and minimap == attachedMinimap then
-					minimap:UnregisterAllEvents()
-					minimap:Hide()
+				if XRPMinimap and XRPMinimap == AttachedMinimapFrame then
+					XRPMinimap:UnregisterAllEvents()
+					XRPMinimap:Hide()
 				end
-				minimap = GetDetachedMinimap()
+				XRPMinimap = GetDetachedMinimap()
 			else
-				if minimap and minimap == detachedMinimap then
-					minimap:UnregisterAllEvents()
-					minimap:Hide()
+				if XRPMinimap and XRPMinimap == DetachedMinimapFrame then
+					XRPMinimap:UnregisterAllEvents()
+					XRPMinimap:Hide()
 				end
-				minimap = GetAttachedMinimap()
+				XRPMinimap = GetAttachedMinimap()
 			end
 			Minimap_UpdateIcon()
-			minimap:RegisterEvent("PLAYER_TARGET_CHANGED")
-			minimap:RegisterEvent("PLAYER_ENTERING_WORLD")
-			minimap:Show()
-		elseif minimap ~= nil then
-			minimap:UnregisterAllEvents()
-			minimap:Hide()
-			minimap = nil
+			XRPMinimap:RegisterEvent("PLAYER_TARGET_CHANGED")
+			XRPMinimap:RegisterEvent("PLAYER_ENTERING_WORLD")
+			XRPMinimap:Show()
+		elseif XRPMinimap ~= nil then
+			XRPMinimap:UnregisterAllEvents()
+			XRPMinimap:Hide()
+			XRPMinimap = nil
 		end
 	end,
 	detached = function(setting)
-		if not xrpPrivate.settings.minimap.enabled or not minimap or setting and minimap == detachedMinimap or not setting and minimap == attachedMinimap then return end
+		if not xrpPrivate.settings.minimap.enabled or not XRPMinimap or setting and XRPMinimap == DetachedMinimapFrame or not setting and XRPMinimap == AttachedMinimapFrame then return end
 		xrpPrivate.settingsToggles.minimap.enabled(xrpPrivate.settings.minimap.enabled)
 	end,
 }

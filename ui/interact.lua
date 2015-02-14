@@ -17,7 +17,7 @@
 
 local addonName, xrpPrivate = ...
 
-local cursorFrame, cursor, rightClick
+local CursorFrame, cursor, rightClick
 
 local Cursor_TurnOrActionStart, Cursor_TurnOrActionStop
 do
@@ -25,10 +25,10 @@ do
 	-- if a unit is right-clicked, it will be the target unit by Stop.
 	local now, mouseover, autoInteract
 	function Cursor_TurnOrActionStart()
-		if not cursor or not rightClick or InCombatLockdown() or not cursorFrame:IsVisible() then return end
-		mouseover = cursorFrame.current
+		if not cursor or not rightClick or InCombatLockdown() or not CursorFrame:IsVisible() then return end
+		mouseover = CursorFrame.current
 		now = GetTime()
-		if cursorFrame.mountable then
+		if CursorFrame.mountable then
 			autoInteract = GetCVar("AutoInteract") == "1"
 			if autoInteract then
 				SetCVar("AutoInteract", "0")
@@ -40,7 +40,7 @@ do
 		-- 0.75s interaction time is guessed as Blizzard number from
 		-- in-game testing. Used for consistency.
 		if GetTime() - now < 0.75 and mouseover == xrp:UnitName("target") then
-			if cursorFrame.mountable then
+			if CursorFrame.mountable then
 				UIErrorsFrame:Clear() -- Hides errors on inteactable mount players.
 			end
 			xrp:View("target")
@@ -97,8 +97,8 @@ do
 end
 
 local function Cursor_RECEIVE(event, name)
-	if cursor and name == cursorFrame.current and not InCombatLockdown() and not cursorFrame:IsVisible() and (not cursorFrame.mountInParty or not IsItemInRange(88589, "mouseover")) then
-		cursorFrame:Show()
+	if cursor and name == CursorFrame.current and not InCombatLockdown() and not CursorFrame:IsVisible() and (not CursorFrame.mountInParty or not IsItemInRange(88589, "mouseover")) then
+		CursorFrame:Show()
 	end
 end
 
@@ -119,33 +119,33 @@ end
 local function CreateCursor()
 	-- Cache item data for range checking.
 	IsItemInRange(88589, "player")
-	cursorFrame = CreateFrame("Frame", nil, UIParent)
+	CursorFrame = CreateFrame("Frame", nil, UIParent)
 	-- Pretending to be part of the mouse cursor, so better be above
 	-- everything we possibly can.
-	cursorFrame:SetFrameStrata("TOOLTIP")
-	cursorFrame:SetFrameLevel(127)
-	cursorFrame:SetWidth(24)
-	cursorFrame:SetHeight(24)
-	local cursorImage = cursorFrame:CreateTexture(nil, "BACKGROUND")
-	cursorImage:SetTexture("Interface\\MINIMAP\\TRACKING\\Class")
-	cursorImage:SetAllPoints(cursorFrame)
-	cursorFrame:Hide()
-	cursorFrame:SetScript("OnEvent", Cursor_OnEvent)
-	cursorFrame:SetScript("OnUpdate", Cursor_OnUpdate)
+	CursorFrame:SetFrameStrata("TOOLTIP")
+	CursorFrame:SetFrameLevel(127)
+	CursorFrame:SetWidth(24)
+	CursorFrame:SetHeight(24)
+	CursorFrame.Image = CursorFrame:CreateTexture(nil, "BACKGROUND")
+	CursorFrame.Image:SetTexture("Interface\\MINIMAP\\TRACKING\\Class")
+	CursorFrame.Image:SetAllPoints(CursorFrame)
+	CursorFrame:Hide()
+	CursorFrame:SetScript("OnEvent", Cursor_OnEvent)
+	CursorFrame:SetScript("OnUpdate", Cursor_OnUpdate)
 	xrp:HookEvent("RECEIVE", Cursor_RECEIVE)
 end
 
 xrpPrivate.settingsToggles.interact = {
 	cursor = function(setting)
 		if setting then
-			if not cursorFrame then
+			if not CursorFrame then
 				CreateCursor()
 			end
-			cursorFrame:RegisterEvent("UPDATE_MOUSEOVER_UNIT")
+			CursorFrame:RegisterEvent("UPDATE_MOUSEOVER_UNIT")
 			cursor = true
 		elseif cursor ~= nil then
-			cursorFrame:UnregisterAllEvents()
-			cursorFrame:Hide()
+			CursorFrame:UnregisterAllEvents()
+			CursorFrame:Hide()
 			cursor = false
 		end
 	end,
