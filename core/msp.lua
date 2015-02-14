@@ -287,8 +287,7 @@ do
 			end
 			return ("%s%u=%s"):format(field, currentVersion, xrp.current.fields[field])
 		elseif action == "!" and version == (xrpCache[name] and xrpCache[name].versions[field] or 0) then
-			-- Told us we have latest of their field.
-			self.cache[name].time[field] = GetTime()
+			self.cache[name].time[field] = GetTime() + FIELD_TIMES[field]
 			self.cache[name].fieldUpdated = self.cache[name].fieldUpdated or false
 			if field == "TT" and xrpCache[name] and self.cache[name].bnet == nil then
 				local VP = tonumber(xrpCache[name].fields.VP)
@@ -332,10 +331,8 @@ do
 			elseif xrpCache[name] then
 				xrpCache[name].versions[field] = nil
 			end
-			-- Save time regardless of contents or version. This prevents
-			-- querying again too soon. Query time is also set prior to initial
-			-- send -- so timer will count from send OR receive as appropriate.
-			self.cache[name].time[field] = GetTime()
+			-- Save session time regardless of contents or version.
+			self.cache[name].time[field] = GetTime() + FIELD_TIMES[field]
 
 			if updated then
 				xrpPrivate:FireEvent("FIELD", name, field)
@@ -391,9 +388,10 @@ msp.handlers = {
 			-- If we don't have any info for them and haven't requested the
 			-- tooltip in this session, also send a tooltip request.
 			local now = GetTime()
-			msp.cache[name].time.TT = now
+			local timer = FIELD_TIMES.TT
+			msp.cache[name].time.TT = now + timer
 			for field, isTT in pairs(TT_FIELDS) do
-				msp.cache[name].time[field] = now
+				msp.cache[name].time[field] = now + timer
 			end
 			self:Send(name, TT_REQ, channel, true)
 		end
@@ -634,18 +632,13 @@ if libfakedraw then
 end
 
 function xrpPrivate:QueueRequest(name, field)
-	if disabled or name == xrpPrivate.playerWithRealm or xrp:Ambiguate(name) == UNKNOWN or msp.cache[name].time[field] and GetTime() < msp.cache[name].time[field] + FIELD_TIMES[field] then
-		return false
-	end
-
-	if not msp.request[name] then
+	if disabled or name == xrpPrivate.playerWithRealm or xrp:Ambiguate(name) == UNKNOWN or msp.cache[name].time[field] and GetTime() < msp.cache[name].time[field] then
+		return
+	elseif not msp.request[name] then
 		msp.request[name] = {}
 	end
-
 	msp.request[name][#msp.request[name] + 1] = field
 	msp:Show()
-
-	return true
 end
 
 -- As also in TT_REQ, these are only slightly less efficient than using GF+GU,
@@ -696,16 +689,17 @@ function xrpPrivate:Request(name, fields)
 
 	local out = {}
 	for i, field in ipairs(fields) do
-		if not msp.cache[name].time[field] or now > msp.cache[name].time[field] + FIELD_TIMES[field] then
+		if not msp.cache[name].time[field] or now > msp.cache[name].time[field] then
 			if not xrpCache[name] or not xrpCache[name].versions[field] then
 				out[#out + 1] = "?" .. field
 			else
 				out[#out + 1] = ("?%s%u"):format(field, xrpCache[name].versions[field])
 			end
-			msp.cache[name].time[field] = now
+			msp.cache[name].time[field] = now + FIELD_TIMES[field]
 			if field == "TT" then
+				local timer = FIELD_TIMES[field]
 				for ttField, isTT in pairs(TT_FIELDS) do
-					msp.cache[name].time[ttField] = now
+					msp.cache[name].time[ttField] = now + timer
 				end
 			end
 		end
