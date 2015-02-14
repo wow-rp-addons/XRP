@@ -175,7 +175,7 @@
 			</OnClick>
 		</Scripts>
 	</Button>
-	<Frame name="XRPBookmarksTemplate" toplevel="true" inherits="ButtonFrameTemplate" hidden="true" enableMouse="true" frameStrata="MEDIUM" virtual="true">
+	<Frame name="XRPBookmarks" toplevel="true" parent="UIParent" inherits="ButtonFrameTemplate" hidden="true" enableMouse="true" frameStrata="MEDIUM">
 		<Size x="338" y="489"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -401,6 +401,11 @@
 			<OnHide>
 				PlaySound("igCharacterInfoClose")
 			</OnHide>
+			<OnUpdate>
+				self:SetScript("OnUpdate", nil)
+				HybridScrollFrame_CreateButtons(self.List, "XRPBookmarksEntryTemplate")
+				self:Refresh()
+			</OnUpdate>
 		</Scripts>
 	</Frame>
 	<Script file="bookmarks.lua"/>

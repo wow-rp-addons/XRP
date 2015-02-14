@@ -63,22 +63,21 @@ local function ToggleButtons(self)
 	self.Save:SetEnabled(changes)
 end
 
-local function Save_OnClick(self, button, down)
+XRPEditor.Automation.Save:SetScript("OnClick", function(self, button, down)
 	local parent = self:GetParent()
 	local form, profile = parent.Form.contents, parent.Profile.contents
 	xrpPrivate.auto[form] = profile
 	ToggleButtons(parent)
-end
+end)
 
-local function Revert_OnClick(self, button, down)
+XRPEditor.Automation.Revert:SetScript("OnClick", function(self, button, down)
 	local parent = self:GetParent()
 	local formProfile = xrpPrivate.auto[parent.Form.contents]
 	parent.Profile.contents = formProfile
 	parent.Profile.MenuText:SetText(formProfile or "None")
 	ToggleButtons(parent)
-end
+end)
 
-local Profile_PreClick
 do
 	local function Profile_Checked(self)
 		return self.arg1 == UIDROPDOWNMENU_INIT_MENU.contents
@@ -93,17 +92,16 @@ do
 	end
 
 	local NONE = { text = "None", checked = Profile_Checked, arg1 = nil, func = Profile_Click }
-	function Profile_PreClick(self, button, down)
+	XRPEditor.Automation.Profile.ArrowButton:SetScript("PreClick", function(self, button, down)
 		local parent = self:GetParent()
 		parent.baseMenuList = { NONE }
 		for i, profile in ipairs(xrpPrivate.profiles:List()) do
 			parent.baseMenuList[i + 1] = { text = profile, checked = Profile_Checked, arg1 = profile, func = Profile_Click }
 		end
-	end
+	end)
 end
 
 local equipSets = {}
-local Form_PreClick
 do
 	local function equipSets_Click(self, arg1, arg2, checked)
 		if not checked then
@@ -124,7 +122,7 @@ do
 
 	local noSet = not isWorgen and not playerClass and { text = FORM_NAMES["DEFAULT"], value = "", checked = equipSets_Check, func = equipSets_Click, } or nil
 
-	function Form_PreClick(self, button, down)
+	XRPEditor.Automation.Form.ArrowButton:SetScript("PreClick", function(self, button, down)
 		wipe(equipSets) -- Keep table reference the same.
 		equipSets[1] = noSet
 		local numsets = GetNumEquipmentSets()
@@ -144,10 +142,9 @@ do
 				disabled = true,
 			}
 		end
-	end
+	end)
 end
 
-local Form_baseMenuList
 do
 	local function forms_Click(self, arg1, arg2, checked)
 		if not checked then
@@ -167,7 +164,7 @@ do
 
 	if isWorgen then
 		if playerClass == "DRUID" then
-			Form_baseMenuList = {
+			XRPEditor.Automation.Form.baseMenuList = {
 				{ -- Worgen
 					text = FORM_NAMES["DEFAULT"],
 					value = "DEFAULT",
@@ -236,7 +233,7 @@ do
 				},
 			}
 		elseif playerClass == "PRIEST" then
-			Form_baseMenuList = {
+			XRPEditor.Automation.Form.baseMenuList = {
 				{ -- Worgen
 					text = FORM_NAMES["DEFAULT"],
 					value = "DEFAULT",
@@ -271,7 +268,7 @@ do
 				},
 			}
 		else
-			Form_baseMenuList = {
+			XRPEditor.Automation.Form.baseMenuList = {
 				{ -- Worgen
 					text = FORM_NAMES["DEFAULT"],
 					value = "DEFAULT",
@@ -292,7 +289,7 @@ do
 		end
 	else
 		if playerClass == "DRUID" then
-			Form_baseMenuList = {
+			XRPEditor.Automation.Form.baseMenuList = {
 				{ -- Humanoid
 					text = FORM_NAMES["DEFAULT"],
 					value = "DEFAULT",
@@ -353,7 +350,7 @@ do
 				}
 			}
 		elseif playerClass == "PRIEST" then
-			Form_baseMenuList = {
+			XRPEditor.Automation.Form.baseMenuList = {
 				{ -- Standard
 					text = FORM_NAMES["DEFAULT"],
 					value = "DEFAULT",
@@ -372,7 +369,7 @@ do
 				},
 			}
 		elseif playerClass == "SHAMAN" then
-			Form_baseMenuList = {
+			XRPEditor.Automation.Form.baseMenuList = {
 				{ -- Humanoid
 					text = FORM_NAMES["DEFAULT"],
 					value = "DEFAULT",
@@ -389,13 +386,18 @@ do
 				},
 			}
 		else
-			Form_baseMenuList = equipSets
+			XRPEditor.Automation.Form.baseMenuList = equipSets
 		end
 	end
 end
 
-local function Automation_OnShow(self)
+XRPEditor.Automation:SetScript("OnShow", function(self)
 	local selectedForm, needsUpdate = self.Form.contents, false
+	if not selectedForm then
+		selectedForm = "DEFAULT"
+		self.Form.contents = "DEFAULT"
+		self.Form.MenuText:SetText(MakeWords("DEFAULT"))
+	end
 	if selectedForm:find("\29", nil, true) then
 		if not GetEquipmentSetInfoByName(selectedForm:match("^.*\29(.+)$")) then
 			selectedForm = "DEFAULT"
@@ -412,20 +414,4 @@ local function Automation_OnShow(self)
 	end
 	ToggleButtons(self)
 	PlaySound("UChatScrollButton")
-end
-
-function xrpPrivate:SetupAutomationFrame(frame)
-	frame.Form.ArrowButton:SetScript("PreClick", Form_PreClick)
-	frame.Form.baseMenuList = Form_baseMenuList
-	frame.Profile.ArrowButton:SetScript("PreClick", Profile_PreClick)
-	frame.Save:SetScript("OnClick", Save_OnClick)
-	frame.Revert:SetScript("OnClick", Revert_OnClick)
-	frame:SetScript("OnShow", Automation_OnShow)
-
-	frame.Form.contents = "DEFAULT"
-	frame.Form.MenuText:SetText(MakeWords("DEFAULT"))
-	local defaultProfile = xrpPrivate.auto["DEFAULT"]
-	frame.Profile.contents = defaultProfile
-	frame.Profile.MenuText:SetText(defaultProfile or "None")
-	ToggleButtons(frame)
-end
+end)
