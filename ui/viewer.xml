@@ -349,7 +349,7 @@
 				self.fields.NI = self.NI
 				self.fields.NH = self.NH
 				self.fields.VA = self.VA
-				self.lastFieldSet = 0
+				self.nextRefresh = 0
 			</OnLoad>
 			<OnShow>
 				PlaySound("igCharacterInfoOpen")
