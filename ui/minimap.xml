@@ -15,7 +15,7 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-	<Button name="XRPMinimapBase" movable="true" virtual="true">
+	<Button name="XRPMinimapBaseTemplate" movable="true" virtual="true">
 		<KeyValues>
 			<KeyValue key="initialize" value="EasyMenu_Initialize" type="global"/>
 			<KeyValue key="displayMode" value="MENU"/>
@@ -110,7 +110,7 @@
 			</OnLeave>
 		</Scripts>
 	</Button>
-	<Button name="XRPMinimap" inherits="XRPMinimapBase" virtual="true">
+	<Button name="XRPMinimapTemplate" inherits="XRPMinimapBaseTemplate" virtual="true">
 		<Scripts>
 			<OnDragStart>
 				self:LockHighlight()
@@ -129,7 +129,7 @@
 			</OnLoad>
 		</Scripts>
 	</Button>
-	<Button name="XRPButton" inherits="XRPMinimapBase" virtual="true">
+	<Button name="XRPButtonTemplate" inherits="XRPMinimapBaseTemplate" virtual="true">
 		<Scripts>
 			<OnDragStart>
 				if IsShiftKeyDown() then
