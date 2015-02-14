@@ -22,7 +22,7 @@ if not msp_RPAddOn then
 	msp_RPAddOn = GetAddOnMetadata(addonName, "Title")
 else
 	StaticPopupDialogs["XRP_MSP_DISABLE"] = {
-		text = "You are running another RP profile addon (\"%s\"). XRP's support for sending and receiving profiles is disabled; to enable it, disable \"%s\" and reload your UI.",
+		text = "You are currently running two roleplay profile addons. XRP's support for sending and receiving profiles is disabled; to enable it, disable \"%s\" and reload your UI.",
 		button1 = OKAY,
 		showAlert = true,
 		enterClicksFirstButton = true,
@@ -32,7 +32,7 @@ else
 		preferredIndex = 3,
 	}
 	disabled = true
-	StaticPopup_Show("XRP_MSP_DISABLE", msp_RPAddOn, msp_RPAddOn)
+	StaticPopup_Show("XRP_MSP_DISABLE", msp_RPAddOn)
 end
 
 -- Protocol version two indicates Battle.net support.
@@ -453,9 +453,8 @@ msp.handlers = {
 				buffer[#buffer + 1] = message
 			end
 		end
-		local chunks = (self.cache[name].chunks or 0) + 1
-		self.cache[name].chunks = chunks
-		xrpPrivate:FireEvent("CHUNK", name, chunks, self.cache[name].totalChunks)
+		self.cache[name].chunks = (self.cache[name].chunks or 0) + 1
+		xrpPrivate:FireEvent("CHUNK", name, self.cache[name].chunks, self.cache[name].totalChunks)
 	end,
 	["MSP\3"] = function(self, name, message, channel)
 		local buffer = self.cache[name][channel]
@@ -478,7 +477,8 @@ msp.handlers = {
 		end
 		-- CHUNK after RECEIVE would fire. Makes it easier to do something
 		-- useful when chunks == totalChunks.
-		xrpPrivate:FireEvent("CHUNK", name, (self.cache[name].chunks or 0) + 1, (self.cache[name].chunks or 0) + 1)
+		local chunks = (self.cache[name].chunks or 0) + 1
+		xrpPrivate:FireEvent("CHUNK", name, chunks, chunks)
 
 		self.cache[name].chunks = nil
 		self.cache[name].totalChunks = nil
@@ -493,7 +493,7 @@ msp.handlers = {
 			prefix, message = message:match("^([\1\2\3]?)(.+)$")
 		end
 		if target and target ~= xrpPrivate.playerWithRealm then return end
-		self.handlers[prefix ~= "" and ("MSP%s"):format(prefix) or "MSP"](self, name, message, channel)
+		self.handlers["MSP" .. prefix](self, name, message, channel)
 	end,
 }
 
