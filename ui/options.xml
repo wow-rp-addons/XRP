@@ -21,7 +21,10 @@
 		</KeyValues>
 		<Scripts>
 			<OnShow>
-				if self:Get("cache", "autoClean") then
+				if not self.wasShown then
+					self.wasShown = true
+					InterfaceOptionsFrame_OpenToCategory(self.General)
+				elseif self:Get("cache", "autoClean") then
 					self.CacheTidy:Hide()
 				else
 					self.CacheTidy:Show()
