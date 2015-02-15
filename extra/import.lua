@@ -15,8 +15,8 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local hasMRP, hasTRP2 = (select(4, GetAddOnInfo("MyRolePlay"))), (select(4, GetAddOnInfo("totalRP2")))
-if not (hasMRP or hasTRP2) then return end
+local hasMRP, hasTRP2, hasTRP3 = (select(4, GetAddOnInfo("MyRolePlay"))), (select(4, GetAddOnInfo("totalRP2"))), (select(4, GetAddOnInfo("totalRP3")))
+if not (hasMRP or hasTRP2 or hasTRP3) then return end
 
 local addonName, xrpPrivate = ...
 
@@ -57,6 +57,9 @@ local function ImportMyRolePlay()
 					end
 					xrpPrivate.profiles[newProfileName].fields[field] = value ~= "" and value or nil
 				end
+			end
+			if newProfileName ~= "MRP-Default" then
+				xrpSaved.profiles[newProfileName].parent = "MRP-Default"
 			end
 			imported = imported + 1
 		end
@@ -127,6 +130,78 @@ do
 	end
 end
 
+-- They really like intricate data structures.
+local function ImportTotalRP3()
+	if not TRP3_Profiles or not TRP3_Characters then
+		return 0
+	end
+	local toImport = TRP3_Profiles[TRP3_Characters[xrpPrivate.playerWithRealm].profileID]
+	if not toImport then
+		return 0
+	end
+	local profileName = "TRP3-" .. toImport.profileName
+	if not xrpPrivate.profiles:Add(profileName) then
+		return 0
+	end
+	local profile = xrpPrivate.profiles[profileName].fields
+	do
+		local NA = {}
+		NA[#NA + 1] = toImport.player.characteristics.TI
+		NA[#NA + 1] = toImport.player.characteristics.FN or xrpPrivate.player
+		NA[#NA + 1] = toImport.player.characteristics.LN
+		profile.NA = table.concat(NA, " ")
+	end
+	profile.NT = toImport.player.characteristics.FT
+	profile.AG = toImport.player.characteristics.AG
+	profile.RA = toImport.player.characteristics.RA
+	profile.RC = toImport.player.characteristics.CL
+	profile.AW = toImport.player.characteristics.WE
+	profile.AH = toImport.player.characteristics.HE
+	profile.HH = toImport.player.characteristics.RE
+	profile.HB = toImport.player.characteristics.BP
+	profile.AE = toImport.player.characteristics.EC
+	if toImport.player.characteristics.MI then
+		local NI, NH, MO = {}, {}, {}
+		for i, custom in ipairs(toImport.player.characteristics.MI) do
+			if custom.NA == "Nickname" then
+				NI[#NI + 1] = custom.VA
+			elseif custom.NA == "House name" then
+				NH[#NH + 1] = custom.VA
+			elseif custom.NA == "Motto" then
+				MO[#MO + 1] = custom.VA
+			end
+		end
+		profile.NI = table.concat(NI, " | ")
+		profile.NH = table.concat(NH, " | ")
+		profile.MO = table.concat(MO, " | ")
+	end
+	do
+		local CU = {}
+		CU[#CU + 1] = toImport.player.character.CU
+		if toImport.player.character.CO then
+			CU[#CU + 1] = ("((%s))"):format(toImport.player.character.CO)
+		end
+		profile.CU = table.concat(CU, " ")
+	end
+	profile.FC = tostring(toImport.player.character.RP)
+	if toImport.player.about.TE == 1 then
+		profile.DE = toImport.player.about["T1"].TX
+	elseif toImport.player.about.TE == 2 then
+		local DE = {}
+		for i, block in ipairs(toImport.player.about["T2"]) do
+			DE[#DE + 1] = block.TX
+		end
+		profile.DE = table.concat(DE, "\n\n")
+	elseif toImport.player.about.TE == 3 then
+		local HI = {}
+		profile.DE = toImport.player.about["T3"].PH.TX
+		HI[#HI + 1] = toImport.player.about["T3"].PS.TX
+		HI[#HI + 1] = toImport.player.about["T3"].HI.TX
+		profile.HI = table.concat(HI, "\n\n")
+	end
+	return 1
+end
+
 local import = CreateFrame("Frame")
 import:SetScript("OnEvent", function(self, event)
 	if event == "PLAYER_LOGIN" then
@@ -142,6 +217,13 @@ import:SetScript("OnEvent", function(self, event)
 			local count = ImportTotalRP2()
 			if count > 0 then
 				DisableAddOn("totalRP2", xrpPrivate.player)
+				imported = true
+			end
+		end
+		if hasTRP3 then
+			local count = ImportTotalRP3()
+			if count > 0 then
+				DisableAddOn("totalRP3", xrpPrivate.player)
 				imported = true
 			end
 		end
