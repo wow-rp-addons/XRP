@@ -150,6 +150,7 @@ local loadedOnce
 function xrpPrivate:Options(pane)
 	if not loadedOnce then
 		loadedOnce = true
+		XRPOptions.wasShown = true
 		InterfaceOptionsFrame_OpenToCategory("XRP")
 	end
 	InterfaceOptionsFrame_OpenToCategory(XRPOptions[pane] or XRPOptions.General)
