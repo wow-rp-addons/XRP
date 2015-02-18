@@ -153,5 +153,5 @@ function xrpPrivate:Options(pane)
 		XRPOptions.wasShown = true
 		InterfaceOptionsFrame_OpenToCategory("XRP")
 	end
-	InterfaceOptionsFrame_OpenToCategory(XRPOptions[pane] or XRPOptions.General)
+	InterfaceOptionsFrame_OpenToCategory(XRPOptions[pane] or XRPOptions[XRPOptions.lastShown] or XRPOptions.General)
 end
