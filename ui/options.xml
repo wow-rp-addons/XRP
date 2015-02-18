@@ -337,10 +337,12 @@
 			</OnLoad>
 			<OnShow>
 				local parent = self:GetParent().XRP
-				self.Get = parent.Get
-				self.Set = parent.Set
-				self:refresh()
-				self:SetScript("OnShow", nil)
+				if not self.Get then
+					self.Get = parent.Get
+					self.Set = parent.Set
+					self:refresh()
+				end
+				parent.lastShown = self.name
 			</OnShow>
 		</Scripts>
 	</Frame>
