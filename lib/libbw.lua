@@ -48,7 +48,7 @@
 	and are close to the maximum which is reliably safe.
 ]]
 
-local LIBBW_VERSION = 1
+local LIBBW_VERSION = 2
 
 if libbw and libbw.version >= LIBBW_VERSION then return end
 
@@ -154,7 +154,7 @@ function libbw:SendAddonMessage(prefix, text, kind, target, priorityName, fifoNa
 		if priorityName ~= "NORMAL" and priorityName ~= "ALERT" and priorityName ~= "BULK" then
 			priorityName = "NORMAL"
 		end
-		ChatThrottleLib:SendAddonMessage(priorityName, prefix, text, kind, target, fifoName or prefix .. kind .. (target or ""), callbackFn, callbackArg)
+		ChatThrottleLib:SendAddonMessage(priorityName, prefix, text, kind, target, fifoName or ("%s%s%s"):format(prefix, kind, (tostring(target) or "")), callbackFn, callbackArg)
 		return
 	end
 
@@ -182,7 +182,7 @@ function libbw:SendAddonMessage(prefix, text, kind, target, priorityName, fifoNa
 		callbackArg = callbackArg,
 	}
 
-	self:Enqueue(priorityName, fifoName or prefix .. kind .. (target or ""), message)
+	self:Enqueue(priorityName, fifoName or ("%s%s%s"):format(prefix, kind, (tostring(target) or "")), message)
 end
 
 function libbw:SendChatMessage(text, kind, languageID, target, priorityName, fifoName, callbackFn, callbackArg)
@@ -528,7 +528,7 @@ function ChatThrottleLib:SendChatMessage(priorityName, prefix, text, kind, langu
 	if #text > 255 then
 		error("ChatThrottleLib:SendChatMessage(): message length cannot exceed 255 bytes", 2)
 	end
-	return libbw:SendChatMessage(text, kind, language, target, priorityName, queueName or prefix .. (kind or "SAY") .. (target or ""), callbackFn, callbackArg)
+	return libbw:SendChatMessage(text, kind, language, target, priorityName, queueName or ("%s%s%s"):format(prefix, (kind or "SAY"), (tostring(target) or "")), callbackFn, callbackArg)
 end
 
 function ChatThrottleLib.Hook_SendChatMessage()
