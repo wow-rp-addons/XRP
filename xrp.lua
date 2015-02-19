@@ -257,10 +257,9 @@ do
 			-- made. If there are any errors in here, they are not visible in
 			-- any manner in-game.
 			do
-				local current = xrpPrivate.current
-				local fields, versions = current:List(), {}
+				local fields, versions = xrpPrivate.current:List(), {}
 				for field, contents in pairs(fields) do
-					versions[field] = current.versions[field]
+					versions[field] = xrpPrivate.current.versions[field]
 				end
 				xrpCache[xrpPrivate.playerWithRealm] = {
 					fields = fields,

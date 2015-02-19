@@ -116,11 +116,11 @@ do
 			if x < 0 then q = q + 1 end
 			if y > 0 then q = q + 2 end
 			if MINIMAP_SHAPES[GetMinimapShape and GetMinimapShape() or "ROUND"][q] then
-				x, y = x*80, y*80
+				x, y = x * 80, y * 80
 			else
 				-- 103.13708498985 = math.sqrt(2*(80)^2)-10
-				x = math.max(-80, math.min(x*103.13708498985, 80))
-				y = math.max(-80, math.min(y*103.13708498985, 80))
+				x = math.max(-80, math.min(x * 103.13708498985, 80))
+				y = math.max(-80, math.min(y * 103.13708498985, 80))
 			end
 			self:ClearAllPoints()
 			self:SetPoint("CENTER", Minimap, "CENTER", x, y)

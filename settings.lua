@@ -313,7 +313,7 @@ local function InitializeSavedVariables()
 					end
 				end
 				if name == "Add" or name == "List" then
-					xrpSaved.profiles[name.." Renamed"] = profile
+					xrpSaved.profiles[name .. " Renamed"] = profile
 					if xrpSaved.selected == name then
 						xrpSaved.selected = name .. " Renamed"
 					end

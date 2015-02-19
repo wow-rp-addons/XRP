@@ -105,7 +105,7 @@ local equipSets = {}
 do
 	local function equipSets_Click(self, arg1, arg2, checked)
 		if not checked then
-			local set = (UIDROPDOWNMENU_MENU_VALUE or "DEFAULT")..self.value
+			local set = (UIDROPDOWNMENU_MENU_VALUE or "DEFAULT") .. self.value
 			UIDROPDOWNMENU_OPEN_MENU.contents = set
 			UIDROPDOWNMENU_OPEN_MENU.MenuText:SetText(MakeWords(set))
 			local Profile, setProfile = UIDROPDOWNMENU_OPEN_MENU:GetParent().Profile, xrpPrivate.auto[set]
@@ -117,7 +117,7 @@ do
 	end
 
 	local function equipSets_Check(self)
-		return (UIDROPDOWNMENU_MENU_VALUE or "DEFAULT")..self.value == UIDROPDOWNMENU_INIT_MENU.contents
+		return (UIDROPDOWNMENU_MENU_VALUE or "DEFAULT") .. self.value == UIDROPDOWNMENU_INIT_MENU.contents
 	end
 
 	local noSet = not isWorgen and not playerClass and { text = FORM_NAMES["DEFAULT"], value = "", checked = equipSets_Check, func = equipSets_Click, } or nil
