@@ -17,8 +17,7 @@
 
 local addonName, xrpPrivate = ...
 
--- The following chat types are linked together by default. These *can* be
--- overridden in the settings, but the UI won't allow for such by default.
+-- The following chat types are linked together.
 local LINKED_CHAT_MSG = {
 	["CHAT_MSG_TEXT_EMOTE"] = "CHAT_MSG_EMOTE",
 	["CHAT_MSG_OFFICER"] = "CHAT_MSG_GUILD",
@@ -67,14 +66,14 @@ local function XRPGetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7
 	if event == "CHAT_MSG_CHANNEL" and type(arg9) == "string" and arg9 ~= "" then
 		-- The match() strips trims names like "General - Stormwind City"
 		-- down to just "General".
-		event = event.."_"..arg9:match("^([^%s]+).*"):upper()
+		event = "CHAT_MSG_CHANNEL_" .. arg9:match("^([^%s]+)"):upper()
 	elseif LINKED_CHAT_MSG[event] then
 		event = LINKED_CHAT_MSG[event]
 	end
 
 	local character = arg12 and xrp.characters.byGUID[arg12] or nil
 	local name = xrpPrivate.settings.chat[event] and character and not character.hide and xrp:Strip(character.fields.NA) or Ambiguate(arg2, "guild")
-	local nameFormat = ((event == "CHAT_MSG_EMOTE" or event == "CHAT_MSG_TEXT_EMOTE") and xrpPrivate.settings.chat.emoteBraced and "[%s]" or "%s") .. (event == "CHAT_MSG_EMOTE" and arg9 or "")
+	local nameFormat = event == "CHAT_MSG_EMOTE" and (xrpPrivate.settings.chat.emoteBraced and "[%s]" or "%s") .. (arg9 or "") or "%s"
 
 	if arg12 and ChatTypeInfo[chatType] and ChatTypeInfo[chatType].colorNameByClass then
 		local color = RAID_CLASS_COLORS[character.fields.GC]
@@ -116,8 +115,8 @@ local function MessageFilter_EMOTE(self, event, message, arg2, arg3, arg4, arg5,
 	-- 39 = ' | 44 = , | 58 = : | 226/128/153 = ’
 	if b1 == 39 or b1 == 44 or b1 == 58 or b1 == 226 and b2 == 128 and b3 == 153 then
 		-- arg9 isn't normally used for CHAT_MSG_EMOTE.
-		arg9 = message:match("([^%s]*).*")
-		message = message:match("[^%s]*%s*(.*)")
+		arg9 = message:match("^([^%s]*)")
+		message = message:match("^[^%s]*%s*(.*)")
 	end
 	return false, message, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, ...
 end
@@ -132,10 +131,10 @@ local function ParseText_Hook(line, send)
 		local oldText = line:GetText()
 		local text = oldText
 		if text:find("%xt", nil, true) then
-			text = text:gsub("%%xt", UnitExists("target") and (xrp.characters.byUnit.target and xrp:Strip(xrp.characters.byUnit.target.fields.NA) or UnitName("target")) or "nobody")
+			text = text:gsub("%%xt", xrp.characters.byUnit.target and xrp:Strip(xrp.characters.byUnit.target.fields.NA) or UnitName("target") or "nobody")
 		end
 		if text:find("%xf", nil, true) then
-			text = text:gsub("%%xf", UnitExists("focus") and (xrp.characters.byUnit.focus and xrp:Strip(xrp.characters.byUnit.focus.fields.NA) or UnitName("focus")) or "nobody")
+			text = text:gsub("%%xf", xrp.characters.byUnit.focus and xrp:Strip(xrp.characters.byUnit.focus.fields.NA) or UnitName("focus") or "nobody")
 		end
 		if text ~= oldText then
 			line:SetText(text)
