@@ -76,10 +76,11 @@ do
 		GC = "RC",
 	}
 	function FIELD(event, name, field)
+		if current.name ~= name then return end
 		if META_SUPPORTED[field] then
 			field = META_SUPPORTED[field]
 		end
-		if current.name == name and SUPPORTED[field] then
+		if SUPPORTED[field] then
 			local fields = current.fields
 			SetField(field, fields[field] or field == "RA" and xrp.values.GR[fields.GR] or field == "RC" and xrp.values.GC[fields.GC] or nil)
 		end
@@ -181,6 +182,7 @@ XRPViewer.Menu:SetScript("PreClick", function(self, button, down)
 			for i = 1, GetNumFriends() do
 				if GetFriendInfo(i) == name then
 					isFriend = true
+					break
 				end
 			end
 		end

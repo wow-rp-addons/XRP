@@ -82,7 +82,7 @@ do
 		wipe(self.baseMenuList)
 		local seenChannels = {}
 		for i, name in ipairs(ChannelsTable(GetChannelList())) do
-			local channel = "CHAT_MSG_CHANNEL_"..name:upper()
+			local channel = "CHAT_MSG_CHANNEL_" .. name:upper()
 			AddChannel(channel, self.baseMenuList, self.settingsList)
 			seenChannels[channel] = true
 		end

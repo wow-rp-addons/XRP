@@ -78,17 +78,15 @@ do
 
 		ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", function(self, event, message)
 			local name = message:match(ERR_CHAT_PLAYER_NOT_FOUND_S:format("(.+)"))
-			if not name or name == "" or not filter[name] then
+			if not name then
+				return false
+			elseif not filter[name] or filter[name] < GetTime() then
+				filter[name] = nil
 				return false
 			end
-			local doFilter = filter[name] > GetTime()
-			if not doFilter then
-				filter[name] = nil
-			else
-				-- Same error message from offline and from opposite faction.
-				xrpPrivate:FireEvent("FAIL", name, (not xrpCache[name] or not xrpCache[name].fields.GF or xrpCache[name].fields.GF == xrp.current.fields.GF) and "offline" or "faction")
-			end
-			return doFilter
+			-- Same error message from offline and from opposite faction.
+			xrpPrivate:FireEvent("FAIL", name, (not xrpCache[name] or not xrpCache[name].fields.GF or xrpCache[name].fields.GF == xrp.current.fields.GF) and "offline" or "faction")
+			return true
 		end)
 
 		function AddFilter(name)
@@ -186,7 +184,7 @@ do
 						end
 						local field = chunk:match("^(%u%u)")
 						if field then
-							local messageNum = math.ceil(total/chunkSize)
+							local messageNum = math.ceil(total / chunkSize)
 							local messageFields = fields[messageNum]
 							if not messageFields then
 								fields[messageNum] = { field }
@@ -222,9 +220,10 @@ do
 	local tt
 	function msp:GetTT()
 		if not tt then
-			local current, tooltip = xrpPrivate.current, {}
+			local tooltip = {}
 			for i, field in ipairs(TT_LIST) do
-				tooltip[#tooltip + 1] = not current.fields[field] and field or ("%s%u=%s"):format(field, current.versions[field], current.fields[field])
+				local contents = xrp.current.fields[field]
+				tooltip[#tooltip + 1] = not contents and field or ("%s%u=%s"):format(field, xrpPrivate.current.versions[field], contents)
 			end
 			local newtt = table.concat(tooltip, "\1")
 			tt = ("%s\1TT%u"):format(newtt, newtt ~= xrpSaved.oldtt and xrpPrivate:NewVersion("TT") or xrpSaved.versions.TT)
@@ -389,9 +388,9 @@ msp.handlers = {
 			-- tooltip in this session, also send a tooltip request.
 			local now = GetTime()
 			local timer = FIELD_TIMES.TT
-			msp.cache[name].time.TT = now + timer
+			self.cache[name].time.TT = now + timer
 			for field, isTT in pairs(TT_FIELDS) do
-				msp.cache[name].time[field] = now + timer
+				self.cache[name].time[field] = now + timer
 			end
 			self:Send(name, TT_REQ, channel, true)
 		end
@@ -581,12 +580,10 @@ function msp:RebuildBNList()
 end
 
 function msp:GetPresenceID(name)
-	if not BNConnected() or not self.bnet and not self:RebuildBNList() or not self.bnet[name] then
+	if not BNConnected() or not self.bnet and not self:RebuildBNList() or not self.bnet[name] or not select(15, BNGetToonInfo(self.bnet[name])) then
 		return nil
-	elseif select(15, BNGetToonInfo(self.bnet[name])) then
-		return self.bnet[name]
 	end
-	return nil
+	return self.bnet[name]
 end
 
 if not disabled then
@@ -632,7 +629,7 @@ if libfakedraw then
 end
 
 function xrpPrivate:QueueRequest(name, field)
-	if disabled or name == xrpPrivate.playerWithRealm or xrp:Ambiguate(name) == UNKNOWN or msp.cache[name].time[field] and GetTime() < msp.cache[name].time[field] then
+	if disabled or name == self.playerWithRealm or xrp:Ambiguate(name) == UNKNOWN or msp.cache[name].time[field] and GetTime() < msp.cache[name].time[field] then
 		return
 	elseif not msp.request[name] then
 		msp.request[name] = {}
@@ -645,7 +642,7 @@ end
 -- but are much more reliable.
 local UNIT_REQUEST = { "GC", "GF", "GR", "GS" }
 function xrpPrivate:Request(name, fields)
-	if disabled or name == xrpPrivate.playerWithRealm or xrp:Ambiguate(name) == UNKNOWN then
+	if disabled or name == self.playerWithRealm or xrp:Ambiguate(name) == UNKNOWN then
 		return false
 	end
 
@@ -672,7 +669,7 @@ function xrpPrivate:Request(name, fields)
 		table.insert(fields, 1, "TT")
 	end
 
-	if not xrpPrivate.gCache[name] then
+	if not self.gCache[name] then
 		if not xrpCache[name] then
 			for i, field in ipairs(UNIT_REQUEST) do
 				fields[#fields + 1] = field

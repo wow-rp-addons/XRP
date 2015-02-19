@@ -164,13 +164,13 @@ function xrp:Status(desiredStatus)
 		end
 	end
 	if not desiredStatus then
-		local currentStatus = xrp.current.fields.FC
+		local currentStatus = self.current.fields.FC
 		local currentIC, profileIC = currentStatus ~= nil and currentStatus ~= "1" and currentStatus ~= "0", profileStatus ~= nil and profileStatus ~= "1" and profileStatus ~= "0"
 		desiredStatus = currentStatus ~= profileStatus and currentIC ~= profileIC and profileStatus or currentIC and "1" or "2"
 	end
 	if desiredStatus ~= profileStatus then
-		xrp.current.fields.FC = desiredStatus ~= "0" and desiredStatus or ""
+		self.current.fields.FC = desiredStatus ~= "0" and desiredStatus or ""
 	else
-		xrp.current.fields.FC = nil
+		self.current.fields.FC = nil
 	end
 end
