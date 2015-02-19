@@ -648,7 +648,7 @@ function xrpPrivate:Request(name, fields)
 
 	local now = GetTime()
 	if msp.cache[name].nextCheck and now < msp.cache[name].nextCheck then
-		self:FireEvent("FAIL", name, "nomsp")
+		self:FireEvent("FAIL", name, (not xrpCache[name] or not xrpCache[name].fields.GF or xrpCache[name].fields.GF == xrp.current.fields.GF) and "nomsp" or "faction")
 		return false
 	elseif msp.cache[name].nextCheck then
 		msp.cache[name].nextCheck = now + 120
