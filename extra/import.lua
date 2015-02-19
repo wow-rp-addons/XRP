@@ -15,12 +15,12 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local hasMRP, hasTRP2, hasTRP3 = (select(4, GetAddOnInfo("MyRolePlay"))), (select(4, GetAddOnInfo("totalRP2"))), (select(4, GetAddOnInfo("totalRP3")))
+local hasMRP, hasTRP2, hasTRP3 = (IsAddOnLoaded("MyRolePlay")), (IsAddOnLoaded("totalRP2")), (IsAddOnLoaded("totalRP3"))
 if not (hasMRP or hasTRP2 or hasTRP3) then return end
 
 local addonName, xrpPrivate = ...
 
-local MRP_NO_IMPORT = { TT = true, VA = true, VP = true, GC = true, GR = true, GS = true, GU = true }
+local MRP_NO_IMPORT = { TT = true, VA = true, VP = true, GC = true, GF = true, GR = true, GS = true, GU = true }
 
 StaticPopupDialogs["XRP_IMPORT_RELOAD"] = {
 	text = "Available profiles have been imported and may be found in the editor's profile list. You should reload your UI now.",

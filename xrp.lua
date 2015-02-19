@@ -187,9 +187,8 @@ do
 				local addonString = "%s/%s"
 				local VA = { addonString:format(GetAddOnMetadata(addonName, "Title"), xrpPrivate.version) }
 				for i, addon in ipairs(addons) do
-					local name, title, notes, enabled, reason, secure, loadable = GetAddOnInfo(addon)
-					if enabled or loadable then
-						VA[#VA + 1] = addonString:format(name, GetAddOnMetadata(name, "Version"))
+					if IsAddOnLoaded(addon) then
+						VA[#VA + 1] = addonString:format(addon, GetAddOnMetadata(addon, "Version"))
 					end
 				end
 				newFields = {
@@ -197,7 +196,7 @@ do
 					GF = UnitFactionGroup("player"),
 					GR = select(2, UnitRace("player")),
 					GS = tostring(UnitSex("player")),
-					NA = UnitName("player"), -- Fallback NA field.
+					NA = xrpPrivate.player, -- Fallback NA field.
 					VA = table.concat(VA, ";"),
 				}
 			end
