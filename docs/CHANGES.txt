@@ -1,22 +1,18 @@
-6.1.0.0_rc1 (2015-02-14):
+6.1.0.0_rc2 (2015-02-20):
 
 	- This version has been tested with both 6.0.3 (live) and 6.1.0 (PTR), and
 	  works correctly with both versions.
 
-	- (rc1) A new tooltip mode, separating the roleplay information from the
-	  main tooltip has been added. Disable "replace tooltip for players and
-	  pets" in the interface options to enable this mode.
+	- (rc2) Tooltip replacement has been partially rewritten. This adds
+	  support for other addons which add lines to the tooltip. Modifications
+	  are still overwritten.
 
-	- (rc1) Length warnings have been added to fields in the editor. These are
-	  just recommendations, not hard limits.
+	- (rc2) A "Roleplay Profile" menu entry has been added to Battle.net
+	  friends list entries, like for in-game friends. This views the profile
+	  of their active character and is only available when they're in WoW.
 
-	- (rc1) Height/weight conversion has been made a bit less overzealous.
-
-	- (rc1) Help system has been added to the viewer. Other frames have had
-	  some texts changed and overlay positions fixed.
-
-	- (rc1) Frame preloading has been removed. All major frames are now
-	  created at UI load time.
+	- (rc2) Bugfix: Detection of other addons being enabled (for adding to
+	  your tooltip) has been fixed.
 
 	- A major new UI component has been added, the long-promised bookmarks
 	  panel. This panel is accessible from the minimap button, from the
@@ -31,6 +27,10 @@
 	  profile, has been added. This exporter is accessed through the editor,
 	  the viewer, and the bookmarks panel.
 
+	- A new tooltip mode, separating the roleplay information from the main
+	  tooltip has been added. Disable "replace tooltip for players and pets"
+	  in the interface options to enable this mode.
+
 	- A simple in-game help system has been added to the bookmarks, editor,
 	  and viewer frames. It is accessed by clicking the large yellow button
 	  marked "i".
@@ -39,6 +39,11 @@
 	  one's in-game friends list directly from either of those panels. The
 	  friends are added with a note indicating their roleplay name, and may be
 	  removed through the standard social panel.
+
+	- Length warnings have been added to fields in the editor. These are just
+	  recommendations, not hard limits.
+
+	- Height/weight conversion has been made a bit less overzealous.
 
 	- Bugfix: Hidden profiles will no longer trigger the cursor book icon or
 	  profile view-on-right-click. They may still be accessed through other
@@ -62,6 +67,9 @@
 
 	- Bugfix: Fixed an extremely rare situation which could lead to fields not
 	  properly being sent over group channels.
+
+	- Frame preloading has been removed. All major frames are now created at
+	  UI load time.
 
 For 6.0.2.1 or earlier users:
 
