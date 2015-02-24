@@ -1,18 +1,4 @@
-6.1.0.0_rc2 (2015-02-20):
-
-	- This version has been tested with both 6.0.3 (live) and 6.1.0 (PTR), and
-	  works correctly with both versions.
-
-	- (rc2) Tooltip replacement has been partially rewritten. This adds
-	  support for other addons which add lines to the tooltip. Modifications
-	  are still overwritten.
-
-	- (rc2) A "Roleplay Profile" menu entry has been added to Battle.net
-	  friends list entries, like for in-game friends. This views the profile
-	  of their active character and is only available when they're in WoW.
-
-	- (rc2) Bugfix: Detection of other addons being enabled (for adding to
-	  your tooltip) has been fixed.
+6.1.0.0 (2015-02-24):
 
 	- A major new UI component has been added, the long-promised bookmarks
 	  panel. This panel is accessible from the minimap button, from the
@@ -20,37 +6,39 @@
 
 		- The bookmarks panel provides some limited mechanisms to filter and
 		  search through all profiles XRP has cached, including a few
-		  predefined views (your bookmarks, your own characters, recently seen
-		  profiles, and all profiles).
-
-	- A profile exporter, which allows you to copy a plain-text version of a
-	  profile, has been added. This exporter is accessed through the editor,
-	  the viewer, and the bookmarks panel.
-
-	- A new tooltip mode, separating the roleplay information from the main
-	  tooltip has been added. Disable "replace tooltip for players and pets"
-	  in the interface options to enable this mode.
+		  predefined views.
 
 	- A simple in-game help system has been added to the bookmarks, editor,
 	  and viewer frames. It is accessed by clicking the large yellow button
 	  marked "i".
 
-	- The viewer and bookmarks panel now have an option to add a character to
-	  one's in-game friends list directly from either of those panels. The
-	  friends are added with a note indicating their roleplay name, and may be
-	  removed through the standard social panel.
+	- A profile exporter, which allows you to copy a plain-text version of a
+	  profile, has been added. This exporter is accessed through the editor,
+	  the viewer, and the bookmarks frames.
 
-	- Length warnings have been added to fields in the editor. These are just
-	  recommendations, not hard limits.
+	- A new tooltip mode, separating the roleplay information from the main
+	  tooltip has been added. Disable "replace tooltip for players and pets"
+	  in the interface options to enable this mode.
 
-	- Height/weight conversion has been made a bit less overzealous.
+	- A "Roleplay Profile" menu entry has been added to Battle.net friends
+	  list entries, like for in-game friends. This views the profile of their
+	  active character and is only available when they're in WoW.
+
+	- In the viewer, the nickname, title, and house/clan/tribe lines may now
+	  be moused over to see their full content if they're truncated.
+
+	- Recommended length warnings have been added to fields in the editor.
+
+	- A basic profile importer for TotalRP3 is available now. It only imports
+	  the currently-active profile due to limitations in TRP3's profiles
+	  (profiles are not associated with a character unless they are active).
 
 	- Bugfix: Hidden profiles will no longer trigger the cursor book icon or
 	  profile view-on-right-click. They may still be accessed through other
 	  methods.
 
 	- Bugfix: An issue in the bandwidth library which could, in circumstances
-	  XRP alone would never trigger, cause disconnects. This has been fixed.
+	  XRP alone would never trigger, cause disconnects has been fixed.
 
 	- Bugfix: An issue where the character's GUID field (GU) would not always
 	  be properly set has been fixed.
@@ -58,18 +46,14 @@
 	- Bugfix: The importer (from other addons) will now properly only disable
 	  those addons for the current character, rather than all characters.
 
+	- Bugfix: Detection of other addons being enabled (for adding to your
+	  tooltip) has been fixed.
+
 	- Bugfix: Crossrealm profiles over Battle.net will now work correctly on
 	  the first login after client launch.
 
-	- Bugfix: Fixed a rare Lua error from the viewer menu interacting with
-	  Blizzard code elsewhere. Enabling/disabling of these menu items, where
-	  appropriate, has also been improved.
-
 	- Bugfix: Fixed an extremely rare situation which could lead to fields not
 	  properly being sent over group channels.
-
-	- Frame preloading has been removed. All major frames are now created at
-	  UI load time.
 
 For 6.0.2.1 or earlier users:
 
@@ -78,17 +62,13 @@ For 6.0.2.1 or earlier users:
 	  handle this on their own), and the game client should be fully restarted
 	  (rather than logout or UI reload) after upgrading.
 
-		- The internal file layout of XRP has changed drastically,
-		  consolidated into a single folder. If in doubt, please check that
-		  you have a single "xrp" folder in your Interface/AddOns folder after
-		  upgrading.
+	- The internal file layout of XRP has changed drastically, consolidated
+	  into a single folder. If in doubt, please check that you have a single
+	  "xrp" folder in your Interface/AddOns folder after upgrading.
 
-		- If you were previously disabling chat names or tooltip replacements
-		  by disabling those modules as addons, you can now disable them from
-		  the XRP interface options panel instead.
+	- If you were previously disabling chat names or tooltip replacements by
+	  disabling those modules as addons, you can now disable them from the XRP
+	  interface options panel instead.
 
-		- Your profiles and settings are unaffected by these changes -- they
-		  will still all be there after upgrading.
-
-	- The full list of changes for 6.0.3.0 can be found in the notes for that
-	  release or 6.0.3.1.
+	- Your profiles are unaffected by any of these changes -- they will still
+	  all be there after upgrading.
