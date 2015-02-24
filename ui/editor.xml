@@ -172,7 +172,6 @@
 				self.ScrollBar.ScrollDownButton:SetPoint("TOP", self.ScrollBar, "BOTTOM", 0, 4)
 				self.ScrollBar.ScrollUpButton:SetPoint("BOTTOM", self.ScrollBar, "TOP", 0, -4)
 				self.ScrollBar.ScrollUpButton:Disable()
-				self.scrollBarHideable = 1
 				self.ScrollBar:Hide()
 				self.EditBox:SetFrameLevel(self.FocusButton:GetFrameLevel() + 1)
 				self.EditBox:SetWidth(self:GetWidth() - 18)
@@ -191,7 +190,7 @@
 			</OnLoad>
 		</Scripts>
 		<ScrollChild>
-			<EditBox parentKey="EditBox" multiLine="true" letters="131071" countInvisibleLetters="true" autoFocus="false">
+			<EditBox parentKey="EditBox" multiLine="true" autoFocus="false">
 				<KeyValues>
 					<KeyValue key="inherited" value="false" type="boolean"/>
 				</KeyValues>
@@ -283,18 +282,8 @@
 			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</Button>
-	<Frame name="XRPEditor" toplevel="true" parent="UIParent" inherits="ButtonFrameTemplate" hidden="true" enableMouse="true" frameStrata="MEDIUM">
+	<Frame name="XRPEditor" toplevel="true" parent="UIParent" inherits="ButtonFrameTemplate" hidden="true" enableMouse="true">
 		<Size x="439" y="525"/>
-		<Layers>
-			<Layer level="OVERLAY">
-				<!-- Parent Profile -->
-				<FontString parentKey="ParentLabel" inherits="GameFontNormalSmall" text="Parent profile:">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" x="8" y="10"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
 		<Frames>
 			<Button name="$parentHelpButton" inherits="XRPHelpButtonTemplate"/>
 			<Frame parentKey="Appearance" parentArray="panes" hidden="false">

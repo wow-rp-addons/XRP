@@ -175,7 +175,7 @@
 			</OnClick>
 		</Scripts>
 	</Button>
-	<Frame name="XRPBookmarks" toplevel="true" parent="UIParent" inherits="ButtonFrameTemplate" hidden="true" enableMouse="true" frameStrata="MEDIUM">
+	<Frame name="XRPBookmarks" toplevel="true" parent="UIParent" inherits="ButtonFrameTemplate" hidden="true" enableMouse="true">
 		<Size x="338" y="489"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -189,7 +189,7 @@
 		</Layers>
 		<Frames>
 			<Button name="$parentHelpButton" inherits="XRPHelpButtonTemplate"/>
-			<ScrollFrame name="$parentList" parentKey="List" inherits="HybridScrollFrameTemplate">
+			<ScrollFrame name="$parentList" parentKey="List" enableMouse="true" inherits="HybridScrollFrameTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.Inset" x="4" y="-2"/>
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset" x="-22" y="2"/>
@@ -205,6 +205,9 @@
 				</Layers>
 				<Frames>
 					<Slider parentKey="scrollBar" inherits="HybridScrollBarTemplate">
+						<KeyValues>
+							<KeyValue key="doNotHide" value="true" type="boolean"/>
+						</KeyValues>
 						<Scripts>
 							<OnValueChanged>
 								HybridScrollFrame_OnValueChanged(self, value)
@@ -213,12 +216,6 @@
 						</Scripts>
 					</Slider>
 				</Frames>
-				<Scripts>
-					<OnLoad>
-						self:EnableMouse(true)
-						self.scrollBar.doNotHide = true
-					</OnLoad>
-				</Scripts>
 			</ScrollFrame>
 			<Button parentKey="RefreshButton">
 				<Size x="32" y="32"/>
@@ -301,7 +298,7 @@
 					</OnHide>
 				</Scripts>
 			</Button>
-			<EditBox inherits="SearchBoxTemplate" parentKey="FilterText" letters="80">
+			<EditBox inherits="SearchBoxTemplate" parentKey="FilterText">
 				<Size x="130" y="22"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.FilterButton" relativePoint="LEFT" x="-5" y="1"/>

@@ -146,6 +146,9 @@
 		<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
 	</CheckButton>
 	<ScrollFrame name="XRPScrollFrameArtTemplate" inherits="UIPanelScrollFrameTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="scrollBarHideable" value="1" type="number"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="TopLeftTex" file="Interface\Common\Common-Input-Border-TL">
@@ -277,13 +280,12 @@
 						self.ScrollBar.ScrollDownButton:SetPoint("TOP", self.ScrollBar, "BOTTOM", 0, 4)
 						self.ScrollBar.ScrollUpButton:SetPoint("BOTTOM", self.ScrollBar, "TOP", 0, -4)
 						self.ScrollBar.ScrollUpButton:Disable()
-						self.scrollBarHideable = 1
 						self.ScrollBar:Hide()
 						self.EditBox:SetWidth(self:GetWidth() - 18)
 					</OnLoad>
 				</Scripts>
 				<ScrollChild>
-					<EditBox parentKey="EditBox" multiLine="true" letters="262142" countInvisibleLetters="true" autoFocus="false">
+					<EditBox parentKey="EditBox" multiLine="true" autoFocus="false">
 						<Anchors>
 							<Anchor point="TOPLEFT"/>
 						</Anchors>

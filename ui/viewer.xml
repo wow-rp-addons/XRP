@@ -70,7 +70,6 @@
 				self.ScrollBar.ScrollDownButton:SetPoint("TOP", self.ScrollBar, "BOTTOM", 0, 4)
 				self.ScrollBar.ScrollUpButton:SetPoint("BOTTOM", self.ScrollBar, "TOP", 0, -4)
 				self.ScrollBar.ScrollUpButton:Disable()
-				self.scrollBarHideable = 1
 				self.ScrollBar:Hide()
 				self.EditBox:SetWidth(self:GetWidth() - 18)
 
@@ -84,7 +83,7 @@
 			</OnLoad>
 		</Scripts>
 		<ScrollChild>
-			<EditBox parentKey="EditBox" multiLine="true" letters="131071" countInvisibleLetters="true" autoFocus="false">
+			<EditBox parentKey="EditBox" multiLine="true" autoFocus="false">
 				<Anchors>
 					<Anchor point="TOPLEFT"/>
 				</Anchors>
@@ -105,10 +104,10 @@
 			</EditBox>
 		</ScrollChild>
 	</ScrollFrame>
-	<Frame name="XRPViewer" toplevel="true" parent="UIParent" inherits="ButtonFrameTemplate" hidden="true" enableMouse="true" frameStrata="MEDIUM">
+	<Frame name="XRPViewer" toplevel="true" parent="UIParent" inherits="ButtonFrameTemplate" hidden="true" enableMouse="true">
 		<Size x="439" y="525"/>
 		<Layers>
-			<Layer level="OVERLAY">
+			<Layer level="ARTWORK">
 				<!-- Version Information -->
 				<FontString parentKey="VA" inherits="GameFontNormalSmall">
 					<Anchors>
@@ -340,6 +339,9 @@
 			<Attribute name="UIPanelLayout-height" type="number" value="545"/>
 			<Attribute name="UIPanelLayout-whileDead" type="boolean" value="true"/>
 		</Attributes>
+		<KeyValues>
+			<KeyValue key="nextRefresh" value="0" type="number"/>
+		</KeyValues>
 		<Scripts>
 			<OnLoad>
 				PanelTemplates_SetNumTabs(self, 2)
@@ -349,7 +351,6 @@
 				self.fields.NI = self.NI
 				self.fields.NH = self.NH
 				self.fields.VA = self.VA
-				self.nextRefresh = 0
 			</OnLoad>
 			<OnShow>
 				PlaySound("igCharacterInfoOpen")

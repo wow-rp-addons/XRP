@@ -138,7 +138,7 @@
 			</OnLoad>
 		</Scripts>
 		<Layers>
-			<Layer level="OVERLAY">
+			<Layer level="ARTWORK">
 				<FontString parentKey="Title" inherits="GameFontNormalLarge" text="XRP" justifyH="LEFT" justifyV="TOP">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="16" y="-16"/>
