@@ -15,7 +15,7 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-	<Button name="XRPMinimapBaseTemplate" movable="true" virtual="true">
+	<Button name="XRPMinimapBaseTemplate" movable="true" dontSavePosition="true" virtual="true">
 		<KeyValues>
 			<KeyValue key="initialize" value="EasyMenu_Initialize" type="global"/>
 			<KeyValue key="displayMode" value="MENU"/>
@@ -110,7 +110,7 @@
 			</OnLeave>
 		</Scripts>
 	</Button>
-	<Button name="XRPMinimapTemplate" inherits="XRPMinimapBaseTemplate" virtual="true">
+	<Button name="XRPMinimapTemplate" frameLevel="8" inherits="XRPMinimapBaseTemplate" virtual="true">
 		<Scripts>
 			<OnDragStart>
 				self:LockHighlight()
@@ -122,14 +122,11 @@
 			</OnDragStop>
 			<OnLoad>
 				self:RegisterForClicks("anyUp")
-				self:SetDontSavePosition()
 				self:RegisterForDrag("LeftButton")
-				self:SetClampedToScreen(false)
-				self:SetFrameLevel(8)
 			</OnLoad>
 		</Scripts>
 	</Button>
-	<Button name="XRPButtonTemplate" inherits="XRPMinimapBaseTemplate" virtual="true">
+	<Button name="XRPButtonTemplate" clampedToScreen="true" inherits="XRPMinimapBaseTemplate" virtual="true">
 		<Scripts>
 			<OnDragStart>
 				if IsShiftKeyDown() then
@@ -141,9 +138,7 @@
 			</OnDragStart>
 			<OnLoad>
 				self:RegisterForClicks("anyUp")
-				self:SetDontSavePosition()
 				self:RegisterForDrag("RightButton")
-				self:SetClampedToScreen(true)
 			</OnLoad>
 		</Scripts>
 	</Button>
