@@ -154,7 +154,7 @@ do
 			RenderLine(currentUnit.nameFormat:format(showProfile and TruncateLine(xrp:Strip(fields.NA), 65, 0, false) or xrp:Ambiguate(currentUnit.character.name)), currentUnit.icons)
 			if showProfile then
 				local NI = fields.NI
-				RenderLine(NI and ("|cff6070a0Nickname:|r \"%s\""):format(TruncateLine(xrp:Strip(NI), 70, 10, false)) or nil, nil, 0.6, 0.7, 0.9)
+				RenderLine(NI and ("|cff6070a0Nickname:|r \"%s\""):format(TruncateLine(xrp:Strip(NI), 70, 12, false)) or nil, nil, 0.6, 0.7, 0.9)
 				RenderLine(TruncateLine(xrp:Strip(fields.NT), 70), nil, 0.8, 0.8, 0.8)
 			end
 			if xrpPrivate.settings.tooltip.extraSpace then
