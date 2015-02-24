@@ -151,8 +151,8 @@
 				end
 			</OnHide>
 			<OnLoad>
-				self:RegisterForClicks("anyUp")
 				self.onHide = self:GetScript("OnHide")
+				self:RegisterForClicks("LeftButtonUp", "RightButtonUp")
 			</OnLoad>
 		</Scripts>
 	</Button>
