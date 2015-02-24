@@ -311,7 +311,7 @@
 							<KeyValue key="field" value="NI"/>
 							<KeyValue key="fieldName" value="Nickname"/>
 							<KeyValue key="nextField" value="AH"/>
-							<KeyValue key="safeLength" value="60" type="number"/>
+							<KeyValue key="safeLength" value="58" type="number"/>
 						</KeyValues>
 						<Size x="136" y="20"/>
 						<Anchors>
