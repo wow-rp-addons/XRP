@@ -58,7 +58,8 @@
 		<Scripts>
 			<OnClick>
 				if button == "LeftButton" then
-					if xrp.characters.byUnit.target and xrp.characters.byUnit.target.fields.VA then
+					local target = xrp.characters.byUnit.target
+					if target and target.fields.VA then
 						xrp:View("target")
 					else
 						xrp:Status()
@@ -121,7 +122,7 @@
 				self:UnlockHighlight()
 			</OnDragStop>
 			<OnLoad>
-				self:RegisterForClicks("anyUp")
+				self:RegisterForClicks("LeftButtonUp", "RightButtonUp")
 				self:RegisterForDrag("LeftButton")
 			</OnLoad>
 		</Scripts>
@@ -137,7 +138,7 @@
 				end
 			</OnDragStart>
 			<OnLoad>
-				self:RegisterForClicks("anyUp")
+				self:RegisterForClicks("LeftButtonUp", "RightButtonUp")
 				self:RegisterForDrag("RightButton")
 			</OnLoad>
 		</Scripts>
