@@ -47,10 +47,8 @@ StaticPopupDialogs["XRP_NOTIFICATION"] = {
 	text = "%s",
 	button1 = OKAY,
 	enterClicksFirstButton = true,
-	timeout = 0,
 	whileDead = true,
 	hideOnEscape = true,
-	preferredIndex = 3,
 }
 
 StaticPopupDialogs["XRP_ERROR"] = {
@@ -58,20 +56,17 @@ StaticPopupDialogs["XRP_ERROR"] = {
 	button1 = OKAY,
 	showAlert = true,
 	enterClicksFirstButton = true,
-	timeout = 0,
 	whileDead = true,
 	hideOnEscape = true,
-	preferredIndex = 3,
 }
 
 StaticPopupDialogs["XRP_URL"] = {
-	text = (IsWindowsClient() or IsLinuxClient()) and "Copy the URL (Ctrl+C) and paste into your web browser." or IsMacClient() and "Copy the URL (Cmd+C) and paste into your web browser." or "Copy the URL and paste into your web browser.",
+	text = not IsMacClient() and "Copy the URL (Ctrl+C) and paste into your web browser." or "Copy the URL (Cmd+C) and paste into your web browser.",
 	button1 = DONE,
 	hasEditBox = true,
+	editBoxWidth = 250,
 	OnShow = function (self, url)
-		self.editBox:SetWidth(self.editBox:GetWidth() + 100)
 		self.editBox:SetText(url or "")
-		self.editBox:SetFocus()
 		self.editBox:HighlightText()
 	end,
 	EditBoxOnTextChanged = function(self, url)
@@ -81,10 +76,8 @@ StaticPopupDialogs["XRP_URL"] = {
 	EditBoxOnEnterPressed = HideParentPanel,
 	EditBoxOnEscapePressed = HideParentPanel,
 	enterClicksFirstButton = true,
-	timeout = 0,
 	whileDead = true,
 	hideOnEscape = true,
-	preferredIndex = 3,
 }
 
 StaticPopupDialogs["XRP_RELOAD"] = {
@@ -93,11 +86,8 @@ StaticPopupDialogs["XRP_RELOAD"] = {
 	button2 = "Not now",
 	showAlert = true,
 	OnAccept = ReloadUI,
-	enterClicksFirstButton = false,
-	timeout = 0,
 	whileDead = true,
 	hideOnEscape = true,
-	preferredIndex = 3,
 }
 
 StaticPopupDialogs["XRP_CURRENTLY"] = {
@@ -106,8 +96,8 @@ StaticPopupDialogs["XRP_CURRENTLY"] = {
 	button2 = RESET,
 	button3 = CANCEL,
 	hasEditBox = true,
+	editBoxWidth = 350,
 	OnShow = function(self)
-		self.editBox:SetWidth(self.editBox:GetWidth() + 150)
 		self.editBox:SetText(xrp.current.fields.CU or "")
 		self.editBox:HighlightText()
 		self.button1:Disable()
@@ -131,10 +121,8 @@ StaticPopupDialogs["XRP_CURRENTLY"] = {
 	EditBoxOnEnterPressed = ClickButton,
 	EditBoxOnEscapePressed = HideParentPanel,
 	enterClicksFirstButton = true,
-	timeout = 0,
 	whileDead = true,
 	hideOnEscape = true,
-	preferredIndex = 3,
 }
 
 StaticPopupDialogs["XRP_CACHE_CLEAR"] = {
@@ -145,11 +133,8 @@ StaticPopupDialogs["XRP_CACHE_CLEAR"] = {
 		xrpPrivate:CacheTidy(60)
 		StaticPopup_Show("XRP_NOTIFICATION", "The cache has been cleared.")
 	end,
-	enterClicksFirstButton = false,
-	timeout = 0,
 	whileDead = true,
 	hideOnEscape = true,
-	preferredIndex = 3,
 }
 
 StaticPopupDialogs["XRP_CACHE_TIDY"] = {
@@ -158,11 +143,8 @@ StaticPopupDialogs["XRP_CACHE_TIDY"] = {
 	OnShow = function(self)
 		xrpPrivate:CacheTidy()
 	end,
-	enterClicksFirstButton = false,
-	timeout = 0,
 	whileDead = true,
 	hideOnEscape = true,
-	preferredIndex = 3,
 }
 
 StaticPopupDialogs["XRP_EDITOR_ADD"] = {
@@ -183,10 +165,8 @@ StaticPopupDialogs["XRP_EDITOR_ADD"] = {
 	EditBoxOnEnterPressed = ClickButton,
 	EditBoxOnEscapePressed = HideParentPanel,
 	enterClicksFirstButton = true,
-	timeout = 0,
 	whileDead = true,
 	hideOnEscape = true,
-	preferredIndex = 3,
 }
 
 StaticPopupDialogs["XRP_EDITOR_DELETE"] = {
@@ -201,11 +181,8 @@ StaticPopupDialogs["XRP_EDITOR_DELETE"] = {
 			editor:Load(xrpSaved.selected)
 		end
 	end,
-	enterClicksFirstButton = false,
-	timeout = 0,
 	whileDead = true,
 	hideOnEscape = true,
-	preferredIndex = 3,
 }
 
 StaticPopupDialogs["XRP_EDITOR_RENAME"] = {
@@ -226,10 +203,8 @@ StaticPopupDialogs["XRP_EDITOR_RENAME"] = {
 	EditBoxOnEnterPressed = ClickButton,
 	EditBoxOnEscapePressed = HideParentPanel,
 	enterClicksFirstButton = true,
-	timeout = 0,
 	whileDead = true,
 	hideOnEscape = true,
-	preferredIndex = 3,
 }
 
 StaticPopupDialogs["XRP_EDITOR_COPY"] = {
@@ -250,8 +225,6 @@ StaticPopupDialogs["XRP_EDITOR_COPY"] = {
 	EditBoxOnEnterPressed = ClickButton,
 	EditBoxOnEscapePressed = HideParentPanel,
 	enterClicksFirstButton = true,
-	timeout = 0,
 	whileDead = true,
 	hideOnEscape = true,
-	preferredIndex = 3,
 }
