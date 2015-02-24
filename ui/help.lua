@@ -289,6 +289,12 @@ local VIEWER_HELP = {
 		ToolTipText = "This button accesses the viewer's menu. In this menu you can refresh the profile (once every 30 seconds), add the character to your bookmarks or friends list, or even export the profile to plain text.",
 	},
 	{
+		ButtonPos = { x = 355, y = 1 },
+		HighLightBox = { x = 79, y = -1, width = 285, height = 42 },
+		ToolTipDir = "RIGHT",
+		ToolTipText = "These lines show, from top to bottom, nicknames, titles, and house/clan/tribe.\n\nIf there is more text than can be shown (an ellipses will be visible at the end), you can mouseover the line to see the full text in a tooltip.",
+	},
+	{
 		ButtonPos = { x = 388, y = -38 },
 		HighLightBox = { x = 12, y = -45, width = 414, height = 67 },
 		ToolTipDir = "RIGHT",

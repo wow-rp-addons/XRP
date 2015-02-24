@@ -18,6 +18,23 @@
 	<!-- Here there be dragons. XML dragons, the most dangerous sort. -->
 	<!-- It's dangerous to go alone, take a syntax highlighter. -->
 	<!-- No, seriously, though. This is the easiest way to get a good UI. -->
+	<Frame name="XRPViewerTextLineTemplate" enableMouse="true" virtual="true">
+		<Size x="280" y="13"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Text" inherits="GameFontNormalSmall" maxLines="1" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter>
+				if self.Text:IsTruncated() then
+					GameTooltip:SetOwner(self, "ANCHOR_CURSOR")
+					GameTooltip:SetText(self.Text:GetText())
+				end
+			</OnEnter>
+			<OnLeave function="GameTooltip_Hide"/>
+		</Scripts>
+	</Frame>
 	<EditBox name="XRPViewerSingleLineTemplate" autoFocus="false" inherits="InputBoxTemplate" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
@@ -122,31 +139,25 @@
 					</Anchors>
 					<Color r="0.5" g="0.5" b="0.5"/>
 				</FontString>
-				<!-- Nickname -->
-				<FontString parentKey="NI" inherits="GameFontNormalSmall" maxLines="1">
-					<Size x="325"/>
-					<Anchors>
-						<Anchor point="TOP" relativePoint="TOP" y="-23"/>
-					</Anchors>
-				</FontString>
-				<!-- Title -->
-				<FontString parentKey="NT" inherits="GameFontNormalSmall" maxLines="1">
-					<Size x="325"/>
-					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.NI" relativePoint="BOTTOM" y="-2"/>
-					</Anchors>
-				</FontString>
-				<!-- House/Clan/Tribe -->
-				<FontString parentKey="NH" inherits="GameFontNormalSmall" maxLines="1">
-					<Size x="325"/>
-					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.NT" relativePoint="BOTTOM" y="-2"/>
-					</Anchors>
-				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
 			<Button name="$parentHelpButton" inherits="XRPHelpButtonTemplate"/>
+			<Frame parentKey="NI" inherits="XRPViewerTextLineTemplate">
+				<Anchors>
+					<Anchor point="TOP" y="-22"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="NT" inherits="XRPViewerTextLineTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.NI" relativePoint="BOTTOM"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="NH" inherits="XRPViewerTextLineTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.NT" relativePoint="BOTTOM"/>
+				</Anchors>
+			</Frame>
 			<Frame parentKey="Appearance" parentArray="panes" hidden="false">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.Inset" relativePoint="TOPLEFT"/>
@@ -347,9 +358,9 @@
 				PanelTemplates_SetNumTabs(self, 2)
 				PanelTemplates_SetTab(self, 1)
 				self.fields.NA = self.TitleText
-				self.fields.NT = self.NT
-				self.fields.NI = self.NI
-				self.fields.NH = self.NH
+				self.fields.NI = self.NI.Text
+				self.fields.NT = self.NT.Text
+				self.fields.NH = self.NH.Text
 				self.fields.VA = self.VA
 			</OnLoad>
 			<OnShow>
