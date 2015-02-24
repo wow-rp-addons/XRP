@@ -139,7 +139,7 @@ local EDITOR_APPEARANCE_HELP = {
 		ButtonPos = { x = 106, y = -108 },
 		HighLightBox = { x = 12, y = -115, width = 132, height = 32 },
 		ToolTipDir = "DOWN",
-		ToolTipText = "The eyes field is for a brief description of your character's eyes.\n\nFor many characters this will be simple, often just indicating their eye color.\n\nTry to avoid overly-poetic language, a straightforward description is best here!",
+		ToolTipText = "The eyes field is for a brief description of your character's eyes.\n\nFor many characters this will be simple, often just indicating their eye color.\n\nA short, straightforward description is typically best -- while poetic language may be tempting, it can be difficult for others to understand.",
 	},
 	{
 		ButtonPos = { x = 247, y = -108 },
