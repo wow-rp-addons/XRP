@@ -26,6 +26,13 @@
 			</Layer>
 		</Layers>
 		<Scripts>
+			<OnLoad>
+				local viewer = self:GetParent()
+				if not viewer.fields then
+					viewer.fields = {}
+				end
+				viewer.fields[self.field] = self.Text
+			</OnLoad>
 			<OnEnter>
 				if self.Text:IsTruncated() then
 					GameTooltip:SetOwner(self, "ANCHOR_CURSOR")
@@ -35,40 +42,60 @@
 			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</Frame>
-	<EditBox name="XRPViewerSingleLineTemplate" autoFocus="false" inherits="InputBoxTemplate" virtual="true">
+	<Frame name="XRPViewerSingleLineTemplate" virtual="true">
+		<Size x="140" y="20"/>
 		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Left" file="Interface\Common\Common-Input-Border">
+					<Size x="8" y="20"/>
+					<Anchors>
+						<Anchor point="LEFT" x="-5" y="0"/>
+					</Anchors>
+					<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
+				</Texture>
+				<Texture parentKey="Right" file="Interface\Common\Common-Input-Border">
+					<Size x="8" y="20"/>
+					<Anchors>
+						<Anchor point="RIGHT" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0.9375" right="1" top="0" bottom="0.625"/>
+				</Texture>
+				<Texture parentKey="Middle" file="Interface\Common\Common-Input-Border">
+					<Size x="10" y="20"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Left" relativePoint="RIGHT"/>
+						<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="LEFT"/>
+					</Anchors>
+					<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625"/>
+				</Texture>
+			</Layer>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Label" inherits="GameFontNormalSmall">
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="-2" y="-1"/>
 					</Anchors>
 				</FontString>
+				<FontString parentKey="Text" inherits="GameFontWhite" maxLines="1" setAllPoints="true" justifyH="LEFT"/>
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnTextChanged>
-				self:SetCursorPosition(0)
-			</OnTextChanged>
-			<OnEnter>
-				local text = self:GetText()
-				if (#text * 6.5) > self:GetWidth() then
-					GameTooltip:SetOwner(self, "ANCHOR_CURSOR")
-					GameTooltip:SetText(text)
-				end
-			</OnEnter>
-			<OnLeave function="GameTooltip_Hide"/>
 			<OnLoad>
-				self:Disable()
 				self.Label:SetText(self.fieldName)
 				local viewer = self:GetParent():GetParent()
 				if not viewer.fields then
 					viewer.fields = {}
 				end
-				viewer.fields[self.field] = self
+				viewer.fields[self.field] = self.Text
 			</OnLoad>
+			<OnEnter>
+				if self.Text:IsTruncated() then
+					GameTooltip:SetOwner(self, "ANCHOR_CURSOR")
+					GameTooltip:SetText(self.Text:GetText())
+				end
+			</OnEnter>
+			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
-		<FontString inherits="GameFontWhite"/>
-	</EditBox>
+	</Frame>
 	<ScrollFrame name="XRPViewerMultiLineTemplate" inherits="XRPScrollFrameArtTemplate" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
@@ -144,16 +171,28 @@
 		<Frames>
 			<Button name="$parentHelpButton" inherits="XRPHelpButtonTemplate"/>
 			<Frame parentKey="NI" inherits="XRPViewerTextLineTemplate">
+				<KeyValues>
+					<KeyValue key="field" value="NI"/>
+					<KeyValue key="fieldName" value="Nickname"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="TOP" y="-22"/>
 				</Anchors>
 			</Frame>
 			<Frame parentKey="NT" inherits="XRPViewerTextLineTemplate">
+				<KeyValues>
+					<KeyValue key="field" value="NT"/>
+					<KeyValue key="fieldName" value="Title"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="TOP" relativeKey="$parent.NI" relativePoint="BOTTOM"/>
 				</Anchors>
 			</Frame>
 			<Frame parentKey="NH" inherits="XRPViewerTextLineTemplate">
+				<KeyValues>
+					<KeyValue key="field" value="NH"/>
+					<KeyValue key="fieldName" value="House/Clan/Tribe"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="TOP" relativeKey="$parent.NT" relativePoint="BOTTOM"/>
 				</Anchors>
@@ -165,7 +204,7 @@
 				</Anchors>
 				<Frames>
 					<!-- Race -->
-					<EditBox parentKey="RA" inherits="XRPViewerSingleLineTemplate">
+					<Frame parentKey="RA" inherits="XRPViewerSingleLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="RA"/>
 							<KeyValue key="fieldName" value="Race"/>
@@ -174,9 +213,9 @@
 						<Anchors>
 							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="14" y="-18"/>
 						</Anchors>
-					</EditBox>
+					</Frame>
 					<!-- Class -->
-					<EditBox parentKey="RC" inherits="XRPViewerSingleLineTemplate">
+					<Frame parentKey="RC" inherits="XRPViewerSingleLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="RC"/>
 							<KeyValue key="fieldName" value="Class"/>
@@ -185,9 +224,9 @@
 						<Anchors>
 							<Anchor point="LEFT" relativeKey="$parent.RA" relativePoint="RIGHT" x="10"/>
 						</Anchors>
-					</EditBox>
+					</Frame>
 					<!-- Height -->
-					<EditBox parentKey="AH" inherits="XRPViewerSingleLineTemplate">
+					<Frame parentKey="AH" inherits="XRPViewerSingleLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="AH"/>
 							<KeyValue key="fieldName" value="Height"/>
@@ -196,9 +235,9 @@
 						<Anchors>
 							<Anchor point="LEFT" relativeKey="$parent.RC" relativePoint="RIGHT" x="10"/>
 						</Anchors>
-					</EditBox>
+					</Frame>
 					<!-- Eyes -->
-					<EditBox parentKey="AE" inherits="XRPViewerSingleLineTemplate">
+					<Frame parentKey="AE" inherits="XRPViewerSingleLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="AE"/>
 							<KeyValue key="fieldName" value="Eyes"/>
@@ -207,9 +246,9 @@
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.RA" relativePoint="BOTTOMLEFT" y="-15"/>
 						</Anchors>
-					</EditBox>
+					</Frame>
 					<!-- Weight -->
-					<EditBox parentKey="AW" inherits="XRPViewerSingleLineTemplate">
+					<Frame parentKey="AW" inherits="XRPViewerSingleLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="AW"/>
 							<KeyValue key="fieldName" value="Weight"/>
@@ -218,7 +257,7 @@
 						<Anchors>
 							<Anchor point="LEFT" relativeKey="$parent.AE" relativePoint="RIGHT" x="10"/>
 						</Anchors>
-					</EditBox>
+					</Frame>
 					<!-- Currently -->
 					<ScrollFrame name="$parentCU" parentKey="CU" inherits="XRPViewerMultiLineTemplate">
 						<KeyValues>
@@ -250,7 +289,7 @@
 				</Anchors>
 				<Frames>
 					<!-- Home -->
-					<EditBox parentKey="HH" inherits="XRPViewerSingleLineTemplate">
+					<Frame parentKey="HH" inherits="XRPViewerSingleLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="HH"/>
 							<KeyValue key="fieldName" value="Home"/>
@@ -259,9 +298,9 @@
 						<Anchors>
 							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="14" y="-18"/>
 						</Anchors>
-					</EditBox>
+					</Frame>
 					<!-- Age -->
-					<EditBox parentKey="AG" inherits="XRPViewerSingleLineTemplate">
+					<Frame parentKey="AG" inherits="XRPViewerSingleLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="AG"/>
 							<KeyValue key="fieldName" value="Age"/>
@@ -270,9 +309,9 @@
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.HH" relativePoint="BOTTOMLEFT" y="-15"/>
 						</Anchors>
-					</EditBox>
+					</Frame>
 					<!-- Birthplace -->
-					<EditBox parentKey="HB" inherits="XRPViewerSingleLineTemplate">
+					<Frame parentKey="HB" inherits="XRPViewerSingleLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="HB"/>
 							<KeyValue key="fieldName" value="Birthplace"/>
@@ -281,7 +320,7 @@
 						<Anchors>
 							<Anchor point="LEFT" relativeKey="$parent.AG" relativePoint="RIGHT" x="10"/>
 						</Anchors>
-					</EditBox>
+					</Frame>
 					<!-- Motto -->
 					<ScrollFrame name="$parentMO" parentKey="MO" inherits="XRPViewerMultiLineTemplate">
 						<KeyValues>
@@ -358,9 +397,6 @@
 				PanelTemplates_SetNumTabs(self, 2)
 				PanelTemplates_SetTab(self, 1)
 				self.fields.NA = self.TitleText
-				self.fields.NI = self.NI.Text
-				self.fields.NT = self.NT.Text
-				self.fields.NH = self.NH.Text
 				self.fields.VA = self.VA
 			</OnLoad>
 			<OnShow>
