@@ -315,8 +315,8 @@ do
 		end
 		currentUnit.noProfile = xrpPrivate.settings.tooltip.noOpFaction and currentUnit.faction ~= playerFaction and currentUnit.faction ~= "Neutral" or xrpPrivate.settings.tooltip.noHostile and attackMe and meAttack
 
-		wipe(currentUnit.lines)
 		if replace then
+			table.wipe(currentUnit.lines)
 			local currentLines = GameTooltip:NumLines()
 			if defaultLines < currentLines then
 				for i = defaultLines + 1, currentLines do

@@ -37,7 +37,7 @@ if msp then
 		-- LibMSP
 		msp.dummyframe:UnregisterAllEvents()
 	end
-	wipe(msp)
+	table.wipe(msp)
 else
 	msp = {}
 end

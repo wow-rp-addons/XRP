@@ -78,7 +78,7 @@ do
 
 		function Minimap_PreClick(self, button, down)
 			if button == "RightButton" then
-				wipe(Profiles_menuList)
+				table.wipe(Profiles_menuList)
 				local selected = xrpSaved.selected
 				for i, profileName in ipairs(xrpPrivate.profiles:List()) do
 					Profiles_menuList[#Profiles_menuList + 1] = { text = profileName, checked = selected == profileName, arg1 = profileName, func = Profiles_Click, }
