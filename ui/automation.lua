@@ -123,7 +123,7 @@ do
 	local noSet = not isWorgen and not playerClass and { text = FORM_NAMES["DEFAULT"], value = "", checked = equipSets_Check, func = equipSets_Click, } or nil
 
 	XRPEditor.Automation.Form.ArrowButton:SetScript("PreClick", function(self, button, down)
-		wipe(equipSets) -- Keep table reference the same.
+		table.wipe(equipSets) -- Keep table reference the same.
 		equipSets[1] = noSet
 		local numsets = GetNumEquipmentSets()
 		if numsets and numsets > 0 then

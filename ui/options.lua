@@ -79,7 +79,7 @@ do
 	end
 
 	function XRPOptions.Chat.Channels:CustomRefresh()
-		wipe(self.baseMenuList)
+		table.wipe(self.baseMenuList)
 		local seenChannels = {}
 		for i, name in ipairs(ChannelsTable(GetChannelList())) do
 			local channel = "CHAT_MSG_CHANNEL_" .. name:upper()
