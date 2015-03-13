@@ -63,7 +63,7 @@ function XRPBookmarks.List:update()
 	for i=1, #buttons do
 		local index = i + offset
 		local button = buttons[i]
-		local character = results[index]
+		local character = xrp.characters.noRequest.byName[results[index]]
 		if index <= matches then
 			if not button.character or character.name ~= button.character.name then
 				button.character = character
@@ -137,7 +137,7 @@ function XRPBookmarks.List:update()
 end
 
 function XRPBookmarks:Refresh()
-	results = xrp.characters.noRequest:Filter(self.request)
+	results = xrp.characters:Filter(self.request)
 	self.List.range = #results * 72
 	self.List:update()
 	self.List.scrollBar:SetValue(self.request.offset)

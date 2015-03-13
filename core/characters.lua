@@ -214,7 +214,7 @@ do
 			table.sort(results)
 		end
 		for i, result in ipairs(results) do
-			results[i] = self.byName[result:match("^.-\30(.+)$")]
+			results[i] = result:match("^.-\30(.+)$")
 		end
 		results.totalCount = totalCount
 		return results
@@ -321,6 +321,5 @@ xrp.characters = {
 			__newindex = xrpPrivate.noFunc,
 			__metatable = false,
 		}),
-		Filter = Filter,
 	},
 }
