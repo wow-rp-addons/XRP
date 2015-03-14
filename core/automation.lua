@@ -135,8 +135,8 @@ end
 local swap = CreateFrame("Frame")
 swap.timer = 0
 do
-	local function TestForm(self, event, unit)
-		if InCombatLockdown() or event == "UNIT_PORTRAIT_UPDATE" and unit ~= "player" then return end
+	local function TestForm(self, event)
+		if InCombatLockdown() then return end
 		if event == "PLAYER_REGEN_DISABLED" then
 			self:Hide()
 			return
@@ -225,7 +225,7 @@ swap:Hide()
 
 -- Shadowform (and possibly others) don't trigger a portrait update. Worgen
 -- form and equipment sets don't trigger a shapeshift update.
-swap:RegisterEvent("UNIT_PORTRAIT_UPDATE")
+swap:RegisterUnitEvent("UNIT_PORTRAIT_UPDATE", "player")
 swap:RegisterEvent("UPDATE_SHAPESHIFT_FORM")
 swap:RegisterEvent("PLAYER_REGEN_DISABLED")
 swap:RegisterEvent("PLAYER_REGEN_ENABLED")
