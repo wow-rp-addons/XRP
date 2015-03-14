@@ -39,7 +39,7 @@ local RACE_FACTION = {
 local gCache = {}
 xrpPrivate.gCache = gCache
 
-local nk, rq = {}, {}
+local nameMap, requestMap = setmetatable({}, xrpPrivate.weakKeyMeta), setmetatable({}, xrpPrivate.weakKeyMeta)
 
 local characterMeta
 do
@@ -48,12 +48,12 @@ do
 			if not field:find("^%u%u$") then
 				return nil
 			end
-			local name = self[nk]
+			local name = nameMap[self]
 			if name == xrpPrivate.playerWithRealm then
 				return xrp.current.fields[field]
 			elseif gCache[name] and gCache[name][field] then
 				return gCache[name][field]
-			elseif self[rq] then
+			elseif requestMap[self] then
 				xrpPrivate:QueueRequest(name, field)
 			end
 			if xrpCache[name] and xrpCache[name].fields[field] then
@@ -67,10 +67,13 @@ do
 
 	characterMeta = {
 		__index = function(self, component)
-			local name = self[nk]
+			local name = nameMap[self]
 			if component == "fields" then
-				rawset(self, "fields", setmetatable({ [nk] = name, [rq] = self[rq] }, fieldsMeta))
-				return self.fields
+				local fields = setmetatable({}, fieldsMeta)
+				nameMap[fields] = name
+				requestMap[fields] = requestMap[self]
+				rawset(self, "fields", fields)
+				return fields
 			elseif component == "name" then
 				return name
 			elseif component == "own" and name == xrpPrivate.playerWithRealm then
@@ -86,7 +89,7 @@ do
 			elseif component == "date" then
 				return xrpCache[name].lastReceive
 			elseif component == "noRequest" then
-				return not self[rq]
+				return not requestMap[self]
 			elseif component == "exportText" then
 				local EXPORT_FIELDS, EXPORT_FORMATS = xrpPrivate.EXPORT_FIELDS, xrpPrivate.EXPORT_FORMATS
 				local fields
@@ -117,7 +120,7 @@ do
 			end
 		end,
 		__newindex = function(self, component, value)
-			local name = self[nk]
+			local name = nameMap[self]
 			if not xrpCache[name] then return end
 			if component == "bookmark" then
 				if value and not xrpAccountSaved.bookmarks[name] then
@@ -231,7 +234,10 @@ xrp.characters = {
 			if not name then
 				return nil
 			elseif not requestTables[name] then
-				requestTables[name] = setmetatable({ [nk] = name, [rq] = true }, characterMeta)
+				local character = setmetatable({}, characterMeta)
+				nameMap[character] = name
+				requestMap[character] = true
+				requestTables[name] = character
 			end
 			return requestTables[name]
 		end,
@@ -267,7 +273,10 @@ xrp.characters = {
 				end
 			end
 			if not requestTables[name] then
-				requestTables[name] = setmetatable({ [nk] = name, [rq] = true }, characterMeta)
+				local character = setmetatable({}, characterMeta)
+				nameMap[character] = name
+				requestMap[character] = true
+				requestTables[name] = character
 			end
 			return requestTables[name]
 		end,
@@ -299,7 +308,10 @@ xrp.characters = {
 				end
 			end
 			if not requestTables[name] then
-				requestTables[name] = setmetatable({ [nk] = name, [rq] = true }, characterMeta)
+				local character = setmetatable({}, characterMeta)
+				nameMap[character] = name
+				requestMap[character] = true
+				requestTables[name] = character
 			end
 			return requestTables[name]
 		end,
@@ -314,7 +326,9 @@ xrp.characters = {
 				if not name then
 					return nil
 				elseif not noRequestTables[name] then
-					noRequestTables[name] = setmetatable({ [nk] = name, [rq] = false }, characterMeta)
+					local character = setmetatable({}, characterMeta)
+					nameMap[character] = name
+					noRequestTables[name] = character
 				end
 				return noRequestTables[name]
 			end,

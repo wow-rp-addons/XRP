@@ -65,13 +65,13 @@ xrp:HookEvent("RECEIVE", function(event, name)
 	end
 end)
 
-local nk = {} -- Used to hide character names inside table.
+local nameMap = setmetatable({}, xrpPrivate.weakKeyMeta)
 
 local mspChars = setmetatable({}, xrpPrivate.weakMeta)
 
 local fieldMeta = {
 	__index = function(self, field)
-		local name = self[nk]
+		local name = nameMap[self]
 		if name == xrpPrivate.playerWithRealm then
 			return xrp.current.fields[field]
 		end
@@ -83,7 +83,7 @@ local fieldMeta = {
 
 local verMeta = {
 	__index = function(self, field)
-		local name = self[nk]
+		local name = nameMap[self]
 		if name == xrpPrivate.playerWithRealm then
 			return xrpPrivate.current.versions[field]
 		end
@@ -122,7 +122,10 @@ msp.char = setmetatable({}, {
 	__index = function (self, name)
 		name = xrp:Name(name) -- For pre-5.4.7 addons.
 		if xrpCache[name] then
-			mspChars[name] = { field = setmetatable({ [nk] = name }, fieldMeta), ver = setmetatable({ [nk] = name }, verMeta), time = timeTable, }
+			local character = { field = setmetatable({}, fieldMeta), ver = setmetatable({}, verMeta), time = timeTable, }
+			nameMap[character.field] = name
+			nameMap[character.ver] = name
+			mspChars[name] = character
 			return mspChars[name]
 		end
 		return emptychar -- LibMSP never returns nil.

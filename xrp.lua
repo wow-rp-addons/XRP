@@ -87,6 +87,7 @@ BINDING_NAME_XRP_EDITOR = "Open/close RP profile editor"
 xrpPrivate.version = GetAddOnMetadata(addonName, "Version")
 xrpPrivate.noFunc = function() end
 xrpPrivate.weakMeta = { __mode = "v" }
+xrpPrivate.weakKeyMeta = { __mode = "k" }
 
 -- Fields to export and their formats.
 xrpPrivate.EXPORT_FIELDS = { "NA", "NI", "NT", "NH", "RA", "RC", "AE", "AH", "AW", "AG", "HH", "HB", "CU", "MO", "DE", "HI" }
