@@ -130,7 +130,7 @@ xrpPrivate.current = setmetatable({
 	end,
 }, { __index = xrp.current })
 
-local nk = {}
+local nameMap = setmetatable({}, xrpPrivate.weakKeyMeta)
 local FORBIDDEN_NAMES = {
 	Add = true,
 	List = true,
@@ -140,7 +140,7 @@ local profileMeta
 do
 	local profileFunctions = {
 		Delete = function(self)
-			local name, selected = self[nk], xrpSaved.selected
+			local name, selected = nameMap[self], xrpSaved.selected
 			if name == selected then
 				return false
 			end
@@ -175,7 +175,7 @@ do
 			return true
 		end,
 		Rename = function(self, newName)
-			local name, profiles = self[nk], xrpSaved.profiles
+			local name, profiles = nameMap[self], xrpSaved.profiles
 			if type(newName) ~= "string" or FORBIDDEN_NAMES[newName] or profiles[newName] ~= nil or type(profiles[name]) ~= "table" then
 				return false
 			end
@@ -192,7 +192,7 @@ do
 			return true
 		end,
 		Copy = function(self, newName)
-			local name, profiles = self[nk], xrpSaved.profiles
+			local name, profiles = nameMap[self], xrpSaved.profiles
 			if type(newName) ~= "string" or FORBIDDEN_NAMES[newName] or profiles[newName] ~= nil or type(profiles[name]) ~= "table" then
 				return false
 			end
@@ -214,7 +214,7 @@ do
 			return true
 		end,
 		Activate = function(self, keepOverrides)
-			local name = self[nk]
+			local name = nameMap[self]
 			if xrpSaved.selected == name or type(xrpSaved.profiles[name]) ~= "table" then
 				return false
 			end
@@ -227,14 +227,14 @@ do
 			return true
 		end,
 		List = function(self)
-			local name, list = self[nk], {}
+			local name, list = nameMap[self], {}
 			for field, contents in pairs(xrpSaved.profiles[name].fields) do
 				list[field] = contents
 			end
 			return list
 		end,
 		Export = function(self)
-			local name = self[nk]
+			local name = nameMap[self]
 			local EXPORT_FIELDS, EXPORT_FORMATS = xrpPrivate.EXPORT_FIELDS, xrpPrivate.EXPORT_FORMATS
 			local fields, profiles = {}, xrpSaved.profiles
 			for field, contents in pairs(xrpSaved.meta.fields) do
@@ -278,11 +278,11 @@ do
 			if NO_PROFILE[field] or not field:find("^%u%u$") then
 				return nil
 			end
-			return xrpSaved.profiles[self[nk]].fields[field] or nil
+			return xrpSaved.profiles[nameMap[self]].fields[field] or nil
 		end,
 		__newindex = function(self, field, contents)
 			if NO_PROFILE[field] or not field:find("^%u%u$") then return end
-			local name, profiles = self[nk], xrpSaved.profiles
+			local name, profiles = nameMap[self], xrpSaved.profiles
 			contents = type(contents) == "string" and contents ~= "" and contents or nil
 			if profiles[name] and profiles[name].fields[field] ~= contents then
 				local selected = xrpSaved.selected
@@ -298,7 +298,7 @@ do
 
 	local inheritsMeta = {
 		__index = function(self, field)
-			local name, profiles = self[nk], xrpSaved.profiles
+			local name, profiles = nameMap[self], xrpSaved.profiles
 			if NO_PROFILE[field] or not field:find("^%u%u$") or profiles[name].inherits[field] == false then
 				return false
 			end
@@ -321,7 +321,7 @@ do
 		end,
 		__newindex = function(self, field, state)
 			if NO_PROFILE[field] or not field:find("^%u%u$") then return end
-			local name, selected = self[nk], xrpSaved.selected
+			local name, selected = nameMap[self], xrpSaved.selected
 			if state ~= xrpSaved.profiles[name].inherits[field] then
 				local current = xrpPrivate.profiles[selected].inherits[field]
 				xrpSaved.profiles[name].inherits[field] = state
@@ -334,24 +334,28 @@ do
 
 	profileMeta = {
 		__index = function(self, component)
-			local name = self[nk]
+			local name = nameMap[self]
 			if not xrpSaved.profiles[name] then
 				return nil
 			elseif profileFunctions[component] then
 				return profileFunctions[component]
 			elseif component == "fields" then
-				rawset(self, "fields", setmetatable({ [nk] = name }, fieldsMeta))
-				return self.fields
+				local fields = setmetatable({}, fieldsMeta)
+				nameMap[fields] = name
+				rawset(self, "fields", fields)
+				return fields
 			elseif component == "inherits" then
-				rawset(self, "inherits", setmetatable({ [nk] = name }, inheritsMeta))
-				return self.inherits
+				local inherits = setmetatable({}, inheritsMeta)
+				nameMap[inherits] = name
+				rawset(self, "inherits", inherits)
+				return inherits
 			elseif component == "parent" then
 				return xrpSaved.profiles[name].parent
 			end
 			return nil
 		end,
 		__newindex = function(self, component, value)
-			local name, profiles = self[nk], xrpSaved.profiles
+			local name, profiles = nameMap[self], xrpSaved.profiles
 			if component ~= "parent" or value == profiles[name].parent then return end
 
 			if xrpPrivate:DoesParentLoop(name, value) then return end
@@ -411,7 +415,9 @@ xrpPrivate.profiles = setmetatable({}, {
 			return nil
 		end
 		if not profileTables[name] then
-			profileTables[name] = setmetatable({ [nk] = name }, profileMeta)
+			local profile = setmetatable({}, profileMeta)
+			nameMap[profile] = name
+			profileTables[name] = profile
 		end
 		return profileTables[name]
 	end,
