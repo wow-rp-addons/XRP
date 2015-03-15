@@ -138,16 +138,16 @@
 			</OnHide>
 		</Scripts>
 	</Frame>
-	<CheckButton name="XRPCheckBoxArtTemplate" virtual="true">
+	<CheckButton name="XRPCheckBoxTemplate" virtual="true">
 		<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
 		<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
 		<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
 		<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
 		<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
 	</CheckButton>
-	<ScrollFrame name="XRPScrollFrameArtTemplate" inherits="UIPanelScrollFrameTemplate" virtual="true">
+	<ScrollFrame name="XRPScrollFrameTemplate" inherits="UIPanelScrollFrameTemplate" virtual="true">
 		<KeyValues>
-			<KeyValue key="scrollBarHideable" value="1" type="number"/>
+			<KeyValue key="scrollBarHideable" value="true" type="boolean"/>
 		</KeyValues>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -207,6 +207,26 @@
 				</Texture>
 			</Layer>
 		</Layers>
+		<Scripts>
+			<OnLoad>
+				self.ScrollBar:ClearAllPoints()
+				self.ScrollBar:SetPoint("TOPLEFT", self, "TOPRIGHT", -13, -11)
+				self.ScrollBar:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", -13, 9)
+				self.ScrollBar.ScrollDownButton:SetPoint("TOP", self.ScrollBar, "BOTTOM", 0, 4)
+				self.ScrollBar.ScrollUpButton:SetPoint("BOTTOM", self.ScrollBar, "TOP", 0, -4)
+				self.ScrollBar.ScrollUpButton:Disable()
+				self.ScrollBar:Hide()
+				if self.EditBox then
+					self.EditBox:SetWidth(self:GetWidth() - 18)
+				end
+				if self.FocusButton then
+					self.ScrollBar:SetFrameLevel(self.FocusButton:GetFrameLevel() + 2)
+					if self.EditBox then
+						self.EditBox:SetFrameLevel(self.FocusButton:GetFrameLevel() + 1)
+					end
+				end
+			</OnLoad>
+		</Scripts>
 	</ScrollFrame>
 	<Button name="XRPHelpButtonTemplate" parentKey="HelpButton" inherits="MainHelpPlateButton" virtual="true">
 		<Anchors>
@@ -222,11 +242,10 @@
 					HelpPlate_Hide(true)
 				end
 			</OnClick>
-			<OnHide>
+			<OnHide inherit="prepend">
 				if HelpPlate_IsShowing(self:GetParent().helpPlates) then
 					HelpPlate_Hide()
 				end
-				Main_HelpPlate_Button_OnLeave(self)
 			</OnHide>
 		</Scripts>
 	</Button>
@@ -267,7 +286,7 @@
 					<Anchor point="TOPRIGHT" x="-2" y="-3"/>
 				</Anchors>
 			</Button>
-			<ScrollFrame name="$parentText" parentKey="Text" inherits="XRPScrollFrameArtTemplate">
+			<ScrollFrame name="$parentText" parentKey="Text" inherits="XRPScrollFrameTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="20" y="-35"/>
 					<Anchor point="BOTTOMRIGHT" x="-34" y="42"/>
@@ -294,7 +313,7 @@
 							<OnTextChanged>
 								if userInput then
 									self:SetText(self:GetParent():GetParent().currentText or "")
-									self:HighlightText()
+									EditBox_HighlightText(self)
 								end
 							</OnTextChanged>
 							<OnEscapePressed>
@@ -315,7 +334,7 @@
 				</Scripts>
 			</Button>
 		</Frames>
-			<Scripts>
+		<Scripts>
 			<OnLoad>
 				if IsMacClient() then
 					self.Instructions:SetText("Press Cmd+C to copy or Escape to close.")
