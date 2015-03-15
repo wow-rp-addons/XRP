@@ -155,30 +155,30 @@ do
 	local function Menu_Checked(self)
 		if self.disabled then
 			return false
-		elseif self.arg1 == 5 then
-			return UIDROPDOWNMENU_INIT_MENU.character and UIDROPDOWNMENU_INIT_MENU.character.bookmark ~= nil
-		elseif self.arg1 == 6 then
-			return UIDROPDOWNMENU_INIT_MENU.character and UIDROPDOWNMENU_INIT_MENU.character.hide ~= nil
+		elseif self.arg1 == "XRP_BOOKMARK" then
+			return UIDROPDOWNMENU_INIT_MENU.character.bookmark ~= nil
+		elseif self.arg1 == "XRP_HIDE" then
+			return UIDROPDOWNMENU_INIT_MENU.character.hide ~= nil
 		end
 	end
 	local function Menu_Click(self, arg1, arg2, checked)
-		if arg1 == 1 then
+		if arg1 == "XRP_VIEW_CACHED" then
 			xrp:View(UIDROPDOWNMENU_OPEN_MENU.character)
-		elseif arg1 == 2 then
+		elseif arg1 == "XRP_VIEW_LIVE" then
 			xrp:View(UIDROPDOWNMENU_OPEN_MENU.character.name)
-		elseif arg1 == 3 then
+		elseif arg1 == "XRP_EXPORT" then
 			local character = UIDROPDOWNMENU_OPEN_MENU.character
 			xrp:ExportPopup(xrp:Ambiguate(character.name), character.exportText)
-		elseif arg1 == 4 then
+		elseif arg1 == "XRP_FRIEND" then
 			local character = UIDROPDOWNMENU_OPEN_MENU.character
 			AddOrRemoveFriend(Ambiguate(character.name, "none"), xrp:Strip(character.fields.NA))
-		elseif arg1 == 5 then
+		elseif arg1 == "XRP_BOOKMARK" then
 			UIDROPDOWNMENU_OPEN_MENU.character.bookmark = not checked
 			if XRPBookmarks.request.bookmark then
 				XRPBookmarks.request.offset = XRPBookmarks.List.scrollBar:GetValue()
 				XRPBookmarks:Refresh()
 			end
-		elseif arg1 == 6 then
+		elseif arg1 == "XRP_HIDE" then
 			UIDROPDOWNMENU_OPEN_MENU.character.hide = not checked
 			if not XRPBookmarks.request.showHidden then
 				XRPBookmarks.request.offset = XRPBookmarks.List.scrollBar:GetValue()
@@ -187,12 +187,12 @@ do
 		end
 	end
 	XRPBookmarks.baseMenuList = {
-		{ text = "View (cached)...", arg1 = 1, notCheckable = true, checked = Menu_Checked, func = Menu_Click, },
-		{ text = "View (live)...", arg1 = 2, notCheckable = true, checked = Menu_Checked, func = Menu_Click, },
-		{ text = "Export...", arg1 = 3, notCheckable = true, checked = Menu_Checked, func = Menu_Click, },
-		{ text = "Add friend", arg1 = 4, notCheckable = true, func = Menu_Click, },
-		{ text = "Bookmark", arg1 = 5, isNotRadio = true, checked = Menu_Checked, func = Menu_Click, },
-		{ text = "Hide profile", arg1 = 6, isNotRadio = true, checked = Menu_Checked, func = Menu_Click, },
+		{ text = "View (cached)...", arg1 = "XRP_VIEW_CACHED", notCheckable = true, checked = Menu_Checked, func = Menu_Click, },
+		{ text = "View (live)...", arg1 = "XRP_VIEW_LIVE", notCheckable = true, checked = Menu_Checked, func = Menu_Click, },
+		{ text = "Export...", arg1 = "XRP_EXPORT", notCheckable = true, checked = Menu_Checked, func = Menu_Click, },
+		{ text = "Add friend", arg1 = "XRP_FRIEND", notCheckable = true, func = Menu_Click, },
+		{ text = "Bookmark", arg1 = "XRP_BOOKMARK", isNotRadio = true, checked = Menu_Checked, func = Menu_Click, },
+		{ text = "Hide profile", arg1 = "XRP_HIDE", isNotRadio = true, checked = Menu_Checked, func = Menu_Click, },
 		{ text = "Cancel", notCheckable = true, func = xrpPrivate.noFunc, },
 	}
 end

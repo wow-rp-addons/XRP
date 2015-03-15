@@ -137,35 +137,35 @@ do
 	local function Menu_Checked(self)
 		if self.disabled then
 			return false
-		elseif self.arg1 == 4 then
+		elseif self.arg1 == "XRP_BOOKMARK" then
 			return current.bookmark ~= nil
-		elseif self.arg1 == 5 then
+		elseif self.arg1 == "XRP_HIDE" then
 			return current.hide ~= nil
 		end
 	end
 	local function Menu_Click(self, arg1, arg2, checked)
-		if arg1 == 1 then
+		if arg1 == "XRP_EXPORT" then
 			xrp:ExportPopup(xrp:Ambiguate(current.name), current.exportText)
-		elseif arg1 == 2 then
+		elseif arg1 == "XRP_REFRESH" then
 			if current.noRequest then
 				Load(xrp.characters.byName[current.name])
 			else
 				Load(current)
 			end
-		elseif arg1 == 3 then
+		elseif arg1 == "XRP_FRIEND" then
 			AddOrRemoveFriend(Ambiguate(current.name, "none"), xrp:Strip(current.fields.NA))
-		elseif arg1 == 4 then
+		elseif arg1 == "XRP_BOOKMARK" then
 			current.bookmark = not checked
-		elseif arg1 == 5 then
+		elseif arg1 == "XRP_HIDE" then
 			current.hide = not checked
 		end
 	end
 	XRPViewer.Menu.baseMenuList = {
-		{ text = "Export...", arg1 = 1, notCheckable = true, func = Menu_Click, },
-		{ text = "Refresh", arg1 = 2, notCheckable = true, func = Menu_Click, },
-		{ text = "Add friend", arg1 = 3, notCheckable = true, func = Menu_Click, },
-		{ text = "Bookmark", arg1 = 4, isNotRadio = true, checked = Menu_Checked, func = Menu_Click, },
-		{ text = "Hide profile", arg1 = 5, isNotRadio = true, checked = Menu_Checked, func = Menu_Click, },
+		{ text = "Export...", arg1 = "XRP_EXPORT", notCheckable = true, func = Menu_Click, },
+		{ text = "Refresh", arg1 = "XRP_REFRESH", notCheckable = true, func = Menu_Click, },
+		{ text = "Add friend", arg1 = "XRP_FRIEND", notCheckable = true, func = Menu_Click, },
+		{ text = "Bookmark", arg1 = "XRP_BOOKMARK", isNotRadio = true, checked = Menu_Checked, func = Menu_Click, },
+		{ text = "Hide profile", arg1 = "XRP_HIDE", isNotRadio = true, checked = Menu_Checked, func = Menu_Click, },
 		{ text = "Close", notCheckable = true, func = xrpPrivate.noFunc, },
 	}
 end
