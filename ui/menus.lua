@@ -67,17 +67,29 @@ xrpPrivate.settingsToggles.menus = {
 			end
 			if standard == nil then
 				hooksecurefunc("UnitPopup_HideButtons", UnitPopup_HideButtons_Hook)
-				if UnitPopupMenus["FRIEND"][2] == "TARGET" then
-					table.remove(UnitPopupMenus["FRIEND"], 2)
+				for i, button in ipairs(UnitPopupMenus["FRIEND"]) do
+					if button == "TARGET" then
+						table.remove(UnitPopupMenus["FRIEND"], i)
+						break
+					end
 				end
-				if UnitPopupMenus["GUILD"][1] == "TARGET" then
-					table.remove(UnitPopupMenus["GUILD"], 1)
+				for i, button in ipairs(UnitPopupMenus["GUILD"]) do
+					if button == "TARGET" then
+						table.remove(UnitPopupMenus["GUILD"], i)
+						break
+					end
 				end
-				if UnitPopupMenus["CHAT_ROSTER"][1] == "TARGET" then
-					table.remove(UnitPopupMenus["CHAT_ROSTER"], 1)
+				for i, button in ipairs(UnitPopupMenus["CHAT_ROSTER"]) do
+					if button == "TARGET" then
+						table.remove(UnitPopupMenus["CHAT_ROSTER"], i)
+						break
+					end
 				end
-				if UnitPopupMenus["BN_FRIEND"][2] == "BN_TARGET" then
-					table.remove(UnitPopupMenus["BN_FRIEND"], 2)
+				for i, button in ipairs(UnitPopupMenus["BN_FRIEND"]) do
+					if button == "BN_TARGET" then
+						table.remove(UnitPopupMenus["BN_FRIEND"], i)
+						break
+					end
 				end
 			end
 			if not standard then
@@ -92,17 +104,29 @@ xrpPrivate.settingsToggles.menus = {
 		elseif standard ~= nil then
 			UnitPopupButtons["XRP_VIEW_CHARACTER"] = nil
 			UnitPopupButtons["XRP_VIEW_BN"] = nil
-			if UnitPopupMenus["FRIEND"][1] == "XRP_VIEW_CHARACTER" then
-				table.remove(UnitPopupMenus["FRIEND"], 1)
+			for i, button in ipairs(UnitPopupMenus["FRIEND"]) do
+				if button == "XRP_VIEW_CHARACTER" then
+					table.remove(UnitPopupMenus["FRIEND"], i)
+					break
+				end
 			end
-			if UnitPopupMenus["GUILD"][1] == "XRP_VIEW_CHARACTER" then
-				table.remove(UnitPopupMenus["GUILD"], 1)
+			for i, button in ipairs(UnitPopupMenus["GUILD"]) do
+				if button == "XRP_VIEW_CHARACTER" then
+					table.remove(UnitPopupMenus["GUILD"], i)
+					break
+				end
 			end
-			if UnitPopupMenus["CHAT_ROSTER"][1] == "XRP_VIEW_CHARACTER" then
-				table.remove(UnitPopupMenus["CHAT_ROSTER"], 1)
+			for i, button in ipairs(UnitPopupMenus["CHAT_ROSTER"]) do
+				if button == "XRP_VIEW_CHARACTER" then
+					table.remove(UnitPopupMenus["CHAT_ROSTER"], i)
+					break
+				end
 			end
-			if UnitPopupMenus["BN_FRIEND"][1] == "XRP_VIEW_BN" then
-				table.remove(UnitPopupMenus["BN_FRIEND"], 1)
+			for i, button in ipairs(UnitPopupMenus["BN_FRIEND"]) do
+				if button == "XRP_VIEW_BN" then
+					table.remove(UnitPopupMenus["BN_FRIEND"], i)
+					break
+				end
 			end
 			standard = false
 		end
@@ -114,14 +138,23 @@ xrpPrivate.settingsToggles.menus = {
 				isHooked = true
 			end
 			if units == nil then
-				if UnitPopupMenus["PLAYER"][2] == "SET_FOCUS" then
-					table.remove(UnitPopupMenus["PLAYER"], 2)
+				for i, button in ipairs(UnitPopupMenus["PLAYER"]) do
+					if button == "SET_FOCUS" then
+						table.remove(UnitPopupMenus["PLAYER"], i)
+						break
+					end
 				end
-				if UnitPopupMenus["PARTY"][2] == "SET_FOCUS" then
-					table.remove(UnitPopupMenus["PARTY"], 2)
+				for i, button in ipairs(UnitPopupMenus["PARTY"]) do
+					if button == "SET_FOCUS" then
+						table.remove(UnitPopupMenus["PARTY"], i)
+						break
+					end
 				end
-				if UnitPopupMenus["RAID_PLAYER"][2] == "SET_FOCUS" then
-					table.remove(UnitPopupMenus["RAID_PLAYER"], 2)
+				for i, button in ipairs(UnitPopupMenus["RAID_PLAYER"]) do
+					if button == "SET_FOCUS" then
+						table.remove(UnitPopupMenus["RAID_PLAYER"], i)
+						break
+					end
 				end
 			end
 			if not units then
@@ -133,14 +166,23 @@ xrpPrivate.settingsToggles.menus = {
 			units = true
 		elseif units ~= nil then
 			UnitPopupButtons["XRP_VIEW_UNIT"] = nil
-			if UnitPopupMenus["PLAYER"][1] == "XRP_VIEW_UNIT" then
-				table.remove(UnitPopupMenus["PLAYER"], 1)
+			for i, button in ipairs(UnitPopupMenus["PLAYER"]) do
+				if button == "XRP_VIEW_UNIT" then
+					table.remove(UnitPopupMenus["PLAYER"], i)
+					break
+				end
 			end
-			if UnitPopupMenus["PARTY"][1] == "XRP_VIEW_UNIT" then
-				table.remove(UnitPopupMenus["PARTY"], 1)
+			for i, button in ipairs(UnitPopupMenus["PARTY"]) do
+				if button == "XRP_VIEW_UNIT" then
+					table.remove(UnitPopupMenus["PARTY"], i)
+					break
+				end
 			end
-			if UnitPopupMenus["RAID_PLAYER"][1] == "XRP_VIEW_UNIT" then
-				table.remove(UnitPopupMenus["RAID_PLAYER"], 1)
+			for i, button in ipairs(UnitPopupMenus["RAID_PLAYER"]) do
+				if button == "XRP_VIEW_UNIT" then
+					table.remove(UnitPopupMenus["RAID_PLAYER"], i)
+					break
+				end
 			end
 			units = false
 		end
