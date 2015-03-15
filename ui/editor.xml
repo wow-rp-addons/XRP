@@ -18,7 +18,7 @@
 	<!-- Here there be dragons. XML dragons, the most dangerous sort. -->
 	<!-- It's dangerous to go alone, take a syntax highlighter. -->
 	<!-- No, seriously, though. This is the easiest way to get a good UI. -->
-	<CheckButton name="XRPEditorInheritCheckTemplate" inherits="XRPCheckBoxArtTemplate" virtual="true">
+	<CheckButton name="XRPEditorInheritCheckTemplate" inherits="XRPCheckBoxTemplate" virtual="true">
 		<Size x="12" y="12"/>
 		<Anchors>
 			<Anchor point="LEFT" relativeKey="$parent.Label" relativePoint="RIGHT"/>
@@ -118,7 +118,7 @@
 					self:SetAttribute("contents", nil)
 				end
 			</OnEditFocusGained>
-			<OnEditFocusLost>
+			<OnEditFocusLost inherit="append">
 				self:ClearFocus()
 				self:GetParent():GetParent():CheckFields(self.field)
 			</OnEditFocusLost>
@@ -133,7 +133,7 @@
 		</Scripts>
 		<FontString inherits="GameFontWhite"/>
 	</EditBox>
-	<ScrollFrame name="XRPEditorMultiLineTemplate" inherits="XRPScrollFrameArtTemplate" virtual="true">
+	<ScrollFrame name="XRPEditorMultiLineTemplate" inherits="XRPScrollFrameTemplate" virtual="true">
 		<KeyValues>
 			<KeyValue key="safeLength" value="4000" type="number"/>
 		</KeyValues>
@@ -164,18 +164,7 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				self.ScrollBar:SetFrameLevel(self.FocusButton:GetFrameLevel() + 2)
-				self.ScrollBar:ClearAllPoints()
-				self.ScrollBar:SetPoint("TOPLEFT", self, "TOPRIGHT", -13, -11)
-				self.ScrollBar:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", -13, 9)
-				self.ScrollBar.ScrollDownButton:SetPoint("TOP", self.ScrollBar, "BOTTOM", 0, 4)
-				self.ScrollBar.ScrollUpButton:SetPoint("BOTTOM", self.ScrollBar, "TOP", 0, -4)
-				self.ScrollBar.ScrollUpButton:Disable()
-				self.ScrollBar:Hide()
-				self.EditBox:SetFrameLevel(self.FocusButton:GetFrameLevel() + 1)
-				self.EditBox:SetWidth(self:GetWidth() - 18)
-
+			<OnLoad inherit="append">
 				self.Label:SetText(self.fieldName)
 				self.EditBox.field = self.field
 				self.EditBox.safeLength = self.safeLength
@@ -237,9 +226,7 @@
 						end
 					</OnTextChanged>
 					<OnCursorChanged function="ScrollingEdit_OnCursorChanged"/>
-					<OnUpdate>
-						ScrollingEdit_OnUpdate(self, elapsed, self:GetParent())
-					</OnUpdate>
+					<OnUpdate function="ScrollingEdit_OnUpdate"/>
 					<OnEscapePressed function="EditBox_ClearFocus"/>
 					<OnEditFocusGained>
 						if self.inherited then
@@ -248,6 +235,7 @@
 						end
 					</OnEditFocusGained>
 					<OnEditFocusLost>
+						EditBox_ClearHighlight(self)
 						self:ClearFocus()
 						self:GetParent():GetParent():GetParent():CheckFields(self.field)
 					</OnEditFocusLost>

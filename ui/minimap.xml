@@ -109,6 +109,9 @@
 				GameTooltip:Hide()
 				self.Dim:Hide()
 			</OnLeave>
+			<OnLoad>
+				self:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+			</OnLoad>
 		</Scripts>
 	</Button>
 	<Button name="XRPMinimapTemplate" frameLevel="8" inherits="XRPMinimapBaseTemplate" virtual="true">
@@ -121,8 +124,7 @@
 				self:SetScript("OnUpdate", nil)
 				self:UnlockHighlight()
 			</OnDragStop>
-			<OnLoad>
-				self:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+			<OnLoad inherit="append">
 				self:RegisterForDrag("LeftButton")
 			</OnLoad>
 		</Scripts>
@@ -137,8 +139,7 @@
 					self.moving = true
 				end
 			</OnDragStart>
-			<OnLoad>
-				self:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+			<OnLoad inherit="append">
 				self:RegisterForDrag("RightButton")
 			</OnLoad>
 		</Scripts>

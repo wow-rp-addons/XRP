@@ -196,7 +196,7 @@
 			</Button>
 		</Frames>
 	</Frame>
-	<CheckButton name="XRPOptionsCheckboxTemplate" parentArray="controls" inherits="XRPCheckBoxArtTemplate" virtual="true">
+	<CheckButton name="XRPOptionsCheckboxTemplate" parentArray="controls" inherits="XRPCheckBoxTemplate" virtual="true">
 		<KeyValues>
 			<KeyValue key="type" value="CONTROLTYPE_CHECKBOX" type="global"/>
 		</KeyValues>
@@ -456,7 +456,7 @@
 					<KeyValue key="defaultValue" value="false" type="boolean"/>
 				</KeyValues>
 			</CheckButton>
-			<Frame name="XRPDisplayOptionsHeight" parentKey="Height" inherits="XRPOptionsDropDownTemplate">
+			<Frame name="XRPOptionsGeneralHeight" parentKey="Height" inherits="XRPOptionsDropDownTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.MenusUnits" relativePoint="BOTTOMLEFT" x="-15" y="-8"/>
 				</Anchors>
@@ -467,7 +467,7 @@
 					<KeyValue key="defaultValue" value="ft"/>
 				</KeyValues>
 			</Frame>
-			<Frame name="XRPDisplayOptionsWeight" parentKey="Weight" inherits="XRPOptionsDropDownTemplate">
+			<Frame name="XRPOptionsGeneralWeight" parentKey="Weight" inherits="XRPOptionsDropDownTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.Height" relativePoint="BOTTOMLEFT" y="-8"/>
 				</Anchors>
@@ -617,7 +617,7 @@
 					<KeyValue key="defaultValue" value="false" type="boolean"/>
 				</KeyValues>
 			</CheckButton>
-			<Frame name="XRPChatOptionsChannels" parentKey="Channels" inherits="XRPOptionsDropDownTemplate">
+			<Frame name="XRPOptionsChatChannels" parentKey="Channels" inherits="XRPOptionsDropDownTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.CHAT_MSG_INSTANCE_CHAT" relativePoint="BOTTOMLEFT" x="-15" y="-8"/>
 				</Anchors>
@@ -786,7 +786,7 @@
 			<KeyValue key="subText" value="Configure advanced XRP options. Please exercise caution when changing these."/>
 		</KeyValues>
 		<Frames>
-			<Frame name="XRPOptionsGeneralCacheTime" parentKey="Time" inherits="XRPOptionsDropDownTemplate">
+			<Frame name="XRPOptionsAdvancedCacheTime" parentKey="Time" inherits="XRPOptionsDropDownTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.SubText" relativePoint="BOTTOMLEFT" x="-17" y="-8"/>
 				</Anchors>

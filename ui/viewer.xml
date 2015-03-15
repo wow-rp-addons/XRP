@@ -96,7 +96,7 @@
 			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</Frame>
-	<ScrollFrame name="XRPViewerMultiLineTemplate" inherits="XRPScrollFrameArtTemplate" virtual="true">
+	<ScrollFrame name="XRPViewerMultiLineTemplate" inherits="XRPScrollFrameTemplate" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Label" inherits="GameFontNormalSmall">
@@ -107,16 +107,7 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
-				self.ScrollBar:ClearAllPoints()
-				self.ScrollBar:SetPoint("TOPLEFT", self, "TOPRIGHT", -13, -11)
-				self.ScrollBar:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", -13, 9)
-				self.ScrollBar.ScrollDownButton:SetPoint("TOP", self.ScrollBar, "BOTTOM", 0, 4)
-				self.ScrollBar.ScrollUpButton:SetPoint("BOTTOM", self.ScrollBar, "TOP", 0, -4)
-				self.ScrollBar.ScrollUpButton:Disable()
-				self.ScrollBar:Hide()
-				self.EditBox:SetWidth(self:GetWidth() - 18)
-
+			<OnLoad inherit="append">
 				self.Label:SetText(self.fieldName)
 
 				local viewer = self:GetParent():GetParent()

@@ -209,8 +209,7 @@
 							<KeyValue key="doNotHide" value="true" type="boolean"/>
 						</KeyValues>
 						<Scripts>
-							<OnValueChanged>
-								HybridScrollFrame_OnValueChanged(self, value)
+							<OnValueChanged inherit="append">
 								CloseDropDownMenus()
 							</OnValueChanged>
 						</Scripts>
@@ -317,8 +316,7 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnEnterPressed>
-						self:ClearFocus()
+					<OnEnterPressed inherit="append">
 						local bookmarks = self:GetParent()
 						if not bookmarks.request.fullText then return end
 						local text = self:GetText()
@@ -328,8 +326,7 @@
 						bookmarks.request.text = text
 						bookmarks:Refresh()
 					</OnEnterPressed>
-					<OnTextChanged>
-						SearchBoxTemplate_OnTextChanged(self)
+					<OnTextChanged inherit="append">
 						local bookmarks = self:GetParent()
 						if bookmarks.request.fullText and userInput then return end
 						local text = self:GetText()
