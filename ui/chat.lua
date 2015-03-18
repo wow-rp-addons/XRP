@@ -84,9 +84,8 @@ local function XRPGetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7
 	return nameFormat:format(name)
 end
 
-local names
-local function MessageFilter_TEXT_EMOTE(self, event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, ...)
-	if not arg12 or not names or arg12 == "" then
+local function MessageEventFilter_TEXT_EMOTE(self, event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, ...)
+	if not arg12 or arg12 == "" then
 		return false
 	end
 
@@ -104,10 +103,7 @@ end
 -- This fixes spacing at the start of emotes when using apostrophes,
 -- commas, and colons. This requires a modified GetColoredName, so it has
 -- to go hand-in-hand with chat names.
-local function MessageFilter_EMOTE(self, event, message, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, ...)
-	if not names then
-		return false
-	end
+local function MessageEventFilter_EMOTE(self, event, message, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, ...)
 	-- Some addons, but not commonly real people, use a fancy unicode
 	-- apostrophe. Since Lua's string library isn't Unicode-aware, use
 	-- string.byte to check first three bytes.
@@ -119,6 +115,25 @@ local function MessageFilter_EMOTE(self, event, message, arg2, arg3, arg4, arg5,
 		message = message:match("^[^%s]*%s*(.*)")
 	end
 	return false, message, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, ...
+end
+
+local names, adding
+-- This is used to be sure that XRP's filters (which actually *MODIFY* the
+-- parameters) are always run last, to avoid interfering with the use other
+-- addons make of the original data.
+local function ChatFrame_AddMessageEventFilter_Hook(event, filter)
+	if not names or adding then return end
+	if event == "CHAT_MSG_EMOTE" then
+		adding = true
+		ChatFrame_RemoveMessageEventFilter("CHAT_MSG_EMOTE", MessageEventFilter_EMOTE)
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_EMOTE", MessageEventFilter_EMOTE)
+		adding = nil
+	elseif event == "CHAT_MSG_TEXT_EMOTE" then
+		adding = true
+		ChatFrame_RemoveMessageEventFilter("CHAT_MSG_TEXT_EMOTE", MessageEventFilter_TEXT_EMOTE)
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_TEXT_EMOTE", MessageEventFilter_TEXT_EMOTE)
+		adding = nil
+	end
 end
 
 -- This replaces %xt and %xf with the target's/focus's RP name or, if that is
@@ -147,12 +162,15 @@ xrpPrivate.settingsToggles.chat = {
 	names = function(setting)
 		if setting then
 			if names == nil then
-				ChatFrame_AddMessageEventFilter("CHAT_MSG_EMOTE", MessageFilter_EMOTE)
-				ChatFrame_AddMessageEventFilter("CHAT_MSG_TEXT_EMOTE", MessageFilter_TEXT_EMOTE)
+				hooksecurefunc("ChatFrame_AddMessageEventFilter", ChatFrame_AddMessageEventFilter_Hook)
 			end
+			ChatFrame_AddMessageEventFilter("CHAT_MSG_EMOTE", MessageEventFilter_EMOTE)
+			ChatFrame_AddMessageEventFilter("CHAT_MSG_TEXT_EMOTE", MessageEventFilter_TEXT_EMOTE)
 			GetColoredName = XRPGetColoredName
 			names = true
 		elseif names ~= nil then
+			ChatFrame_RemoveMessageEventFilter("CHAT_MSG_EMOTE", MessageEventFilter_EMOTE)
+			ChatFrame_RemoveMessageEventFilter("CHAT_MSG_TEXT_EMOTE", MessageEventFilter_TEXT_EMOTE)
 			GetColoredName = BlizzardGetColoredName
 			names = false
 		end
