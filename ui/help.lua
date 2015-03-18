@@ -323,10 +323,10 @@ XRPViewer_helpPlates = {
 		ToolTipText = "The longer fields displayed here will have scroll bars appear if the text is too lengthy to fit in the field as-is.\n\nIn addition, most internet links will be displayed in |cffc845faepic purple|r. When clicked, a box will pop up, allowing you to copy the link.",
 	},
 	{
-		ButtonPos = { x = 174, y = -466 },
-		HighLightBox = { x = 3, y = -477, width = 190, height = 22 },
+		ButtonPos = { x = 184, y = -466 },
+		HighLightBox = { x = 3, y = -477, width = 200, height = 22 },
 		ToolTipDir = "UP",
-		ToolTipText = "The names and versions of certain addons active for the profile's subject are displayed here.",
+		ToolTipText = "The names and versions of certain addons active for the profile's subject are displayed here.\n\nIf there is too much text to display in the short line available, mouseover will display the full list.",
 	},
 	{
 		ButtonPos = { x = 218, y = -466 },

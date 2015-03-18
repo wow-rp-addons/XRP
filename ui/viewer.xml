@@ -102,12 +102,6 @@
 		<Size x="439" y="525"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="VA" inherits="GameFontNormalSmall">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" x="8" y="10"/>
-					</Anchors>
-					<Color r="0.5" g="0.5" b="0.5"/>
-				</FontString>
 				<FontString parentKey="XC" inherits="GameFontNormalSmall">
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-12" y="10"/>
@@ -144,6 +138,28 @@
 				<Anchors>
 					<Anchor point="TOP" relativeKey="$parent.NT" relativePoint="BOTTOM"/>
 				</Anchors>
+			</Frame>
+			<Frame parentKey="VA" enableMouse="true">
+				<KeyValues>
+					<KeyValue key="field" value="VA"/>
+					<KeyValue key="fieldName" value="Version"/>
+				</KeyValues>
+				<Size x="190" y="10"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" x="8" y="10"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Text" inherits="GameFontNormalSmall" maxLines="1" setAllPoints="true" justifyH="left">
+							<Color r="0.5" g="0.5" b="0.5"/>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad function="XRPViewerControls_OnLoad"/>
+					<OnEnter function="XRPTemplates_TooltipTruncated"/>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
 			</Frame>
 			<Frame parentKey="Appearance" parentArray="panes" hidden="false">
 				<Anchors>
