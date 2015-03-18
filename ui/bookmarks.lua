@@ -131,7 +131,7 @@ function XRPBookmarksList_update(self)
 		end
 	end
 
-	XRPBookmarks.Count:SetFormattedText("Listing %u of %u profiles.", matches, results.totalCount)
+	XRPBookmarks.Count:SetFormattedText("Listing %d of %d profiles.", matches, results.totalCount)
 
 	HybridScrollFrame_Update(self, 72 * matches, 72)
 end

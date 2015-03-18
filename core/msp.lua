@@ -119,12 +119,12 @@ do
 		end
 
 		if (not channel or channel == "BN") and presenceID then
-			local queue = ("XRP-%u"):format(presenceID)
+			local queue = ("XRP-%d"):format(presenceID)
 			if #data <= 4078 then
 				libbw:BNSendGameData(presenceID, "MSP", data, isRequest and "ALERT" or "NORMAL", queue)
 			else
 				-- Guess five added characters from metadata.
-				data = ("XC=%u\1%s"):format(((#data + 5) / 4078) + 1, data)
+				data = ("XC=%d\1%s"):format(((#data + 5) / 4078) + 1, data)
 				libbw:BNSendGameData(presenceID, "MSP\1", data:sub(1, 4078), "BULK", queue)
 				local position = 4079
 				while position + 4078 <= #data do
@@ -143,7 +143,7 @@ do
 				libbw:SendAddonMessage("MSP", data, "WHISPER", name, isRequest and "ALERT" or "NORMAL", queue, AddFilter, name)
 			else
 				-- Guess six added characters from metadata.
-				data = ("XC=%u\1%s"):format(((#data + 6) / 255) + 1, data)
+				data = ("XC=%d\1%s"):format(((#data + 6) / 255) + 1, data)
 
 				libbw:SendAddonMessage("MSP\1", data:sub(1, 255), "WHISPER", name, "BULK", queue, AddFilter, name)
 
@@ -167,7 +167,7 @@ do
 				chunkSize = chunkSize - 1
 
 				-- Guess six added characters from metadata.
-				local chunkString = ("XC=%u\1"):format(((#data + 6) / chunkSize) + 1)
+				local chunkString = ("XC=%d\1"):format(((#data + 6) / chunkSize) + 1)
 				data = chunkString .. data
 
 				-- Which fields are in which messages is tracked so that they
@@ -223,10 +223,10 @@ do
 			local tooltip = {}
 			for i, field in ipairs(TT_LIST) do
 				local contents = xrp.current.fields[field]
-				tooltip[#tooltip + 1] = not contents and field or ("%s%u=%s"):format(field, xrpLocal.current.versions[field], contents)
+				tooltip[#tooltip + 1] = not contents and field or ("%s%d=%s"):format(field, xrpLocal.current.versions[field], contents)
 			end
 			local newtt = table.concat(tooltip, "\1")
-			tt = ("%s\1TT%u"):format(newtt, newtt ~= xrpSaved.oldtt and xrpLocal:NewVersion("TT") or xrpSaved.versions.TT)
+			tt = ("%s\1TT%d"):format(newtt, newtt ~= xrpSaved.oldtt and xrpLocal:NewVersion("TT") or xrpSaved.versions.TT)
 			xrpSaved.oldtt = newtt
 		end
 		return tt
@@ -273,7 +273,7 @@ do
 				-- the version.
 				local tt = self:GetTT()
 				if version == xrpSaved.versions.TT then
-					return ("!TT%u"):format(version)
+					return ("!TT%d"):format(version)
 				end
 				return tt
 			end
@@ -282,9 +282,9 @@ do
 				-- Empty fields are versionless.
 				return field
 			elseif version == currentVersion then
-				return ("!%s%u"):format(field, version)
+				return ("!%s%d"):format(field, version)
 			end
-			return ("%s%u=%s"):format(field, currentVersion, xrp.current.fields[field])
+			return ("%s%d=%s"):format(field, currentVersion, xrp.current.fields[field])
 		elseif action == "!" and version == (xrpCache[name] and xrpCache[name].versions[field] or 0) then
 			self.cache[name].time[field] = GetTime() + FIELD_TIMES[field]
 			self.cache[name].fieldUpdated = self.cache[name].fieldUpdated or false
@@ -603,7 +603,7 @@ msp:RegisterEvent("BN_DISCONNECTED")
 
 do
 	local raidUnits, partyUnits = {}, {}
-	local raid, party = "raid%u", "party%u"
+	local raid, party = "raid%d", "party%d"
 	for i = 1, MAX_RAID_MEMBERS do
 		raidUnits[i] = raid:format(i)
 	end
@@ -690,7 +690,7 @@ function xrpLocal:Request(name, fields)
 			if not xrpCache[name] or not xrpCache[name].versions[field] then
 				out[#out + 1] = "?" .. field
 			else
-				out[#out + 1] = ("?%s%u"):format(field, xrpCache[name].versions[field])
+				out[#out + 1] = ("?%s%d"):format(field, xrpCache[name].versions[field])
 			end
 			msp.cache[name].time[field] = now + FIELD_TIMES[field]
 			if field == "TT" then

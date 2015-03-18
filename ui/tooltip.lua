@@ -23,7 +23,7 @@ local currentUnit = {
 
 local TooltipFrame, replace, active, rendering
 
-local GTTL, GTTR = "GameTooltipTextLeft%u", "GameTooltipTextRight%u"
+local GTTL, GTTR = "GameTooltipTextLeft%d", "GameTooltipTextRight%d"
 
 local RenderTooltip
 do
@@ -249,7 +249,7 @@ do
 				currentUnit.icons = watchIcon and pvpIcon and watchIcon .. pvpIcon or watchIcon or pvpIcon
 
 				local guildName, guildRank, guildIndex = GetGuildInfo(unit)
-				currentUnit.guild = guildName and (xrpLocal.settings.tooltip.guildRank and (xrpLocal.settings.tooltip.guildIndex and "%s (%u) of <%s>" or "%s of <%s>") or "<%s>"):format(xrpLocal.settings.tooltip.guildRank and guildRank or guildName, xrpLocal.settings.tooltip.guildIndex and guildIndex + 1 or guildName, guildName) or nil
+				currentUnit.guild = guildName and (xrpLocal.settings.tooltip.guildRank and (xrpLocal.settings.tooltip.guildIndex and "%s (%d) of <%s>" or "%s of <%s>") or "<%s>"):format(xrpLocal.settings.tooltip.guildRank and guildRank or guildName, xrpLocal.settings.tooltip.guildIndex and guildIndex + 1 or guildName, guildName) or nil
 
 				local realm = currentUnit.character.name:match(FULL_PLAYER_NAME:format(".+", "(.+)"))
 				if realm == xrpLocal.realm then

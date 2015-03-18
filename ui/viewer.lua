@@ -113,7 +113,7 @@ local function CHUNK(event, name, chunk, totalchunks)
 	if current.name == name then
 		local XC = XRPViewer.XC:GetText()
 		if chunk ~= totalchunks or not XC or XC:find("^Receiv") then
-			XRPViewer.XC:SetFormattedText(totalchunks and (chunk == totalchunks and "Received! (%u/%u)" or "Receiving... (%u/%u)") or "Receiving... (%u/??)", chunk, totalchunks)
+			XRPViewer.XC:SetFormattedText(totalchunks and (chunk == totalchunks and "Received! (%d/%d)" or "Receiving... (%d/%d)") or "Receiving... (%d/??)", chunk, totalchunks)
 		end
 	end
 end

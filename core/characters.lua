@@ -144,7 +144,7 @@ local Filter
 do
 	local function SortString(sortType, name, cache)
 		if sortType == "date" then
-			return ("%u\30%s"):format(cache.lastReceive, name)
+			return ("%d\30%s"):format(cache.lastReceive, name)
 		elseif sortType == "NA" then
 			return ("%s\30%s"):format((xrp:Strip(cache.fields.NA) or name):lower(), name)
 		elseif sortType == "realm" then

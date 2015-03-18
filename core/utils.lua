@@ -85,17 +85,19 @@ function xrp:Weight(weight, units)
 		number = ((tonumber(weight:lower():match("^%s*([%d%.]+)%s*lbs?%.?%s*$")) or tonumber(weight:lower():match("^%s*([%d%.]+)%s*pounds?%s*$"))) or 0) / 2.20462
 		number = number ~= 0 and number or nil
 	end
-	if not number then
-		return weight
-	elseif not units then
+	if not units then
 		units = xrpLocal.settings.display.weight
 	end
-	if units == "msp" then -- MSP internal format: kg without units as string.
+	if not number then
+		return weight
+	elseif number < 0 then
+		return nil
+	elseif units == "msp" then -- MSP internal format: kg without units as string.
 		return ("%.1f"):format(number + 0.05)
 	elseif units == "kg" then
-		return ("%u kg"):format(number + 0.5)
+		return ("%d kg"):format(number + 0.5)
 	elseif units == "lb" then
-		return ("%u lbs"):format((number * 2.20462) + 0.5)
+		return ("%d lbs"):format((number * 2.20462) + 0.5)
 	end
 	return weight
 end
@@ -129,15 +131,17 @@ function xrp:Height(height, units)
 		end
 		number = feet and (((tonumber(feet) * 12) + (tonumber(inches) or 0)) * 2.54) or nil
 	end
-	if not number then
-		return height
-	elseif not units then
+	if not units then
 		units = xrpLocal.settings.display.height
 	end
-	if units == "msp" then -- MSP internal format: cm without units as string.
-		return ("%u"):format(number + 0.5)
+	if not number then
+		return height
+	elseif number < 0 then
+		return nil
+	elseif units == "msp" then -- MSP internal format: cm without units as string.
+		return ("%d"):format(number + 0.5)
 	elseif units == "cm" then
-		return ("%u cm"):format(number + 0.5)
+		return ("%d cm"):format(number + 0.5)
 	elseif units == "m" then
 		return ("%.2f m"):format(math.floor(number + 0.5) * 0.01) -- Round first.
 	elseif units == "ft" then
@@ -147,7 +151,7 @@ function xrp:Height(height, units)
 			feet = feet + 1
 			inches = 0
 		end
-		return ("%u'%u\""):format(feet, inches)
+		return ("%d'%d\""):format(feet, inches)
 	end
 	return height
 end

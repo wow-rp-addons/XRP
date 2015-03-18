@@ -58,7 +58,7 @@ local function XRPGetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7
 			chatType = "WHISPER"
 		elseif shortType == "CHANNEL" then
 			event = "CHAT_MSG_CHANNEL"
-			chatType = ("CHANNEL%u"):format(arg8)
+			chatType = ("CHANNEL%d"):format(arg8)
 		end
 	end
 
