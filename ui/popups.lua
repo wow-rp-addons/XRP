@@ -82,7 +82,7 @@ StaticPopupDialogs["XRP_URL"] = {
 
 StaticPopupDialogs["XRP_RELOAD"] = {
 	text = "%s",
-	button1 = "Reload UI",
+	button1 = RELOADUI,
 	button2 = "Not now",
 	showAlert = true,
 	OnAccept = ReloadUI,
@@ -154,12 +154,12 @@ StaticPopupDialogs["XRP_EDITOR_ADD"] = {
 	hasEditBox = true,
 	OnShow = DisableButton,
 	EditBoxOnTextChanged = ButtonToggle,
-	OnAccept = function(self, editor)
+	OnAccept = function(self)
 		local name = self.editBox:GetText()
 		if not xrpPrivate.profiles:Add(name) then
 			StaticPopup_Show("XRP_ERROR", ("The name \"%s\" is unavailable or already in use."):format(name))
 		else
-			editor:Load(name)
+			XRPEditor:Load(name)
 		end
 	end,
 	EditBoxOnEnterPressed = ClickButton,
@@ -173,12 +173,12 @@ StaticPopupDialogs["XRP_EDITOR_DELETE"] = {
 	text = "Are you sure you want to remove \"%s\"?",
 	button1 = YES,
 	button2 = NO,
-	OnAccept = function(self, editor)
-		local name = editor.Profiles.contents
+	OnAccept = function(self)
+		local name = XRPEditor.Profiles.contents
 		if not xrpPrivate.profiles[name]:Delete() then
 			StaticPopup_Show("XRP_ERROR", ("The profile\"%s\" is currently active. Active profiles cannot be removed."):format(name))
 		else
-			editor:Load(xrpSaved.selected)
+			XRPEditor:Load(xrpSaved.selected)
 		end
 	end,
 	whileDead = true,
@@ -192,12 +192,12 @@ StaticPopupDialogs["XRP_EDITOR_RENAME"] = {
 	hasEditBox = true,
 	OnShow = DisableButton,
 	EditBoxOnTextChanged = ButtonToggle,
-	OnAccept = function(self, editor)
+	OnAccept = function(self)
 		local name = self.editBox:GetText()
-		if not xrpPrivate.profiles[editor.Profiles.contents]:Rename(name) then
+		if not xrpPrivate.profiles[XRPEditor.Profiles.contents]:Rename(name) then
 			StaticPopup_Show("XRP_ERROR", ("The name \"%s\" is unavailable or already in use."):format(name))
 		else
-			editor:Load(name)
+			XRPEditor:Load(name)
 		end
 	end,
 	EditBoxOnEnterPressed = ClickButton,
@@ -214,12 +214,12 @@ StaticPopupDialogs["XRP_EDITOR_COPY"] = {
 	hasEditBox = true,
 	OnShow = DisableButton,
 	EditBoxOnTextChanged = ButtonToggle,
-	OnAccept = function(self, editor)
+	OnAccept = function(self)
 		local name = self.editBox:GetText()
-		if not xrpPrivate.profiles[editor.Profiles.contents]:Copy(name) then
+		if not xrpPrivate.profiles[XRPEditor.Profiles.contents]:Copy(name) then
 			StaticPopup_Show("XRP_ERROR", ("The name \"%s\" is unavailable or already in use."):format(name))
 		else
-			editor:Load(name)
+			XRPEditor:Load(name)
 		end
 	end,
 	EditBoxOnEnterPressed = ClickButton,

@@ -15,127 +15,14 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
+	<Script file="options.lua"/>
 	<Frame parentKey="XRP" parent="InterfaceOptionsFramePanelContainer" hidden="true">
 		<KeyValues>
 			<KeyValue key="name" value="XRP"/>
 		</KeyValues>
 		<Scripts>
-			<OnShow>
-				if not self.wasShown then
-					self.wasShown = true
-					InterfaceOptionsFrame_OpenToCategory(self.General)
-				elseif self:Get("cache", "autoClean") then
-					self.CacheTidy:Hide()
-				else
-					self.CacheTidy:Show()
-				end
-			</OnShow>
-			<OnLoad>
-				function self:okay()
-					if not self.controls then return end
-					for i, control in ipairs(self.controls) do
-						if control.CustomOkay then
-							control:CustomOkay()
-						else
-							control.oldValue = control.value
-						end
-					end
-				end
-
-				function self:refresh()
-					if not self.controls then return end
-					for i, control in ipairs(self.controls) do
-						if control.CustomRefresh then
-							control:CustomRefresh()
-						else
-							local setting = self:Get(control.xrpTable, control.xrpSetting)
-							control.value = setting
-							if control.oldValue == nil then
-								control.oldValue = setting
-							end
-							if control.type == CONTROLTYPE_CHECKBOX then
-								control:SetChecked(setting)
-							elseif control.type == CONTROLTYPE_DROPDOWN then
-								UIDropDownMenu_Initialize(control, control.initialize, nil, nil, control.baseMenuList)
-								UIDropDownMenu_SetSelectedValue(control, setting)
-							end
-						end
-						if control.dependsOn then
-							if control.type == CONTROLTYPE_CHECKBOX then
-								control:SetEnabled(self[control.dependsOn]:GetChecked())
-							elseif control.type == CONTROLTYPE_DROPDOWN then
-								local setting = self[control.dependsOn]:GetChecked()
-								if setting then
-									UIDropDownMenu_EnableDropDown(control)
-								else
-									UIDropDownMenu_DisableDropDown(control)
-								end
-							end
-						end
-					end
-				end
-
-				function self:cancel()
-					if not self.controls then return end
-					for i, control in ipairs(self.controls) do
-						if control.CustomCancel then
-							control:CustomCancel()
-						else
-							self:Set(control.xrpTable, control.xrpSetting, control.oldValue)
-							control.value = control.oldValue
-							if control.type == CONTROLTYPE_CHECKBOX then
-								control:SetChecked(control.value)
-							elseif control.type == CONTROLTYPE_DROPDOWN then
-								UIDropDownMenu_Initialize(control, control.initialize, nil, nil, control.baseMenuList)
-								UIDropDownMenu_SetSelectedValue(control, control.value)
-							end
-						end
-						if control.dependsOn then
-							if control.type == CONTROLTYPE_CHECKBOX then
-								control:SetEnabled(self[control.dependsOn]:GetChecked())
-							elseif control.type == CONTROLTYPE_DROPDOWN then
-								local setting = self[control.dependsOn]:GetChecked()
-								if setting then
-									UIDropDownMenu_EnableDropDown(control)
-								else
-									UIDropDownMenu_DisableDropDown(control)
-								end
-							end
-						end
-					end
-				end
-
-				function self:default()
-					if not self.controls then return end
-					for i, control in ipairs(self.controls) do
-						if control.CustomDefault then
-							control:CustomDefault()
-						else
-							self:Set(control.xrpTable, control.xrpSetting, control.defaultValue)
-							control.value = control.defaultValue
-							if control.type == CONTROLTYPE_CHECKBOX then
-								control:SetChecked(control.value)
-							elseif control.type == CONTROLTYPE_DROPDOWN then
-								UIDropDownMenu_Initialize(control, control.initialize, nil, nil, control.baseMenuList)
-								UIDropDownMenu_SetSelectedValue(control, control.value)
-							end
-						end
-						if control.dependsOn then
-							if control.type == CONTROLTYPE_CHECKBOX then
-								control:SetEnabled(self[control.dependsOn]:GetChecked())
-							elseif control.type == CONTROLTYPE_DROPDOWN then
-								local setting = self[control.dependsOn]:GetChecked()
-								if setting then
-									UIDropDownMenu_EnableDropDown(control)
-								else
-									UIDropDownMenu_DisableDropDown(control)
-								end
-							end
-						end
-					end
-				end
-				InterfaceOptions_AddCategory(self)
-			</OnLoad>
+			<OnShow function="XRPOptionsAbout_OnShow"/>
+			<OnLoad function="InterfaceOptions_AddCategory"/>
 		</Scripts>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -144,12 +31,12 @@
 						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="16" y="-16"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="Author" inherits="GameFontWhite">
+				<FontString parentKey="Author" inherits="GameFontWhite" text="XRP_OPTIONS_AUTHOR">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" y="-5"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="Version" inherits="GameFontWhite">
+				<FontString parentKey="Version" inherits="GameFontWhite" text="XRP_OPTIONS_VERSION">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Author" relativePoint="BOTTOMLEFT" y="-5"/>
 					</Anchors>
@@ -164,7 +51,7 @@
 						<Anchor point="TOPLEFT" relativeKey="$parent.CopyHeader" relativePoint="BOTTOMLEFT" y="-10"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="License" inherits="GameFontWhite" justifyH="LEFT">
+				<FontString parentKey="License" inherits="GameFontWhite" justifyH="LEFT" text="XRP_OPTIONS_LICENSE">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Copyright" relativePoint="BOTTOMLEFT" y="-10"/>
 					</Anchors>
@@ -173,25 +60,27 @@
 		</Layers>
 		<Frames>
 			<Button parentKey="CacheClear" inherits="UIPanelButtonTemplate" text="Clear Cache">
+				<KeyValues>
+					<KeyValue key="popup" value="XRP_CACHE_CLEAR"/>
+				</KeyValues>
 				<Size x="96" y="21"/>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-15" y="15"/>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						StaticPopup_Show("XRP_CACHE_CLEAR")
-					</OnClick>
+					<OnClick function="XRPTemplates_ShowPopup"/>
 				</Scripts>
 			</Button>
 			<Button parentKey="CacheTidy" inherits="UIPanelButtonTemplate" text="Tidy Cache">
+				<KeyValues>
+					<KeyValue key="popup" value="XRP_CACHE_TIDY"/>
+				</KeyValues>
 				<Size x="96" y="21"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.CacheClear" relativePoint="LEFT" x="-15"/>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						StaticPopup_Show("XRP_CACHE_TIDY")
-					</OnClick>
+					<OnClick function="XRPTemplates_ShowPopup"/>
 				</Scripts>
 			</Button>
 		</Frames>
@@ -199,6 +88,8 @@
 	<CheckButton name="XRPOptionsCheckboxTemplate" parentArray="controls" inherits="XRPCheckBoxTemplate" virtual="true">
 		<KeyValues>
 			<KeyValue key="type" value="CONTROLTYPE_CHECKBOX" type="global"/>
+			<KeyValue key="Get" value="XRPOptions_Get" type="global"/>
+			<KeyValue key="Set" value="XRPOptions_Set" type="global"/>
 		</KeyValues>
 		<Size x="26" y="26"/>
 		<HitRectInsets left="0" right="-500" top="0" bottom="0"/>
@@ -212,68 +103,17 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnClick>
-				local setting = self:GetChecked()
-				PlaySound(setting and "igMainMenuOptionCheckBoxOn" or "igMainMenuOptionCheckBoxOff")
-				self.value = setting
-				if self.dependentControls then
-					for i, control in ipairs(self.dependentControls) do
-						if control.type == CONTROLTYPE_CHECKBOX then
-							control:SetEnabled(setting)
-						elseif control.type == CONTROLTYPE_DROPDOWN then
-							if setting then
-								UIDropDownMenu_EnableDropDown(control)
-							else
-								UIDropDownMenu_DisableDropDown(control)
-							end
-						end
-					end
-				end
-				self:GetParent():Set(self.xrpTable, self.xrpSetting, setting)
-			</OnClick>
-			<OnEnable>
-				self.Text:SetTextColor(self.Text:GetFontObject():GetTextColor())
-				if self.dependentControls then
-					for i, control in ipairs(self.dependentControls) do
-						if control.type == CONTROLTYPE_CHECKBOX then
-							control:SetEnabled(self:GetChecked())
-						elseif control.type == CONTROLTYPE_DROPDOWN then
-							if self:GetChecked() then
-								UIDropDownMenu_EnableDropDown(control)
-							else
-								UIDropDownMenu_DisableDropDown(control)
-							end
-						end
-					end
-				end
-			</OnEnable>
-			<OnDisable>
-				self.Text:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b)
-				if self.dependentControls then
-					for i, control in ipairs(self.dependentControls) do
-						if control.type == CONTROLTYPE_CHECKBOX then
-							control:SetEnabled(false)
-						elseif control.type == CONTROLTYPE_DROPDOWN then
-							UIDropDownMenu_DisableDropDown(control)
-						end
-					end
-				end
-			</OnDisable>
-			<OnLoad>
-				self.dependentControls = {}
-				if self.dependsOn then
-					local depends = self:GetParent()[self.dependsOn].dependentControls
-					depends[#depends + 1] = self
-				end
-				if self.textString then
-					self.Text:SetText(self.textString)
-				end
-			</OnLoad>
+			<OnClick function="XRPOptionsCheckButton_OnClick"/>
+			<OnEnable function="XRPOptionsCheckButton_OnEnable"/>
+			<OnDisable function="XRPOptionsCheckButton_OnDisable"/>
+			<OnLoad function="XRPOptionsControls_OnLoad"/>
 		</Scripts>
 	</CheckButton>
 	<Frame name="XRPOptionsDropDownTemplate" parentArray="controls" inherits="XRPDropDownTemplate" virtual="true">
 		<KeyValues>
 			<KeyValue key="type" value="CONTROLTYPE_DROPDOWN" type="global"/>
+			<KeyValue key="Get" value="XRPOptions_Get" type="global"/>
+			<KeyValue key="Set" value="XRPOptions_Set" type="global"/>
 		</KeyValues>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -285,23 +125,16 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
-				if self.dependsOn then
-					local depends = self:GetParent()[self.dependsOn].dependentControls
-					depends[#depends + 1] = self
-				end
-				if self.textString then
-					UIDropDownMenu_SetText(self, self.textString)
-				end
-				if self.labelString then
-					self.Label:SetText(self.labelString)
-				end
-			</OnLoad>
+			<OnLoad inherit="prepend" function="XRPOptionsControls_OnLoad"/>
 		</Scripts>
 	</Frame>
 	<Frame name="XRPOptionsTemplate" hidden="true" virtual="true">
 		<KeyValues>
 			<KeyValue key="parent" value="XRP"/>
+			<KeyValue key="okay" value="XRPOptions_okay" type="global"/>
+			<KeyValue key="refresh" value="XRPOptions_refresh" type="global"/>
+			<KeyValue key="cancel" value="XRPOptions_cancel" type="global"/>
+			<KeyValue key="default" value="XRPOptions_default" type="global"/>
 		</KeyValues>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -320,30 +153,8 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
-				if self.titleText then
-					self.Title:SetText(self.titleText)
-				end
-				if self.subText then
-					self.SubText:SetText(self.subText)
-				end
-				local parent = self:GetParent().XRP
-				self.okay = parent.okay
-				self.refresh = parent.refresh
-				self.cancel = parent.cancel
-				self.default = parent.default
-				parent[self.name] = self
-				InterfaceOptions_AddCategory(self)
-			</OnLoad>
-			<OnShow>
-				local parent = self:GetParent().XRP
-				if not self.Get then
-					self.Get = parent.Get
-					self.Set = parent.Set
-					self:refresh()
-				end
-				parent.lastShown = self.name
-			</OnShow>
+			<OnLoad function="XRPOptions_OnLoad"/>
+			<OnShow function="XRPOptions_OnShow"/>
 		</Scripts>
 	</Frame>
 	<Frame parentKey="XRPGeneral" parent="InterfaceOptionsFramePanelContainer" inherits="XRPOptionsTemplate">
@@ -465,6 +276,7 @@
 					<KeyValue key="xrpTable" value="display"/>
 					<KeyValue key="xrpSetting" value="height"/>
 					<KeyValue key="defaultValue" value="ft"/>
+					<KeyValue key="baseMenuList" value="XRPOptionsGeneralHeight_baseMenuList" type="global"/>
 				</KeyValues>
 			</Frame>
 			<Frame name="XRPOptionsGeneralWeight" parentKey="Weight" inherits="XRPOptionsDropDownTemplate">
@@ -476,6 +288,7 @@
 					<KeyValue key="xrpTable" value="display"/>
 					<KeyValue key="xrpSetting" value="weight"/>
 					<KeyValue key="defaultValue" value="lb"/>
+					<KeyValue key="baseMenuList" value="XRPOptionsGeneralWeight_baseMenuList" type="global"/>
 				</KeyValues>
 			</Frame>
 			<CheckButton parentKey="MinimapEnabled" inherits="XRPOptionsCheckboxTemplate">
@@ -624,6 +437,11 @@
 				<KeyValues>
 					<KeyValue key="textString" value="Channels"/>
 					<KeyValue key="dependsOn" value="RPNames"/>
+					<KeyValue key="CustomRefresh" value="XRPOptionsChatChannels_CustomRefresh" type="global"/>
+					<KeyValue key="CustomOkay" value="XRPOptionsChatChannels_CustomOkay" type="global"/>
+					<KeyValue key="CustomDefault" value="XRPOptionsChatChannels_CustomDefault" type="global"/>
+					<KeyValue key="CustomCancel" value="XRPOptionsChatChannels_CustomCancel" type="global"/>
+					<KeyValue key="baseMenuList" value="XRPOptionsChatChannels_baseMenuList" type="global"/>
 				</KeyValues>
 			</Frame>
 			<CheckButton parentKey="EmoteBraced" inherits="XRPOptionsCheckboxTemplate">
@@ -786,7 +604,7 @@
 			<KeyValue key="subText" value="Configure advanced XRP options. Please exercise caution when changing these."/>
 		</KeyValues>
 		<Frames>
-			<Frame name="XRPOptionsAdvancedCacheTime" parentKey="Time" inherits="XRPOptionsDropDownTemplate">
+			<Frame name="XRPOptionsAdvancedTime" parentKey="Time" inherits="XRPOptionsDropDownTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.SubText" relativePoint="BOTTOMLEFT" x="-17" y="-8"/>
 				</Anchors>
@@ -795,6 +613,7 @@
 					<KeyValue key="xrpTable" value="cache"/>
 					<KeyValue key="xrpSetting" value="time"/>
 					<KeyValue key="defaultValue" value="864000" type="number"/>
+					<KeyValue key="baseMenuList" value="XRPOptionsAdvancedTime_baseMenuList" type="global"/>
 				</KeyValues>
 			</Frame>
 			<CheckButton parentKey="AutoClean" inherits="XRPOptionsCheckboxTemplate">
@@ -810,5 +629,4 @@
 			</CheckButton>
 		</Frames>
 	</Frame>
-	<Script file="options.lua"/>
 </Ui>

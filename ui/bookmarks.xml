@@ -15,15 +15,15 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-	<!-- Here there be dragons. XML dragons, the most dangerous sort. -->
-	<!-- It's dangerous to go alone, take a syntax highlighter. -->
-	<!-- No, seriously, though. This is the easiest way to get a good UI. -->
+	<Script file="bookmarks.lua"/>
 	<Button name="XRPBookmarksEntryTemplate" virtual="true">
 		<KeyValues>
+			<KeyValue key="registerClicks" value="LeftButtonUp,RightButtonUp"/>
 			<KeyValue key="initialize" value="EasyMenu_Initialize" type="global"/>
 			<KeyValue key="displayMode" value="MENU"/>
-			<!-- This is kinda a hack. -->
-			<KeyValue key="SetHeight" value="assert" type="global"/>
+			<KeyValue key="SetHeight" value="XRPTemplates_DoNothing" type="global"/>
+			<KeyValue key="baseMenuList" value="XRPBookmarksEntry_baseMenuList" type="global"/>
+			<KeyValue key="onHide" value="XRPBookmarksEntry_onHide" type="global"/>
 		</KeyValues>
 		<Size x="0" y="72"/>
 		<Anchors>
@@ -113,69 +113,16 @@
 			</Anchors>
 		</HighlightTexture>
 		<Scripts>
-			<OnClick>
-				if not self.character then return end
-				if button == "RightButton" then
-					local bookmarks = self:GetParent():GetParent():GetParent()
-					self.Selected:Show()
-					if self.character.own then
-						bookmarks.baseMenuList[4].disabled = true
-						bookmarks.baseMenuList[5].disabled = true
-						bookmarks.baseMenuList[6].disabled = true
-					else
-						local GF = self.character.fields.GF
-						if GF and GF ~= xrp.current.fields.GF then
-							bookmarks.baseMenuList[4].disabled = true
-						else
-							local name = Ambiguate(self.character.name, "none")
-							local isFriend
-							for i = 1, GetNumFriends() do
-								if GetFriendInfo(i) == name then
-									isFriend = true
-								end
-							end
-							bookmarks.baseMenuList[4].disabled = isFriend
-						end
-						bookmarks.baseMenuList[5].disabled = nil
-						bookmarks.baseMenuList[6].disabled = nil
-					end
-					ToggleDropDownMenu(nil, nil, self, "cursor", nil, nil, bookmarks.baseMenuList)
-					PlaySound("igMainMenuOptionCheckBoxOn")
-				end
-			</OnClick>
-			<OnHide>
-				if type(self) == "number" then
-					UIDROPDOWNMENU_OPEN_MENU.Selected:Hide()
-				else
-					self.Selected:Hide()
-				end
-			</OnHide>
-			<OnLoad>
-				self.onHide = self:GetScript("OnHide")
-				self:RegisterForClicks("LeftButtonUp", "RightButtonUp")
-			</OnLoad>
+			<OnClick function="XRPBookmarksEntry_OnClick"/>
+			<OnLoad function="XRPTemplates_RegisterMouse"/>
 		</Scripts>
 	</Button>
 	<Button name="XRPBookmarksTabTemplate" inherits="XRPTabButtonTemplate" virtual="true">
 		<Scripts>
-			<OnClick>
-				CloseDropDownMenus()
-				local bookmarks = self:GetParent()
-				bookmarks.request.offset = bookmarks.List.scrollBar:GetValue()
-				local now = GetTime()
-				bookmarks.request.lastRefresh = now
-				bookmarks.request = self.request
-				if self.resetOffset and now - 30 &gt; self.request.lastRefresh then
-					self.request.offset = 0
-				end
-				bookmarks:Refresh()
-				PanelTemplates_SetTab(bookmarks, self:GetID())
-				bookmarks.TitleText:SetText(self.titleText)
-				PlaySound("igCharacterInfoTab")
-			</OnClick>
+			<OnClick function="XRPBookmarksTab_OnClick"/>
 		</Scripts>
 	</Button>
-	<Frame name="XRPBookmarks" toplevel="true" parent="UIParent" inherits="ButtonFrameTemplate" hidden="true" enableMouse="true">
+	<Frame name="XRPBookmarks" parent="UIParent" inherits="XRPButtonFrameTemplate">
 		<Size x="338" y="489"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -188,8 +135,15 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button name="$parentHelpButton" inherits="XRPHelpButtonTemplate"/>
+			<Button name="$parentHelpButton" inherits="XRPHelpButtonTemplate">
+				<Scripts>
+					<PreClick function="XRPBookmarksHelpButton_PreClick"/>
+				</Scripts>
+			</Button>
 			<ScrollFrame name="$parentList" parentKey="List" enableMouse="true" inherits="HybridScrollFrameTemplate">
+				<KeyValues>
+					<KeyValue key="update" value="XRPBookmarksList_update" type="global"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.Inset" x="4" y="-2"/>
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset" x="-22" y="2"/>
@@ -209,9 +163,7 @@
 							<KeyValue key="doNotHide" value="true" type="boolean"/>
 						</KeyValues>
 						<Scripts>
-							<OnValueChanged inherit="append">
-								CloseDropDownMenus()
-							</OnValueChanged>
+							<OnValueChanged inherit="append" function="XRPTemplates_CloseDropDownMenus"/>
 						</Scripts>
 					</Slider>
 				</Frames>
@@ -236,21 +188,15 @@
 				<DisabledTexture file="Interface\Buttons\UI-SquareButton-Disabled"/>
 				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 				<Scripts>
-					<OnMouseDown>
-						self.Icon:SetPoint("CENTER", self, "CENTER", -2, -1)
-					</OnMouseDown>
-					<OnMouseUp>
-						self.Icon:SetPoint("CENTER", self, "CENTER", -1, 0)
-					</OnMouseUp>
-					<OnClick>
-						PlaySound("igMainMenuOptionCheckBoxOn")
-						local bookmarks = self:GetParent()
-						bookmarks.request.offset = 0
-						bookmarks:Refresh()
-					</OnClick>
+					<OnMouseDown function="XRPTemplatesRefresh_OnMouseDown"/>
+					<OnMouseUp function="XRPTemplatesRefresh_OnMouseUp"/>
+					<OnClick function="XRPBookmarksRefreshButton_OnClick"/>
 				</Scripts>
 			</Button>
 			<Button name="$parentFilterButton" parentKey="FilterButton" inherits="UIMenuButtonStretchTemplate" text="FILTER">
+			<KeyValues>
+				<KeyValue key="baseMenuList" value="XRPBookmarksFilterButton_baseMenuList" type="global"/>
+			</KeyValues>
 				<Size x="93" y="28"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.RefreshButton" relativePoint="LEFT" x="-5" y="-1"/>
@@ -270,8 +216,7 @@
 						<KeyValues>
 							<KeyValue key="initialize" value="EasyMenu_Initialize" type="global"/>
 							<KeyValue key="displayMode" value="MENU"/>
-							<!-- This is kinda a hack. -->
-							<KeyValue key="SetHeight" value="assert" type="global"/>
+							<KeyValue key="SetHeight" value="XRPTemplates_DoNothing" type="global"/>
 							<KeyValue key="point" value="TOPLEFT"/>
 							<KeyValue key="relativePoint" value="BOTTOMLEFT"/>
 							<KeyValue key="xOffset" value="74" type="number"/>
@@ -288,13 +233,8 @@
 					</Frame>
 				</Frames>
 				<Scripts>
-					<OnClick>
-						ToggleDropDownMenu(nil, nil, self.Menu, self, nil, nil, self.baseMenuList)
-						PlaySound("igMainMenuOptionCheckBoxOn")
-					</OnClick>
-					<OnHide>
-						CloseDropDownMenus()
-					</OnHide>
+					<OnClick function="XRPTemplatesMenu_OnClick"/>
+					<OnHide function="XRPTemplates_CloseDropDownMenus"/>
 				</Scripts>
 			</Button>
 			<EditBox inherits="SearchBoxTemplate" parentKey="FilterText">
@@ -316,26 +256,8 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnEnterPressed inherit="append">
-						local bookmarks = self:GetParent()
-						if not bookmarks.request.fullText then return end
-						local text = self:GetText()
-						if text == "" then
-							text = nil
-						end
-						bookmarks.request.text = text
-						bookmarks:Refresh()
-					</OnEnterPressed>
-					<OnTextChanged inherit="append">
-						local bookmarks = self:GetParent()
-						if bookmarks.request.fullText and userInput then return end
-						local text = self:GetText()
-						if text == "" then
-							text = nil
-						end
-						bookmarks.request.text = text
-						bookmarks:Refresh()
-					</OnTextChanged>
+					<OnEnterPressed inherit="prepend" function="XRPBookmarksFilterText_OnTextChanged"/>
+					<OnTextChanged inherit="prepend" function="XRPBookmarksFilterText_OnTextChanged"/>
 				</Scripts>
 				<FontString inherits="GameFontHighlight"/>
 			</EditBox>
@@ -364,7 +286,7 @@
 					<Anchor point="LEFT" relativeKey="$parent.Tab2" relativePoint="RIGHT" x="-16"/>
 				</Anchors>
 			</Button>
-			<Button name="$parentTab4" parentKey="Tab4" inherits="XRPBookmarksTabTemplate" id="4" text="All">
+			<Button name="$parentTab4" parentKey="Tab4" inherits="XRPBookmarksTabTemplate" id="4" text="ALL">
 				<KeyValues>
 					<KeyValue key="titleText" value="All Profiles"/>
 					<KeyValue key="resetOffset" value="true" type="boolean"/>
@@ -375,32 +297,18 @@
 			</Button>
 		</Frames>
 		<Attributes>
-			<Attribute name="UIPanelLayout-defined" type="boolean" value="true"/>
-			<Attribute name="UIPanelLayout-enabled" type="boolean" value="true"/>
-			<Attribute name="UIPanelLayout-area" value="left"/>
 			<Attribute name="UIPanelLayout-pushable" type="number" value="1"/>
 			<Attribute name="UIPanelLayout-height" type="number" value="509"/>
-			<Attribute name="UIPanelLayout-whileDead" type="boolean" value="true"/>
 		</Attributes>
+		<KeyValues>
+			<KeyValue key="titleText" value="Bookmarks"/>
+			<KeyValue key="portraitTexture" value="Interface\Icons\INV_Misc_Book_05"/>
+			<KeyValue key="numTabs" value="4" type="number"/>
+			<KeyValue key="Refresh" value="XRPBookmarks_Refresh" type="global"/>
+			<KeyValue key="helpPlates" value="XRPBookmarks_helpPlates" type="global"/>
+		</KeyValues>
 		<Scripts>
-			<OnLoad>
-				PanelTemplates_SetNumTabs(self, 4)
-				PanelTemplates_SetTab(self, 1)
-				SetPortraitToTexture(self.portrait, "Interface\\Icons\\INV_Misc_Book_05")
-				self.TitleText:SetText("Bookmarks")
-			</OnLoad>
-			<OnShow>
-				PlaySound("igCharacterInfoOpen")
-			</OnShow>
-			<OnHide>
-				PlaySound("igCharacterInfoClose")
-			</OnHide>
-			<OnUpdate>
-				self:SetScript("OnUpdate", nil)
-				HybridScrollFrame_CreateButtons(self.List, "XRPBookmarksEntryTemplate")
-				self:Refresh()
-			</OnUpdate>
+			<OnUpdate function="XRPBookmarks_OnUpdate"/>
 		</Scripts>
 	</Frame>
-	<Script file="bookmarks.lua"/>
 </Ui>

@@ -15,34 +15,28 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
+	<Script file="minimap.lua"/>
 	<Button name="XRPMinimapBaseTemplate" movable="true" dontSavePosition="true" virtual="true">
 		<KeyValues>
+			<KeyValue key="registerClicks" value="LeftButtonUp,RightButtonUp"/>
 			<KeyValue key="initialize" value="EasyMenu_Initialize" type="global"/>
 			<KeyValue key="displayMode" value="MENU"/>
-			<!-- This is kinda a hack. -->
-			<KeyValue key="SetHeight" value="assert" type="global"/>
+			<KeyValue key="SetHeight" value="XRPTemplates_DoNothing" type="global"/>
 			<KeyValue key="point" value="TOPLEFT"/>
 			<KeyValue key="relativePoint" value="BOTTOMLEFT"/>
 			<KeyValue key="xOffset" value="0" type="number"/>
 			<KeyValue key="yOffset" value="0" type="number"/>
+			<KeyValue key="baseMenuList" value="XRPButton_baseMenuList" type="global"/>
 		</KeyValues>
 		<Size x="31" y="31"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="Icon" file="Interface\Icons\INV_Misc_QuestionMark">
-					<Size x="20" y="20"/>
+				<Texture>
+					<Size x="21" y="21"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="6" y="-5"/>
 					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK">
-				<Texture parentKey="Dim" hidden="true">
-					<Size x="20" y="20"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="6" y="-5"/>
-					</Anchors>
-					<Color r="0" g="0" b="0" a="0.4"/>
+					<Color r="0" g="0" b="0"/>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
@@ -54,95 +48,43 @@
 				</Texture>
 			</Layer>
 		</Layers>
+		<NormalTexture file="Interface\Icons\INV_Misc_QuestionMark">
+			<Size x="20" y="20"/>
+			<Anchors>
+				<Anchor point="TOPLEFT" x="6" y="-5"/>
+			</Anchors>
+		</NormalTexture>
+		<PushedTexture alpha="0.5" file="Interface\Icons\INV_Misc_QuestionMark">
+			<Size x="20" y="20"/>
+			<Anchors>
+				<Anchor point="TOPLEFT" x="7" y="-6"/>
+			</Anchors>
+		</PushedTexture>
 		<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
 		<Scripts>
-			<OnClick>
-				if button == "LeftButton" then
-					local target = xrp.characters.byUnit.target
-					if target and target.fields.VA then
-						xrp:View("target")
-					else
-						xrp:Status()
-					end
-					self:GetScript("OnEnter")(self, true)
-					CloseDropDownMenus()
-				elseif button == "RightButton" then
-					ToggleDropDownMenu(nil, nil, self, self, nil, nil, self.baseMenuList)
-					PlaySound("igMainMenuOptionCheckBoxOn")
-				end
-			</OnClick>
-			<OnMouseDown>
-				self.Dim:Show()
-			</OnMouseDown>
-			<OnMouseUp>
-				self.Dim:Hide()
-			</OnMouseUp>
-			<OnEnter>
-				if motion then
-					GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT", 0, 32)
-					GameTooltip:SetText(xrp.current.fields.NA)
-					GameTooltip:AddLine(" ")
-					GameTooltip:AddLine(("Profile: |cffffffff%s|r"):format(xrpSaved.selected))
-					local FC = xrp.current.fields.FC
-					if FC and FC ~= "0" then
-						GameTooltip:AddLine(("Status: |cff%s%s|r"):format(FC == "1" and "99664d" or "66b380", xrp.values.FC[FC]))
-					end
-					local CU = xrp.current.fields.CU
-					if CU then
-						GameTooltip:AddLine(" ")
-						GameTooltip:AddLine("Currently:")
-						GameTooltip:AddLine(("|cffe6b399%s|r"):format(CU or "None"), nil, nil, nil, true)
-					end
-					GameTooltip:AddLine(" ")
-					if xrp.characters.byUnit.target and xrp.characters.byUnit.target.fields.VA then
-						GameTooltip:AddLine("|cffffeeaaClick to view your target's profile.|r")
-					elseif not FC or FC == "0" or FC == "1" then
-						GameTooltip:AddLine("|cff66b380Click for in character.|r")
-					else
-						GameTooltip:AddLine("|cff99664dClick for out of character.|r")
-					end
-					GameTooltip:AddLine("|cff999999Right click for the menu.|r")
-					GameTooltip:Show()
-				end
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide()
-				self.Dim:Hide()
-			</OnLeave>
-			<OnLoad>
-				self:RegisterForClicks("LeftButtonUp", "RightButtonUp")
-			</OnLoad>
+			<OnEvent function="XRPButton_UpdateIcon"/>
+			<OnClick function="XRPButton_OnClick"/>
+			<OnEnter function="XRPButton_OnEnter"/>
+			<OnLeave function="GameTooltip_Hide"/>
+			<OnLoad function="XRPTemplates_RegisterMouse"/>
 		</Scripts>
 	</Button>
 	<Button name="XRPMinimapTemplate" frameLevel="8" inherits="XRPMinimapBaseTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="registerDrags" value="LeftButton"/>
+		</KeyValues>
 		<Scripts>
-			<OnDragStart>
-				self:LockHighlight()
-				self:SetScript("OnUpdate", self.OnUpdate)
-			</OnDragStart>
-			<OnDragStop>
-				self:SetScript("OnUpdate", nil)
-				self:UnlockHighlight()
-			</OnDragStop>
-			<OnLoad inherit="append">
-				self:RegisterForDrag("LeftButton")
-			</OnLoad>
+			<OnDragStart function="XRPButtonAttached_OnDragStart"/>
+			<OnDragStop function="XRPButtonAttached_OnDragStop"/>
 		</Scripts>
 	</Button>
 	<Button name="XRPButtonTemplate" clampedToScreen="true" inherits="XRPMinimapBaseTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="registerDrags" value="RightButton"/>
+		</KeyValues>
 		<Scripts>
-			<OnDragStart>
-				if IsShiftKeyDown() then
-					self.Dim:Hide()
-					self:LockHighlight()
-					self:StartMoving()
-					self.moving = true
-				end
-			</OnDragStart>
-			<OnLoad inherit="append">
-				self:RegisterForDrag("RightButton")
-			</OnLoad>
+			<OnDragStart function="XRPButtonDetached_OnDragStart"/>
+			<OnDragStop function="XRPButtonDetached_OnDragStop"/>
 		</Scripts>
 	</Button>
-	<Script file="minimap.lua"/>
 </Ui>

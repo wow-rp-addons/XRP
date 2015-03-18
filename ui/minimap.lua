@@ -18,23 +18,60 @@
 
 local addonName, xrpPrivate = ...
 
-local XRPMinimap
+local Button
 
-local function Minimap_UpdateIcon()
-	if not XRPMinimap then return end
+local TEXTURES = {
+	"Interface\\Icons\\INV_Misc_Book_03", -- Target
+	"Interface\\Icons\\Ability_Malkorok_BlightofYshaarj_Red", -- OOC
+	"Interface\\Icons\\Ability_Malkorok_BlightofYshaarj_Green", -- IC
+}
+
+function XRPButton_UpdateIcon()
+	if not Button then return end
 	if xrp.characters.byUnit.target and xrp.characters.byUnit.target.fields.VA then
-		XRPMinimap.Icon:SetTexture("Interface\\Icons\\INV_Misc_Book_03")
+		Button:SetNormalTexture(TEXTURES[1])
+		Button:SetPushedTexture(TEXTURES[1])
 		return
 	end
 	local FC = xrp.current.fields.FC
 	if not FC or FC == "0" or FC == "1" then
-		XRPMinimap.Icon:SetTexture("Interface\\Icons\\Ability_Malkorok_BlightofYshaarj_Red")
+		Button:SetNormalTexture(TEXTURES[2])
+		Button:SetPushedTexture(TEXTURES[2])
 	else
-		XRPMinimap.Icon:SetTexture("Interface\\Icons\\Ability_Malkorok_BlightofYshaarj_Green")
+		Button:SetNormalTexture(TEXTURES[3])
+		Button:SetPushedTexture(TEXTURES[3])
 	end
 end
 
-local Minimap_PreClick, Minimap_baseMenuList
+function XRPButton_OnEnter(self, motion)
+	if motion then
+		GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT", 0, 32)
+		GameTooltip:SetText(xrp.current.fields.NA)
+		GameTooltip:AddLine(" ")
+		GameTooltip:AddLine(("Profile: |cffffffff%s|r"):format(xrpSaved.selected))
+		local FC = xrp.current.fields.FC
+		if FC and FC ~= "0" then
+			GameTooltip:AddLine(("Status: |cff%s%s|r"):format(FC == "1" and "99664d" or "66b380", xrp.values.FC[FC]))
+		end
+		local CU = xrp.current.fields.CU
+		if CU then
+			GameTooltip:AddLine(" ")
+			GameTooltip:AddLine("Currently:")
+			GameTooltip:AddLine(("|cffe6b399%s|r"):format(CU or "None"), nil, nil, nil, true)
+		end
+		GameTooltip:AddLine(" ")
+		if xrp.characters.byUnit.target and xrp.characters.byUnit.target.fields.VA then
+			GameTooltip:AddLine("|cffffeeaaClick to view your target's profile.|r")
+		elseif not FC or FC == "0" or FC == "1" then
+			GameTooltip:AddLine("|cff66b380Click for in character.|r")
+		else
+			GameTooltip:AddLine("|cff99664dClick for out of character.|r")
+		end
+		GameTooltip:AddLine("|cff999999Right click for the menu.|r")
+		GameTooltip:Show()
+	end
+end
+
 do
 	local Status_menuList = {}
 	do
@@ -56,14 +93,14 @@ do
 	end
 
 	local Profiles_menuList = {}
-	Minimap_baseMenuList = {
+	XRPButton_baseMenuList = {
 		{ text = "XRP", isTitle = true, notCheckable = true, },
 		{ text = "Profiles", notCheckable = true, hasArrow = true, menuList = Profiles_menuList, },
 		{ text = "Character status", notCheckable = true, hasArrow = true, menuList = Status_menuList, },
 		{ text = "Currently...", notCheckable = true, func = function() StaticPopup_Show("XRP_CURRENTLY") end, },
 		{ text = "Bookmarks...", notCheckable = true, func = function() xrp:Bookmarks(true) end, },
 		{ text = "Viewer...", notCheckable = true, func = function() xrp:View() end, },
-		{ text = "Editor...", notCheckable = true, func = function() xrp:Edit() end, },
+		{ text = "Editor...", notCheckable = true, func = function() XRPEditor:Edit() end, },
 		{ text = "Options...", notCheckable = true, func = function() xrpPrivate:Options() end, },
 		{ text = "Cancel", notCheckable = true, func = xrpPrivate.noFunc, },
 	}
@@ -76,23 +113,30 @@ do
 			CloseDropDownMenus()
 		end
 
-		function Minimap_PreClick(self, button, down)
-			if button == "RightButton" then
+		function XRPButton_OnClick(self, button, down)
+			if button == "LeftButton" then
+				local target = xrp.characters.byUnit.target
+				if target and target.fields.VA then
+					xrp:View("target")
+				else
+					xrp:Status()
+				end
+				XRPButton_OnEnter(self, true)
+				CloseDropDownMenus()
+			elseif button == "RightButton" then
 				table.wipe(Profiles_menuList)
 				local selected = xrpSaved.selected
 				for i, profileName in ipairs(xrpPrivate.profiles:List()) do
 					Profiles_menuList[#Profiles_menuList + 1] = { text = profileName, checked = selected == profileName, arg1 = profileName, func = Profiles_Click, }
 				end
+				XRPTemplatesMenu_OnClick(self, button, down)
 			end
 		end
 	end
 end
 
-local AttachedMinimapFrame, DetachedMinimapFrame
-
-local GetAttachedMinimap
+local UpdatePositionAttached
 do
-	local Minimap_UpdatePosition
 	do
 		local MINIMAP_SHAPES = {
 			["ROUND"] = { true, true, true, true },
@@ -110,7 +154,7 @@ do
 			["TRICORNER-BOTTOMLEFT"] = { true, true, false, true },
 			["TRICORNER-BOTTOMRIGHT"] = { true, true, true, false },
 		}
-		function Minimap_UpdatePosition(self)
+		function UpdatePositionAttached(self)
 			local angle = math.rad(xrpPrivate.settings.minimap.angle)
 			local x, y, q = math.cos(angle), math.sin(angle), 1
 			if x < 0 then q = q + 1 end
@@ -132,79 +176,73 @@ do
 		local scale = Minimap:GetEffectiveScale()
 		px, py = px / scale, py / scale
 		xrpPrivate.settings.minimap.angle = math.deg(math.atan2(py - my, px - mx)) % 360
-		Minimap_UpdatePosition(self)
+		UpdatePositionAttached(self)
 	end
 
-	function GetAttachedMinimap()
-		if not AttachedMinimapFrame then
-			AttachedMinimapFrame = CreateFrame("Button", "LibDBIcon10_XRP", Minimap, "XRPMinimapTemplate")
-			AttachedMinimapFrame.baseMenuList = Minimap_baseMenuList
-			AttachedMinimapFrame:SetScript("PreClick", Minimap_PreClick)
-			AttachedMinimapFrame:SetScript("OnEvent", Minimap_UpdateIcon)
-			AttachedMinimapFrame.OnUpdate = Minimap_OnUpdate
-			Minimap_UpdatePosition(AttachedMinimapFrame)
-		end
-		return AttachedMinimapFrame
+	function XRPButtonAttached_OnDragStart(self, button)
+		self:LockHighlight()
+		self:SetScript("OnUpdate", Minimap_OnUpdate)
+	end
+
+	function XRPButtonAttached_OnDragStop(self)
+		self:SetScript("OnUpdate", nil)
+		self:UnlockHighlight()
 	end
 end
 
-local GetDetachedMinimap
-do
-	local function Minimap_OnDragStop(self)
-		if self.moving then
-			self:StopMovingOrSizing()
-			xrpPrivate.settings.minimap.point, xrpPrivate.settings.minimap.x, xrpPrivate.settings.minimap.y = select(3, self:GetPoint())
-			self:UnlockHighlight()
-			self.moving = nil
-		end
+function XRPButtonDetached_OnDragStart(self, button)
+	if IsShiftKeyDown() then
+		self:LockHighlight()
+		self:StartMoving()
 	end
+end
 
-	function GetDetachedMinimap()
-		if not DetachedMinimapFrame then
-			DetachedMinimapFrame = CreateFrame("Button", nil, UIParent, "XRPButtonTemplate")
-			DetachedMinimapFrame.baseMenuList = Minimap_baseMenuList
-			DetachedMinimapFrame:SetScript("OnDragStop", Minimap_OnDragStop)
-			DetachedMinimapFrame:SetScript("PreClick", Minimap_PreClick)
-			DetachedMinimapFrame:SetScript("OnEvent", Minimap_UpdateIcon)
-			DetachedMinimapFrame:ClearAllPoints()
-			DetachedMinimapFrame:SetPoint(xrpPrivate.settings.minimap.point, UIParent, xrpPrivate.settings.minimap.point, xrpPrivate.settings.minimap.x, xrpPrivate.settings.minimap.y)
-		end
-		return DetachedMinimapFrame
-	end
+function XRPButtonDetached_OnDragStop(self)
+	self:StopMovingOrSizing()
+	xrpPrivate.settings.minimap.point, xrpPrivate.settings.minimap.x, xrpPrivate.settings.minimap.y = select(3, self:GetPoint())
+	self:UnlockHighlight()
 end
 
 xrpPrivate.settingsToggles.minimap = {
 	enabled = function(setting)
 		if setting then
-			if XRPMinimap == nil then
-				xrp:HookEvent("UPDATE", Minimap_UpdateIcon)
-				xrp:HookEvent("RECEIVE", Minimap_UpdateIcon)
+			if Button == nil then
+				xrp:HookEvent("UPDATE", XRPButton_UpdateIcon)
+				xrp:HookEvent("RECEIVE", XRPButton_UpdateIcon)
 			end
 			if xrpPrivate.settings.minimap.detached then
-				if XRPMinimap and XRPMinimap == AttachedMinimapFrame then
-					XRPMinimap:UnregisterAllEvents()
-					XRPMinimap:Hide()
+				if Button and Button == LibDBIcon10_XRP then
+					Button:UnregisterAllEvents()
+					Button:Hide()
 				end
-				XRPMinimap = GetDetachedMinimap()
+				if not XRPButton then
+					CreateFrame("Button", "XRPButton", UIParent, "XRPButtonTemplate")
+					XRPButton:SetPoint(xrpPrivate.settings.minimap.point, UIParent, xrpPrivate.settings.minimap.point, xrpPrivate.settings.minimap.x, xrpPrivate.settings.minimap.y)
+				end
+				Button = XRPButton
 			else
-				if XRPMinimap and XRPMinimap == DetachedMinimapFrame then
-					XRPMinimap:UnregisterAllEvents()
-					XRPMinimap:Hide()
+				if Button and Button == XRPButton then
+					Button:UnregisterAllEvents()
+					Button:Hide()
 				end
-				XRPMinimap = GetAttachedMinimap()
+				if not LibDBIcon10_XRP then
+					CreateFrame("Button", "LibDBIcon10_XRP", Minimap, "XRPMinimapTemplate")
+					UpdatePositionAttached(LibDBIcon10_XRP)
+				end
+				Button = LibDBIcon10_XRP
 			end
-			Minimap_UpdateIcon()
-			XRPMinimap:RegisterEvent("PLAYER_TARGET_CHANGED")
-			XRPMinimap:RegisterEvent("PLAYER_ENTERING_WORLD")
-			XRPMinimap:Show()
-		elseif XRPMinimap ~= nil then
-			XRPMinimap:UnregisterAllEvents()
-			XRPMinimap:Hide()
-			XRPMinimap = nil
+			XRPButton_UpdateIcon()
+			Button:RegisterEvent("PLAYER_TARGET_CHANGED")
+			Button:RegisterEvent("PLAYER_ENTERING_WORLD")
+			Button:Show()
+		elseif Button ~= nil then
+			Button:UnregisterAllEvents()
+			Button:Hide()
+			Button = nil
 		end
 	end,
 	detached = function(setting)
-		if not xrpPrivate.settings.minimap.enabled or not XRPMinimap or setting and XRPMinimap == DetachedMinimapFrame or not setting and XRPMinimap == AttachedMinimapFrame then return end
+		if not xrpPrivate.settings.minimap.enabled or not Button or setting and Button == XRPButton or not setting and Button == LibDBIcon10_XRP then return end
 		xrpPrivate.settingsToggles.minimap.enabled(xrpPrivate.settings.minimap.enabled)
 	end,
 }
