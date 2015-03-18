@@ -94,7 +94,7 @@ xrpCmds.export = function(args)
 	local name = xrp:Name(args:match("^[^%s]+"))
 	if not name then return end
 	name = name:gsub("^%l", string.upper)
-	xrp:ExportPopup(xrp:Ambiguate(name), xrp.characters.noRequest.byName[name].exportText)
+	xrp:ExportPopup(xrp:Ambiguate(name), tostring(xrp.characters.noRequest.byName[name].fields))
 end
 
 xrpCmds.profile = function(args)

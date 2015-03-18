@@ -53,13 +53,13 @@ do
 	function Load(character)
 		local fields = character.fields
 		for i, field in ipairs(DISPLAY) do
-			SetField(field, fields[field] or field == "NA" and xrp:Ambiguate(character.name) or field == "RA" and xrp.values.GR[fields.GR] or field == "RC" and xrp.values.GC[fields.GC] or nil)
+			SetField(field, fields[field] or field == "NA" and xrp:Ambiguate(tostring(character)) or field == "RA" and xrp.values.GR[fields.GR] or field == "RC" and xrp.values.GC[fields.GC] or nil)
 		end
 		XRPViewer.XC:SetText("")
 		failed = nil
 		if character == current then
 			return false
-		elseif current and character.name == current.name then
+		elseif current and tostring(character) == tostring(current) then
 			current = character
 			return false
 		end
@@ -76,7 +76,7 @@ do
 		GC = "RC",
 	}
 	function FIELD(event, name, field)
-		if current.name ~= name then return end
+		if tostring(current) ~= name then return end
 		if META_SUPPORTED[field] then
 			field = META_SUPPORTED[field]
 		end
@@ -88,7 +88,7 @@ do
 end
 
 local function RECEIVE(event, name)
-	if current.name == name then
+	if tostring(current) == name then
 		if failed then
 			Load(current)
 		end
@@ -100,7 +100,7 @@ local function RECEIVE(event, name)
 end
 
 local function UPDATE(event, field)
-	if current.name == xrpLocal.playerWithRealm then
+	if tostring(current) == xrpLocal.playerWithRealm then
 		if field then
 			FIELD("FIELD", xrpLocal.playerWithRealm, field)
 		else
@@ -110,7 +110,7 @@ local function UPDATE(event, field)
 end
 
 local function CHUNK(event, name, chunk, totalchunks)
-	if current.name == name then
+	if tostring(current) == name then
 		local XC = XRPViewer.XC:GetText()
 		if chunk ~= totalchunks or not XC or XC:find("^Receiv") then
 			XRPViewer.XC:SetFormattedText(totalchunks and (chunk == totalchunks and "Received! (%d/%d)" or "Receiving... (%d/%d)") or "Receiving... (%d/??)", chunk, totalchunks)
@@ -119,7 +119,7 @@ local function CHUNK(event, name, chunk, totalchunks)
 end
 
 local function FAIL(event, name, reason)
-	if current.name == name then
+	if tostring(current) == name then
 		failed = true
 		if not XRPViewer.XC:GetText() then
 			if reason == "offline" then
@@ -145,15 +145,15 @@ do
 	end
 	local function Menu_Click(self, arg1, arg2, checked)
 		if arg1 == "XRP_EXPORT" then
-			xrp:ExportPopup(xrp:Ambiguate(current.name), current.exportText)
+			xrp:ExportPopup(xrp:Ambiguate(tostring(current)), tostring(current.fields))
 		elseif arg1 == "XRP_REFRESH" then
 			if current.noRequest then
-				Load(xrp.characters.byName[current.name])
+				Load(xrp.characters.byName[tostring(current)])
 			else
 				Load(current)
 			end
 		elseif arg1 == "XRP_FRIEND" then
-			AddOrRemoveFriend(Ambiguate(current.name, "none"), xrp:Strip(current.fields.NA))
+			AddOrRemoveFriend(Ambiguate(tostring(current), "none"), xrp:Strip(current.fields.NA))
 		elseif arg1 == "XRP_BOOKMARK" then
 			current.bookmark = not checked
 		elseif arg1 == "XRP_HIDE" then
@@ -199,7 +199,7 @@ function XRPViewerMenu_PreClick(self, button, down)
 	if GF and GF ~= xrp.current.fields.GF then
 		self.baseMenuList[3].disabled = true
 	else
-		local name = Ambiguate(current.name, "none")
+		local name = Ambiguate(tostring(current), "none")
 		local isFriend = isOwn
 		if not isFriend then
 			for i = 1, GetNumFriends() do
@@ -238,11 +238,11 @@ xrp:HookEvent("FAIL", FAIL)
 
 function xrp:View(player)
 	local isUnit, character
-	if type(player) == "table" and player.name and player.fields then
+	if type(player) == "table" and player.fields then
 		character = player
-		local unit = Ambiguate(character.name, "none")
+		local unit = Ambiguate(tostring(character), "none")
 		isUnit = UnitExists(unit)
-		player = isUnit and unit or character.name
+		player = isUnit and unit or tostring(character)
 	else
 		if not player then
 			if XRPViewer:IsShown() then

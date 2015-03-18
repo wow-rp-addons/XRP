@@ -63,7 +63,7 @@ local function Cursor_OnEvent(self, event)
 		self:Hide()
 		return
 	end
-	self.current = not UnitCanAttack("player", "mouseover") and character.name or nil
+	self.current = not UnitCanAttack("player", "mouseover") and tostring(character) or nil
 	-- Following two must be separate for UIErrorsFrame:Clear().
 	self.mountable = rightClick and self.current and UnitVehicleSeatCount("mouseover") > 0
 	self.mountInParty = self.mountable and (UnitInParty("mouseover") or UnitInRaid("mouseover"))
