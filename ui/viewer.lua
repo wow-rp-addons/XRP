@@ -227,7 +227,6 @@ end
 
 function XRPViewer_OnLoad(self)
 	self.fields.NA = self.TitleText
-	self.fields.VA = self.VA
 end
 
 xrp:HookEvent("FIELD", FIELD)
