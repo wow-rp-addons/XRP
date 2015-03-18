@@ -151,7 +151,7 @@ do
 					return
 				end
 			end
-			RenderLine(currentUnit.nameFormat:format(showProfile and TruncateLine(xrp:Strip(fields.NA), 65, 0, false) or xrp:Ambiguate(currentUnit.character.name)), currentUnit.icons)
+			RenderLine(currentUnit.nameFormat:format(showProfile and TruncateLine(xrp:Strip(fields.NA), 65, 0, false) or xrp:Ambiguate(tostring(currentUnit.character))), currentUnit.icons)
 			if showProfile then
 				local NI = fields.NI
 				RenderLine(NI and ("|cff6070a0Nickname:|r \"%s\""):format(TruncateLine(xrp:Strip(NI), 70, 12, false)) or nil, nil, 0.6, 0.7, 0.9)
@@ -186,7 +186,7 @@ do
 		elseif currentUnit.type == "pet" then
 			RenderLine(currentUnit.nameFormat, currentUnit.icons)
 			local color = COLORS[currentUnit.faction]
-			RenderLine(currentUnit.titleRealm:format(showProfile and TruncateLine(xrp:Strip(fields.NA), 60, 0, false) or xrp:Ambiguate(currentUnit.character.name)), nil, color.r, color.g, color.b)
+			RenderLine(currentUnit.titleRealm:format(showProfile and TruncateLine(xrp:Strip(fields.NA), 60, 0, false) or xrp:Ambiguate(tostring(currentUnit.character))), nil, color.r, color.g, color.b)
 			RenderLine(currentUnit.info, nil, 1, 1, 1)
 		end
 
@@ -251,11 +251,11 @@ do
 				local guildName, guildRank, guildIndex = GetGuildInfo(unit)
 				currentUnit.guild = guildName and (xrpLocal.settings.tooltip.guildRank and (xrpLocal.settings.tooltip.guildIndex and "%s (%d) of <%s>" or "%s of <%s>") or "<%s>"):format(xrpLocal.settings.tooltip.guildRank and guildRank or guildName, xrpLocal.settings.tooltip.guildIndex and guildIndex + 1 or guildName, guildName) or nil
 
-				local realm = currentUnit.character.name:match(FULL_PLAYER_NAME:format(".+", "(.+)"))
+				local realm = tostring(currentUnit.character):match(FULL_PLAYER_NAME:format(".+", "(.+)"))
 				if realm == xrpLocal.realm then
 					realm = nil
 				end
-				local name = UnitPVPName(unit) or xrp:Ambiguate(currentUnit.character.name)
+				local name = UnitPVPName(unit) or xrp:Ambiguate(tostring(currentUnit.character))
 				currentUnit.titleRealm = realm and ("%s (%s)"):format(name, xrp:RealmDisplayName(realm)) or name
 
 				local level = UnitLevel(unit)
@@ -338,7 +338,7 @@ end
 
 local enabled
 local function Tooltip_RECEIVE(event, name)
-	if not enabled or not active or name ~= currentUnit.character.name then return end
+	if not enabled or not active or name ~= tostring(currentUnit.character) then return end
 	local tooltip, unit = GameTooltip:GetUnit()
 	if tooltip then
 		RenderTooltip()

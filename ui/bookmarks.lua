@@ -65,9 +65,9 @@ function XRPBookmarksList_update(self)
 		local button = buttons[i]
 		local character = xrp.characters.noRequest.byName[results[index]]
 		if index <= matches then
-			if not button.character or character.name ~= button.character.name then
+			if not button.character or tostring(character) ~= tostring(button.character) then
 				button.character = character
-				local name, realm = character.name:match(FULL_PLAYER_NAME:format("(.+)", "(.+)"))
+				local name, realm = tostring(character):match(FULL_PLAYER_NAME:format("(.+)", "(.+)"))
 				button.NA:SetText(xrp:Strip(character.fields.NA) or name)
 				button.Name:SetText(name)
 				button.Realm:SetText(xrp:RealmDisplayName(realm))
@@ -165,13 +165,13 @@ do
 		if arg1 == "XRP_VIEW_CACHED" then
 			xrp:View(UIDROPDOWNMENU_OPEN_MENU.character)
 		elseif arg1 == "XRP_VIEW_LIVE" then
-			xrp:View(UIDROPDOWNMENU_OPEN_MENU.character.name)
+			xrp:View(tostring(UIDROPDOWNMENU_OPEN_MENU.character))
 		elseif arg1 == "XRP_EXPORT" then
 			local character = UIDROPDOWNMENU_OPEN_MENU.character
-			xrp:ExportPopup(xrp:Ambiguate(character.name), character.exportText)
+			xrp:ExportPopup(xrp:Ambiguate(tostring(character)), tostring(character.fields))
 		elseif arg1 == "XRP_FRIEND" then
 			local character = UIDROPDOWNMENU_OPEN_MENU.character
-			AddOrRemoveFriend(Ambiguate(character.name, "none"), xrp:Strip(character.fields.NA))
+			AddOrRemoveFriend(Ambiguate(tostring(character), "none"), xrp:Strip(character.fields.NA))
 		elseif arg1 == "XRP_BOOKMARK" then
 			UIDROPDOWNMENU_OPEN_MENU.character.bookmark = not checked
 			if request.bookmark then
@@ -210,7 +210,7 @@ function XRPBookmarksEntry_OnClick(self, button, down)
 			if GF and GF ~= xrp.current.fields.GF then
 				self.baseMenuList[4].disabled = true
 			else
-				local name = Ambiguate(self.character.name, "none")
+				local name = Ambiguate(tostring(self.character), "none")
 				local isFriend
 				for i = 1, GetNumFriends() do
 					if GetFriendInfo(i) == name then

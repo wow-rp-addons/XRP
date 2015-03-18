@@ -257,7 +257,7 @@ function XRPEditorControls_OnLoad(self)
 		self.EditBox.Warning = self.Warning
 	end
 	if self.safeLength then
-		self.Warning.tooltipText = ("|cffcc0000Warning:|r %s is over %u characters."):format(self.fieldName, self.safeLength)
+		self.Warning.tooltipText = ("|cffcc0000Warning:|r %s is over %d characters."):format(self.fieldName, self.safeLength)
 	end
 	if self.field then
 		if not XRPEditor.fields then
