@@ -15,34 +15,17 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
+	<Script file="templates.lua"/>
 <!--
 	This file contains generic XRP frame templates. Component-specific
 	templates are held within the component's respective XML file.
 -->
 	<Button name="XRPTabButtonTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true">
 		<Scripts>
-			<OnClick>
-				local parent, id = self:GetParent(), self:GetID()
-				PanelTemplates_SetTab(parent, id)
-				for paneID, pane in ipairs(parent.panes) do
-					if paneID == id then
-						pane:Show()
-					else
-						pane:Hide()
-					end
-				end
-				if parent.helpPlates and HelpPlate_IsShowing(parent.helpPlates) then
-					local preclick = parent.HelpButton:GetScript("PreClick")
-					if preclick then
-						preclick(parent.HelpButton, "LeftButton", false)
-						HelpPlate_Show(parent.helpPlates, parent, self, true)
-					end
-				end
-				PlaySound("igCharacterInfoTab")
-			</OnClick>
+			<OnClick function="XRPTemplatesTabButton_OnClick"/>
 		</Scripts>
 	</Button>
-	<Frame name="XRPDropDownTemplate" virtual="true">
+	<Frame name="XRPDropDownTemplate" inherits="UIDropDownMenuTemplate" virtual="true">
 		<KeyValues>
 			<KeyValue key="initialize" value="EasyMenu_Initialize" type="global"/>
 			<KeyValue key="point" value="TOPLEFT"/>
@@ -50,92 +33,8 @@
 			<KeyValue key="xOffset" value="-11" type="number"/>
 			<KeyValue key="yOffset" value="22" type="number"/>
 		</KeyValues>
-		<Size x="40" y="32"/>
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture name="$parentLeft" file="Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame">
-					<Size x="25" y="64"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" y="17"/>
-					</Anchors>
-					<TexCoords left="0" right="0.1953125" top="0" bottom="1"/>
-				</Texture>
-				<Texture name="$parentMiddle" file="Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame">
-					<Size x="115" y="64"/>
-					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
-					</Anchors>
-					<TexCoords left="0.1953125" right="0.8046875" top="0" bottom="1"/>
-				</Texture>
-				<Texture name="$parentRight" file="Interface\Glues\CharacterCreate\CharacterCreate-LabelFrame">
-					<Size x="25" y="64"/>
-					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentMiddle" relativePoint="RIGHT"/>
-					</Anchors>
-					<TexCoords left="0.8046875" right="1" top="0" bottom="1"/>
-				</Texture>
-				<FontString name="$parentText" parentKey="MenuText" inherits="GameFontHighlightSmall" wordwrap="false" justifyH="RIGHT">
-					<Size x="0" y="10"/>
-					<Anchors>
-						<Anchor point="RIGHT" relativeTo="$parentRight" x="-43" y="2"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-			<Layer level="OVERLAY">
-				<Texture name="$parentIcon" hidden="true">
-					<Size x="16" y="16"/>
-					<Anchors>
-						<Anchor point="LEFT" x="30" y="2"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Button name="$parentButton" parentKey="ArrowButton" motionScriptsWhileDisabled="true">
-				<Size x="24" y="24"/>
-				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="$parentRight" x="-16" y="-18"/>
-				</Anchors>
-				<Scripts>
-					<!-- NOTE: This uses baseMenuList instead of the default
-						 menuList, as that variable is overwritten when a
-						 second-level menu pops out. -->
-					<OnClick>
-						local parent = self:GetParent()
-						ToggleDropDownMenu(nil, nil, parent, nil, nil, nil, parent.baseMenuList)
-						PlaySound("igMainMenuOptionCheckBoxOn")
-					</OnClick>
-				</Scripts>
-				<NormalTexture name="$parentNormalTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up">
-					<Size x="24" y="24"/>
-					<Anchors>
-						<Anchor point="RIGHT"/>
-					</Anchors>
-				</NormalTexture>
-				<PushedTexture name="$parentPushedTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Down">
-					<Size x="24" y="24"/>
-					<Anchors>
-						<Anchor point="RIGHT"/>
-					</Anchors>
-				</PushedTexture>
-				<DisabledTexture name="$parentDisabledTexture" file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Disabled">
-					<Size x="24" y="24"/>
-					<Anchors>
-						<Anchor point="RIGHT"/>
-					</Anchors>
-				</DisabledTexture>
-				<HighlightTexture name="$parentHighlightTexture" file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD">
-					<Size x="24" y="24"/>
-					<Anchors>
-						<Anchor point="RIGHT"/>
-					</Anchors>
-				</HighlightTexture>
-			</Button>
-		</Frames>
 		<Scripts>
-			<OnHide>
-				CloseDropDownMenus()
-			</OnHide>
+			<OnLoad function="XRPTemplatesDropDown_OnLoad"/>
 		</Scripts>
 	</Frame>
 	<CheckButton name="XRPCheckBoxTemplate" virtual="true">
@@ -163,7 +62,7 @@
 						<Anchor point="TOPRIGHT" x="5" y="5"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="TopTex" file="Interface\Common\Common-Input-Border-T">
+				<Texture file="Interface\Common\Common-Input-Border-T">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.TopLeftTex" relativePoint="TOPRIGHT"/>
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.TopRightTex" relativePoint="BOTTOMLEFT"/>
@@ -181,7 +80,7 @@
 						<Anchor point="BOTTOMRIGHT" x="5" y="-5"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="BottomTex" file="Interface\Common\Common-Input-Border-B">
+				<Texture file="Interface\Common\Common-Input-Border-B">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.BottomLeftTex" relativePoint="TOPRIGHT"/>
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRightTex" relativePoint="BOTTOMLEFT"/>
@@ -199,7 +98,7 @@
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRightTex" relativePoint="TOPRIGHT"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="MiddleTex" file="Interface\Common\Common-Input-Border-M">
+				<Texture file="Interface\Common\Common-Input-Border-M">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.LeftTex" relativePoint="TOPRIGHT"/>
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.RightTex" relativePoint="BOTTOMLEFT"/>
@@ -208,24 +107,7 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
-				self.ScrollBar:ClearAllPoints()
-				self.ScrollBar:SetPoint("TOPLEFT", self, "TOPRIGHT", -13, -11)
-				self.ScrollBar:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", -13, 9)
-				self.ScrollBar.ScrollDownButton:SetPoint("TOP", self.ScrollBar, "BOTTOM", 0, 4)
-				self.ScrollBar.ScrollUpButton:SetPoint("BOTTOM", self.ScrollBar, "TOP", 0, -4)
-				self.ScrollBar.ScrollUpButton:Disable()
-				self.ScrollBar:Hide()
-				if self.EditBox then
-					self.EditBox:SetWidth(self:GetWidth() - 18)
-				end
-				if self.FocusButton then
-					self.ScrollBar:SetFrameLevel(self.FocusButton:GetFrameLevel() + 2)
-					if self.EditBox then
-						self.EditBox:SetFrameLevel(self.FocusButton:GetFrameLevel() + 1)
-					end
-				end
-			</OnLoad>
+			<OnLoad function="XRPTemplatesScrollFrame_OnLoad"/>
 		</Scripts>
 	</ScrollFrame>
 	<Button name="XRPHelpButtonTemplate" parentKey="HelpButton" inherits="MainHelpPlateButton" virtual="true">
@@ -233,23 +115,24 @@
 			<Anchor point="TOPLEFT" x="39" y="20"/>
 		</Anchors>
 		<Scripts>
-			<OnClick>
-				local parent = self:GetParent()
-				if not HelpPlate_IsShowing(parent.helpPlates) then
-					CloseDropDownMenus()
-					HelpPlate_Show(parent.helpPlates, parent, self, true)
-				else
-					HelpPlate_Hide(true)
-				end
-			</OnClick>
-			<OnHide inherit="prepend">
-				if HelpPlate_IsShowing(self:GetParent().helpPlates) then
-					HelpPlate_Hide()
-				end
-			</OnHide>
+			<OnClick function="XRPTemplatesHelpButton_OnClick"/>
+			<OnHide inherit="append" function="XRPTemplatesHelpButton_OnHide"/>
 		</Scripts>
 	</Button>
-	<!-- This isn't strictly a template, but it fits here. -->
+	<Frame name="XRPButtonFrameTemplate" toplevel="true" inherits="ButtonFrameTemplate" hidden="true" enableMouse="true" virtual="true">
+		<Attributes>
+			<Attribute name="UIPanelLayout-defined" type="boolean" value="true"/>
+			<Attribute name="UIPanelLayout-enabled" type="boolean" value="true"/>
+			<Attribute name="UIPanelLayout-area" value="left"/>
+			<Attribute name="UIPanelLayout-whileDead" type="boolean" value="true"/>
+		</Attributes>
+		<Scripts>
+			<OnLoad function="XRPTemplatesPanel_OnLoad"/>
+			<OnShow function="XRPTemplatesPanel_OnShow"/>
+			<OnHide function="XRPTemplatesPanel_OnHide"/>
+		</Scripts>
+	</Frame>
+	<!-- This isn't a template, but it fits here. -->
 	<Frame name="XRPExport" toplevel="true" parent="UIParent" hidden="true" enableMouse="true" frameStrata="HIGH">
 		<Size x="500" y="350"/>
 		<Anchors>
@@ -273,7 +156,7 @@
 						<Anchor point="TOP" relativeKey="$parent.Header" y="-14"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="Instructions" inherits="GameFontWhite" text="Press Ctrl+C to copy or Escape to close.">
+				<FontString parentKey="Instructions" inherits="GameFontWhite" text="XRP_EXPORT_INSTRUCTIONS">
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" x="16" y="18"/>
 					</Anchors>
@@ -292,39 +175,24 @@
 					<Anchor point="BOTTOMRIGHT" x="-34" y="42"/>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
-						self.ScrollBar:ClearAllPoints()
-						self.ScrollBar:SetPoint("TOPLEFT", self, "TOPRIGHT", 7, -9)
-						self.ScrollBar:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", 7, 7)
-						self.ScrollBar.ScrollDownButton:SetPoint("TOP", self.ScrollBar, "BOTTOM", 0, 4)
-						self.ScrollBar.ScrollUpButton:SetPoint("BOTTOM", self.ScrollBar, "TOP", 0, -4)
-						self.ScrollBar.ScrollUpButton:Disable()
-						self.ScrollBar:Hide()
-						self.EditBox:SetWidth(self:GetWidth() - 18)
-					</OnLoad>
+					<OnLoad function="XRPExportText_OnLoad"/>
 				</Scripts>
 				<ScrollChild>
-					<EditBox parentKey="EditBox" multiLine="true" autoFocus="false">
+					<EditBox parentKey="EditBox" multiLine="true">
 						<Anchors>
 							<Anchor point="TOPLEFT"/>
 						</Anchors>
 						<Scripts>
 							<OnCursorChanged function="EditBox_HighlightText"/>
-							<OnTextChanged>
-								if userInput then
-									self:SetText(self:GetParent():GetParent().currentText or "")
-									EditBox_HighlightText(self)
-								end
-							</OnTextChanged>
-							<OnEscapePressed>
-								self:GetParent():GetParent():Hide()
-							</OnEscapePressed>
+							<OnEditFocusGained function="EditBox_HighlightText"/>
+							<OnTextChanged function="XRPExportTextEditBox_OnTextChanged"/>
+							<OnEscapePressed function="XRPTemplates_HideParentParent"/>
 						</Scripts>
 						<FontString inherits="GameFontWhite"/>
 					</EditBox>
 				</ScrollChild>
 			</ScrollFrame>
-			<Button inherits="UIPanelButtonTemplate" text="Close">
+			<Button inherits="UIPanelButtonTemplate" text="CLOSE">
 				<Size x="96" y="22"/>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" x="-28" y="14"/>
@@ -335,20 +203,8 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				if IsMacClient() then
-					self.Instructions:SetText("Press Cmd+C to copy or Escape to close.")
-				end
-			</OnLoad>
-			<OnShow>
-				self.Text.EditBox:SetFocus()
-				self.Text.EditBox:HighlightText()
-				PlaySound("igCharacterInfoOpen")
-			</OnShow>
-			<OnHide>
-				self.currentText = nil
-				PlaySound("igCharacterInfoClose")
-			</OnHide>
+			<OnShow function="XRPTemplatesPanel_OnShow"/>
+			<OnHide function="XRPTemplatesPanel_OnHide"/>
 		</Scripts>
 	</Frame>
 </Ui>

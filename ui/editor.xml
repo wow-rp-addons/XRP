@@ -15,25 +15,20 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-	<!-- Here there be dragons. XML dragons, the most dangerous sort. -->
-	<!-- It's dangerous to go alone, take a syntax highlighter. -->
-	<!-- No, seriously, though. This is the easiest way to get a good UI. -->
+	<Script file="editor.lua"/>
+	<Script file="automation.lua"/>
 	<CheckButton name="XRPEditorInheritCheckTemplate" inherits="XRPCheckBoxTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="tooltipText" value="Use parent profile if blank."/>
+		</KeyValues>
 		<Size x="12" y="12"/>
 		<Anchors>
 			<Anchor point="LEFT" relativeKey="$parent.Label" relativePoint="RIGHT"/>
 		</Anchors>
 		<Scripts>
-			<OnEnter>
-				GameTooltip:SetOwner(self, "ANCHOR_CURSOR")
-				GameTooltip:SetText("Use parent profile if blank.")
-				GameTooltip:Show()
-			</OnEnter>
+			<OnEnter function="XRPTemplates_TooltipText"/>
 			<OnLeave function="GameTooltip_Hide"/>
-			<OnClick>
-				local parent = self:GetParent()
-				parent:GetParent():GetParent():CheckFields(parent.field)
-			</OnClick>
+			<OnClick function="XRPEditorControls_CheckField"/>
 		</Scripts>
 	</CheckButton>
 	<Frame name="XRPEditorWarningTemplate" hidden="true" virtual="true">
@@ -49,12 +44,7 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnEnter>
-				GameTooltip:SetOwner(self, "ANCHOR_CURSOR")
-				local parent = self:GetParent()
-				GameTooltip:SetText(("|cffcc0000Warning:|r %s is over %u characters."):format(parent.fieldName, parent.safeLength))
-				GameTooltip:Show()
-			</OnEnter>
+			<OnEnter function="XRPTemplates_TooltipText"/>
 			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</Frame>
@@ -77,59 +67,12 @@
 			<Frame parentKey="Warning" inherits="XRPEditorWarningTemplate"/>
 		</Frames>
 		<Scripts>
-			<OnAttributeChanged>
-				if name == "contents" then
-					self.contents = value
-					self:SetText(value or "")
-					self:SetCursorPosition(0)
-					if value and #value > self.safeLength then
-						self.Warning:Show()
-					else
-						self.Warning:Hide()
-					end
-				elseif name == "inherited" then
-					if value == true and not self.inherited then
-						self:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b)
-						self.inherited = true
-					elseif value == false and self.inherited then
-						self:SetTextColor(self:GetFontObject():GetTextColor())
-						self.inherited = false
-					end
-				end
-			</OnAttributeChanged>
-			<OnTabPressed>
-				self:GetParent():GetParent().fields[self.nextField]:SetFocus()
-			</OnTabPressed>
-			<OnTextChanged>
-				if userInput then
-					local text = self:GetText()
-					self.contents = text ~= "" and text or nil
-					if #text > self.safeLength then
-						self.Warning:Show()
-					else
-						self.Warning:Hide()
-					end
-					self:GetParent():GetParent():CheckFields(self.field)
-				end
-			</OnTextChanged>
-			<OnEditFocusGained>
-				if self.inherited then
-					self:SetAttribute("inherited", false)
-					self:SetAttribute("contents", nil)
-				end
-			</OnEditFocusGained>
-			<OnEditFocusLost inherit="append">
-				self:ClearFocus()
-				self:GetParent():GetParent():CheckFields(self.field)
-			</OnEditFocusLost>
-			<OnLoad>
-				self.Label:SetText(self.fieldName)
-				local editor = self:GetParent():GetParent()
-				if not editor.fields then
-					editor.fields = {}
-				end
-				editor.fields[self.field] = self
-			</OnLoad>
+			<OnAttributeChanged function="XRPEditorControls_OnAttributeChanged"/>
+			<OnTabPressed function="XRPEditorControls_OnTabPressed"/>
+			<OnTextChanged function="XRPEditorControls_OnTextChanged"/>
+			<OnEditFocusGained function="XRPEditorControls_OnEditFocusGained"/>
+			<OnEditFocusLost function="XRPEditorControls_OnEditFocusLost"/>
+			<OnLoad function="XRPEditorControls_OnLoad"/>
 		</Scripts>
 		<FontString inherits="GameFontWhite"/>
 	</EditBox>
@@ -155,28 +98,12 @@
 			</Frame>
 			<Button parentKey="FocusButton" setAllPoints="true">
 				<Scripts>
-					<OnClick>
-						local editbox = self:GetParent().EditBox
-						editbox:SetFocus()
-						editbox:SetCursorPosition(#editbox:GetText())
-					</OnClick>
+					<OnClick function="XRPTemplatesScrollFrameFocusButton_OnClick"/>
 				</Scripts>
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad inherit="append">
-				self.Label:SetText(self.fieldName)
-				self.EditBox.field = self.field
-				self.EditBox.safeLength = self.safeLength
-				self.EditBox.Inherit = self.Inherit
-				self.EditBox.Warning = self.Warning
-
-				local editor = self:GetParent():GetParent()
-				if not editor.fields then
-					editor.fields = {}
-				end
-				editor.fields[self.field] = self.EditBox
-			</OnLoad>
+			<OnLoad inherit="prepend" function="XRPEditorControls_OnLoad"/>
 		</Scripts>
 		<ScrollChild>
 			<EditBox parentKey="EditBox" multiLine="true" autoFocus="false">
@@ -187,58 +114,14 @@
 					<Anchor point="TOPLEFT"/>
 				</Anchors>
 				<Scripts>
-					<OnAttributeChanged>
-						if name == "contents" then
-							self.contents = value
-							self:SetText(value or "")
-							self:SetCursorPosition(0)
-							if value and #value > self.safeLength then
-								self.Warning:Show()
-							else
-								self.Warning:Hide()
-							end
-						elseif name == "inherited" then
-							if value == true and not self.inherited then
-								self:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b)
-								self.inherited = true
-							elseif value == false and self.inherited then
-								self:SetTextColor(self:GetFontObject():GetTextColor())
-								self.inherited = false
-							end
-						end
-					</OnAttributeChanged>
-					<OnTabPressed>
-						local parent = self:GetParent()
-						parent:GetParent():GetParent().fields[parent.nextField]:SetFocus()
-					</OnTabPressed>
-					<OnTextChanged>
-						local parent = self:GetParent()
-						ScrollingEdit_OnTextChanged(self, parent)
-						if userInput then
-							local text = self:GetText()
-							self.contents = text ~= "" and text or nil
-							if #text > self.safeLength then
-								self.Warning:Show()
-							else
-								self.Warning:Hide()
-							end
-							parent:GetParent():GetParent():CheckFields(parent.field)
-						end
-					</OnTextChanged>
+					<OnAttributeChanged function="XRPEditorControls_OnAttributeChanged"/>
+					<OnTabPressed function="XRPEditorControls_OnTabPressed"/>
+					<OnTextChanged function="XRPEditorControls_OnTextChanged"/>
 					<OnCursorChanged function="ScrollingEdit_OnCursorChanged"/>
 					<OnUpdate function="ScrollingEdit_OnUpdate"/>
 					<OnEscapePressed function="EditBox_ClearFocus"/>
-					<OnEditFocusGained>
-						if self.inherited then
-							self:SetAttribute("inherited", false)
-							self:SetAttribute("contents", nil)
-						end
-					</OnEditFocusGained>
-					<OnEditFocusLost>
-						EditBox_ClearHighlight(self)
-						self:ClearFocus()
-						self:GetParent():GetParent():GetParent():CheckFields(self.field)
-					</OnEditFocusLost>
+					<OnEditFocusGained function="XRPEditorControls_OnEditFocusGained"/>
+					<OnEditFocusLost function="XRPEditorControls_OnEditFocusLost"/>
 				</Scripts>
 				<FontString inherits="GameFontWhite"/>
 			</EditBox>
@@ -254,33 +137,33 @@
 				</FontString>
 			</Layer>
 		</Layers>
+		<Scripts>
+			<OnLoad inherit="prepend" function="XRPEditorControls_OnLoad"/>
+			<OnAttributeChanged function="XRPEditorDropDown_OnAttributeChanged"/>
+		</Scripts>
 	</Frame>
 	<Button name="XRPEditorProfileControlTemplate" inherits="UIPanelButtonTemplate" virtual="true">
 		<Size x="28" y="28"/>
 		<Scripts>
-			<OnClick>
-				local editor = self:GetParent()
-				StaticPopup_Show(self.popupName, editor.Profiles.contents, nil, editor)
-			</OnClick>
-			<OnEnter>
-				GameTooltip:SetOwner(self, "ANCHOR_CURSOR")
-				GameTooltip:SetText(self.tooltipText)
-				GameTooltip:Show()
-			</OnEnter>
+			<OnClick function="XRPEditorPopup_OnClick"/>
+			<OnEnter function="XRPTemplates_TooltipText"/>
 			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</Button>
-	<Frame name="XRPEditor" toplevel="true" parent="UIParent" inherits="ButtonFrameTemplate" hidden="true" enableMouse="true">
+	<Frame name="XRPEditor" parent="UIParent" inherits="XRPButtonFrameTemplate">
 		<Size x="439" y="525"/>
 		<Frames>
-			<Button name="$parentHelpButton" inherits="XRPHelpButtonTemplate"/>
+			<Button name="$parentHelpButton" inherits="XRPHelpButtonTemplate">
+				<Scripts>
+					<PreClick function="XRPEditorHelpButton_PreClick"/>
+				</Scripts>
+			</Button>
 			<Frame parentKey="Appearance" parentArray="panes" hidden="false">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.Inset" relativePoint="TOPLEFT"/>
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset" relativePoint="BOTTOMRIGHT"/>
 				</Anchors>
 				<Frames>
-					<!-- Name -->
 					<EditBox parentKey="NA" inherits="XRPEditorSingleLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="NA"/>
@@ -293,7 +176,6 @@
 							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="14" y="-18"/>
 						</Anchors>
 					</EditBox>
-					<!-- Nickname -->
 					<EditBox parentKey="NI" inherits="XRPEditorSingleLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="NI"/>
@@ -306,7 +188,6 @@
 							<Anchor point="LEFT" relativeKey="$parent.NA" relativePoint="RIGHT" x="10"/>
 						</Anchors>
 					</EditBox>
-					<!-- Height -->
 					<EditBox parentKey="AH" inherits="XRPEditorSingleLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="AH"/>
@@ -318,7 +199,6 @@
 							<Anchor point="LEFT" relativeKey="$parent.NI" relativePoint="RIGHT" x="10"/>
 						</Anchors>
 					</EditBox>
-					<!-- Title -->
 					<EditBox parentKey="NT" inherits="XRPEditorSingleLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="NT"/>
@@ -331,7 +211,6 @@
 							<Anchor point="TOPLEFT" relativeKey="$parent.NA" relativePoint="BOTTOMLEFT" y="-15"/>
 						</Anchors>
 					</EditBox>
-					<!-- House/Clan/Tribe -->
 					<EditBox parentKey="NH" inherits="XRPEditorSingleLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="NH"/>
@@ -343,7 +222,6 @@
 							<Anchor point="LEFT" relativeKey="$parent.NT" relativePoint="RIGHT" x="10"/>
 						</Anchors>
 					</EditBox>
-					<!-- Weight -->
 					<EditBox parentKey="AW" inherits="XRPEditorSingleLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="AW"/>
@@ -355,7 +233,6 @@
 							<Anchor point="LEFT" relativeKey="$parent.NH" relativePoint="RIGHT" x="10"/>
 						</Anchors>
 					</EditBox>
-					<!-- Eyes -->
 					<EditBox parentKey="AE" inherits="XRPEditorSingleLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="AE"/>
@@ -367,7 +244,6 @@
 							<Anchor point="TOPLEFT" relativeKey="$parent.NT" relativePoint="BOTTOMLEFT" y="-15"/>
 						</Anchors>
 					</EditBox>
-					<!-- Race -->
 					<EditBox parentKey="RA" inherits="XRPEditorSingleLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="RA"/>
@@ -380,7 +256,6 @@
 							<Anchor point="LEFT" relativeKey="$parent.AE" relativePoint="RIGHT" x="10"/>
 						</Anchors>
 					</EditBox>
-					<!-- Class -->
 					<EditBox parentKey="RC" inherits="XRPEditorSingleLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="RC"/>
@@ -393,7 +268,6 @@
 							<Anchor point="LEFT" relativeKey="$parent.RA" relativePoint="RIGHT" x="10"/>
 						</Anchors>
 					</EditBox>
-					<!-- Currently -->
 					<EditBox parentKey="CU" inherits="XRPEditorSingleLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="CU"/>
@@ -406,7 +280,6 @@
 							<Anchor point="TOPLEFT" relativeKey="$parent.AE" relativePoint="BOTTOMLEFT" y="-15"/>
 						</Anchors>
 					</EditBox>
-					<!-- Description -->
 					<ScrollFrame name="$parentDE" parentKey="DE" inherits="XRPEditorMultiLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="DE"/>
@@ -426,7 +299,6 @@
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset" relativePoint="BOTTOMRIGHT"/>
 				</Anchors>
 				<Frames>
-					<!-- Age -->
 					<EditBox parentKey="AG" inherits="XRPEditorSingleLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="AG"/>
@@ -438,7 +310,6 @@
 							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="14" y="-18"/>
 						</Anchors>
 					</EditBox>
-					<!-- Home -->
 					<EditBox parentKey="HH" inherits="XRPEditorSingleLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="HH"/>
@@ -450,7 +321,6 @@
 							<Anchor point="LEFT" relativeKey="$parent.AG" relativePoint="RIGHT" x="10"/>
 						</Anchors>
 					</EditBox>
-					<!-- Birthplace -->
 					<EditBox parentKey="HB" inherits="XRPEditorSingleLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="HB"/>
@@ -462,7 +332,6 @@
 							<Anchor point="LEFT" relativeKey="$parent.HH" relativePoint="RIGHT" x="10"/>
 						</Anchors>
 					</EditBox>
-					<!-- Motto -->
 					<EditBox parentKey="MO" inherits="XRPEditorSingleLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="MO"/>
@@ -475,7 +344,6 @@
 							<Anchor point="TOPLEFT" relativeKey="$parent.AG" relativePoint="BOTTOMLEFT" y="-15"/>
 						</Anchors>
 					</EditBox>
-					<!-- History -->
 					<ScrollFrame name="$parentHI" parentKey="HI" inherits="XRPEditorMultiLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="HI"/>
@@ -487,7 +355,6 @@
 							<Anchor point="TOPLEFT" relativeKey="$parent.MO" relativePoint="BOTTOMLEFT" y="-20"/>
 						</Anchors>
 					</ScrollFrame>
-					<!-- Roleplaying style -->
 					<EditBox parentKey="FR" inherits="XRPEditorSingleLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="FR"/>
@@ -500,12 +367,13 @@
 							<Anchor point="TOPLEFT" relativeKey="$parent.HI" relativePoint="BOTTOMLEFT" y="-19"/>
 						</Anchors>
 					</EditBox>
-					<!-- Character status -->
 					<Frame name="$parentMenuFC" parentKey="FC" inherits="XRPEditorDropDownTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="FC"/>
 							<KeyValue key="fieldName" value="Character status"/>
 							<KeyValue key="inherited" value="false" type="boolean"/>
+							<KeyValue key="baseMenuList" value="XRPEditorFC_baseMenuList" type="global"/>
+							<KeyValue key="width" value="188" type="number"/>
 						</KeyValues>
 						<Frames>
 							<CheckButton parentKey="Inherit" inherits="XRPEditorInheritCheckTemplate">
@@ -517,114 +385,79 @@
 						<Anchors>
 							<Anchor point="LEFT" relativeKey="$parent.FR" relativePoint="RIGHT" x="-13" y="-5"/>
 						</Anchors>
-						<Scripts>
-							<OnAttributeChanged>
-								if name == "contents" then
-									self.contents = value
-									self.MenuText:SetText(xrp.values[self.field][value or "0"])
-								elseif name == "inherited" then
-									if value == true and not self.inherited then
-										self.MenuText:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b)
-										self.inherited = true
-									elseif value == false and self.inherited then
-										self.MenuText:SetTextColor(self.MenuText:GetFontObject():GetTextColor())
-										self.inherited = false
-									end
-								end
-							</OnAttributeChanged>
-							<OnLoad>
-								self.Label:SetText(self.fieldName)
-								self:GetParent():GetParent().fields[self.field] = self
-								UIDropDownMenu_SetWidth(self, 188, 0)
-							</OnLoad>
-						</Scripts>
 					</Frame>
 				</Frames>
 			</Frame>
-			<!-- Saved Character Profiles -->
 			<Button name="$parentProfiles" parentKey="Profiles" inherits="XRPDropDownTemplate">
+				<KeyValues>
+					<KeyValue key="preClick" value="XRPEditorProfiles_PreClick" type="global"/>
+					<KeyValue key="width" value="100" type="number"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-243" y="-27"/>
 				</Anchors>
-				<Scripts>
-					<OnLoad>
-						UIDropDownMenu_SetWidth(self, 100, 0)
-					</OnLoad>
-				</Scripts>
 			</Button>
-			<!-- + Profile Button -->
-			<Button parentKey="PlusProfile" inherits="XRPEditorProfileControlTemplate" text=" + ">
+			<Button parentKey="Plus" inherits="XRPEditorProfileControlTemplate" text=" + ">
 				<KeyValues>
-					<KeyValue key="popupName" value="XRP_EDITOR_ADD"/>
+					<KeyValue key="popup" value="XRP_EDITOR_ADD"/>
 					<KeyValue key="tooltipText" value="Add"/>
 				</KeyValues>
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.Profiles" relativePoint="RIGHT" x="34" y="2"/>
 				</Anchors>
 			</Button>
-			<!-- - Profile Button -->
-			<Button parentKey="MinusProfile" inherits="XRPEditorProfileControlTemplate" text=" - ">
+			<Button parentKey="Minus" inherits="XRPEditorProfileControlTemplate" text=" - ">
 				<KeyValues>
-					<KeyValue key="popupName" value="XRP_EDITOR_DELETE"/>
+					<KeyValue key="popup" value="XRP_EDITOR_DELETE"/>
 					<KeyValue key="tooltipText" value="Delete"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.PlusProfile" relativePoint="RIGHT"/>
+					<Anchor point="LEFT" relativeKey="$parent.Plus" relativePoint="RIGHT"/>
 				</Anchors>
 			</Button>
-			<!-- R Profile Button -->
-			<Button parentKey="RenameProfile" inherits="XRPEditorProfileControlTemplate" text=" R ">
+			<Button parentKey="Rename" inherits="XRPEditorProfileControlTemplate" text=" R ">
 				<KeyValues>
-					<KeyValue key="popupName" value="XRP_EDITOR_RENAME"/>
+					<KeyValue key="popup" value="XRP_EDITOR_RENAME"/>
 					<KeyValue key="tooltipText" value="Rename"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.MinusProfile" relativePoint="RIGHT"/>
+					<Anchor point="LEFT" relativeKey="$parent.Minus" relativePoint="RIGHT"/>
 				</Anchors>
 			</Button>
-			<!-- C Profile Button -->
-			<Button parentKey="CopyProfile" inherits="XRPEditorProfileControlTemplate" text=" C ">
+			<Button parentKey="Copy" inherits="XRPEditorProfileControlTemplate" text=" C ">
 				<KeyValues>
-					<KeyValue key="popupName" value="XRP_EDITOR_COPY"/>
+					<KeyValue key="popup" value="XRP_EDITOR_COPY"/>
 					<KeyValue key="tooltipText" value="Copy"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.RenameProfile" relativePoint="RIGHT"/>
+					<Anchor point="LEFT" relativeKey="$parent.Rename" relativePoint="RIGHT"/>
 				</Anchors>
 			</Button>
-			<!-- E Profile Button -->
-			<Button parentKey="ExportProfile" inherits="XRPEditorProfileControlTemplate" text=" E ">
+			<Button parentKey="Export" inherits="XRPEditorProfileControlTemplate" text=" E ">
 				<KeyValues>
 					<KeyValue key="tooltipText" value="Export"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.CopyProfile" relativePoint="RIGHT"/>
-				</Anchors>
-			</Button>
-			<!-- Auto Button -->
-			<Button parentKey="AutoButton" inherits="UIPanelButtonTemplate" text="Auto">
-				<Size x="50" y="28"/>
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.ExportProfile" relativePoint="RIGHT" x="12"/>
+					<Anchor point="LEFT" relativeKey="$parent.Copy" relativePoint="RIGHT"/>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						local auto = self:GetParent().Automation
-						if auto:IsVisible() then
-							auto:Hide()
-						else
-							auto:Show()
-						end
-					</OnClick>
+					<OnClick function="XRPEditorExport_OnClick"/>
 				</Scripts>
 			</Button>
-			<!-- Parent Profile -->
+			<Button parentKey="Auto" inherits="UIPanelButtonTemplate" text="Auto">
+				<Size x="50" y="28"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Export" relativePoint="RIGHT" x="12"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="XRPTemplatesPanelSubframeToggle_OnClick"/>
+				</Scripts>
+			</Button>
 			<Button parentKey="Parent" inherits="MagicButtonTemplate">
 				<Size x="192" y="22"/>
 				<KeyValues>
 					<KeyValue key="initialize" value="EasyMenu_Initialize" type="global"/>
-					<!-- This is kinda a hack. -->
-					<KeyValue key="SetHeight" value="assert" type="global"/>
+					<KeyValue key="SetHeight" value="XRPTemplates_DoNothing" type="global"/>
 					<KeyValue key="xOffset" value="0" type="number"/>
 					<KeyValue key="yOffset" value="0" type="number"/>
 				</KeyValues>
@@ -632,33 +465,27 @@
 					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT"/>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						ToggleDropDownMenu(nil, nil, self, self, nil, nil, self.baseMenuList)
-						PlaySound("igMainMenuOptionCheckBoxOn")
-					</OnClick>
-					<OnHide>
-						CloseDropDownMenus()
-					</OnHide>
+					<PreClick function="XRPEditorParent_PreClick"/>
+					<OnClick function="XRPTemplatesMenu_OnClick"/>
+					<OnHide function="XRPTemplates_CloseDropDownMenus"/>
 				</Scripts>
 			</Button>
-			<!-- Save Button -->
-			<Button parentKey="SaveButton" inherits="MagicButtonTemplate" text="Save">
+			<Button parentKey="Save" inherits="MagicButtonTemplate" text="SAVE">
 				<Size x="96" y="22"/>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT"/>
 				</Anchors>
+				<Scripts>
+					<OnClick function="XRPEditorSave_OnClick"/>
+				</Scripts>
 			</Button>
-			<!-- Revert Button -->
-			<Button parentKey="RevertButton" inherits="MagicButtonTemplate" text="Revert">
+			<Button parentKey="Revert" inherits="MagicButtonTemplate" text="REVERT">
 				<Size x="96" y="22"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativeKey="$parent.SaveButton" relativePoint="TOPLEFT"/>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.Save" relativePoint="TOPLEFT"/>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						local parent = self:GetParent()
-						parent:Load(parent.Profiles.contents)
-					</OnClick>
+					<OnClick function="XRPEditorRevert_OnClick"/>
 				</Scripts>
 			</Button>
 			<Button name="$parentTab1" parentKey="Tab1" inherits="XRPTabButtonTemplate" id="1" text="Appearance">
@@ -717,7 +544,6 @@
 								<Anchor point="TOP" relativeKey="$parent.Header" y="-14"/>
 							</Anchors>
 						</FontString>
-						<!-- Warning -->
 						<FontString parentKey="Warning" inherits="GameFontRedSmall" maxLines="2" hidden="true">
 							<Size x="185" y="36"/>
 							<Anchors>
@@ -732,31 +558,28 @@
 							<Anchor point="TOPRIGHT" x="-2" y="-3"/>
 						</Anchors>
 					</Button>
-					<!-- Form -->
-					<Frame name="$parentAutoForm" parentKey="Form" inherits="XRPEditorDropDownTemplate">
+					<Frame name="$parentForm" parentKey="Form" inherits="XRPEditorDropDownTemplate">
+						<KeyValues>
+							<KeyValue key="fieldName" value="Form/set:"/>
+							<KeyValue key="preClick" value="XRPEditorAutomationForm_PreClick" type="global"/>
+							<KeyValue key="baseMenuList" value="XRPEditorAutomationForm_baseMenuList" type="global"/>
+							<KeyValue key="width" value="159" type="number"/>
+						</KeyValues>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" y="-68"/>
 						</Anchors>
-						<Scripts>
-							<OnLoad>
-								UIDropDownMenu_SetWidth(self, 159, 0)
-								self.Label:SetText("Form/set:")
-							</OnLoad>
-						</Scripts>
 					</Frame>
-					<!-- Profile -->
-					<Frame name="$parentAutoProfile" parentKey="Profile" inherits="XRPEditorDropDownTemplate">
+					<Frame name="$parentProfile" parentKey="Profile" inherits="XRPEditorDropDownTemplate">
+						<KeyValues>
+							<KeyValue key="fieldName" value="Profile for selected form/set:"/>
+							<KeyValue key="preClick" value="XRPEditorAutomationProfile_PreClick" type="global"/>
+							<KeyValue key="width" value="159" type="number"/>
+						</KeyValues>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.Form" relativePoint="BOTTOMLEFT" y="-8"/>
 						</Anchors>
-						<Scripts>
-							<OnLoad>
-								UIDropDownMenu_SetWidth(self, 159, 0)
-								self.Label:SetText("Profile for selected form/set:")
-							</OnLoad>
-						</Scripts>
 					</Frame>
-					<Button parentKey="Save" inherits="UIPanelButtonTemplate" text="Save">
+					<Button parentKey="Save" inherits="UIPanelButtonTemplate" text="SAVE">
 						<Size x="90" y="20"/>
 						<Anchors>
 							<Anchor point="BOTTOMRIGHT" x="-14" y="13"/>
@@ -764,8 +587,11 @@
 						<NormalFont style="GameFontNormalSmall"/>
 						<HighlightFont style="GameFontHighlightSmall"/>
 						<DisabledFont style="GameFontDisableSmall"/>
+						<Scripts>
+							<OnClick function="XRPEditorAutomationSave_OnClick"/>
+						</Scripts>
 					</Button>
-					<Button parentKey="Revert" inherits="UIPanelButtonTemplate" text="Revert">
+					<Button parentKey="Revert" inherits="UIPanelButtonTemplate" text="REVERT">
 						<Size x="90" y="20"/>
 						<Anchors>
 							<Anchor point="TOPRIGHT" relativeKey="$parent.Save" relativePoint="TOPLEFT"/>
@@ -773,43 +599,27 @@
 						<NormalFont style="GameFontNormalSmall"/>
 						<HighlightFont style="GameFontHighlightSmall"/>
 						<DisabledFont style="GameFontDisableSmall"/>
+						<Scripts>
+							<OnClick function="XRPEditorAutomationRevert_OnClick"/>
+						</Scripts>
 					</Button>
 				</Frames>
 				<Scripts>
-					<OnHide>
-						PlaySound("UChatScrollButton")
-					</OnHide>
+					<OnShow function="XRPEditorAutomation_OnShow"/>
+					<OnHide function="XRPTemplatesPane_OnHide"/>
 				</Scripts>
 			</Frame>
 		</Frames>
 		<Attributes>
-			<Attribute name="UIPanelLayout-defined" type="boolean" value="true"/>
-			<Attribute name="UIPanelLayout-enabled" type="boolean" value="true"/>
-			<Attribute name="UIPanelLayout-area" value="left"/>
 			<Attribute name="UIPanelLayout-pushable" type="number" value="4"/>
 			<Attribute name="UIPanelLayout-height" type="number" value="545"/>
-			<Attribute name="UIPanelLayout-whileDead" type="boolean" value="true"/>
 		</Attributes>
-		<Scripts>
-			<OnLoad>
-				PanelTemplates_SetNumTabs(self, #self.panes)
-				PanelTemplates_SetTab(self, 1)
-				self.TitleText:SetText("Profile Editor")
-				self.modified = {}
-			</OnLoad>
-			<OnShow>
-				SetPortraitTexture(self.portrait, "player")
-				PlaySound("igCharacterInfoOpen")
-				if not self.Profiles.contents or self.RevertButton:GetButtonState() == "DISABLED" and self.Profiles.contents ~= xrpSaved.selected then
-					self:Load(xrpSaved.selected)
-				end
-			</OnShow>
-			<OnHide>
-				self.Automation:Hide()
-				PlaySound("igCharacterInfoClose")
-			</OnHide>
-		</Scripts>
+		<KeyValues>
+			<KeyValue key="titleText" value="Profile Editor"/>
+			<KeyValue key="portraitUnit" value="player"/>
+			<KeyValue key="Edit" value="XRPEditor_Edit" type="global"/>
+			<KeyValue key="CheckFields" value="XRPEditor_CheckFields" type="global"/>
+			<KeyValue key="subframe" value="Automation"/>
+		</KeyValues>
 	</Frame>
-	<Script file="automation.lua"/>
-	<Script file="editor.lua"/>
 </Ui>

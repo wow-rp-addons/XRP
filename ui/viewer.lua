@@ -160,7 +160,7 @@ do
 			current.hide = not checked
 		end
 	end
-	XRPViewer.Menu.baseMenuList = {
+	XRPViewerMenu_baseMenuList = {
 		{ text = "Export...", arg1 = "XRP_EXPORT", notCheckable = true, func = Menu_Click, },
 		{ text = "Refresh", arg1 = "XRP_REFRESH", notCheckable = true, func = Menu_Click, },
 		{ text = "Add friend", arg1 = "XRP_FRIEND", notCheckable = true, func = Menu_Click, },
@@ -170,7 +170,30 @@ do
 	}
 end
 
-XRPViewer.Menu:SetScript("PreClick", function(self, button, down)
+function XRPViewerControls_OnLoad(self)
+	if self.Label then
+		self.Label:SetText(self.fieldName)
+	end
+	if self.field then
+		if not XRPViewer.fields then
+			XRPViewer.fields = {}
+		end
+		XRPViewer.fields[self.field] = self.EditBox or self.Text
+	end
+end
+
+function XRPViewerScrollFrameEditBox_OnLoad(self)
+	self:Disable()
+	self:SetHyperlinksEnabled(true)
+end
+
+function XRPViewerScrollFrameEditBox_OnHyperlinkClicked(self, linkData, link, button)
+	if button == "LeftButton" then
+		StaticPopup_Show("XRP_URL", nil, nil, linkData)
+	end
+end
+
+function XRPViewerMenu_PreClick(self, button, down)
 	local GF = current.fields.GF
 	local isOwn = current.own
 	if GF and GF ~= xrp.current.fields.GF then
@@ -200,9 +223,13 @@ XRPViewer.Menu:SetScript("PreClick", function(self, button, down)
 		self.baseMenuList[4].disabled = nil
 		self.baseMenuList[5].disabled = nil
 	end
-end)
+end
 
-XRPViewer.helpPlates = xrpPrivate.Help.Viewer
+function XRPViewer_OnLoad(self)
+	self.fields.NA = self.TitleText
+	self.fields.VA = self.VA
+end
+
 xrp:HookEvent("FIELD", FIELD)
 xrp:HookEvent("RECEIVE", RECEIVE)
 xrp:HookEvent("NOCHANGE", RECEIVE)

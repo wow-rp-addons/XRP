@@ -21,7 +21,7 @@ local addonName, xrpPrivate = ...
 
 local FRAME_POS = { x = 0, y = -22 }
 
-local BOOKMARKS_HELP = {
+XRPBookmarks_helpPlates = {
 	FramePos = FRAME_POS,
 	FrameSize = { width = 338, height = 499 },
 	{
@@ -50,7 +50,7 @@ local BOOKMARKS_HELP = {
 	},
 }
 
-local EDITOR_MAIN_HELP = {
+local EDITOR_MAIN = {
 	{
 		ButtonPos = { x = 74, y = 3 },
 		HighLightBox = { x = 112, y = -3, width = 259, height = 32 },
@@ -77,7 +77,7 @@ local EDITOR_MAIN_HELP = {
 	},
 }
 
-local EDITOR_AUTO_HELP = {
+local EDITOR_AUTO = {
 	{
 		ButtonPos = { x = 610, y = -60 },
 		HighLightBox = { x = 456, y = -63, width = 177, height = 38 },
@@ -98,7 +98,7 @@ local EDITOR_AUTO_HELP = {
 	},
 }
 
-local EDITOR_APPEARANCE_HELP = {
+local EDITOR_APPEARANCE = {
 	{
 		ButtonPos = { x = 167, y = -38 },
 		HighLightBox = { x = 12, y = -45, width = 193, height = 32 },
@@ -167,7 +167,7 @@ local EDITOR_APPEARANCE_HELP = {
 	},
 }
 
-local EDITOR_BIOGRAPHY_HELP = {
+local EDITOR_BIOGRAPHY = {
 	{
 		ButtonPos = { x = 46, y = -38 },
 		HighLightBox = { x = 12, y = -45, width = 72, height = 32 },
@@ -215,71 +215,87 @@ local EDITOR_BIOGRAPHY_HELP = {
 local LARGE_SIZE = { width = 439, height = 500 }
 local AUTO_SIZE = { width = 648, height = 500 }
 
-local EDITOR_APPEARANCE_NOAUTO_HELP
+local EDITOR_APPEARANCE_NOAUTO
 do
 	local plates = {
 		FramePos = FRAME_POS,
 		FrameSize = LARGE_SIZE,
 	}
-	for i, helpPlate in ipairs(EDITOR_MAIN_HELP) do
+	for i, helpPlate in ipairs(EDITOR_MAIN) do
 		plates[#plates + 1] = helpPlate
 	end
-	for i, helpPlate in ipairs(EDITOR_APPEARANCE_HELP) do
+	for i, helpPlate in ipairs(EDITOR_APPEARANCE) do
 		plates[#plates + 1] = helpPlate
 	end
-	EDITOR_APPEARANCE_NOAUTO_HELP = plates
+	EDITOR_APPEARANCE_NOAUTO = plates
 end
-local EDITOR_APPEARANCE_AUTO_HELP
+local EDITOR_APPEARANCE_AUTO
 do
 	local plates = {
 		FramePos = FRAME_POS,
 		FrameSize = AUTO_SIZE,
 	}
-	for i, helpPlate in ipairs(EDITOR_MAIN_HELP) do
+	for i, helpPlate in ipairs(EDITOR_MAIN) do
 		plates[#plates + 1] = helpPlate
 	end
-	for i, helpPlate in ipairs(EDITOR_AUTO_HELP) do
+	for i, helpPlate in ipairs(EDITOR_AUTO) do
 		plates[#plates + 1] = helpPlate
 	end
-	for i, helpPlate in ipairs(EDITOR_APPEARANCE_HELP) do
+	for i, helpPlate in ipairs(EDITOR_APPEARANCE) do
 		plates[#plates + 1] = helpPlate
 	end
-	EDITOR_APPEARANCE_AUTO_HELP = plates
+	EDITOR_APPEARANCE_AUTO = plates
 end
 
-local EDITOR_BIOGRAPHY_NOAUTO_HELP
+local EDITOR_BIOGRAPHY_NOAUTO
 do
 	local plates = {
 		FramePos = FRAME_POS,
 		FrameSize = LARGE_SIZE,
 	}
-	for i, helpPlate in ipairs(EDITOR_MAIN_HELP) do
+	for i, helpPlate in ipairs(EDITOR_MAIN) do
 		plates[#plates + 1] = helpPlate
 	end
-	for i, helpPlate in ipairs(EDITOR_BIOGRAPHY_HELP) do
+	for i, helpPlate in ipairs(EDITOR_BIOGRAPHY) do
 		plates[#plates + 1] = helpPlate
 	end
-	EDITOR_BIOGRAPHY_NOAUTO_HELP = plates
+	EDITOR_BIOGRAPHY_NOAUTO = plates
 end
-local EDITOR_BIOGRAPHY_AUTO_HELP
+local EDITOR_BIOGRAPHY_AUTO
 do
 	local plates = {
 		FramePos = FRAME_POS,
 		FrameSize = AUTO_SIZE,
 	}
-	for i, helpPlate in ipairs(EDITOR_MAIN_HELP) do
+	for i, helpPlate in ipairs(EDITOR_MAIN) do
 		plates[#plates + 1] = helpPlate
 	end
-	for i, helpPlate in ipairs(EDITOR_AUTO_HELP) do
+	for i, helpPlate in ipairs(EDITOR_AUTO) do
 		plates[#plates + 1] = helpPlate
 	end
-	for i, helpPlate in ipairs(EDITOR_BIOGRAPHY_HELP) do
+	for i, helpPlate in ipairs(EDITOR_BIOGRAPHY) do
 		plates[#plates + 1] = helpPlate
 	end
-	EDITOR_BIOGRAPHY_AUTO_HELP = plates
+	EDITOR_BIOGRAPHY_AUTO = plates
 end
 
-local VIEWER_HELP = {
+function XRPEditorHelpButton_PreClick(self, button, down)
+	if XRPEditor.panes[1]:IsVisible() then
+		if XRPEditor.Automation:IsVisible() then
+			XRPEditor.helpPlates = EDITOR_APPEARANCE_AUTO
+		else
+			XRPEditor.helpPlates = EDITOR_APPEARANCE_NOAUTO
+		end
+	else
+		if XRPEditor.Automation:IsVisible() then
+			XRPEditor.helpPlates = EDITOR_BIOGRAPHY_AUTO
+		else
+			XRPEditor.helpPlates = EDITOR_BIOGRAPHY_NOAUTO
+		end
+	end
+end
+
+XRPViewer_helpPlates = {
 	FramePos = FRAME_POS,
 	FrameSize = LARGE_SIZE,
 	{
@@ -318,13 +334,4 @@ local VIEWER_HELP = {
 		ToolTipDir = "UP",
 		ToolTipText = "The incoming status of the profile currently being viewed is displayed here. In general, it will show whether the profile is in the process of receiving or whether it has been received.",
 	},
-}
-
-xrpPrivate.Help = {
-	Bookmarks = BOOKMARKS_HELP,
-	EditorAppearanceNoAuto = EDITOR_APPEARANCE_NOAUTO_HELP,
-	EditorAppearanceAuto = EDITOR_APPEARANCE_AUTO_HELP,
-	EditorBiographyNoAuto = EDITOR_BIOGRAPHY_NOAUTO_HELP,
-	EditorBiographyAuto = EDITOR_BIOGRAPHY_AUTO_HELP,
-	Viewer = VIEWER_HELP,
 }

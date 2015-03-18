@@ -63,20 +63,20 @@ local function ToggleButtons(self)
 	self.Save:SetEnabled(changes)
 end
 
-XRPEditor.Automation.Save:SetScript("OnClick", function(self, button, down)
+function XRPEditorAutomationSave_OnClick(self, button, down)
 	local parent = self:GetParent()
 	local form, profile = parent.Form.contents, parent.Profile.contents
 	xrpPrivate.auto[form] = profile
 	ToggleButtons(parent)
-end)
+end
 
-XRPEditor.Automation.Revert:SetScript("OnClick", function(self, button, down)
+function XRPEditorAutomationRevert_OnClick(self, button, down)
 	local parent = self:GetParent()
 	local formProfile = xrpPrivate.auto[parent.Form.contents]
 	parent.Profile.contents = formProfile
-	parent.Profile.MenuText:SetText(formProfile or "None")
+	parent.Profile.Text:SetText(formProfile or "None")
 	ToggleButtons(parent)
-end)
+end
 
 do
 	local function Profile_Checked(self)
@@ -86,19 +86,19 @@ do
 	local function Profile_Click(self, arg1, arg2, checked)
 		if not checked then
 			UIDROPDOWNMENU_OPEN_MENU.contents = arg1
-			UIDROPDOWNMENU_OPEN_MENU.MenuText:SetText(arg1 or "None")
+			UIDROPDOWNMENU_OPEN_MENU.Text:SetText(arg1 or "None")
 			ToggleButtons(UIDROPDOWNMENU_OPEN_MENU:GetParent())
 		end
 	end
 
 	local NONE = { text = "None", checked = Profile_Checked, arg1 = nil, func = Profile_Click }
-	XRPEditor.Automation.Profile.ArrowButton:SetScript("PreClick", function(self, button, down)
+	function XRPEditorAutomationProfile_PreClick(self, button, down)
 		local parent = self:GetParent()
 		parent.baseMenuList = { NONE }
 		for i, profile in ipairs(xrpPrivate.profiles:List()) do
 			parent.baseMenuList[i + 1] = { text = profile, checked = Profile_Checked, arg1 = profile, func = Profile_Click }
 		end
-	end)
+	end
 end
 
 local equipSets = {}
@@ -107,10 +107,10 @@ do
 		if not checked then
 			local set = (UIDROPDOWNMENU_MENU_VALUE or "DEFAULT") .. self.value
 			UIDROPDOWNMENU_OPEN_MENU.contents = set
-			UIDROPDOWNMENU_OPEN_MENU.MenuText:SetText(MakeWords(set))
+			UIDROPDOWNMENU_OPEN_MENU.Text:SetText(MakeWords(set))
 			local Profile, setProfile = UIDROPDOWNMENU_OPEN_MENU:GetParent().Profile, xrpPrivate.auto[set]
 			Profile.contents = setProfile
-			Profile.MenuText:SetText(setProfile or "None")
+			Profile.Text:SetText(setProfile or "None")
 			ToggleButtons(UIDROPDOWNMENU_OPEN_MENU:GetParent())
 		end
 		CloseDropDownMenus()
@@ -122,7 +122,7 @@ do
 
 	local noSet = not isWorgen and not playerClass and { text = FORM_NAMES["DEFAULT"], value = "", checked = equipSets_Check, func = equipSets_Click, } or nil
 
-	XRPEditor.Automation.Form.ArrowButton:SetScript("PreClick", function(self, button, down)
+	function XRPEditorAutomationForm_PreClick(self, button, down)
 		table.wipe(equipSets) -- Keep table reference the same.
 		equipSets[1] = noSet
 		local numsets = GetNumEquipmentSets()
@@ -142,17 +142,17 @@ do
 				disabled = true,
 			}
 		end
-	end)
+	end
 end
 
 do
 	local function forms_Click(self, arg1, arg2, checked)
 		if not checked then
 			UIDROPDOWNMENU_OPEN_MENU.contents = self.value
-			UIDROPDOWNMENU_OPEN_MENU.MenuText:SetText(MakeWords(self.value))
+			UIDROPDOWNMENU_OPEN_MENU.Text:SetText(MakeWords(self.value))
 			local Profile, formProfile = UIDROPDOWNMENU_OPEN_MENU:GetParent().Profile, xrpPrivate.auto[self.value]
 			Profile.contents = formProfile
-			Profile.MenuText:SetText(formProfile or "None")
+			Profile.Text:SetText(formProfile or "None")
 			ToggleButtons(UIDROPDOWNMENU_OPEN_MENU:GetParent())
 		end
 		CloseDropDownMenus()
@@ -164,7 +164,7 @@ do
 
 	if isWorgen then
 		if playerClass == "DRUID" then
-			XRPEditor.Automation.Form.baseMenuList = {
+			XRPEditorAutomationForm_baseMenuList = {
 				{ -- Worgen
 					text = FORM_NAMES["DEFAULT"],
 					value = "DEFAULT",
@@ -233,7 +233,7 @@ do
 				},
 			}
 		elseif playerClass == "PRIEST" then
-			XRPEditor.Automation.Form.baseMenuList = {
+			XRPEditorAutomationForm_baseMenuList = {
 				{ -- Worgen
 					text = FORM_NAMES["DEFAULT"],
 					value = "DEFAULT",
@@ -268,7 +268,7 @@ do
 				},
 			}
 		else
-			XRPEditor.Automation.Form.baseMenuList = {
+			XRPEditorAutomationForm_baseMenuList = {
 				{ -- Worgen
 					text = FORM_NAMES["DEFAULT"],
 					value = "DEFAULT",
@@ -289,7 +289,7 @@ do
 		end
 	else
 		if playerClass == "DRUID" then
-			XRPEditor.Automation.Form.baseMenuList = {
+			XRPEditorAutomationForm_baseMenuList = {
 				{ -- Humanoid
 					text = FORM_NAMES["DEFAULT"],
 					value = "DEFAULT",
@@ -350,7 +350,7 @@ do
 				}
 			}
 		elseif playerClass == "PRIEST" then
-			XRPEditor.Automation.Form.baseMenuList = {
+			XRPEditorAutomationForm_baseMenuList = {
 				{ -- Standard
 					text = FORM_NAMES["DEFAULT"],
 					value = "DEFAULT",
@@ -369,7 +369,7 @@ do
 				},
 			}
 		elseif playerClass == "SHAMAN" then
-			XRPEditor.Automation.Form.baseMenuList = {
+			XRPEditorAutomationForm_baseMenuList = {
 				{ -- Humanoid
 					text = FORM_NAMES["DEFAULT"],
 					value = "DEFAULT",
@@ -386,22 +386,22 @@ do
 				},
 			}
 		else
-			XRPEditor.Automation.Form.baseMenuList = equipSets
+			XRPEditorAutomationForm_baseMenuList = equipSets
 		end
 	end
 end
 
-XRPEditor.Automation:SetScript("OnShow", function(self)
+function XRPEditorAutomation_OnShow(self)
 	local selectedForm, needsUpdate = self.Form.contents, false
 	if not selectedForm then
 		selectedForm = "DEFAULT"
 		self.Form.contents = "DEFAULT"
-		self.Form.MenuText:SetText(MakeWords("DEFAULT"))
+		self.Form.Text:SetText(MakeWords("DEFAULT"))
 	end
 	if selectedForm:find("\29", nil, true) then
 		if not GetEquipmentSetInfoByName(selectedForm:match("^.*\29(.+)$")) then
 			selectedForm = "DEFAULT"
-			self.Form.MenuText:SetText(MakeWords(selectedForm))
+			self.Form.Text:SetText(MakeWords(selectedForm))
 			self.Form.contents = selectedForm
 			needsUpdate = true
 		end
@@ -410,8 +410,8 @@ XRPEditor.Automation:SetScript("OnShow", function(self)
 	if needsUpdate then
 		local newProfile = xrpPrivate.auto[selectedForm]
 		self.Profile.contents = newProfile
-		self.Profile.MenuText:SetText(newProfile or "None")
+		self.Profile.Text:SetText(newProfile or "None")
 	end
 	ToggleButtons(self)
 	PlaySound("UChatScrollButton")
-end)
+end

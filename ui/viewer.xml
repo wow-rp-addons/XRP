@@ -15,9 +15,7 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-	<!-- Here there be dragons. XML dragons, the most dangerous sort. -->
-	<!-- It's dangerous to go alone, take a syntax highlighter. -->
-	<!-- No, seriously, though. This is the easiest way to get a good UI. -->
+	<Script file="viewer.lua"/>
 	<Frame name="XRPViewerTextLineTemplate" enableMouse="true" virtual="true">
 		<Size x="280" y="13"/>
 		<Layers>
@@ -26,19 +24,8 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
-				local viewer = self:GetParent()
-				if not viewer.fields then
-					viewer.fields = {}
-				end
-				viewer.fields[self.field] = self.Text
-			</OnLoad>
-			<OnEnter>
-				if self.Text:IsTruncated() then
-					GameTooltip:SetOwner(self, "ANCHOR_CURSOR")
-					GameTooltip:SetText(self.Text:GetText())
-				end
-			</OnEnter>
+			<OnLoad function="XRPViewerControls_OnLoad"/>
+			<OnEnter function="XRPTemplates_TooltipTruncated"/>
 			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</Frame>
@@ -79,20 +66,8 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
-				self.Label:SetText(self.fieldName)
-				local viewer = self:GetParent():GetParent()
-				if not viewer.fields then
-					viewer.fields = {}
-				end
-				viewer.fields[self.field] = self.Text
-			</OnLoad>
-			<OnEnter>
-				if self.Text:IsTruncated() then
-					GameTooltip:SetOwner(self, "ANCHOR_CURSOR")
-					GameTooltip:SetText(self.Text:GetText())
-				end
-			</OnEnter>
+			<OnLoad function="XRPViewerControls_OnLoad"/>
+			<OnEnter function="XRPTemplates_TooltipTruncated"/>
 			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</Frame>
@@ -107,15 +82,7 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad inherit="append">
-				self.Label:SetText(self.fieldName)
-
-				local viewer = self:GetParent():GetParent()
-				if not viewer.fields then
-					viewer.fields = {}
-				end
-				viewer.fields[self.field] = self.EditBox
-			</OnLoad>
+			<OnLoad inherit="prepend" function="XRPViewerControls_OnLoad"/>
 		</Scripts>
 		<ScrollChild>
 			<EditBox parentKey="EditBox" multiLine="true" autoFocus="false">
@@ -123,34 +90,24 @@
 					<Anchor point="TOPLEFT"/>
 				</Anchors>
 				<Scripts>
-					<OnTextChanged>
-						self:SetCursorPosition(0)
-						self:GetParent():SetVerticalScroll(0)
-					</OnTextChanged>
-					<OnLoad>
-						self:Disable()
-						self:SetHyperlinksEnabled(true)
-					</OnLoad>
-					<OnHyperlinkClick>
-						StaticPopup_Show("XRP_URL", nil, nil, link)
-					</OnHyperlinkClick>
+					<OnTextChanged function="XRPTemplatesScrollFrameEditBox_ResetToStart"/>
+					<OnLoad function="XRPViewerScrollFrameEditBox_OnLoad"/>
+					<OnHyperlinkClick function="XRPViewerScrollFrameEditBox_OnHyperlinkClicked"/>
 				</Scripts>
 				<FontString inherits="GameFontWhite"/>
 			</EditBox>
 		</ScrollChild>
 	</ScrollFrame>
-	<Frame name="XRPViewer" toplevel="true" parent="UIParent" inherits="ButtonFrameTemplate" hidden="true" enableMouse="true">
+	<Frame name="XRPViewer" parent="UIParent" inherits="XRPButtonFrameTemplate">
 		<Size x="439" y="525"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<!-- Version Information -->
 				<FontString parentKey="VA" inherits="GameFontNormalSmall">
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" x="8" y="10"/>
 					</Anchors>
 					<Color r="0.5" g="0.5" b="0.5"/>
 				</FontString>
-				<!-- Incoming Information -->
 				<FontString parentKey="XC" inherits="GameFontNormalSmall">
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-12" y="10"/>
@@ -194,7 +151,6 @@
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset" relativePoint="BOTTOMRIGHT"/>
 				</Anchors>
 				<Frames>
-					<!-- Race -->
 					<Frame parentKey="RA" inherits="XRPViewerSingleLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="RA"/>
@@ -205,7 +161,6 @@
 							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="14" y="-18"/>
 						</Anchors>
 					</Frame>
-					<!-- Class -->
 					<Frame parentKey="RC" inherits="XRPViewerSingleLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="RC"/>
@@ -216,7 +171,6 @@
 							<Anchor point="LEFT" relativeKey="$parent.RA" relativePoint="RIGHT" x="10"/>
 						</Anchors>
 					</Frame>
-					<!-- Height -->
 					<Frame parentKey="AH" inherits="XRPViewerSingleLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="AH"/>
@@ -227,7 +181,6 @@
 							<Anchor point="LEFT" relativeKey="$parent.RC" relativePoint="RIGHT" x="10"/>
 						</Anchors>
 					</Frame>
-					<!-- Eyes -->
 					<Frame parentKey="AE" inherits="XRPViewerSingleLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="AE"/>
@@ -238,7 +191,6 @@
 							<Anchor point="TOPLEFT" relativeKey="$parent.RA" relativePoint="BOTTOMLEFT" y="-15"/>
 						</Anchors>
 					</Frame>
-					<!-- Weight -->
 					<Frame parentKey="AW" inherits="XRPViewerSingleLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="AW"/>
@@ -249,7 +201,6 @@
 							<Anchor point="LEFT" relativeKey="$parent.AE" relativePoint="RIGHT" x="10"/>
 						</Anchors>
 					</Frame>
-					<!-- Currently -->
 					<ScrollFrame name="$parentCU" parentKey="CU" inherits="XRPViewerMultiLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="CU"/>
@@ -260,7 +211,6 @@
 							<Anchor point="TOPLEFT" relativeKey="$parent.AE" relativePoint="BOTTOMLEFT" y="-20"/>
 						</Anchors>
 					</ScrollFrame>
-					<!-- Description -->
 					<ScrollFrame name="$parentDE" parentKey="DE" inherits="XRPViewerMultiLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="DE"/>
@@ -279,7 +229,6 @@
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset" relativePoint="BOTTOMRIGHT"/>
 				</Anchors>
 				<Frames>
-					<!-- Home -->
 					<Frame parentKey="HH" inherits="XRPViewerSingleLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="HH"/>
@@ -290,7 +239,6 @@
 							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="14" y="-18"/>
 						</Anchors>
 					</Frame>
-					<!-- Age -->
 					<Frame parentKey="AG" inherits="XRPViewerSingleLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="AG"/>
@@ -301,7 +249,6 @@
 							<Anchor point="TOPLEFT" relativeKey="$parent.HH" relativePoint="BOTTOMLEFT" y="-15"/>
 						</Anchors>
 					</Frame>
-					<!-- Birthplace -->
 					<Frame parentKey="HB" inherits="XRPViewerSingleLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="HB"/>
@@ -312,7 +259,6 @@
 							<Anchor point="LEFT" relativeKey="$parent.AG" relativePoint="RIGHT" x="10"/>
 						</Anchors>
 					</Frame>
-					<!-- Motto -->
 					<ScrollFrame name="$parentMO" parentKey="MO" inherits="XRPViewerMultiLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="MO"/>
@@ -323,7 +269,6 @@
 							<Anchor point="TOPLEFT" relativeKey="$parent.AG" relativePoint="BOTTOMLEFT" y="-20"/>
 						</Anchors>
 					</ScrollFrame>
-					<!-- History -->
 					<ScrollFrame name="$parentHI" parentKey="HI" inherits="XRPViewerMultiLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="HI"/>
@@ -340,25 +285,21 @@
 				<KeyValues>
 					<KeyValue key="initialize" value="EasyMenu_Initialize" type="global"/>
 					<KeyValue key="displayMode" value="MENU"/>
-					<!-- This is kinda a hack. -->
-					<KeyValue key="SetHeight" value="assert" type="global"/>
+					<KeyValue key="SetHeight" value="XRPTemplates_DoNothing" type="global"/>
 					<KeyValue key="point" value="TOPRIGHT"/>
 					<KeyValue key="relativePoint" value="BOTTOMRIGHT"/>
 					<KeyValue key="xOffset" value="0" type="number"/>
 					<KeyValue key="yOffset" value="0" type="number"/>
+					<KeyValue key="baseMenuList" value="XRPViewerMenu_baseMenuList" type="global"/>
 				</KeyValues>
 				<Size x="23" y="19"/>
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-23" y="-1"/>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						ToggleDropDownMenu(nil, nil, self, self, nil, nil, self.baseMenuList)
-						PlaySound("igMainMenuOptionCheckBoxOn")
-					</OnClick>
-					<OnHide>
-						CloseDropDownMenus()
-					</OnHide>
+					<PreClick function="XRPViewerMenu_PreClick"/>
+					<OnClick function="XRPTemplatesMenu_OnClick"/>
+					<OnHide function="XRPTemplates_CloseDropDownMenus"/>
 				</Scripts>
 			</Button>
 			<Button name="$parentTab1" parentKey="Tab1" inherits="XRPTabButtonTemplate" id="1" text="Appearance">
@@ -373,30 +314,16 @@
 			</Button>
 		</Frames>
 		<Attributes>
-			<Attribute name="UIPanelLayout-defined" type="boolean" value="true"/>
-			<Attribute name="UIPanelLayout-enabled" type="boolean" value="true"/>
-			<Attribute name="UIPanelLayout-area" value="left"/>
 			<Attribute name="UIPanelLayout-pushable" type="number" value="2"/>
 			<Attribute name="UIPanelLayout-height" type="number" value="545"/>
-			<Attribute name="UIPanelLayout-whileDead" type="boolean" value="true"/>
 		</Attributes>
 		<KeyValues>
+			<KeyValue key="titleText" value="Profile Viewer"/>
+			<KeyValue key="helpPlates" value="XRPViewer_helpPlates" type="global"/>
 			<KeyValue key="nextRefresh" value="0" type="number"/>
 		</KeyValues>
 		<Scripts>
-			<OnLoad>
-				PanelTemplates_SetNumTabs(self, 2)
-				PanelTemplates_SetTab(self, 1)
-				self.fields.NA = self.TitleText
-				self.fields.VA = self.VA
-			</OnLoad>
-			<OnShow>
-				PlaySound("igCharacterInfoOpen")
-			</OnShow>
-			<OnHide>
-				PlaySound("igCharacterInfoClose")
-			</OnHide>
+			<OnLoad inherit="prepend" function="XRPViewer_OnLoad"/>
 		</Scripts>
 	</Frame>
-	<Script file="viewer.lua"/>
 </Ui>

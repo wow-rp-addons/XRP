@@ -17,7 +17,7 @@
 
 local addonName, xrpPrivate = ...
 
-local results
+local request, results
 
 -- Unlike CLASS_ICON_TCOORDS these aren't in a global.
 local RACE_ICON_TCOORDS = {
@@ -49,7 +49,7 @@ local RACE_ICON_TCOORDS = {
 	["PANDAREN_FEMALE"] = { 0.750, 0.875, 0.5, 0.75 },
 }
 
-function XRPBookmarks.List:update()
+function XRPBookmarksList_update(self)
 	local offset = HybridScrollFrame_GetOffset(self)
 	local buttons = self.buttons
 	local matches = #results
@@ -136,24 +136,24 @@ function XRPBookmarks.List:update()
 	HybridScrollFrame_Update(self, 72 * matches, 72)
 end
 
-function XRPBookmarks:Refresh()
-	results = xrp.characters:Filter(self.request)
+function XRPBookmarks_Refresh(self)
+	results = xrp.characters:Filter(request)
 	self.List.range = #results * 72
 	self.List:update()
-	self.List.scrollBar:SetValue(self.request.offset)
-	if self.request.fullText then
+	self.List.scrollBar:SetValue(request.offset)
+	if request.fullText then
 		self.FilterText.Instructions:SetText("Search")
 		self.FilterText.FullTextWarning:Show()
 	else
 		self.FilterText.Instructions:SetText("Name")
 		self.FilterText.FullTextWarning:Hide()
 	end
-	self.FilterText:SetText(self.request.text or "")
+	self.FilterText:SetText(request.text or "")
 end
 
 do
 	local function Menu_Checked(self)
-		if self.disabled then
+		if self.disabled or not UIDROPDOWNMENU_INIT_MENU.character then
 			return false
 		elseif self.arg1 == "XRP_BOOKMARK" then
 			return UIDROPDOWNMENU_INIT_MENU.character.bookmark ~= nil
@@ -174,19 +174,19 @@ do
 			AddOrRemoveFriend(Ambiguate(character.name, "none"), xrp:Strip(character.fields.NA))
 		elseif arg1 == "XRP_BOOKMARK" then
 			UIDROPDOWNMENU_OPEN_MENU.character.bookmark = not checked
-			if XRPBookmarks.request.bookmark then
-				XRPBookmarks.request.offset = XRPBookmarks.List.scrollBar:GetValue()
+			if request.bookmark then
+				request.offset = XRPBookmarks.List.scrollBar:GetValue()
 				XRPBookmarks:Refresh()
 			end
 		elseif arg1 == "XRP_HIDE" then
 			UIDROPDOWNMENU_OPEN_MENU.character.hide = not checked
-			if not XRPBookmarks.request.showHidden then
-				XRPBookmarks.request.offset = XRPBookmarks.List.scrollBar:GetValue()
+			if not request.showHidden then
+				request.offset = XRPBookmarks.List.scrollBar:GetValue()
 				XRPBookmarks:Refresh()
 			end
 		end
 	end
-	XRPBookmarks.baseMenuList = {
+	XRPBookmarksEntry_baseMenuList = {
 		{ text = "View (cached)...", arg1 = "XRP_VIEW_CACHED", notCheckable = true, checked = Menu_Checked, func = Menu_Click, },
 		{ text = "View (live)...", arg1 = "XRP_VIEW_LIVE", notCheckable = true, checked = Menu_Checked, func = Menu_Click, },
 		{ text = "Export...", arg1 = "XRP_EXPORT", notCheckable = true, checked = Menu_Checked, func = Menu_Click, },
@@ -197,32 +197,66 @@ do
 	}
 end
 
+function XRPBookmarksEntry_OnClick(self, button, down)
+	if not self.character then return end
+	if button == "RightButton" then
+		self.Selected:Show()
+		if self.character.own then
+			self.baseMenuList[4].disabled = true
+			self.baseMenuList[5].disabled = true
+			self.baseMenuList[6].disabled = true
+		else
+			local GF = self.character.fields.GF
+			if GF and GF ~= xrp.current.fields.GF then
+				self.baseMenuList[4].disabled = true
+			else
+				local name = Ambiguate(self.character.name, "none")
+				local isFriend
+				for i = 1, GetNumFriends() do
+					if GetFriendInfo(i) == name then
+						isFriend = true
+						break
+					end
+				end
+				self.baseMenuList[4].disabled = isFriend
+			end
+			self.baseMenuList[5].disabled = nil
+			self.baseMenuList[6].disabled = nil
+		end
+		ToggleDropDownMenu(nil, nil, self, "cursor", nil, nil, self.baseMenuList)
+		PlaySound("igMainMenuOptionCheckBoxOn")
+	end
+end
+
+function XRPBookmarksEntry_onHide(level)
+	UIDROPDOWNMENU_OPEN_MENU.Selected:Hide()
+end
+
 do
 	local lists = {}
 	local function Filter_Checked(self)
-		return not XRPBookmarks.request[self.arg1][self.arg2]
+		return not request[self.arg1][self.arg2]
 	end
 	local function Filter_Click(self, arg1, arg2, checked)
 		if arg2 == "ALL" then
 			for i, value in pairs(lists[arg1]) do
-				XRPBookmarks.request[arg1][value] = nil
+				request[arg1][value] = nil
 			end
-			XRPBookmarks.request[arg1].UNKNOWN = nil
+			request[arg1].UNKNOWN = nil
 			UIDropDownMenu_Refresh(XRPBookmarks.FilterButton.Menu, nil, UIDROPDOWNMENU_MENU_LEVEL)
 		elseif arg2 == "NONE" then
 			for i, value in pairs(lists[arg1]) do
-				XRPBookmarks.request[arg1][value] = true
+				request[arg1][value] = true
 			end
-			XRPBookmarks.request[arg1].UNKNOWN = true
+			request[arg1].UNKNOWN = true
 			UIDropDownMenu_Refresh(XRPBookmarks.FilterButton.Menu, nil, UIDROPDOWNMENU_MENU_LEVEL)
 		else
-			XRPBookmarks.request[arg1][arg2] = not checked
+			request[arg1][arg2] = not checked
 		end
-		XRPBookmarks.request.offset = 0
+		request.offset = 0
 		XRPBookmarks:Refresh()
 	end
-	local faction = UnitFactionGroup("player")
-	if faction == "Horde" then
+	if UnitFactionGroup("player") == "Horde" then
 		lists.faction = { "Horde", "Alliance", "Neutral" }
 		lists.race = { "Orc", "Scourge", "Tauren", "Troll", "BloodElf", "Goblin", "Pandaren", "Human", "Dwarf", "NightElf", "Gnome", "Draenei", "Worgen" }
 	else
@@ -258,11 +292,11 @@ do
 	classMenu[#classMenu + 1] = { text = "Unknown", isNotRadio = true, keepShownOnClick = true, arg1 = "class", arg2 = "UNKNOWN", checked = Filter_Checked, func = Filter_Click, }
 
 	local function Filter_Radio_Checked(self)
-		return XRPBookmarks.request[self.arg1] == self.arg2
+		return request[self.arg1] == self.arg2
 	end
 	local function Filter_Radio_Click(self, arg1, arg2, checked)
-		XRPBookmarks.request[arg1] = arg2
-		XRPBookmarks.request.offset = 0
+		request[arg1] = arg2
+		request.offset = 0
 		XRPBookmarks:Refresh()
 		UIDropDownMenu_Refresh(XRPBookmarks.FilterButton.Menu, nil, UIDROPDOWNMENU_MENU_LEVEL)
 	end
@@ -274,15 +308,14 @@ do
 	}
 
 	local function Filter_Toggle_Checked(self)
-		return XRPBookmarks.request[self.arg1] == true
+		return request[self.arg1] == true
 	end
 	local function Filter_Toggle_Click(self, arg1, arg2, checked)
-		XRPBookmarks.request[arg1] = checked or nil
-		XRPBookmarks.request.offset = 0
+		request[arg1] = checked or nil
+		request.offset = 0
 		XRPBookmarks:Refresh()
 	end
 	local function Filter_Reset(self, arg1, arg2, checked)
-		local request = XRPBookmarks.request
 		request.text = nil
 		for faction, filtered in pairs(request.faction) do
 			request.faction[faction] = nil
@@ -299,7 +332,7 @@ do
 		request.offset = 0
 		XRPBookmarks:Refresh()
 	end
-	XRPBookmarks.FilterButton.baseMenuList = {
+	XRPBookmarksFilterButton_baseMenuList = {
 		{ text = "Faction", notCheckable = true, hasArrow = true, menuList = factionMenu, },
 		{ text = "Race", notCheckable = true, hasArrow = true, menuList = raceMenu, },
 		{ text = "Class", notCheckable = true, hasArrow = true, menuList = classMenu, },
@@ -311,18 +344,59 @@ do
 	}
 end
 
-XRPBookmarks.HelpButton:SetScript("PreClick", function(self, button, down)
+function XRPBookmarksFilterText_OnTextChanged(self, userInput)
+	if userInput and request.fullText or userInput == nil and not request.fullText then return end
+	local text = self:GetText()
+	if text == "" then
+		text = nil
+	end
+	request.text = text
+	XRPBookmarks:Refresh()
+end
+
+function XRPBookmarksHelpButton_PreClick(self, button, down)
 	if not results or #results == 0 then
 		XRPBookmarks.Tab4:Click()
 	end
-end)
+end
 
-XRPBookmarks.helpPlates = xrpPrivate.Help.Bookmarks
-XRPBookmarks.Tab1.request = { bookmark = true, sortType = "NA", defaultSortType = "NA", offset = 0, lastRefresh = 0, faction = {}, race = {}, class = {} }
-XRPBookmarks.Tab2.request = { own = true, sortType = "NA", defaultSortType = "NA", offset = 0, lastRefresh = 0, faction = {}, race = {}, class = {} }
-XRPBookmarks.Tab3.request = { maxAge = 10800, sortType = "date", defaultSortType = "date", offset = 0, lastRefresh = 0, faction = {}, race = {}, class = {} }
-XRPBookmarks.Tab4.request = { offset = 0, lastRefresh = 0, faction = {}, race = {}, class = {} }
-XRPBookmarks.request = XRPBookmarks.Tab1.request
+function XRPBookmarksRefreshButton_OnClick(self, button, down)
+	request.offset = 0
+	XRPBookmarks:Refresh()
+	PlaySound("igMainMenuOptionCheckBoxOn")
+end
+
+do
+	local requests = {
+		{ bookmark = true, sortType = "NA", defaultSortType = "NA", offset = 0, lastRefresh = 0, faction = {}, race = {}, class = {} }, -- Bookmarks
+		{ own = true, sortType = "NA", defaultSortType = "NA", offset = 0, lastRefresh = 0, faction = {}, race = {}, class = {} }, -- Own
+		{ maxAge = 10800, sortType = "date", defaultSortType = "date", offset = 0, lastRefresh = 0, faction = {}, race = {}, class = {} }, -- Recent
+		{ offset = 0, lastRefresh = 0, faction = {}, race = {}, class = {} }, -- All
+	}
+	request = requests[1]
+
+	function XRPBookmarksTab_OnClick(self, button, down)
+		CloseDropDownMenus()
+		request.offset = XRPBookmarks.List.scrollBar:GetValue()
+		local now = GetTime()
+		request.lastRefresh = now
+		local tabID = self:GetID()
+		request = requests[tabID]
+		if self.resetOffset and now - 30 > request.lastRefresh then
+			request.offset = 0
+		end
+		XRPBookmarks:Refresh()
+		PanelTemplates_SetTab(XRPBookmarks, tabID)
+		XRPBookmarks.TitleText:SetText(self.titleText)
+		PlaySound("igCharacterInfoTab")
+	end
+end
+
+function XRPBookmarks_OnUpdate(self, elapsed)
+	self:SetScript("OnUpdate", nil)
+	HybridScrollFrame_CreateButtons(self.List, "XRPBookmarksEntryTemplate")
+	self:Refresh()
+end
 
 function xrp:Bookmarks(showBookmarks)
 	if XRPBookmarks:IsShown() then
