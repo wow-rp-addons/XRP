@@ -15,7 +15,7 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local addonName, xrpPrivate = ...
+local addonName, xrpLocal = ...
 
 function xrp:UnitName(unit)
 	if not (unit == "player" or UnitIsPlayer(unit)) then
@@ -88,7 +88,7 @@ function xrp:Weight(weight, units)
 	if not number then
 		return weight
 	elseif not units then
-		units = xrpPrivate.settings.display.weight
+		units = xrpLocal.settings.display.weight
 	end
 	if units == "msp" then -- MSP internal format: kg without units as string.
 		return ("%.1f"):format(number + 0.05)
@@ -132,7 +132,7 @@ function xrp:Height(height, units)
 	if not number then
 		return height
 	elseif not units then
-		units = xrpPrivate.settings.display.height
+		units = xrpLocal.settings.display.height
 	end
 	if units == "msp" then -- MSP internal format: cm without units as string.
 		return ("%u"):format(number + 0.5)
@@ -153,11 +153,11 @@ function xrp:Height(height, units)
 end
 
 function xrp:Status(desiredStatus)
-	local profileStatus = xrpPrivate.profiles[xrpSaved.selected].fields.FC
+	local profileStatus = xrpLocal.profiles[xrpSaved.selected].fields.FC
 	if not profileStatus then
-		local inherit = xrpPrivate.profiles[xrpSaved.selected].inherits.FC
-		if xrpPrivate.profiles[inherit] then
-			profileStatus = xrpPrivate.profiles[inherit].fields.FC
+		local inherit = xrpLocal.profiles[xrpSaved.selected].inherits.FC
+		if xrpLocal.profiles[inherit] then
+			profileStatus = xrpLocal.profiles[inherit].fields.FC
 		end
 		if not profileStatus then
 			profileStatus = "0"

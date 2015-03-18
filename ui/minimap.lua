@@ -16,7 +16,7 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local addonName, xrpPrivate = ...
+local addonName, xrpLocal = ...
 
 local Button
 
@@ -101,14 +101,14 @@ do
 		{ text = "Bookmarks...", notCheckable = true, func = function() xrp:Bookmarks(true) end, },
 		{ text = "Viewer...", notCheckable = true, func = function() xrp:View() end, },
 		{ text = "Editor...", notCheckable = true, func = function() XRPEditor:Edit() end, },
-		{ text = "Options...", notCheckable = true, func = function() xrpPrivate:Options() end, },
-		{ text = "Cancel", notCheckable = true, func = xrpPrivate.noFunc, },
+		{ text = "Options...", notCheckable = true, func = function() xrpLocal:Options() end, },
+		{ text = "Cancel", notCheckable = true, func = xrpLocal.noFunc, },
 	}
 
 	do
 		local function Profiles_Click(self, profileName, arg2, checked)
-			if not checked and xrpPrivate.profiles[profileName] then
-				xrpPrivate.profiles[profileName]:Activate()
+			if not checked and xrpLocal.profiles[profileName] then
+				xrpLocal.profiles[profileName]:Activate()
 			end
 			CloseDropDownMenus()
 		end
@@ -126,7 +126,7 @@ do
 			elseif button == "RightButton" then
 				table.wipe(Profiles_menuList)
 				local selected = xrpSaved.selected
-				for i, profileName in ipairs(xrpPrivate.profiles:List()) do
+				for i, profileName in ipairs(xrpLocal.profiles:List()) do
 					Profiles_menuList[#Profiles_menuList + 1] = { text = profileName, checked = selected == profileName, arg1 = profileName, func = Profiles_Click, }
 				end
 				XRPTemplatesMenu_OnClick(self, button, down)
@@ -155,7 +155,7 @@ do
 			["TRICORNER-BOTTOMRIGHT"] = { true, true, true, false },
 		}
 		function UpdatePositionAttached(self)
-			local angle = math.rad(xrpPrivate.settings.minimap.angle)
+			local angle = math.rad(xrpLocal.settings.minimap.angle)
 			local x, y, q = math.cos(angle), math.sin(angle), 1
 			if x < 0 then q = q + 1 end
 			if y > 0 then q = q + 2 end
@@ -175,7 +175,7 @@ do
 		local px, py = GetCursorPosition()
 		local scale = Minimap:GetEffectiveScale()
 		px, py = px / scale, py / scale
-		xrpPrivate.settings.minimap.angle = math.deg(math.atan2(py - my, px - mx)) % 360
+		xrpLocal.settings.minimap.angle = math.deg(math.atan2(py - my, px - mx)) % 360
 		UpdatePositionAttached(self)
 	end
 
@@ -199,25 +199,25 @@ end
 
 function XRPButtonDetached_OnDragStop(self)
 	self:StopMovingOrSizing()
-	xrpPrivate.settings.minimap.point, xrpPrivate.settings.minimap.x, xrpPrivate.settings.minimap.y = select(3, self:GetPoint())
+	xrpLocal.settings.minimap.point, xrpLocal.settings.minimap.x, xrpLocal.settings.minimap.y = select(3, self:GetPoint())
 	self:UnlockHighlight()
 end
 
-xrpPrivate.settingsToggles.minimap = {
+xrpLocal.settingsToggles.minimap = {
 	enabled = function(setting)
 		if setting then
 			if Button == nil then
 				xrp:HookEvent("UPDATE", XRPButton_UpdateIcon)
 				xrp:HookEvent("RECEIVE", XRPButton_UpdateIcon)
 			end
-			if xrpPrivate.settings.minimap.detached then
+			if xrpLocal.settings.minimap.detached then
 				if Button and Button == LibDBIcon10_XRP then
 					Button:UnregisterAllEvents()
 					Button:Hide()
 				end
 				if not XRPButton then
 					CreateFrame("Button", "XRPButton", UIParent, "XRPButtonTemplate")
-					XRPButton:SetPoint(xrpPrivate.settings.minimap.point, UIParent, xrpPrivate.settings.minimap.point, xrpPrivate.settings.minimap.x, xrpPrivate.settings.minimap.y)
+					XRPButton:SetPoint(xrpLocal.settings.minimap.point, UIParent, xrpLocal.settings.minimap.point, xrpLocal.settings.minimap.x, xrpLocal.settings.minimap.y)
 				end
 				Button = XRPButton
 			else
@@ -242,7 +242,7 @@ xrpPrivate.settingsToggles.minimap = {
 		end
 	end,
 	detached = function(setting)
-		if not xrpPrivate.settings.minimap.enabled or not Button or setting and Button == XRPButton or not setting and Button == LibDBIcon10_XRP then return end
-		xrpPrivate.settingsToggles.minimap.enabled(xrpPrivate.settings.minimap.enabled)
+		if not xrpLocal.settings.minimap.enabled or not Button or setting and Button == XRPButton or not setting and Button == LibDBIcon10_XRP then return end
+		xrpLocal.settingsToggles.minimap.enabled(xrpLocal.settings.minimap.enabled)
 	end,
 }

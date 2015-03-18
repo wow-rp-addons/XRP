@@ -15,7 +15,7 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local addonName, xrpPrivate = ...
+local addonName, xrpLocal = ...
 
 local current, failed
 
@@ -100,9 +100,9 @@ local function RECEIVE(event, name)
 end
 
 local function UPDATE(event, field)
-	if current.name == xrpPrivate.playerWithRealm then
+	if current.name == xrpLocal.playerWithRealm then
 		if field then
-			FIELD("FIELD", xrpPrivate.playerWithRealm, field)
+			FIELD("FIELD", xrpLocal.playerWithRealm, field)
 		else
 			Load(current)
 		end
@@ -166,7 +166,7 @@ do
 		{ text = "Add friend", arg1 = "XRP_FRIEND", notCheckable = true, func = Menu_Click, },
 		{ text = "Bookmark", arg1 = "XRP_BOOKMARK", isNotRadio = true, checked = Menu_Checked, func = Menu_Click, },
 		{ text = "Hide profile", arg1 = "XRP_HIDE", isNotRadio = true, checked = Menu_Checked, func = Menu_Click, },
-		{ text = "Close", notCheckable = true, func = xrpPrivate.noFunc, },
+		{ text = "Close", notCheckable = true, func = xrpLocal.noFunc, },
 	}
 end
 
@@ -277,7 +277,7 @@ function xrp:View(player)
 	end
 end
 
-xrpPrivate.settingsToggles.display.movableViewer = function(setting)
+xrpLocal.settingsToggles.display.movableViewer = function(setting)
 	local wasVisible = XRPViewer:IsVisible()
 	if wasVisible then
 		HideUIPanel(XRPViewer)
@@ -295,7 +295,7 @@ xrpPrivate.settingsToggles.display.movableViewer = function(setting)
 			XRPViewer.TitleRegion = XRPViewer:CreateTitleRegion()
 		end
 		XRPViewer.TitleRegion:SetAllPoints("XRPViewerTitleBg")
-		xrpPrivate.settingsToggles.display.closeOnEscapeViewer(xrpPrivate.settings.display.closeOnEscapeViewer)
+		xrpLocal.settingsToggles.display.closeOnEscapeViewer(xrpLocal.settings.display.closeOnEscapeViewer)
 	elseif XRPViewer.TitleRegion then
 		XRPViewer:SetAttribute("UIPanelLayout-defined", true)
 		XRPViewer:SetAttribute("UIPanelLayout-enabled", true)
@@ -303,14 +303,14 @@ xrpPrivate.settingsToggles.display.movableViewer = function(setting)
 		XRPViewer:SetClampedToScreen(false)
 		XRPViewer:SetFrameStrata("MEDIUM")
 		XRPViewer.TitleRegion:SetPoint("BOTTOMLEFT", XRPViewer, "TOPLEFT")
-		xrpPrivate.settingsToggles.display.closeOnEscapeViewer(false)
+		xrpLocal.settingsToggles.display.closeOnEscapeViewer(false)
 	end
 	if wasVisible then
 		ShowUIPanel(XRPViewer)
 	end
 end
 local closeOnEscape
-xrpPrivate.settingsToggles.display.closeOnEscapeViewer = function(setting)
+xrpLocal.settingsToggles.display.closeOnEscapeViewer = function(setting)
 	if setting and XRPViewer.TitleRegion then
 		if not closeOnEscape then
 			UISpecialFrames[#UISpecialFrames + 1] = "XRPViewer"

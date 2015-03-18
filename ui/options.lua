@@ -15,16 +15,16 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local addonName, xrpPrivate = ...
+local addonName, xrpLocal = ...
 
 function XRPOptions_Get(self)
-	return xrpPrivate.settings[self.xrpTable][self.xrpSetting]
+	return xrpLocal.settings[self.xrpTable][self.xrpSetting]
 end
 
 function XRPOptions_Set(self, value)
-	xrpPrivate.settings[self.xrpTable][self.xrpSetting] = value
-	if xrpPrivate.settingsToggles[self.xrpTable] and xrpPrivate.settingsToggles[self.xrpTable][self.xrpSetting] then
-		xrpPrivate.settingsToggles[self.xrpTable][self.xrpSetting](value)
+	xrpLocal.settings[self.xrpTable][self.xrpSetting] = value
+	if xrpLocal.settingsToggles[self.xrpTable] and xrpLocal.settingsToggles[self.xrpTable][self.xrpSetting] then
+		xrpLocal.settingsToggles[self.xrpTable][self.xrpSetting](value)
 	end
 end
 
@@ -233,7 +233,7 @@ function XRPOptionsCheckButton_OnDisable(self)
 end
 
 XRP_OPTIONS_AUTHOR = "|cff99b3e6Author:|r " .. GetAddOnMetadata(addonName, "Author")
-XRP_OPTIONS_VERSION = "|cff99b3e6Version:|r " .. xrpPrivate.version
+XRP_OPTIONS_VERSION = "|cff99b3e6Version:|r " .. xrpLocal.version
 XRP_OPTIONS_LICENSE =
 [[This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -256,7 +256,7 @@ do
 	end
 	local function Channels_OnClick(self, channel, arg2, checked)
 		settingsList[channel].value = checked
-		xrpPrivate.settings.chat[channel] = checked
+		xrpLocal.settings.chat[channel] = checked
 	end
 
 	local function ChannelsTable(...)
@@ -269,7 +269,7 @@ do
 	end
 
 	local function AddChannel(channel, menuList)
-		local setting = xrpPrivate.settings.chat[channel]
+		local setting = xrpLocal.settings.chat[channel]
 		local oldSetting = setting
 		if setting == nil then
 			setting = false
@@ -288,7 +288,7 @@ do
 			AddChannel(channel, self.baseMenuList, settingsList)
 			seenChannels[channel] = true
 		end
-		for channel, setting in pairs(xrpPrivate.settings.chat) do
+		for channel, setting in pairs(xrpLocal.settings.chat) do
 			if not seenChannels[channel] and channel:find("CHAT_MSG_CHANNEL_", nil, true) then
 				AddChannel(channel, self.baseMenuList, settingsList)
 				seenChannels[channel] = true
@@ -302,13 +302,13 @@ do
 	end
 	function XRPOptionsChatChannels_CustomDefault(self)
 		for channel, control in pairs(settingsList) do
-			xrpPrivate.settings.chat[channel] = nil
+			xrpLocal.settings.chat[channel] = nil
 			control.value = nil
 		end
 	end
 	function XRPOptionsChatChannels_CustomCancel(self)
 		for channel, control in pairs(settingsList) do
-			xrpPrivate.settings.chat[channel] = control.oldValue
+			xrpLocal.settings.chat[channel] = control.oldValue
 			control.value = control.oldValue
 		end
 	end
@@ -347,7 +347,7 @@ do
 	}
 end
 
-function xrpPrivate:Options(pane)
+function xrpLocal:Options(pane)
 	local XRPOptions = InterfaceOptionsFramePanelContainer.XRP
 	if not XRPOptions.wasShown then
 		XRPOptions.wasShown = true

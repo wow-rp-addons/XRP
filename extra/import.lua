@@ -18,7 +18,7 @@
 local hasMRP, hasTRP2, hasTRP3 = (IsAddOnLoaded("MyRolePlay")), (IsAddOnLoaded("totalRP2")), (IsAddOnLoaded("totalRP3"))
 if not (hasMRP or hasTRP2 or hasTRP3) then return end
 
-local addonName, xrpPrivate = ...
+local addonName, xrpLocal = ...
 
 local MRP_NO_IMPORT = { TT = true, VA = true, VP = true, GC = true, GF = true, GR = true, GS = true, GU = true }
 
@@ -43,7 +43,7 @@ local function ImportMyRolePlay()
 	local imported = 0
 	for profileName, profile in pairs(mrpSaved.Profiles) do
 		local newProfileName = "MRP-" .. profileName
-		if xrpPrivate.profiles:Add(newProfileName) then
+		if xrpLocal.profiles:Add(newProfileName) then
 			for field, value in pairs(profile) do
 				if not MRP_NO_IMPORT[field] and field:find("^%u%u$") then
 					if field == "FC" then
@@ -55,7 +55,7 @@ local function ImportMyRolePlay()
 					elseif field == "FR" and tonumber(value) then
 						value = value ~= "0" and xrp.values.FR[value] or ""
 					end
-					xrpPrivate.profiles[newProfileName].fields[field] = value ~= "" and value or nil
+					xrpLocal.profiles[newProfileName].fields[field] = value ~= "" and value or nil
 				end
 			end
 			if newProfileName ~= "MRP-Default" then
@@ -85,14 +85,14 @@ do
 
 	-- This is a bit more complex. And partly in French.
 	function ImportTotalRP2()
-		if not TRP2_Module_PlayerInfo or not xrpPrivate.profiles:Add("TRP2") then
+		if not TRP2_Module_PlayerInfo or not xrpLocal.profiles:Add("TRP2") then
 			return 0
 		end
 		local realm = GetRealmName()
-		local profile = TRP2_Module_PlayerInfo[realm][xrpPrivate.player]
+		local profile = TRP2_Module_PlayerInfo[realm][xrpLocal.player]
 		if profile.Actu then
-			xrpPrivate.profiles["TRP2"].fields.CU = profile.Actu.ActuTexte
-			xrpPrivate.profiles["TRP2"].fields.FC = profile.Actu.StatutRP and profile.Actu.StatutRP ~= 0 and tostring(profile.Actu.StatutRP) or nil
+			xrpLocal.profiles["TRP2"].fields.CU = profile.Actu.ActuTexte
+			xrpLocal.profiles["TRP2"].fields.FC = profile.Actu.StatutRP and profile.Actu.StatutRP ~= 0 and tostring(profile.Actu.StatutRP) or nil
 		end
 		local DE = ""
 		if profile.Registre and profile.Registre.TraitVisage then
@@ -104,27 +104,27 @@ do
 		if profile.Physique and profile.Physique.PhysiqueTexte then
 			DE = DE .. profile.Physique.PhysiqueTexte
 		end
-		xrpPrivate.profiles["TRP2"].fields.DE = DE ~= "" and DE:match("^(.-)\n+$") or nil
+		xrpLocal.profiles["TRP2"].fields.DE = DE ~= "" and DE:match("^(.-)\n+$") or nil
 		if profile.Histoire then
-			xrpPrivate.profiles["TRP2"].fields.HI = profile.Histoire.HistoireTexte
+			xrpLocal.profiles["TRP2"].fields.HI = profile.Histoire.HistoireTexte
 		end
 		if profile.Registre then
 			do
 				local NA = ("%s %s"):format(profile.Registre.Prenom or "", profile.Registre.Nom or ""):trim()
-				xrpPrivate.profiles["TRP2"].fields.NA = NA ~= "" and NA or nil
+				xrpLocal.profiles["TRP2"].fields.NA = NA ~= "" and NA or nil
 			end
-			xrpPrivate.profiles["TRP2"].fields.RA = profile.Registre.RacePerso
-			xrpPrivate.profiles["TRP2"].fields.RC = profile.Registre.ClassePerso
-			xrpPrivate.profiles["TRP2"].fields.AE = profile.Registre.YeuxVisage
+			xrpLocal.profiles["TRP2"].fields.RA = profile.Registre.RacePerso
+			xrpLocal.profiles["TRP2"].fields.RC = profile.Registre.ClassePerso
+			xrpLocal.profiles["TRP2"].fields.AE = profile.Registre.YeuxVisage
 			do
 				local NT = ("%s | %s"):format(profile.Registre.Titre or "", profile.Registre.TitreComplet or ""):match("^[%s|]*(.-)[%s|]*$")
-				xrpPrivate.profiles["TRP2"].fields.NT = NT ~= "" and NT or nil
+				xrpLocal.profiles["TRP2"].fields.NT = NT ~= "" and NT or nil
 			end
-			xrpPrivate.profiles["TRP2"].fields.AG = profile.Registre.Age
-			xrpPrivate.profiles["TRP2"].fields.HH = profile.Registre.Habitation
-			xrpPrivate.profiles["TRP2"].fields.HB = profile.Registre.Origine
-			xrpPrivate.profiles["TRP2"].fields.AH = TRP2_HEIGHT[profile.Registre.Taille or 3]
-			xrpPrivate.profiles["TRP2"].fields.AW = TRP2_WEIGHT[profile.Registre.Silhouette or 2]
+			xrpLocal.profiles["TRP2"].fields.AG = profile.Registre.Age
+			xrpLocal.profiles["TRP2"].fields.HH = profile.Registre.Habitation
+			xrpLocal.profiles["TRP2"].fields.HB = profile.Registre.Origine
+			xrpLocal.profiles["TRP2"].fields.AH = TRP2_HEIGHT[profile.Registre.Taille or 3]
+			xrpLocal.profiles["TRP2"].fields.AW = TRP2_WEIGHT[profile.Registre.Silhouette or 2]
 		end
 		return 1
 	end
@@ -135,19 +135,19 @@ local function ImportTotalRP3()
 	if not TRP3_Profiles or not TRP3_Characters then
 		return 0
 	end
-	local toImport = TRP3_Profiles[TRP3_Characters[xrpPrivate.playerWithRealm].profileID]
+	local toImport = TRP3_Profiles[TRP3_Characters[xrpLocal.playerWithRealm].profileID]
 	if not toImport then
 		return 0
 	end
 	local profileName = "TRP3-" .. toImport.profileName
-	if not xrpPrivate.profiles:Add(profileName) then
+	if not xrpLocal.profiles:Add(profileName) then
 		return 0
 	end
-	local profile = xrpPrivate.profiles[profileName].fields
+	local profile = xrpLocal.profiles[profileName].fields
 	do
 		local NA = {}
 		NA[#NA + 1] = toImport.player.characteristics.TI
-		NA[#NA + 1] = toImport.player.characteristics.FN or xrpPrivate.player
+		NA[#NA + 1] = toImport.player.characteristics.FN or xrpLocal.player
 		NA[#NA + 1] = toImport.player.characteristics.LN
 		profile.NA = table.concat(NA, " ")
 	end
@@ -209,21 +209,21 @@ import:SetScript("OnEvent", function(self, event)
 		if hasMRP then
 			local count = ImportMyRolePlay()
 			if count > 0 then
-				DisableAddOn("MyRolePlay", xrpPrivate.player)
+				DisableAddOn("MyRolePlay", xrpLocal.player)
 				imported = true
 			end
 		end
 		if hasTRP2 then
 			local count = ImportTotalRP2()
 			if count > 0 then
-				DisableAddOn("totalRP2", xrpPrivate.player)
+				DisableAddOn("totalRP2", xrpLocal.player)
 				imported = true
 			end
 		end
 		if hasTRP3 then
 			local count = ImportTotalRP3()
 			if count > 0 then
-				DisableAddOn("totalRP3", xrpPrivate.player)
+				DisableAddOn("totalRP3", xrpLocal.player)
 				imported = true
 			end
 		end

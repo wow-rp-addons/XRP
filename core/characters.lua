@@ -15,7 +15,7 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local addonName, xrpPrivate = ...
+local addonName, xrpLocal = ...
 
 -- These fields are not searched in a full-text search.
 local FILTER_IGNORE = { CO = true, FC = true, FR = true, GC = true, GF = true, GR = true, GS = true, GU = true, IC = true, VA = true, VP = true }
@@ -37,9 +37,9 @@ local RACE_FACTION = {
 }
 
 local gCache = {}
-xrpPrivate.gCache = gCache
+xrpLocal.gCache = gCache
 
-local nameMap, requestMap = setmetatable({}, xrpPrivate.weakKeyMeta), setmetatable({}, xrpPrivate.weakKeyMeta)
+local nameMap, requestMap = setmetatable({}, xrpLocal.weakKeyMeta), setmetatable({}, xrpLocal.weakKeyMeta)
 
 local characterMeta
 do
@@ -49,19 +49,19 @@ do
 				return nil
 			end
 			local name = nameMap[self]
-			if name == xrpPrivate.playerWithRealm then
+			if name == xrpLocal.playerWithRealm then
 				return xrp.current.fields[field]
 			elseif gCache[name] and gCache[name][field] then
 				return gCache[name][field]
 			elseif requestMap[self] then
-				xrpPrivate:QueueRequest(name, field)
+				xrpLocal:QueueRequest(name, field)
 			end
 			if xrpCache[name] and xrpCache[name].fields[field] then
 				return xrpCache[name].fields[field]
 			end
 			return nil
 		end,
-		__newindex = xrpPrivate.noFunc,
+		__newindex = xrpLocal.noFunc,
 		__metatable = false,
 	}
 
@@ -76,7 +76,7 @@ do
 				return fields
 			elseif component == "name" then
 				return name
-			elseif component == "own" and name == xrpPrivate.playerWithRealm then
+			elseif component == "own" and name == xrpLocal.playerWithRealm then
 				return true
 			elseif not xrpCache[name] then
 				return nil
@@ -91,10 +91,10 @@ do
 			elseif component == "noRequest" then
 				return not requestMap[self]
 			elseif component == "exportText" then
-				local EXPORT_FIELDS, EXPORT_FORMATS = xrpPrivate.EXPORT_FIELDS, xrpPrivate.EXPORT_FORMATS
+				local EXPORT_FIELDS, EXPORT_FORMATS = xrpLocal.EXPORT_FIELDS, xrpLocal.EXPORT_FORMATS
 				local fields
-				if name == xrpPrivate.playerWithRealm then
-					fields = xrpPrivate.current.fields
+				if name == xrpLocal.playerWithRealm then
+					fields = xrpLocal.current.fields
 				else
 					fields = xrpCache[name].fields
 				end
@@ -224,8 +224,8 @@ do
 	end
 end
 
-local requestTables = setmetatable({}, xrpPrivate.weakMeta)
-local noRequestTables = setmetatable({}, xrpPrivate.weakMeta)
+local requestTables = setmetatable({}, xrpLocal.weakMeta)
+local noRequestTables = setmetatable({}, xrpLocal.weakMeta)
 
 xrp.characters = {
 	byName = setmetatable({}, {
@@ -241,7 +241,7 @@ xrp.characters = {
 			end
 			return requestTables[name]
 		end,
-		__newindex = xrpPrivate.noFunc,
+		__newindex = xrpLocal.noFunc,
 		__metatable = false,
 	}),
 	byUnit = setmetatable({}, {
@@ -259,7 +259,7 @@ xrp.characters = {
 					GS = tostring(GS),
 					GU = GU,
 				}
-				if xrpCache[name] and name ~= xrpPrivate.playerWithRealm then
+				if xrpCache[name] and name ~= xrpLocal.playerWithRealm then
 					for field, contents in pairs(gCache[name]) do
 						-- We DO want to overwrite these, to account for race,
 						-- faction, or sex changes.
@@ -268,7 +268,7 @@ xrp.characters = {
 				end
 			elseif not gCache[name].GF then -- GUID won't always get faction.
 				gCache[name].GF = UnitFactionGroup(unit)
-				if xrpCache[name] and name ~= xrpPrivate.playerWithRealm then
+				if xrpCache[name] and name ~= xrpLocal.playerWithRealm then
 					xrpCache[name].fields.GF = gCache[name].GF
 				end
 			end
@@ -280,7 +280,7 @@ xrp.characters = {
 			end
 			return requestTables[name]
 		end,
-		__newindex = xrpPrivate.noFunc,
+		__newindex = xrpLocal.noFunc,
 		__metatable = false,
 	}),
 	byGUID = setmetatable({}, {
@@ -299,7 +299,7 @@ xrp.characters = {
 					GS = tostring(GS),
 					GU = GU,
 				}
-				if xrpCache[name] and name ~= xrpPrivate.playerWithRealm then
+				if xrpCache[name] and name ~= xrpLocal.playerWithRealm then
 					for field, contents in pairs(gCache[name]) do
 						-- We DO want to overwrite these, to account for race,
 						-- faction, or sex changes.
@@ -315,7 +315,7 @@ xrp.characters = {
 			end
 			return requestTables[name]
 		end,
-		__newindex = xrpPrivate.noFunc,
+		__newindex = xrpLocal.noFunc,
 		__metatable = false,
 	}),
 	Filter = Filter,
@@ -332,7 +332,7 @@ xrp.characters = {
 				end
 				return noRequestTables[name]
 			end,
-			__newindex = xrpPrivate.noFunc,
+			__newindex = xrpLocal.noFunc,
 			__metatable = false,
 		}),
 	},

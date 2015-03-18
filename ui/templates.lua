@@ -15,9 +15,9 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local addonName, xrpPrivate = ...
+local addonName, xrpLocal = ...
 
-XRPTemplates_DoNothing = xrpPrivate.noFunc
+XRPTemplates_DoNothing = xrpLocal.noFunc
 
 function XRPTemplates_CloseDropDownMenus(self, ...)
 	CloseDropDownMenus()

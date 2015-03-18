@@ -15,7 +15,7 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local addonName, xrpPrivate = ...
+local addonName, xrpLocal = ...
 
 local isWorgen, playerClass = select(2, UnitRace("player")) == "Worgen", select(2, UnitClassBase("player"))
 if not (playerClass == "DRUID" or playerClass == "PRIEST" or playerClass == "SHAMAN") then
@@ -52,8 +52,8 @@ end
 
 local function ToggleButtons(self)
 	local form, profile = self.Form.contents, self.Profile.contents
-	local changes = xrpPrivate.auto[form] ~= profile
-	if next(xrpSaved.auto) and not xrpPrivate.auto["DEFAULT"] then
+	local changes = xrpLocal.auto[form] ~= profile
+	if next(xrpSaved.auto) and not xrpLocal.auto["DEFAULT"] then
 		self.Warning:Show()
 		self.Warning:SetFormattedText("You should set a fallback profile for \"%s\".", FORM_NAMES["DEFAULT"])
 	else
@@ -66,13 +66,13 @@ end
 function XRPEditorAutomationSave_OnClick(self, button, down)
 	local parent = self:GetParent()
 	local form, profile = parent.Form.contents, parent.Profile.contents
-	xrpPrivate.auto[form] = profile
+	xrpLocal.auto[form] = profile
 	ToggleButtons(parent)
 end
 
 function XRPEditorAutomationRevert_OnClick(self, button, down)
 	local parent = self:GetParent()
-	local formProfile = xrpPrivate.auto[parent.Form.contents]
+	local formProfile = xrpLocal.auto[parent.Form.contents]
 	parent.Profile.contents = formProfile
 	parent.Profile.Text:SetText(formProfile or "None")
 	ToggleButtons(parent)
@@ -95,7 +95,7 @@ do
 	function XRPEditorAutomationProfile_PreClick(self, button, down)
 		local parent = self:GetParent()
 		parent.baseMenuList = { NONE }
-		for i, profile in ipairs(xrpPrivate.profiles:List()) do
+		for i, profile in ipairs(xrpLocal.profiles:List()) do
 			parent.baseMenuList[i + 1] = { text = profile, checked = Profile_Checked, arg1 = profile, func = Profile_Click }
 		end
 	end
@@ -108,7 +108,7 @@ do
 			local set = (UIDROPDOWNMENU_MENU_VALUE or "DEFAULT") .. self.value
 			UIDROPDOWNMENU_OPEN_MENU.contents = set
 			UIDROPDOWNMENU_OPEN_MENU.Text:SetText(MakeWords(set))
-			local Profile, setProfile = UIDROPDOWNMENU_OPEN_MENU:GetParent().Profile, xrpPrivate.auto[set]
+			local Profile, setProfile = UIDROPDOWNMENU_OPEN_MENU:GetParent().Profile, xrpLocal.auto[set]
 			Profile.contents = setProfile
 			Profile.Text:SetText(setProfile or "None")
 			ToggleButtons(UIDROPDOWNMENU_OPEN_MENU:GetParent())
@@ -150,7 +150,7 @@ do
 		if not checked then
 			UIDROPDOWNMENU_OPEN_MENU.contents = self.value
 			UIDROPDOWNMENU_OPEN_MENU.Text:SetText(MakeWords(self.value))
-			local Profile, formProfile = UIDROPDOWNMENU_OPEN_MENU:GetParent().Profile, xrpPrivate.auto[self.value]
+			local Profile, formProfile = UIDROPDOWNMENU_OPEN_MENU:GetParent().Profile, xrpLocal.auto[self.value]
 			Profile.contents = formProfile
 			Profile.Text:SetText(formProfile or "None")
 			ToggleButtons(UIDROPDOWNMENU_OPEN_MENU:GetParent())
@@ -406,9 +406,9 @@ function XRPEditorAutomation_OnShow(self)
 			needsUpdate = true
 		end
 	end
-	needsUpdate = needsUpdate or not xrpPrivate.profiles[self.Profile.contents]
+	needsUpdate = needsUpdate or not xrpLocal.profiles[self.Profile.contents]
 	if needsUpdate then
-		local newProfile = xrpPrivate.auto[selectedForm]
+		local newProfile = xrpLocal.auto[selectedForm]
 		self.Profile.contents = newProfile
 		self.Profile.Text:SetText(newProfile or "None")
 	end

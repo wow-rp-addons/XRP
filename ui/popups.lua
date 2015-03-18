@@ -15,7 +15,7 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local addonName, xrpPrivate = ...
+local addonName, xrpLocal = ...
 
 function xrp:ExportPopup(title, text)
 	if not title or not text then return end
@@ -130,7 +130,7 @@ StaticPopupDialogs["XRP_CACHE_CLEAR"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = function(self)
-		xrpPrivate:CacheTidy(60)
+		xrpLocal:CacheTidy(60)
 		StaticPopup_Show("XRP_NOTIFICATION", "The cache has been cleared.")
 	end,
 	whileDead = true,
@@ -141,7 +141,7 @@ StaticPopupDialogs["XRP_CACHE_TIDY"] = {
 	text = "Old entries have been pruned from the cache.",
 	button1 = OKAY,
 	OnShow = function(self)
-		xrpPrivate:CacheTidy()
+		xrpLocal:CacheTidy()
 	end,
 	whileDead = true,
 	hideOnEscape = true,
@@ -156,7 +156,7 @@ StaticPopupDialogs["XRP_EDITOR_ADD"] = {
 	EditBoxOnTextChanged = ButtonToggle,
 	OnAccept = function(self)
 		local name = self.editBox:GetText()
-		if not xrpPrivate.profiles:Add(name) then
+		if not xrpLocal.profiles:Add(name) then
 			StaticPopup_Show("XRP_ERROR", ("The name \"%s\" is unavailable or already in use."):format(name))
 		else
 			XRPEditor:Load(name)
@@ -175,7 +175,7 @@ StaticPopupDialogs["XRP_EDITOR_DELETE"] = {
 	button2 = NO,
 	OnAccept = function(self)
 		local name = XRPEditor.Profiles.contents
-		if not xrpPrivate.profiles[name]:Delete() then
+		if not xrpLocal.profiles[name]:Delete() then
 			StaticPopup_Show("XRP_ERROR", ("The profile\"%s\" is currently active. Active profiles cannot be removed."):format(name))
 		else
 			XRPEditor:Load(xrpSaved.selected)
@@ -194,7 +194,7 @@ StaticPopupDialogs["XRP_EDITOR_RENAME"] = {
 	EditBoxOnTextChanged = ButtonToggle,
 	OnAccept = function(self)
 		local name = self.editBox:GetText()
-		if not xrpPrivate.profiles[XRPEditor.Profiles.contents]:Rename(name) then
+		if not xrpLocal.profiles[XRPEditor.Profiles.contents]:Rename(name) then
 			StaticPopup_Show("XRP_ERROR", ("The name \"%s\" is unavailable or already in use."):format(name))
 		else
 			XRPEditor:Load(name)
@@ -216,7 +216,7 @@ StaticPopupDialogs["XRP_EDITOR_COPY"] = {
 	EditBoxOnTextChanged = ButtonToggle,
 	OnAccept = function(self)
 		local name = self.editBox:GetText()
-		if not xrpPrivate.profiles[XRPEditor.Profiles.contents]:Copy(name) then
+		if not xrpLocal.profiles[XRPEditor.Profiles.contents]:Copy(name) then
 			StaticPopup_Show("XRP_ERROR", ("The name \"%s\" is unavailable or already in use."):format(name))
 		else
 			XRPEditor:Load(name)

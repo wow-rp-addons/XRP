@@ -15,7 +15,7 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local addonName, xrpPrivate = ...
+local addonName, xrpLocal = ...
 
 if msp_RPAddOn ~= GetAddOnMetadata(addonName, "Title") then return end
 
@@ -46,7 +46,7 @@ end
 -- versions of MSP overwriting this.
 msp.version = 999
 msp.versionx = 999
-msp.protocolversion = xrpPrivate.msp
+msp.protocolversion = xrpLocal.msp
 
 -- Run MSP callbacks with appropriate arguments on XRP events.
 msp.callback = {
@@ -65,31 +65,31 @@ xrp:HookEvent("RECEIVE", function(event, name)
 	end
 end)
 
-local nameMap = setmetatable({}, xrpPrivate.weakKeyMeta)
+local nameMap = setmetatable({}, xrpLocal.weakKeyMeta)
 
-local mspChars = setmetatable({}, xrpPrivate.weakMeta)
+local mspChars = setmetatable({}, xrpLocal.weakMeta)
 
 local fieldMeta = {
 	__index = function(self, field)
 		local name = nameMap[self]
-		if name == xrpPrivate.playerWithRealm then
+		if name == xrpLocal.playerWithRealm then
 			return xrp.current.fields[field]
 		end
 		return xrpCache[name] and xrpCache[name].fields[field] or ""
 	end,
-	__newindex = xrpPrivate.noFunc,
+	__newindex = xrpLocal.noFunc,
 	__metatable = false,
 }
 
 local verMeta = {
 	__index = function(self, field)
 		local name = nameMap[self]
-		if name == xrpPrivate.playerWithRealm then
-			return xrpPrivate.current.versions[field]
+		if name == xrpLocal.playerWithRealm then
+			return xrpLocal.current.versions[field]
 		end
 		return xrpCache[name] and xrpCache[name].versions[field] or nil
 	end,
-	__newindex = xrpPrivate.noFunc,
+	__newindex = xrpLocal.noFunc,
 	__metatable = false,
 }
 
@@ -98,23 +98,23 @@ local timeTable = setmetatable({}, {
 	__index = function()
 		return loadTime -- Worst-case scenario, they re-run msp:Request().
 	end,
-	__newindex = xrpPrivate.noFunc,
+	__newindex = xrpLocal.noFunc,
 	__metatable = false,
 })
 
-local emptyMeta = { __newindex = xrpPrivate.noFunc, __metatable = false, }
+local emptyMeta = { __newindex = xrpLocal.noFunc, __metatable = false, }
 local emptyTable = setmetatable({}, emptyMeta)
 
 local emptychar = setmetatable({
-	field = setmetatable({}, { __index = function() return "" end, __newindex = xrpPrivate.noFunc, __metatable = false, }),
+	field = setmetatable({}, { __index = function() return "" end, __newindex = xrpLocal.noFunc, __metatable = false, }),
 	ver = emptyTable,
 	time = emptyTable,
 }, emptyMeta)
 
 -- Some addons try to mess with the frames we don't actually have.
 msp.dummyframe = {
-	RegisterEvent = xrpPrivate.noFunc,
-	UnregisterEvent = xrpPrivate.noFunc,
+	RegisterEvent = xrpLocal.noFunc,
+	UnregisterEvent = xrpLocal.noFunc,
 }
 msp.dummyframex = msp.dummyframe
 
@@ -130,7 +130,7 @@ msp.char = setmetatable({}, {
 		end
 		return emptychar -- LibMSP never returns nil.
 	end,
-	__newindex = xrpPrivate.noFunc,
+	__newindex = xrpLocal.noFunc,
 	__metatable = false,
 })
 
@@ -151,9 +151,9 @@ msp.my = setmetatable({}, {
 -- that entirely automatically.
 msp.myver = setmetatable({}, {
 	__index = function(self, field)
-		return xrpPrivate.current.versions[field]
+		return xrpLocal.current.versions[field]
 	end,
-	__newindex = xrpPrivate.noFunc,
+	__newindex = xrpLocal.noFunc,
 	__metatable = false,
 })
 
@@ -165,7 +165,7 @@ function msp:Request(name, fields)
 	elseif type(fields) ~= "table" then
 		return false
 	end
-	return xrpPrivate:Request(xrp:Name(name), fields)
+	return xrpLocal:Request(xrp:Name(name), fields)
 end
 
 function msp:Name(...)
@@ -177,7 +177,7 @@ end
 -- explicitly noted as an internal LibMSP function in the library...
 function msp:PlayerKnownAbout(name)
 	name = xrp:Name(name)
-	return name == xrpPrivate.playerWithRealm or xrpCache[name] ~= nil
+	return name == xrpLocal.playerWithRealm or xrpCache[name] ~= nil
 end
 
 -- Dummy function. Updates are processed as they're set in XRP. Benefits of
@@ -194,9 +194,9 @@ end
 setmetatable(msp, {
 	__index = function(self, key)
 		if key == "player" then
-			return xrpPrivate.playerWithRealm
+			return xrpLocal.playerWithRealm
 		end
 	end,
-	__newindex = xrpPrivate.noFunc,
+	__newindex = xrpLocal.noFunc,
 	__metatable = false,
 })
