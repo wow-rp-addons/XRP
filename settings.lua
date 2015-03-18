@@ -15,9 +15,9 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local addonName, xrpPrivate = ...
+local addonName, xrpLocal = ...
 
-xrpPrivate.settingsToggles = {
+xrpLocal.settingsToggles = {
 	display = {},
 }
 
@@ -302,7 +302,7 @@ local function InitializeSavedVariables()
 				if type(profile.versions) ~= "table" then
 					profile.versions = {}
 					for field, contents in pairs(profile.fields) do
-						profile.versions[field] = xrpPrivate:NewVersion(field)
+						profile.versions[field] = xrpLocal:NewVersion(field)
 					end
 				end
 				if type(profile.inherits) ~= "table" then
@@ -346,7 +346,7 @@ local function InitializeSavedVariables()
 	end
 end
 
-function xrpPrivate:SavedVariableSetup()
+function xrpLocal:SavedVariableSetup()
 	InitializeSavedVariables()
 	if (xrpAccountSaved.dataVersion or 1) < DATA_VERSION_ACCOUNT then
 		for i = (xrpAccountSaved.dataVersion or 1) + 1, DATA_VERSION_ACCOUNT do
@@ -368,7 +368,7 @@ function xrpPrivate:SavedVariableSetup()
 	self.settings = xrpAccountSaved.settings
 end
 
-function xrpPrivate:LoadSettings()
+function xrpLocal:LoadSettings()
 	for xrpTable, category in pairs(self.settingsToggles) do
 		for xrpSetting, func in pairs(category) do
 			func(self.settings[xrpTable][xrpSetting])
@@ -376,7 +376,7 @@ function xrpPrivate:LoadSettings()
 	end
 end
 
-function xrpPrivate:CacheTidy(timer)
+function xrpLocal:CacheTidy(timer)
 	if type(timer) ~= "number" or timer < 30 then
 		timer = self.settings.cache.time
 		if type(timer) ~= "number" or timer < 30 then

@@ -15,7 +15,7 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local addonName, xrpPrivate = ...
+local addonName, xrpLocal = ...
 
 xrp = {
 	values = {
@@ -84,14 +84,14 @@ BINDING_NAME_XRP_VIEWER_TARGET = "View target's RP profile"
 BINDING_NAME_XRP_VIEWER_MOUSEOVER = "View mouseover's RP profile"
 BINDING_NAME_XRP_EDITOR = "Open/close RP profile editor"
 
-xrpPrivate.version = GetAddOnMetadata(addonName, "Version")
-xrpPrivate.noFunc = function() end
-xrpPrivate.weakMeta = { __mode = "v" }
-xrpPrivate.weakKeyMeta = { __mode = "k" }
+xrpLocal.version = GetAddOnMetadata(addonName, "Version")
+xrpLocal.noFunc = function() end
+xrpLocal.weakMeta = { __mode = "v" }
+xrpLocal.weakKeyMeta = { __mode = "k" }
 
 -- Fields to export and their formats.
-xrpPrivate.EXPORT_FIELDS = { "NA", "NI", "NT", "NH", "RA", "RC", "AE", "AH", "AW", "AG", "HH", "HB", "CU", "MO", "DE", "HI" }
-xrpPrivate.EXPORT_FORMATS = {
+xrpLocal.EXPORT_FIELDS = { "NA", "NI", "NT", "NH", "RA", "RC", "AE", "AH", "AW", "AG", "HH", "HB", "CU", "MO", "DE", "HI" }
+xrpLocal.EXPORT_FORMATS = {
 	NA = "Name: %s\n",
 	NI = "Nickname: \"%s\"\n",
 	NT = "Title: %s\n",
@@ -113,7 +113,7 @@ xrpPrivate.EXPORT_FORMATS = {
 do
 	local events = {}
 
-	function xrpPrivate:FireEvent(event, ...)
+	function xrpLocal:FireEvent(event, ...)
 		if type(events[event]) ~= "table" then
 			return false
 		end
@@ -165,10 +165,10 @@ do
 		end
 	end
 
-	function xrpPrivate:AddonUpdate(version)
-		if not version or version == self.version or version == xrpPrivate.settings.newversion then return end
-		if CompareVersion(version, xrpPrivate.settings.newversion or self.version) >= 0 then
-			xrpPrivate.settings.newversion = version
+	function xrpLocal:AddonUpdate(version)
+		if not version or version == self.version or version == xrpLocal.settings.newversion then return end
+		if CompareVersion(version, xrpLocal.settings.newversion or self.version) >= 0 then
+			xrpLocal.settings.newversion = version
 		end
 	end
 
@@ -179,14 +179,14 @@ do
 	}
 	init:SetScript("OnEvent", function(self, event, addon)
 		if event == "ADDON_LOADED" and addon == addonName then
-			xrpPrivate.playerWithRealm = xrp:UnitName("player")
-			xrpPrivate.player, xrpPrivate.realm = xrpPrivate.playerWithRealm:match(FULL_PLAYER_NAME:format("(.+)", "(.+)"))
-			xrpPrivate:SavedVariableSetup()
+			xrpLocal.playerWithRealm = xrp:UnitName("player")
+			xrpLocal.player, xrpLocal.realm = xrpLocal.playerWithRealm:match(FULL_PLAYER_NAME:format("(.+)", "(.+)"))
+			xrpLocal:SavedVariableSetup()
 
 			local newFields
 			do
 				local addonString = "%s/%s"
-				local VA = { addonString:format(GetAddOnMetadata(addonName, "Title"), xrpPrivate.version) }
+				local VA = { addonString:format(GetAddOnMetadata(addonName, "Title"), xrpLocal.version) }
 				for i, addon in ipairs(addons) do
 					if IsAddOnLoaded(addon) then
 						VA[#VA + 1] = addonString:format(addon, GetAddOnMetadata(addon, "Version"))
@@ -197,7 +197,7 @@ do
 					GF = UnitFactionGroup("player"),
 					GR = select(2, UnitRace("player")),
 					GS = tostring(UnitSex("player")),
-					NA = xrpPrivate.player, -- Fallback NA field.
+					NA = xrpLocal.player, -- Fallback NA field.
 					VA = table.concat(VA, ";"),
 				}
 			end
@@ -205,11 +205,11 @@ do
 			for field, contents in pairs(newFields) do
 				if contents ~= fields[field] then
 					fields[field] = contents
-					versions[field] = xrpPrivate:NewVersion(field)
+					versions[field] = xrpLocal:NewVersion(field)
 				end
 			end
-			fields.VP = tostring(xrpPrivate.msp)
-			versions.VP = xrpPrivate.msp
+			fields.VP = tostring(xrpLocal.msp)
+			versions.VP = xrpLocal.msp
 
 			if not xrpSaved.overrides.logout or xrpSaved.overrides.logout + 600 < time() then
 				xrpSaved.overrides.fields = {}
@@ -217,23 +217,23 @@ do
 			end
 			xrpSaved.overrides.logout = nil
 
-			if xrpPrivate.settings.cache.autoClean then
-				xrpPrivate:CacheTidy()
+			if xrpLocal.settings.cache.autoClean then
+				xrpLocal:CacheTidy()
 			end
 
-			xrpPrivate:LoadSettings()
+			xrpLocal:LoadSettings()
 
-			if xrpPrivate.settings.newversion then
-				local update = CompareVersion(xrpPrivate.settings.newversion, xrpPrivate.version)
+			if xrpLocal.settings.newversion then
+				local update = CompareVersion(xrpLocal.settings.newversion, xrpLocal.version)
 				local now = time()
-				if update == 1 and (not xrpPrivate.settings.versionwarning or xrpPrivate.settings.versionwarning < now - 21600) then
+				if update == 1 and (not xrpLocal.settings.versionwarning or xrpLocal.settings.versionwarning < now - 21600) then
 					C_Timer.After(8, function()
-						print(("There is a new version of |cffabd473XRP|r available. You should update to %s as soon as possible."):format(xrpPrivate.settings.newversion))
-						xrpPrivate.settings.versionwarning = now
+						print(("There is a new version of |cffabd473XRP|r available. You should update to %s as soon as possible."):format(xrpLocal.settings.newversion))
+						xrpLocal.settings.versionwarning = now
 					end)
 				elseif update == -1 then
-					xrpPrivate.settings.newversion = nil
-					xrpPrivate.settings.versionwarning = nil
+					xrpLocal.settings.newversion = nil
+					xrpLocal.settings.versionwarning = nil
 				end
 			end
 
@@ -249,7 +249,7 @@ do
 			local GU = UnitGUID("player")
 			if xrpSaved.meta.fields.GU ~= GU then
 				xrpSaved.meta.fields.GU = GU
-				xrpSaved.meta.versions.GU = xrpPrivate:NewVersion("GU")
+				xrpSaved.meta.versions.GU = xrpLocal:NewVersion("GU")
 			end
 			self:UnregisterEvent("PLAYER_LOGIN")
 		elseif event == "PLAYER_LOGOUT" then
@@ -257,11 +257,11 @@ do
 			-- made. If there are any errors in here, they are not visible in
 			-- any manner in-game.
 			do
-				local fields, versions = xrpPrivate.current:List(), {}
+				local fields, versions = xrpLocal.current:List(), {}
 				for field, contents in pairs(fields) do
-					versions[field] = xrpPrivate.current.versions[field]
+					versions[field] = xrpLocal.current.versions[field]
 				end
-				xrpCache[xrpPrivate.playerWithRealm] = {
+				xrpCache[xrpLocal.playerWithRealm] = {
 					fields = fields,
 					versions = versions,
 					own = true,
@@ -273,8 +273,8 @@ do
 			end
 		elseif event == "NEUTRAL_FACTION_SELECT_RESULT" then
 			xrpSaved.meta.fields.GF = UnitFactionGroup("player")
-			xrpSaved.meta.versions.GF = xrpPrivate:NewVersion("GF")
-			xrpPrivate:FireEvent("UPDATE", "GF")
+			xrpSaved.meta.versions.GF = xrpLocal:NewVersion("GF")
+			xrpLocal:FireEvent("UPDATE", "GF")
 			self:UnregisterEvent("NEUTRAL_FACTION_SELECT_RESULT")
 		end
 	end)

@@ -15,7 +15,7 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local addonName, xrpPrivate = ...
+local addonName, xrpLocal = ...
 
 local currentUnit = {
 	lines = {},
@@ -157,14 +157,14 @@ do
 				RenderLine(NI and ("|cff6070a0Nickname:|r \"%s\""):format(TruncateLine(xrp:Strip(NI), 70, 12, false)) or nil, nil, 0.6, 0.7, 0.9)
 				RenderLine(TruncateLine(xrp:Strip(fields.NT), 70), nil, 0.8, 0.8, 0.8)
 			end
-			if xrpPrivate.settings.tooltip.extraSpace then
+			if xrpLocal.settings.tooltip.extraSpace then
 				RenderLine(" ")
 			end
 			if replace then
 				RenderLine(currentUnit.guild, nil, 1, 1, 1)
 				local color = COLORS[currentUnit.faction]
 				RenderLine(currentUnit.titleRealm, currentUnit.character.hide and "Hidden" or showProfile and ParseVersion(fields.VA), color.r, color.g, color.b, 0.5, 0.5, 0.5)
-				if xrpPrivate.settings.tooltip.extraSpace then
+				if xrpLocal.settings.tooltip.extraSpace then
 					RenderLine(" ")
 				end
 			end
@@ -172,7 +172,7 @@ do
 				local CU = fields.CU
 				RenderLine(CU and ("|cffa08050Currently:|r %s"):format(TruncateLine(xrp:Strip(CU), 70, 11)) or nil, nil, 0.9, 0.7, 0.6)
 			end
-			RenderLine(currentUnit.info:format(showProfile and not xrpPrivate.settings.tooltip.noRace and TruncateLine(xrp:Strip(fields.RA), 40, 0, false) or xrp.values.GR[fields.GR] or UNKNOWN, showProfile and not xrpPrivate.settings.tooltip.noClass and TruncateLine(xrp:Strip(fields.RC), 40, 0, false) or xrp.values.GC[fields.GC] or UNKNOWN, 40, 0, false), not replace and ParseVersion(fields.VA), 1, 1, 1, 0.5, 0.5, 0.5)
+			RenderLine(currentUnit.info:format(showProfile and not xrpLocal.settings.tooltip.noRace and TruncateLine(xrp:Strip(fields.RA), 40, 0, false) or xrp.values.GR[fields.GR] or UNKNOWN, showProfile and not xrpLocal.settings.tooltip.noClass and TruncateLine(xrp:Strip(fields.RC), 40, 0, false) or xrp.values.GC[fields.GC] or UNKNOWN, 40, 0, false), not replace and ParseVersion(fields.VA), 1, 1, 1, 0.5, 0.5, 0.5)
 			if showProfile then
 				local FR, FC = fields.FR, fields.FC
 				if FR and FR ~= "0" or FC and FC ~= "0" then
@@ -235,7 +235,7 @@ do
 
 			local connected = UnitIsConnected(unit)
 			local color = COLORS[(currentUnit.faction ~= playerFaction and currentUnit.faction ~= "Neutral" or attackMe and meAttack) and "hostile" or (currentUnit.faction == "Neutral" or meAttack or attackMe) and "neutral" or "friendly"]
-			local watchIcon = xrpPrivate.settings.tooltip.watching and UnitIsUnit("player", unit .. "target") and "|TInterface\\LFGFrame\\BattlenetWorking0:28:28:10:0|t" or nil
+			local watchIcon = xrpLocal.settings.tooltip.watching and UnitIsUnit("player", unit .. "target") and "|TInterface\\LFGFrame\\BattlenetWorking0:28:28:10:0|t" or nil
 			local class, classID = UnitClassBase(unit)
 
 			if replace then
@@ -249,10 +249,10 @@ do
 				currentUnit.icons = watchIcon and pvpIcon and watchIcon .. pvpIcon or watchIcon or pvpIcon
 
 				local guildName, guildRank, guildIndex = GetGuildInfo(unit)
-				currentUnit.guild = guildName and (xrpPrivate.settings.tooltip.guildRank and (xrpPrivate.settings.tooltip.guildIndex and "%s (%u) of <%s>" or "%s of <%s>") or "<%s>"):format(xrpPrivate.settings.tooltip.guildRank and guildRank or guildName, xrpPrivate.settings.tooltip.guildIndex and guildIndex + 1 or guildName, guildName) or nil
+				currentUnit.guild = guildName and (xrpLocal.settings.tooltip.guildRank and (xrpLocal.settings.tooltip.guildIndex and "%s (%u) of <%s>" or "%s of <%s>") or "<%s>"):format(xrpLocal.settings.tooltip.guildRank and guildRank or guildName, xrpLocal.settings.tooltip.guildIndex and guildIndex + 1 or guildName, guildName) or nil
 
 				local realm = currentUnit.character.name:match(FULL_PLAYER_NAME:format(".+", "(.+)"))
-				if realm == xrpPrivate.realm then
+				if realm == xrpLocal.realm then
 					realm = nil
 				end
 				local name = UnitPVPName(unit) or xrp:Ambiguate(currentUnit.character.name)
@@ -313,7 +313,7 @@ do
 				defaultLines = defaultLines + 1
 			end
 		end
-		currentUnit.noProfile = xrpPrivate.settings.tooltip.noOpFaction and currentUnit.faction ~= playerFaction and currentUnit.faction ~= "Neutral" or xrpPrivate.settings.tooltip.noHostile and attackMe and meAttack
+		currentUnit.noProfile = xrpLocal.settings.tooltip.noOpFaction and currentUnit.faction ~= playerFaction and currentUnit.faction ~= "Neutral" or xrpLocal.settings.tooltip.noHostile and attackMe and meAttack
 
 		if replace then
 			table.wipe(currentUnit.lines)
@@ -414,7 +414,7 @@ local function NoUnit_OnUpdate(self, elapsed)
 	SetUnit(unit)
 end
 
-xrpPrivate.settingsToggles.tooltip = {
+xrpLocal.settingsToggles.tooltip = {
 	enabled = function(setting)
 		if setting then
 			if enabled == nil then
@@ -426,7 +426,7 @@ xrpPrivate.settingsToggles.tooltip = {
 				GameTooltip:HookScript("OnTooltipCleared", GameTooltip_OnTooltipCleared_Hook)
 			end
 			enabled = true
-			xrpPrivate.settingsToggles.tooltip.replace(xrpPrivate.settings.tooltip.replace)
+			xrpLocal.settingsToggles.tooltip.replace(xrpLocal.settings.tooltip.replace)
 		elseif enabled ~= nil then
 			enabled = false
 		end

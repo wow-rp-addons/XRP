@@ -15,7 +15,7 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local addonName, xrpPrivate = ...
+local addonName, xrpLocal = ...
 
 -- Cannot define commands in static table, as they make use of each other.
 local xrpCmds = {}
@@ -24,7 +24,7 @@ do
 	xrpCmds.about = function(args)
 		print("|cffabd473XRP|r")
 		print("|cff99b3e6Author:|r " .. GetAddOnMetadata(addonName, "Author"))
-		print("|cff99b3e6Version:|r " .. xrpPrivate.version)
+		print("|cff99b3e6Version:|r " .. xrpLocal.version)
 		print("License: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>")
 		print("This is free software: you are free to change and redistribute it.")
 		print("There is NO WARRANTY, to the extent permitted by law.")
@@ -100,11 +100,11 @@ end
 xrpCmds.profile = function(args)
 	if args == "list" then
 		print("Profiles:")
-		for i, profile in ipairs(xrpPrivate.profiles:List()) do
+		for i, profile in ipairs(xrpLocal.profiles:List()) do
 			print(profile)
 		end
 	elseif type(args) == "string" then
-		if xrpPrivate.profiles[args] and xrpPrivate.profiles[args]:Activate() then
+		if xrpLocal.profiles[args] and xrpLocal.profiles[args]:Activate() then
 			print(("Set profile to \"%s\"."):format(args))
 		else
 			print(("Failed to set profile to \"%s\"."):format(args))

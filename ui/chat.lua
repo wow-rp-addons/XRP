@@ -15,7 +15,7 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local addonName, xrpPrivate = ...
+local addonName, xrpLocal = ...
 
 -- The following chat types are linked together.
 local LINKED_CHAT_MSG = {
@@ -41,7 +41,7 @@ local function XRPGetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7
 	-- target's name with our (colored/RP) name. Being sure to return a
 	-- non-colored, non-RP name for our own text emotes fixes the issue.
 	if event == "CHAT_MSG_TEXT_EMOTE" then
-		if arg2 == xrpPrivate.player then
+		if arg2 == xrpLocal.player then
 			return arg2
 		elseif arg12 then
 			-- TEXT_EMOTE doesn't have realm attached to arg2, because
@@ -72,8 +72,8 @@ local function XRPGetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7
 	end
 
 	local character = arg12 and xrp.characters.byGUID[arg12] or nil
-	local name = xrpPrivate.settings.chat[event] and character and not character.hide and xrp:Strip(character.fields.NA) or Ambiguate(arg2, "guild")
-	local nameFormat = event == "CHAT_MSG_EMOTE" and (xrpPrivate.settings.chat.emoteBraced and "[%s]" or "%s") .. (arg9 or "") or "%s"
+	local name = xrpLocal.settings.chat[event] and character and not character.hide and xrp:Strip(character.fields.NA) or Ambiguate(arg2, "guild")
+	local nameFormat = event == "CHAT_MSG_EMOTE" and (xrpLocal.settings.chat.emoteBraced and "[%s]" or "%s") .. (arg9 or "") or "%s"
 
 	if arg12 and ChatTypeInfo[chatType] and ChatTypeInfo[chatType].colorNameByClass then
 		local color = RAID_CLASS_COLORS[character.fields.GC]
@@ -158,7 +158,7 @@ local function ParseText_Hook(line, send)
 end
 
 local BlizzardGetColoredName = GetColoredName
-xrpPrivate.settingsToggles.chat = {
+xrpLocal.settingsToggles.chat = {
 	names = function(setting)
 		if setting then
 			if names == nil then

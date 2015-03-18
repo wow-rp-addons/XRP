@@ -15,11 +15,11 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local addonName, xrpPrivate = ...
+local addonName, xrpLocal = ...
 
 local RecheckForm
 
-xrpPrivate.auto = setmetatable({}, {
+xrpLocal.auto = setmetatable({}, {
 	__index = function(self, form)
 		local profile = xrpSaved.auto[form]
 		if not xrpSaved.profiles[profile] then
@@ -182,7 +182,7 @@ swap:SetScript("OnUpdate", function(self, elapsed)
 	-- 6: DEFAULT-Equipment
 	-- 9: DEFAULT
 
-	local auto, form = xrpPrivate.auto
+	local auto, form = xrpLocal.auto
 	if self.race then
 		-- RACE-CLASS-Equipment (Worgen only)
 		if self.class and self.equip then
@@ -219,7 +219,7 @@ swap:SetScript("OnUpdate", function(self, elapsed)
 	end
 
 	--print("Swapping to: "..auto[form])
-	xrpPrivate.profiles[auto[form]]:Activate(true)
+	xrpLocal.profiles[auto[form]]:Activate(true)
 end)
 swap:Hide()
 

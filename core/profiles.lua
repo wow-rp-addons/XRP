@@ -15,16 +15,16 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local addonName, xrpPrivate = ...
+local addonName, xrpLocal = ...
 
 local NO_PROFILE = { TT = true, VP = true, VA = true, GC = true, GF = true, GR = true, GS = true, GU = true }
 
-function xrpPrivate:NewVersion(field)
+function xrpLocal:NewVersion(field)
 	xrpSaved.versions[field] = (xrpSaved.versions[field] or 0) + 1
 	return xrpSaved.versions[field]
 end
 
-function xrpPrivate:DoesParentLoop(profile, parent)
+function xrpLocal:DoesParentLoop(profile, parent)
 	local profiles = xrpSaved.profiles
 	-- Walk through the parentage to see if there would be looping.
 	local count = 0
@@ -51,8 +51,8 @@ xrp.current = {
 				contents = xrpSaved.overrides.fields[field] ~= "" and xrpSaved.overrides.fields[field] or nil
 			elseif profiles[selected].fields[field] then
 				contents = profiles[selected].fields[field]
-			elseif profiles[xrpPrivate.profiles[selected].inherits[field]] then
-				contents = profiles[xrpPrivate.profiles[selected].inherits[field]].fields[field]
+			elseif profiles[xrpLocal.profiles[selected].inherits[field]] then
+				contents = profiles[xrpLocal.profiles[selected].inherits[field]].fields[field]
 			elseif xrpSaved.meta.fields[field] then
 				contents = xrpSaved.meta.fields[field]
 			else
@@ -68,8 +68,8 @@ xrp.current = {
 		__newindex = function(self, field, contents)
 			if xrpSaved.overrides.fields[field] == contents or NO_PROFILE[field] or not field:find("^%u%u$") then return end
 			xrpSaved.overrides.fields[field] = contents
-			xrpSaved.overrides.versions[field] = contents and xrpPrivate:NewVersion(field) or nil
-			xrpPrivate:FireEvent("UPDATE", field)
+			xrpSaved.overrides.versions[field] = contents and xrpLocal:NewVersion(field) or nil
+			xrpLocal:FireEvent("UPDATE", field)
 		end,
 		__metatable = false,
 	}),
@@ -77,12 +77,12 @@ xrp.current = {
 		__index = function(self, field)
 			return xrpSaved.overrides.fields[field] ~= nil
 		end,
-		__newindex = xrpPrivate.noFunc,
+		__newindex = xrpLocal.noFunc,
 		__metatable = false,
 	}),
 }
 
-xrpPrivate.current = setmetatable({
+xrpLocal.current = setmetatable({
 	versions = setmetatable({}, {
 		__index = function (self, field)
 			local selected = xrpSaved.selected
@@ -90,12 +90,12 @@ xrpPrivate.current = setmetatable({
 			local version = xrpSaved.overrides.versions[field] or xrpSaved.profiles[selected].versions[field]
 			if not version then
 				-- Inherited profile or inherited meta.
-				local inherit = xrpPrivate.profiles[selected].inherits[field]
+				local inherit = xrpLocal.profiles[selected].inherits[field]
 				version = xrpSaved.profiles[inherit] and xrpSaved.profiles[inherit].versions[field] or xrpSaved.meta.versions[field]
 			end
 			return version or nil
 		end,
-		__newindex = xrpPrivate.noFunc,
+		__newindex = xrpLocal.noFunc,
 		__metatable = false,
 	}),
 	List = function(self)
@@ -112,7 +112,7 @@ xrpPrivate.current = setmetatable({
 			end
 			for i, profile in ipairs(parents) do
 				for field, contents in pairs(profiles[profile].fields) do
-					if xrpPrivate.profiles[selected].inherits[field] == profile then
+					if xrpLocal.profiles[selected].inherits[field] == profile then
 						out[field] = contents
 					end
 				end
@@ -130,7 +130,7 @@ xrpPrivate.current = setmetatable({
 	end,
 }, { __index = xrp.current })
 
-local nameMap = setmetatable({}, xrpPrivate.weakKeyMeta)
+local nameMap = setmetatable({}, xrpLocal.weakKeyMeta)
 local FORBIDDEN_NAMES = {
 	Add = true,
 	List = true,
@@ -170,7 +170,7 @@ do
 			end
 			profiles[name] = nil
 			if isUsed then
-				xrpPrivate:FireEvent("UPDATE")
+				xrpLocal:FireEvent("UPDATE")
 			end
 			return true
 		end,
@@ -223,7 +223,7 @@ do
 				xrpSaved.overrides.fields = {}
 				xrpSaved.overrides.versions = {}
 			end
-			xrpPrivate:FireEvent("UPDATE")
+			xrpLocal:FireEvent("UPDATE")
 			return true
 		end,
 		List = function(self)
@@ -235,7 +235,7 @@ do
 		end,
 		Export = function(self)
 			local name = nameMap[self]
-			local EXPORT_FIELDS, EXPORT_FORMATS = xrpPrivate.EXPORT_FIELDS, xrpPrivate.EXPORT_FORMATS
+			local EXPORT_FIELDS, EXPORT_FORMATS = xrpLocal.EXPORT_FIELDS, xrpLocal.EXPORT_FORMATS
 			local fields, profiles = {}, xrpSaved.profiles
 			for field, contents in pairs(xrpSaved.meta.fields) do
 				fields[field] = contents
@@ -249,7 +249,7 @@ do
 				end
 				for i, profile in ipairs(parents) do
 					for field, contents in pairs(profiles[profile].fields) do
-						if xrpPrivate.profiles[name].inherits[field] == profile then
+						if xrpLocal.profiles[name].inherits[field] == profile then
 							fields[field] = contents
 						end
 					end
@@ -258,9 +258,9 @@ do
 			for field, contents in pairs(profiles[name].fields) do
 				fields[field] = contents
 			end
-			local realm = xrp:RealmDisplayName(xrpPrivate.realm)
-			local export = { xrpPrivate.player, " (", realm, ") - ", name, "\n" }
-			for i = 1, #xrpPrivate.player + #realm + #name + 6 do
+			local realm = xrp:RealmDisplayName(xrpLocal.realm)
+			local export = { xrpLocal.player, " (", realm, ") - ", name, "\n" }
+			for i = 1, #xrpLocal.player + #realm + #name + 6 do
 				export[#export + 1] = "="
 			end
 			export[#export + 1] = "\n"
@@ -286,11 +286,11 @@ do
 			contents = type(contents) == "string" and contents ~= "" and contents or nil
 			if profiles[name] and profiles[name].fields[field] ~= contents then
 				local selected = xrpSaved.selected
-				local isUsed = name == selected or name == xrpPrivate.profiles[selected].inherits[field]
+				local isUsed = name == selected or name == xrpLocal.profiles[selected].inherits[field]
 				profiles[name].fields[field] = contents
-				profiles[name].versions[field] = contents ~= nil and xrpPrivate:NewVersion(field) or nil
-				if isUsed or name == xrpPrivate.profiles[selected].inherits[field] then
-					xrpPrivate:FireEvent("UPDATE", field)
+				profiles[name].versions[field] = contents ~= nil and xrpLocal:NewVersion(field) or nil
+				if isUsed or name == xrpLocal.profiles[selected].inherits[field] then
+					xrpLocal:FireEvent("UPDATE", field)
 				end
 			end
 		end,
@@ -323,10 +323,10 @@ do
 			if NO_PROFILE[field] or not field:find("^%u%u$") then return end
 			local name, selected = nameMap[self], xrpSaved.selected
 			if state ~= xrpSaved.profiles[name].inherits[field] then
-				local current = xrpPrivate.profiles[selected].inherits[field]
+				local current = xrpLocal.profiles[selected].inherits[field]
 				xrpSaved.profiles[name].inherits[field] = state
-				if current ~= xrpPrivate.profiles[selected].inherits[field] then
-					xrpPrivate:FireEvent("UPDATE", field)
+				if current ~= xrpLocal.profiles[selected].inherits[field] then
+					xrpLocal:FireEvent("UPDATE", field)
 				end
 			end
 		end,
@@ -358,7 +358,7 @@ do
 			local name, profiles = nameMap[self], xrpSaved.profiles
 			if component ~= "parent" or value == profiles[name].parent then return end
 
-			if xrpPrivate:DoesParentLoop(name, value) then return end
+			if xrpLocal:DoesParentLoop(name, value) then return end
 
 			-- Walk through the selected profile's parentage to see if we're in
 			-- the chain anywhere (for firing UPDATE event).
@@ -377,7 +377,7 @@ do
 			end
 			profiles[name].parent = value
 			if isUsed then
-				xrpPrivate:FireEvent("UPDATE")
+				xrpLocal:FireEvent("UPDATE")
 			end
 		end,
 	}
@@ -405,9 +405,9 @@ local profilesFunctions = {
 	end,
 }
 
-local profileTables = setmetatable({}, xrpPrivate.weakMeta)
+local profileTables = setmetatable({}, xrpLocal.weakMeta)
 
-xrpPrivate.profiles = setmetatable({}, {
+xrpLocal.profiles = setmetatable({}, {
 	__index = function(self, name)
 		if profilesFunctions[name] then
 			return profilesFunctions[name]
@@ -421,5 +421,5 @@ xrpPrivate.profiles = setmetatable({}, {
 		end
 		return profileTables[name]
 	end,
-	__newindex = xrpPrivate.noFunc,
+	__newindex = xrpLocal.noFunc,
 })

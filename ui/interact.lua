@@ -15,7 +15,7 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local addonName, xrpPrivate = ...
+local addonName, xrpLocal = ...
 
 local CursorFrame, cursor, rightClick
 
@@ -54,7 +54,7 @@ do
 end
 
 local function Cursor_OnEvent(self, event)
-	if not cursor or InCombatLockdown() or xrpPrivate.settings.interact.disableInstance and (IsInInstance() or IsInActiveWorldPVP()) or xrpPrivate.settings.interact.disablePvP and (UnitIsPVP("player") or UnitIsPVPFreeForAll("player")) or GetMouseFocus() ~= WorldFrame then
+	if not cursor or InCombatLockdown() or xrpLocal.settings.interact.disableInstance and (IsInInstance() or IsInActiveWorldPVP()) or xrpLocal.settings.interact.disablePvP and (UnitIsPVP("player") or UnitIsPVPFreeForAll("player")) or GetMouseFocus() ~= WorldFrame then
 		self:Hide()
 		return
 	end
@@ -135,7 +135,7 @@ local function CreateCursor()
 	xrp:HookEvent("RECEIVE", Cursor_RECEIVE)
 end
 
-xrpPrivate.settingsToggles.interact = {
+xrpLocal.settingsToggles.interact = {
 	cursor = function(setting)
 		if setting then
 			if not CursorFrame then
