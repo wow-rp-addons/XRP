@@ -95,7 +95,7 @@ function xrp:Weight(weight, units)
 	elseif units == "msp" then -- MSP internal format: kg without units as string.
 		return ("%.1f"):format(number + 0.05)
 	elseif units == "kg" then
-		return ("%d kg"):format(number + 0.5)
+		return ("%.1f kg"):format(number + 0.05)
 	elseif units == "lb" then
 		return ("%d lbs"):format((number * 2.20462) + 0.5)
 	end
