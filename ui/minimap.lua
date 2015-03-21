@@ -98,8 +98,8 @@ do
 		{ text = "Profiles", notCheckable = true, hasArrow = true, menuList = Profiles_menuList, },
 		{ text = "Character status", notCheckable = true, hasArrow = true, menuList = Status_menuList, },
 		{ text = "Currently...", notCheckable = true, func = function() StaticPopup_Show("XRP_CURRENTLY") end, },
-		{ text = "Bookmarks...", notCheckable = true, func = function() xrp:Bookmarks(true) end, },
-		{ text = "Viewer...", notCheckable = true, func = function() xrp:View() end, },
+		{ text = "Bookmarks...", notCheckable = true, func = function() XRPBookmarks:Toggle(1) end, },
+		{ text = "Viewer...", notCheckable = true, func = function() XRPViewer:View() end, },
 		{ text = "Editor...", notCheckable = true, func = function() XRPEditor:Edit() end, },
 		{ text = "Options...", notCheckable = true, func = function() xrpLocal:Options() end, },
 		{ text = "Cancel", notCheckable = true, func = xrpLocal.noFunc, },
@@ -117,7 +117,7 @@ do
 			if button == "LeftButton" then
 				local target = xrp.characters.byUnit.target
 				if target and target.fields.VA then
-					xrp:View("target")
+					XRPViewer:View("target")
 				else
 					xrp:Status()
 				end

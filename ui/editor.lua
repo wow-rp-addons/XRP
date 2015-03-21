@@ -17,6 +17,57 @@
 
 local addonName, xrpLocal = ...
 
+local CheckFields
+do
+	local function FallbackFieldContents(field)
+		if xrpSaved.meta.fields[field] then
+			return xrpSaved.meta.fields[field]
+		elseif field ~= "RA" and field ~= "RC" then
+			return nil
+		end
+		local metaField = field == "RA" and "GR" or field == "RC" and "GC" or nil
+		return xrp.values[metaField][xrpSaved.meta.fields[metaField]] or nil
+	end
+
+	local function CheckField(self, profile, parent)
+		if (not self.HasFocus or not self:HasFocus()) and (not self.contents or self.inherited) then
+			if parent and self.Inherit:GetChecked() then
+				self:SetAttribute("inherited", true)
+				self:SetAttribute("contents", parent.fullFields[self.field] or FallbackFieldContents(self.field))
+			else
+				local fallback = FallbackFieldContents(self.field)
+				self:SetAttribute("inherited", fallback ~= nil)
+				self:SetAttribute("contents", fallback)
+			end
+		end
+		if parent then
+			self.Inherit:Show()
+		else
+			self.Inherit:Hide()
+		end
+		return self.inherited and profile.fields[self.field] ~= nil or not self.inherited and self.contents ~= profile.fields[self.field] or self.Inherit:GetChecked() ~= profile.inherit[self.field] or nil
+	end
+
+	local modified = {}
+	function CheckFields(field)
+		local profile, parent = xrp.profiles[XRPEditor.Profiles.contents], xrp.profiles[XRPEditor.Parent.contents]
+		if XRPEditor.fields[field] then
+			modified[field] = CheckField(XRPEditor.fields[field], profile, parent)
+		else
+			for field, control in pairs(XRPEditor.fields) do
+				modified[field] = CheckField(XRPEditor.fields[field], profile, parent)
+			end
+		end
+		if next(modified) or tostring(parent) ~= profile.parent then
+			XRPEditor.Save:Enable()
+			XRPEditor.Revert:Enable()
+		else
+			XRPEditor.Save:Disable()
+			XRPEditor.Revert:Disable()
+		end
+	end
+end
+
 do
 	local function ClearAllFocus()
 		local focused = GetCurrentKeyBoardFocus()
@@ -36,7 +87,7 @@ do
 		end
 		profile.parent = XRPEditor.Parent.contents
 
-		XRPEditor:CheckFields()
+		CheckFields()
 	end
 
 	function XRPEditor_Edit(self, name)
@@ -73,57 +124,7 @@ do
 
 		self.TitleText:SetFormattedText("Profile Editor: %s", name)
 
-		self:CheckFields()
-	end
-end
-
-do
-	local function FallbackFieldContents(field)
-		if xrpSaved.meta.fields[field] then
-			return xrpSaved.meta.fields[field]
-		elseif field ~= "RA" and field ~= "RC" then
-			return nil
-		end
-		local metaField = field == "RA" and "GR" or field == "RC" and "GC" or nil
-		return xrp.values[metaField][xrpSaved.meta.fields[metaField]] or nil
-	end
-
-	local function CheckField(self, profile, parent)
-		if (not self.HasFocus or not self:HasFocus()) and (not self.contents or self.inherited) then
-			if parent and self.Inherit:GetChecked() then
-				self:SetAttribute("inherited", true)
-				self:SetAttribute("contents", parent.fullFields[self.field] or FallbackFieldContents(self.field))
-			else
-				local fallback = FallbackFieldContents(self.field)
-				self:SetAttribute("inherited", fallback ~= nil)
-				self:SetAttribute("contents", fallback)
-			end
-		end
-		if parent then
-			self.Inherit:Show()
-		else
-			self.Inherit:Hide()
-		end
-		return self.inherited and profile.fields[self.field] ~= nil or not self.inherited and self.contents ~= profile.fields[self.field] or self.Inherit:GetChecked() ~= profile.inherit[self.field] or nil
-	end
-
-	local modified = {}
-	function XRPEditor_CheckFields(self, field)
-		local profile, parent = xrp.profiles[self.Profiles.contents], xrp.profiles[self.Parent.contents]
-		if self.fields[field] then
-			modified[field] = CheckField(self.fields[field], profile, parent)
-		else
-			for field, control in pairs(self.fields) do
-				modified[field] = CheckField(self.fields[field], profile, parent)
-			end
-		end
-		if next(modified) or tostring(parent) ~= profile.parent then
-			self.Save:Enable()
-			self.Revert:Enable()
-		else
-			self.Save:Disable()
-			self.Revert:Disable()
-		end
+		CheckFields()
 	end
 end
 
@@ -161,7 +162,7 @@ do
 			if not checked then
 				UIDROPDOWNMENU_OPEN_MENU.contents = arg1
 				UIDROPDOWNMENU_OPEN_MENU:SetFormattedText("Parent: %s", arg1 or "None")
-				XRPEditor:CheckFields()
+				CheckFields()
 			end
 		end
 
@@ -182,7 +183,7 @@ do
 			if not checked or UIDROPDOWNMENU_OPEN_MENU.inherited then
 				UIDROPDOWNMENU_OPEN_MENU:SetAttribute("contents", arg1)
 				UIDROPDOWNMENU_OPEN_MENU:SetAttribute("inherited", false)
-				XRPEditor:CheckFields("FC")
+				CheckFields("FC")
 			end
 		end
 
@@ -252,7 +253,7 @@ function XRPEditorControls_OnLoad(self)
 end
 
 function XRPEditorControls_CheckField(self)
-	XRPEditor:CheckFields(self.field or self:GetParent().field)
+	CheckFields(self.field or self:GetParent().field)
 end
 
 function XRPEditorControls_OnTabPressed(self)
@@ -290,9 +291,5 @@ end
 
 function XRPEditorExport_OnClick(self, button, down)
 	local profile = XRPEditor.Profiles.contents
-	xrp:ExportPopup(profile, tostring(xrp.profiles[profile].fields))
-end
-
-function xrp:Edit(...)
-	XRPEditor:Edit(...)
+	XRPExport:Export(profile, tostring(xrp.profiles[profile].fields))
 end

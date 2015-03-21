@@ -145,7 +145,7 @@ do
 	end
 	local function Menu_Click(self, arg1, arg2, checked)
 		if arg1 == "XRP_EXPORT" then
-			xrp:ExportPopup(xrp:Ambiguate(tostring(current)), tostring(current.fields))
+			XRPExport:Export(xrp:Ambiguate(tostring(current)), tostring(current.fields))
 		elseif arg1 == "XRP_REFRESH" then
 			if current.noRequest then
 				Load(xrp.characters.byName[tostring(current)])
@@ -236,7 +236,7 @@ xrp:HookEvent("UPDATE", UPDATE)
 xrp:HookEvent("CHUNK", CHUNK)
 xrp:HookEvent("FAIL", FAIL)
 
-function xrp:View(player)
+function XRPViewer_View(self, player)
 	local isUnit, character
 	if type(player) == "table" and player.fields then
 		character = player
@@ -245,13 +245,13 @@ function xrp:View(player)
 		player = isUnit and unit or tostring(character)
 	else
 		if not player then
-			if XRPViewer:IsShown() then
-				HideUIPanel(XRPViewer)
+			if self:IsShown() then
+				HideUIPanel(self)
 				return
 			elseif not current then
 				player = "player"
 			else
-				ShowUIPanel(XRPViewer)
+				ShowUIPanel(self)
 				return
 			end
 		end
@@ -260,20 +260,20 @@ function xrp:View(player)
 		if not isUnit then
 			local unit = Ambiguate(player, "none")
 			isUnit = UnitExists(unit)
-			player = isUnit and unit or self:Name(player):gsub("^%l", string.upper)
+			player = isUnit and unit or xrp:Name(player):gsub("^%l", string.upper)
 		end
-		character = isUnit and self.characters.byUnit[player] or self.characters.byName[player]
+		character = isUnit and xrp.characters.byUnit[player] or xrp.characters.byName[player]
 	end
 	local isNew = Load(character)
 	if isUnit then
-		SetPortraitTexture(XRPViewer.portrait, player)
+		SetPortraitTexture(self.portrait, player)
 	elseif isNew then
 		local GF = character.fields.GF
-		SetPortraitToTexture(XRPViewer.portrait, GF == "Alliance" and "Interface\\Icons\\INV_BannerPVP_02" or GF == "Horde" and "Interface\\Icons\\INV_BannerPVP_01" or "Interface\\Icons\\INV_Misc_Book_17")
+		SetPortraitToTexture(self.portrait, GF == "Alliance" and "Interface\\Icons\\INV_BannerPVP_02" or GF == "Horde" and "Interface\\Icons\\INV_BannerPVP_01" or "Interface\\Icons\\INV_Misc_Book_17")
 	end
-	ShowUIPanel(XRPViewer)
-	if isNew and not XRPViewer.panes[1]:IsVisible() then
-		XRPViewer.Tab1:Click()
+	ShowUIPanel(self)
+	if isNew and not self.panes[1]:IsVisible() then
+		self.Tab1:Click()
 	end
 end
 

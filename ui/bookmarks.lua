@@ -136,19 +136,19 @@ function XRPBookmarksList_update(self)
 	HybridScrollFrame_Update(self, 72 * matches, 72)
 end
 
-function XRPBookmarks_Refresh(self)
+local function Refresh()
 	results = xrp.characters:Filter(request)
-	self.List.range = #results * 72
-	self.List:update()
-	self.List.scrollBar:SetValue(request.offset)
+	XRPBookmarks.List.range = #results * 72
+	XRPBookmarks.List:update()
+	XRPBookmarks.List.scrollBar:SetValue(request.offset)
 	if request.fullText then
-		self.FilterText.Instructions:SetText("Search")
-		self.FilterText.FullTextWarning:Show()
+		XRPBookmarks.FilterText.Instructions:SetText("Search")
+		XRPBookmarks.FilterText.FullTextWarning:Show()
 	else
-		self.FilterText.Instructions:SetText("Name")
-		self.FilterText.FullTextWarning:Hide()
+		XRPBookmarks.FilterText.Instructions:SetText("Name")
+		XRPBookmarks.FilterText.FullTextWarning:Hide()
 	end
-	self.FilterText:SetText(request.text or "")
+	XRPBookmarks.FilterText:SetText(request.text or "")
 end
 
 do
@@ -163,12 +163,12 @@ do
 	end
 	local function Menu_Click(self, arg1, arg2, checked)
 		if arg1 == "XRP_VIEW_CACHED" then
-			xrp:View(UIDROPDOWNMENU_OPEN_MENU.character)
+			XRPViewer:View(UIDROPDOWNMENU_OPEN_MENU.character)
 		elseif arg1 == "XRP_VIEW_LIVE" then
-			xrp:View(tostring(UIDROPDOWNMENU_OPEN_MENU.character))
+			XRPViewer:View(tostring(UIDROPDOWNMENU_OPEN_MENU.character))
 		elseif arg1 == "XRP_EXPORT" then
 			local character = UIDROPDOWNMENU_OPEN_MENU.character
-			xrp:ExportPopup(xrp:Ambiguate(tostring(character)), tostring(character.fields))
+			XRPExport:Export(xrp:Ambiguate(tostring(character)), tostring(character.fields))
 		elseif arg1 == "XRP_FRIEND" then
 			local character = UIDROPDOWNMENU_OPEN_MENU.character
 			AddOrRemoveFriend(Ambiguate(tostring(character), "none"), xrp:Strip(character.fields.NA))
@@ -176,13 +176,13 @@ do
 			UIDROPDOWNMENU_OPEN_MENU.character.bookmark = not checked
 			if request.bookmark then
 				request.offset = XRPBookmarks.List.scrollBar:GetValue()
-				XRPBookmarks:Refresh()
+				Refresh()
 			end
 		elseif arg1 == "XRP_HIDE" then
 			UIDROPDOWNMENU_OPEN_MENU.character.hide = not checked
 			if not request.showHidden then
 				request.offset = XRPBookmarks.List.scrollBar:GetValue()
-				XRPBookmarks:Refresh()
+				Refresh()
 			end
 		end
 	end
@@ -254,7 +254,7 @@ do
 			request[arg1][arg2] = not checked
 		end
 		request.offset = 0
-		XRPBookmarks:Refresh()
+		Refresh()
 	end
 	if UnitFactionGroup("player") == "Horde" then
 		lists.faction = { "Horde", "Alliance", "Neutral" }
@@ -297,7 +297,7 @@ do
 	local function Filter_Radio_Click(self, arg1, arg2, checked)
 		request[arg1] = arg2
 		request.offset = 0
-		XRPBookmarks:Refresh()
+		Refresh()
 		UIDropDownMenu_Refresh(XRPBookmarks.FilterButton.Menu, nil, UIDROPDOWNMENU_MENU_LEVEL)
 	end
 	local sortMenu = {
@@ -313,7 +313,7 @@ do
 	local function Filter_Toggle_Click(self, arg1, arg2, checked)
 		request[arg1] = checked or nil
 		request.offset = 0
-		XRPBookmarks:Refresh()
+		Refresh()
 	end
 	local function Filter_Reset(self, arg1, arg2, checked)
 		request.text = nil
@@ -330,7 +330,7 @@ do
 		request.fullText = nil
 		request.sortReverse = nil
 		request.offset = 0
-		XRPBookmarks:Refresh()
+		Refresh()
 	end
 	XRPBookmarksFilterButton_baseMenuList = {
 		{ text = "Faction", notCheckable = true, hasArrow = true, menuList = factionMenu, },
@@ -351,7 +351,7 @@ function XRPBookmarksFilterText_OnTextChanged(self, userInput)
 		text = nil
 	end
 	request.text = text
-	XRPBookmarks:Refresh()
+	Refresh()
 end
 
 function XRPBookmarksHelpButton_PreClick(self, button, down)
@@ -362,7 +362,7 @@ end
 
 function XRPBookmarksRefreshButton_OnClick(self, button, down)
 	request.offset = 0
-	XRPBookmarks:Refresh()
+	Refresh()
 	PlaySound("igMainMenuOptionCheckBoxOn")
 end
 
@@ -385,7 +385,7 @@ do
 		if self.resetOffset and now - 30 > request.lastRefresh then
 			request.offset = 0
 		end
-		XRPBookmarks:Refresh()
+		Refresh()
 		PanelTemplates_SetTab(XRPBookmarks, tabID)
 		XRPBookmarks.TitleText:SetText(self.titleText)
 		PlaySound("igCharacterInfoTab")
@@ -398,12 +398,17 @@ function XRPBookmarks_OnUpdate(self, elapsed)
 	self:Refresh()
 end
 
-function xrp:Bookmarks(showBookmarks)
-	if XRPBookmarks:IsShown() then
-		HideUIPanel(XRPBookmarks)
+function XRPBookmarks_Toggle(self, tabID)
+	if tabID and tabID ~= self.selectedTab then
+		local tab = self[("Tab%d"):format(tabID)]
+		if tab then
+			tab:Click()
+			ShowUIPanel(self)
+			return
+		end
+	elseif self:IsShown() then
+		HideUIPanel(self)
 		return
-	elseif showBookmarks then
-		XRPBookmarks.Tab1:Click()
 	end
-	ShowUIPanel(XRPBookmarks)
+	ShowUIPanel(self)
 end
