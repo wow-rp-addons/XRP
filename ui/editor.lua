@@ -29,18 +29,12 @@ do
 		ClearAllFocus()
 
 		local name = XRPEditor.Profiles.contents
-		local profile, inherits = xrpLocal.profiles[name].fields, xrpLocal.profiles[name].inherits
+		local profile = xrp.profiles[name]
 		for field, control in pairs(XRPEditor.fields) do
-			profile[field] = not control.inherited and control.contents or nil
-			inherits[field] = control.Inherit:GetChecked()
+			profile.fields[field] = not control.inherited and control.contents or nil
+			profile.inherit[field] = control.Inherit:GetChecked()
 		end
-		local parent = XRPEditor.Parent.contents
-		xrpLocal.profiles[name].parent = parent
-		if xrpLocal.profiles[name].parent ~= parent then
-			local value = xrpLocal.profiles[name].parent
-			XRPEditor.Parent.contents = value
-			XRPEditor.Parent:SetFormattedText("Parent: %s",  value or "None")
-		end
+		profile.parent = XRPEditor.Parent.contents
 
 		XRPEditor:CheckFields()
 	end
@@ -52,18 +46,18 @@ do
 			HideUIPanel(self)
 			return
 		end
-		if not name and (not self.Profiles.contents or self.Revert:GetButtonState() == "DISABLED" and self.Profiles.contents ~= xrpSaved.selected) then
-			name = xrpSaved.selected
+		if not name and (not self.Profiles.contents or self.Revert:GetButtonState() == "DISABLED" and self.Profiles.contents ~= tostring(xrp.profiles.SELECTED)) then
+			name = tostring(xrp.profiles.SELECTED)
 		elseif not name then
 			return
 		end
 		ClearAllFocus()
 
-		local profile, inherits = xrpLocal.profiles[name].fields, xrpLocal.profiles[name].inherits
+		local fields, inherit = xrp.profiles[name].fields, xrp.profiles[name].inherit
 		for field, control in pairs(self.fields) do
 			control:SetAttribute("inherited", false)
-			control:SetAttribute("contents", profile[field])
-			control.Inherit:SetChecked(inherits[field] ~= false)
+			control:SetAttribute("contents", fields[field])
+			control.Inherit:SetChecked(inherit[field])
 		end
 
 		if self.Profiles.contents ~= name and not self.panes[1]:IsVisible() then
@@ -73,7 +67,7 @@ do
 		self.Profiles.contents = name
 		self.Profiles.Text:SetText(name)
 
-		local value = xrpLocal.profiles[name].parent
+		local value = xrp.profiles[name].parent
 		self.Parent.contents = value
 		self.Parent:SetFormattedText("Parent: %s", value or "None")
 
@@ -85,55 +79,45 @@ end
 
 do
 	local function FallbackFieldContents(field)
-		if field ~= "NA" and field ~= "RA" and field ~= "RC" then
+		if xrpSaved.meta.fields[field] then
+			return xrpSaved.meta.fields[field]
+		elseif field ~= "RA" and field ~= "RC" then
 			return nil
 		end
-		local metafield = field == "RA" and "GR" or field == "RC" and "GC" or nil
-		return xrpSaved.meta.fields[field] or xrp.values[metafield][xrpSaved.meta.fields[metafield]] or nil
+		local metaField = field == "RA" and "GR" or field == "RC" and "GC" or nil
+		return xrp.values[metaField][xrpSaved.meta.fields[metaField]] or nil
 	end
 
-	local function CheckField(control, name, parent, profile, inherits, field)
-		if (not control.HasFocus or not control:HasFocus()) and (not control.contents or control.inherited) then
-			if parent and control.Inherit:GetChecked() then
-				control:SetAttribute("inherited", true)
-				local parentcontent = xrpLocal.profiles[parent].fields[field]
-				if parentcontent then
-					control:SetAttribute("contents", parentcontent)
-				else
-					local parentinherit = xrpLocal.profiles[parent].inherits[field]
-					if type(parentinherit) == "string" and parentinherit ~= name then
-						control:SetAttribute("contents", xrpLocal.profiles[parentinherit].fields[field])
-					else
-						control:SetAttribute("contents", FallbackFieldContents(field))
-					end
-				end
+	local function CheckField(self, profile, parent)
+		if (not self.HasFocus or not self:HasFocus()) and (not self.contents or self.inherited) then
+			if parent and self.Inherit:GetChecked() then
+				self:SetAttribute("inherited", true)
+				self:SetAttribute("contents", parent.fullFields[self.field] or FallbackFieldContents(self.field))
 			else
-				local fallback = FallbackFieldContents(field)
-				control:SetAttribute("inherited", fallback ~= nil)
-				control:SetAttribute("contents", fallback)
+				local fallback = FallbackFieldContents(self.field)
+				self:SetAttribute("inherited", fallback ~= nil)
+				self:SetAttribute("contents", fallback)
 			end
 		end
 		if parent then
-			control.Inherit:Show()
+			self.Inherit:Show()
 		else
-			control.Inherit:Hide()
+			self.Inherit:Hide()
 		end
-		return control.inherited and profile[field] ~= nil or not control.inherited and control.contents ~= profile[field] or control.Inherit:GetChecked() ~= (inherits[field] ~= false) or nil
+		return self.inherited and profile.fields[self.field] ~= nil or not self.inherited and self.contents ~= profile.fields[self.field] or self.Inherit:GetChecked() ~= profile.inherit[self.field] or nil
 	end
 
 	local modified = {}
 	function XRPEditor_CheckFields(self, field)
-		local name, parent = self.Profiles.contents, self.Parent.contents
-		if not xrpLocal.profiles[name] then return end
-		local profile, inherits = xrpLocal.profiles[name].fields, xrpLocal.profiles[name].inherits
+		local profile, parent = xrp.profiles[self.Profiles.contents], xrp.profiles[self.Parent.contents]
 		if self.fields[field] then
-			modified[field] = CheckField(self.fields[field], name, parent, profile, inherits, field)
+			modified[field] = CheckField(self.fields[field], profile, parent)
 		else
 			for field, control in pairs(self.fields) do
-				modified[field] = CheckField(control, name, parent, profile, inherits, field)
+				modified[field] = CheckField(self.fields[field], profile, parent)
 			end
 		end
-		if parent ~= xrpLocal.profiles[name].parent or next(modified) then
+		if next(modified) or tostring(parent) ~= profile.parent then
 			self.Save:Enable()
 			self.Revert:Enable()
 		else
@@ -166,7 +150,7 @@ do
 		function XRPEditorProfiles_PreClick(self, button, down)
 			local parent = self:GetParent()
 			parent.baseMenuList = {}
-			for i, profile in ipairs(xrpLocal.profiles:List()) do
+			for i, profile in ipairs(xrp.profiles:List()) do
 				parent.baseMenuList[i] = { text = profile, checked = Checked, arg1 = profile, func = Profiles_Click }
 			end
 		end
@@ -185,8 +169,8 @@ do
 		function XRPEditorParent_PreClick(self, button, down)
 			self.baseMenuList = { NONE }
 			local editingProfile = XRPEditor.Profiles.contents
-			for i, profile in ipairs(xrpLocal.profiles:List()) do
-				if profile ~= editingProfile and not xrpLocal:DoesParentLoop(editingProfile, profile) then
+			for i, profile in ipairs(xrp.profiles:List()) do
+				if profile ~= editingProfile and xrp.profiles[editingProfile]:IsParentValid(profile) then
 					self.baseMenuList[#self.baseMenuList + 1] = { text = profile, checked = Checked, arg1 = profile, func = Parent_Click }
 				end
 			end
@@ -306,7 +290,7 @@ end
 
 function XRPEditorExport_OnClick(self, button, down)
 	local profile = XRPEditor.Profiles.contents
-	xrp:ExportPopup(profile, xrpLocal.profiles[profile]:Export())
+	xrp:ExportPopup(profile, tostring(xrp.profiles[profile].fields))
 end
 
 function xrp:Edit(...)

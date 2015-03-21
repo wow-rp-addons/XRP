@@ -48,7 +48,7 @@ function XRPButton_OnEnter(self, motion)
 		GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT", 0, 32)
 		GameTooltip:SetText(xrp.current.fields.NA)
 		GameTooltip:AddLine(" ")
-		GameTooltip:AddLine(("Profile: |cffffffff%s|r"):format(xrpSaved.selected))
+		GameTooltip:AddLine(("Profile: |cffffffff%s|r"):format(tostring(xrp.profiles.SELECTED)))
 		local FC = xrp.current.fields.FC
 		if FC and FC ~= "0" then
 			GameTooltip:AddLine(("Status: |cff%s%s|r"):format(FC == "1" and "99664d" or "66b380", xrp.values.FC[FC]))
@@ -107,8 +107,8 @@ do
 
 	do
 		local function Profiles_Click(self, profileName, arg2, checked)
-			if not checked and xrpLocal.profiles[profileName] then
-				xrpLocal.profiles[profileName]:Activate()
+			if not checked and xrp.profiles[profileName] then
+				xrp.profiles[profileName]:Activate()
 			end
 			CloseDropDownMenus()
 		end
@@ -125,8 +125,8 @@ do
 				CloseDropDownMenus()
 			elseif button == "RightButton" then
 				table.wipe(Profiles_menuList)
-				local selected = xrpSaved.selected
-				for i, profileName in ipairs(xrpLocal.profiles:List()) do
+				local selected = tostring(xrp.profiles.SELECTED)
+				for i, profileName in ipairs(xrp.profiles:List()) do
 					Profiles_menuList[#Profiles_menuList + 1] = { text = profileName, checked = selected == profileName, arg1 = profileName, func = Profiles_Click, }
 				end
 				XRPTemplatesMenu_OnClick(self, button, down)

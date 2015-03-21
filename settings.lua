@@ -21,7 +21,7 @@ xrpLocal.settingsToggles = {
 	display = {},
 }
 
-local DATA_VERSION = 3
+local DATA_VERSION = 4
 local DATA_VERSION_ACCOUNT = 9
 
 local DEFAULT_SETTINGS = {
@@ -257,6 +257,23 @@ local upgradeVars = {
 			xrpSaved.auto = {}
 		end
 		xrpSaved.versions.VP = nil
+	end,
+	[4] = function() -- 6.1.0.1
+		for name, profile in pairs(xrpSaved.profiles) do
+			if name == "SELECTED" then
+				local newName = "SELECTED Renamed"
+				if xrpSaved.selected == name then
+					xrpSaved.selected = newName
+				end
+				for name, profile in pairs(xrpSaved.profiles) do
+					if profile.parent == name then
+						profile.parent = newName
+					end
+				end
+				xrpSaved.profiles[newName] = profile
+				xrpSaved.profiles[name] = nil
+			end
+		end
 	end,
 }
 

@@ -157,16 +157,7 @@ function xrp:Height(height, units)
 end
 
 function xrp:Status(desiredStatus)
-	local profileStatus = xrpLocal.profiles[xrpSaved.selected].fields.FC
-	if not profileStatus then
-		local inherit = xrpLocal.profiles[xrpSaved.selected].inherits.FC
-		if xrpLocal.profiles[inherit] then
-			profileStatus = xrpLocal.profiles[inherit].fields.FC
-		end
-		if not profileStatus then
-			profileStatus = "0"
-		end
-	end
+	local profileStatus = self.profiles.SELECTED.fullFields.FC or "0"
 	if not desiredStatus then
 		local currentStatus = self.current.fields.FC
 		local currentIC, profileIC = currentStatus ~= nil and currentStatus ~= "1" and currentStatus ~= "0", profileStatus ~= nil and profileStatus ~= "1" and profileStatus ~= "0"

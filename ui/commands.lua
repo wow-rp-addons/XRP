@@ -100,11 +100,11 @@ end
 xrpCmds.profile = function(args)
 	if args == "list" then
 		print("Profiles:")
-		for i, profile in ipairs(xrpLocal.profiles:List()) do
+		for i, profile in ipairs(xrp.profiles:List()) do
 			print(profile)
 		end
 	elseif type(args) == "string" then
-		if xrpLocal.profiles[args] and xrpLocal.profiles[args]:Activate() then
+		if xrp.profiles[args] and xrp.profiles[args]:Activate() then
 			print(("Set profile to \"%s\"."):format(args))
 		else
 			print(("Failed to set profile to \"%s\"."):format(args))
