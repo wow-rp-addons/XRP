@@ -30,13 +30,13 @@ local standard, units
 local function UnitPopup_OnClick_Hook(self)
 	if not standard and not units then return end
 	if self.value == "XRP_VIEW_CHARACTER" then
-		xrp:View(xrp:Name(UIDROPDOWNMENU_INIT_MENU.name, UIDROPDOWNMENU_INIT_MENU.server))
+		XRPViewer:View(xrp:Name(UIDROPDOWNMENU_INIT_MENU.name, UIDROPDOWNMENU_INIT_MENU.server))
 	elseif self.value == "XRP_VIEW_UNIT" then
-		xrp:View(UIDROPDOWNMENU_INIT_MENU.unit)
+		XRPViewer:View(UIDROPDOWNMENU_INIT_MENU.unit)
 	elseif self.value == "XRP_VIEW_BN" then
 		local active, toonName, client, realmName = BNGetToonInfo(select(6, BNGetFriendInfoByID(UIDROPDOWNMENU_INIT_MENU.presenceID)))
 		if client == "WoW" and realmName ~= "" then
-			xrp:View(xrp:Name(toonName, realmName))
+			XRPViewer:View(xrp:Name(toonName, realmName))
 		end
 	end
 end

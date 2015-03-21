@@ -19,26 +19,26 @@
 		xrp:Status()
 	</Binding>
 	<Binding name="XRP_BOOKMARKS" category="ADDONS">
-		xrp:Bookmarks()
+		XRPBookmarks:Toggle()
 	</Binding>
 	<Binding name="XRP_VIEWER" category="ADDONS">
 		if xrp.characters.byUnit.target then
-			xrp:View("target")
+			XRPViewer:View("target")
 		elseif xrp.characters.byUnit.mouseover then
-			xrp:View("mouseover")
+			XRPViewer:View("mouseover")
 		end
 	</Binding>
 	<Binding name="XRP_VIEWER_TARGET" category="ADDONS">
 		if xrp.characters.byUnit.target then
-			xrp:View("target")
+			XRPViewer:View("target")
 		end
 	</Binding>
 	<Binding name="XRP_VIEWER_MOUSEOVER" category="ADDONS">
 		if xrp.characters.byUnit.mouseover then
-			xrp:View("mouseover")
+			XRPViewer:View("mouseover")
 		end
 	</Binding>
 	<Binding name="XRP_EDITOR" category="ADDONS">
-		xrp:Edit()
+		XRPEditor:Edit()
 	</Binding>
 </Bindings>

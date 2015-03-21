@@ -72,7 +72,7 @@ do
 			print(command:format("about", "Display basic information about XRP."))
 			print(command:format("bookmarks", "Toggle the bookmarks frame."))
 			print(command:format("edit", "Access the editor."))
-			print(command:format("export", "Export a profile to plain text."))
+			print(command:format("export", "Export a character's profile to plain text."))
 			print(command:format("help", "Display this help message."))
 			print(command:format("profile", "Set your current profile."))
 			print(command:format("status", "Set your character status."))
@@ -83,18 +83,18 @@ do
 end
 
 xrpCmds.edit = function(args)
-	xrp:Edit(args)
+	XRPEditor:Edit(args)
 end
 
 xrpCmds.bookmarks = function(args)
-	xrp:Bookmarks(true)
+	XRPBookmarks:Toggle(1)
 end
 
 xrpCmds.export = function(args)
 	local name = xrp:Name(args:match("^[^%s]+"))
 	if not name then return end
 	name = name:gsub("^%l", string.upper)
-	xrp:ExportPopup(xrp:Ambiguate(name), tostring(xrp.characters.noRequest.byName[name].fields))
+	XRPExport:Export(xrp:Ambiguate(name), tostring(xrp.characters.noRequest.byName[name].fields))
 end
 
 xrpCmds.profile = function(args)
@@ -140,7 +140,7 @@ xrpCmds.view = function(args)
 	elseif not args and UnitIsPlayer("mouseover") then
 		args = "mouseover"
 	end
-	xrp:View(args)
+	XRPViewer:View(args)
 end
 
 -- Aliases.

@@ -337,6 +337,7 @@
 			<KeyValue key="titleText" value="Profile Viewer"/>
 			<KeyValue key="helpPlates" value="XRPViewer_helpPlates" type="global"/>
 			<KeyValue key="nextRefresh" value="0" type="number"/>
+			<KeyValue key="View" value="XRPViewer_View" type="global"/>
 		</KeyValues>
 		<Scripts>
 			<OnLoad inherit="prepend" function="XRPViewer_OnLoad"/>

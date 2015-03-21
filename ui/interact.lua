@@ -43,7 +43,7 @@ do
 			if CursorFrame.mountable then
 				UIErrorsFrame:Clear() -- Hides errors on inteactable mount players.
 			end
-			xrp:View("target")
+			XRPViewer:View("target")
 		end
 		if autoInteract then
 			SetCVar("AutoInteract", "1")
@@ -113,7 +113,7 @@ local function InteractUnit_Hook(unit)
 	if mountable then
 		UIErrorsFrame:Clear() -- Hides errors on inteactable mount players.
 	end
-	xrp:View(unit)
+	XRPViewer:View(unit)
 end
 
 local function CreateCursor()

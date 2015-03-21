@@ -220,3 +220,13 @@ function XRPExportTextEditBox_OnTextChanged(self, userInput)
 		EditBox_HighlightText(self)
 	end
 end
+
+function XRPExport_Export(self, title, text)
+	if not title or not text then return end
+	self.currentText = text
+	self.Text.EditBox:SetText(text)
+	self.Text.EditBox:SetCursorPosition(0)
+	self.Text:SetVerticalScroll(0)
+	self.HeaderText:SetFormattedText("Export: %s", title)
+	ShowUIPanel(self)
+end

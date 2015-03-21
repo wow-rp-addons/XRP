@@ -304,7 +304,7 @@
 			<KeyValue key="titleText" value="Bookmarks"/>
 			<KeyValue key="portraitTexture" value="Interface\Icons\INV_Misc_Book_05"/>
 			<KeyValue key="numTabs" value="4" type="number"/>
-			<KeyValue key="Refresh" value="XRPBookmarks_Refresh" type="global"/>
+			<KeyValue key="Toggle" value="XRPBookmarks_Toggle" type="global"/>
 			<KeyValue key="helpPlates" value="XRPBookmarks_helpPlates" type="global"/>
 		</KeyValues>
 		<Scripts>

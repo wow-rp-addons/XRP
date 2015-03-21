@@ -17,16 +17,6 @@
 
 local addonName, xrpLocal = ...
 
-function xrp:ExportPopup(title, text)
-	if not title or not text then return end
-	XRPExport.currentText = text
-	XRPExport.Text.EditBox:SetText(text)
-	XRPExport.Text.EditBox:SetCursorPosition(0)
-	XRPExport.Text:SetVerticalScroll(0)
-	XRPExport.HeaderText:SetFormattedText("Export: %s", title)
-	ShowUIPanel(XRPExport)
-end
-
 local function ClickButton(self)
 	self:GetParent().button1:Click()
 end

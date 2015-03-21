@@ -618,7 +618,6 @@
 			<KeyValue key="titleText" value="Profile Editor"/>
 			<KeyValue key="portraitUnit" value="player"/>
 			<KeyValue key="Edit" value="XRPEditor_Edit" type="global"/>
-			<KeyValue key="CheckFields" value="XRPEditor_CheckFields" type="global"/>
 			<KeyValue key="subframe" value="Automation"/>
 		</KeyValues>
 	</Frame>
