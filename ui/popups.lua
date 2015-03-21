@@ -156,10 +156,10 @@ StaticPopupDialogs["XRP_EDITOR_ADD"] = {
 	EditBoxOnTextChanged = ButtonToggle,
 	OnAccept = function(self)
 		local name = self.editBox:GetText()
-		if not xrpLocal.profiles:Add(name) then
+		if not xrp.profiles:Add(name) then
 			StaticPopup_Show("XRP_ERROR", ("The name \"%s\" is unavailable or already in use."):format(name))
 		else
-			XRPEditor:Load(name)
+			XRPEditor:Edit(name)
 		end
 	end,
 	EditBoxOnEnterPressed = ClickButton,
@@ -175,10 +175,10 @@ StaticPopupDialogs["XRP_EDITOR_DELETE"] = {
 	button2 = NO,
 	OnAccept = function(self)
 		local name = XRPEditor.Profiles.contents
-		if not xrpLocal.profiles[name]:Delete() then
-			StaticPopup_Show("XRP_ERROR", ("The profile\"%s\" is currently active. Active profiles cannot be removed."):format(name))
+		if not xrp.profiles[name]:Delete() then
+			StaticPopup_Show("XRP_ERROR", ("The profile \"%s\" is currently in-use directly or as a parent profile. In-use profiles cannot be removed."):format(name))
 		else
-			XRPEditor:Load(xrpSaved.selected)
+			XRPEditor:Edit(tostring(xrp.profiles.SELECTED))
 		end
 	end,
 	whileDead = true,
@@ -194,10 +194,10 @@ StaticPopupDialogs["XRP_EDITOR_RENAME"] = {
 	EditBoxOnTextChanged = ButtonToggle,
 	OnAccept = function(self)
 		local name = self.editBox:GetText()
-		if not xrpLocal.profiles[XRPEditor.Profiles.contents]:Rename(name) then
+		if not xrp.profiles[XRPEditor.Profiles.contents]:Rename(name) then
 			StaticPopup_Show("XRP_ERROR", ("The name \"%s\" is unavailable or already in use."):format(name))
 		else
-			XRPEditor:Load(name)
+			XRPEditor:Edit(name)
 		end
 	end,
 	EditBoxOnEnterPressed = ClickButton,
@@ -216,10 +216,10 @@ StaticPopupDialogs["XRP_EDITOR_COPY"] = {
 	EditBoxOnTextChanged = ButtonToggle,
 	OnAccept = function(self)
 		local name = self.editBox:GetText()
-		if not xrpLocal.profiles[XRPEditor.Profiles.contents]:Copy(name) then
+		if not xrp.profiles[XRPEditor.Profiles.contents]:Copy(name) then
 			StaticPopup_Show("XRP_ERROR", ("The name \"%s\" is unavailable or already in use."):format(name))
 		else
-			XRPEditor:Load(name)
+			XRPEditor:Edit(name)
 		end
 	end,
 	EditBoxOnEnterPressed = ClickButton,

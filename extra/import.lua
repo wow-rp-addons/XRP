@@ -41,10 +41,12 @@ local function ImportMyRolePlay()
 		return 0
 	end
 	local imported = 0
-	for profileName, profile in pairs(mrpSaved.Profiles) do
-		local newProfileName = "MRP-" .. profileName
-		if xrpLocal.profiles:Add(newProfileName) then
-			for field, value in pairs(profile) do
+	local importedList = {}
+	for profileName, oldProfile in pairs(mrpSaved.Profiles) do
+		local profile = xrp.profiles:Add("MRP-" .. profileName)
+		if profile then
+			importedList[#importedList + 1] = tostring(profile)
+			for field, value in pairs(oldProfile) do
 				if not MRP_NO_IMPORT[field] and field:find("^%u%u$") then
 					if field == "FC" then
 						if not tonumber(value) and value ~= "" then
@@ -55,13 +57,15 @@ local function ImportMyRolePlay()
 					elseif field == "FR" and tonumber(value) then
 						value = value ~= "0" and xrp.values.FR[value] or ""
 					end
-					xrpLocal.profiles[newProfileName].fields[field] = value ~= "" and value or nil
+					profile.fields[field] = value ~= "" and value or nil
 				end
 			end
-			if newProfileName ~= "MRP-Default" then
-				xrpSaved.profiles[newProfileName].parent = "MRP-Default"
-			end
 			imported = imported + 1
+		end
+	end
+	for i, name in ipairs(importedList) do
+		if name ~= "MRP-Default" then
+			xrp.profiles[name].parent = "MRP-Default"
 		end
 	end
 	return imported
@@ -85,46 +89,50 @@ do
 
 	-- This is a bit more complex. And partly in French.
 	function ImportTotalRP2()
-		if not TRP2_Module_PlayerInfo or not xrpLocal.profiles:Add("TRP2") then
+		if not TRP2_Module_PlayerInfo then
+			return 0
+		end
+		local profile = xrp.profiles:Add("TRP2")
+		if not profile then
 			return 0
 		end
 		local realm = GetRealmName()
-		local profile = TRP2_Module_PlayerInfo[realm][xrpLocal.player]
-		if profile.Actu then
-			xrpLocal.profiles["TRP2"].fields.CU = profile.Actu.ActuTexte
-			xrpLocal.profiles["TRP2"].fields.FC = profile.Actu.StatutRP and profile.Actu.StatutRP ~= 0 and tostring(profile.Actu.StatutRP) or nil
+		local oldProfile = TRP2_Module_PlayerInfo[realm][xrpLocal.player]
+		if oldProfile.Actu then
+			profile.fields.CU = oldProfile.Actu.ActuTexte
+			profile.fields.FC = oldProfile.Actu.StatutRP and oldProfile.Actu.StatutRP ~= 0 and tostring(oldProfile.Actu.StatutRP) or nil
 		end
-		local DE = ""
-		if profile.Registre and profile.Registre.TraitVisage then
-			DE = ("%sFace: %s\n\n"):format(DE, profile.Registre.TraitVisage)
+		local DE = {}
+		if oldProfile.Registre and oldProfile.Registre.TraitVisage then
+			DE[#DE + 1] = ("Face: %s"):format(oldProfile.Registre.TraitVisage)
 		end
-		if profile.Registre and profile.Registre.Piercing then
-			DE = ("%sPiercings/Tattoos: %s\n\n"):format(DE, profile.Registre.Piercing)
+		if oldProfile.Registre and oldProfile.Registre.Piercing then
+			DE[#DE + 1] = ("Piercings/Tattoos: %s"):format(oldProfile.Registre.Piercing)
 		end
-		if profile.Physique and profile.Physique.PhysiqueTexte then
-			DE = DE .. profile.Physique.PhysiqueTexte
+		if oldProfile.Physique and oldProfile.Physique.PhysiqueTexte then
+			DE[#DE + 1] = oldProfile.Physique.PhysiqueTexte
 		end
-		xrpLocal.profiles["TRP2"].fields.DE = DE ~= "" and DE:match("^(.-)\n+$") or nil
-		if profile.Histoire then
-			xrpLocal.profiles["TRP2"].fields.HI = profile.Histoire.HistoireTexte
+		profile.fields.DE = table.concat(DE, "\n\n")
+		if oldProfile.Histoire then
+			profile.fields.HI = oldProfile.Histoire.HistoireTexte
 		end
-		if profile.Registre then
+		if oldProfile.Registre then
 			do
-				local NA = ("%s %s"):format(profile.Registre.Prenom or "", profile.Registre.Nom or ""):trim()
-				xrpLocal.profiles["TRP2"].fields.NA = NA ~= "" and NA or nil
+				local NA = ("%s %s"):format(oldProfile.Registre.Prenom or "", oldProfile.Registre.Nom or ""):trim()
+				profile.fields.NA = NA ~= "" and NA or nil
 			end
-			xrpLocal.profiles["TRP2"].fields.RA = profile.Registre.RacePerso
-			xrpLocal.profiles["TRP2"].fields.RC = profile.Registre.ClassePerso
-			xrpLocal.profiles["TRP2"].fields.AE = profile.Registre.YeuxVisage
+			profile.fields.RA = oldProfile.Registre.RacePerso
+			profile.fields.RC = oldProfile.Registre.ClassePerso
+			profile.fields.AE = oldProfile.Registre.YeuxVisage
 			do
-				local NT = ("%s | %s"):format(profile.Registre.Titre or "", profile.Registre.TitreComplet or ""):match("^[%s|]*(.-)[%s|]*$")
-				xrpLocal.profiles["TRP2"].fields.NT = NT ~= "" and NT or nil
+				local NT = ("%s | %s"):format(oldProfile.Registre.Titre or "", oldProfile.Registre.TitreComplet or ""):trim(" |")
+				profile.fields.NT = NT ~= "" and NT or nil
 			end
-			xrpLocal.profiles["TRP2"].fields.AG = profile.Registre.Age
-			xrpLocal.profiles["TRP2"].fields.HH = profile.Registre.Habitation
-			xrpLocal.profiles["TRP2"].fields.HB = profile.Registre.Origine
-			xrpLocal.profiles["TRP2"].fields.AH = TRP2_HEIGHT[profile.Registre.Taille or 3]
-			xrpLocal.profiles["TRP2"].fields.AW = TRP2_WEIGHT[profile.Registre.Silhouette or 2]
+			profile.fields.AG = oldProfile.Registre.Age
+			profile.fields.HH = oldProfile.Registre.Habitation
+			profile.fields.HB = oldProfile.Registre.Origine
+			profile.fields.AH = TRP2_HEIGHT[oldProfile.Registre.Taille or 3]
+			profile.fields.AW = TRP2_WEIGHT[oldProfile.Registre.Silhouette or 2]
 		end
 		return 1
 	end
@@ -135,34 +143,33 @@ local function ImportTotalRP3()
 	if not TRP3_Profiles or not TRP3_Characters then
 		return 0
 	end
-	local toImport = TRP3_Profiles[TRP3_Characters[xrpLocal.playerWithRealm].profileID]
-	if not toImport then
+	local oldProfile = TRP3_Profiles[TRP3_Characters[xrpLocal.playerWithRealm].profileID]
+	if not oldProfile then
 		return 0
 	end
-	local profileName = "TRP3-" .. toImport.profileName
-	if not xrpLocal.profiles:Add(profileName) then
+	local profile = xrp.profiles:Add("TRP3-" .. oldProfile.profileName)
+	if not profile then
 		return 0
 	end
-	local profile = xrpLocal.profiles[profileName].fields
 	do
 		local NA = {}
-		NA[#NA + 1] = toImport.player.characteristics.TI
-		NA[#NA + 1] = toImport.player.characteristics.FN or xrpLocal.player
-		NA[#NA + 1] = toImport.player.characteristics.LN
-		profile.NA = table.concat(NA, " ")
+		NA[#NA + 1] = oldProfile.player.characteristics.TI
+		NA[#NA + 1] = oldProfile.player.characteristics.FN or xrpLocal.player
+		NA[#NA + 1] = oldProfile.player.characteristics.LN
+		profile.fields.NA = table.concat(NA, " ")
 	end
-	profile.NT = toImport.player.characteristics.FT
-	profile.AG = toImport.player.characteristics.AG
-	profile.RA = toImport.player.characteristics.RA
-	profile.RC = toImport.player.characteristics.CL
-	profile.AW = toImport.player.characteristics.WE
-	profile.AH = toImport.player.characteristics.HE
-	profile.HH = toImport.player.characteristics.RE
-	profile.HB = toImport.player.characteristics.BP
-	profile.AE = toImport.player.characteristics.EC
-	if toImport.player.characteristics.MI then
+	profile.fields.NT = oldProfile.player.characteristics.FT
+	profile.fields.AG = oldProfile.player.characteristics.AG
+	profile.fields.RA = oldProfile.player.characteristics.RA
+	profile.fields.RC = oldProfile.player.characteristics.CL
+	profile.fields.AW = oldProfile.player.characteristics.WE
+	profile.fields.AH = oldProfile.player.characteristics.HE
+	profile.fields.HH = oldProfile.player.characteristics.RE
+	profile.fields.HB = oldProfile.player.characteristics.BP
+	profile.fields.AE = oldProfile.player.characteristics.EC
+	if oldProfile.player.characteristics.MI then
 		local NI, NH, MO = {}, {}, {}
-		for i, custom in ipairs(toImport.player.characteristics.MI) do
+		for i, custom in ipairs(oldProfile.player.characteristics.MI) do
 			if custom.NA == "Nickname" then
 				NI[#NI + 1] = custom.VA
 			elseif custom.NA == "House name" then
@@ -171,33 +178,33 @@ local function ImportTotalRP3()
 				MO[#MO + 1] = custom.VA
 			end
 		end
-		profile.NI = table.concat(NI, " | ")
-		profile.NH = table.concat(NH, " | ")
-		profile.MO = table.concat(MO, " | ")
+		profile.fields.NI = table.concat(NI, " | ")
+		profile.fields.NH = table.concat(NH, " | ")
+		profile.fields.MO = table.concat(MO, " | ")
 	end
 	do
 		local CU = {}
-		CU[#CU + 1] = toImport.player.character.CU
-		if toImport.player.character.CO then
-			CU[#CU + 1] = ("((%s))"):format(toImport.player.character.CO)
+		CU[#CU + 1] = oldProfile.player.character.CU
+		if oldProfile.player.character.CO then
+			CU[#CU + 1] = ("((%s))"):format(oldProfile.player.character.CO)
 		end
-		profile.CU = table.concat(CU, " ")
+		profile.fields.CU = table.concat(CU, " ")
 	end
-	profile.FC = tostring(toImport.player.character.RP)
-	if toImport.player.about.TE == 1 then
-		profile.DE = toImport.player.about["T1"].TX
-	elseif toImport.player.about.TE == 2 then
+	profile.fields.FC = tostring(oldProfile.player.character.RP)
+	if oldProfile.player.about.TE == 1 then
+		profile.fields.DE = oldProfile.player.about["T1"].TX
+	elseif oldProfile.player.about.TE == 2 then
 		local DE = {}
-		for i, block in ipairs(toImport.player.about["T2"]) do
+		for i, block in ipairs(oldProfile.player.about["T2"]) do
 			DE[#DE + 1] = block.TX
 		end
-		profile.DE = table.concat(DE, "\n\n")
-	elseif toImport.player.about.TE == 3 then
+		profile.fields.DE = table.concat(DE, "\n\n")
+	elseif oldProfile.player.about.TE == 3 then
 		local HI = {}
-		profile.DE = toImport.player.about["T3"].PH.TX
-		HI[#HI + 1] = toImport.player.about["T3"].PS.TX
-		HI[#HI + 1] = toImport.player.about["T3"].HI.TX
-		profile.HI = table.concat(HI, "\n\n")
+		profile.fields.DE = oldProfile.player.about["T3"].PH.TX
+		HI[#HI + 1] = oldProfile.player.about["T3"].PS.TX
+		HI[#HI + 1] = oldProfile.player.about["T3"].HI.TX
+		profile.fields.HI = table.concat(HI, "\n\n")
 	end
 	return 1
 end

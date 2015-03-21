@@ -256,20 +256,62 @@ do
 			-- Note: This code must be thoroughly tested if any changes are
 			-- made. If there are any errors in here, they are not visible in
 			-- any manner in-game.
+			local now = time()
 			do
-				local fields, versions = xrpLocal.current:List(), {}
-				for field, contents in pairs(fields) do
-					versions[field] = xrpLocal.current.versions[field]
+				local fields, versions = {}, {}
+				local profiles, inherit = { xrpSaved.profiles[xrpSaved.selected] }, xrpSaved.profiles[xrpSaved.selected].parent
+				for i = 1, 16 do
+					profiles[#profiles + 1] = xrpSaved.profiles[inherit]
+					inherit = xrpSaved.profiles[inherit].parent
+					if not xrpSaved.profiles[inherit] then
+						break
+					end
+				end
+				for i = #profiles, 1, -1 do
+					local profile = profiles[i]
+					for field, doInherit in pairs(profile.inherits) do
+						if doInherit == false then
+							fields[field] = nil
+							versions[field] = nil
+						end
+					end
+					for field, contents in pairs(profile.fields) do
+						if not fields[field] then
+							fields[field] = contents
+							versions[field] = profile.versions[field]
+						end
+					end
+				end
+				for field, contents in pairs(xrpSaved.meta.fields) do
+					if not fields[field] then
+						fields[field] = contents
+						versions[field] = xrpSaved.meta.versions[field]
+					end
+				end
+				for field, contents in pairs(xrpSaved.overrides.fields) do
+					if contents == "" then
+						fields[field] = nil
+						versions[field] = nil
+					else
+						fields[field] = contents
+						versions[field] = xrpSaved.overrides.versions[field]
+					end
+				end
+				if fields.AW then
+					fields.AW = xrp:Weight(fields.AW, "msp")
+				end
+				if fields.AH then
+					fields.AH = xrp:Height(fields.AH, "msp")
 				end
 				xrpCache[xrpLocal.playerWithRealm] = {
 					fields = fields,
 					versions = versions,
 					own = true,
-					lastReceive = time(),
+					lastReceive = now,
 				}
 			end
 			if next(xrpSaved.overrides.fields) then
-				xrpSaved.overrides.logout = time()
+				xrpSaved.overrides.logout = now
 			end
 		elseif event == "NEUTRAL_FACTION_SELECT_RESULT" then
 			xrpSaved.meta.fields.GF = UnitFactionGroup("player")

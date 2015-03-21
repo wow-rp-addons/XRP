@@ -95,7 +95,7 @@ do
 	function XRPEditorAutomationProfile_PreClick(self, button, down)
 		local parent = self:GetParent()
 		parent.baseMenuList = { NONE }
-		for i, profile in ipairs(xrpLocal.profiles:List()) do
+		for i, profile in ipairs(xrp.profiles:List()) do
 			parent.baseMenuList[i + 1] = { text = profile, checked = Profile_Checked, arg1 = profile, func = Profile_Click }
 		end
 	end
@@ -406,7 +406,7 @@ function XRPEditorAutomation_OnShow(self)
 			needsUpdate = true
 		end
 	end
-	needsUpdate = needsUpdate or not xrpLocal.profiles[self.Profile.contents]
+	needsUpdate = needsUpdate or not xrp.profiles[self.Profile.contents]
 	if needsUpdate then
 		local newProfile = xrpLocal.auto[selectedForm]
 		self.Profile.contents = newProfile

@@ -223,7 +223,7 @@ do
 			local tooltip = {}
 			for i, field in ipairs(TT_LIST) do
 				local contents = xrp.current.fields[field]
-				tooltip[#tooltip + 1] = not contents and field or ("%s%d=%s"):format(field, xrpLocal.current.versions[field], contents)
+				tooltip[#tooltip + 1] = not contents and field or ("%s%d=%s"):format(field, xrpLocal.versions[field], contents)
 			end
 			local newtt = table.concat(tooltip, "\1")
 			tt = ("%s\1TT%d"):format(newtt, newtt ~= xrpSaved.oldtt and xrpLocal:NewVersion("TT") or xrpSaved.versions.TT)
@@ -277,7 +277,7 @@ do
 				end
 				return tt
 			end
-			local currentVersion = xrpLocal.current.versions[field]
+			local currentVersion = xrpLocal.versions[field]
 			if not currentVersion then
 				-- Empty fields are versionless.
 				return field
