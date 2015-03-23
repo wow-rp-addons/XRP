@@ -152,7 +152,7 @@ do
 		elseif sortType == "NA" then
 			return ("%s\30%s"):format((xrp:Strip(cache.fields.NA) or name):lower(), name)
 		elseif sortType == "realm" then
-			return ("%s\30%s"):format(name:match(FULL_PLAYER_NAME:format(".+", "(.+)")), name)
+			return ("%s\30%s"):format(name:match("%-([^%-]+)$"), name)
 		end
 		return "\30" .. name
 	end

@@ -67,7 +67,7 @@ function XRPBookmarksList_update(self)
 		if index <= matches then
 			if not button.character or tostring(character) ~= tostring(button.character) then
 				button.character = character
-				local name, realm = tostring(character):match(FULL_PLAYER_NAME:format("(.+)", "(.+)"))
+				local name, realm = tostring(character):match("^([^%-]+)%-([^%-]+)$")
 				button.NA:SetText(xrp:Strip(character.fields.NA) or name)
 				button.Name:SetText(name)
 				button.Realm:SetText(xrp:RealmDisplayName(realm))

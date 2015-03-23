@@ -251,7 +251,7 @@ do
 				local guildName, guildRank, guildIndex = GetGuildInfo(unit)
 				currentUnit.guild = guildName and (xrpLocal.settings.tooltip.guildRank and (xrpLocal.settings.tooltip.guildIndex and "%s (%d) of <%s>" or "%s of <%s>") or "<%s>"):format(xrpLocal.settings.tooltip.guildRank and guildRank or guildName, xrpLocal.settings.tooltip.guildIndex and guildIndex + 1 or guildName, guildName) or nil
 
-				local realm = tostring(currentUnit.character):match(FULL_PLAYER_NAME:format(".+", "(.+)"))
+				local realm = tostring(currentUnit.character):match("%-([^%-]+)$")
 				if realm == xrpLocal.realm then
 					realm = nil
 				end
@@ -294,7 +294,7 @@ do
 			if not owner then return end
 			currentUnit.character = xrp.characters.byName[owner]
 
-			local realm = owner:match(FULL_PLAYER_NAME:format(".+", "(.+)"))
+			local realm = owner:match("%-([^%-]+)$")
 			currentUnit.titleRealm = realm and ("%s (%s)"):format(petType, xrp:RealmDisplayName(realm)) or petType
 
 			local race = UnitCreatureFamily(unit) or UnitCreatureType(unit)
