@@ -209,34 +209,30 @@ local function ImportTotalRP3()
 	return 1
 end
 
-local import = CreateFrame("Frame")
-import:SetScript("OnEvent", function(self, event)
-	if event == "PLAYER_LOGIN" then
-		local imported = false
-		if hasMRP then
-			local count = ImportMyRolePlay()
-			if count > 0 then
-				DisableAddOn("MyRolePlay", xrpLocal.player)
-				imported = true
-			end
-		end
-		if hasTRP2 then
-			local count = ImportTotalRP2()
-			if count > 0 then
-				DisableAddOn("totalRP2", xrpLocal.player)
-				imported = true
-			end
-		end
-		if hasTRP3 then
-			local count = ImportTotalRP3()
-			if count > 0 then
-				DisableAddOn("totalRP3", xrpLocal.player)
-				imported = true
-			end
-		end
-		if imported then
-			StaticPopup_Show("XRP_IMPORT_RELOAD")
+xrpLocal:HookGameEvent("PLAYER_LOGIN", function(event)
+	local imported = false
+	if hasMRP then
+		local count = ImportMyRolePlay()
+		if count > 0 then
+			DisableAddOn("MyRolePlay", xrpLocal.player)
+			imported = true
 		end
 	end
+	if hasTRP2 then
+		local count = ImportTotalRP2()
+		if count > 0 then
+			DisableAddOn("totalRP2", xrpLocal.player)
+			imported = true
+		end
+	end
+	if hasTRP3 then
+		local count = ImportTotalRP3()
+		if count > 0 then
+			DisableAddOn("totalRP3", xrpLocal.player)
+			imported = true
+		end
+	end
+	if imported then
+		StaticPopup_Show("XRP_IMPORT_RELOAD")
+	end
 end)
-import:RegisterEvent("PLAYER_LOGIN")

@@ -54,11 +54,8 @@ local FIELD_TIMES = setmetatable({ TT = 15 }, {
 	end,
 })
 
-local msp = CreateFrame("Frame")
--- Requested field queue.
-msp.request = {}
 -- Session cache. Do NOT make weak.
-msp.cache = setmetatable({}, {
+local cache = setmetatable({}, {
 	__index = function(self, name)
 		self[name] = {
 			nextCheck = 0,
@@ -67,9 +64,37 @@ msp.cache = setmetatable({}, {
 		return self[name]
 	end,
 })
--- Group outgoing field tracking.
-msp.groupOut = {}
 
+local bnet
+local function RebuildBNList()
+	local newBnet = {}
+	for i = 1, select(2, BNGetNumFriends()) do
+		for j = 1, BNGetNumFriendToons(i) do
+			local active, toonName, client, realmName, realmID, faction, race, class, blank, zoneName, level, gameText, broadcastText, broadcastTime, isConnected, toonID = BNGetFriendToonInfo(i, j)
+			if isConnected and client == "WoW" and realmName ~= "" then
+				local name = xrp:Name(toonName, realmName)
+				if cache[name].nextCheck then
+					cache[name].nextCheck = 0
+				end
+				newBnet[name] = toonID
+			end
+		end
+	end
+	if not next(newBnet) then
+		return false
+	end
+	bnet = newBnet
+	return true
+end
+
+local function GetPresenceID(name)
+	if not BNConnected() or not bnet and not RebuildBNList() or not bnet[name] or not select(15, BNGetToonInfo(bnet[name])) then
+		return nil
+	end
+	return bnet[name]
+end
+
+local Send, handlers
 do
 	local AddFilter
 	do
@@ -94,25 +119,24 @@ do
 		end
 	end
 
+	-- Group outgoing field tracking.
+	local groupOut = {}
 	local function GroupSent(fields)
 		for i, field in ipairs(fields) do
-			--print("Cleared:", field)
-			msp.groupOut[field] = nil
+			groupOut[field] = nil
 		end
 	end
 
-	function msp:Send(name, dataTable, channel, isRequest)
+	function Send(name, dataTable, channel, isRequest)
 		local data = table.concat(dataTable, "\1")
-		--print("Sending to: "..name)
-		--print(GetTime()..": Out: "..name..": "..data:gsub("\1", ";"))
 
 		local presenceID
 		if not channel or channel == "BN" then
-			presenceID = self:GetPresenceID(name)
+			presenceID = GetPresenceID(name)
 			if not channel and presenceID then
-				if self.cache[name].bnet == false then
+				if cache[name].bnet == false then
 					channel = "GAME"
-				elseif self.cache[name].bnet == true then
+				elseif cache[name].bnet == true then
 					channel = "BN"
 				end
 			end
@@ -191,8 +215,7 @@ do
 							else
 								messageFields[#messageFields + 1] = field
 							end
-							self.groupOut[field] = true
-							--print("Added:", field)
+							groupOut[field] = true
 						end
 					end
 				end
@@ -213,32 +236,14 @@ do
 			end
 		end
 	end
-end
 
-do
-	local TT_LIST = { "VP", "VA", "NA", "NH", "NI", "NT", "RA", "RC", "CU", "FR", "FC" }
 	local tt
-	function msp:GetTT()
-		if not tt then
-			local tooltip = {}
-			for i, field in ipairs(TT_LIST) do
-				local contents = xrp.current.fields[field]
-				tooltip[#tooltip + 1] = not contents and field or ("%s%d=%s"):format(field, xrpLocal.versions[field], contents)
-			end
-			local newtt = table.concat(tooltip, "\1")
-			tt = ("%s\1TT%d"):format(newtt, newtt ~= xrpSaved.oldtt and xrpLocal:NewVersion("TT") or xrpSaved.versions.TT)
-			xrpSaved.oldtt = newtt
-		end
-		return tt
-	end
 	xrp:HookEvent("UPDATE", function(event, field)
 		if tt and (not field or TT_FIELDS[field]) then
 			tt = nil
 		end
 	end)
-end
 
-do
 	local requestTime = setmetatable({}, {
 		__index = function(self, name)
 			self[name] = {}
@@ -246,7 +251,8 @@ do
 		end,
 		__mode = "v", -- Worst case, we rarely send too soon again.
 	})
-	function msp:Process(name, command, isGroup)
+	local TT_LIST = { "VP", "VA", "NA", "NH", "NI", "NT", "RA", "RC", "CU", "FR", "FC" }
+	local function Process(name, command, isGroup)
 		local action, field, version, contents = command:match("(%p?)(%u%u)(%d*)=?(.*)")
 		version = tonumber(version) or 0
 		if not field then
@@ -258,7 +264,7 @@ do
 			if isGroup then
 				-- In group, ignore every 2.5s to try and catch simultaneous
 				-- requests (such as from names-in-chat).
-				if self.groupOut[field] or requestTime.GROUP[field] and requestTime.GROUP[field] > now then
+				if groupOut[field] or requestTime.GROUP[field] and requestTime.GROUP[field] > now then
 					return nil
 				end
 				requestTime.GROUP[field] = now + 2.5
@@ -271,7 +277,16 @@ do
 			if field == "TT" then
 				-- Rebuild the TT to catch any version changes before checking
 				-- the version.
-				local tt = self:GetTT()
+				if not tt then
+					local tooltip = {}
+					for i, field in ipairs(TT_LIST) do
+						local contents = xrp.current.fields[field]
+						tooltip[#tooltip + 1] = not contents and field or ("%s%d=%s"):format(field, xrpLocal.versions[field], contents)
+					end
+					local newtt = table.concat(tooltip, "\1")
+					tt = ("%s\1TT%d"):format(newtt, newtt ~= xrpSaved.oldtt and xrpLocal:NewVersion("TT") or xrpSaved.versions.TT)
+					xrpSaved.oldtt = newtt
+				end
 				if version == xrpSaved.versions.TT then
 					return ("!TT%d"):format(version)
 				end
@@ -286,19 +301,19 @@ do
 			end
 			return ("%s%d=%s"):format(field, currentVersion, xrp.current.fields[field])
 		elseif action == "!" and version == (xrpCache[name] and xrpCache[name].versions[field] or 0) then
-			self.cache[name].time[field] = GetTime() + FIELD_TIMES[field]
-			self.cache[name].fieldUpdated = self.cache[name].fieldUpdated or false
-			if field == "TT" and xrpCache[name] and self.cache[name].bnet == nil then
+			cache[name].time[field] = GetTime() + FIELD_TIMES[field]
+			cache[name].fieldUpdated = cache[name].fieldUpdated or false
+			if field == "TT" and xrpCache[name] and cache[name].bnet == nil then
 				local VP = tonumber(xrpCache[name].fields.VP)
 				if VP then
-					self.cache[name].bnet = VP >= 2
+					cache[name].bnet = VP >= 2
 				end
 			end
 			return nil
 		elseif action == "" then
 			-- If working with a partial message, don't update TT version or
 			-- time. Full TT may not have been received.
-			if field == "TT" and self.cache[name].partialMessage then
+			if field == "TT" and cache[name].partialMessage then
 				return nil
 			elseif not xrpCache[name] and (contents ~= "" or version ~= 0) then
 				-- This is the only place a cache table is created by XRP.
@@ -331,311 +346,283 @@ do
 				xrpCache[name].versions[field] = nil
 			end
 			-- Save session time regardless of contents or version.
-			self.cache[name].time[field] = GetTime() + FIELD_TIMES[field]
+			cache[name].time[field] = GetTime() + FIELD_TIMES[field]
 
 			if updated then
 				xrpLocal:FireEvent("FIELD", name, field)
-				self.cache[name].fieldUpdated = true
+				cache[name].fieldUpdated = true
 			else
-				self.cache[name].fieldUpdated = self.cache[name].fieldUpdated or false
+				cache[name].fieldUpdated = cache[name].fieldUpdated or false
 			end
-			if field == "VP" and (updated or self.cache[name].bnet == nil) then
+			if field == "VP" and (updated or cache[name].bnet == nil) then
 				local VP = tonumber(contents)
 				if VP then
-					self.cache[name].bnet = VP >= 2
+					cache[name].bnet = VP >= 2
 				end
 			end
 			return nil
 		end
 	end
-end
 
--- Using GU is more efficient outgoing (~8 bytes less), but some addons don't
--- properly expose it always, and it's about as efficient for the other side if
--- we just ask for all the fields.
-local TT_REQ = { "?TT", "?GC", "?GF", "?GR", "?GS" }
-msp.handlers = {
-	["MSP"] = function(self, name, message, channel)
-		local out
-		for command in message:gmatch("([^\1]+)\1*") do
-			local response = self:Process(name, command, channel ~= "WHISPER" and channel ~= "BN")
-			if response then
-				if not out then
-					out = {}
+	-- Using GU is more efficient outgoing (~8 bytes less), but some addons don't
+	-- properly expose it always, and it's about as efficient for the other side if
+	-- we just ask for all the fields.
+	local TT_REQ = { "?TT", "?GC", "?GF", "?GR", "?GS" }
+	handlers = {
+		["MSP"] = function(name, message, channel)
+			local out
+			for command in message:gmatch("([^\1]+)\1*") do
+				local response = Process(name, command, channel ~= "WHISPER" and channel ~= "BN")
+				if response then
+					if not out then
+						out = {}
+					end
+					out[#out + 1] = response
 				end
-				out[#out + 1] = response
 			end
-		end
-		-- If a field has been updated (i.e., changed content), fieldUpdated
-		-- will be set to true; if a field was received, but the content has
-		-- not changed, fieldUpdated will be set to false; if no fields were
-		-- received (i.e., only requests), fieldUpdated is nil.
-		if self.cache[name].fieldUpdated == true then
-			xrpLocal:FireEvent("RECEIVE", name)
-			self.cache[name].fieldUpdated = nil
-		elseif self.cache[name].fieldUpdated == false then
-			xrpLocal:FireEvent("NOCHANGE", name)
-			self.cache[name].fieldUpdated = nil
-		end
-		if out then
-			self:Send(name, out, channel)
-		end
-		if xrpCache[name] ~= nil then
-			-- Cache timer. Last receive marked for clearing old entries.
-			xrpCache[name].lastReceive = time()
-		elseif not self.cache[name].time.TT then
-			-- If we don't have any info for them and haven't requested the
-			-- tooltip in this session, also send a tooltip request.
-			local now = GetTime()
-			local timer = FIELD_TIMES.TT
-			self.cache[name].time.TT = now + timer
-			for field, isTT in pairs(TT_FIELDS) do
-				self.cache[name].time[field] = now + timer
+			-- If a field has been updated (i.e., changed content), fieldUpdated
+			-- will be set to true; if a field was received, but the content has
+			-- not changed, fieldUpdated will be set to false; if no fields were
+			-- received (i.e., only requests), fieldUpdated is nil.
+			if cache[name].fieldUpdated == true then
+				xrpLocal:FireEvent("RECEIVE", name)
+				cache[name].fieldUpdated = nil
+			elseif cache[name].fieldUpdated == false then
+				xrpLocal:FireEvent("NOCHANGE", name)
+				cache[name].fieldUpdated = nil
 			end
-			self:Send(name, TT_REQ, channel, true)
-		end
-	end,
-	["MSP\1"] = function(self, name, message, channel)
-		local totalChunks = tonumber(message:match("^XC=(%d+)\1"))
-		if totalChunks then
-			self.cache[name].totalChunks = totalChunks
-			message = message:gsub("^XC=%d+\1", "")
-		end
-		-- Queries (i.e., "?TT") are processed only after receive finishes.
-		for command in message:gmatch("([^\1]+)\1") do
-			if command:find("^[^%?]") then
-				self:Process(name, command)
-				message = message:gsub(command:gsub("(%W)","%%%1") .. "\1", "")
+			if out then
+				Send(name, out, channel)
 			end
-		end
-		self.cache[name].chunks = 1
-		self.cache[name][channel] = message
-		xrpLocal:FireEvent("CHUNK", name, 1, totalChunks)
-	end,
-	["MSP\2"] = function(self, name, message, channel)
-		local buffer = self.cache[name][channel]
-		-- If we don't have a buffer (i.e., no prior received message), still
-		-- try to process as many full commands as we can.
-		if not buffer then
-			message = message:match("^.-\1(.+)$")
-			if not message then return end
-			buffer = { "", partial = true }
-			self.cache[name][channel] = buffer
-		end
-		-- Only merge the contents if there's an end-of-command to process.
-		if message:find("\1", nil, true) then
-			if type(buffer) == "string" then
-				message = buffer .. message
-			else
-				if buffer.partial then
-					self.cache[name].partialMessage = true
+			if xrpCache[name] ~= nil then
+				-- Cache timer. Last receive marked for clearing old entries.
+				xrpCache[name].lastReceive = time()
+			elseif not cache[name].time.TT then
+				-- If we don't have any info for them and haven't requested the
+				-- tooltip in this session, also send a tooltip request.
+				local now = GetTime()
+				local timer = FIELD_TIMES.TT
+				cache[name].time.TT = now + timer
+				for field, isTT in pairs(TT_FIELDS) do
+					cache[name].time[field] = now + timer
 				end
-				buffer[#buffer + 1] = message
-				message = table.concat(buffer)
+				Send(name, TT_REQ, channel, true)
 			end
+		end,
+		["MSP\1"] = function(name, message, channel)
+			local totalChunks = tonumber(message:match("^XC=(%d+)\1"))
+			if totalChunks then
+				cache[name].totalChunks = totalChunks
+				message = message:gsub("^XC=%d+\1", "")
+			end
+			-- Queries (i.e., "?TT") are processed only after receive finishes.
 			for command in message:gmatch("([^\1]+)\1") do
 				if command:find("^[^%?]") then
-					self:Process(name, command)
+					Process(name, command)
 					message = message:gsub(command:gsub("(%W)","%%%1") .. "\1", "")
 				end
 			end
-			if self.cache[name].partialMessage then
-				self.cache[name].partialMessage = nil
-				self.cache[name][channel] = { message, partial = true }
-			else
-				self.cache[name][channel] = message
+			cache[name].chunks = 1
+			cache[name][channel] = message
+			xrpLocal:FireEvent("CHUNK", name, 1, totalChunks)
+		end,
+		["MSP\2"] = function(name, message, channel)
+			local buffer = cache[name][channel]
+			-- If we don't have a buffer (i.e., no prior received message), still
+			-- try to process as many full commands as we can.
+			if not buffer then
+				message = message:match("^.-\1(.+)$")
+				if not message then return end
+				buffer = { "", partial = true }
+				cache[name][channel] = buffer
 			end
-		else
+			-- Only merge the contents if there's an end-of-command to process.
+			if message:find("\1", nil, true) then
+				if type(buffer) == "string" then
+					message = buffer .. message
+				else
+					if buffer.partial then
+						cache[name].partialMessage = true
+					end
+					buffer[#buffer + 1] = message
+					message = table.concat(buffer)
+				end
+				for command in message:gmatch("([^\1]+)\1") do
+					if command:find("^[^%?]") then
+						Process(name, command)
+						message = message:gsub(command:gsub("(%W)","%%%1") .. "\1", "")
+					end
+				end
+				if cache[name].partialMessage then
+					cache[name].partialMessage = nil
+					cache[name][channel] = { message, partial = true }
+				else
+					cache[name][channel] = message
+				end
+			else
+				if type(buffer) == "string" then
+					cache[name][channel] = { buffer, message }
+				else
+					buffer[#buffer + 1] = message
+				end
+			end
+			cache[name].chunks = (cache[name].chunks or 0) + 1
+			xrpLocal:FireEvent("CHUNK", name, cache[name].chunks, cache[name].totalChunks)
+		end,
+		["MSP\3"] = function(name, message, channel)
+			local buffer = cache[name][channel]
+			-- If we don't have a buffer (i.e., no prior received message), still
+			-- try to process as many full commands as we can.
+			if not buffer then
+				message = message:match("^.-\1(.+)$")
+				if not message then return end
+				buffer = ""
+				cache[name].partialMessage = true
+			end
 			if type(buffer) == "string" then
-				self.cache[name][channel] = { buffer, message }
+				handlers["MSP"](name, buffer .. message, channel)
 			else
+				if buffer.partial then
+					cache[name].partialMessage = true
+				end
 				buffer[#buffer + 1] = message
+				handlers["MSP"](name, table.concat(buffer), channel)
 			end
-		end
-		self.cache[name].chunks = (self.cache[name].chunks or 0) + 1
-		xrpLocal:FireEvent("CHUNK", name, self.cache[name].chunks, self.cache[name].totalChunks)
-	end,
-	["MSP\3"] = function(self, name, message, channel)
-		local buffer = self.cache[name][channel]
-		-- If we don't have a buffer (i.e., no prior received message), still
-		-- try to process as many full commands as we can.
-		if not buffer then
-			message = message:match("^.-\1(.+)$")
-			if not message then return end
-			buffer = ""
-			self.cache[name].partialMessage = true
-		end
-		if type(buffer) == "string" then
-			self.handlers["MSP"](self, name, buffer .. message, channel)
-		else
-			if buffer.partial then
-				self.cache[name].partialMessage = true
+			-- CHUNK after RECEIVE would fire. Makes it easier to do something
+			-- useful when chunks == totalChunks.
+			local chunks = (cache[name].chunks or 0) + 1
+			xrpLocal:FireEvent("CHUNK", name, chunks, chunks)
+
+			cache[name].chunks = nil
+			cache[name].totalChunks = nil
+			cache[name][channel] = nil
+			cache[name].partialMessage = nil
+		end,
+		["GMSP"] = function(name, message, channel)
+			local target, prefix
+			if message:find("\30", nil, true) then
+				target, prefix, message = message:match("^(.-)\30([\1\2\3]?)(.+)$")
+			else
+				prefix, message = message:match("^([\1\2\3]?)(.+)$")
 			end
-			buffer[#buffer + 1] = message
-			self.handlers["MSP"](self, name, table.concat(buffer), channel)
-		end
-		-- CHUNK after RECEIVE would fire. Makes it easier to do something
-		-- useful when chunks == totalChunks.
-		local chunks = (self.cache[name].chunks or 0) + 1
-		xrpLocal:FireEvent("CHUNK", name, chunks, chunks)
+			if target and target ~= xrpLocal.playerWithRealm then return end
+			handlers["MSP" .. prefix](name, message, channel)
+		end,
+	}
+end
 
-		self.cache[name].chunks = nil
-		self.cache[name].totalChunks = nil
-		self.cache[name][channel] = nil
-		self.cache[name].partialMessage = nil
-	end,
-	["GMSP"] = function(self, name, message, channel)
-		local target, prefix
-		if message:find("\30", nil, true) then
-			target, prefix, message = message:match("^(.-)\30([\1\2\3]?)(.+)$")
-		else
-			prefix, message = message:match("^([\1\2\3]?)(.+)$")
-		end
-		if target and target ~= xrpLocal.playerWithRealm then return end
-		self.handlers["MSP" .. prefix](self, name, message, channel)
-	end,
-}
+local gameEvents = {}
+function gameEvents.CHAT_MSG_ADDON(event, prefix, message, channel, sender)
+	if not handlers[prefix] then return end
+	-- Sometimes won't have the realm attached because I dunno. Always
+	-- works correctly for different-realm messages.
+	local name = xrp:Name(sender)
 
-msp:SetScript("OnEvent", function(self, event, prefix, message, channel, sender)
-	if event == "CHAT_MSG_ADDON" then
-		if not self.handlers[prefix] then return end
-		-- Sometimes won't have the realm attached because I dunno. Always
-		-- works correctly for different-realm messages.
-		local name = xrp:Name(sender)
-		--print(GetTime()..": In: "..name..": "..message:gsub("\1", ";"))
-		--print("Receiving from: "..name)
+	-- Ignore messages from ourselves (GMSP).
+	if name ~= xrpLocal.playerWithRealm then
+		cache[name].nextCheck = nil
 
-		-- Ignore messages from ourselves (GMSP).
-		if name ~= xrpLocal.playerWithRealm then
-			self.cache[name].nextCheck = nil
+		handlers[prefix](name, message, channel)
+	end
+end
+function gameEvents.BN_CHAT_MSG_ADDON(event, prefix, message, channel, presenceID)
+	if not handlers[prefix] then return end
+	local active, toonName, client, realmName = BNGetToonInfo(presenceID)
+	local name = xrp:Name(toonName, realmName)
+	if bnet then
+		bnet[name] = presenceID
+	end
 
-			self.handlers[prefix](self, name, message, channel)
-		end
-	elseif event == "BN_CHAT_MSG_ADDON" then
-		if not self.handlers[prefix] then return end
-		local active, toonName, client, realmName = BNGetToonInfo(sender)
+	cache[name].bnet = true
+	cache[name].nextCheck = nil
+
+	handlers[prefix](name, message, "BN")
+end
+function gameEvents.BN_TOON_NAME_UPDATE(event, presenceID)
+	if not bnet then return end
+	local active, toonName, client, realmName = BNGetToonInfo(presenceID)
+	if client == "WoW" and realmName ~= "" then
 		local name = xrp:Name(toonName, realmName)
-		if self.bnet then
-			self.bnet[name] = sender
+		if cache[name].nextCheck then
+			cache[name].nextCheck = 0
 		end
-
-		self.cache[name].bnet = true
-		self.cache[name].nextCheck = nil
-
-		self.handlers[prefix](self, name, message, "BN")
-	elseif event == "BN_TOON_NAME_UPDATED" or event == "BN_FRIEND_TOON_ONLINE" then
-		if not self.bnet then return end
-		local active, toonName, client, realmName = BNGetToonInfo(prefix)
-		if client == "WoW" and realmName ~= "" then
-			local name = xrp:Name(toonName, realmName)
-			if self.cache[name].nextCheck then
-				self.cache[name].nextCheck = 0
-			end
-			self.bnet[name] = prefix
+		bnet[name] = presenceID
+	end
+end
+function gameEvents.BN_CONNECTED(event)
+	RebuildBNList()
+	xrpLocal:HookGameEvent("BN_TOON_NAME_UPDATED", gameEvents.BN_TOON_NAME_UPDATED)
+	xrpLocal:HookGameEvent("BN_FRIEND_TOON_ONLINE", gameEvents.BN_TOON_NAME_UPDATED)
+end
+function gameEvents.BN_DISCONNECTED(event)
+	xrpLocal:UnhookGameEvent("BN_TOON_NAME_UPDATED", gameEvents.BN_TOON_NAME_UPDATED)
+	xrpLocal:UnhookGameEvent("BN_FRIEND_TOON_ONLINE", gameEvents.BN_TOON_NAME_UPDATED)
+	bnet = nil
+end
+do
+	local inGroup = {}
+	local raidUnits, partyUnits = {}, {}
+	do
+		local raid, party = "raid%d", "party%d"
+		for i = 1, MAX_RAID_MEMBERS do
+			raidUnits[i] = raid:format(i)
 		end
-	elseif event == "GROUP_ROSTER_UPDATE" then
-		local units = IsInRaid() and self.raidUnits or self.partyUnits
-		local inGroup, newInGroup = self.inGroup, {}
+		for i = 1, MAX_PARTY_MEMBERS do
+			partyUnits[i] = party:format(i)
+		end
+	end
+	function gameEvents.GROUP_ROSTER_UPDATE(event)
+		local units = IsInRaid() and raidUnits or partyUnits
+		local newInGroup = {}
 		for i, unit in ipairs(units) do
 			local name = xrp:UnitName(unit)
 			if not name then break end
 			if name ~= xrpLocal.playerWithRealm then
-				if not inGroup[name] and self.cache[name].nextCheck then
-					self.cache[name].nextCheck = 0
+				if not inGroup[name] and cache[name].nextCheck then
+					cache[name].nextCheck = 0
 				end
 				newInGroup[name] = true
 			end
 		end
-		self.inGroup = newInGroup
-	elseif event == "BN_CONNECTED" then
-		self:RebuildBNList()
-		self:RegisterEvent("BN_TOON_NAME_UPDATED")
-		self:RegisterEvent("BN_FRIEND_TOON_ONLINE")
-	elseif event == "BN_DISCONNECTED" then
-		self:UnregisterEvent("BN_TOON_NAME_UPDATED")
-		self:UnregisterEvent("BN_FRIEND_TOON_ONLINE")
-		self.bnet = nil
+		inGroup = newInGroup
 	end
-end)
-
-function msp:RebuildBNList()
-	local bnet = {}
-	for i = 1, select(2, BNGetNumFriends()) do
-		for j = 1, BNGetNumFriendToons(i) do
-			local active, toonName, client, realmName, realmID, faction, race, class, blank, zoneName, level, gameText, broadcastText, broadcastTime, isConnected, toonID = BNGetFriendToonInfo(i, j)
-			if isConnected and client == "WoW" and realmName ~= "" then
-				local name = xrp:Name(toonName, realmName)
-				if self.cache[name].nextCheck then
-					self.cache[name].nextCheck = 0
-				end
-				bnet[name] = toonID
-			end
-		end
-	end
-	if not next(bnet) then
-		return false
-	end
-	self.bnet = bnet
-	return true
-end
-
-function msp:GetPresenceID(name)
-	if not BNConnected() or not self.bnet and not self:RebuildBNList() or not self.bnet[name] or not select(15, BNGetToonInfo(self.bnet[name])) then
-		return nil
-	end
-	return self.bnet[name]
 end
 
 if not disabled then
-	for prefix, handler in pairs(msp.handlers) do
+	for prefix, handler in pairs(handlers) do
 		RegisterAddonMessagePrefix(prefix)
 	end
-	msp:RegisterEvent("CHAT_MSG_ADDON")
-	msp:RegisterEvent("BN_CHAT_MSG_ADDON")
+	xrpLocal:HookGameEvent("CHAT_MSG_ADDON", gameEvents.CHAT_MSG_ADDON)
+	xrpLocal:HookGameEvent("BN_CHAT_MSG_ADDON", gameEvents.BN_CHAT_MSG_ADDON)
 end
-msp:RegisterEvent("GROUP_ROSTER_UPDATE")
+xrpLocal:HookGameEvent("GROUP_ROSTER_UPDATE", gameEvents.GROUP_ROSTER_UPDATE)
 if BNConnected() then
-	msp:RegisterEvent("BN_TOON_NAME_UPDATED")
-	msp:RegisterEvent("BN_FRIEND_TOON_ONLINE")
+	xrpLocal:HookGameEvent("BN_TOON_NAME_UPDATED", gameEvents.BN_TOON_NAME_UPDATED)
+	xrpLocal:HookGameEvent("BN_FRIEND_TOON_ONLINE", gameEvents.BN_TOON_NAME_UPDATED)
 end
-msp:RegisterEvent("BN_CONNECTED")
-msp:RegisterEvent("BN_DISCONNECTED")
+xrpLocal:HookGameEvent("BN_CONNECTED", gameEvents.BN_CONNECTED)
+xrpLocal:HookGameEvent("BN_DISCONNECTED", gameEvents.BN_DISCONNECTED)
 
-do
-	local raidUnits, partyUnits = {}, {}
-	local raid, party = "raid%d", "party%d"
-	for i = 1, MAX_RAID_MEMBERS do
-		raidUnits[i] = raid:format(i)
-	end
-	for i = 1, MAX_PARTY_MEMBERS do
-		partyUnits[i] = party:format(i)
-	end
-	msp.raidUnits = raidUnits
-	msp.partyUnits = partyUnits
-	msp.inGroup = {}
-end
-
-msp:SetScript("OnUpdate", function(self, elapsed)
-	for name, fields in pairs(self.request) do
+local request, requestQueued = {}
+local function RunRequestQueue()
+	for name, fields in pairs(request) do
 		xrpLocal:Request(name, fields)
-		self.request[name] = nil
+		request[name] = nil
 	end
-	self:Hide()
-end)
-msp:Hide()
-
-if libfakedraw then
-	libfakedraw:RegisterFrame(msp)
+	requestQueued = nil
 end
 
 function xrpLocal:QueueRequest(name, field)
-	if disabled or name == self.playerWithRealm or xrp:Ambiguate(name) == UNKNOWN or msp.cache[name].time[field] and GetTime() < msp.cache[name].time[field] then
+	if disabled or name == self.playerWithRealm or xrp:Ambiguate(name) == UNKNOWN or cache[name].time[field] and GetTime() < cache[name].time[field] then
 		return
-	elseif not msp.request[name] then
-		msp.request[name] = {}
+	elseif not request[name] then
+		request[name] = {}
 	end
-	msp.request[name][#msp.request[name] + 1] = field
-	msp:Show()
+	request[name][#request[name] + 1] = field
+	if not requestQueued then
+		C_Timer.After(0, RunRequestQueue)
+		requestQueued = true
+	end
 end
 
 -- As also in TT_REQ, these are only slightly less efficient than using GF+GU,
@@ -647,20 +634,20 @@ function xrpLocal:Request(name, fields)
 	end
 
 	local now = GetTime()
-	if msp.cache[name].nextCheck and now < msp.cache[name].nextCheck then
+	if cache[name].nextCheck and now < cache[name].nextCheck then
 		self:FireEvent("FAIL", name, (not xrpCache[name] or not xrpCache[name].fields.GF or xrpCache[name].fields.GF == xrp.current.fields.GF) and "nomsp" or "faction")
 		return false
-	elseif msp.cache[name].nextCheck then
-		msp.cache[name].nextCheck = now + 120
+	elseif cache[name].nextCheck then
+		cache[name].nextCheck = now + 120
 	end
 
 	-- No need to strip repeated fields -- the logic below for not querying
 	-- fields repeatedly over a short time will handle that for us.
 	local reqTT = false
 	-- This entire for block is FRAGILE. Modifications not recommended.
-	for key = #fields, 1, -1 do
-		if fields[key] == "TT" or TT_FIELDS[fields[key]] then
-			table.remove(fields, key)
+	for i = #fields, 1, -1 do
+		if fields[i] == "TT" or TT_FIELDS[fields[i]] then
+			table.remove(fields, i)
 			reqTT = true
 		end
 	end
@@ -686,23 +673,23 @@ function xrpLocal:Request(name, fields)
 
 	local out = {}
 	for i, field in ipairs(fields) do
-		if not msp.cache[name].time[field] or now > msp.cache[name].time[field] then
+		if not cache[name].time[field] or now > cache[name].time[field] then
 			if not xrpCache[name] or not xrpCache[name].versions[field] then
 				out[#out + 1] = "?" .. field
 			else
 				out[#out + 1] = ("?%s%d"):format(field, xrpCache[name].versions[field])
 			end
-			msp.cache[name].time[field] = now + FIELD_TIMES[field]
+			cache[name].time[field] = now + FIELD_TIMES[field]
 			if field == "TT" then
 				local timer = FIELD_TIMES[field]
 				for ttField, isTT in pairs(TT_FIELDS) do
-					msp.cache[name].time[ttField] = now + timer
+					cache[name].time[ttField] = now + timer
 				end
 			end
 		end
 	end
 	if #out > 0 then
-		msp:Send(name, out, nil, true)
+		Send(name, out, nil, true)
 		return true
 	end
 	return false
