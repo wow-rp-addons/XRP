@@ -338,7 +338,7 @@ end
 
 local enabled
 local function Tooltip_RECEIVE(event, name)
-	if not enabled or not active or name ~= tostring(currentUnit.character) then return end
+	if not active or name ~= tostring(currentUnit.character) then return end
 	local tooltip, unit = GameTooltip:GetUnit()
 	if tooltip then
 		RenderTooltip()
@@ -392,43 +392,39 @@ local function GameTooltip_OnTooltipCleared_Hook(self)
 	end
 end
 
-local NoUnit
-local function GameTooltip_OnTooltipSetUnit_Hook(self)
-	if not enabled then return end
-	local tooltip, unit = self:GetUnit()
-	if not unit then
-		NoUnit:Show()
-	else
-		SetUnit(unit)
-	end
-end
-
-local function NoUnit_OnUpdate(self, elapsed)
+local function NoUnit()
 	-- GameTooltip:GetUnit() will sometimes return nil, especially when custom
 	-- unit frames call GameTooltip:SetUnit() with something 'odd' like
 	-- targettarget. By the next frame draw, the tooltip will correctly be able
 	-- to identify such units (usually as mouseover).
-	self:Hide()
 	local tooltip, unit = GameTooltip:GetUnit()
 	if not unit then return end
 	SetUnit(unit)
+end
+
+local function GameTooltip_OnTooltipSetUnit_Hook(self)
+	if not enabled then return end
+	local tooltip, unit = self:GetUnit()
+	if not unit then
+		xrpLocal:NextFrame(NoUnit)
+	else
+		SetUnit(unit)
+	end
 end
 
 xrpLocal.settingsToggles.tooltip = {
 	enabled = function(setting)
 		if setting then
 			if enabled == nil then
-				NoUnit = CreateFrame("Frame")
-				NoUnit:Hide()
-				NoUnit:SetScript("OnUpdate", NoUnit_OnUpdate)
-				xrp:HookEvent("RECEIVE", Tooltip_RECEIVE)
 				GameTooltip:HookScript("OnTooltipSetUnit", GameTooltip_OnTooltipSetUnit_Hook)
 				GameTooltip:HookScript("OnTooltipCleared", GameTooltip_OnTooltipCleared_Hook)
 			end
+			xrp:HookEvent("RECEIVE", Tooltip_RECEIVE)
 			enabled = true
 			xrpLocal.settingsToggles.tooltip.replace(xrpLocal.settings.tooltip.replace)
 		elseif enabled ~= nil then
 			enabled = false
+			xrp:UnhookEvent("RECEIVE", Tooltip_RECEIVE)
 		end
 	end,
 	replace = function(setting)

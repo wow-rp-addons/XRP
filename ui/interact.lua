@@ -97,7 +97,7 @@ do
 end
 
 local function Cursor_RECEIVE(event, name)
-	if cursor and name == CursorFrame.current and not InCombatLockdown() and not CursorFrame:IsVisible() and (not CursorFrame.mountInParty or not IsItemInRange(88589, "mouseover")) then
+	if name == CursorFrame.current and not InCombatLockdown() and not CursorFrame:IsVisible() and (not CursorFrame.mountInParty or not IsItemInRange(88589, "mouseover")) then
 		CursorFrame:Show()
 	end
 end
@@ -132,7 +132,6 @@ local function CreateCursor()
 	CursorFrame:Hide()
 	CursorFrame:SetScript("OnEvent", Cursor_OnEvent)
 	CursorFrame:SetScript("OnUpdate", Cursor_OnUpdate)
-	xrp:HookEvent("RECEIVE", Cursor_RECEIVE)
 end
 
 xrpLocal.settingsToggles.interact = {
@@ -141,11 +140,13 @@ xrpLocal.settingsToggles.interact = {
 			if not CursorFrame then
 				CreateCursor()
 			end
+			xrp:HookEvent("RECEIVE", Cursor_RECEIVE)
 			CursorFrame:RegisterEvent("UPDATE_MOUSEOVER_UNIT")
 			cursor = true
 		elseif cursor ~= nil then
 			CursorFrame:UnregisterAllEvents()
 			CursorFrame:Hide()
+			xrp:UnhookEvent("RECEIVE", Cursor_RECEIVE)
 			cursor = false
 		end
 	end,

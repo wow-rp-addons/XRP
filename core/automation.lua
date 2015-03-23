@@ -17,23 +17,6 @@
 
 local addonName, xrpLocal = ...
 
-local RecheckForm
-
-xrpLocal.auto = setmetatable({}, {
-	__index = function(self, form)
-		local profile = xrpSaved.auto[form]
-		if not xrpSaved.profiles[profile] then
-			return nil
-		end
-		return profile
-	end,
-	__newindex = function(self, form, profile)
-		if profile and not xrpSaved.profiles[profile] then return end
-		xrpSaved.auto[form] = profile
-		RecheckForm()
-	end,
-})
-
 local GetCurrentForm
 do
 	local isWorgen = select(2, UnitRace("player")) == "Worgen"
@@ -110,7 +93,6 @@ do
 					lastEquipSet = name
 					break
 				elseif not lastEquipSet and numItems > 0 then
-					local score
 					if numEquip == numItems then
 						-- Sets with all items equipped (but slots that should
 						-- be empty aren't) are penalized slightly. No way to
@@ -132,100 +114,100 @@ do
 	end
 end
 
-local swap = CreateFrame("Frame")
-swap.timer = 0
-do
-	local function TestForm(self, event)
-		if InCombatLockdown() then return end
-		if event == "PLAYER_REGEN_DISABLED" then
-			self:Hide()
-			return
-		end
-		local race, class, equip = GetCurrentForm()
-		local newForm = self.class ~= class or self.race ~= race or self.equip ~= equip
-		if event == "PLAYER_REGEN_ENABLED" and (newForm or self.timer > 0) then
-			self.timer = 6
-			self.race = race
-			self.class = class
-			self.equip = equip
-			self:Show()
-		elseif newForm then
-			self.timer = 3
-			self.race = race
-			self.class = class
-			self.equip = equip
-			self:Show()
-		end
+local timer
+local function CancelTimer()
+	if timer and not timer._cancelled then
+		timer:Cancel()
 	end
-	function RecheckForm()
-		swap.race = nil
-		swap.class = nil
-		swap.equip = nil
-		TestForm(swap)
-		-- This forces a form check immediately, for new profile assignments.
-		swap.timer = 0
-	end
-	swap:SetScript("OnEvent", TestForm)
 end
-swap:SetScript("OnUpdate", function(self, elapsed)
-	self.timer = self.timer - elapsed
-	if self.timer > 0 then return end
-	self.timer = 0
-	self:Hide()
 
-	-- Priority (W = Worgen):
-	-- 1: RACE-CLASS-Equipment (W)
-	-- 2: RACE-CLASS (W)
-	-- 3: RACE-Equipment (W) or CLASS-Equipment
-	-- 4: RACE (W) or CLASS
-	-- 5: DEFAULT-CLASS-Equipment (W)
-	-- 6: DEFAULT-Equipment
-	-- 9: DEFAULT
+local race, class, equip
 
-	local auto, form = xrpLocal.auto
-	if self.race then
+local function DoSwap()
+	timer = nil
+
+	local form
+	if race then
 		-- RACE-CLASS-Equipment (Worgen only)
-		if self.class and self.equip then
-			form = ("%s\30%s\29%s"):format(self.race, self.class, self.equip)
+		if class and equip then
+			form = ("%s\30%s\29%s"):format(race, class, equip)
 		end
 		-- RACE-CLASS (Worgen only)
-		if not auto[form] and self.class then
-			form = ("%s\30%s"):format(self.race, self.class)
+		if not xrpLocal.auto[form] and class then
+			form = ("%s\30%s"):format(race, class)
 		end
 	end
 	-- RACE-Equipment (Worgen only)/CLASS-Equipment
-	if not auto[form] and (self.race or self.class) and self.equip then
-		form = ("%s\29%s"):format(self.race or self.class, self.equip)
+	if not xrpLocal.auto[form] and (race or class) and equip then
+		form = ("%s\29%s"):format(race or class, equip)
 	end
 	-- RACE (Worgen only)/CLASS
-	if not auto[form] and (self.race or self.class) then
-		form = self.race or self.class
+	if not xrpLocal.auto[form] and (race or class) then
+		form = race or class
 	end
 	-- DEFAULT-CLASS-Equipment (Worgen only)
-	if not auto[form] and self.race and self.race ~= "DEFAULT" and self.class and self.equip then
-		form = ("DEFAULT\30%s\29%s"):format(self.class, self.equip)
+	if not xrpLocal.auto[form] and race and race ~= "DEFAULT" and class and equip then
+		form = ("DEFAULT\30%s\29%s"):format(class, equip)
 	end
 	-- DEFAULT-Equipment
-	if not auto[form] and self.equip then
-		form = ("DEFAULT\29%s"):format(self.equip)
+	if not xrpLocal.auto[form] and equip then
+		form = ("DEFAULT\29%s"):format(equip)
 	end
 	-- DEFAULT
-	if not auto[form] then
+	if not xrpLocal.auto[form] then
 		form = "DEFAULT"
 	end
 
-	if not auto[form] then
+	--print(form and (form:gsub("\30", "-"):gsub("\29", "-")) or "NONE")
+	if not xrpLocal.auto[form] then
 		return
 	end
+	xrp.profiles[xrpLocal.auto[form]]:Activate(true)
+end
 
-	--print("Swapping to: "..auto[form])
-	xrp.profiles[auto[form]]:Activate(true)
-end)
-swap:Hide()
+local function TestForm(event, unit)
+	if InCombatLockdown() or event == "UNIT_PORTRAIT_UPDATE" and unit ~= "player" then return end
+	local newRace, newClass, newEquip = GetCurrentForm()
+	local newForm = class ~= newClass or race ~= newRace or equip ~= newEquip
+	if event == "PLAYER_REGEN_ENABLED" and (newForm or timer and timer._cancelled) then
+		race = newRace
+		class = newClass
+		equip = newEquip
+		CancelTimer()
+		timer = C_Timer.NewTimer(6, DoSwap)
+	elseif newForm then
+		race = newRace
+		class = newClass
+		equip = newEquip
+		CancelTimer()
+		timer = C_Timer.NewTimer(3, DoSwap)
+	end
+end
+
+local function RecheckForm()
+	race, class, equip = GetCurrentForm()
+	CancelTimer()
+	DoSwap()
+end
 
 -- Shadowform (and possibly others) don't trigger a portrait update. Worgen
 -- form and equipment sets don't trigger a shapeshift update.
-swap:RegisterUnitEvent("UNIT_PORTRAIT_UPDATE", "player")
-swap:RegisterEvent("UPDATE_SHAPESHIFT_FORM")
-swap:RegisterEvent("PLAYER_REGEN_DISABLED")
-swap:RegisterEvent("PLAYER_REGEN_ENABLED")
+xrpLocal:HookGameEvent("UNIT_PORTRAIT_UPDATE", TestForm, "player")
+xrpLocal:HookGameEvent("UPDATE_SHAPESHIFT_FORM", TestForm)
+xrpLocal:HookGameEvent("PLAYER_REGEN_ENABLED", TestForm)
+xrpLocal:HookGameEvent("PLAYER_REGEN_DISABLED", CancelTimer)
+
+xrpLocal.auto = setmetatable({}, {
+	__index = function(self, form)
+		local profile = xrpSaved.auto[form]
+		if not xrpSaved.profiles[profile] then
+			return nil
+		end
+		return profile
+	end,
+	__newindex = function(self, form, profile)
+		if profile == xrpSaved.auto[form] or profile and not xrpSaved.profiles[profile] then return end
+		xrpSaved.auto[form] = profile
+		RecheckForm()
+	end,
+})

@@ -27,7 +27,6 @@ local TEXTURES = {
 }
 
 function XRPButton_UpdateIcon()
-	if not Button then return end
 	if xrp.characters.byUnit.target and xrp.characters.byUnit.target.fields.VA then
 		Button:SetNormalTexture(TEXTURES[1])
 		Button:SetPushedTexture(TEXTURES[1])
@@ -206,10 +205,8 @@ end
 xrpLocal.settingsToggles.minimap = {
 	enabled = function(setting)
 		if setting then
-			if Button == nil then
-				xrp:HookEvent("UPDATE", XRPButton_UpdateIcon)
-				xrp:HookEvent("RECEIVE", XRPButton_UpdateIcon)
-			end
+			xrp:HookEvent("UPDATE", XRPButton_UpdateIcon)
+			xrp:HookEvent("RECEIVE", XRPButton_UpdateIcon)
 			if xrpLocal.settings.minimap.detached then
 				if Button and Button == LibDBIcon10_XRP then
 					Button:UnregisterAllEvents()
@@ -236,6 +233,8 @@ xrpLocal.settingsToggles.minimap = {
 			Button:RegisterEvent("PLAYER_ENTERING_WORLD")
 			Button:Show()
 		elseif Button ~= nil then
+			xrp:UnhookEvent("UPDATE", XRPButton_UpdateIcon)
+			xrp:UnhookEvent("RECEIVE", XRPButton_UpdateIcon)
 			Button:UnregisterAllEvents()
 			Button:Hide()
 			Button = nil
