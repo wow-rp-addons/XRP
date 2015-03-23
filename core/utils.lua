@@ -27,10 +27,9 @@ end
 function xrp:Name(name, realm)
 	if not name or name == "" then
 		return nil
-	elseif name:find(FULL_PLAYER_NAME:format(".+", ".+")) then
+	elseif name:find("-", nil, true) then
 		return name
 	elseif realm and realm ~= "" then
-		-- If a realm was provided, use it.
 		return FULL_PLAYER_NAME:format(name, (realm:gsub("%s*%-*", "")))
 	end
 	return FULL_PLAYER_NAME:format(name, (GetRealmName():gsub("%s*%-*", "")))
@@ -41,7 +40,7 @@ function xrp:Ambiguate(name)
 	if type(name) ~= "string" then
 		return UNKNOWN
 	end
-	return name:match(FULL_PLAYER_NAME:format("(.+)", ".+")) or name
+	return name:match("^([^%-]+)")
 end
 
 do
