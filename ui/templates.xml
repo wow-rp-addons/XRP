@@ -62,7 +62,7 @@
 						<Anchor point="TOPRIGHT" x="5" y="5"/>
 					</Anchors>
 				</Texture>
-				<Texture file="Interface\Common\Common-Input-Border-T">
+				<Texture parentKey="TopTex" file="Interface\Common\Common-Input-Border-T">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.TopLeftTex" relativePoint="TOPRIGHT"/>
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.TopRightTex" relativePoint="BOTTOMLEFT"/>
@@ -80,7 +80,7 @@
 						<Anchor point="BOTTOMRIGHT" x="5" y="-5"/>
 					</Anchors>
 				</Texture>
-				<Texture file="Interface\Common\Common-Input-Border-B">
+				<Texture parentKey="BottomTex" file="Interface\Common\Common-Input-Border-B">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.BottomLeftTex" relativePoint="TOPRIGHT"/>
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRightTex" relativePoint="BOTTOMLEFT"/>
@@ -98,7 +98,7 @@
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomRightTex" relativePoint="TOPRIGHT"/>
 					</Anchors>
 				</Texture>
-				<Texture file="Interface\Common\Common-Input-Border-M">
+				<Texture parentKey="MiddleTex" file="Interface\Common\Common-Input-Border-M">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.LeftTex" relativePoint="TOPRIGHT"/>
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.RightTex" relativePoint="BOTTOMLEFT"/>
@@ -132,82 +132,22 @@
 			<OnHide function="XRPTemplatesPanel_OnHide"/>
 		</Scripts>
 	</Frame>
-	<!-- This isn't a template, but it fits here. -->
-	<Frame name="XRPExport" toplevel="true" parent="UIParent" hidden="true" enableMouse="true" frameStrata="HIGH">
-		<Size x="500" y="350"/>
-		<Anchors>
-			<Anchor point="CENTER"/>
-		</Anchors>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background-Dark" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets left="11" right="11" top="12" bottom="10"/>
-			<TileSize val="32"/>
-			<EdgeSize val="32"/>
-		</Backdrop>
+	<GameTooltip name="XRPTooltipTemplate" inherits="GameTooltipTemplate" virtual="true">
+		<Scripts>
+			<OnUpdate function="XRPTooltip_OnUpdate"/>
+			<OnHide inherit="prepend" function="XRPTooltip_OnHide"/>
+		</Scripts>
+	</GameTooltip>
+	<Frame name="XRPCursorBookTemplate" frameStrata="TOOLTIP" frameLevel="127" hidden="true" virtual="true">
+		<Size x="24" y="24"/>
 		<Layers>
-			<Layer level="ARTWORK">
-				<Texture parentKey="Header" file="Interface\DialogFrame\UI-DialogBox-Header">
-					<Size x="300" y="68"/>
-					<Anchors>
-						<Anchor point="TOP" y="12"/>
-					</Anchors>
-				</Texture>
-				<FontString parentKey="HeaderText" inherits="GameFontNormal" text="Export Profile">
-					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.Header" y="-14"/>
-					</Anchors>
-				</FontString>
-				<FontString parentKey="Instructions" inherits="GameFontWhite" text="XRP_EXPORT_INSTRUCTIONS">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" x="16" y="18"/>
-					</Anchors>
-				</FontString>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Icon" setAllPoints="true" file="Interface\MINIMAP\TRACKING\Class"/>
 			</Layer>
 		</Layers>
-		<Frames>
-			<Button inherits="UIPanelCloseButton">
-				<Anchors>
-					<Anchor point="TOPRIGHT" x="-2" y="-3"/>
-				</Anchors>
-			</Button>
-			<ScrollFrame name="$parentText" parentKey="Text" inherits="XRPScrollFrameTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" x="20" y="-35"/>
-					<Anchor point="BOTTOMRIGHT" x="-34" y="42"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad function="XRPExportText_OnLoad"/>
-				</Scripts>
-				<ScrollChild>
-					<EditBox parentKey="EditBox" multiLine="true">
-						<Anchors>
-							<Anchor point="TOPLEFT"/>
-						</Anchors>
-						<Scripts>
-							<OnCursorChanged function="EditBox_HighlightText"/>
-							<OnEditFocusGained function="EditBox_HighlightText"/>
-							<OnTextChanged function="XRPExportTextEditBox_OnTextChanged"/>
-							<OnEscapePressed function="XRPTemplates_HideParentParent"/>
-						</Scripts>
-						<FontString inherits="GameFontWhite"/>
-					</EditBox>
-				</ScrollChild>
-			</ScrollFrame>
-			<Button inherits="UIPanelButtonTemplate" text="CLOSE">
-				<Size x="96" y="22"/>
-				<Anchors>
-					<Anchor point="BOTTOMRIGHT" x="-28" y="14"/>
-				</Anchors>
-				<Scripts>
-					<OnClick function="HideParentPanel"/>
-				</Scripts>
-			</Button>
-		</Frames>
-		<KeyValues>
-			<KeyValue key="Export" value="XRPExport_Export" type="global"/>
-		</KeyValues>
 		<Scripts>
-			<OnShow function="XRPTemplatesPanel_OnShow"/>
-			<OnHide function="XRPTemplatesPanel_OnHide"/>
+			<OnEvent function="XRPCursorBook_OnEvent"/>
+			<OnUpdate function="XRPCursorBook_OnUpdate"/>
 		</Scripts>
 	</Frame>
 </Ui>

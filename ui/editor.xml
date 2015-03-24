@@ -510,14 +510,14 @@
 				</Backdrop>
 				<Layers>
 					<Layer level="ARTWORK">
-						<Texture file="Interface\RaidFrame\UI-RaidInfo-Header">
+						<Texture parentKey="HeaderTop" file="Interface\RaidFrame\UI-RaidInfo-Header">
 							<Size x="189" y="47"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" x="10" y="-9"/>
 							</Anchors>
 							<TexCoords left="0.18164" right="0.81640" top="0.578125" bottom="0.94531"/>
 						</Texture>
-						<Texture file="Interface\RaidFrame\UI-RaidInfo-Header">
+						<Texture parentKey="HeaderBottom" file="Interface\RaidFrame\UI-RaidInfo-Header">
 							<Size x="190" y="29"/>
 							<Anchors>
 								<Anchor point="BOTTOMLEFT" x="9" y="9"/>
@@ -526,7 +526,7 @@
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">
-						<Texture file="Interface\DialogFrame\UI-DialogBox-Corner">
+						<Texture parentKey="Corner" file="Interface\DialogFrame\UI-DialogBox-Corner">
 							<Size x="32" y="32"/>
 							<Anchors>
 								<Anchor point="TOPRIGHT" x="-6" y="-7"/>
@@ -538,7 +538,7 @@
 								<Anchor point="TOP" y="12"/>
 							</Anchors>
 						</Texture>
-						<FontString inherits="GameFontNormal" text="Automation">
+						<FontString parentKey="Title" inherits="GameFontNormal" text="Automation">
 							<Size x="185" y="12"/>
 							<Anchors>
 								<Anchor point="TOP" relativeKey="$parent.Header" y="-14"/>

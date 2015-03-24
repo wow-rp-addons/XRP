@@ -21,7 +21,7 @@ local currentUnit = {
 	lines = {},
 }
 
-local TooltipFrame, replace, active, rendering
+local Tooltip, replace, rendering
 
 local GTTL, GTTR = "GameTooltipTextLeft%d", "GameTooltipTextRight%d"
 
@@ -115,9 +115,9 @@ do
 			end
 		else -- Second case: If there are no more lines to replace.
 			if right then
-				TooltipFrame:AddDoubleLine(left or " ", right, lR or 1, lG or 0.82, lB or 0, rR or 1, rG or 0.82, rB or 0)
+				Tooltip:AddDoubleLine(left or " ", right, lR or 1, lG or 0.82, lB or 0, rR or 1, rG or 0.82, rB or 0)
 			elseif left then
-				TooltipFrame:AddLine(left, lR or 1, lG or 0.82, lB or 0)
+				Tooltip:AddLine(left, lR or 1, lG or 0.82, lB or 0)
 			end
 		end
 		rendering = nil
@@ -132,10 +132,10 @@ do
 	}
 	function RenderTooltip()
 		if not replace then
-			TooltipFrame:ClearLines()
-			TooltipFrame:SetOwner(GameTooltip, "ANCHOR_TOPRIGHT")
+			XRPTooltip:ClearLines()
+			XRPTooltip:SetOwner(GameTooltip, "ANCHOR_TOPRIGHT")
 		end
-		oldLines = TooltipFrame:NumLines()
+		oldLines = Tooltip:NumLines()
 		lineNum = 0
 		local showProfile = not (currentUnit.noProfile or currentUnit.character.hide)
 		local fields = currentUnit.character.fields
@@ -144,10 +144,10 @@ do
 			if not replace then
 				if currentUnit.character.hide then
 					RenderLine("Hidden", nil, 0.5, 0.5, 0.5)
-					TooltipFrame:Show()
+					XRPTooltip:Show()
 					return
 				elseif (not showProfile or not fields.VA) then
-					TooltipFrame:Hide()
+					XRPTooltip:Hide()
 					return
 				end
 			end
@@ -208,11 +208,11 @@ do
 			end
 		end
 
-		TooltipFrame:Show()
+		Tooltip:Show()
 	end
 end
 
-local SetUnit
+local SetUnit, active
 do
 	local COLORS = {
 		friendly = "00991a",
@@ -336,7 +336,6 @@ do
 	end
 end
 
-local enabled
 local function Tooltip_RECEIVE(event, name)
 	if not active or name ~= tostring(currentUnit.character) then return end
 	local tooltip, unit = GameTooltip:GetUnit()
@@ -346,7 +345,7 @@ local function Tooltip_RECEIVE(event, name)
 		-- visible. This bounces it back into visibility if it's partly faded
 		-- out, but it'll just fade again.
 		if not GameTooltip:IsUnit("mouseover") then
-			TooltipFrame:FadeOut()
+			Tooltip:FadeOut()
 			if not replace then
 				GameTooltip:Show()
 				GameTooltip:FadeOut()
@@ -355,18 +354,7 @@ local function Tooltip_RECEIVE(event, name)
 	end
 end
 
-local function XRPTooltip_OnUpdate(self, elapsed)
-	if not self.fading and not UnitExists("mouseover") then
-		self.fading = true
-		self:FadeOut()
-	end
-end
-
-local function XRPTooltip_OnHide(self)
-	self.fading = nil
-	GameTooltip_OnHide(self)
-end
-
+local enabled
 local function GameTooltip_AddLine_Hook(self, ...)
 	if enabled and replace and active and not rendering then
 		currentUnit.lines[#currentUnit.lines + 1] = { ... }
@@ -381,14 +369,14 @@ end
 
 local function GameTooltip_FadeOut_Hook(self)
 	if enabled and not replace then
-		TooltipFrame:FadeOut()
+		XRPTooltip:FadeOut()
 	end
 end
 
 local function GameTooltip_OnTooltipCleared_Hook(self)
 	active = nil
 	if enabled and not replace then
-		TooltipFrame:Hide()
+		XRPTooltip:Hide()
 	end
 end
 
@@ -434,16 +422,14 @@ xrpLocal.settingsToggles.tooltip = {
 				hooksecurefunc(GameTooltip, "AddLine", GameTooltip_AddLine_Hook)
 				hooksecurefunc(GameTooltip, "AddDoubleLine", GameTooltip_AddDoubleLine_Hook)
 			end
-			TooltipFrame = GameTooltip
+			Tooltip = GameTooltip
 			replace = true
 		else
 			if not XRPTooltip then
-				CreateFrame("GameTooltip", "XRPTooltip", UIParent, "GameTooltipTemplate")
-				XRPTooltip:SetScript("OnUpdate", XRPTooltip_OnUpdate)
-				XRPTooltip:SetScript("OnHide", XRPTooltip_OnHide)
+				CreateFrame("GameTooltip", "XRPTooltip", UIParent, "XRPTooltipTemplate")
 				hooksecurefunc(GameTooltip, "FadeOut", GameTooltip_FadeOut_Hook)
 			end
-			TooltipFrame = XRPTooltip
+			Tooltip = XRPTooltip
 			if replace ~= nil then
 				replace = false
 			end

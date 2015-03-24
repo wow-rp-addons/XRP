@@ -26,6 +26,7 @@ ui\menus.lua
 ui\tooltip.lua
 ui\templates.xml
 ui\minimap.xml
+ui\export.xml
 ui\viewer.xml
 ui\bookmarks.xml
 ui\editor.xml
