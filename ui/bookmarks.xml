@@ -40,7 +40,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="BACKGROUND">
-				<Texture atlas="PetList-ButtonBackground" useAtlasSize="true">
+				<Texture parentKey="bg" atlas="PetList-ButtonBackground" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="TOPRIGHT"/>
 						<Anchor point="BOTTOMLEFT"/>

@@ -31,7 +31,7 @@
 		<Size x="31" y="31"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture>
+				<Texture parentKey="Black">
 					<Size x="21" y="21"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="6" y="-5"/>
@@ -40,7 +40,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture file="Interface\Minimap\MiniMap-TrackingBorder">
+				<Texture parentKey="Border" file="Interface\Minimap\MiniMap-TrackingBorder">
 					<Size x="53" y="53"/>
 					<Anchors>
 						<Anchor point="TOPLEFT"/>

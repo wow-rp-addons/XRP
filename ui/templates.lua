@@ -200,33 +200,55 @@ function XRPTemplatesPane_OnHide(self)
 	PlaySound("UChatScrollButton")
 end
 
-XRP_EXPORT_INSTRUCTIONS = not IsMacClient() and "Press Ctrl+C to copy or Escape to close." or "Press Cmd+C to copy or Escape to close."
-
--- Analogue to XRPTemplatesScrollFrame_OnLoad for XRPExport.
-function XRPExportText_OnLoad(self)
-	self.ScrollBar:ClearAllPoints()
-	self.ScrollBar:SetPoint("TOPLEFT", self, "TOPRIGHT", 7, -9)
-	self.ScrollBar:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", 7, 7)
-	self.ScrollBar.ScrollDownButton:SetPoint("TOP", self.ScrollBar, "BOTTOM", 0, 4)
-	self.ScrollBar.ScrollUpButton:SetPoint("BOTTOM", self.ScrollBar, "TOP", 0, -4)
-	self.ScrollBar.ScrollUpButton:Disable()
-	self.ScrollBar:Hide()
-	self.EditBox:SetWidth(self:GetWidth())
-end
-
-function XRPExportTextEditBox_OnTextChanged(self, userInput)
-	if userInput then
-		self:SetText(self:GetParent():GetParent().currentText or "")
-		EditBox_HighlightText(self)
+function XRPTooltip_OnUpdate(self, elapsed)
+	if not self.fading and not UnitExists("mouseover") then
+		self.fading = true
+		self:FadeOut()
 	end
 end
 
-function XRPExport_Export(self, title, text)
-	if not title or not text then return end
-	self.currentText = text
-	self.Text.EditBox:SetText(text)
-	self.Text.EditBox:SetCursorPosition(0)
-	self.Text:SetVerticalScroll(0)
-	self.HeaderText:SetFormattedText("Export: %s", title)
-	ShowUIPanel(self)
+function XRPTooltip_OnHide(self)
+	self.fading = nil
+end
+
+function XRPCursorBook_OnEvent(self, event)
+	if InCombatLockdown() or xrpLocal.settings.interact.disableInstance and (IsInInstance() or IsInActiveWorldPVP()) or xrpLocal.settings.interact.disablePvP and (UnitIsPVP("player") or UnitIsPVPFreeForAll("player")) or GetMouseFocus() ~= WorldFrame then
+		self:Hide()
+		return
+	end
+	local character = xrp.characters.byUnit.mouseover
+	if not character or character.hide then
+		self:Hide()
+		return
+	end
+	self.current = not UnitCanAttack("player", "mouseover") and tostring(character) or nil
+	-- Following two must be separate for UIErrorsFrame:Clear().
+	self.mountable = rightClick and self.current and UnitVehicleSeatCount("mouseover") > 0
+	self.mountInParty = self.mountable and (UnitInParty("mouseover") or UnitInRaid("mouseover"))
+	if self.current and character.fields.VA and (not self.mountInParty or not IsItemInRange(88589, "mouseover")) then
+		self:Show()
+	else
+		self:Hide()
+	end
+end
+
+do
+	local previousX, previousY
+	-- Crazy optimization crap since it's run every frame.
+	local UnitIsPlayer, InCombatLockdown, GetMouseFocus, WorldFrame, GetCursorPosition, IsItemInRange, UIParent, GetEffectiveScale = UnitIsPlayer, InCombatLockdown, GetMouseFocus, WorldFrame, GetCursorPosition, IsItemInRange, UIParent, UIParent.GetEffectiveScale
+	function XRPCursorBook_OnUpdate(self, elapsed)
+		if not UnitIsPlayer("mouseover") or InCombatLockdown() or GetMouseFocus() ~= WorldFrame then
+			self:Hide()
+			return
+		end
+		local x, y = GetCursorPosition()
+		if x == previousX and y == previousY then return end
+		if self.mountInParty and IsItemInRange(88589, "mouseover") then
+			self:Hide()
+			return
+		end
+		local scale = GetEffectiveScale(UIParent)
+		self:SetPoint("CENTER", UIParent, "BOTTOMLEFT", x/scale + 36, y/scale - 4)
+		previousX, previousY = x, y
+	end
 end

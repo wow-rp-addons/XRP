@@ -17,7 +17,7 @@
 
 local addonName, xrpLocal = ...
 
-local CursorFrame, cursor, rightClick
+local cursor, rightClick
 
 local Cursor_TurnOrActionStart, Cursor_TurnOrActionStop
 do
@@ -25,10 +25,10 @@ do
 	-- if a unit is right-clicked, it will be the target unit by Stop.
 	local now, mouseover, autoInteract
 	function Cursor_TurnOrActionStart()
-		if not cursor or not rightClick or InCombatLockdown() or not CursorFrame:IsVisible() then return end
-		mouseover = CursorFrame.current
+		if not cursor or not rightClick or InCombatLockdown() or not XRPCursorBook:IsVisible() then return end
+		mouseover = XRPCursorBook.current
 		now = GetTime()
-		if CursorFrame.mountable then
+		if XRPCursorBook.mountable then
 			autoInteract = GetCVar("AutoInteract") == "1"
 			if autoInteract then
 				SetCVar("AutoInteract", "0")
@@ -40,7 +40,7 @@ do
 		-- 0.75s interaction time is guessed as Blizzard number from
 		-- in-game testing. Used for consistency.
 		if GetTime() - now < 0.75 and mouseover == xrp:UnitName("target") then
-			if CursorFrame.mountable then
+			if XRPCursorBook.mountable then
 				UIErrorsFrame:Clear() -- Hides errors on inteactable mount players.
 			end
 			XRPViewer:View("target")
@@ -53,52 +53,9 @@ do
 	end
 end
 
-local function Cursor_OnEvent(self, event)
-	if not cursor or InCombatLockdown() or xrpLocal.settings.interact.disableInstance and (IsInInstance() or IsInActiveWorldPVP()) or xrpLocal.settings.interact.disablePvP and (UnitIsPVP("player") or UnitIsPVPFreeForAll("player")) or GetMouseFocus() ~= WorldFrame then
-		self:Hide()
-		return
-	end
-	local character = xrp.characters.byUnit.mouseover
-	if not character or character.hide then
-		self:Hide()
-		return
-	end
-	self.current = not UnitCanAttack("player", "mouseover") and tostring(character) or nil
-	-- Following two must be separate for UIErrorsFrame:Clear().
-	self.mountable = rightClick and self.current and UnitVehicleSeatCount("mouseover") > 0
-	self.mountInParty = self.mountable and (UnitInParty("mouseover") or UnitInRaid("mouseover"))
-	if self.current and character.fields.VA and (not self.mountInParty or not IsItemInRange(88589, "mouseover")) then
-		self:Show()
-	else
-		self:Hide()
-	end
-end
-
-local Cursor_OnUpdate
-do
-	local previousX, previousY
-	-- Crazy optimization crap since it's run every frame.
-	local UnitIsPlayer, InCombatLockdown, GetMouseFocus, WorldFrame, GetCursorPosition, IsItemInRange, UIParent, GetEffectiveScale = UnitIsPlayer, InCombatLockdown, GetMouseFocus, WorldFrame, GetCursorPosition, IsItemInRange, UIParent, UIParent.GetEffectiveScale
-	function Cursor_OnUpdate(self, elapsed)
-		if not UnitIsPlayer("mouseover") or InCombatLockdown() or GetMouseFocus() ~= WorldFrame then
-			self:Hide()
-			return
-		end
-		local x, y = GetCursorPosition()
-		if x == previousX and y == previousY then return end
-		if self.mountInParty and IsItemInRange(88589, "mouseover") then
-			self:Hide()
-			return
-		end
-		local scale = GetEffectiveScale(UIParent)
-		self:SetPoint("CENTER", UIParent, "BOTTOMLEFT", x/scale + 36, y/scale - 4)
-		previousX, previousY = x, y
-	end
-end
-
 local function Cursor_RECEIVE(event, name)
-	if name == CursorFrame.current and not InCombatLockdown() and not CursorFrame:IsVisible() and (not CursorFrame.mountInParty or not IsItemInRange(88589, "mouseover")) then
-		CursorFrame:Show()
+	if name == XRPCursorBook.current and not InCombatLockdown() and not XRPCursorBook:IsVisible() and (not XRPCursorBook.mountInParty or not IsItemInRange(88589, "mouseover")) then
+		XRPCursorBook:Show()
 	end
 end
 
@@ -116,36 +73,19 @@ local function InteractUnit_Hook(unit)
 	XRPViewer:View(unit)
 end
 
-local function CreateCursor()
-	-- Cache item data for range checking.
-	IsItemInRange(88589, "player")
-	CursorFrame = CreateFrame("Frame", nil, UIParent)
-	-- Pretending to be part of the mouse cursor, so better be above
-	-- everything we possibly can.
-	CursorFrame:SetFrameStrata("TOOLTIP")
-	CursorFrame:SetFrameLevel(127)
-	CursorFrame:SetWidth(24)
-	CursorFrame:SetHeight(24)
-	CursorFrame.Image = CursorFrame:CreateTexture(nil, "BACKGROUND")
-	CursorFrame.Image:SetTexture("Interface\\MINIMAP\\TRACKING\\Class")
-	CursorFrame.Image:SetAllPoints(CursorFrame)
-	CursorFrame:Hide()
-	CursorFrame:SetScript("OnEvent", Cursor_OnEvent)
-	CursorFrame:SetScript("OnUpdate", Cursor_OnUpdate)
-end
-
 xrpLocal.settingsToggles.interact = {
 	cursor = function(setting)
 		if setting then
-			if not CursorFrame then
-				CreateCursor()
+			if not XRPCursorBook then
+				IsItemInRange(88589, "player")
+				CreateFrame("Frame", "XRPCursorBook", UIParent, "XRPCursorBookTemplate")
 			end
 			xrp:HookEvent("RECEIVE", Cursor_RECEIVE)
-			CursorFrame:RegisterEvent("UPDATE_MOUSEOVER_UNIT")
+			XRPCursorBook:RegisterEvent("UPDATE_MOUSEOVER_UNIT")
 			cursor = true
 		elseif cursor ~= nil then
-			CursorFrame:UnregisterAllEvents()
-			CursorFrame:Hide()
+			XRPCursorBook:UnregisterAllEvents()
+			XRPCursorBook:Hide()
 			xrp:UnhookEvent("RECEIVE", Cursor_RECEIVE)
 			cursor = false
 		end
