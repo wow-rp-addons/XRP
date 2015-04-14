@@ -29,12 +29,13 @@
 
 	The minimal arguments are identical to the global methods provided by
 	Blizzard. In addition, each function takes up to four additional arguments:
-		- priority: ALERT, NORMAL, BULK (defaults to NORMAL)
-		- queue: Aribtrary value. Messages in the same queue are sent
-		  in-order regardless of prefix, others are not guaranteed to be so.
-		- callbackFunction: A function to call when message is removed from
-		  queue (either due to being sent or dropped). This is called via
-		  pcall() so ANY errors will NOT be displayed.
+		- priority: ALERT, NORMAL, BULK (defaults to NORMAL).
+		- queue: Aribtrary value. Messages in the same queue and priority are
+		  guaranteed to be sent in-order for most data. SendChatMessage() with
+		  types of SAY, YELL, and EMOTE are not guaranteed to be in-order when
+		  combined with other types of messages.
+		- callbackFunction: A function to call when message is sent or dropped.
+		  This is called via pcall() so ANY errors will NOT be displayed.
 		- callbackArgument: The first argument provided to callbackFunction
 		  (the second is whether the message was sent or dropped).
 
@@ -48,7 +49,7 @@
 	and are close to the maximum which is reliably safe.
 ]]
 
-local LIBBW_VERSION = 2
+local LIBBW_VERSION = 3
 
 if libbw and libbw.version >= LIBBW_VERSION then return end
 
@@ -122,7 +123,7 @@ function libbw:BNSendGameData(presenceID, prefix, text, priorityName, fifoName, 
 		callbackArg = callbackArg,
 	}
 
-	self:Enqueue(priorityName, fifoName or ("%s%u"):format(prefix, presenceID), message)
+	self:Enqueue(priorityName, fifoName or ("%s%d"):format(prefix, presenceID), message)
 end
 
 function libbw:SendAddonMessage(prefix, text, kind, target, priorityName, fifoName, callbackFn, callbackArg)
@@ -320,42 +321,34 @@ local function libbw_Enqueue(self, priorityName, fifoName, message)
 	self.queueing = true
 end
 
-local libbw_Despool
-do
-	local fnKindMap = {
-		[SendChatMessage] = 2,
-		[SendAddonMessage] = 3,
-	}
-
-	function libbw_Despool(self, priority)
-		local queue = priority.queue
-		while queue.nextFifo and priority.avail >= queue.nextFifo[1].length do
-			local message = table.remove(queue.nextFifo, 1)
-			if not queue.nextFifo[1] then  -- did we remove last message in this queue?
-				local fifo = queue.nextFifo
-				queue:Remove(fifo)
-				priority.byName[fifo.name] = nil
-			else
-				queue.nextFifo = queue.nextFifo.next
-			end
-			local doSend, kind = true, message[fnKindMap[message.f]]
-			if kind and ((kind == "RAID" or kind == "PARTY") and not IsInGroup() or kind == "INSTANCE_CHAT" and not IsInGroup(LE_PARTY_CATEGORY_INSTANCE)) then
-				doSend = false
-			end
-			local didSend = false
-			if doSend then
-				-- Remember, there's a REALLY BIG reason the avail update isn't
-				-- just handled in the hook. Especially here, since it's a
-				-- different avail.
-				priority.avail = priority.avail - message.length
-				self.sending = true
-				didSend = message.f(unpack(message, 1, 4)) ~= false
-				self.sending = false
-			end
-			-- notify caller of delivery (even if we didn't send it)
-			if message.callbackFn then
-				pcall(message.callbackFn, message.callbackArg, didSend)
-			end
+local function libbw_Despool(self, priority)
+	local queue = priority.queue
+	while queue.nextFifo and priority.avail >= queue.nextFifo[1].length do
+		local message = table.remove(queue.nextFifo, 1)
+		if not queue.nextFifo[1] then -- This fifo is empty.
+			local fifo = queue.nextFifo
+			queue:Remove(fifo)
+			priority.byName[fifo.name] = nil
+		else
+			queue.nextFifo = queue.nextFifo.next
+		end
+		local doSend, kind = true, message.f == SendChatMessage and message[2] or message.f == SendAddonMessage and message[3]
+		if kind and ((kind == "RAID" or kind == "PARTY") and not IsInGroup() or kind == "INSTANCE_CHAT" and not IsInGroup(LE_PARTY_CATEGORY_INSTANCE)) then
+			doSend = false
+		end
+		local didSend = false
+		if doSend then
+			-- Remember, there's a REALLY BIG reason the avail update isn't
+			-- just handled in the hook. Especially here, since it's a
+			-- different avail.
+			priority.avail = priority.avail - message.length
+			self.sending = true
+			didSend = message.f(unpack(message, 1, 4)) ~= false
+			self.sending = false
+		end
+		-- Run callback, even if message wasn't sent.
+		if message.callbackFn then
+			pcall(message.callbackFn, message.callbackArg, didSend)
 		end
 	end
 end
