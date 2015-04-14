@@ -16,6 +16,7 @@
 ]]
 
 local addonName, xrpLocal = ...
+local _S = xrpLocal.strings
 
 -- These fields are not searched in a full-text search.
 local FILTER_IGNORE = { CO = true, FC = true, FR = true, GC = true, GF = true, GR = true, GS = true, GU = true, IC = true, VA = true, VP = true }
@@ -65,32 +66,9 @@ do
 		__tostring = function(self)
 			local name = nameMap[self]
 			if not xrpCache[name] then return "" end
-			local EXPORT_FIELDS, EXPORT_FORMATS = xrpLocal.EXPORT_FIELDS, xrpLocal.EXPORT_FORMATS
-			local fields
-			if name == xrpLocal.playerWithRealm then
-				fields = xrp.current.fields
-			else
-				fields = xrpCache[name].fields
-			end
-			local shortName, realm = name:match(FULL_PLAYER_NAME:format("(.+)", "(.+)"))
+			local shortName, realm = name:match("^([^%-]+)%-([^%-]+)$")
 			realm = xrp:RealmDisplayName(realm)
-			local export = { shortName, " (", realm, ")\n" }
-			for i = 1, #shortName + #realm + 3 do
-				export[#export + 1] = "="
-			end
-			export[#export + 1] = "\n"
-			for i, field in ipairs(EXPORT_FIELDS) do
-				if fields[field] then
-					local fieldText = fields[field]
-					if field == "AH" then
-						fieldText = xrp:Height(fieldText)
-					elseif field == "AW" then
-						fieldText = xrp:Weight(fieldText)
-					end
-					export[#export + 1] = EXPORT_FORMATS[field]:format(fieldText)
-				end
-			end
-			return table.concat(export)
+			return xrpLocal.ExportText(_S.NAME_REALM:format(shortName, realm), name == xrpLocal.playerWithRealm and xrp.current.fields or xrpCache[name].fields)
 		end,
 		__metatable = false,
 	}

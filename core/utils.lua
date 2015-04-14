@@ -16,6 +16,7 @@
 ]]
 
 local addonName, xrpLocal = ...
+local _S = xrpLocal.strings
 
 function xrp:UnitName(unit)
 	if not (unit == "player" or UnitIsPlayer(unit)) then
@@ -70,6 +71,9 @@ function xrp:Strip(text)
 	return text:gsub("||", "|"):gsub("|n", ""):gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|r", ""):gsub("|H.-|h(.-)|h", "%1"):gsub("|T.-|t", ""):gsub("|K.-|k.-|k", ""):gsub("|", "||"):trim()
 end
 
+local BASIC = "^%%s*%s%%s*$"
+local KG1, KG2 = BASIC:format(_S.KG1), BASIC:format(_S.KG2)
+local LBS1, LBS2 = BASIC:format(_S.LBS1), BASIC:format(_S.LBS2)
 function xrp:Weight(weight, units)
 	if not weight then
 		return nil
@@ -77,11 +81,11 @@ function xrp:Weight(weight, units)
 	local number = tonumber(weight)
 	if not number then
 		-- Match "50kg", "50 kg", "50 kilograms", etc..
-		number = tonumber(weight:lower():match("^%s*([%d%.]+)%s*kgs?%.?%s*$")) or tonumber(weight:lower():match("^%s*([%d%.]+)%s*kilo[grams]+%s*$"))
+		number = tonumber(weight:lower():match(KG1)) or tonumber(weight:lower():match(KG2))
 	end
 	if not number then
 		-- Match "50lbs", "50 lbs", "50 pounds", etc.
-		number = ((tonumber(weight:lower():match("^%s*([%d%.]+)%s*lbs?%.?%s*$")) or tonumber(weight:lower():match("^%s*([%d%.]+)%s*pounds?%s*$"))) or 0) / 2.20462
+		number = ((tonumber(weight:lower():match(LBS1)) or tonumber(weight:lower():match(LBS2))) or 0) / 2.20462
 		number = number ~= 0 and number or nil
 	end
 	if not units then
@@ -94,13 +98,16 @@ function xrp:Weight(weight, units)
 	elseif units == "msp" then -- MSP internal format: kg without units as string.
 		return ("%.1f"):format(number + 0.05)
 	elseif units == "kg" then
-		return ("%.1f kg"):format(number + 0.05)
+		return _S.KG:format(number + 0.05)
 	elseif units == "lb" then
-		return ("%d lbs"):format((number * 2.20462) + 0.5)
+		return _S.LBS:format((number * 2.20462) + 0.5)
 	end
 	return weight
 end
 
+local CM1, CM2 = BASIC:format(_S.CM1), BASIC:format(_S.CM2)
+local M1, M2 = BASIC:format(_S.M1), BASIC:format(_S.M2)
+local FT1, FT2, FT3 = BASIC:format(_S.FT1), BASIC:format(_S.FT2), BASIC:format(_S.FT3)
 function xrp:Height(height, units)
 	if not height then
 		return nil
@@ -112,21 +119,21 @@ function xrp:Height(height, units)
 	end
 	if not number then
 		-- Match "100cm", "100 cm", "100 centimeters", "100 centimetres", etc.
-		number = tonumber(height:lower():match("^%s*([%d%.]+)%s*cm%.?%s*$")) or tonumber(height:lower():match("^%s*([%d%.]+)%s*centimet[ers]+%s*$"))
+		number = tonumber(height:lower():match(CM1)) or tonumber(height:lower():match(CM2))
 	end
 	if not number then
 		-- Match "1.05m", "1.05 m", "1.05 meters", "1.05 metres" etc..
-		number = (tonumber(height:lower():match("^%s*([%d%.]+)%s*m%.?%s*$")) or tonumber(height:lower():match("^%s*([%d%.]+)%s*met[ers]+%s*$")) or 0) * 100
+		number = (tonumber(height:lower():match(M1)) or tonumber(height:lower():match(M2)) or 0) * 100
 		number = number ~= 0 and number or nil
 	end
 	if not number then
 		-- Match "4'9", "4'9"", "4 ft 9 in", etc.
-		local feet, inches = height:lower():match("^%s*(%d+)%s*'%s*(%d*)%s*\"?%s*$")
+		local feet, inches = height:lower():match(FT1)
 		if not feet then
-			feet, inches = height:lower():match("^%s*([%d%.]+)%s*ft%.?%s*(%d*)[in%.%s]*$")
+			feet, inches = height:lower():match(FT2)
 		end
 		if not feet then
-			feet, inches = height:lower():match("^%s*([%d%.]+)%s*feet%s*(%d*)[inches%s]*$")
+			feet, inches = height:lower():match(FT3)
 		end
 		number = feet and (((tonumber(feet) * 12) + (tonumber(inches) or 0)) * 2.54) or nil
 	end
@@ -140,9 +147,9 @@ function xrp:Height(height, units)
 	elseif units == "msp" then -- MSP internal format: cm without units as string.
 		return ("%d"):format(number + 0.5)
 	elseif units == "cm" then
-		return ("%d cm"):format(number + 0.5)
+		return _S.CM:format(number + 0.5)
 	elseif units == "m" then
-		return ("%.2f m"):format(math.floor(number + 0.5) * 0.01) -- Round first.
+		return _S.M:format(math.floor(number + 0.5) * 0.01) -- Round first.
 	elseif units == "ft" then
 		local feet, inches = math.modf(number / 30.48)
 		inches = (inches * 12) + 0.5
@@ -150,7 +157,7 @@ function xrp:Height(height, units)
 			feet = feet + 1
 			inches = 0
 		end
-		return ("%d'%d\""):format(feet, inches)
+		return _S.FT:format(feet, inches)
 	end
 	return height
 end

@@ -16,6 +16,7 @@
 ]]
 
 local addonName, xrpLocal = ...
+local _S = xrpLocal.strings
 
 local MAX_DEPTH = 50
 
@@ -227,7 +228,6 @@ do
 		end,
 		__tostring = function(self)
 			local name = nameMap[self]
-			local EXPORT_FIELDS, EXPORT_FORMATS = xrpLocal.EXPORT_FIELDS, xrpLocal.EXPORT_FORMATS
 			local fields = {}
 			local profiles, inherit = { xrpSaved.profiles[name] }, xrpSaved.profiles[name].parent
 			for i = 1, MAX_DEPTH do
@@ -255,18 +255,7 @@ do
 					fields[field] = contents
 				end
 			end
-			local realm = xrp:RealmDisplayName(xrpLocal.realm)
-			local export = { xrpLocal.player, " (", realm, ") - ", name, "\n" }
-			for i = 1, #xrpLocal.player + #realm + #name + 6 do
-				export[#export + 1] = "="
-			end
-			export[#export + 1] = "\n"
-			for i, field in ipairs(EXPORT_FIELDS) do
-				if fields[field] then
-					export[#export + 1] = EXPORT_FORMATS[field]:format(fields[field])
-				end
-			end
-			return table.concat(export)
+			return xrpLocal.ExportText(("%s - %s"):format(_S.NAME_REALM:format(xrpLocal.player, xrp:RealmDisplayName(xrpLocal.realm)), name), fields)
 		end,
 		__metatable = false,
 	}
