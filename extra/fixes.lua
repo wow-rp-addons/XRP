@@ -15,29 +15,44 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
+local addonName, xrpLocal = ...
+local _S = xrpLocal.strings
+
 -- Closing interface options after viewing the raid profiles (compact raid
 -- frames) section tends to horrifically taint most of the UI. Warn users about
 -- that.
-
-local cufOpened = false
+local cufOpened, blamed = false, nil
 CompactUnitFrameProfiles:HookScript("OnShow", function(self)
 	cufOpened = true
+	local isSecure, blameName = issecurevariable("UIDROPDOWNMENU_MENU_LEVEL")
+	if not isSecure then
+		blamed = blameName
+	end
 end)
-
-InterfaceOptionsFrame:HookScript("OnHide", function(self)
-	if cufOpened then
-		StaticPopup_Show("XRP_RELOAD", "Accessing the raid profiles configuration may cause UI problems due to Blizzard bugs (inaccurately blaming XRP or others). You should reload your UI now to avoid this possibility.")
+CompactUnitFrameProfiles:HookScript("OnHide", function(self)
+	if not cufOpened or blamed then return end
+	local isSecure, blameName = issecurevariable("UIDROPDOWNMENU_MENU_LEVEL")
+	if not isSecure then
+		blamed = blameName
+	else
+		-- If it was secure at open and close, it should be safe. This isn't a
+		-- perfect guarantee, but it's close.
 		cufOpened = false
 	end
 end)
+InterfaceOptionsFrame:HookScript("OnHide", function(self)
+	if not cufOpened then return end
+	cufOpened = false
+	StaticPopup_Show("XRP_RELOAD", _S.CUF_WARNING:format(GetAddOnMetadata(blamed, "Title")))
+	blamed = nil
+end)
 
--- And also...
---
 -- This is kinda terrifying, but it fixes some major UI tainting when the user
 -- presses "Cancel" in the Interface Options (out of combat). The drawback is
 -- that any changes made to the default compact raid frames aren't actually
 -- cancelled (they're not saved, but they're still active). Still, this is
--- better than having the Cancel button completely taint the raid frames.
+-- better than having the Cancel button completely taint the raid frames, and
+-- then have that taint spread further.
 function CompactUnitFrameProfiles_CancelChanges(self)
 	InterfaceOptionsPanel_Cancel(self)
 

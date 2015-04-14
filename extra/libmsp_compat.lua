@@ -188,7 +188,15 @@ end
 
 -- Dummy function. Pushing to others isn't supported in XRP.
 function msp:Send()
-	return 0
+	return 0, 0
+end
+
+-- Dummy functions for libmspx v2 enable/disable system.
+msp.Enable = xrpLocal.noFunc
+msp.Disable = xrpLocal.noFunc
+
+function msp:IsEnabled()
+	return true
 end
 
 setmetatable(msp, {
