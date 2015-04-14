@@ -16,17 +16,19 @@
 ]]
 
 local addonName, xrpLocal = ...
+local _S = xrpLocal.strings
 
 local CheckFields
 do
 	local function FallbackFieldContents(field)
 		if xrpSaved.meta.fields[field] then
 			return xrpSaved.meta.fields[field]
-		elseif field ~= "RA" and field ~= "RC" then
-			return nil
+		elseif field == "RA" then
+			return xrp.values.GR[xrpSaved.meta.fields.GR]
+		elseif field == "RC" then
+			return xrp.values.GC["1"][xrpSaved.meta.fields.GC]
 		end
-		local metaField = field == "RA" and "GR" or field == "RC" and "GC" or nil
-		return xrp.values[metaField][xrpSaved.meta.fields[metaField]] or nil
+		return nil
 	end
 
 	local function CheckField(self, profile, parent)
@@ -120,9 +122,9 @@ do
 
 		local value = xrp.profiles[name].parent
 		self.Parent.contents = value
-		self.Parent:SetFormattedText("Parent: %s", value or "None")
+		self.Parent:SetFormattedText(SUBTITLE_FORMAT, _S.PARENT, value or NONE)
 
-		self.TitleText:SetFormattedText("Profile Editor: %s", name)
+		self.TitleText:SetFormattedText(SUBTITLE_FORMAT, _S.PROFILE_EDITOR, name)
 
 		CheckFields()
 	end
@@ -161,12 +163,12 @@ do
 		local function Parent_Click(self, arg1, arg2, checked)
 			if not checked then
 				UIDROPDOWNMENU_OPEN_MENU.contents = arg1
-				UIDROPDOWNMENU_OPEN_MENU:SetFormattedText("Parent: %s", arg1 or "None")
+				UIDROPDOWNMENU_OPEN_MENU:SetFormattedText(SUBTITLE_FORMAT, _S.PARENT, arg1 or NONE)
 				CheckFields()
 			end
 		end
 
-		local NONE = { text = "None", checked = Checked, arg1 = nil, func = Parent_Click }
+		local NONE = { text = NONE, checked = Checked, arg1 = nil, func = Parent_Click }
 		function XRPEditorParent_PreClick(self, button, down)
 			self.baseMenuList = { NONE }
 			local editingProfile = XRPEditor.Profiles.contents
@@ -234,7 +236,8 @@ function XRPEditorDropDown_OnAttributeChanged(self, name, value)
 end
 
 function XRPEditorControls_OnLoad(self)
-	self.Label:SetText(self.fieldName)
+	local fieldName = xrp.fields[self.field] or xrp.fields[self.labelKey]
+	self.Label:SetText(fieldName)
 	if self.EditBox then
 		self.EditBox.field = self.field
 		self.EditBox.safeLength = self.safeLength
@@ -242,7 +245,7 @@ function XRPEditorControls_OnLoad(self)
 		self.EditBox.Warning = self.Warning
 	end
 	if self.safeLength then
-		self.Warning.tooltipText = ("|cffcc0000Warning:|r %s is over %d characters."):format(self.fieldName, self.safeLength)
+		self.Warning.tooltipText = ("|cffcc0000%s|r %s"):format(STAT_FORMAT:format(_S.WARNING), _S.WARNING_LENGTH:format(fieldName, self.safeLength))
 	end
 	if self.field then
 		if not XRPEditor.fields then

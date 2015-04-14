@@ -16,6 +16,10 @@
 ]]
 
 local addonName, xrpLocal = ...
+local _S = xrpLocal.strings
+
+XRP_APPEARANCE = _S.APPEARANCE
+XRP_BIOGRAPHY = _S.BIOGRAPHY
 
 XRPTemplates_DoNothing = xrpLocal.noFunc
 
@@ -42,17 +46,14 @@ function XRPTemplates_RegisterMouse(self, ...)
 end
 
 function XRPTemplates_TooltipText(self, ...)
-	if not self.tooltipText then return end
+	if not (self.tooltipText or self.tooltipKey) then return end
 	GameTooltip:SetOwner(self, "ANCHOR_CURSOR")
-	GameTooltip:SetText(self.tooltipText)
+	GameTooltip:SetText(self.tooltipText or _S[self.tooltipKey] or _G[self.tooltipKey])
 	GameTooltip:Show()
 end
 
 function XRPTemplates_TooltipTruncated(self, ...)
-	if self.Text.fullText then
-		GameTooltip:SetOwner(self, "ANCHOR_CURSOR")
-		GameTooltip:SetText(self.Text.fullText)
-	elseif self.Text:IsTruncated() then
+	if self.Text:IsTruncated() then
 		GameTooltip:SetOwner(self, "ANCHOR_CURSOR")
 		GameTooltip:SetText(self.Text:GetText())
 	end

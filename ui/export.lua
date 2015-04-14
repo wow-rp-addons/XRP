@@ -16,8 +16,10 @@
 ]]
 
 local addonName, xrpLocal = ...
+local _S = xrpLocal.strings
 
-XRP_EXPORT_INSTRUCTIONS = not IsMacClient() and "Press Ctrl+C to copy or Escape to close." or "Press Cmd+C to copy or Escape to close."
+XRP_EXPORT_PROFILE = _S.EXPORT_PROFILE
+XRP_EXPORT_INSTRUCTIONS = _S.EXPORT_INSTRUCTIONS:format(not IsMacClient() and "Ctrl+C" or "Cmd+C")
 
 function XRPExportText_OnLoad(self)
 	self.ScrollBar:ClearAllPoints()
@@ -43,6 +45,6 @@ function XRPExport_Export(self, title, text)
 	self.Text.EditBox:SetText(text)
 	self.Text.EditBox:SetCursorPosition(0)
 	self.Text:SetVerticalScroll(0)
-	self.HeaderText:SetFormattedText("Export: %s", title)
+	self.HeaderText:SetFormattedText(SUBTITLE_FORMAT, _S.EXPORT, title)
 	ShowUIPanel(self)
 end

@@ -115,7 +115,6 @@
 			<Frame parentKey="NI" inherits="XRPViewerTextLineTemplate">
 				<KeyValues>
 					<KeyValue key="field" value="NI"/>
-					<KeyValue key="fieldName" value="Nickname"/>
 				</KeyValues>
 				<Anchors>
 					<Anchor point="TOP" y="-22"/>
@@ -124,7 +123,6 @@
 			<Frame parentKey="NT" inherits="XRPViewerTextLineTemplate">
 				<KeyValues>
 					<KeyValue key="field" value="NT"/>
-					<KeyValue key="fieldName" value="Title"/>
 				</KeyValues>
 				<Anchors>
 					<Anchor point="TOP" relativeKey="$parent.NI" relativePoint="BOTTOM"/>
@@ -133,7 +131,6 @@
 			<Frame parentKey="NH" inherits="XRPViewerTextLineTemplate">
 				<KeyValues>
 					<KeyValue key="field" value="NH"/>
-					<KeyValue key="fieldName" value="House/Clan/Tribe"/>
 				</KeyValues>
 				<Anchors>
 					<Anchor point="TOP" relativeKey="$parent.NT" relativePoint="BOTTOM"/>
@@ -142,7 +139,6 @@
 			<Frame parentKey="VA" enableMouse="true">
 				<KeyValues>
 					<KeyValue key="field" value="VA"/>
-					<KeyValue key="fieldName" value="Version"/>
 				</KeyValues>
 				<Size x="190" y="10"/>
 				<Anchors>
@@ -170,7 +166,6 @@
 					<Frame parentKey="RA" inherits="XRPViewerSingleLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="RA"/>
-							<KeyValue key="fieldName" value="Race"/>
 						</KeyValues>
 						<Size x="135" y="20"/>
 						<Anchors>
@@ -180,7 +175,6 @@
 					<Frame parentKey="RC" inherits="XRPViewerSingleLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="RC"/>
-							<KeyValue key="fieldName" value="Class"/>
 						</KeyValues>
 						<Size x="135" y="20"/>
 						<Anchors>
@@ -190,7 +184,6 @@
 					<Frame parentKey="AH" inherits="XRPViewerSingleLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="AH"/>
-							<KeyValue key="fieldName" value="Height"/>
 						</KeyValues>
 						<Size x="117" y="20"/>
 						<Anchors>
@@ -200,7 +193,6 @@
 					<Frame parentKey="AE" inherits="XRPViewerSingleLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="AE"/>
-							<KeyValue key="fieldName" value="Eyes"/>
 						</KeyValues>
 						<Size x="280" y="20"/>
 						<Anchors>
@@ -210,7 +202,6 @@
 					<Frame parentKey="AW" inherits="XRPViewerSingleLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="AW"/>
-							<KeyValue key="fieldName" value="Weight"/>
 						</KeyValues>
 						<Size x="117" y="20"/>
 						<Anchors>
@@ -220,7 +211,6 @@
 					<ScrollFrame name="$parentCU" parentKey="CU" inherits="XRPViewerMultiLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="CU"/>
-							<KeyValue key="fieldName" value="Currently"/>
 						</KeyValues>
 						<Size x="402" y="45"/>
 						<Anchors>
@@ -230,7 +220,6 @@
 					<ScrollFrame name="$parentDE" parentKey="DE" inherits="XRPViewerMultiLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="DE"/>
-							<KeyValue key="fieldName" value="Description"/>
 						</KeyValues>
 						<Size x="402" y="264"/>
 						<Anchors>
@@ -248,7 +237,6 @@
 					<Frame parentKey="HH" inherits="XRPViewerSingleLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="HH"/>
-							<KeyValue key="fieldName" value="Home"/>
 						</KeyValues>
 						<Size x="407" y="20"/>
 						<Anchors>
@@ -258,7 +246,6 @@
 					<Frame parentKey="AG" inherits="XRPViewerSingleLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="AG"/>
-							<KeyValue key="fieldName" value="Age"/>
 						</KeyValues>
 						<Size x="146" y="20"/>
 						<Anchors>
@@ -268,7 +255,6 @@
 					<Frame parentKey="HB" inherits="XRPViewerSingleLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="HB"/>
-							<KeyValue key="fieldName" value="Birthplace"/>
 						</KeyValues>
 						<Size x="251" y="20"/>
 						<Anchors>
@@ -278,7 +264,6 @@
 					<ScrollFrame name="$parentMO" parentKey="MO" inherits="XRPViewerMultiLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="MO"/>
-							<KeyValue key="fieldName" value="Motto"/>
 						</KeyValues>
 						<Size x="402" y="45"/>
 						<Anchors>
@@ -288,7 +273,6 @@
 					<ScrollFrame name="$parentHI" parentKey="HI" inherits="XRPViewerMultiLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="HI"/>
-							<KeyValue key="fieldName" value="History"/>
 						</KeyValues>
 						<Size x="402" y="264"/>
 						<Anchors>
@@ -318,12 +302,12 @@
 					<OnHide function="XRPTemplates_CloseDropDownMenus"/>
 				</Scripts>
 			</Button>
-			<Button name="$parentTab1" parentKey="Tab1" inherits="XRPTabButtonTemplate" id="1" text="Appearance">
+			<Button name="$parentTab1" parentKey="Tab1" inherits="XRPTabButtonTemplate" id="1" text="XRP_APPEARANCE">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" y="1"/>
 				</Anchors>
 			</Button>
-			<Button name="$parentTab2" parentKey="Tab2" inherits="XRPTabButtonTemplate" id="2" text="Biography">
+			<Button name="$parentTab2" parentKey="Tab2" inherits="XRPTabButtonTemplate" id="2" text="XRP_BIOGRAPHY">
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.Tab1" relativePoint="RIGHT" x="-16"/>
 				</Anchors>
