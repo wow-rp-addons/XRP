@@ -10,7 +10,10 @@
 
 xrp.lua
 settings.lua
+locale\en.lua
+locale\all.lua
 core\utils.lua
+core\export.lua
 core\profiles.lua
 lib\libfakedraw.lua
 lib\libbw.lua

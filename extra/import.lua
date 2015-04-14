@@ -19,12 +19,13 @@ local hasMRP, hasTRP2, hasTRP3 = (IsAddOnLoaded("MyRolePlay")), (IsAddOnLoaded("
 if not (hasMRP or hasTRP2 or hasTRP3) then return end
 
 local addonName, xrpLocal = ...
+local _S = xrpLocal.strings
 
 local MRP_NO_IMPORT = { TT = true, VA = true, VP = true, GC = true, GF = true, GR = true, GS = true, GU = true }
 
 StaticPopupDialogs["XRP_IMPORT_RELOAD"] = {
-	text = "Available profiles have been imported and may be found in the editor's profile list. You should reload your UI now.",
-	button1 = "Reload UI",
+	text = _S.IMPORT_RELOAD,
+	button1 = RELOADUI,
 	button2 = CANCEL,
 	OnAccept = ReloadUI,
 	enterClicksFirstButton = false,
@@ -74,19 +75,18 @@ end
 local ImportTotalRP2
 do
 	local TRP2_HEIGHT = {
-		"Very short",
-		"Short",
-		"Average",
-		"Tall",
-		"Very tall",
+		[1] = _S.HEIGHT_VSHORT,
+		[2] = _S.HEIGHT_SHORT,
+		[3] = _S.HEIGHT_AVERAGE,
+		[4] = _S.HEIGHT_TALL,
+		[5] = _S.HEIGHT_VTALL,
 	}
 	local TRP2_WEIGHT = {
-		"Overweight",
-		"Regular",
-		"Muscular",
-		"Skinny",
+		[1] = _S.WEIGHT_HEAVY,
+		[2] = _S.WEIGHT_REGULAR,
+		[3] = _S.WEIGHT_MUSCULAR,
+		[4] = _S.WEIGHT_SKINNY,
 	}
-
 	-- This is a bit more complex. And partly in French.
 	function ImportTotalRP2()
 		if not TRP2_Module_PlayerInfo then
@@ -104,10 +104,10 @@ do
 		end
 		local DE = {}
 		if oldProfile.Registre and oldProfile.Registre.TraitVisage then
-			DE[#DE + 1] = ("Face: %s"):format(oldProfile.Registre.TraitVisage)
+			DE[#DE + 1] = _S.IMPORT_FACE:format(oldProfile.Registre.TraitVisage)
 		end
 		if oldProfile.Registre and oldProfile.Registre.Piercing then
-			DE[#DE + 1] = ("Piercings/Tattoos: %s"):format(oldProfile.Registre.Piercing)
+			DE[#DE + 1] = _S.IMPORT_MODS:format(oldProfile.Registre.Piercing)
 		end
 		if oldProfile.Physique and oldProfile.Physique.PhysiqueTexte then
 			DE[#DE + 1] = oldProfile.Physique.PhysiqueTexte
@@ -170,11 +170,11 @@ local function ImportTotalRP3()
 	if oldProfile.player.characteristics.MI then
 		local NI, NH, MO = {}, {}, {}
 		for i, custom in ipairs(oldProfile.player.characteristics.MI) do
-			if custom.NA == "Nickname" then
+			if custom.NA == _S.TRP3_NICKNAME then
 				NI[#NI + 1] = custom.VA
-			elseif custom.NA == "House name" then
+			elseif custom.NA == _S.TRP3_HOUSE_NAME then
 				NH[#NH + 1] = custom.VA
-			elseif custom.NA == "Motto" then
+			elseif custom.NA == _S.TRP3_MOTTO then
 				MO[#MO + 1] = custom.VA
 			end
 		end

@@ -16,13 +16,14 @@
 ]]
 
 local addonName, xrpLocal = ...
+local _S = xrpLocal.strings
 
 local disabled = false
 if not msp_RPAddOn then
 	msp_RPAddOn = GetAddOnMetadata(addonName, "Title")
 else
 	StaticPopupDialogs["XRP_MSP_DISABLE"] = {
-		text = "You are currently running two roleplay profile addons. XRP's support for sending and receiving profiles is disabled; to enable it, disable \"%s\" and reload your UI.",
+		text = _S.MSP_DISABLED,
 		button1 = OKAY,
 		showAlert = true,
 		enterClicksFirstButton = true,

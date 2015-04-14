@@ -17,98 +17,23 @@
 
 local addonName, xrpLocal = ...
 
-xrp = {
-	values = {
-		GC = {
-			DEATHKNIGHT = "Death Knight",
-			DRUID = "Druid",
-			HUNTER = "Hunter",
-			MAGE = "Mage",
-			MONK = "Monk",
-			PALADIN = "Paladin",
-			PRIEST = "Priest",
-			ROGUE = "Rogue",
-			SHAMAN = "Shaman",
-			WARLOCK = "Warlock",
-			WARRIOR = "Warrior",
-		},
-		GF = {
-			Alliance = "Alliance",
-			Horde = "Horde",
-			Neutral = "Neutral",
-		},
-		GR = {
-			BloodElf = "Blood Elf",
-			Draenei = "Draenei",
-			Dwarf = "Dwarf",
-			Gnome = "Gnome",
-			Goblin = "Goblin",
-			Human = "Human",
-			NightElf = "Night Elf",
-			Orc = "Orc",
-			Pandaren = "Pandaren",
-			Scourge = "Undead", -- Yes, Scourge.
-			Tauren = "Tauren",
-			Troll = "Troll",
-			Worgen = "Worgen",
-		},
-		GS = {
-			["1"] = "Unknown",
-			["2"] = "Male",
-			["3"] = "Female",
-		},
-		FR = {
-			["0"] = "(None)",
-			["1"] = "Normal roleplayer",
-			["2"] = "Casual roleplayer",
-			["3"] = "Full-time roleplayer",
-			["4"] = "Beginner roleplayer",
-			["5"] = "Mature roleplayer", -- This isn't standard (?) but is used sometimes.
-		},
-		FC = {
-			["0"] = "(None)",
-			["1"] = "Out of character",
-			["2"] = "In character",
-			["3"] = "Looking for contact",
-			["4"] = "Storyteller",
-		},
-	},
-}
+xrp = {}
 
--- Global strings for keybinds.
-BINDING_HEADER_XRP = "XRP"
-BINDING_NAME_XRP_STATUS = "Toggle IC/OOC status"
-BINDING_NAME_XRP_BOOKMARKS = "Open/close bookmarks panel"
-BINDING_NAME_XRP_VIEWER = "View target's or mouseover's RP profile"
-BINDING_NAME_XRP_VIEWER_TARGET = "View target's RP profile"
-BINDING_NAME_XRP_VIEWER_MOUSEOVER = "View mouseover's RP profile"
-BINDING_NAME_XRP_EDITOR = "Open/close RP profile editor"
+xrpLocal.strings = {}
+local _S = xrpLocal.strings
+
+do
+	local supported = {
+		enUS = "en",
+		enGB = "en",
+	}
+	xrpLocal.language = supported[GetLocale()] or "en"
+end
 
 xrpLocal.version = GetAddOnMetadata(addonName, "Version")
 xrpLocal.noFunc = function() end
 xrpLocal.weakMeta = { __mode = "v" }
 xrpLocal.weakKeyMeta = { __mode = "k" }
-
--- Fields to export and their formats.
-xrpLocal.EXPORT_FIELDS = { "NA", "NI", "NT", "NH", "RA", "RC", "AE", "AH", "AW", "AG", "HH", "HB", "CU", "MO", "DE", "HI" }
-xrpLocal.EXPORT_FORMATS = {
-	NA = "Name: %s\n",
-	NI = "Nickname: \"%s\"\n",
-	NT = "Title: %s\n",
-	NH = "House/Clan/Tribe: %s\n",
-	RA = "Race: %s\n",
-	RC = "Class: %s\n",
-	AE = "Eyes: %s\n",
-	AH = "Height: %s\n",
-	AW = "Weight: %s\n",
-	AG = "Age: %s\n",
-	HH = "Home: %s\n",
-	HB = "Birthplace: %s\n",
-	CU = "\nCurrently:\n%s\n",
-	MO = "\nMotto:\n%s\n",
-	DE = "\nDescription:\n------------\n%s\n",
-	HI = "\nHistory:\n--------\n%s\n",
-}
 
 do
 	local events = {}
@@ -282,7 +207,7 @@ function loadEvents.ADDON_LOADED(event, addon)
 		local now = time()
 		if update == 1 and (not xrpLocal.settings.versionwarning or xrpLocal.settings.versionwarning < now - 21600) then
 			C_Timer.After(8, function()
-				print(("There is a new version of |cffabd473XRP|r available. You should update to %s as soon as possible."):format(xrpLocal.settings.newversion))
+				print(_S.NEW_VERSION:format(xrpLocal.settings.newversion))
 				xrpLocal.settings.versionwarning = now
 			end)
 		elseif update == -1 then

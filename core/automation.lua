@@ -16,6 +16,7 @@
 ]]
 
 local addonName, xrpLocal = ...
+local _S = xrpLocal.strings
 
 local GetCurrentForm
 do
@@ -70,7 +71,7 @@ do
 							break
 						end
 					end
-				elseif not classForm and UnitBuff("player", "Treant Form") then
+				elseif not classForm and UnitBuff("player", _S.TREANT_BUFF) then
 					classForm = "TREANT"
 				end
 			elseif playerClass == "PRIEST" or playerClass == "SHAMAN" then
