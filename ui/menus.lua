@@ -16,6 +16,7 @@
 ]]
 
 local addonName, xrpLocal = ...
+local _S = xrpLocal.strings
 
 -- This adds "Roleplay Profile" menu entries to several menus for a more
 -- convenient way to access profiles (including chat names, guild lists, and
@@ -55,7 +56,7 @@ local function UnitPopup_HideButtons_Hook()
 	end
 end
 
-local Buttons_Profile = { text = "Roleplay Profile", dist = 0 }
+local Buttons_Profile = { text = _S.ROLEPLAY_PROFILE, dist = 0 }
 
 local isHooked
 xrpLocal.settingsToggles.menus = {

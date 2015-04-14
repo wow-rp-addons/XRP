@@ -16,8 +16,9 @@
 ]]
 
 local addonName, xrpLocal = ...
+local _S = xrpLocal.strings
 
-local current, failed
+local current, status, failed
 
 local Load, FIELD
 do
@@ -31,11 +32,11 @@ do
 	local function SetField(field, contents)
 		contents = contents and xrp:Strip(contents) or nil
 		if field == "VA" then
-			contents = contents and contents:gsub(";", ", ") or "Unknown/None"
+			contents = contents and contents:gsub(";", PLAYER_LIST_DELIMITER) or NONE
 		elseif not contents then
 			contents = ""
 		elseif field == "NI" then
-			contents = ("\"%s\""):format(contents)
+			contents = _S.NICKNAME:format(contents)
 		elseif field == "AH" then
 			contents = xrp:Height(contents)
 		elseif field == "AW" then
@@ -53,10 +54,11 @@ do
 	function Load(character)
 		local fields = character.fields
 		for i, field in ipairs(DISPLAY) do
-			SetField(field, fields[field] or field == "NA" and xrp:Ambiguate(tostring(character)) or field == "RA" and xrp.values.GR[fields.GR] or field == "RC" and xrp.values.GC[fields.GC] or nil)
+			SetField(field, fields[field] or field == "NA" and xrp:Ambiguate(tostring(character)) or field == "RA" and xrp.values.GR[fields.GR] or field == "RC" and xrp.values.GC[fields.GS or "1"][fields.GC] or nil)
 		end
 		XRPViewer.XC:SetText("")
 		failed = nil
+		status = nil
 		if character == current then
 			return false
 		elseif current and tostring(character) == tostring(current) then
@@ -82,7 +84,7 @@ do
 		end
 		if SUPPORTED[field] then
 			local fields = current.fields
-			SetField(field, fields[field] or field == "RA" and xrp.values.GR[fields.GR] or field == "RC" and xrp.values.GC[fields.GC] or nil)
+			SetField(field, fields[field] or field == "RA" and xrp.values.GR[fields.GR] or field == "RC" and xrp.values.GC[fields.GS or "1"][fields.GC] or nil)
 		end
 	end
 end
@@ -92,9 +94,14 @@ local function RECEIVE(event, name)
 		if failed then
 			Load(current)
 		end
-		local XC = XRPViewer.XC:GetText()
-		if not XC or not XC:find("^Received") then
-			XRPViewer.XC:SetText(event == "NOCHANGE" and "No changes." or "Received!")
+		if status ~= "received" then
+			if event == "NOCHANGE" then
+				XRPViewer.XC:SetText(_S.NO_CHANGES)
+				status = "nochange"
+			elseif status ~= "nochange" then
+				XRPViewer.XC:SetText(_S.RECEIVED)
+				status = "received"
+			end
 		end
 	end
 end
@@ -109,11 +116,14 @@ local function UPDATE(event, field)
 	end
 end
 
-local function CHUNK(event, name, chunk, totalchunks)
+local function CHUNK(event, name, chunk, totalChunks)
 	if tostring(current) == name then
-		local XC = XRPViewer.XC:GetText()
-		if chunk ~= totalchunks or not XC or XC:find("^Receiv") then
-			XRPViewer.XC:SetFormattedText(totalchunks and (chunk == totalchunks and "Received! (%d/%d)" or "Receiving... (%d/%d)") or "Receiving... (%d/??)", chunk, totalchunks)
+		if chunk ~= totalChunks then
+			XRPViewer.XC:SetFormattedText(totalChunks and _S.RECEIVING_PARTS or _S.RECEIVING_UNKNOWN, chunk, totalChunks)
+			status = "receiving"
+		elseif status ~= "nochange" then
+			XRPViewer.XC:SetFormattedText(_S.RECEIVED_PARTS, chunk, totalChunks)
+			status = "received"
 		end
 	end
 end
@@ -121,14 +131,15 @@ end
 local function FAIL(event, name, reason)
 	if tostring(current) == name then
 		failed = true
-		if not XRPViewer.XC:GetText() then
+		if not status then
 			if reason == "offline" then
-				XRPViewer.XC:SetText("Character is not online.")
+				XRPViewer.XC:SetText(_S.ERR_OFFLINE)
 			elseif reason == "faction" then
-				XRPViewer.XC:SetText("Character is opposite faction.")
+				XRPViewer.XC:SetText(_S.ERR_FACTION)
 			elseif reason == "nomsp" then
-				XRPViewer.XC:SetText("No RP addon appears to be active.")
+				XRPViewer.XC:SetText(_S.ERR_ADDON)
 			end
+			status = "failed"
 		end
 	end
 end
@@ -161,18 +172,18 @@ do
 		end
 	end
 	XRPViewerMenu_baseMenuList = {
-		{ text = "Export...", arg1 = "XRP_EXPORT", notCheckable = true, func = Menu_Click, },
-		{ text = "Refresh", arg1 = "XRP_REFRESH", notCheckable = true, func = Menu_Click, },
-		{ text = "Add friend", arg1 = "XRP_FRIEND", notCheckable = true, func = Menu_Click, },
-		{ text = "Bookmark", arg1 = "XRP_BOOKMARK", isNotRadio = true, checked = Menu_Checked, func = Menu_Click, },
-		{ text = "Hide profile", arg1 = "XRP_HIDE", isNotRadio = true, checked = Menu_Checked, func = Menu_Click, },
-		{ text = "Close", notCheckable = true, func = xrpLocal.noFunc, },
+		{ text = _S.EXPORT_MENU, arg1 = "XRP_EXPORT", notCheckable = true, func = Menu_Click, },
+		{ text = REFRESH, arg1 = "XRP_REFRESH", notCheckable = true, func = Menu_Click, },
+		{ text = _S.ADD_FRIEND, arg1 = "XRP_FRIEND", notCheckable = true, func = Menu_Click, },
+		{ text = _S.BOOKMARK, arg1 = "XRP_BOOKMARK", isNotRadio = true, checked = Menu_Checked, func = Menu_Click, },
+		{ text = _S.HIDE_PROFILE, arg1 = "XRP_HIDE", isNotRadio = true, checked = Menu_Checked, func = Menu_Click, },
+		{ text = CLOSE, notCheckable = true, func = xrpLocal.noFunc, },
 	}
 end
 
 function XRPViewerControls_OnLoad(self)
 	if self.Label then
-		self.Label:SetText(self.fieldName)
+		self.Label:SetText(xrp.fields[self.field])
 	end
 	if self.field then
 		if not XRPViewer.fields then

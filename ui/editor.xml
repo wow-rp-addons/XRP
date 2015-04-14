@@ -19,7 +19,7 @@
 	<Script file="automation.lua"/>
 	<CheckButton name="XRPEditorInheritCheckTemplate" inherits="XRPCheckBoxTemplate" virtual="true">
 		<KeyValues>
-			<KeyValue key="tooltipText" value="Use parent profile if blank."/>
+			<KeyValue key="tooltipKey" value="USE_PARENT"/>
 		</KeyValues>
 		<Size x="12" y="12"/>
 		<Anchors>
@@ -167,7 +167,6 @@
 					<EditBox parentKey="NA" inherits="XRPEditorSingleLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="NA"/>
-							<KeyValue key="fieldName" value="Name"/>
 							<KeyValue key="nextField" value="NI"/>
 							<KeyValue key="safeLength" value="65" type="number"/>
 						</KeyValues>
@@ -179,7 +178,6 @@
 					<EditBox parentKey="NI" inherits="XRPEditorSingleLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="NI"/>
-							<KeyValue key="fieldName" value="Nickname"/>
 							<KeyValue key="nextField" value="AH"/>
 							<KeyValue key="safeLength" value="58" type="number"/>
 						</KeyValues>
@@ -191,7 +189,6 @@
 					<EditBox parentKey="AH" inherits="XRPEditorSingleLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="AH"/>
-							<KeyValue key="fieldName" value="Height"/>
 							<KeyValue key="nextField" value="NT"/>
 						</KeyValues>
 						<Size x="65" y="20"/>
@@ -202,7 +199,6 @@
 					<EditBox parentKey="NT" inherits="XRPEditorSingleLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="NT"/>
-							<KeyValue key="fieldName" value="Title"/>
 							<KeyValue key="nextField" value="NH"/>
 							<KeyValue key="safeLength" value="130" type="number"/>
 						</KeyValues>
@@ -214,7 +210,6 @@
 					<EditBox parentKey="NH" inherits="XRPEditorSingleLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="NH"/>
-							<KeyValue key="fieldName" value="House/Clan/Tribe"/>
 							<KeyValue key="nextField" value="AW"/>
 						</KeyValues>
 						<Size x="136" y="20"/>
@@ -225,7 +220,6 @@
 					<EditBox parentKey="AW" inherits="XRPEditorSingleLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="AW"/>
-							<KeyValue key="fieldName" value="Weight"/>
 							<KeyValue key="nextField" value="AE"/>
 						</KeyValues>
 						<Size x="65" y="20"/>
@@ -236,7 +230,6 @@
 					<EditBox parentKey="AE" inherits="XRPEditorSingleLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="AE"/>
-							<KeyValue key="fieldName" value="Eyes"/>
 							<KeyValue key="nextField" value="RA"/>
 						</KeyValues>
 						<Size x="125" y="20"/>
@@ -247,7 +240,6 @@
 					<EditBox parentKey="RA" inherits="XRPEditorSingleLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="RA"/>
-							<KeyValue key="fieldName" value="Race"/>
 							<KeyValue key="nextField" value="RC"/>
 							<KeyValue key="safeLength" value="40" type="number"/>
 						</KeyValues>
@@ -259,7 +251,6 @@
 					<EditBox parentKey="RC" inherits="XRPEditorSingleLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="RC"/>
-							<KeyValue key="fieldName" value="Class"/>
 							<KeyValue key="nextField" value="CU"/>
 							<KeyValue key="safeLength" value="40" type="number"/>
 						</KeyValues>
@@ -271,7 +262,6 @@
 					<EditBox parentKey="CU" inherits="XRPEditorSingleLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="CU"/>
-							<KeyValue key="fieldName" value="Currently"/>
 							<KeyValue key="nextField" value="DE"/>
 							<KeyValue key="safeLength" value="120" type="number"/>
 						</KeyValues>
@@ -283,7 +273,6 @@
 					<ScrollFrame name="$parentDE" parentKey="DE" inherits="XRPEditorMultiLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="DE"/>
-							<KeyValue key="fieldName" value="Description"/>
 							<KeyValue key="nextField" value="NA"/>
 						</KeyValues>
 						<Size x="402" y="264"/>
@@ -302,7 +291,6 @@
 					<EditBox parentKey="AG" inherits="XRPEditorSingleLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="AG"/>
-							<KeyValue key="fieldName" value="Age"/>
 							<KeyValue key="nextField" value="HH"/>
 						</KeyValues>
 						<Size x="65" y="20"/>
@@ -313,7 +301,6 @@
 					<EditBox parentKey="HH" inherits="XRPEditorSingleLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="HH"/>
-							<KeyValue key="fieldName" value="Home"/>
 							<KeyValue key="nextField" value="HB"/>
 						</KeyValues>
 						<Size x="161" y="20"/>
@@ -324,7 +311,6 @@
 					<EditBox parentKey="HB" inherits="XRPEditorSingleLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="HB"/>
-							<KeyValue key="fieldName" value="Birthplace"/>
 							<KeyValue key="nextField" value="MO"/>
 						</KeyValues>
 						<Size x="161" y="20"/>
@@ -335,7 +321,6 @@
 					<EditBox parentKey="MO" inherits="XRPEditorSingleLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="MO"/>
-							<KeyValue key="fieldName" value="Motto"/>
 							<KeyValue key="nextField" value="HI"/>
 							<KeyValue key="safeLength" value="250" type="number"/>
 						</KeyValues>
@@ -347,7 +332,6 @@
 					<ScrollFrame name="$parentHI" parentKey="HI" inherits="XRPEditorMultiLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="HI"/>
-							<KeyValue key="fieldName" value="History"/>
 							<KeyValue key="nextField" value="FR"/>
 						</KeyValues>
 						<Size x="402" y="294"/>
@@ -358,7 +342,6 @@
 					<EditBox parentKey="FR" inherits="XRPEditorSingleLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="FR"/>
-							<KeyValue key="fieldName" value="Roleplaying style"/>
 							<KeyValue key="nextField" value="AG"/>
 							<KeyValue key="safeLength" value="35" type="number"/>
 						</KeyValues>
@@ -370,7 +353,6 @@
 					<Frame name="$parentMenuFC" parentKey="FC" inherits="XRPEditorDropDownTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="FC"/>
-							<KeyValue key="fieldName" value="Character status"/>
 							<KeyValue key="inherited" value="false" type="boolean"/>
 							<KeyValue key="baseMenuList" value="XRPEditorFC_baseMenuList" type="global"/>
 							<KeyValue key="width" value="188" type="number"/>
@@ -400,7 +382,7 @@
 			<Button parentKey="Plus" inherits="XRPEditorProfileControlTemplate" text=" + ">
 				<KeyValues>
 					<KeyValue key="popup" value="XRP_EDITOR_ADD"/>
-					<KeyValue key="tooltipText" value="Add"/>
+					<KeyValue key="tooltipKey" value="ADD"/>
 				</KeyValues>
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.Profiles" relativePoint="RIGHT" x="34" y="2"/>
@@ -409,7 +391,7 @@
 			<Button parentKey="Minus" inherits="XRPEditorProfileControlTemplate" text=" - ">
 				<KeyValues>
 					<KeyValue key="popup" value="XRP_EDITOR_DELETE"/>
-					<KeyValue key="tooltipText" value="Delete"/>
+					<KeyValue key="tooltipKey" value="DELETE"/>
 				</KeyValues>
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.Plus" relativePoint="RIGHT"/>
@@ -418,7 +400,7 @@
 			<Button parentKey="Rename" inherits="XRPEditorProfileControlTemplate" text=" R ">
 				<KeyValues>
 					<KeyValue key="popup" value="XRP_EDITOR_RENAME"/>
-					<KeyValue key="tooltipText" value="Rename"/>
+					<KeyValue key="tooltipKey" value="RENAME"/>
 				</KeyValues>
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.Minus" relativePoint="RIGHT"/>
@@ -427,7 +409,7 @@
 			<Button parentKey="Copy" inherits="XRPEditorProfileControlTemplate" text=" C ">
 				<KeyValues>
 					<KeyValue key="popup" value="XRP_EDITOR_COPY"/>
-					<KeyValue key="tooltipText" value="Copy"/>
+					<KeyValue key="tooltipKey" value="COPY"/>
 				</KeyValues>
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.Rename" relativePoint="RIGHT"/>
@@ -435,7 +417,7 @@
 			</Button>
 			<Button parentKey="Export" inherits="XRPEditorProfileControlTemplate" text=" E ">
 				<KeyValues>
-					<KeyValue key="tooltipText" value="Export"/>
+					<KeyValue key="tooltipKey" value="EXPORT"/>
 				</KeyValues>
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.Copy" relativePoint="RIGHT"/>
@@ -444,7 +426,7 @@
 					<OnClick function="XRPEditorExport_OnClick"/>
 				</Scripts>
 			</Button>
-			<Button parentKey="Auto" inherits="UIPanelButtonTemplate" text="Auto">
+			<Button parentKey="Auto" inherits="UIPanelButtonTemplate" text="XRP_AUTO">
 				<Size x="50" y="28"/>
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.Export" relativePoint="RIGHT" x="12"/>
@@ -488,12 +470,12 @@
 					<OnClick function="XRPEditorRevert_OnClick"/>
 				</Scripts>
 			</Button>
-			<Button name="$parentTab1" parentKey="Tab1" inherits="XRPTabButtonTemplate" id="1" text="Appearance">
+			<Button name="$parentTab1" parentKey="Tab1" inherits="XRPTabButtonTemplate" id="1" text="XRP_APPEARANCE">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" y="1"/>
 				</Anchors>
 			</Button>
-			<Button name="$parentTab2" parentKey="Tab2" inherits="XRPTabButtonTemplate" id="2" text="Biography">
+			<Button name="$parentTab2" parentKey="Tab2" inherits="XRPTabButtonTemplate" id="2" text="XRP_BIOGRAPHY">
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.Tab1" relativePoint="RIGHT" x="-16"/>
 				</Anchors>
@@ -538,7 +520,7 @@
 								<Anchor point="TOP" y="12"/>
 							</Anchors>
 						</Texture>
-						<FontString parentKey="Title" inherits="GameFontNormal" text="Automation">
+						<FontString parentKey="Title" inherits="GameFontNormal" text="XRP_AUTOMATION">
 							<Size x="185" y="12"/>
 							<Anchors>
 								<Anchor point="TOP" relativeKey="$parent.Header" y="-14"/>
@@ -560,7 +542,7 @@
 					</Button>
 					<Frame name="$parentForm" parentKey="Form" inherits="XRPEditorDropDownTemplate">
 						<KeyValues>
-							<KeyValue key="fieldName" value="Form/set:"/>
+							<KeyValue key="labelKey" value="FORM_SET"/>
 							<KeyValue key="preClick" value="XRPEditorAutomationForm_PreClick" type="global"/>
 							<KeyValue key="baseMenuList" value="XRPEditorAutomationForm_baseMenuList" type="global"/>
 							<KeyValue key="width" value="159" type="number"/>
@@ -571,7 +553,7 @@
 					</Frame>
 					<Frame name="$parentProfile" parentKey="Profile" inherits="XRPEditorDropDownTemplate">
 						<KeyValues>
-							<KeyValue key="fieldName" value="Profile for selected form/set:"/>
+							<KeyValue key="labelKey" value="PROFILE_FOR_FORM"/>
 							<KeyValue key="preClick" value="XRPEditorAutomationProfile_PreClick" type="global"/>
 							<KeyValue key="width" value="159" type="number"/>
 						</KeyValues>

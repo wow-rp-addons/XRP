@@ -16,6 +16,13 @@
 ]]
 
 local addonName, xrpLocal = ...
+local _S = xrpLocal.strings
+
+XRP_BOOKMARKS = _S.BOOKMARKS
+XRP_OWN = _S.OWN
+XRP_RECENT = _S.RECENT
+XRP_SEARCH_ENTER = _S.PRESS_ENTER_SEARCH
+XRP_PROFILES_NOTFOUND = _S.NO_PROFILES_FOUND
 
 local request, results
 
@@ -92,7 +99,7 @@ function XRPBookmarksList_update(self)
 					button.RaceIcon:Hide()
 				end
 				local GC = character.fields.GC
-				local RC = xrp:Strip(character.fields.RC) or xrp.values.GC[GC]
+				local RC = xrp:Strip(character.fields.RC) or xrp.values.GC[character.fields.GS or "1"][GC]
 				if RC then
 					button.RC:SetText(RC)
 					button.RC:Show()
@@ -131,7 +138,7 @@ function XRPBookmarksList_update(self)
 		end
 	end
 
-	XRPBookmarks.Count:SetFormattedText("Listing %d of %d profiles.", matches, results.totalCount)
+	XRPBookmarks.Count:SetFormattedText(_S.TOTAL_LIST, matches, results.totalCount)
 
 	HybridScrollFrame_Update(self, 72 * matches, 72)
 end
@@ -142,10 +149,10 @@ local function Refresh()
 	XRPBookmarks.List:update()
 	XRPBookmarks.List.scrollBar:SetValue(request.offset)
 	if request.fullText then
-		XRPBookmarks.FilterText.Instructions:SetText("Search")
+		XRPBookmarks.FilterText.Instructions:SetText(SEARCH)
 		XRPBookmarks.FilterText.FullTextWarning:Show()
 	else
-		XRPBookmarks.FilterText.Instructions:SetText("Name")
+		XRPBookmarks.FilterText.Instructions:SetText(NAME)
 		XRPBookmarks.FilterText.FullTextWarning:Hide()
 	end
 	XRPBookmarks.FilterText:SetText(request.text or "")
@@ -187,13 +194,13 @@ do
 		end
 	end
 	XRPBookmarksEntry_baseMenuList = {
-		{ text = "View (cached)...", arg1 = "XRP_VIEW_CACHED", notCheckable = true, checked = Menu_Checked, func = Menu_Click, },
-		{ text = "View (live)...", arg1 = "XRP_VIEW_LIVE", notCheckable = true, checked = Menu_Checked, func = Menu_Click, },
-		{ text = "Export...", arg1 = "XRP_EXPORT", notCheckable = true, checked = Menu_Checked, func = Menu_Click, },
-		{ text = "Add friend", arg1 = "XRP_FRIEND", notCheckable = true, func = Menu_Click, },
-		{ text = "Bookmark", arg1 = "XRP_BOOKMARK", isNotRadio = true, checked = Menu_Checked, func = Menu_Click, },
-		{ text = "Hide profile", arg1 = "XRP_HIDE", isNotRadio = true, checked = Menu_Checked, func = Menu_Click, },
-		{ text = "Cancel", notCheckable = true, func = xrpLocal.noFunc, },
+		{ text = _S.VIEW_CACHED, arg1 = "XRP_VIEW_CACHED", notCheckable = true, checked = Menu_Checked, func = Menu_Click, },
+		{ text = _S.VIEW_LIVE, arg1 = "XRP_VIEW_LIVE", notCheckable = true, checked = Menu_Checked, func = Menu_Click, },
+		{ text = _S.EXPORT_MENU, arg1 = "XRP_EXPORT", notCheckable = true, checked = Menu_Checked, func = Menu_Click, },
+		{ text = _S.ADD_FRIEND, arg1 = "XRP_FRIEND", notCheckable = true, func = Menu_Click, },
+		{ text = _S.BOOKMARK, arg1 = "XRP_BOOKMARK", isNotRadio = true, checked = Menu_Checked, func = Menu_Click, },
+		{ text = _S.HIDE_PROFILE, arg1 = "XRP_HIDE", isNotRadio = true, checked = Menu_Checked, func = Menu_Click, },
+		{ text = CANCEL, notCheckable = true, func = xrpLocal.noFunc, },
 	}
 end
 
@@ -264,32 +271,32 @@ do
 		lists.race = { "Human", "Dwarf", "NightElf", "Gnome", "Draenei", "Worgen", "Pandaren", "Orc", "Scourge", "Tauren", "Troll", "BloodElf", "Goblin" }
 	end
 	local factionMenu = {
-		{ text = "Check all", notCheckable = true, keepShownOnClick = true, arg1 = "faction", arg2 = "ALL", func = Filter_Click, },
-		{ text = "Uncheck all", notCheckable = true, keepShownOnClick = true, arg1 = "faction", arg2 = "NONE", func = Filter_Click, },
+		{ text = _S.CHECK_ALL, notCheckable = true, keepShownOnClick = true, arg1 = "faction", arg2 = "ALL", func = Filter_Click, },
+		{ text = _S.UNCHECK_ALL, notCheckable = true, keepShownOnClick = true, arg1 = "faction", arg2 = "NONE", func = Filter_Click, },
 	}
 	for i, faction in ipairs(lists.faction) do
 		factionMenu[#factionMenu + 1] = { text = xrp.values.GF[faction], isNotRadio = true, keepShownOnClick = true, arg1 = "faction", arg2 = faction, checked = Filter_Checked, func = Filter_Click, }
 	end
-	factionMenu[#factionMenu + 1] = { text = "Unknown", isNotRadio = true, keepShownOnClick = true, arg1 = "faction", arg2 = "UNKNOWN", checked = Filter_Checked, func = Filter_Click, }
+	factionMenu[#factionMenu + 1] = { text = UNKNOWN, isNotRadio = true, keepShownOnClick = true, arg1 = "faction", arg2 = "UNKNOWN", checked = Filter_Checked, func = Filter_Click, }
 
 	local raceMenu = {
-		{ text = "Check all", notCheckable = true, keepShownOnClick = true, arg1 = "race", arg2 = "ALL", func = Filter_Click, },
-		{ text = "Uncheck all", notCheckable = true, keepShownOnClick = true, arg1 = "race", arg2 = "NONE", func = Filter_Click, },
+		{ text = _S.CHECK_ALL, notCheckable = true, keepShownOnClick = true, arg1 = "race", arg2 = "ALL", func = Filter_Click, },
+		{ text = _S.UNCHECK_ALL, notCheckable = true, keepShownOnClick = true, arg1 = "race", arg2 = "NONE", func = Filter_Click, },
 	}
 	for i, race in ipairs(lists.race) do
 		raceMenu[#raceMenu + 1] = { text = xrp.values.GR[race], isNotRadio = true, keepShownOnClick = true, arg1 = "race", arg2 = race, checked = Filter_Checked, func = Filter_Click, }
 	end
-	raceMenu[#raceMenu + 1] = { text = "Unknown", isNotRadio = true, keepShownOnClick = true, arg1 = "race", arg2 = "UNKNOWN", checked = Filter_Checked, func = Filter_Click, }
+	raceMenu[#raceMenu + 1] = { text = UNKNOWN, isNotRadio = true, keepShownOnClick = true, arg1 = "race", arg2 = "UNKNOWN", checked = Filter_Checked, func = Filter_Click, }
 
 	lists.class = { "DEATHKNIGHT", "DRUID", "HUNTER", "MAGE", "MONK", "PALADIN", "PRIEST", "ROGUE", "SHAMAN", "WARLOCK", "WARRIOR" }
 	local classMenu = {
-		{ text = "Check all", notCheckable = true, keepShownOnClick = true, arg1 = "class", arg2 = "ALL", func = Filter_Click, },
-		{ text = "Uncheck all", notCheckable = true, keepShownOnClick = true, arg1 = "class", arg2 = "NONE", func = Filter_Click, },
+		{ text = _S.CHECK_ALL, notCheckable = true, keepShownOnClick = true, arg1 = "class", arg2 = "ALL", func = Filter_Click, },
+		{ text = _S.UNCHECK_ALL, notCheckable = true, keepShownOnClick = true, arg1 = "class", arg2 = "NONE", func = Filter_Click, },
 	}
 	for i, class in ipairs(lists.class) do
-		classMenu[#classMenu + 1] = { text = xrp.values.GC[class], isNotRadio = true, keepShownOnClick = true, arg1 = "class", arg2 = class, checked = Filter_Checked, func = Filter_Click, }
+		classMenu[#classMenu + 1] = { text = xrp.values.GC["1"][class], isNotRadio = true, keepShownOnClick = true, arg1 = "class", arg2 = class, checked = Filter_Checked, func = Filter_Click, }
 	end
-	classMenu[#classMenu + 1] = { text = "Unknown", isNotRadio = true, keepShownOnClick = true, arg1 = "class", arg2 = "UNKNOWN", checked = Filter_Checked, func = Filter_Click, }
+	classMenu[#classMenu + 1] = { text = UNKNOWN, isNotRadio = true, keepShownOnClick = true, arg1 = "class", arg2 = "UNKNOWN", checked = Filter_Checked, func = Filter_Click, }
 
 	local function Filter_Radio_Checked(self)
 		return request[self.arg1] == self.arg2
@@ -301,10 +308,10 @@ do
 		UIDropDownMenu_Refresh(XRPBookmarks.FilterButton.Menu, nil, UIDROPDOWNMENU_MENU_LEVEL)
 	end
 	local sortMenu = {
-		{ text = "Name", keepShownOnClick = true, arg1 = "sortType", arg2 = nil, checked = Filter_Radio_Checked, func = Filter_Radio_Click, },
-		{ text = "Roleplay name", keepShownOnClick = true, arg1 = "sortType", arg2 = "NA", checked = Filter_Radio_Checked, func = Filter_Radio_Click, },
-		{ text = "Realm", keepShownOnClick = true, arg1 = "sortType", arg2 = "realm", checked = Filter_Radio_Checked, func = Filter_Radio_Click, },
-		{ text = "Date", keepShownOnClick = true, arg1 = "sortType", arg2 = "date", checked = Filter_Radio_Checked, func = Filter_Radio_Click, },
+		{ text = NAME, keepShownOnClick = true, arg1 = "sortType", arg2 = nil, checked = Filter_Radio_Checked, func = Filter_Radio_Click, },
+		{ text = _S.ROLEPLAY_NAME, keepShownOnClick = true, arg1 = "sortType", arg2 = "NA", checked = Filter_Radio_Checked, func = Filter_Radio_Click, },
+		{ text = _S.REALM, keepShownOnClick = true, arg1 = "sortType", arg2 = "realm", checked = Filter_Radio_Checked, func = Filter_Radio_Click, },
+		{ text = _S.DATE, keepShownOnClick = true, arg1 = "sortType", arg2 = "date", checked = Filter_Radio_Checked, func = Filter_Radio_Click, },
 	}
 
 	local function Filter_Toggle_Checked(self)
@@ -333,14 +340,14 @@ do
 		Refresh()
 	end
 	XRPBookmarksFilterButton_baseMenuList = {
-		{ text = "Faction", notCheckable = true, hasArrow = true, menuList = factionMenu, },
-		{ text = "Race", notCheckable = true, hasArrow = true, menuList = raceMenu, },
-		{ text = "Class", notCheckable = true, hasArrow = true, menuList = classMenu, },
-		{ text = "Sort by", notCheckable = true, hasArrow = true, menuList = sortMenu, },
-		{ text = "Full-text search", isNotRadio = true, keepShownOnClick = true, arg1 = "fullText", checked = Filter_Toggle_Checked, func = Filter_Toggle_Click, },
-		{ text = "Reverse sorting", isNotRadio = true, keepShownOnClick = true, arg1 = "sortReverse", checked = Filter_Toggle_Checked, func = Filter_Toggle_Click, },
-		{ text = "Include hidden", isNotRadio = true, keepShownOnClick = true, arg1 = "showHidden", checked = Filter_Toggle_Checked, func = Filter_Toggle_Click, },
-		{ text = "Reset filters", notCheckable = true, func = Filter_Reset, },
+		{ text = FACTION, notCheckable = true, hasArrow = true, menuList = factionMenu, },
+		{ text = RACE, notCheckable = true, hasArrow = true, menuList = raceMenu, },
+		{ text = CLASS, notCheckable = true, hasArrow = true, menuList = classMenu, },
+		{ text = _S.SORT_BY, notCheckable = true, hasArrow = true, menuList = sortMenu, },
+		{ text = _S.FULL_SEARCH, isNotRadio = true, keepShownOnClick = true, arg1 = "fullText", checked = Filter_Toggle_Checked, func = Filter_Toggle_Click, },
+		{ text = _S.REVERSE_SORT, isNotRadio = true, keepShownOnClick = true, arg1 = "sortReverse", checked = Filter_Toggle_Checked, func = Filter_Toggle_Click, },
+		{ text = _S.INCLUDE_HIDDEN, isNotRadio = true, keepShownOnClick = true, arg1 = "showHidden", checked = Filter_Toggle_Checked, func = Filter_Toggle_Click, },
+		{ text = _S.RESET_FILTERS, notCheckable = true, func = Filter_Reset, },
 	}
 end
 
@@ -367,6 +374,12 @@ function XRPBookmarksRefreshButton_OnClick(self, button, down)
 end
 
 do
+	local BOOKMARKS_TAB = {
+		_S.BOOKMARKS,
+		_S.OWN_CHARACTERS,
+		_S.RECENT_3HOURS,
+		_S.ALL_PROFILES,
+	}
 	local requests = {
 		{ bookmark = true, sortType = "NA", defaultSortType = "NA", offset = 0, lastRefresh = 0, faction = {}, race = {}, class = {} }, -- Bookmarks
 		{ own = true, sortType = "NA", defaultSortType = "NA", offset = 0, lastRefresh = 0, faction = {}, race = {}, class = {} }, -- Own
@@ -387,7 +400,7 @@ do
 		end
 		Refresh()
 		PanelTemplates_SetTab(XRPBookmarks, tabID)
-		XRPBookmarks.TitleText:SetText(self.titleText)
+		XRPBookmarks.TitleText:SetText(BOOKMARKS_TAB[tabID])
 		PlaySound("igCharacterInfoTab")
 	end
 end
@@ -395,7 +408,7 @@ end
 function XRPBookmarks_OnUpdate(self, elapsed)
 	self:SetScript("OnUpdate", nil)
 	HybridScrollFrame_CreateButtons(self.List, "XRPBookmarksEntryTemplate")
-	self:Refresh()
+	Refresh()
 end
 
 function XRPBookmarks_Toggle(self, tabID)

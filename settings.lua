@@ -16,6 +16,7 @@
 ]]
 
 local addonName, xrpLocal = ...
+local _S = xrpLocal.strings
 
 xrpLocal.settingsToggles = {
 	display = {},
@@ -24,7 +25,7 @@ xrpLocal.settingsToggles = {
 local DATA_VERSION = 4
 local DATA_VERSION_ACCOUNT = 9
 
-local DEFAULT_SETTINGS = {
+xrpLocal.DEFAULT_SETTINGS = {
 	cache = {
 		autoClean = true,
 		time = 864000,
@@ -113,11 +114,11 @@ local upgradeAccountVars = {
 
 		newSettings.minimap = settings.minimap or {}
 		-- Minimap button was getting hidden by garrison button.
-		newSettings.minimap.angle = DEFAULT_SETTINGS.minimap.angle
+		newSettings.minimap.angle = xrpLocal.DEFAULT_SETTINGS.minimap.angle
 
 		newSettings.tooltip = settings.tooltip or {}
 
-		for section, defaults in pairs(DEFAULT_SETTINGS) do
+		for section, defaults in pairs(xrpLocal.DEFAULT_SETTINGS) do
 			for option, setting in pairs(defaults) do
 				if newSettings[section][option] == nil then
 					newSettings[section][option] = setting
@@ -142,7 +143,7 @@ local upgradeAccountVars = {
 		end
 		if settings.interact.rightclick ~= nil then
 			settings.interact.cursor = settings.interact.rightclick
-			settings.interact.rightClick = DEFAULT_SETTINGS.interact.rightClick
+			settings.interact.rightClick = xrpLocal.DEFAULT_SETTINGS.interact.rightClick
 			settings.interact.rightclick = nil
 		end
 
@@ -158,7 +159,6 @@ local upgradeAccountVars = {
 				end
 			end
 		end
-		C_Timer.After(6, function() print("XRP has been updated to 6.0.3.0+. Please note that if you were formerly disabling the tooltip or chat names via the addons menu, those settings are now found in the XRP interface options.") end)
 	end,
 	[6] = function() -- 6.0.3.2
 		local settings = xrpAccountSaved.settings
@@ -209,7 +209,7 @@ local upgradeAccountVars = {
 			settings.tooltip.noRace = settings.tooltip.norprace
 			settings.tooltip.norprace = nil
 		end
-		settings.display.movableViewer = DEFAULT_SETTINGS.display.movableViewer
+		settings.display.movableViewer = xrpLocal.DEFAULT_SETTINGS.display.movableViewer
 	end,
 	[7] = function() -- 6.0.3.3
 		if xrpAccountSaved.settings.display.preloadViewer == true and xrpAccountSaved.settings.display.movableViewer == true then
@@ -219,7 +219,7 @@ local upgradeAccountVars = {
 			-- Make sure movable viewer is disabled if it would be disabled
 			-- for them (i.e., preload disabled or movable disabled).
 			xrpAccountSaved.settings.display.movableViewer = false
-			xrpAccountSaved.settings.display.closeOnEscapeViewer = DEFAULT_SETTINGS.display.closeOnEscapeViewer
+			xrpAccountSaved.settings.display.closeOnEscapeViewer = xrpLocal.DEFAULT_SETTINGS.display.closeOnEscapeViewer
 		end
 		xrpAccountSaved.settings.display.preloadViewer = nil
 	end,
@@ -245,7 +245,7 @@ local upgradeAccountVars = {
 		end
 	end,
 	[9] = function() -- 6.1.0.0
-		xrpAccountSaved.settings.tooltip.replace = DEFAULT_SETTINGS.tooltip.replace
+		xrpAccountSaved.settings.tooltip.replace = xrpLocal.DEFAULT_SETTINGS.tooltip.replace
 		xrpAccountSaved.settings.display.preloadBookmarks = nil
 		xrpAccountSaved.settings.display.preloadEditor = nil
 	end,
@@ -258,16 +258,16 @@ local upgradeVars = {
 		end
 		xrpSaved.versions.VP = nil
 	end,
-	[4] = function() -- 6.1.0.1
+	[4] = function() -- 6.1.2.0
 		for name, profile in pairs(xrpSaved.profiles) do
 			if name == "SELECTED" then
-				local newName = "SELECTED Renamed"
+				local newName = _S.RENAMED_FORMAT:format("SELECTED")
 				if xrpSaved.selected == name then
 					xrpSaved.selected = newName
 				end
-				for name, profile in pairs(xrpSaved.profiles) do
-					if profile.parent == name then
-						profile.parent = newName
+				for inhName, inhProfile in pairs(xrpSaved.profiles) do
+					if inhProfile.parent == name then
+						inhProfile.parent = newName
 					end
 				end
 				xrpSaved.profiles[newName] = profile
@@ -288,7 +288,7 @@ local function InitializeSavedVariables()
 			settings = {},
 			dataVersion = DATA_VERSION_ACCOUNT,
 		}
-		for section, defaults in pairs(DEFAULT_SETTINGS) do
+		for section, defaults in pairs(xrpLocal.DEFAULT_SETTINGS) do
 			if not xrpAccountSaved.settings[section] then
 				xrpAccountSaved.settings[section] = {}
 			end
@@ -330,9 +330,9 @@ local function InitializeSavedVariables()
 					end
 				end
 				if name == "Add" or name == "List" then
-					xrpSaved.profiles[name .. " Renamed"] = profile
+					xrpSaved.profiles[_S.RENAMED_FORMAT:format(name)] = profile
 					if xrpSaved.selected == name then
-						xrpSaved.selected = name .. " Renamed"
+						xrpSaved.selected = _S.RENAMED_FORMAT:format(name)
 					end
 					xrpSaved.profiles[name] = nil
 				end
@@ -349,13 +349,13 @@ local function InitializeSavedVariables()
 					versions = {},
 				},
 				profiles = {
-					["Default"] = {
+					[DEFAULT] = {
 						fields = {},
 						inherits = {},
 						versions = {},
 					},
 				},
-				selected = "Default",
+				selected = DEFAULT,
 				versions = {},
 				dataVersion = DATA_VERSION,
 			}

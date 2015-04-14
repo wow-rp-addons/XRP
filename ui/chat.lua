@@ -16,6 +16,7 @@
 ]]
 
 local addonName, xrpLocal = ...
+local _S = xrpLocal.strings
 
 -- The following chat types are linked together.
 local LINKED_CHAT_MSG = {
@@ -146,10 +147,10 @@ local function ParseText_Hook(line, send)
 		local oldText = line:GetText()
 		local text = oldText
 		if text:find("%xt", nil, true) then
-			text = text:gsub("%%xt", xrp.characters.byUnit.target and xrp:Strip(xrp.characters.byUnit.target.fields.NA) or UnitName("target") or "nobody")
+			text = text:gsub("%%xt", xrp.characters.byUnit.target and xrp:Strip(xrp.characters.byUnit.target.fields.NA) or UnitName("target") or _S.NOBODY)
 		end
 		if text:find("%xf", nil, true) then
-			text = text:gsub("%%xf", xrp.characters.byUnit.focus and xrp:Strip(xrp.characters.byUnit.focus.fields.NA) or UnitName("focus") or "nobody")
+			text = text:gsub("%%xf", xrp.characters.byUnit.focus and xrp:Strip(xrp.characters.byUnit.focus.fields.NA) or UnitName("focus") or _S.NOBODY)
 		end
 		if text ~= oldText then
 			line:SetText(text)

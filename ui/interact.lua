@@ -16,6 +16,7 @@
 ]]
 
 local addonName, xrpLocal = ...
+local _S = xrpLocal.strings
 
 local cursor, rightClick
 

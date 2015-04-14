@@ -16,6 +16,10 @@
 ]]
 
 local addonName, xrpLocal = ...
+local _S = xrpLocal.strings
+
+XRP_AUTO = _S.AUTO
+XRP_AUTOMATION = _S.AUTOMATION
 
 local isWorgen, playerClass = select(2, UnitRace("player")) == "Worgen", select(2, UnitClassBase("player"))
 if not (playerClass == "DRUID" or playerClass == "PRIEST" or playerClass == "SHAMAN") then
@@ -23,20 +27,20 @@ if not (playerClass == "DRUID" or playerClass == "PRIEST" or playerClass == "SHA
 end
 
 local FORM_NAMES = {
-	["DEFAULT"] = isWorgen and "Worgen" or playerClass and (playerClass == "PRIEST" and "Standard" or "Humanoid") or "No equipment set",
-	["CAT"] = "Cat Form",
-	["BEAR"] = "Bear Form",
-	["MOONKIN"] = "Moonkin Form",
-	["ASTRAL"] = "Astral Form",
-	["AQUATIC"] = "Travel Form (Aquatic)",
-	["TRAVEL"] = "Travel Form (Land)",
-	["FLIGHT"] = "Travel Form (Flight)",
-	["TREANT"] = "Treant Form",
-	["SHADOWFORM"] = "Shadowform",
-	["GHOSTWOLF"] = "Ghost Wolf",
-	["HUMAN"] = "Human",
-	["DEFAULT\30SHADOWFORM"] = "Shadowform (Worgen)",
-	["HUMAN\30SHADOWFORM"] = "Shadowform (Human)",
+	["DEFAULT"] = isWorgen and xrp.values.GR.Worgen or playerClass and (playerClass == "PRIEST" and _S.STANDARD or _S.HUMANOID) or _S.NOEQUIP,
+	["CAT"] = _S.CAT,
+	["BEAR"] = _S.BEAR,
+	["MOONKIN"] = _S.MOONKIN,
+	["ASTRAL"] = _S.ASTRAL,
+	["AQUATIC"] = _S.AQUATIC,
+	["TRAVEL"] = _S.TRAVEL,
+	["FLIGHT"] = _S.FLIGHT,
+	["TREANT"] = _S.TREANT,
+	["SHADOWFORM"] = _S.SHADOWFORM,
+	["GHOSTWOLF"] = _S.GHOST_WOLF,
+	["HUMAN"] = xrp.values.GR.Human,
+	["DEFAULT\30SHADOWFORM"] = _S.WORGEN_SHADOW,
+	["HUMAN\30SHADOWFORM"] = _S.HUMAN_SHADOW,
 }
 
 local function MakeWords(text)
@@ -46,7 +50,7 @@ local function MakeWords(text)
 	elseif not isWorgen and not playerClass then
 		return equipment
 	else
-		return ("%s: %s"):format(FORM_NAMES[form], equipment)
+		return SUBTITLE_FORMAT:format(FORM_NAMES[form], equipment)
 	end
 end
 
@@ -55,7 +59,7 @@ local function ToggleButtons(self)
 	local changes = xrpLocal.auto[form] ~= profile
 	if next(xrpSaved.auto) and not xrpLocal.auto["DEFAULT"] then
 		self.Warning:Show()
-		self.Warning:SetFormattedText("You should set a fallback profile for \"%s\".", FORM_NAMES["DEFAULT"])
+		self.Warning:SetFormattedText(_S.WARN_FALLBACK, FORM_NAMES["DEFAULT"])
 	else
 		self.Warning:Hide()
 	end
@@ -74,7 +78,7 @@ function XRPEditorAutomationRevert_OnClick(self, button, down)
 	local parent = self:GetParent()
 	local formProfile = xrpLocal.auto[parent.Form.contents]
 	parent.Profile.contents = formProfile
-	parent.Profile.Text:SetText(formProfile or "None")
+	parent.Profile.Text:SetText(formProfile or NONE)
 	ToggleButtons(parent)
 end
 
@@ -86,12 +90,12 @@ do
 	local function Profile_Click(self, arg1, arg2, checked)
 		if not checked then
 			UIDROPDOWNMENU_OPEN_MENU.contents = arg1
-			UIDROPDOWNMENU_OPEN_MENU.Text:SetText(arg1 or "None")
+			UIDROPDOWNMENU_OPEN_MENU.Text:SetText(arg1 or NONE)
 			ToggleButtons(UIDROPDOWNMENU_OPEN_MENU:GetParent())
 		end
 	end
 
-	local NONE = { text = "None", checked = Profile_Checked, arg1 = nil, func = Profile_Click }
+	local NONE = { text = NONE, checked = Profile_Checked, arg1 = nil, func = Profile_Click }
 	function XRPEditorAutomationProfile_PreClick(self, button, down)
 		local parent = self:GetParent()
 		parent.baseMenuList = { NONE }
@@ -110,7 +114,7 @@ do
 			UIDROPDOWNMENU_OPEN_MENU.Text:SetText(MakeWords(set))
 			local Profile, setProfile = UIDROPDOWNMENU_OPEN_MENU:GetParent().Profile, xrpLocal.auto[set]
 			Profile.contents = setProfile
-			Profile.Text:SetText(setProfile or "None")
+			Profile.Text:SetText(setProfile or NONE)
 			ToggleButtons(UIDROPDOWNMENU_OPEN_MENU:GetParent())
 		end
 		CloseDropDownMenus()
@@ -138,7 +142,7 @@ do
 			end
 		elseif not noSet then
 			equipSets[#equipSets + 1]  = {
-				text = "No equipment sets",
+				text = _S.NO_SETS,
 				disabled = true,
 			}
 		end
@@ -152,7 +156,7 @@ do
 			UIDROPDOWNMENU_OPEN_MENU.Text:SetText(MakeWords(self.value))
 			local Profile, formProfile = UIDROPDOWNMENU_OPEN_MENU:GetParent().Profile, xrpLocal.auto[self.value]
 			Profile.contents = formProfile
-			Profile.Text:SetText(formProfile or "None")
+			Profile.Text:SetText(formProfile or NONE)
 			ToggleButtons(UIDROPDOWNMENU_OPEN_MENU:GetParent())
 		end
 		CloseDropDownMenus()
@@ -410,7 +414,7 @@ function XRPEditorAutomation_OnShow(self)
 	if needsUpdate then
 		local newProfile = xrpLocal.auto[selectedForm]
 		self.Profile.contents = newProfile
-		self.Profile.Text:SetText(newProfile or "None")
+		self.Profile.Text:SetText(newProfile or NONE)
 	end
 	ToggleButtons(self)
 	PlaySound("UChatScrollButton")

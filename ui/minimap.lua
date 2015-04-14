@@ -17,6 +17,7 @@
 ]]
 
 local addonName, xrpLocal = ...
+local _S = xrpLocal.strings
 
 local Button
 
@@ -47,26 +48,27 @@ function XRPButton_OnEnter(self, motion)
 		GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT", 0, 32)
 		GameTooltip:SetText(xrp.current.fields.NA)
 		GameTooltip:AddLine(" ")
-		GameTooltip:AddLine(("Profile: |cffffffff%s|r"):format(tostring(xrp.profiles.SELECTED)))
+		GameTooltip:AddLine(SUBTITLE_FORMAT:format(_S.PROFILE, ("|cffffffff%s|r"):format(tostring(xrp.profiles.SELECTED))))
 		local FC = xrp.current.fields.FC
 		if FC and FC ~= "0" then
-			GameTooltip:AddLine(("Status: |cff%s%s|r"):format(FC == "1" and "99664d" or "66b380", xrp.values.FC[FC]))
+			GameTooltip:AddLine(SUBTITLE_FORMAT:format(_S.STATUS, ("|cff%s%s|r"):format(FC == "1" and "99664d" or "66b380", xrp.values.FC[FC])))
+			GameTooltip:AddLine(_S.STATUS_FORMAT:format(FC == "1" and "99664d" or "66b380", xrp.values.FC[FC]))
 		end
 		local CU = xrp.current.fields.CU
 		if CU then
 			GameTooltip:AddLine(" ")
-			GameTooltip:AddLine("Currently:")
-			GameTooltip:AddLine(("|cffe6b399%s|r"):format(CU or "None"), nil, nil, nil, true)
+			GameTooltip:AddLine(STAT_FORMAT:format(xrp.fields.CU))
+			GameTooltip:AddLine(("%s"):format(CU), 0.9, 0.7, 0.6, true)
 		end
 		GameTooltip:AddLine(" ")
 		if xrp.characters.byUnit.target and xrp.characters.byUnit.target.fields.VA then
-			GameTooltip:AddLine("|cffffeeaaClick to view your target's profile.|r")
+			GameTooltip:AddLine(_S.CLICK_VIEW_TARGET, 1, 0.93, 0.67)
 		elseif not FC or FC == "0" or FC == "1" then
-			GameTooltip:AddLine("|cff66b380Click for in character.|r")
+			GameTooltip:AddLine(_S.CLICK_IC, 0.4, 0.7, 0.5)
 		else
-			GameTooltip:AddLine("|cff99664dClick for out of character.|r")
+			GameTooltip:AddLine(_S.CLICK_OOC, 0.6, 0.4, 0.3)
 		end
-		GameTooltip:AddLine("|cff999999Right click for the menu.|r")
+		GameTooltip:AddLine(_S.RTCLICK_MENU, 0.6, 0.6, 0.6)
 		GameTooltip:Show()
 	end
 end
@@ -94,14 +96,14 @@ do
 	local Profiles_menuList = {}
 	XRPButton_baseMenuList = {
 		{ text = "XRP", isTitle = true, notCheckable = true, },
-		{ text = "Profiles", notCheckable = true, hasArrow = true, menuList = Profiles_menuList, },
-		{ text = "Character status", notCheckable = true, hasArrow = true, menuList = Status_menuList, },
-		{ text = "Currently...", notCheckable = true, func = function() StaticPopup_Show("XRP_CURRENTLY") end, },
-		{ text = "Bookmarks...", notCheckable = true, func = function() XRPBookmarks:Toggle(1) end, },
-		{ text = "Viewer...", notCheckable = true, func = function() XRPViewer:View() end, },
-		{ text = "Editor...", notCheckable = true, func = function() XRPEditor:Edit() end, },
-		{ text = "Options...", notCheckable = true, func = function() xrpLocal:Options() end, },
-		{ text = "Cancel", notCheckable = true, func = xrpLocal.noFunc, },
+		{ text = _S.PROFILES, notCheckable = true, hasArrow = true, menuList = Profiles_menuList, },
+		{ text = xrp.fields.FC, notCheckable = true, hasArrow = true, menuList = Status_menuList, },
+		{ text = _S.CURRENTLY_MENU, notCheckable = true, func = function() StaticPopup_Show("XRP_CURRENTLY") end, },
+		{ text = _S.BOOKMARKS_MENU, notCheckable = true, func = function() XRPBookmarks:Toggle(1) end, },
+		{ text = _S.VIEWER_MENU, notCheckable = true, func = function() XRPViewer:View() end, },
+		{ text = _S.EDITOR_MENU, notCheckable = true, func = function() XRPEditor:Edit() end, },
+		{ text = _S.OPTIONS_MENU, notCheckable = true, func = function() xrpLocal:Options() end, },
+		{ text = CANCEL, notCheckable = true, func = xrpLocal.noFunc, },
 	}
 
 	do

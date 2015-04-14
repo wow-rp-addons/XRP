@@ -34,7 +34,7 @@
 						<Anchor point="TOP" y="12"/>
 					</Anchors>
 				</Texture>
-				<FontString parentKey="HeaderText" inherits="GameFontNormal" text="Export Profile">
+				<FontString parentKey="HeaderText" inherits="GameFontNormal" text="XRP_EXPORT_PROFILE">
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.Header" y="-14"/>
 					</Anchors>
