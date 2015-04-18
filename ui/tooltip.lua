@@ -15,8 +15,7 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local addonName, xrpLocal = ...
-local _S = xrpLocal.strings
+local addonName, _xrp = ...
 
 local currentUnit = {
 	lines = {},
@@ -146,7 +145,7 @@ do
 		if currentUnit.type == "player" then
 			if not replace then
 				if currentUnit.character.hide then
-					RenderLine(_S.HIDDEN, nil, 0.5, 0.5, 0.5)
+					RenderLine(_xrp.L.HIDDEN, nil, 0.5, 0.5, 0.5)
 					XRPTooltip:Show()
 					return
 				elseif (not showProfile or not fields.VA) then
@@ -157,17 +156,17 @@ do
 			RenderLine(currentUnit.nameFormat:format(showProfile and TruncateLine(xrp:Strip(fields.NA), 65, 0, false) or xrp:Ambiguate(tostring(currentUnit.character))), currentUnit.icons)
 			if showProfile then
 				local NI = fields.NI
-				RenderLine(NI and ("|cff6070a0%s|r %s"):format(STAT_FORMAT:format(xrp.fields.NI), _S.NICKNAME:format(TruncateLine(xrp:Strip(NI), 70, NI_LENGTH, false))) or nil, nil, 0.6, 0.7, 0.9)
+				RenderLine(NI and ("|cff6070a0%s|r %s"):format(STAT_FORMAT:format(xrp.fields.NI), _xrp.L.NICKNAME:format(TruncateLine(xrp:Strip(NI), 70, NI_LENGTH, false))) or nil, nil, 0.6, 0.7, 0.9)
 				RenderLine(TruncateLine(xrp:Strip(fields.NT), 70), nil, 0.8, 0.8, 0.8)
 			end
-			if xrpLocal.settings.tooltip.extraSpace then
+			if _xrp.settings.tooltip.extraSpace then
 				RenderLine(" ")
 			end
 			if replace then
 				RenderLine(currentUnit.guild, nil, 1, 1, 1)
 				local color = COLORS[currentUnit.faction]
-				RenderLine(currentUnit.titleRealm, currentUnit.character.hide and _S.HIDDEN or showProfile and ParseVersion(fields.VA), color.r, color.g, color.b, 0.5, 0.5, 0.5)
-				if xrpLocal.settings.tooltip.extraSpace then
+				RenderLine(currentUnit.titleRealm, currentUnit.character.hide and _xrp.L.HIDDEN or showProfile and ParseVersion(fields.VA), color.r, color.g, color.b, 0.5, 0.5, 0.5)
+				if _xrp.settings.tooltip.extraSpace then
 					RenderLine(" ")
 				end
 			end
@@ -175,7 +174,7 @@ do
 				local CU = fields.CU
 				RenderLine(CU and ("|cffa08050%s|r %s"):format(STAT_FORMAT:format(xrp.fields.CU), TruncateLine(xrp:Strip(CU), 70, CU_LENGTH)) or nil, nil, 0.9, 0.7, 0.6)
 			end
-			RenderLine(currentUnit.info:format(showProfile and not xrpLocal.settings.tooltip.noRace and TruncateLine(xrp:Strip(fields.RA), 40, 0, false) or xrp.values.GR[fields.GR] or UNKNOWN, showProfile and not xrpLocal.settings.tooltip.noClass and TruncateLine(xrp:Strip(fields.RC), 40, 0, false) or xrp.values.GC[fields.GS] and xrp.values.GC[fields.GS][fields.GC] or xrp.values.GC["1"][fields.GC] or UNKNOWN, 40, 0, false), not replace and ParseVersion(fields.VA), 1, 1, 1, 0.5, 0.5, 0.5)
+			RenderLine(currentUnit.info:format(showProfile and not _xrp.settings.tooltip.noRace and TruncateLine(xrp:Strip(fields.RA), 40, 0, false) or xrp.values.GR[fields.GR] or UNKNOWN, showProfile and not _xrp.settings.tooltip.noClass and TruncateLine(xrp:Strip(fields.RC), 40, 0, false) or xrp.values.GC[fields.GS] and xrp.values.GC[fields.GS][fields.GC] or xrp.values.GC["1"][fields.GC] or UNKNOWN, 40, 0, false), not replace and ParseVersion(fields.VA), 1, 1, 1, 0.5, 0.5, 0.5)
 			if showProfile then
 				local FR, FC = fields.FR, fields.FC
 				if FR and FR ~= "0" or FC and FC ~= "0" then
@@ -239,7 +238,7 @@ do
 
 			local connected = UnitIsConnected(unit)
 			local color = COLORS[(currentUnit.faction ~= playerFaction and currentUnit.faction ~= "Neutral" or attackMe and meAttack) and "hostile" or (currentUnit.faction == "Neutral" or meAttack or attackMe) and "neutral" or "friendly"]
-			local watchIcon = xrpLocal.settings.tooltip.watching and UnitIsUnit("player", unit .. "target") and "|TInterface\\LFGFrame\\BattlenetWorking0:28:28:10:0|t" or nil
+			local watchIcon = _xrp.settings.tooltip.watching and UnitIsUnit("player", unit .. "target") and "|TInterface\\LFGFrame\\BattlenetWorking0:28:28:10:0|t" or nil
 			local class, classID = UnitClassBase(unit)
 
 			if replace then
@@ -253,14 +252,14 @@ do
 				currentUnit.icons = watchIcon and pvpIcon and watchIcon .. pvpIcon or watchIcon or pvpIcon
 
 				local guildName, guildRank, guildIndex = GetGuildInfo(unit)
-				currentUnit.guild = guildName and (xrpLocal.settings.tooltip.guildRank and (xrpLocal.settings.tooltip.guildIndex and _S.GUILD_RANK_INDEX or _S.GUILD_RANK) or _S.GUILD):format(xrpLocal.settings.tooltip.guildRank and guildRank or guildName, xrpLocal.settings.tooltip.guildIndex and guildIndex + 1 or guildName, guildName) or nil
+				currentUnit.guild = guildName and (_xrp.settings.tooltip.guildRank and (_xrp.settings.tooltip.guildIndex and _xrp.L.GUILD_RANK_INDEX or _xrp.L.GUILD_RANK) or _xrp.L.GUILD):format(_xrp.settings.tooltip.guildRank and guildRank or guildName, _xrp.settings.tooltip.guildIndex and guildIndex + 1 or guildName, guildName) or nil
 
 				local realm = tostring(currentUnit.character):match("%-([^%-]+)$")
-				if realm == xrpLocal.realm then
+				if realm == _xrp.realm then
 					realm = nil
 				end
 				local name = UnitPVPName(unit) or xrp:Ambiguate(tostring(currentUnit.character))
-				currentUnit.titleRealm = realm and _S.NAME_REALM:format(name, xrp:RealmDisplayName(realm)) or name
+				currentUnit.titleRealm = realm and _xrp.L.NAME_REALM:format(name, xrp:RealmDisplayName(realm)) or name
 
 				local level = UnitLevel(unit)
 				currentUnit.info = ("%s %%s |c%s%%s|r (%s)"):format((level < 1 and UNIT_LETHAL_LEVEL_TEMPLATE or UNIT_LEVEL_TEMPLATE):format(level), RAID_CLASS_COLORS[classID] and RAID_CLASS_COLORS[classID].colorStr or "ffffffff", PLAYER)
@@ -299,17 +298,17 @@ do
 			currentUnit.character = xrp.characters.byName[owner]
 
 			local realm = owner:match("%-([^%-]+)$")
-			currentUnit.titleRealm = realm and _S.NAME_REALM:format(petType, xrp:RealmDisplayName(realm)) or petType
+			currentUnit.titleRealm = realm and _xrp.L.NAME_REALM:format(petType, xrp:RealmDisplayName(realm)) or petType
 
 			local race = UnitCreatureFamily(unit) or UnitCreatureType(unit)
-			if race == _S.PET_GHOUL or race == _S.PET_WATER_ELEMENTAL or race == _S.PET_MT_WATER_ELEMENTAL then
+			if race == _xrp.L.PET_GHOUL or race == _xrp.L.PET_WATER_ELEMENTAL or race == _xrp.L.PET_MT_WATER_ELEMENTAL then
 				race = UnitCreatureType(unit)
 			elseif not race then
 				race = UNKNOWN
 			end
 			-- Mages, death knights, and warlocks have minions, hunters have 
 			-- pets. Mages and death knights only have one pet family each.
-			local classID = petType == UNITNAME_TITLE_MINION and (race == _S.PET_ELEMENTAL and "MAGE" or race == _S.PET_UNDEAD and "DEATHKNIGHT" or "WARLOCK") or petType == UNITNAME_TITLE_PET and "HUNTER"
+			local classID = petType == UNITNAME_TITLE_MINION and (race == _xrp.L.PET_ELEMENTAL and "MAGE" or race == _xrp.L.PET_UNDEAD and "DEATHKNIGHT" or "WARLOCK") or petType == UNITNAME_TITLE_PET and "HUNTER"
 			local level = UnitLevel(unit)
 			currentUnit.info = ("%s |c%s%s|r (%s)"):format((level < 1 and UNIT_LETHAL_LEVEL_TEMPLATE or UNIT_LEVEL_TEMPLATE):format(level), RAID_CLASS_COLORS[classID] and RAID_CLASS_COLORS[classID].colorStr or "ffffffff", race, PET)
 
@@ -317,7 +316,7 @@ do
 				defaultLines = defaultLines + 1
 			end
 		end
-		currentUnit.noProfile = xrpLocal.settings.tooltip.noOpFaction and currentUnit.faction ~= playerFaction and currentUnit.faction ~= "Neutral" or xrpLocal.settings.tooltip.noHostile and attackMe and meAttack
+		currentUnit.noProfile = _xrp.settings.tooltip.noOpFaction and currentUnit.faction ~= playerFaction and currentUnit.faction ~= "Neutral" or _xrp.settings.tooltip.noHostile and attackMe and meAttack
 
 		if replace then
 			table.wipe(currentUnit.lines)
@@ -398,13 +397,13 @@ local function GameTooltip_OnTooltipSetUnit_Hook(self)
 	if not enabled then return end
 	local tooltip, unit = self:GetUnit()
 	if not unit then
-		xrpLocal:NextFrame(NoUnit)
+		_xrp.NextFrame(NoUnit)
 	else
 		SetUnit(unit)
 	end
 end
 
-xrpLocal.settingsToggles.tooltip = {
+_xrp.settingsToggles.tooltip = {
 	enabled = function(setting)
 		if setting then
 			if enabled == nil then
@@ -413,7 +412,7 @@ xrpLocal.settingsToggles.tooltip = {
 			end
 			xrp:HookEvent("RECEIVE", Tooltip_RECEIVE)
 			enabled = true
-			xrpLocal.settingsToggles.tooltip.replace(xrpLocal.settings.tooltip.replace)
+			_xrp.settingsToggles.tooltip.replace(_xrp.settings.tooltip.replace)
 		elseif enabled ~= nil then
 			enabled = false
 			xrp:UnhookEvent("RECEIVE", Tooltip_RECEIVE)

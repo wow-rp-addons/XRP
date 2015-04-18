@@ -15,13 +15,12 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local addonName, xrpLocal = ...
-local _S = xrpLocal.strings
+local addonName, _xrp = ...
 
-XRP_APPEARANCE = _S.APPEARANCE
-XRP_BIOGRAPHY = _S.BIOGRAPHY
+XRP_APPEARANCE = _xrp.L.APPEARANCE
+XRP_BIOGRAPHY = _xrp.L.BIOGRAPHY
 
-XRPTemplates_DoNothing = xrpLocal.noFunc
+XRPTemplates_DoNothing = _xrp.noFunc
 
 function XRPTemplates_CloseDropDownMenus(self, ...)
 	CloseDropDownMenus()
@@ -48,7 +47,7 @@ end
 function XRPTemplates_TooltipText(self, ...)
 	if not (self.tooltipText or self.tooltipKey) then return end
 	GameTooltip:SetOwner(self, "ANCHOR_CURSOR")
-	GameTooltip:SetText(self.tooltipText or _S[self.tooltipKey] or _G[self.tooltipKey])
+	GameTooltip:SetText(self.tooltipText or _xrp.L[self.tooltipKey] or _G[self.tooltipKey])
 	GameTooltip:Show()
 end
 
@@ -213,7 +212,7 @@ function XRPTooltip_OnHide(self)
 end
 
 function XRPCursorBook_OnEvent(self, event)
-	if InCombatLockdown() or xrpLocal.settings.interact.disableInstance and (IsInInstance() or IsInActiveWorldPVP()) or xrpLocal.settings.interact.disablePvP and (UnitIsPVP("player") or UnitIsPVPFreeForAll("player")) or GetMouseFocus() ~= WorldFrame then
+	if InCombatLockdown() or _xrp.settings.interact.disableInstance and (IsInInstance() or IsInActiveWorldPVP()) or _xrp.settings.interact.disablePvP and (UnitIsPVP("player") or UnitIsPVPFreeForAll("player")) or GetMouseFocus() ~= WorldFrame then
 		self:Hide()
 		return
 	end

@@ -16,8 +16,7 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local addonName, xrpLocal = ...
-local _S = xrpLocal.strings
+local addonName, _xrp = ...
 
 local Button
 
@@ -48,11 +47,10 @@ function XRPButton_OnEnter(self, motion)
 		GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT", 0, 32)
 		GameTooltip:SetText(xrp.current.fields.NA)
 		GameTooltip:AddLine(" ")
-		GameTooltip:AddLine(SUBTITLE_FORMAT:format(_S.PROFILE, ("|cffffffff%s|r"):format(tostring(xrp.profiles.SELECTED))))
+		GameTooltip:AddLine(SUBTITLE_FORMAT:format(_xrp.L.PROFILE, ("|cffffffff%s|r"):format(tostring(xrp.profiles.SELECTED))))
 		local FC = xrp.current.fields.FC
 		if FC and FC ~= "0" then
-			GameTooltip:AddLine(SUBTITLE_FORMAT:format(_S.STATUS, ("|cff%s%s|r"):format(FC == "1" and "99664d" or "66b380", xrp.values.FC[FC])))
-			GameTooltip:AddLine(_S.STATUS_FORMAT:format(FC == "1" and "99664d" or "66b380", xrp.values.FC[FC]))
+			GameTooltip:AddLine(SUBTITLE_FORMAT:format(_xrp.L.STATUS, ("|cff%s%s|r"):format(FC == "1" and "99664d" or "66b380", xrp.values.FC[FC])))
 		end
 		local CU = xrp.current.fields.CU
 		if CU then
@@ -62,13 +60,13 @@ function XRPButton_OnEnter(self, motion)
 		end
 		GameTooltip:AddLine(" ")
 		if xrp.characters.byUnit.target and xrp.characters.byUnit.target.fields.VA then
-			GameTooltip:AddLine(_S.CLICK_VIEW_TARGET, 1, 0.93, 0.67)
+			GameTooltip:AddLine(_xrp.L.CLICK_VIEW_TARGET, 1, 0.93, 0.67)
 		elseif not FC or FC == "0" or FC == "1" then
-			GameTooltip:AddLine(_S.CLICK_IC, 0.4, 0.7, 0.5)
+			GameTooltip:AddLine(_xrp.L.CLICK_IC, 0.4, 0.7, 0.5)
 		else
-			GameTooltip:AddLine(_S.CLICK_OOC, 0.6, 0.4, 0.3)
+			GameTooltip:AddLine(_xrp.L.CLICK_OOC, 0.6, 0.4, 0.3)
 		end
-		GameTooltip:AddLine(_S.RTCLICK_MENU, 0.6, 0.6, 0.6)
+		GameTooltip:AddLine(_xrp.L.RTCLICK_MENU, 0.6, 0.6, 0.6)
 		GameTooltip:Show()
 	end
 end
@@ -96,14 +94,14 @@ do
 	local Profiles_menuList = {}
 	XRPButton_baseMenuList = {
 		{ text = "XRP", isTitle = true, notCheckable = true, },
-		{ text = _S.PROFILES, notCheckable = true, hasArrow = true, menuList = Profiles_menuList, },
+		{ text = _xrp.L.PROFILES, notCheckable = true, hasArrow = true, menuList = Profiles_menuList, },
 		{ text = xrp.fields.FC, notCheckable = true, hasArrow = true, menuList = Status_menuList, },
-		{ text = _S.CURRENTLY_MENU, notCheckable = true, func = function() StaticPopup_Show("XRP_CURRENTLY") end, },
-		{ text = _S.BOOKMARKS_MENU, notCheckable = true, func = function() XRPBookmarks:Toggle(1) end, },
-		{ text = _S.VIEWER_MENU, notCheckable = true, func = function() XRPViewer:View() end, },
-		{ text = _S.EDITOR_MENU, notCheckable = true, func = function() XRPEditor:Edit() end, },
-		{ text = _S.OPTIONS_MENU, notCheckable = true, func = function() xrpLocal:Options() end, },
-		{ text = CANCEL, notCheckable = true, func = xrpLocal.noFunc, },
+		{ text = _xrp.L.CURRENTLY_MENU, notCheckable = true, func = function() StaticPopup_Show("XRP_CURRENTLY") end, },
+		{ text = _xrp.L.BOOKMARKS_MENU, notCheckable = true, func = function() XRPBookmarks:Toggle(1) end, },
+		{ text = _xrp.L.VIEWER_MENU, notCheckable = true, func = function() XRPViewer:View() end, },
+		{ text = _xrp.L.EDITOR_MENU, notCheckable = true, func = function() XRPEditor:Edit() end, },
+		{ text = _xrp.L.OPTIONS_MENU, notCheckable = true, func = function() _xrp.Options() end, },
+		{ text = CANCEL, notCheckable = true, func = _xrp.noFunc, },
 	}
 
 	do
@@ -156,7 +154,7 @@ do
 			["TRICORNER-BOTTOMRIGHT"] = { true, true, true, false },
 		}
 		function UpdatePositionAttached(self)
-			local angle = math.rad(xrpLocal.settings.minimap.angle)
+			local angle = math.rad(_xrp.settings.minimap.angle)
 			local x, y, q = math.cos(angle), math.sin(angle), 1
 			if x < 0 then q = q + 1 end
 			if y > 0 then q = q + 2 end
@@ -176,7 +174,7 @@ do
 		local px, py = GetCursorPosition()
 		local scale = Minimap:GetEffectiveScale()
 		px, py = px / scale, py / scale
-		xrpLocal.settings.minimap.angle = math.deg(math.atan2(py - my, px - mx)) % 360
+		_xrp.settings.minimap.angle = math.deg(math.atan2(py - my, px - mx)) % 360
 		UpdatePositionAttached(self)
 	end
 
@@ -200,23 +198,23 @@ end
 
 function XRPButtonDetached_OnDragStop(self)
 	self:StopMovingOrSizing()
-	xrpLocal.settings.minimap.point, xrpLocal.settings.minimap.x, xrpLocal.settings.minimap.y = select(3, self:GetPoint())
+	_xrp.settings.minimap.point, _xrp.settings.minimap.x, _xrp.settings.minimap.y = select(3, self:GetPoint())
 	self:UnlockHighlight()
 end
 
-xrpLocal.settingsToggles.minimap = {
+_xrp.settingsToggles.minimap = {
 	enabled = function(setting)
 		if setting then
 			xrp:HookEvent("UPDATE", XRPButton_UpdateIcon)
 			xrp:HookEvent("RECEIVE", XRPButton_UpdateIcon)
-			if xrpLocal.settings.minimap.detached then
+			if _xrp.settings.minimap.detached then
 				if Button and Button == LibDBIcon10_XRP then
 					Button:UnregisterAllEvents()
 					Button:Hide()
 				end
 				if not XRPButton then
 					CreateFrame("Button", "XRPButton", UIParent, "XRPButtonTemplate")
-					XRPButton:SetPoint(xrpLocal.settings.minimap.point, UIParent, xrpLocal.settings.minimap.point, xrpLocal.settings.minimap.x, xrpLocal.settings.minimap.y)
+					XRPButton:SetPoint(_xrp.settings.minimap.point, UIParent, _xrp.settings.minimap.point, _xrp.settings.minimap.x, _xrp.settings.minimap.y)
 				end
 				Button = XRPButton
 			else
@@ -243,7 +241,7 @@ xrpLocal.settingsToggles.minimap = {
 		end
 	end,
 	detached = function(setting)
-		if not xrpLocal.settings.minimap.enabled or not Button or setting and Button == XRPButton or not setting and Button == LibDBIcon10_XRP then return end
-		xrpLocal.settingsToggles.minimap.enabled(xrpLocal.settings.minimap.enabled)
+		if not _xrp.settings.minimap.enabled or not Button or setting and Button == XRPButton or not setting and Button == LibDBIcon10_XRP then return end
+		_xrp.settingsToggles.minimap.enabled(_xrp.settings.minimap.enabled)
 	end,
 }

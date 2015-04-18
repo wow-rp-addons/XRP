@@ -15,8 +15,7 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local addonName, xrpLocal = ...
-local _S = xrpLocal.strings
+local addonName, _xrp = ...
 
 function xrp:UnitName(unit)
 	if not (unit == "player" or UnitIsPlayer(unit)) then
@@ -72,8 +71,8 @@ function xrp:Strip(text)
 end
 
 local BASIC = "^%%s*%s%%s*$"
-local KG1, KG2 = BASIC:format(_S.KG1), BASIC:format(_S.KG2)
-local LBS1, LBS2 = BASIC:format(_S.LBS1), BASIC:format(_S.LBS2)
+local KG1, KG2 = BASIC:format(_xrp.L.KG1), BASIC:format(_xrp.L.KG2)
+local LBS1, LBS2 = BASIC:format(_xrp.L.LBS1), BASIC:format(_xrp.L.LBS2)
 function xrp:Weight(weight, units)
 	if not weight then
 		return nil
@@ -89,7 +88,7 @@ function xrp:Weight(weight, units)
 		number = number ~= 0 and number or nil
 	end
 	if not units then
-		units = xrpLocal.settings.display.weight
+		units = _xrp.settings.display.weight
 	end
 	if not number then
 		return weight
@@ -98,16 +97,16 @@ function xrp:Weight(weight, units)
 	elseif units == "msp" then -- MSP internal format: kg without units as string.
 		return ("%.1f"):format(number + 0.05)
 	elseif units == "kg" then
-		return _S.KG:format(number + 0.05)
+		return _xrp.L.KG:format(number + 0.05)
 	elseif units == "lb" then
-		return _S.LBS:format((number * 2.20462) + 0.5)
+		return _xrp.L.LBS:format((number * 2.20462) + 0.5)
 	end
 	return weight
 end
 
-local CM1, CM2 = BASIC:format(_S.CM1), BASIC:format(_S.CM2)
-local M1, M2 = BASIC:format(_S.M1), BASIC:format(_S.M2)
-local FT1, FT2, FT3 = BASIC:format(_S.FT1), BASIC:format(_S.FT2), BASIC:format(_S.FT3)
+local CM1, CM2 = BASIC:format(_xrp.L.CM1), BASIC:format(_xrp.L.CM2)
+local M1, M2 = BASIC:format(_xrp.L.M1), BASIC:format(_xrp.L.M2)
+local FT1, FT2, FT3 = BASIC:format(_xrp.L.FT1), BASIC:format(_xrp.L.FT2), BASIC:format(_xrp.L.FT3)
 function xrp:Height(height, units)
 	if not height then
 		return nil
@@ -138,7 +137,7 @@ function xrp:Height(height, units)
 		number = feet and (((tonumber(feet) * 12) + (tonumber(inches) or 0)) * 2.54) or nil
 	end
 	if not units then
-		units = xrpLocal.settings.display.height
+		units = _xrp.settings.display.height
 	end
 	if not number then
 		return height
@@ -147,9 +146,9 @@ function xrp:Height(height, units)
 	elseif units == "msp" then -- MSP internal format: cm without units as string.
 		return ("%d"):format(number + 0.5)
 	elseif units == "cm" then
-		return _S.CM:format(number + 0.5)
+		return _xrp.L.CM:format(number + 0.5)
 	elseif units == "m" then
-		return _S.M:format(math.floor(number + 0.5) * 0.01) -- Round first.
+		return _xrp.L.M:format(math.floor(number + 0.5) * 0.01) -- Round first.
 	elseif units == "ft" then
 		local feet, inches = math.modf(number / 30.48)
 		inches = (inches * 12) + 0.5
@@ -157,7 +156,7 @@ function xrp:Height(height, units)
 			feet = feet + 1
 			inches = 0
 		end
-		return _S.FT:format(feet, inches)
+		return _xrp.L.FT:format(feet, inches)
 	end
 	return height
 end

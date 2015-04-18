@@ -15,8 +15,7 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local addonName, xrpLocal = ...
-local _S = xrpLocal.strings
+local addonName, _xrp = ...
 
 -- This adds "Roleplay Profile" menu entries to several menus for a more
 -- convenient way to access profiles (including chat names, guild lists, and
@@ -56,10 +55,10 @@ local function UnitPopup_HideButtons_Hook()
 	end
 end
 
-local Buttons_Profile = { text = _S.ROLEPLAY_PROFILE, dist = 0 }
+local Buttons_Profile = { text = _xrp.L.ROLEPLAY_PROFILE, dist = 0 }
 
 local isHooked
-xrpLocal.settingsToggles.menus = {
+_xrp.settingsToggles.menus = {
 	standard = function(setting)
 		if setting then
 			if not isHooked then

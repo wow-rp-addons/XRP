@@ -15,14 +15,13 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local addonName, xrpLocal = ...
-local _S = xrpLocal.strings
+local addonName, _xrp = ...
 
 local MAX_DEPTH = 50
 
 local NO_PROFILE = { TT = true, VP = true, VA = true, GC = true, GF = true, GR = true, GS = true, GU = true }
 
-function xrpLocal:NewVersion(field)
+function _xrp.NewVersion(field)
 	xrpSaved.versions[field] = (xrpSaved.versions[field] or 0) + 1
 	return xrpSaved.versions[field]
 end
@@ -43,8 +42,8 @@ xrp.current = {
 		__newindex = function(self, field, contents)
 			if xrpSaved.overrides.fields[field] == contents or NO_PROFILE[field] or not field:find("^%u%u$") then return end
 			xrpSaved.overrides.fields[field] = contents
-			xrpSaved.overrides.versions[field] = contents and contents ~= "" and xrpLocal:NewVersion(field) or nil
-			xrpLocal:FireEvent("UPDATE", field)
+			xrpSaved.overrides.versions[field] = contents and contents ~= "" and _xrp.NewVersion(field) or nil
+			_xrp.FireEvent("UPDATE", field)
 		end,
 		__metatable = false,
 	}),
@@ -52,12 +51,12 @@ xrp.current = {
 		__index = function(self, field)
 			return xrpSaved.overrides.fields[field] ~= nil
 		end,
-		__newindex = xrpLocal.noFunc,
+		__newindex = _xrp.noFunc,
 		__metatable = false,
 	}),
 }
 
-xrpLocal.versions = setmetatable({}, {
+_xrp.versions = setmetatable({}, {
 	__index = function (self, field)
 		if xrpSaved.overrides.fields[field] == "" then
 			return nil
@@ -76,7 +75,7 @@ xrpLocal.versions = setmetatable({}, {
 		end
 		return xrpSaved.meta.versions[field] or nil
 	end,
-	__newindex = xrpLocal.noFunc,
+	__newindex = _xrp.noFunc,
 })
 
 local function IsUsed(name, field)
@@ -96,7 +95,7 @@ local function IsUsed(name, field)
 	return false
 end
 
-local nameMap = setmetatable({}, xrpLocal.weakKeyMeta)
+local nameMap = setmetatable({}, _xrp.weakKeyMeta)
 
 local FORBIDDEN_NAMES = {
 	Add = true,
@@ -120,7 +119,7 @@ do
 			end
 			for form, profileName in pairs(xrpSaved.auto) do
 				if profileName == name then
-					xrpLocal.auto[form] = nil
+					_xrp.auto[form] = nil
 				end
 			end
 			profiles[name] = nil
@@ -187,7 +186,7 @@ do
 				xrpSaved.overrides.fields = {}
 				xrpSaved.overrides.versions = {}
 			end
-			xrpLocal:FireEvent("UPDATE")
+			_xrp.FireEvent("UPDATE")
 			return true
 		end,
 		IsParentValid = function(self, testName)
@@ -220,9 +219,9 @@ do
 			local profile = xrpSaved.profiles[name]
 			if profile and profile.fields[field] ~= contents then
 				profile.fields[field] = contents
-				profile.versions[field] = contents and xrpLocal:NewVersion(field) or nil
+				profile.versions[field] = contents and _xrp.NewVersion(field) or nil
 				if IsUsed(name, field) then
-					xrpLocal:FireEvent("UPDATE", field)
+					_xrp.FireEvent("UPDATE", field)
 				end
 			end
 		end,
@@ -255,7 +254,7 @@ do
 					fields[field] = contents
 				end
 			end
-			return xrpLocal.ExportText(("%s - %s"):format(_S.NAME_REALM:format(xrpLocal.player, xrp:RealmDisplayName(xrpLocal.realm)), name), fields)
+			return _xrp.ExportText(("%s - %s"):format(_xrp.L.NAME_REALM:format(_xrp.player, xrp:RealmDisplayName(_xrp.realm)), name), fields)
 		end,
 		__metatable = false,
 	}
@@ -274,7 +273,7 @@ do
 			end
 			return nil
 		end,
-		__newindex = xrpLocal.noFunc,
+		__newindex = _xrp.noFunc,
 		__metatable = false,
 	}
 
@@ -292,7 +291,7 @@ do
 			if state ~= profile.inherits[field] then
 				profile.inherits[field] = state
 				if not profile.fields[field] and IsUsed(name, field) then
-					xrpLocal:FireEvent("UPDATE", field)
+					_xrp.FireEvent("UPDATE", field)
 				end
 			end
 		end,
@@ -331,7 +330,7 @@ do
 			if component ~= "parent" or value == profiles[name].parent or not self:IsParentValid(value) then return end
 			profiles[name].parent = value
 			if IsUsed(name) then
-				xrpLocal:FireEvent("UPDATE")
+				_xrp.FireEvent("UPDATE")
 			end
 		end,
 		__tostring = function(self)
@@ -341,7 +340,7 @@ do
 	}
 end
 
-local profileTables = setmetatable({}, xrpLocal.weakMeta)
+local profileTables = setmetatable({}, _xrp.weakMeta)
 
 xrp.profiles = setmetatable({
 	Add = function(self, name)
@@ -377,6 +376,6 @@ xrp.profiles = setmetatable({
 		end
 		return profileTables[name]
 	end,
-	__newindex = xrpLocal.noFunc,
+	__newindex = _xrp.noFunc,
 	__metatable = false,
 })

@@ -15,8 +15,7 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local addonName, xrpLocal = ...
-local _S = xrpLocal.strings
+local addonName, _xrp = ...
 
 local cursor, rightClick
 
@@ -74,7 +73,7 @@ local function InteractUnit_Hook(unit)
 	XRPViewer:View(unit)
 end
 
-xrpLocal.settingsToggles.interact = {
+_xrp.settingsToggles.interact = {
 	cursor = function(setting)
 		if setting then
 			if not XRPCursorBook then

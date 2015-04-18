@@ -15,15 +15,14 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local addonName, xrpLocal = ...
-local _S = xrpLocal.strings
+local addonName, _xrp = ...
 
-local SLASH_XRP = _S.SLASH_XRP or "/xrp"
+local SLASH_XRP = _xrp.L.SLASH_XRP or "/xrp"
 do
 	local INFO = STAT_FORMAT:format("|cff99b3e6%s") .. "|r %s"
 	-- Also used in ui/options.xml.
-	XRP_AUTHOR = INFO:format(_S.AUTHOR, GetAddOnMetadata(addonName, "Author"))
-	XRP_VERSION = INFO:format(GAME_VERSION_LABEL, xrpLocal.version)
+	XRP_AUTHOR = INFO:format(_xrp.L.AUTHOR, GetAddOnMetadata(addonName, "Author"))
+	XRP_VERSION = INFO:format(GAME_VERSION_LABEL, _xrp.version)
 end
 
 -- Cannot define commands in static table, as they make use of each other.
@@ -33,61 +32,61 @@ xrpCmds.about = function(args)
 	print(("|cffabd473%s|r"):format(GetAddOnMetadata(addonName, "Title")))
 	print(XRP_AUTHOR)
 	print(XRP_VERSION)
-	for line in _S.GPL_SHORT:gmatch("[^\n]+") do
+	for line in _xrp.L.GPL_SHORT:gmatch("[^\n]+") do
 		print(line)
 	end
 end
 
 do
-	local USAGE = ("|cffabd473%s|r %%s"):format(STAT_FORMAT:format(_S.USAGE))
+	local USAGE = ("|cffabd473%s|r %%s"):format(STAT_FORMAT:format(_xrp.L.USAGE))
 	local ARG = (" - |cfffff569%s|r %%s"):format(STAT_FORMAT:format("%s"))
 	local NO_ARGS = SLASH_XRP .. " %s"
 	local HAS_ARGS = SLASH_XRP .. " %s %s"
 	xrpCmds.help = function(args)
-		if args == "about" or args and args == _S.CMD_ABOUT then
-			print(USAGE:format(NO_ARGS:format(_S.CMD_ABOUT)))
-			print(_S.ABOUT_HELP)
-		elseif args == "bookmarks" or args and args == _S.CMD_BOOKMARKS then
-			print(USAGE:format(NO_ARGS:format(_S.CMD_BOOKMARKS)))
-			print(_S.BOOKMARKS_HELP)
-		elseif args == "edit" or args and args == _S.CMD_EDIT then
-			print(USAGE:format(HAS_ARGS:format(_S.CMD_EDIT, _S.EDIT_ARGS)))
-			print(ARG:format(_S.EDIT_ARG1, _S.EDIT_ARG1_HELP))
-			print(ARG:format(_S.EDIT_ARG2, _S.EDIT_ARG2_HELP))
-		elseif args == "export" or args and args == _S.CMD_EXPORT then
-			print(USAGE:format(HAS_ARGS:format(_S.CMD_EXPORT, _S.EXPORT_ARG1)))
-			print(ARG:format(_S.EXPORT_ARG1, _S.EXPORT_ARG1_HELP))
-		elseif args == "profile" or args and args == _S.CMD_PROFILE then
-			print(USAGE:format(HAS_ARGS:format(_S.CMD_PROFILE, _S.PROFILE_ARGS)))
-			print(ARG:format(_S.ARG_PROFILE_LIST, _S.PROFILE_ARG1_HELP))
-			print(ARG:format(_S.PROFILE_ARG2, _S.PROFILE_ARG2_HELP))
-		elseif args == "status" or args and args == _S.CMD_STATUS then
-			print(USAGE:format(HAS_ARGS:format(_S.CMD_STATUS, _S.STATUS_ARGS)))
-			print(ARG:format(_S.ARG_STATUS_NIL, _S.STATUS_ARG1_HELP))
-			print(ARG:format(_S.ARG_STATUS_IC, _S.STATUS_ARG2_HELP))
-			print(ARG:format(_S.ARG_STATUS_OOC, _S.STATUS_ARG3_HELP))
-			print(ARG:format(_S.ARG_STATUS_LFC, _S.STATUS_ARG4_HELP))
-			print(ARG:format(_S.ARG_STATUS_ST, _S.STATUS_ARG5_HELP))
-		elseif args == "toggle" or args and args == _S.CMD_TOGGLE then
-			print(USAGE:format(NO_ARGS:format(_S.CMD_TOGGLE)))
-			print(_S.TOGGLE_HELP)
-		elseif args == "view" or args == "show" or args and args == _S.CMD_VIEW then
-			print(USAGE:format(HAS_ARGS:format(_S.CMD_VIEW, _S.VIEW_ARGS)))
-			print(ARG:format(_S.VIEW_ARG1, _S.VIEW_ARG1_HELP))
-			print(ARG:format(_S.VIEW_ARG2, _S.VIEW_ARG2_HELP))
-			print(ARG:format(_S.VIEW_ARG3, _S.VIEW_ARG3_HELP))
+		if args == "about" or args and args == _xrp.L.CMD_ABOUT then
+			print(USAGE:format(NO_ARGS:format(_xrp.L.CMD_ABOUT)))
+			print(_xrp.L.ABOUT_HELP)
+		elseif args == "bookmarks" or args and args == _xrp.L.CMD_BOOKMARKS then
+			print(USAGE:format(NO_ARGS:format(_xrp.L.CMD_BOOKMARKS)))
+			print(_xrp.L.BOOKMARKS_HELP)
+		elseif args == "edit" or args and args == _xrp.L.CMD_EDIT then
+			print(USAGE:format(HAS_ARGS:format(_xrp.L.CMD_EDIT, _xrp.L.EDIT_ARGS)))
+			print(ARG:format(_xrp.L.EDIT_ARG1, _xrp.L.EDIT_ARG1_HELP))
+			print(ARG:format(_xrp.L.EDIT_ARG2, _xrp.L.EDIT_ARG2_HELP))
+		elseif args == "export" or args and args == _xrp.L.CMD_EXPORT then
+			print(USAGE:format(HAS_ARGS:format(_xrp.L.CMD_EXPORT, _xrp.L.EXPORT_ARG1)))
+			print(ARG:format(_xrp.L.EXPORT_ARG1, _xrp.L.EXPORT_ARG1_HELP))
+		elseif args == "profile" or args and args == _xrp.L.CMD_PROFILE then
+			print(USAGE:format(HAS_ARGS:format(_xrp.L.CMD_PROFILE, _xrp.L.PROFILE_ARGS)))
+			print(ARG:format(_xrp.L.ARG_PROFILE_LIST, _xrp.L.PROFILE_ARG1_HELP))
+			print(ARG:format(_xrp.L.PROFILE_ARG2, _xrp.L.PROFILE_ARG2_HELP))
+		elseif args == "status" or args and args == _xrp.L.CMD_STATUS then
+			print(USAGE:format(HAS_ARGS:format(_xrp.L.CMD_STATUS, _xrp.L.STATUS_ARGS)))
+			print(ARG:format(_xrp.L.ARG_STATUS_NIL, _xrp.L.STATUS_ARG1_HELP))
+			print(ARG:format(_xrp.L.ARG_STATUS_IC, _xrp.L.STATUS_ARG2_HELP))
+			print(ARG:format(_xrp.L.ARG_STATUS_OOC, _xrp.L.STATUS_ARG3_HELP))
+			print(ARG:format(_xrp.L.ARG_STATUS_LFC, _xrp.L.STATUS_ARG4_HELP))
+			print(ARG:format(_xrp.L.ARG_STATUS_ST, _xrp.L.STATUS_ARG5_HELP))
+		elseif args == "toggle" or args and args == _xrp.L.CMD_TOGGLE then
+			print(USAGE:format(NO_ARGS:format(_xrp.L.CMD_TOGGLE)))
+			print(_xrp.L.TOGGLE_HELP)
+		elseif args == "view" or args == "show" or args and args == _xrp.L.CMD_VIEW then
+			print(USAGE:format(HAS_ARGS:format(_xrp.L.CMD_VIEW, _xrp.L.VIEW_ARGS)))
+			print(ARG:format(_xrp.L.VIEW_ARG1, _xrp.L.VIEW_ARG1_HELP))
+			print(ARG:format(_xrp.L.VIEW_ARG2, _xrp.L.VIEW_ARG2_HELP))
+			print(ARG:format(_xrp.L.VIEW_ARG3, _xrp.L.VIEW_ARG3_HELP))
 		else
-			print(USAGE:format(HAS_ARGS:format(_S.COMMANDS, _S.ARGUMENTS)))
-			print(_S.COMMANDS_HELP)
-			print(ARG:format(_S.CMD_ABOUT, _S.ABOUT_HELP))
-			print(ARG:format(_S.CMD_BOOKMARKS, _S.BOOKMARKS_HELP))
-			print(ARG:format(_S.CMD_EDIT, _S.EDIT_HELP))
-			print(ARG:format(_S.CMD_EXPORT, _S.EXPORT_HELP))
-			print(ARG:format(_S.CMD_HELP, _S.HELP_HELP))
-			print(ARG:format(_S.CMD_PROFILE, _S.PROFILE_HELP))
-			print(ARG:format(_S.CMD_STATUS, _S.STATUS_HELP))
-			print(ARG:format(_S.CMD_TOGGLE, _S.TOGGLE_HELP))
-			print(ARG:format(_S.CMD_VIEW, _S.VIEW_HELP))
+			print(USAGE:format(HAS_ARGS:format(_xrp.L.COMMANDS, _xrp.L.ARGUMENTS)))
+			print(_xrp.L.COMMANDS_HELP)
+			print(ARG:format(_xrp.L.CMD_ABOUT, _xrp.L.ABOUT_HELP))
+			print(ARG:format(_xrp.L.CMD_BOOKMARKS, _xrp.L.BOOKMARKS_HELP))
+			print(ARG:format(_xrp.L.CMD_EDIT, _xrp.L.EDIT_HELP))
+			print(ARG:format(_xrp.L.CMD_EXPORT, _xrp.L.EXPORT_HELP))
+			print(ARG:format(_xrp.L.CMD_HELP, _xrp.L.HELP_HELP))
+			print(ARG:format(_xrp.L.CMD_PROFILE, _xrp.L.PROFILE_HELP))
+			print(ARG:format(_xrp.L.CMD_STATUS, _xrp.L.STATUS_HELP))
+			print(ARG:format(_xrp.L.CMD_TOGGLE, _xrp.L.TOGGLE_HELP))
+			print(ARG:format(_xrp.L.CMD_VIEW, _xrp.L.VIEW_HELP))
 		end
 	end
 end
@@ -108,16 +107,16 @@ xrpCmds.export = function(args)
 end
 
 xrpCmds.profile = function(args)
-	if args == "list" or args == _S.ARG_PROFILE_LIST then
-		print(STAT_FORMAT:format(_S.PROFILES))
+	if args == "list" or args == _xrp.L.ARG_PROFILE_LIST then
+		print(STAT_FORMAT:format(_xrp.L.PROFILES))
 		for i, profile in ipairs(xrp.profiles:List()) do
 			print(profile)
 		end
 	elseif type(args) == "string" then
 		if xrp.profiles[args] and xrp.profiles[args]:Activate() then
-			print(_S.SET_PROFILE::format(args))
+			print(_xrp.L.SET_PROFILE:format(args))
 		else
-			print(_S.SET_PROFILE_FAIL:format(args))
+			print(_xrp.L.SET_PROFILE_FAIL:format(args))
 		end
 	else
 		xrpCmds.help("profile")
@@ -125,15 +124,15 @@ xrpCmds.profile = function(args)
 end
 
 xrpCmds.status = function(args)
-	if args == "nil" or args == _S.ARG_STATUS_NIL then
+	if args == "nil" or args == _xrp.L.ARG_STATUS_NIL then
 		xrp.current.fields.FC = nil
-	elseif args == "ooc" or args == _S.ARG_STATUS_IC then
+	elseif args == "ooc" or args == _xrp.L.ARG_STATUS_IC then
 		xrp.current.fields.FC = "1"
-	elseif args == "ic" or args == _S.ARG_STATUS_OOC then
+	elseif args == "ic" or args == _xrp.L.ARG_STATUS_OOC then
 		xrp.current.fields.FC = "2"
-	elseif args == "lfc" or args == _S.ARG_STATUS_LFC then
+	elseif args == "lfc" or args == _xrp.L.ARG_STATUS_LFC then
 		xrp.current.fields.FC = "3"
-	elseif args == "st" or args == _S.ARG_STATUS_ST then
+	elseif args == "st" or args == _xrp.L.ARG_STATUS_ST then
 		xrp.current.fields.FC = "4"
 	else
 		xrpCmds.help("status")
@@ -158,32 +157,32 @@ end
 xrpCmds.show = xrpCmds.view
 
 -- Localized aliases.
-if _S.CMD_ABOUT ~= "about" then
-	xrpCmds[_S.CMD_ABOUT] = xrpCmds.about
+if _xrp.L.CMD_ABOUT ~= "about" then
+	xrpCmds[_xrp.L.CMD_ABOUT] = xrpCmds.about
 end
-if _S.CMD_BOOKMARKS ~= "bookmarks" then
-	xrpCmds[_S.CMD_BOOKMARKS] = xrpCmds.bookmarks
+if _xrp.L.CMD_BOOKMARKS ~= "bookmarks" then
+	xrpCmds[_xrp.L.CMD_BOOKMARKS] = xrpCmds.bookmarks
 end
-if _S.CMD_EDIT ~= "edit" then
-	xrpCmds[_S.CMD_EDIT] = xrpCmds.edit
+if _xrp.L.CMD_EDIT ~= "edit" then
+	xrpCmds[_xrp.L.CMD_EDIT] = xrpCmds.edit
 end
-if _S.CMD_EXPORT ~= "export" then
-	xrpCmds[_S.CMD_EXPORT] = xrpCmds.export
+if _xrp.L.CMD_EXPORT ~= "export" then
+	xrpCmds[_xrp.L.CMD_EXPORT] = xrpCmds.export
 end
-if _S.CMD_HELP ~= "help" then
-	xrpCmds[_S.CMD_HELP] = xrpCmds.help
+if _xrp.L.CMD_HELP ~= "help" then
+	xrpCmds[_xrp.L.CMD_HELP] = xrpCmds.help
 end
-if _S.CMD_PROFILE ~= "profile" then
-	xrpCmds[_S.CMD_PROFILE] = xrpCmds.profile
+if _xrp.L.CMD_PROFILE ~= "profile" then
+	xrpCmds[_xrp.L.CMD_PROFILE] = xrpCmds.profile
 end
-if _S.CMD_STATUS ~= "status" then
-	xrpCmds[_S.CMD_STATUS] = xrpCmds.status
+if _xrp.L.CMD_STATUS ~= "status" then
+	xrpCmds[_xrp.L.CMD_STATUS] = xrpCmds.status
 end
-if _S.CMD_TOGGLE ~= "toggle" then
-	xrpCmds[_S.CMD_TOGGLE] = xrpCmds.toggle
+if _xrp.L.CMD_TOGGLE ~= "toggle" then
+	xrpCmds[_xrp.L.CMD_TOGGLE] = xrpCmds.toggle
 end
-if _S.CMD_VIEW ~= "view" then
-	xrpCmds[_S.CMD_VIEW] = xrpCmds.view
+if _xrp.L.CMD_VIEW ~= "view" then
+	xrpCmds[_xrp.L.CMD_VIEW] = xrpCmds.view
 end
 
 SLASH_XRP1 = "/xrp"

@@ -15,15 +15,14 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local addonName, xrpLocal = ...
-local _S = xrpLocal.strings
+local addonName, _xrp = ...
 
 local disabled = false
 if not msp_RPAddOn then
 	msp_RPAddOn = GetAddOnMetadata(addonName, "Title")
 else
 	StaticPopupDialogs["XRP_MSP_DISABLE"] = {
-		text = _S.MSP_DISABLED,
+		text = _xrp.L.MSP_DISABLED,
 		button1 = OKAY,
 		showAlert = true,
 		enterClicksFirstButton = true,
@@ -37,7 +36,7 @@ else
 end
 
 -- Protocol version two indicates Battle.net support.
-xrpLocal.msp = 2
+_xrp.msp = 2
 
 -- Fields in tooltip.
 local TT_FIELDS = { VP = true, VA = true, NA = true, NH = true, NI = true, NT = true, RA = true, RC = true, FR = true, FC = true, CU = true }
@@ -111,7 +110,7 @@ do
 				return false
 			end
 			-- Same error message from offline and from opposite faction.
-			xrpLocal:FireEvent("FAIL", name, (not xrpCache[name] or not xrpCache[name].fields.GF or xrpCache[name].fields.GF == xrp.current.fields.GF) and "offline" or "faction")
+			_xrp.FireEvent("FAIL", name, (not xrpCache[name] or not xrpCache[name].fields.GF or xrpCache[name].fields.GF == xrp.current.fields.GF) and "offline" or "faction")
 			return true
 		end)
 
@@ -282,10 +281,10 @@ do
 					local tooltip = {}
 					for i, field in ipairs(TT_LIST) do
 						local contents = xrp.current.fields[field]
-						tooltip[#tooltip + 1] = not contents and field or ("%s%d=%s"):format(field, xrpLocal.versions[field], contents)
+						tooltip[#tooltip + 1] = not contents and field or ("%s%d=%s"):format(field, _xrp.versions[field], contents)
 					end
 					local newtt = table.concat(tooltip, "\1")
-					tt = ("%s\1TT%d"):format(newtt, newtt ~= xrpSaved.oldtt and xrpLocal:NewVersion("TT") or xrpSaved.versions.TT)
+					tt = ("%s\1TT%d"):format(newtt, newtt ~= xrpSaved.oldtt and _xrp.NewVersion("TT") or xrpSaved.versions.TT)
 					xrpSaved.oldtt = newtt
 				end
 				if version == xrpSaved.versions.TT then
@@ -293,7 +292,7 @@ do
 				end
 				return tt
 			end
-			local currentVersion = xrpLocal.versions[field]
+			local currentVersion = _xrp.versions[field]
 			if not currentVersion then
 				-- Empty fields are versionless.
 				return field
@@ -323,9 +322,9 @@ do
 					versions = {},
 					lastReceive = time(),
 				}
-				if xrpLocal.gCache[name] then
+				if _xrp.gCache[name] then
 					for gField, isUnitField in pairs(UNIT_FIELDS) do
-						xrpCache[name].fields[gField] = xrpLocal.gCache[name][gField]
+						xrpCache[name].fields[gField] = _xrp.gCache[name][gField]
 					end
 				end
 			end
@@ -338,7 +337,7 @@ do
 				xrpCache[name].fields[field] = contents
 				updated = true
 				if field == "VA" then
-					xrpLocal:AddonUpdate(contents:match("^XRP/([^;]+)"))
+					_xrp.AddonUpdate(contents:match("^XRP/([^;]+)"))
 				end
 			end
 			if version ~= 0 then
@@ -350,7 +349,7 @@ do
 			cache[name].time[field] = GetTime() + FIELD_TIMES[field]
 
 			if updated then
-				xrpLocal:FireEvent("FIELD", name, field)
+				_xrp.FireEvent("FIELD", name, field)
 				cache[name].fieldUpdated = true
 			else
 				cache[name].fieldUpdated = cache[name].fieldUpdated or false
@@ -386,10 +385,10 @@ do
 			-- not changed, fieldUpdated will be set to false; if no fields were
 			-- received (i.e., only requests), fieldUpdated is nil.
 			if cache[name].fieldUpdated == true then
-				xrpLocal:FireEvent("RECEIVE", name)
+				_xrp.FireEvent("RECEIVE", name)
 				cache[name].fieldUpdated = nil
 			elseif cache[name].fieldUpdated == false then
-				xrpLocal:FireEvent("NOCHANGE", name)
+				_xrp.FireEvent("NOCHANGE", name)
 				cache[name].fieldUpdated = nil
 			end
 			if out then
@@ -425,7 +424,7 @@ do
 			end
 			cache[name].chunks = 1
 			cache[name][channel] = message
-			xrpLocal:FireEvent("CHUNK", name, 1, totalChunks)
+			_xrp.FireEvent("CHUNK", name, 1, totalChunks)
 		end,
 		["MSP\2"] = function(name, message, channel)
 			local buffer = cache[name][channel]
@@ -468,7 +467,7 @@ do
 				end
 			end
 			cache[name].chunks = (cache[name].chunks or 0) + 1
-			xrpLocal:FireEvent("CHUNK", name, cache[name].chunks, cache[name].totalChunks)
+			_xrp.FireEvent("CHUNK", name, cache[name].chunks, cache[name].totalChunks)
 		end,
 		["MSP\3"] = function(name, message, channel)
 			local buffer = cache[name][channel]
@@ -492,7 +491,7 @@ do
 			-- CHUNK after RECEIVE would fire. Makes it easier to do something
 			-- useful when chunks == totalChunks.
 			local chunks = (cache[name].chunks or 0) + 1
-			xrpLocal:FireEvent("CHUNK", name, chunks, chunks)
+			_xrp.FireEvent("CHUNK", name, chunks, chunks)
 
 			cache[name].chunks = nil
 			cache[name].totalChunks = nil
@@ -506,7 +505,7 @@ do
 			else
 				prefix, message = message:match("^([\1\2\3]?)(.+)$")
 			end
-			if target and target ~= xrpLocal.playerWithRealm then return end
+			if target and target ~= _xrp.playerWithRealm then return end
 			handlers["MSP" .. prefix](name, message, channel)
 		end,
 	}
@@ -520,7 +519,7 @@ function gameEvents.CHAT_MSG_ADDON(event, prefix, message, channel, sender)
 	local name = xrp:Name(sender)
 
 	-- Ignore messages from ourselves (GMSP).
-	if name ~= xrpLocal.playerWithRealm then
+	if name ~= _xrp.playerWithRealm then
 		cache[name].nextCheck = nil
 
 		handlers[prefix](name, message, channel)
@@ -552,12 +551,12 @@ function gameEvents.BN_TOON_NAME_UPDATE(event, presenceID)
 end
 function gameEvents.BN_CONNECTED(event)
 	RebuildBNList()
-	xrpLocal:HookGameEvent("BN_TOON_NAME_UPDATED", gameEvents.BN_TOON_NAME_UPDATED)
-	xrpLocal:HookGameEvent("BN_FRIEND_TOON_ONLINE", gameEvents.BN_TOON_NAME_UPDATED)
+	_xrp.HookGameEvent("BN_TOON_NAME_UPDATED", gameEvents.BN_TOON_NAME_UPDATED)
+	_xrp.HookGameEvent("BN_FRIEND_TOON_ONLINE", gameEvents.BN_TOON_NAME_UPDATED)
 end
 function gameEvents.BN_DISCONNECTED(event)
-	xrpLocal:UnhookGameEvent("BN_TOON_NAME_UPDATED", gameEvents.BN_TOON_NAME_UPDATED)
-	xrpLocal:UnhookGameEvent("BN_FRIEND_TOON_ONLINE", gameEvents.BN_TOON_NAME_UPDATED)
+	_xrp.UnhookGameEvent("BN_TOON_NAME_UPDATED", gameEvents.BN_TOON_NAME_UPDATED)
+	_xrp.UnhookGameEvent("BN_FRIEND_TOON_ONLINE", gameEvents.BN_TOON_NAME_UPDATED)
 	bnet = nil
 end
 do
@@ -578,7 +577,7 @@ do
 		for i, unit in ipairs(units) do
 			local name = xrp:UnitName(unit)
 			if not name then break end
-			if name ~= xrpLocal.playerWithRealm then
+			if name ~= _xrp.playerWithRealm then
 				if not inGroup[name] and cache[name].nextCheck then
 					cache[name].nextCheck = 0
 				end
@@ -593,28 +592,28 @@ if not disabled then
 	for prefix, handler in pairs(handlers) do
 		RegisterAddonMessagePrefix(prefix)
 	end
-	xrpLocal:HookGameEvent("CHAT_MSG_ADDON", gameEvents.CHAT_MSG_ADDON)
-	xrpLocal:HookGameEvent("BN_CHAT_MSG_ADDON", gameEvents.BN_CHAT_MSG_ADDON)
+	_xrp.HookGameEvent("CHAT_MSG_ADDON", gameEvents.CHAT_MSG_ADDON)
+	_xrp.HookGameEvent("BN_CHAT_MSG_ADDON", gameEvents.BN_CHAT_MSG_ADDON)
 end
-xrpLocal:HookGameEvent("GROUP_ROSTER_UPDATE", gameEvents.GROUP_ROSTER_UPDATE)
+_xrp.HookGameEvent("GROUP_ROSTER_UPDATE", gameEvents.GROUP_ROSTER_UPDATE)
 if BNConnected() then
-	xrpLocal:HookGameEvent("BN_TOON_NAME_UPDATED", gameEvents.BN_TOON_NAME_UPDATED)
-	xrpLocal:HookGameEvent("BN_FRIEND_TOON_ONLINE", gameEvents.BN_TOON_NAME_UPDATED)
+	_xrp.HookGameEvent("BN_TOON_NAME_UPDATED", gameEvents.BN_TOON_NAME_UPDATED)
+	_xrp.HookGameEvent("BN_FRIEND_TOON_ONLINE", gameEvents.BN_TOON_NAME_UPDATED)
 end
-xrpLocal:HookGameEvent("BN_CONNECTED", gameEvents.BN_CONNECTED)
-xrpLocal:HookGameEvent("BN_DISCONNECTED", gameEvents.BN_DISCONNECTED)
+_xrp.HookGameEvent("BN_CONNECTED", gameEvents.BN_CONNECTED)
+_xrp.HookGameEvent("BN_DISCONNECTED", gameEvents.BN_DISCONNECTED)
 
 local request, requestQueued = {}
 local function RunRequestQueue()
 	for name, fields in pairs(request) do
-		xrpLocal:Request(name, fields)
+		_xrp.Request(name, fields)
 		request[name] = nil
 	end
 	requestQueued = nil
 end
 
-function xrpLocal:QueueRequest(name, field)
-	if disabled or name == self.playerWithRealm or xrp:Ambiguate(name) == UNKNOWN or cache[name].time[field] and GetTime() < cache[name].time[field] then
+function _xrp.QueueRequest(name, field)
+	if disabled or name == _xrp.playerWithRealm or xrp:Ambiguate(name) == UNKNOWN or cache[name].time[field] and GetTime() < cache[name].time[field] then
 		return
 	elseif not request[name] then
 		request[name] = {}
@@ -629,14 +628,14 @@ end
 -- As also in TT_REQ, these are only slightly less efficient than using GF+GU,
 -- but are much more reliable.
 local UNIT_REQUEST = { "GC", "GF", "GR", "GS" }
-function xrpLocal:Request(name, fields)
-	if disabled or name == self.playerWithRealm or xrp:Ambiguate(name) == UNKNOWN then
+function _xrp.Request(name, fields)
+	if disabled or name == _xrp.playerWithRealm or xrp:Ambiguate(name) == UNKNOWN then
 		return false
 	end
 
 	local now = GetTime()
 	if cache[name].nextCheck and now < cache[name].nextCheck then
-		self:FireEvent("FAIL", name, (not xrpCache[name] or not xrpCache[name].fields.GF or xrpCache[name].fields.GF == xrp.current.fields.GF) and "nomsp" or "faction")
+		_xrp.FireEvent("FAIL", name, (not xrpCache[name] or not xrpCache[name].fields.GF or xrpCache[name].fields.GF == xrp.current.fields.GF) and "nomsp" or "faction")
 		return false
 	elseif cache[name].nextCheck then
 		cache[name].nextCheck = now + 120
@@ -657,7 +656,7 @@ function xrpLocal:Request(name, fields)
 		table.insert(fields, 1, "TT")
 	end
 
-	if not self.gCache[name] then
+	if not _xrp.gCache[name] then
 		if not xrpCache[name] then
 			for i, field in ipairs(UNIT_REQUEST) do
 				fields[#fields + 1] = field

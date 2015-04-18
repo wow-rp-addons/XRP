@@ -15,22 +15,21 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local addonName, xrpLocal = ...
-local _S = xrpLocal.strings
+local addonName, _xrp = ...
 
-XRP_LICENSE_HEADER = _S.LICENSE_COPYRIGHT
-XRP_LICENSE = _S.GPL_HEADER
-XRP_CLEAR_CACHE = _S.CLEAR_CACHE
-XRP_TIDY_CACHE = _S.TIDY_CACHE
+XRP_LICENSE_HEADER = _xrp.L.LICENSE_COPYRIGHT
+XRP_LICENSE = _xrp.L.GPL_HEADER
+XRP_CLEAR_CACHE = _xrp.L.CLEAR_CACHE
+XRP_TIDY_CACHE = _xrp.L.TIDY_CACHE
 
 function XRPOptions_Get(self)
-	return xrpLocal.settings[self.xrpTable][self.xrpSetting]
+	return _xrp.settings[self.xrpTable][self.xrpSetting]
 end
 
 function XRPOptions_Set(self, value)
-	xrpLocal.settings[self.xrpTable][self.xrpSetting] = value
-	if xrpLocal.settingsToggles[self.xrpTable] and xrpLocal.settingsToggles[self.xrpTable][self.xrpSetting] then
-		xrpLocal.settingsToggles[self.xrpTable][self.xrpSetting](value)
+	_xrp.settings[self.xrpTable][self.xrpSetting] = value
+	if _xrp.settingsToggles[self.xrpTable] and _xrp.settingsToggles[self.xrpTable][self.xrpSetting] then
+		_xrp.settingsToggles[self.xrpTable][self.xrpSetting](value)
 	end
 end
 
@@ -114,7 +113,7 @@ function XRPOptions_default(self)
 		if control.CustomDefault then
 			control:CustomDefault()
 		else
-			local defaultValue = xrpLocal.DEFAULT_SETTINGS[control.xrpTable][control.xrpSetting]
+			local defaultValue = _xrp.DEFAULT_SETTINGS[control.xrpTable][control.xrpSetting]
 			control:Set(defaultValue)
 			control.value = defaultValue
 			if control.type == CONTROLTYPE_CHECKBOX then
@@ -142,7 +141,7 @@ end
 function XRPOptionsAbout_OnShow(self)
 	if not self.wasShown then
 		self.wasShown = true
-		InterfaceOptionsFrame_OpenToCategory(self.General)
+		InterfaceOptionsFrame_OpenToCategory(self.GENERAL)
 	elseif self.ADVANCED.AutoClean:Get() then
 		self.CacheTidy:Hide()
 	else
@@ -153,14 +152,14 @@ end
 local OPTIONS_NAME = {
 	GENERAL = GENERAL,
 	CHAT = CHAT,
-	TOOLTIP = _S.TOOLTIP,
+	TOOLTIP = _xrp.L.TOOLTIP,
 	ADVANCED = ADVANCED_LABEL,
 }
 local OPTIONS_DESCRIPTION = {
-	GENERAL = _S.GENERAL_OPTIONS,
-	CHAT = _S.CHAT_OPTIONS,
-	TOOLTIP = _S.TOOLTIP_OPTIONS,
-	ADVANCED = _S.ADVANCED_OPTIONS,
+	GENERAL = _xrp.L.GENERAL_OPTIONS,
+	CHAT = _xrp.L.CHAT_OPTIONS,
+	TOOLTIP = _xrp.L.TOOLTIP_OPTIONS,
+	ADVANCED = _xrp.L.ADVANCED_OPTIONS,
 }
 function XRPOptions_OnLoad(self)
 	self.name = OPTIONS_NAME[self.paneID]
@@ -180,13 +179,13 @@ end
 
 local OPTIONS_TEXT = {
 	cache = {
-		time = _S.CACHE_EXPIRY_TIME,
-		autoClean = _S.CACHE_AUTOCLEAN,
+		time = _xrp.L.CACHE_EXPIRY_TIME,
+		autoClean = _xrp.L.CACHE_AUTOCLEAN,
 	},
 	chat = {
-		names = _S.ENABLE_ROLEPLAY_NAMES,
-		emoteBraced = _S.EMOTE_SQUARE_BRACES,
-		replacements = _S.XT_XF_REPLACE,
+		names = _xrp.L.ENABLE_ROLEPLAY_NAMES,
+		emoteBraced = _xrp.L.EMOTE_SQUARE_BRACES,
+		replacements = _xrp.L.XT_XF_REPLACE,
 		CHAT_MSG_SAY = SAY,
 		CHAT_MSG_EMOTE = EMOTE,
 		CHAT_MSG_YELL = YELL,
@@ -197,37 +196,37 @@ local OPTIONS_TEXT = {
 		CHAT_MSG_INSTANCE_CHAT = INSTANCE_CHAT,
 	},
 	display = {
-		movableViewer = _S.MOVABLE_VIEWER,
-		closeOnEscapeViewer = _S.CLOSE_ESCAPE_VIEWER,
-		height = _S.HEIGHT_DISPLAY,
-		weight = _S.WEIGHT_DISPLAY,
+		movableViewer = _xrp.L.MOVABLE_VIEWER,
+		closeOnEscapeViewer = _xrp.L.CLOSE_ESCAPE_VIEWER,
+		height = _xrp.L.HEIGHT_DISPLAY,
+		weight = _xrp.L.WEIGHT_DISPLAY,
 	},
 	interact = {
-		cursor = _S.DISPLAY_BOOK_CURSOR,
-		rightClick = _S.VIEW_PROFILE_RTCLICK,
-		disableInstance = _S.DISABLE_INSTANCES,
-		disablePvP = _S.DISABLE_PVPFLAG,
-		keybind = _S.VIEW_PROFILE_KEYBIND,
+		cursor = _xrp.L.DISPLAY_BOOK_CURSOR,
+		rightClick = _xrp.L.VIEW_PROFILE_RTCLICK,
+		disableInstance = _xrp.L.DISABLE_INSTANCES,
+		disablePvP = _xrp.L.DISABLE_PVPFLAG,
+		keybind = _xrp.L.VIEW_PROFILE_KEYBIND,
 	},
 	menus = {
-		standard = _S.RTCLICK_MENU_STANDARD,
-		units = _S.RTCLICK_MENU_UNIT,
+		standard = _xrp.L.RTCLICK_MENU_STANDARD,
+		units = _xrp.L.RTCLICK_MENU_UNIT,
 	},
 	minimap = {
-		enabled = _S.MINIMAP_ENABLE,
-		detached = _S.DETACH_MINIMAP,
+		enabled = _xrp.L.MINIMAP_ENABLE,
+		detached = _xrp.L.DETACH_MINIMAP,
 	},
 	tooltip = {
-		enabled = _S.TOOLTIP_ENABLE,
-		replace = _S.REPLACE_DEFAULT_TOOLTIP,
-		watching = _S.EYE_ICON_TARGET,
-		extraSpace = _S.EXTRA_SPACE_TOOLTIP,
-		guildRank = _S.DISPLAY_GUILD_RANK,
-		guildIndex = _S.DISPLAY_GUILD_RANK_INDEX,
-		noHostile = _S.NO_HOSTILE,
-		noOpFaction = _S.NO_OP_FACTION,
-		noClass = _S.NO_RP_CLASS,
-		noRace = _S.NO_RP_RACE,
+		enabled = _xrp.L.TOOLTIP_ENABLE,
+		replace = _xrp.L.REPLACE_DEFAULT_TOOLTIP,
+		watching = _xrp.L.EYE_ICON_TARGET,
+		extraSpace = _xrp.L.EXTRA_SPACE_TOOLTIP,
+		guildRank = _xrp.L.DISPLAY_GUILD_RANK,
+		guildIndex = _xrp.L.DISPLAY_GUILD_RANK_INDEX,
+		noHostile = _xrp.L.NO_HOSTILE,
+		noOpFaction = _xrp.L.NO_OP_FACTION,
+		noClass = _xrp.L.NO_RP_CLASS,
+		noRace = _xrp.L.NO_RP_RACE,
 	},
 }
 
@@ -307,7 +306,7 @@ do
 	end
 	local function Channels_OnClick(self, channel, arg2, checked)
 		settingsList[channel].value = checked
-		xrpLocal.settings.chat[channel] = checked
+		_xrp.settings.chat[channel] = checked
 	end
 
 	local function ChannelsTable(...)
@@ -320,7 +319,7 @@ do
 	end
 
 	local function AddChannel(channel, menuList)
-		local setting = xrpLocal.settings.chat[channel]
+		local setting = _xrp.settings.chat[channel]
 		local oldSetting = setting
 		if setting == nil then
 			setting = false
@@ -339,7 +338,7 @@ do
 			AddChannel(channel, self.baseMenuList, settingsList)
 			seenChannels[channel] = true
 		end
-		for channel, setting in pairs(xrpLocal.settings.chat) do
+		for channel, setting in pairs(_xrp.settings.chat) do
 			if not seenChannels[channel] and channel:find("CHAT_MSG_CHANNEL_", nil, true) then
 				AddChannel(channel, self.baseMenuList, settingsList)
 				seenChannels[channel] = true
@@ -353,13 +352,13 @@ do
 	end
 	function XRPOptionsChatChannels_CustomDefault(self)
 		for channel, control in pairs(settingsList) do
-			xrpLocal.settings.chat[channel] = nil
+			_xrp.settings.chat[channel] = nil
 			control.value = nil
 		end
 	end
 	function XRPOptionsChatChannels_CustomCancel(self)
 		for channel, control in pairs(settingsList) do
-			xrpLocal.settings.chat[channel] = control.oldValue
+			_xrp.settings.chat[channel] = control.oldValue
 			control.value = control.oldValue
 		end
 	end
@@ -377,32 +376,32 @@ do
 	end
 
 	XRPOptionsGeneralHeight_baseMenuList = {
-		{ text = _S.CENTIMETERS, value = "cm", func = DropDown_OnClick },
-		{ text = _S.FEET_INCHES, value = "ft", func = DropDown_OnClick },
-		{ text = _S.METERS, value = "m", func = DropDown_OnClick },
+		{ text = _xrp.L.CENTIMETERS, value = "cm", func = DropDown_OnClick },
+		{ text = _xrp.L.FEET_INCHES, value = "ft", func = DropDown_OnClick },
+		{ text = _xrp.L.METERS, value = "m", func = DropDown_OnClick },
 	}
 
 	XRPOptionsGeneralWeight_baseMenuList = {
-		{ text = _S.KILOGRAMS, value = "kg", func = DropDown_OnClick },
-		{ text = _S.POUNDS, value = "lb", func = DropDown_OnClick },
+		{ text = _xrp.L.KILOGRAMS, value = "kg", func = DropDown_OnClick },
+		{ text = _xrp.L.POUNDS, value = "lb", func = DropDown_OnClick },
 	}
 
 	XRPOptionsAdvancedTime_baseMenuList = {
-		{ text = _S.TIME_1DAY, value = 86400, func = DropDown_OnClick },
-		{ text = _S.TIME_3DAY, value = 259200, func = DropDown_OnClick },
-		{ text = _S.TIME_7DAY, value = 604800, func = DropDown_OnClick },
-		{ text = _S.TIME_10DAY, value = 864000, func = DropDown_OnClick },
-		{ text = _S.TIME_2WEEK, value = 1209600, func = DropDown_OnClick },
-		{ text = _S.TIME_1MONTH, value = 2419200, func = DropDown_OnClick },
-		{ text = _S.TIME_3MONTH, value = 7257600, func = DropDown_OnClick },
+		{ text = _xrp.L.TIME_1DAY, value = 86400, func = DropDown_OnClick },
+		{ text = _xrp.L.TIME_3DAY, value = 259200, func = DropDown_OnClick },
+		{ text = _xrp.L.TIME_7DAY, value = 604800, func = DropDown_OnClick },
+		{ text = _xrp.L.TIME_10DAY, value = 864000, func = DropDown_OnClick },
+		{ text = _xrp.L.TIME_2WEEK, value = 1209600, func = DropDown_OnClick },
+		{ text = _xrp.L.TIME_1MONTH, value = 2419200, func = DropDown_OnClick },
+		{ text = _xrp.L.TIME_3MONTH, value = 7257600, func = DropDown_OnClick },
 	}
 end
 
-function xrpLocal:Options(pane)
+function _xrp.Options(pane)
 	local XRPOptions = InterfaceOptionsFramePanelContainer.XRP
 	if not XRPOptions.wasShown then
 		XRPOptions.wasShown = true
-		InterfaceOptionsFrame_OpenToCategory("XRP")
+		InterfaceOptionsFrame_OpenToCategory(XRPOptions)
 	end
 	InterfaceOptionsFrame_OpenToCategory(XRPOptions[pane] or XRPOptions[XRPOptions.lastShown] or XRPOptions.GENERAL)
 end
