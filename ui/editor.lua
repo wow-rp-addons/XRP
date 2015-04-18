@@ -15,8 +15,7 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local addonName, xrpLocal = ...
-local _S = xrpLocal.strings
+local addonName, _xrp = ...
 
 local CheckFields
 do
@@ -122,9 +121,9 @@ do
 
 		local value = xrp.profiles[name].parent
 		self.Parent.contents = value
-		self.Parent:SetFormattedText(SUBTITLE_FORMAT, _S.PARENT, value or NONE)
+		self.Parent:SetFormattedText(SUBTITLE_FORMAT, _xrp.L.PARENT, value or NONE)
 
-		self.TitleText:SetFormattedText(SUBTITLE_FORMAT, _S.PROFILE_EDITOR, name)
+		self.TitleText:SetFormattedText(SUBTITLE_FORMAT, _xrp.L.PROFILE_EDITOR, name)
 
 		CheckFields()
 	end
@@ -163,7 +162,7 @@ do
 		local function Parent_Click(self, arg1, arg2, checked)
 			if not checked then
 				UIDROPDOWNMENU_OPEN_MENU.contents = arg1
-				UIDROPDOWNMENU_OPEN_MENU:SetFormattedText(SUBTITLE_FORMAT, _S.PARENT, arg1 or NONE)
+				UIDROPDOWNMENU_OPEN_MENU:SetFormattedText(SUBTITLE_FORMAT, _xrp.L.PARENT, arg1 or NONE)
 				CheckFields()
 			end
 		end
@@ -245,7 +244,7 @@ function XRPEditorControls_OnLoad(self)
 		self.EditBox.Warning = self.Warning
 	end
 	if self.safeLength then
-		self.Warning.tooltipText = ("|cffcc0000%s|r %s"):format(STAT_FORMAT:format(_S.WARNING), _S.WARNING_LENGTH:format(fieldName, self.safeLength))
+		self.Warning.tooltipText = ("|cffcc0000%s|r %s"):format(STAT_FORMAT:format(_xrp.L.WARNING), _xrp.L.WARNING_LENGTH:format(fieldName, self.safeLength))
 	end
 	if self.field then
 		if not XRPEditor.fields then

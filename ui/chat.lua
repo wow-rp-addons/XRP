@@ -15,8 +15,7 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local addonName, xrpLocal = ...
-local _S = xrpLocal.strings
+local addonName, _xrp = ...
 
 -- The following chat types are linked together.
 local LINKED_CHAT_MSG = {
@@ -42,7 +41,7 @@ local function XRPGetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7
 	-- target's name with our (colored/RP) name. Being sure to return a
 	-- non-colored, non-RP name for our own text emotes fixes the issue.
 	if event == "CHAT_MSG_TEXT_EMOTE" then
-		if arg2 == xrpLocal.player then
+		if arg2 == _xrp.player then
 			return arg2
 		elseif arg12 then
 			-- TEXT_EMOTE doesn't have realm attached to arg2, because
@@ -73,8 +72,8 @@ local function XRPGetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7
 	end
 
 	local character = arg12 and xrp.characters.byGUID[arg12] or nil
-	local name = xrpLocal.settings.chat[event] and character and not character.hide and xrp:Strip(character.fields.NA) or Ambiguate(arg2, "guild")
-	local nameFormat = event == "CHAT_MSG_EMOTE" and (xrpLocal.settings.chat.emoteBraced and "[%s]" or "%s") .. (arg9 or "") or "%s"
+	local name = _xrp.settings.chat[event] and character and not character.hide and xrp:Strip(character.fields.NA) or Ambiguate(arg2, "guild")
+	local nameFormat = event == "CHAT_MSG_EMOTE" and (_xrp.settings.chat.emoteBraced and "[%s]" or "%s") .. (arg9 or "") or "%s"
 
 	if arg12 and ChatTypeInfo[chatType] and ChatTypeInfo[chatType].colorNameByClass then
 		local color = RAID_CLASS_COLORS[character.fields.GC]
@@ -147,10 +146,10 @@ local function ParseText_Hook(line, send)
 		local oldText = line:GetText()
 		local text = oldText
 		if text:find("%xt", nil, true) then
-			text = text:gsub("%%xt", xrp.characters.byUnit.target and xrp:Strip(xrp.characters.byUnit.target.fields.NA) or UnitName("target") or _S.NOBODY)
+			text = text:gsub("%%xt", xrp.characters.byUnit.target and xrp:Strip(xrp.characters.byUnit.target.fields.NA) or UnitName("target") or _xrp.L.NOBODY)
 		end
 		if text:find("%xf", nil, true) then
-			text = text:gsub("%%xf", xrp.characters.byUnit.focus and xrp:Strip(xrp.characters.byUnit.focus.fields.NA) or UnitName("focus") or _S.NOBODY)
+			text = text:gsub("%%xf", xrp.characters.byUnit.focus and xrp:Strip(xrp.characters.byUnit.focus.fields.NA) or UnitName("focus") or _xrp.L.NOBODY)
 		end
 		if text ~= oldText then
 			line:SetText(text)
@@ -159,7 +158,7 @@ local function ParseText_Hook(line, send)
 end
 
 local BlizzardGetColoredName = GetColoredName
-xrpLocal.settingsToggles.chat = {
+_xrp.settingsToggles.chat = {
 	names = function(setting)
 		if setting then
 			if names == nil then

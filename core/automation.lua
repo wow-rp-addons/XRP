@@ -15,8 +15,7 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local addonName, xrpLocal = ...
-local _S = xrpLocal.strings
+local addonName, _xrp = ...
 
 local GetCurrentForm
 do
@@ -71,7 +70,7 @@ do
 							break
 						end
 					end
-				elseif not classForm and UnitBuff("player", _S.TREANT_BUFF) then
+				elseif not classForm and UnitBuff("player", _xrp.L.TREANT_BUFF) then
 					classForm = "TREANT"
 				end
 			elseif playerClass == "PRIEST" or playerClass == "SHAMAN" then
@@ -134,36 +133,36 @@ local function DoSwap()
 			form = ("%s\30%s\29%s"):format(race, class, equip)
 		end
 		-- RACE-CLASS (Worgen only)
-		if not xrpLocal.auto[form] and class then
+		if not _xrp.auto[form] and class then
 			form = ("%s\30%s"):format(race, class)
 		end
 	end
 	-- RACE-Equipment (Worgen only)/CLASS-Equipment
-	if not xrpLocal.auto[form] and (race or class) and equip then
+	if not _xrp.auto[form] and (race or class) and equip then
 		form = ("%s\29%s"):format(race or class, equip)
 	end
 	-- RACE (Worgen only)/CLASS
-	if not xrpLocal.auto[form] and (race or class) then
+	if not _xrp.auto[form] and (race or class) then
 		form = race or class
 	end
 	-- DEFAULT-CLASS-Equipment (Worgen only)
-	if not xrpLocal.auto[form] and race and race ~= "DEFAULT" and class and equip then
+	if not _xrp.auto[form] and race and race ~= "DEFAULT" and class and equip then
 		form = ("DEFAULT\30%s\29%s"):format(class, equip)
 	end
 	-- DEFAULT-Equipment
-	if not xrpLocal.auto[form] and equip then
+	if not _xrp.auto[form] and equip then
 		form = ("DEFAULT\29%s"):format(equip)
 	end
 	-- DEFAULT
-	if not xrpLocal.auto[form] then
+	if not _xrp.auto[form] then
 		form = "DEFAULT"
 	end
 
 	--print(form and (form:gsub("\30", "-"):gsub("\29", "-")) or "NONE")
-	if not xrpLocal.auto[form] then
+	if not _xrp.auto[form] then
 		return
 	end
-	xrp.profiles[xrpLocal.auto[form]]:Activate(true)
+	xrp.profiles[_xrp.auto[form]]:Activate(true)
 end
 
 local function TestForm(event, unit)
@@ -193,12 +192,12 @@ end
 
 -- Shadowform (and possibly others) don't trigger a portrait update. Worgen
 -- form and equipment sets don't trigger a shapeshift update.
-xrpLocal:HookGameEvent("UNIT_PORTRAIT_UPDATE", TestForm, "player")
-xrpLocal:HookGameEvent("UPDATE_SHAPESHIFT_FORM", TestForm)
-xrpLocal:HookGameEvent("PLAYER_REGEN_ENABLED", TestForm)
-xrpLocal:HookGameEvent("PLAYER_REGEN_DISABLED", CancelTimer)
+_xrp.HookGameEvent("UNIT_PORTRAIT_UPDATE", TestForm, "player")
+_xrp.HookGameEvent("UPDATE_SHAPESHIFT_FORM", TestForm)
+_xrp.HookGameEvent("PLAYER_REGEN_ENABLED", TestForm)
+_xrp.HookGameEvent("PLAYER_REGEN_DISABLED", CancelTimer)
 
-xrpLocal.auto = setmetatable({}, {
+_xrp.auto = setmetatable({}, {
 	__index = function(self, form)
 		local profile = xrpSaved.auto[form]
 		if not xrpSaved.profiles[profile] then

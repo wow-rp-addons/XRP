@@ -15,8 +15,7 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local addonName, xrpLocal = ...
-local _S = xrpLocal.strings
+local addonName, _xrp = ...
 
 local current, status, failed
 
@@ -36,14 +35,14 @@ do
 		elseif not contents then
 			contents = ""
 		elseif field == "NI" then
-			contents = _S.NICKNAME:format(contents)
+			contents = _xrp.L.NICKNAME:format(contents)
 		elseif field == "AH" then
 			contents = xrp:Height(contents)
 		elseif field == "AW" then
 			contents = xrp:Weight(contents)
 		elseif field == "CU" or field == "DE" or field == "MO" or field == "HI" then
 			-- Link URLs in scrolling fields.
-			contents = contents:gsub("([ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789%-%.]+%.com[^%w])", "http://%1"):gsub("([ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789%-%.]+%.net[^%w])", "http://%1"):gsub("([ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789%-%.]+%.org[^%w])", "http://%1"):gsub("(bit%.ly%/)", "http://%1"):gsub("(https?://)http://", "%1"):gsub("(https?://[ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789%%%-%.%_%~%:%/%?#%[%]%@%!%$%&%'%(%)%*%+%,%;%=]+)", "|H%1|h|cffc845fa[%1]|r|h")
+			contents = contents:gsub("([%w%-%.]+%.com[^%w])", "http://%1"):gsub("([%w%-%.]+%.net[^%w])", "http://%1"):gsub("([%w%-%.]+%.org[^%w])", "http://%1"):gsub("([%w%-%.]+%.[%w%-]+%/)", "http://%1"):gsub("(https?://)http://", "%1"):gsub("(https?://[%w%%%-%.%_%~%:%/%?#%[%]%@%!%$%&%'%(%)%*%+%,%;%=]+)", "|H%1|h|cffc845fa[%1]|r|h")
 		end
 		XRPViewer.fields[field]:SetText(contents)
 		if field == "DE" or field == "HI" then
@@ -96,10 +95,10 @@ local function RECEIVE(event, name)
 		end
 		if status ~= "received" then
 			if event == "NOCHANGE" then
-				XRPViewer.XC:SetText(_S.NO_CHANGES)
+				XRPViewer.XC:SetText(_xrp.L.NO_CHANGES)
 				status = "nochange"
 			elseif status ~= "nochange" then
-				XRPViewer.XC:SetText(_S.RECEIVED)
+				XRPViewer.XC:SetText(_xrp.L.RECEIVED)
 				status = "received"
 			end
 		end
@@ -107,9 +106,9 @@ local function RECEIVE(event, name)
 end
 
 local function UPDATE(event, field)
-	if tostring(current) == xrpLocal.playerWithRealm then
+	if tostring(current) == _xrp.playerWithRealm then
 		if field then
-			FIELD("FIELD", xrpLocal.playerWithRealm, field)
+			FIELD("FIELD", _xrp.playerWithRealm, field)
 		else
 			Load(current)
 		end
@@ -119,10 +118,10 @@ end
 local function CHUNK(event, name, chunk, totalChunks)
 	if tostring(current) == name then
 		if chunk ~= totalChunks then
-			XRPViewer.XC:SetFormattedText(totalChunks and _S.RECEIVING_PARTS or _S.RECEIVING_UNKNOWN, chunk, totalChunks)
+			XRPViewer.XC:SetFormattedText(totalChunks and _xrp.L.RECEIVING_PARTS or _xrp.L.RECEIVING_UNKNOWN, chunk, totalChunks)
 			status = "receiving"
 		elseif status ~= "nochange" then
-			XRPViewer.XC:SetFormattedText(_S.RECEIVED_PARTS, chunk, totalChunks)
+			XRPViewer.XC:SetFormattedText(_xrp.L.RECEIVED_PARTS, chunk, totalChunks)
 			status = "received"
 		end
 	end
@@ -133,11 +132,11 @@ local function FAIL(event, name, reason)
 		failed = true
 		if not status then
 			if reason == "offline" then
-				XRPViewer.XC:SetText(_S.ERR_OFFLINE)
+				XRPViewer.XC:SetText(_xrp.L.ERR_OFFLINE)
 			elseif reason == "faction" then
-				XRPViewer.XC:SetText(_S.ERR_FACTION)
+				XRPViewer.XC:SetText(_xrp.L.ERR_FACTION)
 			elseif reason == "nomsp" then
-				XRPViewer.XC:SetText(_S.ERR_ADDON)
+				XRPViewer.XC:SetText(_xrp.L.ERR_ADDON)
 			end
 			status = "failed"
 		end
@@ -172,12 +171,12 @@ do
 		end
 	end
 	XRPViewerMenu_baseMenuList = {
-		{ text = _S.EXPORT_MENU, arg1 = "XRP_EXPORT", notCheckable = true, func = Menu_Click, },
+		{ text = _xrp.L.EXPORT_MENU, arg1 = "XRP_EXPORT", notCheckable = true, func = Menu_Click, },
 		{ text = REFRESH, arg1 = "XRP_REFRESH", notCheckable = true, func = Menu_Click, },
-		{ text = _S.ADD_FRIEND, arg1 = "XRP_FRIEND", notCheckable = true, func = Menu_Click, },
-		{ text = _S.BOOKMARK, arg1 = "XRP_BOOKMARK", isNotRadio = true, checked = Menu_Checked, func = Menu_Click, },
-		{ text = _S.HIDE_PROFILE, arg1 = "XRP_HIDE", isNotRadio = true, checked = Menu_Checked, func = Menu_Click, },
-		{ text = CLOSE, notCheckable = true, func = xrpLocal.noFunc, },
+		{ text = _xrp.L.ADD_FRIEND, arg1 = "XRP_FRIEND", notCheckable = true, func = Menu_Click, },
+		{ text = _xrp.L.BOOKMARK, arg1 = "XRP_BOOKMARK", isNotRadio = true, checked = Menu_Checked, func = Menu_Click, },
+		{ text = _xrp.L.HIDE_PROFILE, arg1 = "XRP_HIDE", isNotRadio = true, checked = Menu_Checked, func = Menu_Click, },
+		{ text = CLOSE, notCheckable = true, func = _xrp.noFunc, },
 	}
 end
 
@@ -288,7 +287,7 @@ function XRPViewer_View(self, player)
 	end
 end
 
-xrpLocal.settingsToggles.display.movableViewer = function(setting)
+_xrp.settingsToggles.display.movableViewer = function(setting)
 	local wasVisible = XRPViewer:IsVisible()
 	if wasVisible then
 		HideUIPanel(XRPViewer)
@@ -306,7 +305,7 @@ xrpLocal.settingsToggles.display.movableViewer = function(setting)
 			XRPViewer.TitleRegion = XRPViewer:CreateTitleRegion()
 		end
 		XRPViewer.TitleRegion:SetAllPoints("XRPViewerTitleBg")
-		xrpLocal.settingsToggles.display.closeOnEscapeViewer(xrpLocal.settings.display.closeOnEscapeViewer)
+		_xrp.settingsToggles.display.closeOnEscapeViewer(_xrp.settings.display.closeOnEscapeViewer)
 	elseif XRPViewer.TitleRegion then
 		XRPViewer:SetAttribute("UIPanelLayout-defined", true)
 		XRPViewer:SetAttribute("UIPanelLayout-enabled", true)
@@ -314,14 +313,14 @@ xrpLocal.settingsToggles.display.movableViewer = function(setting)
 		XRPViewer:SetClampedToScreen(false)
 		XRPViewer:SetFrameStrata("MEDIUM")
 		XRPViewer.TitleRegion:SetPoint("BOTTOMLEFT", XRPViewer, "TOPLEFT")
-		xrpLocal.settingsToggles.display.closeOnEscapeViewer(false)
+		_xrp.settingsToggles.display.closeOnEscapeViewer(false)
 	end
 	if wasVisible then
 		ShowUIPanel(XRPViewer)
 	end
 end
 local closeOnEscape
-xrpLocal.settingsToggles.display.closeOnEscapeViewer = function(setting)
+_xrp.settingsToggles.display.closeOnEscapeViewer = function(setting)
 	if setting and XRPViewer.TitleRegion then
 		if not closeOnEscape then
 			UISpecialFrames[#UISpecialFrames + 1] = "XRPViewer"

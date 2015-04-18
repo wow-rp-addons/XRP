@@ -15,8 +15,7 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local addonName, xrpLocal = ...
-local _S = xrpLocal.strings
+local addonName, _xrp = ...
 
 -- Closing interface options after viewing the raid profiles (compact raid
 -- frames) section tends to horrifically taint most of the UI. Warn users about
@@ -43,7 +42,7 @@ end)
 InterfaceOptionsFrame:HookScript("OnHide", function(self)
 	if not cufOpened then return end
 	cufOpened = false
-	StaticPopup_Show("XRP_RELOAD", _S.CUF_WARNING:format(GetAddOnMetadata(blamed, "Title")))
+	StaticPopup_Show("XRP_RELOAD", _xrp.L.CUF_WARNING:format(GetAddOnMetadata(blamed, "Title")))
 	blamed = nil
 end)
 

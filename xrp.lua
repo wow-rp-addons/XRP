@@ -15,29 +15,28 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local addonName, xrpLocal = ...
+local addonName, _xrp = ...
 
 xrp = {}
 
-xrpLocal.strings = {}
-local _S = xrpLocal.strings
+_xrp.L = {}
 
 do
 	local supported = {
 		enUS = "en",
 		enGB = "en",
 	}
-	xrpLocal.language = supported[GetLocale()] or "en"
+	_xrp.language = supported[GetLocale()] or "en"
 end
 
-xrpLocal.version = GetAddOnMetadata(addonName, "Version")
-xrpLocal.noFunc = function() end
-xrpLocal.weakMeta = { __mode = "v" }
-xrpLocal.weakKeyMeta = { __mode = "k" }
+_xrp.version = GetAddOnMetadata(addonName, "Version")
+_xrp.noFunc = function() end
+_xrp.weakMeta = { __mode = "v" }
+_xrp.weakKeyMeta = { __mode = "k" }
 
 do
 	local events = {}
-	function xrpLocal:FireEvent(event, ...)
+	function _xrp.FireEvent(event, ...)
 		if not events[event] then
 			return false
 		end
@@ -69,7 +68,7 @@ end
 do
 	local frame = CreateFrame("Frame")
 	local nextFrame = {}
-	function xrpLocal:NextFrame(func)
+	function _xrp.NextFrame(func)
 		if type(func) ~= "function" or nextFrame[func] then return end
 		nextFrame[func] = true
 		frame:Show()
@@ -84,7 +83,7 @@ do
 	frame:Hide()
 
 	local gameEvents = {}
-	function xrpLocal:HookGameEvent(event, func, unit)
+	function _xrp.HookGameEvent(event, func, unit)
 		if type(func) ~= "function" then
 			return false
 		elseif not gameEvents[event] then
@@ -100,7 +99,7 @@ do
 		end
 		return true
 	end
-	function xrpLocal:UnhookGameEvent(event, func)
+	function _xrp.UnhookGameEvent(event, func)
 		if not gameEvents[event] or not gameEvents[event][func] then
 			return false
 		end
@@ -148,24 +147,24 @@ local function CompareVersion(newVersion, oldVersion)
 	end
 end
 
-function xrpLocal:AddonUpdate(version)
-	if not version or version == self.version or version == xrpLocal.settings.newversion then return end
-	if CompareVersion(version, xrpLocal.settings.newversion or self.version) >= 0 then
-		xrpLocal.settings.newversion = version
+function _xrp.AddonUpdate(version)
+	if not version or version == _xrp.version or version == _xrp.settings.newversion then return end
+	if CompareVersion(version, _xrp.settings.newversion or _xrp.version) >= 0 then
+		_xrp.settings.newversion = version
 	end
 end
 
 local loadEvents = {}
 function loadEvents.ADDON_LOADED(event, addon)
 	if addon ~= addonName then return end
-	xrpLocal.playerWithRealm = xrp:UnitName("player")
-	xrpLocal.player, xrpLocal.realm = xrpLocal.playerWithRealm:match("^([^%-]+)%-([^%-]+)$")
-	xrpLocal:SavedVariableSetup()
+	_xrp.playerWithRealm = xrp:UnitName("player")
+	_xrp.player, _xrp.realm = _xrp.playerWithRealm:match("^([^%-]+)%-([^%-]+)$")
+	_xrp.SavedVariableSetup()
 
 	local newFields
 	do
 		local addonString = "%s/%s"
-		local VA = { addonString:format(GetAddOnMetadata(addonName, "Title"), xrpLocal.version) }
+		local VA = { addonString:format(GetAddOnMetadata(addonName, "Title"), _xrp.version) }
 		for i, addon in ipairs({ "GHI", "Tongues" }) do
 			if IsAddOnLoaded(addon) then
 				VA[#VA + 1] = addonString:format(addon, GetAddOnMetadata(addon, "Version"))
@@ -176,7 +175,7 @@ function loadEvents.ADDON_LOADED(event, addon)
 			GF = UnitFactionGroup("player"),
 			GR = select(2, UnitRace("player")),
 			GS = tostring(UnitSex("player")),
-			NA = xrpLocal.player, -- Fallback NA field.
+			NA = _xrp.player, -- Fallback NA field.
 			VA = table.concat(VA, ";"),
 		}
 	end
@@ -184,11 +183,11 @@ function loadEvents.ADDON_LOADED(event, addon)
 	for field, contents in pairs(newFields) do
 		if contents ~= fields[field] then
 			fields[field] = contents
-			versions[field] = xrpLocal:NewVersion(field)
+			versions[field] = _xrp.NewVersion(field)
 		end
 	end
-	fields.VP = tostring(xrpLocal.msp)
-	versions.VP = xrpLocal.msp
+	fields.VP = tostring(_xrp.msp)
+	versions.VP = _xrp.msp
 
 	if not xrpSaved.overrides.logout or xrpSaved.overrides.logout + 600 < time() then
 		xrpSaved.overrides.fields = {}
@@ -196,32 +195,32 @@ function loadEvents.ADDON_LOADED(event, addon)
 	end
 	xrpSaved.overrides.logout = nil
 
-	if xrpLocal.settings.cache.autoClean then
-		xrpLocal:CacheTidy()
+	if _xrp.settings.cache.autoClean then
+		_xrp.CacheTidy()
 	end
 
-	xrpLocal:LoadSettings()
+	_xrp.LoadSettings()
 
-	if xrpLocal.settings.newversion then
-		local update = CompareVersion(xrpLocal.settings.newversion, xrpLocal.version)
+	if _xrp.settings.newversion then
+		local update = CompareVersion(_xrp.settings.newversion, _xrp.version)
 		local now = time()
-		if update == 1 and (not xrpLocal.settings.versionwarning or xrpLocal.settings.versionwarning < now - 21600) then
+		if update == 1 and (not _xrp.settings.versionwarning or _xrp.settings.versionwarning < now - 21600) then
 			C_Timer.After(8, function()
-				print(_S.NEW_VERSION:format(xrpLocal.settings.newversion))
-				xrpLocal.settings.versionwarning = now
+				print(_xrp.L.NEW_VERSION:format(_xrp.settings.newversion))
+				_xrp.settings.versionwarning = now
 			end)
 		elseif update == -1 then
-			xrpLocal.settings.newversion = nil
-			xrpLocal.settings.versionwarning = nil
+			_xrp.settings.newversion = nil
+			_xrp.settings.versionwarning = nil
 		end
 	end
 
-	xrpLocal:UnhookGameEvent(event, loadEvents[event])
+	_xrp.UnhookGameEvent(event, loadEvents[event])
 	if fields.GF == "Neutral" then
-		xrpLocal:HookGameEvent("NEUTRAL_FACTION_SELECT_RESULT", loadEvents.NEUTRAL_FACTION_SELECT_RESULT)
+		_xrp.HookGameEvent("NEUTRAL_FACTION_SELECT_RESULT", loadEvents.NEUTRAL_FACTION_SELECT_RESULT)
 	end
-	xrpLocal:HookGameEvent("PLAYER_LOGIN", loadEvents.PLAYER_LOGIN)
-	xrpLocal:HookGameEvent("PLAYER_LOGOUT", loadEvents.PLAYER_LOGOUT)
+	_xrp.HookGameEvent("PLAYER_LOGIN", loadEvents.PLAYER_LOGIN)
+	_xrp.HookGameEvent("PLAYER_LOGOUT", loadEvents.PLAYER_LOGOUT)
 end
 function loadEvents.PLAYER_LOGIN(event)
 	-- UnitGUID() does not work prior to first PLAYER_LOGIN (but does
@@ -229,9 +228,9 @@ function loadEvents.PLAYER_LOGIN(event)
 	local GU = UnitGUID("player")
 	if xrpSaved.meta.fields.GU ~= GU then
 		xrpSaved.meta.fields.GU = GU
-		xrpSaved.meta.versions.GU = xrpLocal:NewVersion("GU")
+		xrpSaved.meta.versions.GU = _xrp.NewVersion("GU")
 	end
-	xrpLocal:UnhookGameEvent(event, loadEvents[event])
+	_xrp.UnhookGameEvent(event, loadEvents[event])
 end
 function loadEvents.PLAYER_LOGOUT(event)
 	-- Note: This code must be thoroughly tested if any changes are
@@ -284,7 +283,7 @@ function loadEvents.PLAYER_LOGOUT(event)
 		if fields.AH then
 			fields.AH = xrp:Height(fields.AH, "msp")
 		end
-		xrpCache[xrpLocal.playerWithRealm] = {
+		xrpCache[_xrp.playerWithRealm] = {
 			fields = fields,
 			versions = versions,
 			own = true,
@@ -297,9 +296,9 @@ function loadEvents.PLAYER_LOGOUT(event)
 end
 function loadEvents.NEUTRAL_FACTION_SELECT_RESULT(event)
 	xrpSaved.meta.fields.GF = UnitFactionGroup("player")
-	xrpSaved.meta.versions.GF = xrpLocal:NewVersion("GF")
-	xrpLocal:FireEvent("UPDATE", "GF")
-	xrpLocal:UnhookGameEvent(event, loadEvents[event])
+	xrpSaved.meta.versions.GF = _xrp.NewVersion("GF")
+	_xrp.FireEvent("UPDATE", "GF")
+	_xrp.UnhookGameEvent(event, loadEvents[event])
 end
 
-xrpLocal:HookGameEvent("ADDON_LOADED", loadEvents.ADDON_LOADED)
+_xrp.HookGameEvent("ADDON_LOADED", loadEvents.ADDON_LOADED)

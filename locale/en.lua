@@ -17,9 +17,9 @@
 
 local LANGUAGE = "en"
 
-local addonName, _L = ...
-if _L.language ~= LANGUAGE then return end
-setfenv(1, _L.strings)
+local addonName, _xrp = ...
+if _xrp.language ~= LANGUAGE then return end
+setfenv(1, _xrp.L)
 
 -- Canonical names for fields by identifier.
 FIELD_NA = "Name"

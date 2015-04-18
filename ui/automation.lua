@@ -15,11 +15,10 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local addonName, xrpLocal = ...
-local _S = xrpLocal.strings
+local addonName, _xrp = ...
 
-XRP_AUTO = _S.AUTO
-XRP_AUTOMATION = _S.AUTOMATION
+XRP_AUTO = _xrp.L.AUTO
+XRP_AUTOMATION = _xrp.L.AUTOMATION
 
 local isWorgen, playerClass = select(2, UnitRace("player")) == "Worgen", select(2, UnitClassBase("player"))
 if not (playerClass == "DRUID" or playerClass == "PRIEST" or playerClass == "SHAMAN") then
@@ -27,20 +26,20 @@ if not (playerClass == "DRUID" or playerClass == "PRIEST" or playerClass == "SHA
 end
 
 local FORM_NAMES = {
-	["DEFAULT"] = isWorgen and xrp.values.GR.Worgen or playerClass and (playerClass == "PRIEST" and _S.STANDARD or _S.HUMANOID) or _S.NOEQUIP,
-	["CAT"] = _S.CAT,
-	["BEAR"] = _S.BEAR,
-	["MOONKIN"] = _S.MOONKIN,
-	["ASTRAL"] = _S.ASTRAL,
-	["AQUATIC"] = _S.AQUATIC,
-	["TRAVEL"] = _S.TRAVEL,
-	["FLIGHT"] = _S.FLIGHT,
-	["TREANT"] = _S.TREANT,
-	["SHADOWFORM"] = _S.SHADOWFORM,
-	["GHOSTWOLF"] = _S.GHOST_WOLF,
+	["DEFAULT"] = isWorgen and xrp.values.GR.Worgen or playerClass and (playerClass == "PRIEST" and _xrp.L.STANDARD or _xrp.L.HUMANOID) or _xrp.L.NOEQUIP,
+	["CAT"] = _xrp.L.CAT,
+	["BEAR"] = _xrp.L.BEAR,
+	["MOONKIN"] = _xrp.L.MOONKIN,
+	["ASTRAL"] = _xrp.L.ASTRAL,
+	["AQUATIC"] = _xrp.L.AQUATIC,
+	["TRAVEL"] = _xrp.L.TRAVEL,
+	["FLIGHT"] = _xrp.L.FLIGHT,
+	["TREANT"] = _xrp.L.TREANT,
+	["SHADOWFORM"] = _xrp.L.SHADOWFORM,
+	["GHOSTWOLF"] = _xrp.L.GHOST_WOLF,
 	["HUMAN"] = xrp.values.GR.Human,
-	["DEFAULT\30SHADOWFORM"] = _S.WORGEN_SHADOW,
-	["HUMAN\30SHADOWFORM"] = _S.HUMAN_SHADOW,
+	["DEFAULT\30SHADOWFORM"] = _xrp.L.WORGEN_SHADOW,
+	["HUMAN\30SHADOWFORM"] = _xrp.L.HUMAN_SHADOW,
 }
 
 local function MakeWords(text)
@@ -56,10 +55,10 @@ end
 
 local function ToggleButtons(self)
 	local form, profile = self.Form.contents, self.Profile.contents
-	local changes = xrpLocal.auto[form] ~= profile
-	if next(xrpSaved.auto) and not xrpLocal.auto["DEFAULT"] then
+	local changes = _xrp.auto[form] ~= profile
+	if next(xrpSaved.auto) and not _xrp.auto["DEFAULT"] then
 		self.Warning:Show()
-		self.Warning:SetFormattedText(_S.WARN_FALLBACK, FORM_NAMES["DEFAULT"])
+		self.Warning:SetFormattedText(_xrp.L.WARN_FALLBACK, FORM_NAMES["DEFAULT"])
 	else
 		self.Warning:Hide()
 	end
@@ -70,13 +69,13 @@ end
 function XRPEditorAutomationSave_OnClick(self, button, down)
 	local parent = self:GetParent()
 	local form, profile = parent.Form.contents, parent.Profile.contents
-	xrpLocal.auto[form] = profile
+	_xrp.auto[form] = profile
 	ToggleButtons(parent)
 end
 
 function XRPEditorAutomationRevert_OnClick(self, button, down)
 	local parent = self:GetParent()
-	local formProfile = xrpLocal.auto[parent.Form.contents]
+	local formProfile = _xrp.auto[parent.Form.contents]
 	parent.Profile.contents = formProfile
 	parent.Profile.Text:SetText(formProfile or NONE)
 	ToggleButtons(parent)
@@ -112,7 +111,7 @@ do
 			local set = (UIDROPDOWNMENU_MENU_VALUE or "DEFAULT") .. self.value
 			UIDROPDOWNMENU_OPEN_MENU.contents = set
 			UIDROPDOWNMENU_OPEN_MENU.Text:SetText(MakeWords(set))
-			local Profile, setProfile = UIDROPDOWNMENU_OPEN_MENU:GetParent().Profile, xrpLocal.auto[set]
+			local Profile, setProfile = UIDROPDOWNMENU_OPEN_MENU:GetParent().Profile, _xrp.auto[set]
 			Profile.contents = setProfile
 			Profile.Text:SetText(setProfile or NONE)
 			ToggleButtons(UIDROPDOWNMENU_OPEN_MENU:GetParent())
@@ -142,7 +141,7 @@ do
 			end
 		elseif not noSet then
 			equipSets[#equipSets + 1]  = {
-				text = _S.NO_SETS,
+				text = _xrp.L.NO_SETS,
 				disabled = true,
 			}
 		end
@@ -154,7 +153,7 @@ do
 		if not checked then
 			UIDROPDOWNMENU_OPEN_MENU.contents = self.value
 			UIDROPDOWNMENU_OPEN_MENU.Text:SetText(MakeWords(self.value))
-			local Profile, formProfile = UIDROPDOWNMENU_OPEN_MENU:GetParent().Profile, xrpLocal.auto[self.value]
+			local Profile, formProfile = UIDROPDOWNMENU_OPEN_MENU:GetParent().Profile, _xrp.auto[self.value]
 			Profile.contents = formProfile
 			Profile.Text:SetText(formProfile or NONE)
 			ToggleButtons(UIDROPDOWNMENU_OPEN_MENU:GetParent())
@@ -412,7 +411,7 @@ function XRPEditorAutomation_OnShow(self)
 	end
 	needsUpdate = needsUpdate or not xrp.profiles[self.Profile.contents]
 	if needsUpdate then
-		local newProfile = xrpLocal.auto[selectedForm]
+		local newProfile = _xrp.auto[selectedForm]
 		self.Profile.contents = newProfile
 		self.Profile.Text:SetText(newProfile or NONE)
 	end
