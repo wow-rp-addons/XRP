@@ -22,7 +22,7 @@ _xrp.settingsToggles = {
 }
 
 local DATA_VERSION = 4
-local DATA_VERSION_ACCOUNT = 9
+local DATA_VERSION_ACCOUNT = 10
 
 _xrp.DEFAULT_SETTINGS = {
 	cache = {
@@ -43,6 +43,14 @@ _xrp.DEFAULT_SETTINGS = {
 		replacements = true,
 	},
 	display = {
+		altBloodElf = false,
+		altBloodElfForce = false,
+		altNightElf = false,
+		altNightElfForce = false,
+		altScourge = false,
+		altScourgeForce = false,
+		altTauren = false,
+		altTaurenForce = false,
 		closeOnEscapeViewer = true,
 		height = "ft",
 		movableViewer = false,
@@ -247,6 +255,16 @@ local upgradeAccountVars = {
 		xrpAccountSaved.settings.tooltip.replace = _xrp.DEFAULT_SETTINGS.tooltip.replace
 		xrpAccountSaved.settings.display.preloadBookmarks = nil
 		xrpAccountSaved.settings.display.preloadEditor = nil
+	end,
+	[10] = function() -- 6.1.2.0
+		xrpAccountSaved.settings.display.altBloodElf = _xrp.DEFAULT_SETTINGS.display.altBloodElf
+		xrpAccountSaved.settings.display.altBloodElfForce = _xrp.DEFAULT_SETTINGS.display.altBloodElfForce
+		xrpAccountSaved.settings.display.altNightElf = _xrp.DEFAULT_SETTINGS.display.altNightElf
+		xrpAccountSaved.settings.display.altNightElfForce = _xrp.DEFAULT_SETTINGS.display.altNightElfForce
+		xrpAccountSaved.settings.display.altScourge = _xrp.DEFAULT_SETTINGS.display.altScourge
+		xrpAccountSaved.settings.display.altScourgeForce = _xrp.DEFAULT_SETTINGS.display.altScourgeForce
+		xrpAccountSaved.settings.display.altTauren = _xrp.DEFAULT_SETTINGS.display.altTauren
+		xrpAccountSaved.settings.display.altTaurenForce = _xrp.DEFAULT_SETTINGS.display.altTaurenForce
 	end,
 }
 

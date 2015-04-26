@@ -107,3 +107,92 @@ BINDING_NAME_XRP_STATUS = _xrp.L.TOGGLE_STATUS
 BINDING_NAME_XRP_VIEWER = _xrp.L.VIEW_TARGET_MOUSEOVER
 BINDING_NAME_XRP_VIEWER_TARGET = _xrp.L.VIEW_TARGET
 BINDING_NAME_XRP_VIEWER_MOUSEOVER = _xrp.L.VIEW_MOUSEOVER
+
+_xrp.settingsToggles.display.altBloodElf = function(setting)
+	if setting and xrp.values.GR.BloodElf == _xrp.L.VALUE_GR_BLOODELF then
+		xrp.values.GR.BloodElf = _xrp.L.VALUE_GR_BLOODELF_ALT
+		_xrp.settingsToggles.display.altBloodElfForce(_xrp.settings.display.altBloodElfForce)
+	elseif not setting then
+		if xrp.values.GR.BloodElf == _xrp.L.VALUE_GR_BLOODELF_ALT then
+			xrp.values.GR.BloodElf = _xrp.L.VALUE_GR_BLOODELF
+		end
+		_xrp.settingsToggles.display.altBloodElfForce(false)
+	end
+end
+_xrp.settingsToggles.display.altBloodElfForce = function(setting)
+	if setting and xrpSaved.meta.fields.GR == "BloodElf" and xrpSaved.meta.fields.RA ~= _xrp.L.VALUE_GR_BLOODELF_ALT then
+		xrpSaved.meta.fields.RA = _xrp.L.VALUE_GR_BLOODELF_ALT
+		xrpSaved.meta.versions.RA = _xrp.NewVersion("RA")
+		_xrp.FireEvent("UPDATE", "RA")
+	elseif (not setting or xrpSaved.meta.fields.GR ~= "BloodElf") and xrpSaved.meta.fields.RA == _xrp.L.VALUE_GR_BLOODELF_ALT then
+		xrpSaved.meta.fields.RA = nil
+		xrpSaved.meta.versions.RA = nil
+		_xrp.FireEvent("UPDATE", "RA")
+	end
+end
+_xrp.settingsToggles.display.altNightElf = function(setting)
+	if setting and xrp.values.GR.NightElf == _xrp.L.VALUE_GR_NIGHTELF then
+		xrp.values.GR.NightElf = _xrp.L.VALUE_GR_NIGHTELF_ALT
+		_xrp.settingsToggles.display.altNightElfForce(_xrp.settings.display.altNightElfForce)
+	elseif not setting then
+		if xrp.values.GR.NightElf == _xrp.L.VALUE_GR_NIGHTELF_ALT then
+			xrp.values.GR.NightElf = _xrp.L.VALUE_GR_NIGHTELF
+		end
+		_xrp.settingsToggles.display.altNightElfForce(false)
+	end
+end
+_xrp.settingsToggles.display.altNightElfForce = function(setting)
+	if setting and xrpSaved.meta.fields.GR == "NightElf" and xrpSaved.meta.fields.RA ~= _xrp.L.VALUE_GR_NIGHTELF_ALT then
+		xrpSaved.meta.fields.RA = _xrp.L.VALUE_GR_NIGHTELF_ALT
+		xrpSaved.meta.versions.RA = _xrp.NewVersion("RA")
+		_xrp.FireEvent("UPDATE", "RA")
+	elseif (not setting or xrpSaved.meta.fields.GR ~= "NightElf") and xrpSaved.meta.fields.RA == _xrp.L.VALUE_GR_NIGHTELF_ALT then
+		xrpSaved.meta.fields.RA = nil
+		xrpSaved.meta.versions.RA = nil
+		_xrp.FireEvent("UPDATE", "RA")
+	end
+end
+_xrp.settingsToggles.display.altScourge = function(setting)
+	if setting and xrp.values.GR.Scourge == _xrp.L.VALUE_GR_SCOURGE then
+		xrp.values.GR.Scourge = _xrp.L.VALUE_GR_SCOURGE_ALT
+		_xrp.settingsToggles.display.altScourgeForce(_xrp.settings.display.altScourgeForce)
+	elseif not setting then
+		if xrp.values.GR.Scourge == _xrp.L.VALUE_GR_SCOURGE_ALT then
+			xrp.values.GR.Scourge = _xrp.L.VALUE_GR_SCOURGE
+		end
+		_xrp.settingsToggles.display.altScourgeForce(false)
+	end
+end
+_xrp.settingsToggles.display.altScourgeForce = function(setting)
+	if setting and xrpSaved.meta.fields.GR == "Scourge" and xrpSaved.meta.fields.RA ~= _xrp.L.VALUE_GR_SCOURGE_ALT then
+		xrpSaved.meta.fields.RA = _xrp.L.VALUE_GR_SCOURGE_ALT
+		xrpSaved.meta.versions.RA = _xrp.NewVersion("RA")
+		_xrp.FireEvent("UPDATE", "RA")
+	elseif (not setting or xrpSaved.meta.fields.GR ~= "Scourge") and xrpSaved.meta.fields.RA == _xrp.L.VALUE_GR_SCOURGE_ALT then
+		xrpSaved.meta.fields.RA = nil
+		xrpSaved.meta.versions.RA = nil
+		_xrp.FireEvent("UPDATE", "RA")
+	end
+end
+_xrp.settingsToggles.display.altTauren = function(setting)
+	if setting and xrp.values.GR.Tauren == _xrp.L.VALUE_GR_TAUREN then
+		xrp.values.GR.Tauren = _xrp.L.VALUE_GR_TAUREN_ALT
+		_xrp.settingsToggles.display.altTaurenForce(_xrp.settings.display.altTaurenForce)
+	elseif not setting then
+		if xrp.values.GR.Tauren == _xrp.L.VALUE_GR_TAUREN_ALT then
+			xrp.values.GR.Tauren = _xrp.L.VALUE_GR_TAUREN
+		end
+		_xrp.settingsToggles.display.altTaurenForce(false)
+	end
+end
+_xrp.settingsToggles.display.altTaurenForce = function(setting)
+	if setting and xrpSaved.meta.fields.GR == "Tauren" and xrpSaved.meta.fields.RA ~= _xrp.L.VALUE_GR_TAUREN_ALT then
+		xrpSaved.meta.fields.RA = _xrp.L.VALUE_GR_TAUREN_ALT
+		xrpSaved.meta.versions.RA = _xrp.NewVersion("RA")
+		_xrp.FireEvent("UPDATE", "RA")
+	elseif (not setting or xrpSaved.meta.fields.GR ~= "Tauren") and xrpSaved.meta.fields.RA == _xrp.L.VALUE_GR_TAUREN_ALT then
+		xrpSaved.meta.fields.RA = nil
+		xrpSaved.meta.versions.RA = nil
+		_xrp.FireEvent("UPDATE", "RA")
+	end
+end
