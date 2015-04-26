@@ -248,9 +248,35 @@
 					<KeyValue key="xrpSetting" value="units"/>
 				</KeyValues>
 			</CheckButton>
+			<CheckButton parentKey="MinimapEnabled" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.MenusUnits" relativePoint="BOTTOMLEFT" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="xrpTable" value="minimap"/>
+					<KeyValue key="xrpSetting" value="enabled"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="MinimapDetached" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.MinimapEnabled" relativePoint="BOTTOMLEFT" x="24" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="dependsOn" value="MinimapEnabled"/>
+					<KeyValue key="xrpTable" value="minimap"/>
+					<KeyValue key="xrpSetting" value="detached"/>
+				</KeyValues>
+			</CheckButton>
+		</Frames>
+	</Frame>
+	<Frame parentKey="XRPDisplay" parent="InterfaceOptionsFramePanelContainer" inherits="XRPOptionsTemplate">
+		<KeyValues>
+			<KeyValue key="paneID" value="DISPLAY"/>
+		</KeyValues>
+		<Frames>
 			<Frame name="XRPOptionsGeneralHeight" parentKey="Height" inherits="XRPOptionsDropDownTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.MenusUnits" relativePoint="BOTTOMLEFT" x="-15" y="-8"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.SubText" relativePoint="BOTTOMLEFT" x="-17" y="-8"/>
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="xrpTable" value="display"/>
@@ -268,23 +294,80 @@
 					<KeyValue key="baseMenuList" value="XRPOptionsGeneralWeight_baseMenuList" type="global"/>
 				</KeyValues>
 			</Frame>
-			<CheckButton parentKey="MinimapEnabled" inherits="XRPOptionsCheckboxTemplate">
+			<CheckButton parentKey="AltBloodElf" inherits="XRPOptionsCheckboxTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.Weight" relativePoint="BOTTOMLEFT" x="15" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="xrpTable" value="minimap"/>
-					<KeyValue key="xrpSetting" value="enabled"/>
+					<KeyValue key="xrpTable" value="display"/>
+					<KeyValue key="xrpSetting" value="altBloodElf"/>
 				</KeyValues>
 			</CheckButton>
-			<CheckButton parentKey="MinimapDetached" inherits="XRPOptionsCheckboxTemplate">
+			<CheckButton parentKey="AltBloodElfForce" inherits="XRPOptionsCheckboxTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.MinimapEnabled" relativePoint="BOTTOMLEFT" x="24" y="-8"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.AltBloodElf" relativePoint="BOTTOMLEFT" x="24" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="dependsOn" value="MinimapEnabled"/>
-					<KeyValue key="xrpTable" value="minimap"/>
-					<KeyValue key="xrpSetting" value="detached"/>
+					<KeyValue key="dependsOn" value="AltBloodElf"/>
+					<KeyValue key="xrpTable" value="display"/>
+					<KeyValue key="xrpSetting" value="altBloodElfForce"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="AltNightElf" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.AltBloodElfForce" relativePoint="BOTTOMLEFT" x="-24" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="xrpTable" value="display"/>
+					<KeyValue key="xrpSetting" value="altNightElf"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="AltNightElfForce" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.AltNightElf" relativePoint="BOTTOMLEFT" x="24" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="dependsOn" value="AltNightElf"/>
+					<KeyValue key="xrpTable" value="display"/>
+					<KeyValue key="xrpSetting" value="altNightElfForce"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="AltScourge" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.AltNightElfForce" relativePoint="BOTTOMLEFT" x="-24" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="xrpTable" value="display"/>
+					<KeyValue key="xrpSetting" value="altScourge"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="AltScourgeForce" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.AltScourge" relativePoint="BOTTOMLEFT" x="24" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="dependsOn" value="AltScourge"/>
+					<KeyValue key="xrpTable" value="display"/>
+					<KeyValue key="xrpSetting" value="altScourgeForce"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="AltTauren" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.AltScourgeForce" relativePoint="BOTTOMLEFT" x="-24" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="xrpTable" value="display"/>
+					<KeyValue key="xrpSetting" value="altTauren"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="AltTaurenForce" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.AltTauren" relativePoint="BOTTOMLEFT" x="24" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="dependsOn" value="AltTauren"/>
+					<KeyValue key="xrpTable" value="display"/>
+					<KeyValue key="xrpSetting" value="altTaurenForce"/>
 				</KeyValues>
 			</CheckButton>
 		</Frames>

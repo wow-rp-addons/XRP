@@ -151,12 +151,14 @@ end
 
 local OPTIONS_NAME = {
 	GENERAL = GENERAL,
+	DISPLAY = DISPLAY,
 	CHAT = CHAT,
 	TOOLTIP = _xrp.L.TOOLTIP,
 	ADVANCED = ADVANCED_LABEL,
 }
 local OPTIONS_DESCRIPTION = {
 	GENERAL = _xrp.L.GENERAL_OPTIONS,
+	DISPLAY = _xrp.L.DISPLAY_OPTIONS,
 	CHAT = _xrp.L.CHAT_OPTIONS,
 	TOOLTIP = _xrp.L.TOOLTIP_OPTIONS,
 	ADVANCED = _xrp.L.ADVANCED_OPTIONS,
@@ -196,6 +198,14 @@ local OPTIONS_TEXT = {
 		CHAT_MSG_INSTANCE_CHAT = INSTANCE_CHAT,
 	},
 	display = {
+		altBloodElf = _xrp.L.ALT_RACE:format(_xrp.L.VALUE_GR_BLOODELF_ALT, _xrp.L.VALUE_GR_BLOODELF),
+		altBloodElfForce = _xrp.L.ALT_RACE_FORCE:format(_xrp.L.VALUE_GR_BLOODELF_ALT),
+		altNightElf = _xrp.L.ALT_RACE:format(_xrp.L.VALUE_GR_NIGHTELF_ALT, _xrp.L.VALUE_GR_NIGHTELF),
+		altNightElfForce = _xrp.L.ALT_RACE_FORCE:format(_xrp.L.VALUE_GR_NIGHTELF_ALT),
+		altScourge = _xrp.L.ALT_RACE:format(_xrp.L.VALUE_GR_SCOURGE_ALT, _xrp.L.VALUE_GR_SCOURGE),
+		altScourgeForce = _xrp.L.ALT_RACE_FORCE:format(_xrp.L.VALUE_GR_SCOURGE_ALT),
+		altTauren = _xrp.L.ALT_RACE:format(_xrp.L.VALUE_GR_TAUREN_ALT, _xrp.L.VALUE_GR_TAUREN),
+		altTaurenForce = _xrp.L.ALT_RACE_FORCE:format(_xrp.L.VALUE_GR_TAUREN_ALT),
 		movableViewer = _xrp.L.MOVABLE_VIEWER,
 		closeOnEscapeViewer = _xrp.L.CLOSE_ESCAPE_VIEWER,
 		height = _xrp.L.HEIGHT_DISPLAY,
