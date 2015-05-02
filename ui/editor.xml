@@ -69,6 +69,7 @@
 		<Scripts>
 			<OnAttributeChanged function="XRPEditorControls_OnAttributeChanged"/>
 			<OnTabPressed function="XRPEditorControls_OnTabPressed"/>
+			<OnEnterPressed function="EditBox_ClearFocus"/>
 			<OnTextChanged function="XRPEditorControls_OnTextChanged"/>
 			<OnEditFocusGained function="XRPEditorControls_OnEditFocusGained"/>
 			<OnEditFocusLost function="XRPEditorControls_OnEditFocusLost"/>
@@ -594,10 +595,10 @@
 		</Frames>
 		<Attributes>
 			<Attribute name="UIPanelLayout-pushable" type="number" value="4"/>
-			<Attribute name="UIPanelLayout-height" type="number" value="545"/>
+			<Attribute name="UIPanelLayout-extraHeight" type="number" value="20"/>
 		</Attributes>
 		<KeyValues>
-			<KeyValue key="titleText" value="Profile Editor"/>
+			<KeyValue key="titleKey" value="PROFILE_EDITOR"/>
 			<KeyValue key="portraitUnit" value="player"/>
 			<KeyValue key="Edit" value="XRPEditor_Edit" type="global"/>
 			<KeyValue key="subframe" value="Automation"/>

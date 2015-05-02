@@ -21,6 +21,8 @@ local addonName, _xrp = ...
 if _xrp.language ~= LANGUAGE then return end
 setfenv(1, _xrp.L)
 
+local UNTRANSLATED = " (Needs translation.)"
+
 -- Canonical names for fields by identifier.
 FIELD_NA = "Name"
 FIELD_NI = "Nickname"
@@ -436,3 +438,6 @@ NO_CHANGES = "No changes."
 ERR_OFFLINE = "Character is not online."
 ERR_FACTION = "Character is opposite faction."
 ERR_ADDON = "No RP addon appears to be active."
+
+-- ui/viewer.xml
+PROFILE_VIEWER = "Profile Viewer"

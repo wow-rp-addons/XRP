@@ -208,10 +208,12 @@ function XRPBookmarksEntry_OnClick(self, button, down)
 	if button == "RightButton" then
 		self.Selected:Show()
 		if self.character.own then
+			self.baseMenuList[2].disabled = true
 			self.baseMenuList[4].disabled = true
 			self.baseMenuList[5].disabled = true
 			self.baseMenuList[6].disabled = true
 		else
+			self.baseMenuList[2].disabled = nil
 			local GF = self.character.fields.GF
 			if GF and GF ~= xrp.current.fields.GF then
 				self.baseMenuList[4].disabled = true

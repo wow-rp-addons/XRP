@@ -174,7 +174,7 @@ function XRPTemplatesPanel_OnLoad(self)
 	if self.numTabs then
 		PanelTemplates_SetTab(self, 1)
 	end
-	self.TitleText:SetText(self.titleText)
+	self.TitleText:SetText(self.titleText or _xrp.L[self.titleKey] or _G[self.titleKey])
 end
 
 function XRPTemplatesPanel_OnShow(self)

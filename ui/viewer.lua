@@ -42,7 +42,7 @@ do
 			contents = xrp:Weight(contents)
 		elseif field == "CU" or field == "DE" or field == "MO" or field == "HI" then
 			-- Link URLs in scrolling fields.
-			contents = contents:gsub("([%w%-%.]+%.com[^%w])", "http://%1"):gsub("([%w%-%.]+%.net[^%w])", "http://%1"):gsub("([%w%-%.]+%.org[^%w])", "http://%1"):gsub("([%w%-%.]+%.[%w%-]+%/)", "http://%1"):gsub("(https?://)http://", "%1"):gsub("(https?://[%w%%%-%.%_%~%:%/%?#%[%]%@%!%$%&%'%(%)%*%+%,%;%=]+)", "|H%1|h|cffc845fa[%1]|r|h")
+			contents = contents:gsub("([%w%-%.]+%.com%f[^%w%/])", "http://%1"):gsub("([%w%-%.]+%.net%f[^%w%/])", "http://%1"):gsub("([%w%-%.]+%.org%f[^%w%/])", "http://%1"):gsub("([%w%-%.]+%.[%w%-]+%/)", "http://%1"):gsub("(https?://)http://", "%1"):gsub("<?(https?://[%w%%%-%.%_%~%:%/%?#%[%]%@%!%$%&%'%(%)%*%+%,%;%=]+)>?", "|H%1|h|cffc845fa<%1>|r|h")
 		end
 		XRPViewer.fields[field]:SetText(contents)
 		if field == "DE" or field == "HI" then

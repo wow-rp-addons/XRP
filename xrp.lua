@@ -184,6 +184,7 @@ function loadEvents.ADDON_LOADED(event, addon)
 		if contents ~= fields[field] then
 			fields[field] = contents
 			versions[field] = _xrp.NewVersion(field)
+			_xrp.FireEvent("UPDATE", field)
 		end
 	end
 	fields.VP = tostring(_xrp.msp)

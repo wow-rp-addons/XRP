@@ -358,7 +358,7 @@
 			<Attribute name="UIPanelLayout-extraHeight" type="number" value="20"/>
 		</Attributes>
 		<KeyValues>
-			<KeyValue key="titleText" value="Profile Viewer"/>
+			<KeyValue key="titleKey" value="PROFILE_VIEWER"/>
 			<KeyValue key="helpPlates" value="XRPViewer_helpPlates" type="global"/>
 			<KeyValue key="nextRefresh" value="0" type="number"/>
 			<KeyValue key="View" value="XRPViewer_View" type="global"/>
