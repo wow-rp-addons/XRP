@@ -330,8 +330,48 @@ XRPViewer_helpPlates = {
 	},
 	{
 		ButtonPos = { x = 218, y = -466 },
-		HighLightBox = { x = 242, y = -477, width = 190, height = 22 },
+		HighLightBox = { x = 242, y = -477, width = 186, height = 22 },
 		ToolTipDir = "UP",
 		ToolTipText = _xrp.L.HELP_VIEWER_STATUS,
 	},
+	{
+		ButtonPos = { x = 429, y = -471 },
+		HighLightBox = { x = 426, y = -486, width = 13, height = 13 },
+		ToolTipDir = "DOWN",
+		ToolTipText = _xrp.L.HELP_VIEWER_RESIZE,
+	},
 }
+function XRPViewerHelpButton_PreClick(self, button, down)
+	if HelpPlate_IsShowing(XRPViewer.helpPlates) then return end
+	local width, height = XRPViewer:GetWidth(), XRPViewer:GetHeight()
+	-- 439, 525 default
+	local plates = XRPViewer_helpPlates
+	-- Menu
+	plates[1].ButtonPos.x = width - 81
+	plates[1].HighLightBox.x = width - 45
+	-- Single lines
+	plates[2].ButtonPos.x = width - 84
+	plates[2].HighLightBox.width = width - 154
+	-- Single boxes
+	plates[3].ButtonPos.x = width - 51
+	plates[3].HighLightBox.width = width - 25
+	-- Multiline boxes
+	plates[4].ButtonPos.x = width - 51
+	plates[4].HighLightBox.width = width - 25
+	plates[4].HighLightBox.height = height - 170
+	-- Addon info
+	plates[5].ButtonPos.x = width - 255
+	plates[5].ButtonPos.y = 59 - height
+	plates[5].HighLightBox.y = 48 - height
+	plates[5].HighLightBox.width = width - 239
+	-- Status info
+	plates[6].ButtonPos.x = width - 221
+	plates[6].ButtonPos.y = 59 - height
+	plates[6].HighLightBox.x = width - 201
+	plates[6].HighLightBox.y = 48 - height
+	-- Resize handle
+	plates[7].ButtonPos.x = width - 10
+	plates[7].ButtonPos.y = 54 - height
+	plates[7].HighLightBox.x = width - 13
+	plates[7].HighLightBox.y = 39 - height
+end

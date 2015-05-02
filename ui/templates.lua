@@ -72,7 +72,9 @@ function XRPTemplatesTabButton_OnClick(self, button, down)
 		local PreClick = parent.HelpButton:GetScript("PreClick")
 		if PreClick then
 			PreClick(parent.HelpButton, "LeftButton", false)
-			HelpPlate_Show(parent.helpPlates, parent, self, true)
+			if not HelpPlate_IsShowing(parent.helpPlates) then
+				HelpPlate_Show(parent.helpPlates, parent, self, true)
+			end
 		end
 	end
 	PlaySound("igCharacterInfoTab")
@@ -113,14 +115,17 @@ function XRPTemplatesScrollFrame_OnLoad(self)
 	self.ScrollBar.ScrollUpButton:SetPoint("BOTTOM", self.ScrollBar, "TOP", 0, -4)
 	self.ScrollBar.ScrollUpButton:Disable()
 	self.ScrollBar:Hide()
-	if self.EditBox then
-		self.EditBox:SetWidth(self:GetWidth() - 18)
-	end
 	if self.FocusButton then
 		self.ScrollBar:SetFrameLevel(self.FocusButton:GetFrameLevel() + 2)
 		if self.EditBox then
 			self.EditBox:SetFrameLevel(self.FocusButton:GetFrameLevel() + 1)
 		end
+	end
+end
+
+function XRPTemplatesScrollFrame_OnSizeChanged(self, width, height)
+	if self.EditBox then
+		self.EditBox:SetWidth(width - 18)
 	end
 end
 
