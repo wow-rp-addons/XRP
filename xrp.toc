@@ -1,6 +1,6 @@
 ## Interface: 60100
 ## Title: XRP
-## Version: 6.1.2.0_beta1
+## Version: 6.1.2.0_beta2
 ## Author: Bor of Wyrmrest Accord (US)
 ## Notes: Yet another roleplaying profile addon.
 ## X-Category: Roleplay
