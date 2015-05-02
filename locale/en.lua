@@ -323,6 +323,7 @@ HELP_VIEWER_SHORT = "The shorter fields displayed here may not always be able to
 HELP_VIEWER_LONG = "The longer fields displayed here will have scroll bars appear if the text is too lengthy to fit in the field as-is.\n\nIn addition, most internet links will be displayed in |cffc845faepic purple|r. When clicked, a box will pop up, allowing you to copy the link."
 HELP_VIEWER_ADDONS = "The names and versions of certain addons active for the profile's subject are displayed here.\n\nIf there is too much text to display in the short line available, mouseover will display the full list."
 HELP_VIEWER_STATUS = "The incoming status of the profile currently being viewed is displayed here. In general, it will show whether the profile is in the process of receiving or whether it has been received."
+HELP_VIEWER_RESIZE = "The small handle here may be clicked and dragged to resize the viewer window.\n\nTo reset the size of the viewer, right-click on it instead."
 
 -- ui/menus.lua
 ROLEPLAY_PROFILE = "Roleplay Profile"

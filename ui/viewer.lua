@@ -226,12 +226,45 @@ function XRPViewerMenu_PreClick(self, button, down)
 	else
 		self.baseMenuList[2].disabled = nil
 	end
-	if isOwn or not current.fields.VA then
+	local noProfile = not current.fields.VA
+	if isOwn or noProfile then
 		self.baseMenuList[4].disabled = true
 		self.baseMenuList[5].disabled = true
 	else
 		self.baseMenuList[4].disabled = nil
 		self.baseMenuList[5].disabled = nil
+	end
+	if noProfile then
+		self.baseMenuList[1].disabled = true
+	else
+		self.baseMenuList[1].disabled = nil
+	end
+end
+
+function XRPViewerResize_OnClick(self, button, down)
+	XRPViewer:SetWidth(439)
+	XRPViewer:SetHeight(525)
+	if XRPViewer:GetAttribute("UIPanelLayout-defined") then
+		UpdateUIPanelPositions(XRPViewer)
+	end
+end
+
+function XRPViewerResize_OnMouseDown(self, button)
+	if button == "LeftButton" then
+		self:SetButtonState("PUSHED", true)
+		self:GetHighlightTexture():Hide()
+		XRPViewer:StartSizing()
+	end
+end
+
+function XRPViewerResize_OnMouseUp(self, button)
+	if button == "LeftButton" then
+		self:SetButtonState("NORMAL", false)
+		self:GetHighlightTexture():Show()
+		XRPViewer:StopMovingOrSizing()
+		if XRPViewer:GetAttribute("UIPanelLayout-defined") then
+			UpdateUIPanelPositions(XRPViewer)
+		end
 	end
 end
 
@@ -288,15 +321,14 @@ function XRPViewer_View(self, player)
 end
 
 _xrp.settingsToggles.display.movableViewer = function(setting)
-	local wasVisible = XRPViewer:IsVisible()
-	if wasVisible then
+	local wasShown = XRPViewer:IsShown()
+	if wasShown then
 		HideUIPanel(XRPViewer)
 	end
 	if setting then
 		XRPViewer:SetAttribute("UIPanelLayout-defined", false)
 		XRPViewer:SetAttribute("UIPanelLayout-enabled", false)
 		XRPViewer:SetMovable(true)
-		XRPViewer:SetClampedToScreen(true)
 		XRPViewer:SetFrameStrata("HIGH")
 		if not XRPViewer:GetPoint() then
 			XRPViewer:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 50, -125)
@@ -310,12 +342,11 @@ _xrp.settingsToggles.display.movableViewer = function(setting)
 		XRPViewer:SetAttribute("UIPanelLayout-defined", true)
 		XRPViewer:SetAttribute("UIPanelLayout-enabled", true)
 		XRPViewer:SetMovable(false)
-		XRPViewer:SetClampedToScreen(false)
 		XRPViewer:SetFrameStrata("MEDIUM")
 		XRPViewer.TitleRegion:SetPoint("BOTTOMLEFT", XRPViewer, "TOPLEFT")
 		_xrp.settingsToggles.display.closeOnEscapeViewer(false)
 	end
-	if wasVisible then
+	if wasShown then
 		ShowUIPanel(XRPViewer)
 	end
 end

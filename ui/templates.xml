@@ -108,6 +108,7 @@
 		</Layers>
 		<Scripts>
 			<OnLoad function="XRPTemplatesScrollFrame_OnLoad"/>
+			<OnSizeChanged function="XRPTemplatesScrollFrame_OnSizeChanged"/>
 		</Scripts>
 	</ScrollFrame>
 	<Button name="XRPHelpButtonTemplate" parentKey="HelpButton" inherits="MainHelpPlateButton" virtual="true">
