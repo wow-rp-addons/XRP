@@ -15,7 +15,6 @@ locale\all.lua
 core\utils.lua
 core\export.lua
 core\profiles.lua
-lib\libfakedraw.lua
 lib\libbw.lua
 core\msp.lua
 core\characters.lua
