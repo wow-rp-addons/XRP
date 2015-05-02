@@ -1,74 +1,42 @@
-6.1.0.0 (2015-02-24):
+6.1.2.0_beta1 (2015-05-02):
 
-	- A major new UI component has been added, the long-promised bookmarks
-	  panel. This panel is accessible from the minimap button, from the
-	  '/xrp bookmarks' chat command, and from a newly-added keybinding.
+	- If you are upgrading from 6.1.0.0 or earlier, please fully-restart the
+	  game client when upgrading. Some new files have been added, and a
+	  restart is necessary for the game client to see these.
 
-		- The bookmarks panel provides some limited mechanisms to filter and
-		  search through all profiles XRP has cached, including a few
-		  predefined views.
+	- Options have been added (under the new XRP -> Display category in the
+	  interface options) to replace certain race names with alternate or
+	  translated values (such as replacing "Undead" with "Forsaken" or "Blood
+	  Elf" with "Sin'dorei", among others).
 
-	- A simple in-game help system has been added to the bookmarks, editor,
-	  and viewer frames. It is accessed by clicking the large yellow button
-	  marked "i".
+	- XRP's profile viewer is now resizable. Use the handle at the
+	  bottom-right of the frame to resize. Right-clicking the handle will
+	  reset the size to default.
 
-	- A profile exporter, which allows you to copy a plain-text version of a
-	  profile, has been added. This exporter is accessed through the editor,
-	  the viewer, and the bookmarks frames.
+	- The addon version information displayed in the profile viewer may now be
+	  moused over in order to see any further addons or version numbers which
+	  do not fit in the available space.
 
-	- A new tooltip mode, separating the roleplay information from the main
-	  tooltip has been added. Disable "replace tooltip for players and pets"
-	  in the interface options to enable this mode.
+	- Clickable URLs in profiles have been changed somewhat, now bracketed by
+	  angle brackets instead of square brackets. In addition, the URL-matching
+	  has been adjusted to (hopefully) match more URLs properly.
 
-	- A "Roleplay Profile" menu entry has been added to Battle.net friends
-	  list entries, like for in-game friends. This views the profile of their
-	  active character and is only available when they're in WoW.
+		- Furthermore, additional changes have been made that make encasing
+		  URLs in your own profile in angle brackets (such as
+		  <http://example.com/something.html>) a good idea, as XRP will be
+		  certain to not include extra letters at the end when doing so. It is
+		  not required, but it is recommended.
 
-	- In the viewer, the nickname, title, and house/clan/tribe lines may now
-	  be moused over to see their full content if they're truncated.
+	- Support for translating XRP into languages other than English has been
+	  added. If you're interested in providing a translation, please get in
+	  contact with XRP's author.
 
-	- Recommended length warnings have been added to fields in the editor.
+	- Display of weights in kilograms is now slightly more precise.
 
-	- A basic profile importer for TotalRP3 is available now. It only imports
-	  the currently-active profile due to limitations in TRP3's profiles
-	  (profiles are not associated with a character unless they are active).
+	- (Bugfix) The "Roleplay Profile" entry will no longer show for Battle.net
+	  chat when the person isn't on your friends list (such as in a
+	  conversation).
 
-	- Bugfix: Hidden profiles will no longer trigger the cursor book icon or
-	  profile view-on-right-click. They may still be accessed through other
-	  methods.
-
-	- Bugfix: An issue in the bandwidth library which could, in circumstances
-	  XRP alone would never trigger, cause disconnects has been fixed.
-
-	- Bugfix: An issue where the character's GUID field (GU) would not always
-	  be properly set has been fixed.
-
-	- Bugfix: The importer (from other addons) will now properly only disable
-	  those addons for the current character, rather than all characters.
-
-	- Bugfix: Detection of other addons being enabled (for adding to your
-	  tooltip) has been fixed.
-
-	- Bugfix: Crossrealm profiles over Battle.net will now work correctly on
-	  the first login after client launch.
-
-	- Bugfix: Fixed an extremely rare situation which could lead to fields not
-	  properly being sent over group channels.
-
-For 6.0.2.1 or earlier users:
-
-	- Old versions of XRP should be removed from the Interface/AddOns folder
-	  prior to upgrading from 6.0.2.1 or lower (automated installers should
-	  handle this on their own), and the game client should be fully restarted
-	  (rather than logout or UI reload) after upgrading.
-
-	- The internal file layout of XRP has changed drastically, consolidated
-	  into a single folder. If in doubt, please check that you have a single
-	  "xrp" folder in your Interface/AddOns folder after upgrading.
-
-	- If you were previously disabling chat names or tooltip replacements by
-	  disabling those modules as addons, you can now disable them from the XRP
-	  interface options panel instead.
-
-	- Your profiles are unaffected by any of these changes -- they will still
-	  all be there after upgrading.
+	- Quite a few aspects of the UI implementation have been overhauled. If
+	  you're modifying the UI (such as for skin authors), you may need to
+	  recheck some values. Most should be the same, but that's not guaranteed.
