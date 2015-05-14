@@ -19,6 +19,8 @@ local addonName, _xrp = ...
 
 XRP_APPEARANCE = _xrp.L.APPEARANCE
 XRP_BIOGRAPHY = _xrp.L.BIOGRAPHY
+XRP_NOTES = _xrp.L.NOTES
+XRP_NOTES_INSTRUCTIONS = _xrp.L.NOTES_INSTRUCTIONS
 
 XRPTemplates_DoNothing = _xrp.noFunc
 
@@ -185,24 +187,12 @@ function XRPTemplatesPanel_OnShow(self)
 end
 
 function XRPTemplatesPanel_OnHide(self)
-	if self.subframe then
-		self[self.subframe]:Hide()
+	if self.popouts then
+		for i, popout in ipairs(self.popouts) do
+			popout:Hide()
+		end
 	end
 	PlaySound("igCharacterInfoClose")
-end
-
-function XRPTemplatesPanelSubframeToggle_OnClick(self, button, down)
-	local parent = self:GetParent()
-	local subframe = parent[parent.subframe]
-	if subframe and subframe:IsVisible() then
-		subframe:Hide()
-	elseif subframe then
-		subframe:Show()
-	end
-end
-
-function XRPTemplatesPane_OnHide(self)
-	PlaySound("UChatScrollButton")
 end
 
 function XRPTooltip_OnUpdate(self, elapsed)
@@ -228,7 +218,7 @@ function XRPCursorBook_OnEvent(self, event)
 	end
 	self.current = not UnitCanAttack("player", "mouseover") and tostring(character) or nil
 	-- Following two must be separate for UIErrorsFrame:Clear().
-	self.mountable = rightClick and self.current and UnitVehicleSeatCount("mouseover") > 0
+	self.mountable = self.current and UnitVehicleSeatCount("mouseover") > 0
 	self.mountInParty = self.mountable and (UnitInParty("mouseover") or UnitInRaid("mouseover"))
 	if self.current and character.fields.VA and (not self.mountInParty or not IsItemInRange(88589, "mouseover")) then
 		self:Show()
@@ -256,4 +246,109 @@ do
 		self:SetPoint("CENTER", UIParent, "BOTTOMLEFT", x/scale + 36, y/scale - 4)
 		previousX, previousY = x, y
 	end
+end
+
+function XRPTemplatesPopout_OnShow(self)
+	for i, popout in ipairs(self:GetParent().popouts) do
+		if popout ~= self and popout:IsVisible() then
+			popout:Hide()
+		end
+	end
+	local parent = self:GetParent()
+	parent:SetAttribute("UIPanelLayout-extraWidth", self:GetWidth())
+	if parent:GetAttribute("UIPanelLayout-defined") then
+		UpdateUIPanelPositions(parent)
+	end
+	PlaySound("UChatScrollButton")
+end
+
+function XRPTemplatesPopout_OnHide(self)
+	local parent = self:GetParent()
+	parent:SetAttribute("UIPanelLayout-extraWidth", nil)
+	if parent:GetAttribute("UIPanelLayout-defined") then
+		UpdateUIPanelPositions(parent)
+	end
+	PlaySound("UChatScrollButton")
+end
+
+local function XRPTemplatesNotes_Hook_OnSizeChanged(self, width, height)
+	self.Notes:SetHeight(height - 56)
+end
+
+local allNotes = {}
+function XRPTemplatesNotes_OnLoad(self)
+	allNotes[#allNotes + 1] = self
+	self:GetParent():HookScript("OnSizeChanged", XRPTemplatesNotes_Hook_OnSizeChanged)
+end
+
+function XRPTemplatesNotes_OnShow(self)
+	for i, notes in ipairs(allNotes) do
+		if notes ~= self and notes:IsVisible() and tostring(notes.character) == tostring(self.character) then
+			self.Text.EditBox:SetText(notes.Text.EditBox:GetText())
+			notes.Text.EditBox:SetText(self.character.notes or "")
+			notes:Hide()
+		end
+	end
+end
+
+function XRPTemplatesNotes_OnHide(self)
+	local text = self.Text.EditBox:GetText()
+	if text == "" then
+		text = nil
+	end
+	self.character.notes = text
+	self.Revert:SetEnabled(false)
+end
+
+function XRPTemplatesNotes_OnAttributeChanged(self, name, value)
+	if name == "character" and value ~= self.character then
+		if self.character then
+			local text = self.Text.EditBox:GetText()
+			if text == "" then
+				text = nil
+			end
+			self.character.notes = text
+		end
+		self.character = value
+		self.Text.EditBox:SetText(self.character.notes or "")
+		if self:IsVisible() then
+			XRPTemplatesNotes_OnShow(self)
+		end
+	end
+end
+
+function XRPTemplatesNotesEditBox_OnEditFocusGained(self)
+	self.Instructions:Hide()
+end
+
+function XRPTemplatesNotesEditBox_OnEditFocusLost(self)
+	if self:GetText() == "" then
+		self.Instructions:Show()
+	else
+		self.Instructions:Hide()
+	end
+end
+
+function XRPTemplatesNotesEditBox_OnTextChanged(self, userInput)
+	local parent = self:GetParent()
+	ScrollingEdit_OnTextChanged(self, parent)
+	local text = self:GetText()
+	if text == "" then
+		text = nil
+	end
+	local notes = parent:GetParent()
+	if text == notes.character.notes then
+		notes.Revert:SetEnabled(false)
+	else
+		notes.Revert:SetEnabled(true)
+	end
+	if not userInput and not self:HasFocus() then
+		XRPTemplatesNotesEditBox_OnEditFocusLost(self)
+	end
+end
+
+function XRPTemplatesNotesRevert_OnClick(self, button, down)
+	local parent = self:GetParent()
+	parent.Text.EditBox:ClearFocus()
+	parent.Text.EditBox:SetText(parent.character.notes or "")
 end

@@ -151,13 +151,16 @@ TOGGLE_EDITOR = "Open/close RP profile editor"
 -- Shared UI strings
 APPEARANCE = "Appearance"
 BIOGRAPHY = "Biography"
+NOTES = "Notes"
 AUTHOR = "Author"
 VIEW_CACHED = "View (cached)..."
 VIEW_LIVE = "View (live)..."
 EXPORT_MENU = "Export..."
+NOTES_MENU = "Notes..."
 ADD_FRIEND = "Add friend"
 BOOKMARK = "Bookmark"
 HIDE_PROFILE = "Hide profile"
+NOTES_INSTRUCTIONS = "You can store private notes here. They will never be visible to other players.\n\nNotes are accessible on all your characters and are automatically saved when you close this panel."
 
 -- ui/automation.lua
 STANDARD = "Standard"
@@ -272,17 +275,17 @@ SET_PROFILE_FAIL = "Failed to set profile to \"%s\"."
 -- ui/editor.lua
 PARENT = "Parent"
 PROFILE_EDITOR = "Profile Editor"
+RENAME_MENU = "Rename..."
+COPY_MENU = "Copy..."
+AUTOMATION_MENU = "Automation..."
 WARNING = "Warning"
 WARNING_LENGTH = "%s is over %d characters."
 FORM_SET = "Form/set"
 PROFILE_FOR_FORM = "Profile for selected form/set"
 
 -- ui/editor.xml
-AUTO = "Auto"
 AUTOMATION = "Automation"
 USE_PARENT = "Use parent profile if blank."
-RENAME = "Rename"
-COPY = "Copy"
 EXPORT = "Export"
 
 -- ui/export.xml
@@ -294,8 +297,8 @@ HELP_BOOKMARKS_FILTER = "You can filter the list of profiles in a number of ways
 HELP_BOOKMARKS_ENTRIES = "Each of these entries displays a profile XRP has cached, matching your filter selections.\n\nTo interact with these entries, right-click on them and a menu with a number of options will appear.\n\nIn this menu, you can access the cached profile, export the profile, or even add the character directly to your friends list."
 HELP_BOOKMARKS_NUMBER = "The number of profiles matching your filter results is indicated here.\n\nHidden profiles are not shown by default, so even the \"All\" view may not list everything initially!"
 HELP_BOOKMARKS_TABS = "Each of these tabs provides a predefined filter, \"Bookmarks\" and \"All\" being self-explanatory.\n\nThe \"Own\" tab lists your own characters from this WoW account, and the \"Recent\" tab lists profiles XRP has seen in the past three hours, sorted by most recent first."
-HELP_EDITOR_CONTROLS = "These controls manage the profile you're editing.\n\nThe dropdown selects a profile to edit, and the buttons, from left to right, are add profile, delete profile, rename profile, copy profile, and export profile.\n\nYou can add, delete, rename, and copy profiles at will. The only exception is that XRP won't let you delete your currently-active profile!"
-HELP_EDITOR_AUTO = "The \"Auto\" button shows the controls for XRP's automated profile switching.\n\nIf you open this help system with these controls visible, more information will be available."
+HELP_EDITOR_CONTROLS = "These controls manage the profile you're editing.\n\nThe dropdown selects a profile to edit, and the buttons allow you to add or remove profiles.\n\nYou can add and delete profiles at will. The only exception is that XRP won't let you delete your currently-active profile!"
+HELP_EDITOR_MENU = "This button accesses the editor's menu. In this menu you can access your private notes, export your profile, rename or copy your profile, or access the automated profile controls.\n\nIf you open this help system with the automated profile controls visible, more help on that feature is available."
 HELP_EDITOR_PARENT = "This button allows you to select a parent profile for the profile you're editing.\n\nHaving a parent profile lets you select fields, using the checkboxes next to the field names, to inherit from the parent profile if they're empty on this profile. Any inherited fields will show in a light grey text color, rather than white.\n\nYou can even use a profile that has a parent as a different profile's parent, up to 50 levels deep."
 HELP_EDITOR_BUTTONS = "This pair of buttons is only available when you've made changes to the profile you're editing.\n\nIf you've made changes, pressing \"Revert\" will discard any changes you've made since the profile was last saved.\n\nPressing \"Save\" will save any changes you've made, including field text changes and parent/inheritance changes."
 HELP_EDITOR_AUTO_FORM = "Select a form, equipment set, or form/equipment set combination from this menu.\n\nNote that you can select a form itself, even if there's a submenu with equipment sets. Just click on the form name anyway!"

@@ -198,6 +198,30 @@ do
 	end
 end
 
+do
+	local function Menu_Click(self, arg1, arg2, checked)
+		if arg1 == "XRP_NOTES" then
+			XRPEditor.Notes:Show()
+		elseif arg1 == "XRP_EXPORT" then
+			XRPExport:Export(XRPEditor.Profiles.contents, tostring(xrp.profiles[XRPEditor.Profiles.contents].fields))
+		elseif arg1 == "XRP_RENAME" then
+			StaticPopup_Show("XRP_EDITOR_RENAME", XRPEditor.Profiles.contents)
+		elseif arg1 == "XRP_COPY" then
+			StaticPopup_Show("XRP_EDITOR_COPY", XRPEditor.Profiles.contents)
+		elseif arg1 == "XRP_AUTOMATION" then
+			XRPEditor.Automation:Show()
+		end
+	end
+	XRPEditorMenu_baseMenuList = {
+		{ text = _xrp.L.NOTES_MENU, arg1 = "XRP_NOTES", notCheckable = true, func = Menu_Click, },
+		{ text = _xrp.L.EXPORT_MENU, arg1 = "XRP_EXPORT", notCheckable = true, func = Menu_Click, },
+		{ text = _xrp.L.RENAME_MENU, arg1 = "XRP_RENAME", notCheckable = true, func = Menu_Click, },
+		{ text = _xrp.L.COPY_MENU, arg1 = "XRP_COPY", notCheckable = true, func = Menu_Click, },
+		{ text = _xrp.L.AUTOMATION_MENU, arg1 = "XRP_AUTOMATION", notCheckable = true, func = Menu_Click, },
+		{ text = CLOSE, notCheckable = true, func = _xrp.noFunc, },
+	}
+end
+
 function XRPEditorControls_OnAttributeChanged(self, name, value)
 	if name == "contents" then
 		self.contents = value
@@ -291,7 +315,6 @@ function XRPEditorControls_OnEditFocusLost(self)
 	XRPEditorControls_CheckField(self)
 end
 
-function XRPEditorExport_OnClick(self, button, down)
-	local profile = XRPEditor.Profiles.contents
-	XRPExport:Export(profile, tostring(xrp.profiles[profile].fields))
+function XRPEditorNotes_OnShow(self)
+	self:SetAttribute("character", xrp.characters.byUnit.player)
 end

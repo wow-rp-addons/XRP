@@ -145,16 +145,16 @@ end
 
 do
 	local function Menu_Checked(self)
-		if self.disabled then
-			return false
-		elseif self.arg1 == "XRP_BOOKMARK" then
+		if self.arg1 == "XRP_BOOKMARK" then
 			return current.bookmark ~= nil
 		elseif self.arg1 == "XRP_HIDE" then
 			return current.hide ~= nil
 		end
 	end
 	local function Menu_Click(self, arg1, arg2, checked)
-		if arg1 == "XRP_EXPORT" then
+		if arg1 == "XRP_NOTES" then
+			XRPViewer.Notes:Show()
+		elseif arg1 == "XRP_EXPORT" then
 			XRPExport:Export(xrp:Ambiguate(tostring(current)), tostring(current.fields))
 		elseif arg1 == "XRP_REFRESH" then
 			if current.noRequest then
@@ -171,6 +171,7 @@ do
 		end
 	end
 	XRPViewerMenu_baseMenuList = {
+		{ text = _xrp.L.NOTES_MENU, arg1 = "XRP_NOTES", notCheckable = true, func = Menu_Click, },
 		{ text = _xrp.L.EXPORT_MENU, arg1 = "XRP_EXPORT", notCheckable = true, func = Menu_Click, },
 		{ text = REFRESH, arg1 = "XRP_REFRESH", notCheckable = true, func = Menu_Click, },
 		{ text = _xrp.L.ADD_FRIEND, arg1 = "XRP_FRIEND", notCheckable = true, func = Menu_Click, },
@@ -207,7 +208,7 @@ function XRPViewerMenu_PreClick(self, button, down)
 	local GF = current.fields.GF
 	local isOwn = current.own
 	if GF and GF ~= xrp.current.fields.GF then
-		self.baseMenuList[3].disabled = true
+		self.baseMenuList[4].disabled = true
 	else
 		local name = Ambiguate(tostring(current), "none")
 		local isFriend = isOwn
@@ -219,25 +220,31 @@ function XRPViewerMenu_PreClick(self, button, down)
 				end
 			end
 		end
-		self.baseMenuList[3].disabled = isFriend
+		self.baseMenuList[4].disabled = isFriend
 	end
 	if isOwn or not current.noRequest and XRPViewer.nextRefresh > GetTime() then
-		self.baseMenuList[2].disabled = true
+		self.baseMenuList[3].disabled = true
 	else
-		self.baseMenuList[2].disabled = nil
+		self.baseMenuList[3].disabled = nil
 	end
 	local noProfile = not current.fields.VA
 	if isOwn or noProfile then
-		self.baseMenuList[4].disabled = true
 		self.baseMenuList[5].disabled = true
+		self.baseMenuList[6].disabled = true
 	else
-		self.baseMenuList[4].disabled = nil
-		self.baseMenuList[5].disabled = nil
+		if current.notes then
+			self.baseMenuList[5].disabled = true
+		else
+			self.baseMenuList[5].disabled = nil
+		end
+		self.baseMenuList[6].disabled = nil
 	end
 	if noProfile then
 		self.baseMenuList[1].disabled = true
+		self.baseMenuList[2].disabled = true
 	else
 		self.baseMenuList[1].disabled = nil
+		self.baseMenuList[2].disabled = nil
 	end
 end
 
@@ -314,6 +321,7 @@ function XRPViewer_View(self, player)
 		local GF = character.fields.GF
 		SetPortraitToTexture(self.portrait, GF == "Alliance" and "Interface\\Icons\\INV_BannerPVP_02" or GF == "Horde" and "Interface\\Icons\\INV_BannerPVP_01" or "Interface\\Icons\\INV_Misc_Book_17")
 	end
+	self.Notes:SetAttribute("character", character)
 	ShowUIPanel(self)
 	if isNew and not self.panes[1]:IsVisible() then
 		self.Tab1:Click()
