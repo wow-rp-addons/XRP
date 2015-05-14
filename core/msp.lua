@@ -284,7 +284,7 @@ do
 						tooltip[#tooltip + 1] = not contents and field or ("%s%d=%s"):format(field, _xrp.versions[field], contents)
 					end
 					local newtt = table.concat(tooltip, "\1")
-					tt = ("%s\1TT%d"):format(newtt, newtt ~= xrpSaved.oldtt and _xrp.NewVersion("TT") or xrpSaved.versions.TT)
+					tt = ("%s\1TT%d"):format(newtt, newtt ~= xrpSaved.oldtt and _xrp.NewVersion("TT", newtt) or xrpSaved.versions.TT)
 					xrpSaved.oldtt = newtt
 				end
 				if version == xrpSaved.versions.TT then
@@ -325,6 +325,15 @@ do
 				if _xrp.gCache[name] then
 					for gField, isUnitField in pairs(UNIT_FIELDS) do
 						xrpCache[name].fields[gField] = _xrp.gCache[name][gField]
+					end
+				end
+			elseif field == "TT" and xrpCache[name] and version < (xrpCache[name].versions.TT or 0) then
+				--print("TT version detection trigger on:", name)
+				-- Their TT version is lower than we have. They probably wiped
+				-- and reinstalled, nuke stored versions of non-TT fields.
+				for field, version in pairs(xrpCache[name].versions) do
+					if not TT_FIELDS[field] then
+						xrpCache[name].versions[field] = nil
 					end
 				end
 			end
