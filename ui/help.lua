@@ -52,16 +52,16 @@ XRPBookmarks_helpPlates = {
 
 local EDITOR_MAIN = {
 	{
-		ButtonPos = { x = 74, y = 3 },
-		HighLightBox = { x = 112, y = -3, width = 259, height = 32 },
+		ButtonPos = { x = 114, y = 3 },
+		HighLightBox = { x = 152, y = -3, width = 179, height = 32 },
 		ToolTipDir = "DOWN",
 		ToolTipText = _xrp.L.HELP_EDITOR_CONTROLS,
 	},
 	{
-		ButtonPos = { x = 360, y = -10 },
-		HighLightBox = { x = 381, y = -3, width = 52, height = 32 },
-		ToolTipDir = "LEFT",
-		ToolTipText = _xrp.L.HELP_EDITOR_AUTO,
+		ButtonPos = { x = 358, y = 34 },
+		HighLightBox = { x = 394, y = 22, width = 22, height = 22 },
+		ToolTipDir = "DOWN",
+		ToolTipText = _xrp.L.HELP_EDITOR_MENU,
 	},
 	{
 		ButtonPos = { x = 174, y = -466 },

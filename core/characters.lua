@@ -83,8 +83,12 @@ do
 				return fields
 			elseif component == "own" and name == _xrp.playerWithRealm then
 				return true
+			elseif component == "noRequest" then
+				return not requestMap[self]
 			elseif not xrpCache[name] then
 				return nil
+			elseif component == "notes" then
+				return xrpAccountSaved.notes[name]
 			elseif component == "bookmark" then
 				return xrpAccountSaved.bookmarks[name]
 			elseif component == "hide" then
@@ -93,17 +97,20 @@ do
 				return xrpCache[name].own
 			elseif component == "date" then
 				return xrpCache[name].lastReceive
-			elseif component == "noRequest" then
-				return not requestMap[self]
 			end
 		end,
 		__newindex = function(self, component, value)
 			local name = nameMap[self]
 			if not xrpCache[name] then return end
-			if component == "bookmark" then
+			if component == "notes" then
+				xrpAccountSaved.notes[name] = value
+				if value and not self.own then
+					self.bookmark = true
+				end
+			elseif component == "bookmark" then
 				if value and not xrpAccountSaved.bookmarks[name] then
 					xrpAccountSaved.bookmarks[name] = time()
-				elseif not value and xrpAccountSaved.bookmarks[name] then
+				elseif not value and xrpAccountSaved.bookmarks[name] and not xrpAccountSaved.notes[name] then
 					xrpAccountSaved.bookmarks[name] = nil
 				end
 			elseif component == "hide" then

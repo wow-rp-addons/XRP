@@ -22,7 +22,7 @@ _xrp.settingsToggles = {
 }
 
 local DATA_VERSION = 4
-local DATA_VERSION_ACCOUNT = 10
+local DATA_VERSION_ACCOUNT = 11
 
 _xrp.DEFAULT_SETTINGS = {
 	cache = {
@@ -265,6 +265,11 @@ local upgradeAccountVars = {
 		xrpAccountSaved.settings.display.altScourgeForce = _xrp.DEFAULT_SETTINGS.display.altScourgeForce
 		xrpAccountSaved.settings.display.altTauren = _xrp.DEFAULT_SETTINGS.display.altTauren
 		xrpAccountSaved.settings.display.altTaurenForce = _xrp.DEFAULT_SETTINGS.display.altTaurenForce
+	end,
+	[11] = function() -- 6.1.2.0
+		if not xrpAccountSaved.notes then
+			xrpAccountSaved.notes = {}
+		end
 	end,
 }
 

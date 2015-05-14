@@ -55,7 +55,7 @@ local RACE_ICON_TCOORDS = {
 	["PANDAREN_FEMALE"] = { 0.750, 0.875, 0.5, 0.75 },
 }
 
-function XRPBookmarksList_update(self)
+function XRPBookmarksList_update(self, force)
 	local offset = HybridScrollFrame_GetOffset(self)
 	local buttons = self.buttons
 	local matches = #results
@@ -71,7 +71,7 @@ function XRPBookmarksList_update(self)
 		local button = buttons[i]
 		local character = xrp.characters.noRequest.byName[results[index]]
 		if index <= matches then
-			if not button.character or tostring(character) ~= tostring(button.character) then
+			if force or not button.character or tostring(character) ~= tostring(button.character) then
 				button.character = character
 				local name, realm = tostring(character):match("^([^%-]+)%-([^%-]+)$")
 				button.NA:SetText(xrp:Strip(character.fields.NA) or name)
@@ -130,6 +130,11 @@ function XRPBookmarksList_update(self)
 					button.GF:Hide()
 					button.Name:SetTextColor(button.Name:GetFontObject():GetTextColor())
 				end
+				if character.notes then
+					button.Notes:Show()
+				else
+					button.Notes:Hide()
+				end
 			end
 			button:Show()
 		else
@@ -159,7 +164,7 @@ end
 
 do
 	local function Menu_Checked(self)
-		if self.disabled or not UIDROPDOWNMENU_INIT_MENU.character then
+		if not UIDROPDOWNMENU_INIT_MENU.character then
 			return false
 		elseif self.arg1 == "XRP_BOOKMARK" then
 			return UIDROPDOWNMENU_INIT_MENU.character.bookmark ~= nil
@@ -172,6 +177,9 @@ do
 			XRPViewer:View(UIDROPDOWNMENU_OPEN_MENU.character)
 		elseif arg1 == "XRP_VIEW_LIVE" then
 			XRPViewer:View(tostring(UIDROPDOWNMENU_OPEN_MENU.character))
+		elseif arg1 == "XRP_NOTES" then
+			XRPBookmarks.Notes:SetAttribute("character", UIDROPDOWNMENU_OPEN_MENU.character)
+			XRPBookmarks.Notes:Show()
 		elseif arg1 == "XRP_EXPORT" then
 			local character = UIDROPDOWNMENU_OPEN_MENU.character
 			XRPExport:Export(xrp:Ambiguate(tostring(character)), tostring(character.fields))
@@ -193,9 +201,10 @@ do
 		end
 	end
 	XRPBookmarksEntry_baseMenuList = {
-		{ text = _xrp.L.VIEW_CACHED, arg1 = "XRP_VIEW_CACHED", notCheckable = true, checked = Menu_Checked, func = Menu_Click, },
-		{ text = _xrp.L.VIEW_LIVE, arg1 = "XRP_VIEW_LIVE", notCheckable = true, checked = Menu_Checked, func = Menu_Click, },
-		{ text = _xrp.L.EXPORT_MENU, arg1 = "XRP_EXPORT", notCheckable = true, checked = Menu_Checked, func = Menu_Click, },
+		{ text = _xrp.L.VIEW_CACHED, arg1 = "XRP_VIEW_CACHED", notCheckable = true, func = Menu_Click, },
+		{ text = _xrp.L.VIEW_LIVE, arg1 = "XRP_VIEW_LIVE", notCheckable = true, func = Menu_Click, },
+		{ text = _xrp.L.NOTES_MENU, arg1 = "XRP_NOTES", notCheckable = true, func = Menu_Click, },
+		{ text = _xrp.L.EXPORT_MENU, arg1 = "XRP_EXPORT", notCheckable = true, func = Menu_Click, },
 		{ text = _xrp.L.ADD_FRIEND, arg1 = "XRP_FRIEND", notCheckable = true, func = Menu_Click, },
 		{ text = _xrp.L.BOOKMARK, arg1 = "XRP_BOOKMARK", isNotRadio = true, checked = Menu_Checked, func = Menu_Click, },
 		{ text = _xrp.L.HIDE_PROFILE, arg1 = "XRP_HIDE", isNotRadio = true, checked = Menu_Checked, func = Menu_Click, },
@@ -208,15 +217,22 @@ function XRPBookmarksEntry_OnClick(self, button, down)
 	if button == "RightButton" then
 		self.Selected:Show()
 		if self.character.own then
-			self.baseMenuList[2].disabled = true
-			self.baseMenuList[4].disabled = true
+			if tostring(self.character) == _xrp.playerWithRealm then
+				self.baseMenuList[1].disabled = true
+				self.baseMenuList[2].disabled = nil
+			else
+				self.baseMenuList[1].disabled = nil
+				self.baseMenuList[2].disabled = true
+			end
 			self.baseMenuList[5].disabled = true
 			self.baseMenuList[6].disabled = true
+			self.baseMenuList[7].disabled = true
 		else
+			self.baseMenuList[1].disabled = nil
 			self.baseMenuList[2].disabled = nil
 			local GF = self.character.fields.GF
 			if GF and GF ~= xrp.current.fields.GF then
-				self.baseMenuList[4].disabled = true
+				self.baseMenuList[5].disabled = true
 			else
 				local name = Ambiguate(tostring(self.character), "none")
 				local isFriend
@@ -226,10 +242,14 @@ function XRPBookmarksEntry_OnClick(self, button, down)
 						break
 					end
 				end
-				self.baseMenuList[4].disabled = isFriend
+				self.baseMenuList[5].disabled = isFriend
 			end
-			self.baseMenuList[5].disabled = nil
-			self.baseMenuList[6].disabled = nil
+			if self.character.notes then
+				self.baseMenuList[6].disabled = true
+			else
+				self.baseMenuList[6].disabled = nil
+			end
+			self.baseMenuList[7].disabled = nil
 		end
 		ToggleDropDownMenu(nil, nil, self, "cursor", nil, nil, self.baseMenuList)
 		PlaySound("igMainMenuOptionCheckBoxOn")
@@ -403,6 +423,16 @@ do
 		PanelTemplates_SetTab(XRPBookmarks, tabID)
 		XRPBookmarks.TitleText:SetText(BOOKMARKS_TAB[tabID])
 		PlaySound("igCharacterInfoTab")
+	end
+end
+
+function XRPBookmarksNotes_OnHide(self)
+	XRPBookmarks.List:update(true)
+end
+
+function XRPBookmarksNotes_OnAttributeChanged(self, name, value)
+	if name == "character" then
+		self.Title:SetText(xrp:Ambiguate(tostring(value)))
 	end
 end
 

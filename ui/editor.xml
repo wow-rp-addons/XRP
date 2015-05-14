@@ -377,7 +377,7 @@
 					<KeyValue key="width" value="100" type="number"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-243" y="-27"/>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-200" y="-27"/>
 				</Anchors>
 			</Button>
 			<Button parentKey="Plus" inherits="XRPEditorProfileControlTemplate" text=" + ">
@@ -397,44 +397,6 @@
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.Plus" relativePoint="RIGHT"/>
 				</Anchors>
-			</Button>
-			<Button parentKey="Rename" inherits="XRPEditorProfileControlTemplate" text=" R ">
-				<KeyValues>
-					<KeyValue key="popup" value="XRP_EDITOR_RENAME"/>
-					<KeyValue key="tooltipKey" value="RENAME"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.Minus" relativePoint="RIGHT"/>
-				</Anchors>
-			</Button>
-			<Button parentKey="Copy" inherits="XRPEditorProfileControlTemplate" text=" C ">
-				<KeyValues>
-					<KeyValue key="popup" value="XRP_EDITOR_COPY"/>
-					<KeyValue key="tooltipKey" value="COPY"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.Rename" relativePoint="RIGHT"/>
-				</Anchors>
-			</Button>
-			<Button parentKey="Export" inherits="XRPEditorProfileControlTemplate" text=" E ">
-				<KeyValues>
-					<KeyValue key="tooltipKey" value="EXPORT"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.Copy" relativePoint="RIGHT"/>
-				</Anchors>
-				<Scripts>
-					<OnClick function="XRPEditorExport_OnClick"/>
-				</Scripts>
-			</Button>
-			<Button parentKey="Auto" inherits="UIPanelButtonTemplate" text="XRP_AUTO">
-				<Size x="50" y="28"/>
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.Export" relativePoint="RIGHT" x="12"/>
-				</Anchors>
-				<Scripts>
-					<OnClick function="XRPTemplatesPanelSubframeToggle_OnClick"/>
-				</Scripts>
 			</Button>
 			<Button parentKey="Parent" inherits="MagicButtonTemplate">
 				<Size x="192" y="22"/>
@@ -471,6 +433,14 @@
 					<OnClick function="XRPEditorRevert_OnClick"/>
 				</Scripts>
 			</Button>
+			<Button inherits="XRPMenuButtonTemplate">
+				<KeyValues>
+					<KeyValue key="baseMenuList" value="XRPEditorMenu_baseMenuList" type="global"/>
+				</KeyValues>
+				<Scripts>
+					<PreClick function="XRPEditorMenu_PreClick"/>
+				</Scripts>
+			</Button>
 			<Button name="$parentTab1" parentKey="Tab1" inherits="XRPTabButtonTemplate" id="1" text="XRP_APPEARANCE">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" y="1"/>
@@ -481,16 +451,8 @@
 					<Anchor point="LEFT" relativeKey="$parent.Tab1" relativePoint="RIGHT" x="-16"/>
 				</Anchors>
 			</Button>
-			<Frame parentKey="Automation" enableMouse="true" hidden="true">
+			<Frame parentKey="Automation" inherits="XRPPopoutTemplate">
 				<Size x="209" y="175"/>
-				<Anchors>
-					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" y="-28"/>
-				</Anchors>
-				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background-Dark" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-					<BackgroundInsets left="11" right="12" top="12" bottom="11"/>
-					<TileSize val="32"/>
-					<EdgeSize val="32"/>
-				</Backdrop>
 				<Layers>
 					<Layer level="ARTWORK">
 						<Texture parentKey="HeaderTop" file="Interface\RaidFrame\UI-RaidInfo-Header">
@@ -509,18 +471,6 @@
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">
-						<Texture parentKey="Corner" file="Interface\DialogFrame\UI-DialogBox-Corner">
-							<Size x="32" y="32"/>
-							<Anchors>
-								<Anchor point="TOPRIGHT" x="-6" y="-7"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="Header" file="Interface\DialogFrame\UI-DialogBox-Header">
-							<Size x="222" y="64"/>
-							<Anchors>
-								<Anchor point="TOP" y="12"/>
-							</Anchors>
-						</Texture>
 						<FontString parentKey="Title" inherits="GameFontNormal" text="XRP_AUTOMATION">
 							<Size x="185" y="12"/>
 							<Anchors>
@@ -536,11 +486,6 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Button inherits="UIPanelCloseButton">
-						<Anchors>
-							<Anchor point="TOPRIGHT" x="-2" y="-3"/>
-						</Anchors>
-					</Button>
 					<Frame name="$parentForm" parentKey="Form" inherits="XRPEditorDropDownTemplate">
 						<KeyValues>
 							<KeyValue key="labelKey" value="FORM_SET"/>
@@ -588,8 +533,12 @@
 					</Button>
 				</Frames>
 				<Scripts>
-					<OnShow function="XRPEditorAutomation_OnShow"/>
-					<OnHide function="XRPTemplatesPane_OnHide"/>
+					<OnShow inherit="prepend" function="XRPEditorAutomation_OnShow"/>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentNotes" inherits="XRPNotesTemplate">
+				<Scripts>
+					<OnShow inherit="prepend" function="XRPEditorNotes_OnShow"/>
 				</Scripts>
 			</Frame>
 		</Frames>
@@ -601,7 +550,6 @@
 			<KeyValue key="titleKey" value="PROFILE_EDITOR"/>
 			<KeyValue key="portraitUnit" value="player"/>
 			<KeyValue key="Edit" value="XRPEditor_Edit" type="global"/>
-			<KeyValue key="subframe" value="Automation"/>
 		</KeyValues>
 	</Frame>
 </Ui>

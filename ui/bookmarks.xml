@@ -104,6 +104,13 @@
 						<Anchor point="BOTTOMRIGHT" x="-10" y="6"/>
 					</Anchors>
 				</FontString>
+				<Texture parentKey="Notes" file="Interface/FriendsFrame/UI-FriendsFrame-Note">
+					<Size x="12" y="10"/>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Date" relativePoint="TOPRIGHT" x="2" y="3"/>
+					</Anchors>
+					<Color r="1.0" g="0.82" b="0"/>
+				</Texture>
 			</Layer>
 		</Layers>
 		<HighlightTexture atlas="GarrMission_FollowerListButton-Highlight" useAtlasSize="true">
@@ -287,6 +294,12 @@
 					<Anchor point="LEFT" relativeKey="$parent.Tab3" relativePoint="RIGHT" x="-16"/>
 				</Anchors>
 			</Button>
+			<Frame name="$parentNotes" inherits="XRPNotesTemplate">
+				<Scripts>
+					<OnHide inherit="prepend" function="XRPBookmarksNotes_OnHide"/>
+					<OnAttributeChanged inherit="prepend" function="XRPBookmarksNotes_OnAttributeChanged"/>
+				</Scripts>
+			</Frame>
 		</Frames>
 		<Attributes>
 			<Attribute name="UIPanelLayout-pushable" type="number" value="1"/>

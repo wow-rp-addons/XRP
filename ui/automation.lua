@@ -17,7 +17,6 @@
 
 local addonName, _xrp = ...
 
-XRP_AUTO = _xrp.L.AUTO
 XRP_AUTOMATION = _xrp.L.AUTOMATION
 
 local isWorgen, playerClass = select(2, UnitRace("player")) == "Worgen", select(2, UnitClassBase("player"))
@@ -416,5 +415,4 @@ function XRPEditorAutomation_OnShow(self)
 		self.Profile.Text:SetText(newProfile or NONE)
 	end
 	ToggleButtons(self)
-	PlaySound("UChatScrollButton")
 end

@@ -151,4 +151,165 @@
 			<OnUpdate function="XRPCursorBook_OnUpdate"/>
 		</Scripts>
 	</Frame>
+	<Button name="XRPMenuButtonTemplate" parentKey="Menu" inherits="UIPanelButtonTemplate" text=" v " virtual="true">
+		<KeyValues>
+			<KeyValue key="initialize" value="EasyMenu_Initialize" type="global"/>
+			<KeyValue key="displayMode" value="MENU"/>
+			<KeyValue key="SetHeight" value="XRPTemplates_DoNothing" type="global"/>
+			<KeyValue key="point" value="TOPRIGHT"/>
+			<KeyValue key="relativePoint" value="BOTTOMRIGHT"/>
+			<KeyValue key="xOffset" value="0" type="number"/>
+			<KeyValue key="yOffset" value="0" type="number"/>
+		</KeyValues>
+		<Size x="23" y="19"/>
+		<Anchors>
+			<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-23" y="-1"/>
+		</Anchors>
+		<Scripts>
+			<OnClick function="XRPTemplatesMenu_OnClick"/>
+			<OnHide function="XRPTemplates_CloseDropDownMenus"/>
+		</Scripts>
+	</Button>
+	<Frame name="XRPPopoutTemplate" parentArray="popouts" enableMouse="true" hidden="true" virtual="true">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" y="-28"/>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background-Dark" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets left="11" right="12" top="12" bottom="11"/>
+			<TileSize val="32"/>
+			<EdgeSize val="32"/>
+		</Backdrop>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Corner" file="Interface\DialogFrame\UI-DialogBox-Corner">
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-6" y="-7"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Header" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size x="222" y="64"/>
+					<Anchors>
+						<Anchor point="TOP" y="12"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="XButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-2" y="-3"/>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnShow function="XRPTemplatesPopout_OnShow"/>
+			<OnHide function="XRPTemplatesPopout_OnHide"/>
+		</Scripts>
+	</Frame>
+	<Frame name="XRPNotesTemplate" parentKey="Notes" inherits="XRPPopoutTemplate" virtual="true">
+		<Size x="302" y="302"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="HeaderTop" file="Interface\RaidFrame\UI-RaidInfo-Header">
+					<Size y="27"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="10" y="-9"/>
+						<Anchor point="TOPRIGHT" x="-10" y="-9"/>
+					</Anchors>
+					<TexCoords left="0.18164" right="0.81640" top="0.578125" bottom="0.94531"/>
+				</Texture>
+				<Texture parentKey="HeaderBottom" file="Interface\RaidFrame\UI-RaidInfo-Header">
+					<Size y="29"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="9" y="9"/>
+						<Anchor point="BOTTOMRIGHT" x="-9" y="9"/>
+					</Anchors>
+					<TexCoords left="0.18164" right="0.81640" top="0.08593" bottom="0.3125"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Title" inherits="GameFontNormal" text="XRP_NOTES">
+					<Size x="185" y="12"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Header" y="-14"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<ScrollFrame name="$parentText" parentKey="Text" inherits="XRPScrollFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.HeaderTop" relativePoint="BOTTOMLEFT" x="5"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.HeaderBottom" relativePoint="TOPRIGHT" x="-5"/>
+				</Anchors>
+				<Frames>
+					<Button parentKey="FocusButton" setAllPoints="true">
+						<Scripts>
+							<OnClick function="XRPTemplatesScrollFrameFocusButton_OnClick"/>
+						</Scripts>
+					</Button>
+				</Frames>
+				<ScrollChild>
+					<EditBox parentKey="EditBox" multiLine="true" autoFocus="false">
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BORDER">
+								<FontString parentKey="Instructions" inherits="GameFontWhite" justifyH="LEFT" justifyV="TOP" text="XRP_NOTES_INSTRUCTIONS">
+									<Anchors>
+										<Anchor point="TOPLEFT"/>
+										<Anchor point="RIGHT"/>
+										<Anchor point="BOTTOM" relativeKey="$parent.$parent"/>
+									</Anchors>
+									<Color r="0.5" g="0.5" b="0.5"/>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad function="XRPTemplatesScrollFrameEditBox_ResetToStart"/>
+							<OnEditFocusGained function="XRPTemplatesNotesEditBox_OnEditFocusGained"/>
+							<OnEditFocusLost function="XRPTemplatesNotesEditBox_OnEditFocusLost"/>
+							<OnTextChanged function="XRPTemplatesNotesEditBox_OnTextChanged"/>
+							<OnCursorChanged function="ScrollingEdit_OnCursorChanged"/>
+							<OnUpdate function="ScrollingEdit_OnUpdate"/>
+							<OnEscapePressed function="EditBox_ClearFocus"/>
+						</Scripts>
+						<FontString inherits="GameFontWhite"/>
+					</EditBox>
+				</ScrollChild>
+			</ScrollFrame>
+			<Button parentKey="Close" inherits="UIPanelButtonTemplate" text="CLOSE">
+				<Size x="90" y="20"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-14" y="13"/>
+				</Anchors>
+				<NormalFont style="GameFontNormalSmall"/>
+				<HighlightFont style="GameFontHighlightSmall"/>
+				<DisabledFont style="GameFontDisableSmall"/>
+				<Scripts>
+					<OnClick function="HideParentPanel"/>
+				</Scripts>
+			</Button>
+			<Button parentKey="Revert" inherits="UIPanelButtonTemplate" text="REVERT">
+				<Size x="90" y="20"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.Close" relativePoint="TOPLEFT"/>
+				</Anchors>
+				<NormalFont style="GameFontNormalSmall"/>
+				<HighlightFont style="GameFontHighlightSmall"/>
+				<DisabledFont style="GameFontDisableSmall"/>
+				<Scripts>
+					<OnClick function="XRPTemplatesNotesRevert_OnClick"/>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnAttributeChanged function="XRPTemplatesNotes_OnAttributeChanged"/>
+			<OnLoad function="XRPTemplatesNotes_OnLoad"/>
+			<OnShow inherit="prepend" function="XRPTemplatesNotes_OnShow"/>
+			<OnHide inherit="append" function="XRPTemplatesNotes_OnHide"/>
+		</Scripts>
+	</Frame>
 </Ui>
