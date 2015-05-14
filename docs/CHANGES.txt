@@ -1,8 +1,15 @@
-6.1.2.0_beta2 (2015-05-02):
+6.1.2.0_beta3 (2015-05-14):
 
 	- If you are upgrading from 6.1.0.0 or earlier, please fully-restart the
 	  game client when upgrading. Some new files have been added, and a
 	  restart is necessary for the game client to see these.
+
+	- Private notes may now be added to information about characters. Adding
+	  or viewing notes may be done from the viewer, the bookmarks, or, for
+	  your current character, from the editor.
+
+		- Characters (excluding your own) with notes are automatically
+		  bookmarked and may not be unbookmarked until the notes are removed.
 
 	- Options have been added (under the new XRP -> Display category in the
 	  interface options) to replace certain race names with alternate or
@@ -26,6 +33,16 @@
 		  <http://example.com/something.html>) a good idea, as XRP will be
 		  certain to not include extra letters at the end when doing so. It is
 		  not required, but it is recommended.
+
+	- Some improvements have been made to field version handling, likely
+	  avoiding rare issues with profiles failing to update after the subject
+	  has recently reinstalled or wiped their addon data.
+
+		- More changes will be coming in the future, including the ability to
+		  force-reload profiles, without wiping the full cache, if absolutely
+		  necessary.
+
+	- Colorblind mode should now be properly supported in XRP's tooltip.
 
 	- Support for translating XRP into languages other than English has been
 	  added. If you're interested in providing a translation, please get in
