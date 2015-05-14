@@ -242,6 +242,7 @@ do
 			local class, classID = UnitClassBase(unit)
 
 			if replace then
+				local colorblind = GetCVar("colorblindMode") == "1"
 				-- Can only ever be one of AFK, DND, or offline.
 				local isAFK = connected and UnitIsAFK(unit)
 				local isDND = connected and not isAFK and UnitIsDND(unit)
@@ -259,10 +260,11 @@ do
 					realm = nil
 				end
 				local name = UnitPVPName(unit) or xrp:Ambiguate(tostring(currentUnit.character))
-				currentUnit.titleRealm = realm and _xrp.L.NAME_REALM:format(name, xrp:RealmDisplayName(realm)) or name
+				currentUnit.titleRealm = (colorblind and _xrp.L.NAME_REALM or "%s"):format(realm and _xrp.L.NAME_REALM:format(name, xrp:RealmDisplayName(realm)) or name, colorblind and xrp.values.GF[currentUnit.faction] or nil)
 
 				local level = UnitLevel(unit)
-				currentUnit.info = ("%s %%s |c%s%%s|r (%s)"):format((level < 1 and UNIT_LETHAL_LEVEL_TEMPLATE or UNIT_LEVEL_TEMPLATE):format(level), RAID_CLASS_COLORS[classID] and RAID_CLASS_COLORS[classID].colorStr or "ffffffff", PLAYER)
+				level = level > 0 and tostring(level) or _xrp.L.LETHAL_LEVEL
+				currentUnit.info = (TOOLTIP_UNIT_LEVEL_RACE_CLASS_TYPE):format(level, "%s", ("|c%s%%s|r"):format(RAID_CLASS_COLORS[classID] and RAID_CLASS_COLORS[classID].colorStr or "ffffffff"), colorblind and xrp.values.GC["1"][classID] or PLAYER)
 
 				local location = connected and not UnitIsVisible(unit) and GameTooltipTextLeft3:GetText() or nil
 				currentUnit.location = location and ("|cffffeeaa%s|r %s"):format(ZONE_COLON, location) or nil
@@ -273,12 +275,16 @@ do
 				if guildName then
 					defaultLines = defaultLines + 1
 				end
+				if colorblind then
+					defaultLines = defaultLines + 1
+				end
 			else
 				currentUnit.nameFormat = ("|cff%s%%s|r"):format(color)
 				currentUnit.icons = watchIcon
 				currentUnit.info = ("%%s |c%s%%s|r"):format(RAID_CLASS_COLORS[classID] and RAID_CLASS_COLORS[classID].colorStr or "ffffffff")
 			end
 		elseif currentUnit.type == "pet" then
+			local colorblind = GetCVar("colorblindMode") == "1"
 			currentUnit.faction = UnitFactionGroup(unit) or UnitIsUnit(unit, "playerpet") and playerFaction or "Neutral"
 
 			local name = UnitName(unit)
@@ -288,7 +294,7 @@ do
 			local ffa = UnitIsPVPFreeForAll(unit)
 			currentUnit.icons = (UnitIsPVP(unit) or ffa) and PVP_ICON:format((ffa or currentUnit.faction == "Neutral") and "FFA" or currentUnit.faction) or nil
 
-			local ownership = GameTooltipTextLeft2:GetText()
+			local ownership = _G[GTTL:format(colorblind and 3 or 2)]:GetText()
 			local owner, petType = ownership:match(UNITNAME_TITLE_PET:format("(.+)")), UNITNAME_TITLE_PET
 			if not owner then
 				owner, petType = ownership:match(UNITNAME_TITLE_MINION:format("(.+)")), UNITNAME_TITLE_MINION
@@ -298,7 +304,7 @@ do
 			currentUnit.character = xrp.characters.byName[owner]
 
 			local realm = owner:match("%-([^%-]+)$")
-			currentUnit.titleRealm = realm and _xrp.L.NAME_REALM:format(petType, xrp:RealmDisplayName(realm)) or petType
+			currentUnit.titleRealm = (colorblind and _xrp.L.NAME_REALM or "%s"):format(realm and _xrp.L.NAME_REALM:format(petType, xrp:RealmDisplayName(realm)) or petType, colorblind and xrp.values.GF[currentUnit.faction] or nil)
 
 			local race = UnitCreatureFamily(unit) or UnitCreatureType(unit)
 			if race == _xrp.L.PET_GHOUL or race == _xrp.L.PET_WATER_ELEMENTAL or race == _xrp.L.PET_MT_WATER_ELEMENTAL then
@@ -310,9 +316,13 @@ do
 			-- pets. Mages and death knights only have one pet family each.
 			local classID = petType == UNITNAME_TITLE_MINION and (race == _xrp.L.PET_ELEMENTAL and "MAGE" or race == _xrp.L.PET_UNDEAD and "DEATHKNIGHT" or "WARLOCK") or petType == UNITNAME_TITLE_PET and "HUNTER"
 			local level = UnitLevel(unit)
-			currentUnit.info = ("%s |c%s%s|r (%s)"):format((level < 1 and UNIT_LETHAL_LEVEL_TEMPLATE or UNIT_LEVEL_TEMPLATE):format(level), RAID_CLASS_COLORS[classID] and RAID_CLASS_COLORS[classID].colorStr or "ffffffff", race, PET)
+			level = level > 0 and tostring(level) or _xrp.L.LETHAL_LEVEL
+			currentUnit.info = TOOLTIP_UNIT_LEVEL_CLASS_TYPE:format(level, ("|c%s%s|r"):format(RAID_CLASS_COLORS[classID] and RAID_CLASS_COLORS[classID].colorStr or "ffffffff", race), colorblind and ("%s %s"):format(xrp.values.GC["1"][classID], PET) or PET)
 
 			if currentUnit.icons then
+				defaultLines = defaultLines + 1
+			end
+			if colorblind then
 				defaultLines = defaultLines + 1
 			end
 		end
