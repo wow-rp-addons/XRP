@@ -21,7 +21,13 @@ local MAX_DEPTH = 50
 
 local NO_PROFILE = { TT = true, VP = true, VA = true, GC = true, GF = true, GR = true, GS = true, GU = true }
 
-function _xrp.NewVersion(field)
+function _xrp.NewVersion(field, contents)
+	if field == "FC" then
+		local number = tonumber(contents)
+		if number then
+			return number
+		end
+	end
 	xrpSaved.versions[field] = (xrpSaved.versions[field] or 0) + 1
 	return xrpSaved.versions[field]
 end
@@ -42,7 +48,7 @@ xrp.current = {
 		__newindex = function(self, field, contents)
 			if xrpSaved.overrides.fields[field] == contents or NO_PROFILE[field] or not field:find("^%u%u$") then return end
 			xrpSaved.overrides.fields[field] = contents
-			xrpSaved.overrides.versions[field] = contents and contents ~= "" and _xrp.NewVersion(field) or nil
+			xrpSaved.overrides.versions[field] = contents and contents ~= "" and _xrp.NewVersion(field, contents) or nil
 			_xrp.FireEvent("UPDATE", field)
 		end,
 		__metatable = false,
@@ -219,7 +225,7 @@ do
 			local profile = xrpSaved.profiles[name]
 			if profile and profile.fields[field] ~= contents then
 				profile.fields[field] = contents
-				profile.versions[field] = contents and _xrp.NewVersion(field) or nil
+				profile.versions[field] = contents and _xrp.NewVersion(field, contents) or nil
 				if IsUsed(name, field) then
 					_xrp.FireEvent("UPDATE", field)
 				end

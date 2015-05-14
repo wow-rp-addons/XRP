@@ -183,7 +183,7 @@ function loadEvents.ADDON_LOADED(event, addon)
 	for field, contents in pairs(newFields) do
 		if contents ~= fields[field] then
 			fields[field] = contents
-			versions[field] = _xrp.NewVersion(field)
+			versions[field] = _xrp.NewVersion(field, contents)
 			_xrp.FireEvent("UPDATE", field)
 		end
 	end
@@ -229,7 +229,7 @@ function loadEvents.PLAYER_LOGIN(event)
 	local GU = UnitGUID("player")
 	if xrpSaved.meta.fields.GU ~= GU then
 		xrpSaved.meta.fields.GU = GU
-		xrpSaved.meta.versions.GU = _xrp.NewVersion("GU")
+		xrpSaved.meta.versions.GU = _xrp.NewVersion("GU", GU)
 	end
 	_xrp.UnhookGameEvent(event, loadEvents[event])
 end
@@ -241,12 +241,12 @@ function loadEvents.PLAYER_LOGOUT(event)
 	do
 		local fields, versions = {}, {}
 		local profiles, inherit = { xrpSaved.profiles[xrpSaved.selected] }, xrpSaved.profiles[xrpSaved.selected].parent
-		for i = 1, 16 do
-			profiles[#profiles + 1] = xrpSaved.profiles[inherit]
-			inherit = xrpSaved.profiles[inherit].parent
+		for i = 1, 50 do
 			if not xrpSaved.profiles[inherit] then
 				break
 			end
+			profiles[#profiles + 1] = xrpSaved.profiles[inherit]
+			inherit = xrpSaved.profiles[inherit].parent
 		end
 		for i = #profiles, 1, -1 do
 			local profile = profiles[i]
@@ -297,7 +297,7 @@ function loadEvents.PLAYER_LOGOUT(event)
 end
 function loadEvents.NEUTRAL_FACTION_SELECT_RESULT(event)
 	xrpSaved.meta.fields.GF = UnitFactionGroup("player")
-	xrpSaved.meta.versions.GF = _xrp.NewVersion("GF")
+	xrpSaved.meta.versions.GF = _xrp.NewVersion("GF", xrpSaved.meta.fields.GF)
 	_xrp.FireEvent("UPDATE", "GF")
 	_xrp.UnhookGameEvent(event, loadEvents[event])
 end

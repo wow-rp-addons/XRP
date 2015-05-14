@@ -21,7 +21,7 @@ _xrp.settingsToggles = {
 	display = {},
 }
 
-local DATA_VERSION = 4
+local DATA_VERSION = 5
 local DATA_VERSION_ACCOUNT = 11
 
 _xrp.DEFAULT_SETTINGS = {
@@ -297,6 +297,22 @@ local upgradeVars = {
 			end
 		end
 	end,
+	[5] = function() -- 6.1.2.0
+		xrpSaved.versions.FC = nil
+		for name, profile in pairs(xrpSaved.profiles) do
+			for field, contents in pairs(profile.fields) do
+				if field == "FC" then
+					profile.versions[field] = _xrp.NewVersion(field, contents)
+				end
+			end
+		end
+		for field, contents in pairs(xrpSaved.meta.fields) do
+			if field == "FC" then
+				xrpSaved.meta.versions[field] = _xrp.NewVersion(field, contents)
+			end
+		end
+		_xrp.FireEvent("UPDATE", "FC")
+	end,
 }
 
 local function InitializeSavedVariables()
@@ -341,7 +357,7 @@ local function InitializeSavedVariables()
 				if type(profile.versions) ~= "table" then
 					profile.versions = {}
 					for field, contents in pairs(profile.fields) do
-						profile.versions[field] = _xrp.NewVersion(field)
+						profile.versions[field] = _xrp.NewVersion(field, contents)
 					end
 				end
 				if type(profile.inherits) ~= "table" then
@@ -436,8 +452,6 @@ function _xrp.CacheTidy(timer)
 		end
 	end
 	if timer <= 60 then
-		-- Explicitly collect garbage, as there may be a hell of a lot of it
-		-- (the user probably clicked "Clear Cache" in the options).
 		collectgarbage()
 	end
 	return true
