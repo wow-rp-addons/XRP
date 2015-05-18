@@ -164,7 +164,7 @@ end
 
 do
 	local function Menu_Checked(self)
-		if not UIDROPDOWNMENU_INIT_MENU.character then
+		if self.disabled or not UIDROPDOWNMENU_INIT_MENU.character then
 			return false
 		elseif self.arg1 == "XRP_BOOKMARK" then
 			return UIDROPDOWNMENU_INIT_MENU.character.bookmark ~= nil
@@ -244,11 +244,7 @@ function XRPBookmarksEntry_OnClick(self, button, down)
 				end
 				self.baseMenuList[5].disabled = isFriend
 			end
-			if self.character.notes then
-				self.baseMenuList[6].disabled = true
-			else
-				self.baseMenuList[6].disabled = nil
-			end
+			self.baseMenuList[6].disabled = nil
 			self.baseMenuList[7].disabled = nil
 		end
 		ToggleDropDownMenu(nil, nil, self, "cursor", nil, nil, self.baseMenuList)

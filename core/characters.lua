@@ -104,13 +104,10 @@ do
 			if not xrpCache[name] then return end
 			if component == "notes" then
 				xrpAccountSaved.notes[name] = value
-				if value and not self.own then
-					self.bookmark = true
-				end
 			elseif component == "bookmark" then
 				if value and not xrpAccountSaved.bookmarks[name] then
 					xrpAccountSaved.bookmarks[name] = time()
-				elseif not value and xrpAccountSaved.bookmarks[name] and not xrpAccountSaved.notes[name] then
+				elseif not value and xrpAccountSaved.bookmarks[name] then
 					xrpAccountSaved.bookmarks[name] = nil
 				end
 			elseif component == "hide" then
