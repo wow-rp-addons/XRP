@@ -77,7 +77,7 @@ do
 		GC = "RC",
 	}
 	function FIELD(event, name, field)
-		if tostring(current) ~= name then return end
+		if tostring(current) ~= name or current.noRequest then return end
 		if META_SUPPORTED[field] then
 			field = META_SUPPORTED[field]
 		end
@@ -89,7 +89,7 @@ do
 end
 
 local function RECEIVE(event, name)
-	if tostring(current) == name then
+	if tostring(current) == name and not current.noRequest then
 		if failed then
 			Load(current)
 		end

@@ -59,7 +59,7 @@ do
 				modified[field] = CheckField(XRPEditor.fields[field], profile, parent)
 			end
 		end
-		if next(modified) or tostring(parent) ~= profile.parent then
+		if next(modified) or (parent and tostring(parent) or nil) ~= profile.parent then
 			XRPEditor.Save:Enable()
 			XRPEditor.Revert:Enable()
 		else
@@ -188,11 +188,10 @@ do
 			end
 		end
 
-		local FC = xrp.values.FC
 		local baseMenuList = {}
-		for i = 0, 4, 1 do
+		for i = 0, 4 do
 			local s = tostring(i)
-			baseMenuList[i + 1] = { text = FC[s], checked = Checked, arg1 = i ~= 0 and s or nil, func = FC_Click }
+			baseMenuList[i + 1] = { text = xrp.values.FC[s], checked = Checked, arg1 = i ~= 0 and s or nil, func = FC_Click }
 		end
 		XRPEditorFC_baseMenuList = baseMenuList
 	end
@@ -233,10 +232,10 @@ function XRPEditorControls_OnAttributeChanged(self, name, value)
 			self.Warning:Hide()
 		end
 	elseif name == "inherited" then
-		if value == true and not self.inherited then
+		if value and not self.inherited then
 			self:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b)
 			self.inherited = true
-		elseif value == false and self.inherited then
+		elseif not value and self.inherited then
 			self:SetTextColor(self:GetFontObject():GetTextColor())
 			self.inherited = false
 		end

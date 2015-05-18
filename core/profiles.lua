@@ -196,6 +196,9 @@ do
 			return true
 		end,
 		IsParentValid = function(self, testName)
+			if not testName then
+				return true
+			end
 			local name = nameMap[self]
 			for i = 1, MAX_DEPTH do
 				local profile = xrpSaved.profiles[testName]
