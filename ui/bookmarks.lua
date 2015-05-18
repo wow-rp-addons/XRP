@@ -57,7 +57,6 @@ local RACE_ICON_TCOORDS = {
 
 function XRPBookmarksList_update(self, force)
 	local offset = HybridScrollFrame_GetOffset(self)
-	local buttons = self.buttons
 	local matches = #results
 
 	if matches == 0 then
@@ -66,9 +65,8 @@ function XRPBookmarksList_update(self, force)
 		self.NoResults:Hide()
 	end
 
-	for i=1, #buttons do
+	for i, button in ipairs(self.buttons) do
 		local index = i + offset
-		local button = buttons[i]
 		local character = xrp.characters.noRequest.byName[results[index]]
 		if index <= matches then
 			if force or not button.character or tostring(character) ~= tostring(button.character) then

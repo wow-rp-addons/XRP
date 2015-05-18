@@ -27,7 +27,8 @@ local TEXTURES = {
 }
 
 function XRPButton_UpdateIcon()
-	if xrp.characters.byUnit.target and xrp.characters.byUnit.target.fields.VA then
+	local target = xrp.characters.byUnit.target
+	if target and (target.hide or target.fields.VA) then
 		Button:SetNormalTexture(TEXTURES[1])
 		Button:SetPushedTexture(TEXTURES[1])
 		return
@@ -59,7 +60,8 @@ function XRPButton_OnEnter(self, motion)
 			GameTooltip:AddLine(("%s"):format(CU), 0.9, 0.7, 0.6, true)
 		end
 		GameTooltip:AddLine(" ")
-		if xrp.characters.byUnit.target and xrp.characters.byUnit.target.fields.VA then
+		local target = xrp.characters.byUnit.target
+		if target and (target.hide or target.fields.VA) then
 			GameTooltip:AddLine(_xrp.L.CLICK_VIEW_TARGET, 1, 0.93, 0.67)
 		elseif not FC or FC == "0" or FC == "1" then
 			GameTooltip:AddLine(_xrp.L.CLICK_IC, 0.4, 0.7, 0.5)
@@ -76,18 +78,17 @@ do
 	do
 		local function Status_Click(self, status, arg2, checked)
 			if not checked then
-				xrp:Status(status)
+				xrp:Status(status or "0")
 			end
 			CloseDropDownMenus()
 		end
 		local function Status_Checked(self)
-			return self.arg1 == (xrp.current.fields.FC or "0")
+			return self.arg1 == xrp.current.fields.FC
 		end
 
-		local FC = xrp.values.FC
-		for i = 0, 4, 1 do
-			local iString = tostring(i)
-			Status_menuList[i + 1] = { text = FC[iString], checked = Status_Checked, arg1 = iString, func = Status_Click, }
+		for i = 0, 4 do
+			local s = tostring(i)
+			Status_menuList[i + 1] = { text = xrp.values.FC[s], checked = Status_Checked, arg1 = i ~= 0 and s or nil, func = Status_Click, }
 		end
 	end
 
@@ -115,7 +116,7 @@ do
 		function XRPButton_OnClick(self, button, down)
 			if button == "LeftButton" then
 				local target = xrp.characters.byUnit.target
-				if target and target.fields.VA then
+				if target and (target.hide or target.fields.VA) then
 					XRPViewer:View("target")
 				else
 					xrp:Status()
