@@ -316,5 +316,7 @@ function XRPEditorControls_OnEditFocusLost(self)
 end
 
 function XRPEditorNotes_OnShow(self)
-	self:SetAttribute("character", xrp.characters.byUnit.player)
+	if not self.character then
+		self.character = xrp.characters.byUnit.player
+	end
 end

@@ -145,7 +145,9 @@ end
 
 do
 	local function Menu_Checked(self)
-		if self.arg1 == "XRP_BOOKMARK" then
+		if self.disabled then
+			return false
+		elseif self.arg1 == "XRP_BOOKMARK" then
 			return current.bookmark ~= nil
 		elseif self.arg1 == "XRP_HIDE" then
 			return current.hide ~= nil

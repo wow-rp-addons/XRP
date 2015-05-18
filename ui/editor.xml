@@ -538,7 +538,7 @@
 			</Frame>
 			<Frame name="$parentNotes" inherits="XRPNotesTemplate">
 				<Scripts>
-					<OnShow inherit="prepend" function="XRPEditorNotes_OnShow"/>
+					<OnShow inherit="append" function="XRPEditorNotes_OnShow"/>
 				</Scripts>
 			</Frame>
 		</Frames>

@@ -282,6 +282,7 @@ function XRPTemplatesNotes_OnLoad(self)
 end
 
 function XRPTemplatesNotes_OnShow(self)
+	self.Text.EditBox:SetText(self.character.notes or "")
 	for i, notes in ipairs(allNotes) do
 		if notes ~= self and notes:IsVisible() and tostring(notes.character) == tostring(self.character) then
 			self.Text.EditBox:SetText(notes.Text.EditBox:GetText())
@@ -302,16 +303,12 @@ end
 
 function XRPTemplatesNotes_OnAttributeChanged(self, name, value)
 	if name == "character" and value ~= self.character then
-		if self.character then
-			local text = self.Text.EditBox:GetText()
-			if text == "" then
-				text = nil
-			end
-			self.character.notes = text
+		local visible = self:IsVisible()
+		if visible then
+			XRPTemplatesNotes_OnHide(self)
 		end
 		self.character = value
-		self.Text.EditBox:SetText(self.character.notes or "")
-		if self:IsVisible() then
+		if visible then
 			XRPTemplatesNotes_OnShow(self)
 		end
 	end
