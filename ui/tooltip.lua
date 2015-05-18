@@ -133,10 +133,6 @@ do
 	local NI_LENGTH = #xrp.fields.NI + #STAT_FORMAT + 1
 	local CU_LENGTH = #xrp.fields.CU + #STAT_FORMAT - 1
 	function RenderTooltip()
-		if not replace then
-			XRPTooltip:ClearLines()
-			XRPTooltip:SetOwner(GameTooltip, "ANCHOR_TOPRIGHT")
-		end
 		oldLines = Tooltip:NumLines()
 		lineNum = 0
 		local showProfile = not (currentUnit.noProfile or currentUnit.character.hide)
@@ -144,6 +140,8 @@ do
 
 		if currentUnit.type == "player" then
 			if not replace then
+				XRPTooltip:ClearLines()
+				XRPTooltip:SetOwner(GameTooltip, "ANCHOR_TOPRIGHT")
 				if currentUnit.character.hide then
 					RenderLine(_xrp.L.HIDDEN, nil, 0.5, 0.5, 0.5)
 					XRPTooltip:Show()
@@ -357,12 +355,8 @@ local function Tooltip_RECEIVE(event, name)
 		-- If the mouse has already left the unit, the tooltip will get stuck
 		-- visible. This bounces it back into visibility if it's partly faded
 		-- out, but it'll just fade again.
-		if not GameTooltip:IsUnit("mouseover") then
+		if replace and not GameTooltip:IsUnit("mouseover") then
 			Tooltip:FadeOut()
-			if not replace then
-				GameTooltip:Show()
-				GameTooltip:FadeOut()
-			end
 		end
 	end
 end
@@ -380,16 +374,10 @@ local function GameTooltip_AddDoubleLine_Hook(self, ...)
 	end
 end
 
-local function GameTooltip_FadeOut_Hook(self)
-	if enabled and not replace then
-		XRPTooltip:FadeOut()
-	end
-end
-
 local function GameTooltip_OnTooltipCleared_Hook(self)
 	active = nil
-	if enabled and not replace then
-		XRPTooltip:Hide()
+	if not replace then
+		Tooltip:Hide()
 	end
 end
 
@@ -439,8 +427,7 @@ _xrp.settingsToggles.tooltip = {
 			replace = true
 		else
 			if not XRPTooltip then
-				CreateFrame("GameTooltip", "XRPTooltip", UIParent, "XRPTooltipTemplate")
-				hooksecurefunc(GameTooltip, "FadeOut", GameTooltip_FadeOut_Hook)
+				CreateFrame("GameTooltip", "XRPTooltip", GameTooltip, "GameTooltipTemplate")
 			end
 			Tooltip = XRPTooltip
 			if replace ~= nil then

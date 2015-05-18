@@ -133,12 +133,6 @@
 			<OnHide function="XRPTemplatesPanel_OnHide"/>
 		</Scripts>
 	</Frame>
-	<GameTooltip name="XRPTooltipTemplate" inherits="GameTooltipTemplate" virtual="true">
-		<Scripts>
-			<OnUpdate function="XRPTooltip_OnUpdate"/>
-			<OnHide inherit="prepend" function="XRPTooltip_OnHide"/>
-		</Scripts>
-	</GameTooltip>
 	<Frame name="XRPCursorBookTemplate" frameStrata="TOOLTIP" frameLevel="127" hidden="true" virtual="true">
 		<Size x="24" y="24"/>
 		<Layers>

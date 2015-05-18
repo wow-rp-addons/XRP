@@ -195,17 +195,6 @@ function XRPTemplatesPanel_OnHide(self)
 	PlaySound("igCharacterInfoClose")
 end
 
-function XRPTooltip_OnUpdate(self, elapsed)
-	if not self.fading and not UnitExists("mouseover") then
-		self.fading = true
-		self:FadeOut()
-	end
-end
-
-function XRPTooltip_OnHide(self)
-	self.fading = nil
-end
-
 function XRPCursorBook_OnEvent(self, event)
 	if InCombatLockdown() or _xrp.settings.interact.disableInstance and (IsInInstance() or IsInActiveWorldPVP()) or _xrp.settings.interact.disablePvP and (UnitIsPVP("player") or UnitIsPVPFreeForAll("player")) or GetMouseFocus() ~= WorldFrame then
 		self:Hide()
