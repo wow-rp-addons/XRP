@@ -149,12 +149,13 @@ do
 		end
 		local totalCount = 0
 		local before = request.maxAge and (time() - request.maxAge)
-		local bookmarks = xrpAccountSaved.bookmarks
-		local hidden = xrpAccountSaved.hidden
+		local bookmarks, notes, hidden = xrpAccountSaved.bookmarks, xrpAccountSaved.notes, xrpAccountSaved.hidden
 		for name, cache in pairs(xrpCache) do
 			totalCount = totalCount + 1
 			local toAdd = true
 			if request.bookmark and not bookmarks[name] then
+				toAdd = false
+			elseif request.notes and not notes[name] then
 				toAdd = false
 			elseif not request.showHidden and hidden[name] then
 				toAdd = false
