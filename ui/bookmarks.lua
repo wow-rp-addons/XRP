@@ -353,6 +353,8 @@ do
 		request.sortType = request.defaultSortType
 		request.fullText = nil
 		request.sortReverse = nil
+		request.notes = nil
+		request.showHidden = nil
 		request.offset = 0
 		Refresh()
 	end
@@ -363,6 +365,7 @@ do
 		{ text = _xrp.L.SORT_BY, notCheckable = true, hasArrow = true, menuList = sortMenu, },
 		{ text = _xrp.L.FULL_SEARCH, isNotRadio = true, keepShownOnClick = true, arg1 = "fullText", checked = Filter_Toggle_Checked, func = Filter_Toggle_Click, },
 		{ text = _xrp.L.REVERSE_SORT, isNotRadio = true, keepShownOnClick = true, arg1 = "sortReverse", checked = Filter_Toggle_Checked, func = Filter_Toggle_Click, },
+		{ text = _xrp.L.HAS_NOTES, isNotRadio = true, keepShownOnClick = true, arg1 = "notes", checked = Filter_Toggle_Checked, func = Filter_Toggle_Click, },
 		{ text = _xrp.L.INCLUDE_HIDDEN, isNotRadio = true, keepShownOnClick = true, arg1 = "showHidden", checked = Filter_Toggle_Checked, func = Filter_Toggle_Click, },
 		{ text = _xrp.L.RESET_FILTERS, notCheckable = true, func = Filter_Reset, },
 	}
