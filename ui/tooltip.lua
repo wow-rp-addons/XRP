@@ -130,6 +130,7 @@ do
 		Horde = { r = 1, g = 0.39, b = 0.41 },
 		Neutral = { r = 1, g = 0.86, b = 0.36 },
 	}
+	local REACTION = "FACTION_STANDING_LABEL%d"
 	local NI_LENGTH = #xrp.fields.NI + #STAT_FORMAT + 1
 	local CU_LENGTH = #xrp.fields.CU + #STAT_FORMAT - 1
 	function RenderTooltip()
@@ -152,6 +153,9 @@ do
 				end
 			end
 			RenderLine(currentUnit.nameFormat:format(showProfile and TruncateLine(xrp:Strip(fields.NA), 65, 0, false) or xrp:Ambiguate(tostring(currentUnit.character))), currentUnit.icons)
+			if replace and currentUnit.reaction then
+				RenderLine(GetText(REACTION:format(currentUnit.reaction), currentUnit.gender), nil, 1, 1, 1)
+			end
 			if showProfile then
 				local NI = fields.NI
 				RenderLine(NI and ("|cff6070a0%s|r %s"):format(STAT_FORMAT:format(xrp.fields.NI), _xrp.L.NICKNAME:format(TruncateLine(xrp:Strip(NI), 70, NI_LENGTH, false))) or nil, nil, 0.6, 0.7, 0.9)
@@ -185,6 +189,9 @@ do
 			end
 		elseif currentUnit.type == "pet" then
 			RenderLine(currentUnit.nameFormat, currentUnit.icons)
+			if currentUnit.reaction then
+				RenderLine(GetText(REACTION:format(currentUnit.reaction), currentUnit.gender), nil, 1, 1, 1)
+			end
 			local color = COLORS[currentUnit.faction]
 			RenderLine(currentUnit.titleRealm:format(showProfile and TruncateLine(xrp:Strip(fields.NA), 60, 0, false) or xrp:Ambiguate(tostring(currentUnit.character))), nil, color.r, color.g, color.b)
 			RenderLine(currentUnit.info, nil, 1, 1, 1)
@@ -260,6 +267,9 @@ do
 				local name = UnitPVPName(unit) or xrp:Ambiguate(tostring(currentUnit.character))
 				currentUnit.titleRealm = (colorblind and _xrp.L.NAME_REALM or "%s"):format(realm and _xrp.L.NAME_REALM:format(name, xrp:RealmDisplayName(realm)) or name, colorblind and xrp.values.GF[currentUnit.faction] or nil)
 
+				currentUnit.reaction = colorblind and UnitReaction("player", unit) or nil
+				currentUnit.gender = colorblind and UnitSex(unit) or nil
+
 				local level = UnitLevel(unit)
 				level = level > 0 and tostring(level) or _xrp.L.LETHAL_LEVEL
 				currentUnit.info = (TOOLTIP_UNIT_LEVEL_RACE_CLASS_TYPE):format(level, "%s", ("|c%s%%s|r"):format(RAID_CLASS_COLORS[classID] and RAID_CLASS_COLORS[classID].colorStr or "ffffffff"), colorblind and xrp.values.GC["1"][classID] or PLAYER)
@@ -303,6 +313,9 @@ do
 
 			local realm = owner:match("%-([^%-]+)$")
 			currentUnit.titleRealm = (colorblind and _xrp.L.NAME_REALM or "%s"):format(realm and _xrp.L.NAME_REALM:format(petType, xrp:RealmDisplayName(realm)) or petType, colorblind and xrp.values.GF[currentUnit.faction] or nil)
+
+			currentUnit.reaction = colorblind and UnitReaction("player", unit) or nil
+			currentUnit.gender = colorblind and UnitSex(unit) or nil
 
 			local race = UnitCreatureFamily(unit) or UnitCreatureType(unit)
 			if race == _xrp.L.PET_GHOUL or race == _xrp.L.PET_WATER_ELEMENTAL or race == _xrp.L.PET_MT_WATER_ELEMENTAL then
