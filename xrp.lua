@@ -197,7 +197,7 @@ function loadEvents.ADDON_LOADED(event, addon)
 	xrpSaved.overrides.logout = nil
 
 	if _xrp.settings.cache.autoClean then
-		_xrp.CacheTidy()
+		_xrp.CacheTidy(nil, true)
 	end
 
 	_xrp.LoadSettings()

@@ -45,9 +45,6 @@ do
 			contents = contents:gsub("([%w%-%.]+%.com%f[^%w%/])", "http://%1"):gsub("([%w%-%.]+%.net%f[^%w%/])", "http://%1"):gsub("([%w%-%.]+%.org%f[^%w%/])", "http://%1"):gsub("([%w%-%.]+%.[%w%-]+%/)", "http://%1"):gsub("(https?://)http://", "%1"):gsub("<?(https?://[%w%%%-%.%_%~%:%/%?#%[%]%@%!%$%&%'%(%)%*%+%,%;%=]+)>?", "|H%1|h|cffc845fa<%1>|r|h")
 		end
 		XRPViewer.fields[field]:SetText(contents)
-		if field == "DE" or field == "HI" then
-			XRPViewer.nextRefresh = GetTime() + 30
-		end
 	end
 
 	function Load(character)
@@ -140,6 +137,13 @@ local function FAIL(event, name, reason)
 			end
 			status = "failed"
 		end
+	end
+end
+
+local function DROP(event, name)
+	if name == "ALL" or tostring(current) == name then
+		XRPViewer:View("player")
+		HideUIPanel(XRPViewer)
 	end
 end
 
@@ -287,6 +291,7 @@ xrp:HookEvent("NOCHANGE", RECEIVE)
 xrp:HookEvent("UPDATE", UPDATE)
 xrp:HookEvent("CHUNK", CHUNK)
 xrp:HookEvent("FAIL", FAIL)
+xrp:HookEvent("DROP", DROP)
 
 function XRPViewer_View(self, player)
 	local isUnit, character
