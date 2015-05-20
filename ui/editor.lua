@@ -191,7 +191,7 @@ do
 		local baseMenuList = {}
 		for i = 0, 4 do
 			local s = tostring(i)
-			baseMenuList[i + 1] = { text = xrp.values.FC[s], checked = Checked, arg1 = i ~= 0 and s or nil, func = FC_Click }
+			baseMenuList[i + 1] = { text = xrp.menuValues.FC[s], checked = Checked, arg1 = i ~= 0 and s or nil, func = FC_Click }
 		end
 		XRPEditorFC_baseMenuList = baseMenuList
 	end
@@ -201,22 +201,22 @@ do
 	local function Menu_Click(self, arg1, arg2, checked)
 		if arg1 == "XRP_NOTES" then
 			XRPEditor.Notes:Show()
+		elseif arg1 == "XRP_AUTOMATION" then
+			XRPEditor.Automation:Show()
 		elseif arg1 == "XRP_EXPORT" then
 			XRPExport:Export(XRPEditor.Profiles.contents, tostring(xrp.profiles[XRPEditor.Profiles.contents].fields))
 		elseif arg1 == "XRP_RENAME" then
 			StaticPopup_Show("XRP_EDITOR_RENAME", XRPEditor.Profiles.contents)
 		elseif arg1 == "XRP_COPY" then
 			StaticPopup_Show("XRP_EDITOR_COPY", XRPEditor.Profiles.contents)
-		elseif arg1 == "XRP_AUTOMATION" then
-			XRPEditor.Automation:Show()
 		end
 	end
 	XRPEditorMenu_baseMenuList = {
-		{ text = _xrp.L.NOTES_MENU, arg1 = "XRP_NOTES", notCheckable = true, func = Menu_Click, },
-		{ text = _xrp.L.EXPORT_MENU, arg1 = "XRP_EXPORT", notCheckable = true, func = Menu_Click, },
-		{ text = _xrp.L.RENAME_MENU, arg1 = "XRP_RENAME", notCheckable = true, func = Menu_Click, },
-		{ text = _xrp.L.COPY_MENU, arg1 = "XRP_COPY", notCheckable = true, func = Menu_Click, },
-		{ text = _xrp.L.AUTOMATION_MENU, arg1 = "XRP_AUTOMATION", notCheckable = true, func = Menu_Click, },
+		{ text = _xrp.L.NOTES, arg1 = "XRP_NOTES", notCheckable = true, func = Menu_Click, },
+		{ text = _xrp.L.AUTOMATION, arg1 = "XRP_AUTOMATION", notCheckable = true, func = Menu_Click, },
+		{ text = _xrp.L.EXPORT, arg1 = "XRP_EXPORT", notCheckable = true, func = Menu_Click, },
+		{ text = _xrp.L.RENAME .. CONTINUED, arg1 = "XRP_RENAME", notCheckable = true, func = Menu_Click, },
+		{ text = _xrp.L.COPY .. CONTINUED, arg1 = "XRP_COPY", notCheckable = true, func = Menu_Click, },
 		{ text = CLOSE, notCheckable = true, func = _xrp.noFunc, },
 	}
 end
@@ -245,7 +245,7 @@ end
 function XRPEditorDropDown_OnAttributeChanged(self, name, value)
 	if name == "contents" then
 		self.contents = value
-		self.Text:SetText(xrp.values[self.field][value or "0"])
+		self.Text:SetText(xrp.menuValues[self.field][value or "0"])
 	elseif name == "inherited" then
 		if value == true and not self.inherited then
 			self.Text:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b)

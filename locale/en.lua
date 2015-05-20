@@ -23,7 +23,6 @@ setfenv(1, _xrp.L)
 
 local UNTRANSLATED = " (Needs translation.)"
 
--- Canonical names for fields by identifier.
 FIELD_NA = "Name"
 FIELD_NI = "Nickname"
 FIELD_NT = "Title"
@@ -43,16 +42,9 @@ FIELD_HI = "History"
 FIELD_FR = "Roleplaying style"
 FIELD_FC = "Character status"
 FIELD_VA = "Version"
--- Metadata fields, not usually user-exposed.
-FIELD_VP = "Protocol version"
-FIELD_GC = "Toon class"
-FIELD_GF = "Toon faction"
-FIELD_GR = "Toon race"
-FIELD_GS = "Toon sex"
-FIELD_GU = "Toon GUID"
 
--- Canonical values for non-plaintext fields. Values not listed here have
--- a context-appropriate translation available in Blizzard's localization.
+-- Values not listed here have a context-appropriate translation available
+-- in Blizzard's localization.
 VALUE_FC_1 = "Out of character"
 VALUE_FC_2 = "In character"
 VALUE_FC_3 = "Looking for contact"
@@ -76,8 +68,19 @@ VALUE_GR_TAUREN = "Tauren"
 VALUE_GR_TROLL = "Troll"
 VALUE_GR_WORGEN = "Worgen"
 VALUE_GF_NEUTRAL = "Neutral"
-VALUE_GS_1 = "Unknown"
 
+-- These are alternate values suited for use in menus.
+VALUE_FC_1_MENU = "Out of Character"
+VALUE_FC_2_MENU = "In Character"
+VALUE_FC_3_MENU = "Looking for Contact"
+VALUE_FC_4_MENU = "Storyteller"
+VALUE_FR_1_MENU = "Normal Roleplayer"
+VALUE_FR_2_MENU = "Casual Roleplayer"
+VALUE_FR_3_MENU = "Full-Time Roleplayer"
+VALUE_FR_4_MENU = "Beginner Roleplayer"
+VALUE_FR_5_MENU = "Mature Roleplayer"
+
+-- These are alternate values for certain races.
 VALUE_GR_BLOODELF_ALT = "Sin'dorei"
 VALUE_GR_NIGHTELF_ALT = "Kaldorei"
 VALUE_GR_SCOURGE_ALT = "Forsaken"
@@ -99,9 +102,7 @@ TREANT_BUFF = "Treant Form" -- Must match in-game name of Treant buff.
 MSP_DISABLED = "You are currently running two roleplay profile addons. XRP's support for sending and receiving profiles is disabled; to fully use XRP, disable \"%s\" and reload your UI."
 
 -- core/utils.lua
--- These are all Lua patterns. If you don't know Lua patterns, provide some
--- examples of various ways height/weight is written in your language and they
--- can be turned into patterns.
+-- Pattern matches for weight/height.
 KG1 = "([%d%.]+)%s*kgs?%.?"
 KG2 = "([%d%.]+)%s*kilo[grams]+"
 LBS1 = "([%d%.]+)%s*lbs?%.?"
@@ -113,7 +114,7 @@ M2 = "([%d%.]+)%s*met[ers]+"
 FT1 = "(%d+)%s*'%s*(%d*)%s*\"?"
 FT2 = "([%d%.]+)%s*ft%.?%s*([%d%.]*)[in%.]*"
 FT3 = "([%d%.]+)%s*feet%s*([%d%.]*)[inches]*"
--- Standard output weight/height display.
+-- Format strings for weight/height display.
 KG = "%.1f kg"
 LBS = "%d lbs"
 CM = "%d cm"
@@ -141,31 +142,30 @@ TRP3_HOUSE_NAME = "House name"
 TRP3_MOTTO = "Motto"
 
 -- Bindings.xml
-TOGGLE_STATUS = "Toggle IC/OOC status"
-TOGGLE_BOOKMARKS = "Open/close bookmarks panel"
-VIEW_TARGET_MOUSEOVER = "View target's or mouseover's RP profile"
-VIEW_TARGET = "View target's RP profile"
-VIEW_MOUSEOVER = "View mouseover's RP profile"
-TOGGLE_EDITOR = "Open/close RP profile editor"
+TOGGLE_STATUS = "Toggle IC/OOC Status"
+TOGGLE_BOOKMARKS = "Toggle RP Profile Bookmarks"
+VIEW_TARGET_MOUSEOVER = "View RP Profile of Target/Mouseover"
+VIEW_TARGET = "View RP Profile of Target"
+VIEW_MOUSEOVER = "View RP Profile of Mouseover"
+TOGGLE_EDITOR = "Toggle RP Profile Editor"
 
 -- Shared UI strings
 APPEARANCE = "Appearance"
 BIOGRAPHY = "Biography"
 NOTES = "Notes"
 AUTHOR = "Author"
-VIEW_CACHED = "View (cached)..."
-VIEW_LIVE = "View (live)..."
-EXPORT_MENU = "Export..."
-NOTES_MENU = "Notes..."
-ADD_FRIEND = "Add friend"
+VIEW_CACHED = "View (Cached)"
+VIEW_LIVE = "View (Live)"
 BOOKMARK = "Bookmark"
-HIDE_PROFILE = "Hide profile"
+HIDE_PROFILE = "Hide Profile"
+DROP_CACHE = "Drop Cache"
+FORCE_REFRESH = "Force Refresh"
 NOTES_INSTRUCTIONS = "You can store private notes here. They will never be visible to other players.\n\nNotes are accessible on all your characters and are automatically saved when you close this panel."
 
 -- ui/automation.lua
 STANDARD = "Standard"
 HUMANOID = "Humanoid"
-NOEQUIP = "No equipment set"
+NOEQUIP = "No Equipment Set"
 CAT = "Cat Form"
 BEAR = "Bear Form"
 MOONKIN = "Moonkin Form"
@@ -179,27 +179,25 @@ GHOST_WOLF = "Ghost Wolf"
 WORGEN_SHADOW = "Shadowform (Worgen)"
 HUMAN_SHADOW = "Shadowform (Human)"
 WARN_FALLBACK = "You should set a fallback profile for \"%s\"."
-NO_SETS = "No equipment sets"
+NO_SETS = "No Equipment Sets"
 
 -- ui/bookmarks.lua
 TOTAL_LIST = "Listing %d of %d profiles."
-ROLEPLAY_NAME = "Roleplay name"
+ROLEPLAY_NAME = "Roleplay Name"
 REALM = "Realm"
 DATE = "Date"
-CHECK_ALL = "Check all"
-UNCHECK_ALL = "Uncheck all"
-SORT_BY = "Sort by"
-FULL_SEARCH = "Full-text search"
-REVERSE_SORT = "Reverse sorting"
-HAS_NOTES = "Has notes"
-INCLUDE_HIDDEN = "Include hidden"
-RESET_FILTERS = "Reset filters"
+SORT_BY = "Sort By"
+FULL_SEARCH = "Full-Text Search"
+REVERSE_SORT = "Reverse Sorting"
+HAS_NOTES = "Has Notes"
+INCLUDE_HIDDEN = "Include Hidden"
+RESET_FILTERS = "Reset Filters"
 OWN_CHARACTERS = "Own Characters"
 RECENT_3HOURS = "Recently Seen (3 hours)"
 ALL_PROFILES = "All Profiles"
 
 -- ui/bookmarks.xml
-NO_PROFILES_FOUND = "No profiles found"
+NO_PROFILES_FOUND = "No profiles found."
 PRESS_ENTER_SEARCH = "Press enter to search."
 BOOKMARKS = "Bookmarks"
 OWN = "Own"
@@ -207,7 +205,7 @@ RECENT = "Recent"
 
 -- ui/chat.lua
 -- This is used mid-sentence, like "You look at nobody.", in place of a full
--- character name, when one is not available.
+-- character name when one is not available.
 NOBODY = "nobody"
 
 -- ui/commands.lua
@@ -258,8 +256,8 @@ PROFILE_ARG2 = "<Profile>"
 PROFILE_ARG2_HELP = "Set current profile to the named profile."
 STATUS_ARGS = "[nil|ooc|ic|lfc|st]"
 STATUS_ARG1_HELP = "Reset to profile default."
-STATUS_ARG2_HELP = "Set to out-of-character."
-STATUS_ARG3_HELP = "Set to in-character."
+STATUS_ARG2_HELP = "Set to out of character."
+STATUS_ARG3_HELP = "Set to in character."
 STATUS_ARG4_HELP = "Set to looking for contact."
 STATUS_ARG5_HELP = "Set to storyteller."
 VIEW_ARGS = "[<Unit>|<Character>]"
@@ -276,9 +274,8 @@ SET_PROFILE_FAIL = "Failed to set profile to \"%s\"."
 -- ui/editor.lua
 PARENT = "Parent"
 PROFILE_EDITOR = "Profile Editor"
-RENAME_MENU = "Rename..."
-COPY_MENU = "Copy..."
-AUTOMATION_MENU = "Automation..."
+RENAME = "Rename"
+COPY = "Copy"
 WARNING = "Warning"
 WARNING_LENGTH = "%s is over %d characters."
 FORM_SET = "Form/set"
@@ -335,20 +332,17 @@ HELP_VIEWER_RESIZE = "The small handle here may be clicked and dragged to resize
 ROLEPLAY_PROFILE = "Roleplay Profile"
 
 -- ui/minimap.lua
--- Tooltip texts.
 PROFILE = "Profile"
 STATUS = "Status"
 CLICK_VIEW_TARGET = "Click to view your target's profile."
 CLICK_IC = "Click for in character."
 CLICK_OOC = "Click for out of character."
 RTCLICK_MENU = "Right click for the menu."
--- Menu items.
 PROFILES = "Profiles"
-CURRENTLY_MENU = "Currently..."
-BOOKMARKS_MENU = "Bookmarks..."
-VIEWER_MENU = "Viewer..."
-EDITOR_MENU = "Editor..."
-OPTIONS_MENU = "Options..."
+CHARACTER_STATUS = "Character Status"
+VIEWER = "Viewer"
+EDITOR = "Editor"
+OPTIONS = "Options"
 
 -- ui/options.lua
 CENTIMETERS = "Centimeters"
@@ -356,13 +350,13 @@ FEET_INCHES = "Feet/Inches"
 METERS = "Meters"
 KILOGRAMS = "Kilograms"
 POUNDS = "Pounds"
-TIME_1DAY = "1 day"
-TIME_3DAY = "3 days"
-TIME_7DAY = "7 days"
-TIME_10DAY = "10 days"
-TIME_2WEEK = "2 weeks"
-TIME_1MONTH = "1 month"
-TIME_3MONTH = "3 months"
+TIME_1DAY = "1 Day"
+TIME_3DAY = "3 Days"
+TIME_7DAY = "7 Days"
+TIME_10DAY = "10 Days"
+TIME_2WEEK = "2 Weeks"
+TIME_1MONTH = "1 Month"
+TIME_3MONTH = "3 Months"
 TOOLTIP = "Tooltip"
 GENERAL_OPTIONS = "Configure the core XRP options, dealing with the user interface. Note that some of these options may require a UI reload (/reload) to fully enable/disable in some cases."
 DISPLAY_OPTIONS = "Configure the display options for XRP, changing how some roleplay information is displayed in-game."
@@ -429,7 +423,7 @@ GUILD = "<%s>"
 GUILD_RANK = "%s of <%s>"
 GUILD_RANK_INDEX = "%s (%d) of <%s>"
 -- These must match in-game returns from UnitCreatureFamily() and
--- UnitCreatureType()
+-- UnitCreatureType().
 PET_GHOUL = "Ghoul"
 PET_WATER_ELEMENTAL = "Water Elemental"
 PET_MT_WATER_ELEMENTAL = "MT - Water Elemental"
