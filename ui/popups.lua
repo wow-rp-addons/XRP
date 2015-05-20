@@ -115,6 +115,30 @@ StaticPopupDialogs["XRP_CURRENTLY"] = {
 	hideOnEscape = true,
 }
 
+StaticPopupDialogs["XRP_CACHE_SINGLE"] = {
+	text = _xrp.L.POPUP_ASK_CACHE_SINGLE,
+	button1 = YES,
+	button2 = NO,
+	showAlert = true,
+	OnAccept = function(self, name)
+		_xrp.DropCache(name)
+	end,
+	whileDead = true,
+	hideOnEscape = true,
+}
+
+StaticPopupDialogs["XRP_FORCE_REFRESH"] = {
+	text = _xrp.L.POPUP_ASK_FORCE_REFRESH,
+	button1 = YES,
+	button2 = NO,
+	showAlert = true,
+	OnAccept = function(self, name)
+		_xrp.ForceRefresh(name)
+	end,
+	whileDead = true,
+	hideOnEscape = true,
+}
+
 StaticPopupDialogs["XRP_CACHE_CLEAR"] = {
 	text = _xrp.L.POPUP_ASK_CACHE,
 	button1 = ACCEPT,

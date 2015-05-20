@@ -431,13 +431,14 @@ function _xrp.LoadSettings()
 	end
 end
 
-function _xrp.CacheTidy(timer)
+function _xrp.CacheTidy(timer, isInit)
 	if type(timer) ~= "number" or timer < 30 then
 		timer = _xrp.settings.cache.time
 		if type(timer) ~= "number" or timer < 30 then
 			return false
 		end
 	end
+	local doDrop = not isInit and timer > 60
 	local now = time()
 	local before = now - timer
 	local beforeOwn = now - math.max(timer * 3, 604800)
@@ -445,14 +446,22 @@ function _xrp.CacheTidy(timer)
 	for name, data in pairs(xrpCache) do
 		if type(data.lastReceive) ~= "number" then
 			data.lastReceive = now
-		elseif not data.own and not bookmarks[name] and not notes[name] and data.lastReceive < before then
-			xrpCache[name] = nil
-		elseif data.own and not bookmarks[name] and not notes[name] and data.lastReceive < beforeOwn then
-			xrpCache[name] = nil
+		elseif not bookmarks[name] and not notes[name] and (not data.own and data.lastReceive < before or data.own and data.lastReceive < beforeOwn) then
+			if doDrop then
+				_xrp.DropCache(name)
+			else
+				if not isInit then
+					_xrp.ResetCacheTimers(name)
+				end
+				xrpCache[name] = nil
+			end
 		end
 	end
 	if timer <= 60 then
 		collectgarbage()
+		if not isInit then
+			_xrp.FireEvent("DROP", "ALL")
+		end
 	end
 	return true
 end

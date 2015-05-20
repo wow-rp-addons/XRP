@@ -160,6 +160,22 @@ local function Refresh()
 	XRPBookmarks.FilterText:SetText(request.text or "")
 end
 
+local function DROP(event, name)
+	if name == "ALL" then
+		request.offset = 0
+		Refresh()
+		return
+	end
+	for i, button in ipairs(XRPBookmarks.List.buttons) do
+		if tostring(button.character) == name then
+			request.offset = XRPBookmarks.List.scrollBar:GetValue()
+			Refresh()
+			return
+		end
+	end
+end
+xrp:HookEvent("DROP", DROP)
+
 do
 	local function Menu_Checked(self)
 		if self.disabled or not UIDROPDOWNMENU_INIT_MENU.character then
