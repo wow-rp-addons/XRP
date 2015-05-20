@@ -21,7 +21,7 @@ _xrp.settingsToggles = {
 	display = {},
 }
 
-local DATA_VERSION = 5
+local DATA_VERSION = 6
 local DATA_VERSION_ACCOUNT = 11
 
 _xrp.DEFAULT_SETTINGS = {
@@ -297,12 +297,17 @@ local upgradeVars = {
 			end
 		end
 	end,
-	[5] = function() -- 6.1.2.0
+	[6] = function() -- 6.1.2.0
 		xrpSaved.versions.FC = nil
 		for name, profile in pairs(xrpSaved.profiles) do
 			for field, contents in pairs(profile.fields) do
 				if field == "FC" then
 					profile.versions[field] = _xrp.NewVersion(field, contents)
+				end
+			end
+			for field, doInherit in pairs(profile.inherits) do
+				if doInherit == true then
+					profile.inherits[field] = nil
 				end
 			end
 		end

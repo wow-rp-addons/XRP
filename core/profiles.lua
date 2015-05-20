@@ -297,6 +297,9 @@ do
 			if NO_PROFILE[field] or not field:find("^%u%u$") then return end
 			local name = nameMap[self]
 			local profile = xrpSaved.profiles[name]
+			if state == true then
+				state = nil
+			end
 			if state ~= profile.inherits[field] then
 				profile.inherits[field] = state
 				if not profile.fields[field] and IsUsed(name, field) then
