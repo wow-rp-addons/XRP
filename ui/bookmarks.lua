@@ -194,9 +194,6 @@ do
 		elseif arg1 == "XRP_NOTES" then
 			XRPBookmarks.Notes:SetAttribute("character", UIDROPDOWNMENU_OPEN_MENU.character)
 			XRPBookmarks.Notes:Show()
-		elseif arg1 == "XRP_EXPORT" then
-			local character = UIDROPDOWNMENU_OPEN_MENU.character
-			XRPExport:Export(xrp:Ambiguate(tostring(character)), tostring(character.fields))
 		elseif arg1 == "XRP_FRIEND" then
 			local character = UIDROPDOWNMENU_OPEN_MENU.character
 			AddOrRemoveFriend(Ambiguate(tostring(character), "none"), xrp:Strip(character.fields.NA))
@@ -212,16 +209,30 @@ do
 				request.offset = XRPBookmarks.List.scrollBar:GetValue()
 				Refresh()
 			end
+		elseif arg1 == "XRP_EXPORT" then
+			local character = UIDROPDOWNMENU_OPEN_MENU.character
+			XRPExport:Export(xrp:Ambiguate(tostring(character)), tostring(character.fields))
+		elseif arg1 == "XRP_CACHE_DROP" then
+			local fullName = tostring(UIDROPDOWNMENU_OPEN_MENU.character)
+			local name, realm = fullName:match("^([^%-]+)%-([^%-]+)")
+			StaticPopup_Show("XRP_CACHE_SINGLE", _xrp.L.NAME_REALM:format(name, xrp:RealmDisplayName(realm)), nil, fullName)
+		end
+		if arg2 then -- Second-level menu.
+			CloseDropDownMenus()
 		end
 	end
+	local Advanced_menuList = {
+		{ text = _xrp.L.EXPORT, arg1 = "XRP_EXPORT", arg2 = true, notCheckable = true, func = Menu_Click, },
+		{ text = _xrp.L.DROP_CACHE .. CONTINUED, arg1 = "XRP_CACHE_DROP", arg2 = true, notCheckable = true, func = Menu_Click, },
+	}
 	XRPBookmarksEntry_baseMenuList = {
 		{ text = _xrp.L.VIEW_CACHED, arg1 = "XRP_VIEW_CACHED", notCheckable = true, func = Menu_Click, },
 		{ text = _xrp.L.VIEW_LIVE, arg1 = "XRP_VIEW_LIVE", notCheckable = true, func = Menu_Click, },
-		{ text = _xrp.L.NOTES_MENU, arg1 = "XRP_NOTES", notCheckable = true, func = Menu_Click, },
-		{ text = _xrp.L.EXPORT_MENU, arg1 = "XRP_EXPORT", notCheckable = true, func = Menu_Click, },
-		{ text = _xrp.L.ADD_FRIEND, arg1 = "XRP_FRIEND", notCheckable = true, func = Menu_Click, },
+		{ text = _xrp.L.NOTES, arg1 = "XRP_NOTES", notCheckable = true, func = Menu_Click, },
+		{ text = ADD_FRIEND, arg1 = "XRP_FRIEND", notCheckable = true, func = Menu_Click, },
 		{ text = _xrp.L.BOOKMARK, arg1 = "XRP_BOOKMARK", isNotRadio = true, checked = Menu_Checked, func = Menu_Click, },
 		{ text = _xrp.L.HIDE_PROFILE, arg1 = "XRP_HIDE", isNotRadio = true, checked = Menu_Checked, func = Menu_Click, },
+		{ text = ADVANCED_LABEL, notCheckable = true, hasArrow = true, menuList = Advanced_menuList, },
 		{ text = CANCEL, notCheckable = true, func = _xrp.noFunc, },
 	}
 end
@@ -234,19 +245,21 @@ function XRPBookmarksEntry_OnClick(self, button, down)
 			if tostring(self.character) == _xrp.playerWithRealm then
 				self.baseMenuList[1].disabled = true
 				self.baseMenuList[2].disabled = nil
+				self.baseMenuList[7].menuList[2].disabled = true
 			else
 				self.baseMenuList[1].disabled = nil
 				self.baseMenuList[2].disabled = true
+				self.baseMenuList[7].menuList[2].disabled = nil
 			end
+			self.baseMenuList[4].disabled = true
 			self.baseMenuList[5].disabled = true
 			self.baseMenuList[6].disabled = true
-			self.baseMenuList[7].disabled = true
 		else
 			self.baseMenuList[1].disabled = nil
 			self.baseMenuList[2].disabled = nil
 			local GF = self.character.fields.GF
 			if GF and GF ~= xrp.current.fields.GF then
-				self.baseMenuList[5].disabled = true
+				self.baseMenuList[4].disabled = true
 			else
 				local name = Ambiguate(tostring(self.character), "none")
 				local isFriend
@@ -256,10 +269,11 @@ function XRPBookmarksEntry_OnClick(self, button, down)
 						break
 					end
 				end
-				self.baseMenuList[5].disabled = isFriend
+				self.baseMenuList[4].disabled = isFriend
 			end
+			self.baseMenuList[5].disabled = nil
 			self.baseMenuList[6].disabled = nil
-			self.baseMenuList[7].disabled = nil
+			self.baseMenuList[7].menuList[2].disabled = nil
 		end
 		ToggleDropDownMenu(nil, nil, self, "cursor", nil, nil, self.baseMenuList)
 		PlaySound("igMainMenuOptionCheckBoxOn")
@@ -302,8 +316,8 @@ do
 		lists.race = { "Human", "Dwarf", "NightElf", "Gnome", "Draenei", "Worgen", "Pandaren", "Orc", "Scourge", "Tauren", "Troll", "BloodElf", "Goblin" }
 	end
 	local factionMenu = {
-		{ text = _xrp.L.CHECK_ALL, notCheckable = true, keepShownOnClick = true, arg1 = "faction", arg2 = "ALL", func = Filter_Click, },
-		{ text = _xrp.L.UNCHECK_ALL, notCheckable = true, keepShownOnClick = true, arg1 = "faction", arg2 = "NONE", func = Filter_Click, },
+		{ text = CHECK_ALL, notCheckable = true, keepShownOnClick = true, arg1 = "faction", arg2 = "ALL", func = Filter_Click, },
+		{ text = UNCHECK_ALL, notCheckable = true, keepShownOnClick = true, arg1 = "faction", arg2 = "NONE", func = Filter_Click, },
 	}
 	for i, faction in ipairs(lists.faction) do
 		factionMenu[#factionMenu + 1] = { text = xrp.values.GF[faction], isNotRadio = true, keepShownOnClick = true, arg1 = "faction", arg2 = faction, checked = Filter_Checked, func = Filter_Click, }
@@ -311,8 +325,8 @@ do
 	factionMenu[#factionMenu + 1] = { text = UNKNOWN, isNotRadio = true, keepShownOnClick = true, arg1 = "faction", arg2 = "UNKNOWN", checked = Filter_Checked, func = Filter_Click, }
 
 	local raceMenu = {
-		{ text = _xrp.L.CHECK_ALL, notCheckable = true, keepShownOnClick = true, arg1 = "race", arg2 = "ALL", func = Filter_Click, },
-		{ text = _xrp.L.UNCHECK_ALL, notCheckable = true, keepShownOnClick = true, arg1 = "race", arg2 = "NONE", func = Filter_Click, },
+		{ text = CHECK_ALL, notCheckable = true, keepShownOnClick = true, arg1 = "race", arg2 = "ALL", func = Filter_Click, },
+		{ text = UNCHECK_ALL, notCheckable = true, keepShownOnClick = true, arg1 = "race", arg2 = "NONE", func = Filter_Click, },
 	}
 	for i, race in ipairs(lists.race) do
 		raceMenu[#raceMenu + 1] = { text = xrp.values.GR[race], isNotRadio = true, keepShownOnClick = true, arg1 = "race", arg2 = race, checked = Filter_Checked, func = Filter_Click, }
@@ -321,8 +335,8 @@ do
 
 	lists.class = { "DEATHKNIGHT", "DRUID", "HUNTER", "MAGE", "MONK", "PALADIN", "PRIEST", "ROGUE", "SHAMAN", "WARLOCK", "WARRIOR" }
 	local classMenu = {
-		{ text = _xrp.L.CHECK_ALL, notCheckable = true, keepShownOnClick = true, arg1 = "class", arg2 = "ALL", func = Filter_Click, },
-		{ text = _xrp.L.UNCHECK_ALL, notCheckable = true, keepShownOnClick = true, arg1 = "class", arg2 = "NONE", func = Filter_Click, },
+		{ text = CHECK_ALL, notCheckable = true, keepShownOnClick = true, arg1 = "class", arg2 = "ALL", func = Filter_Click, },
+		{ text = UNCHECK_ALL, notCheckable = true, keepShownOnClick = true, arg1 = "class", arg2 = "NONE", func = Filter_Click, },
 	}
 	for i, class in ipairs(lists.class) do
 		classMenu[#classMenu + 1] = { text = xrp.values.GC["1"][class], isNotRadio = true, keepShownOnClick = true, arg1 = "class", arg2 = class, checked = Filter_Checked, func = Filter_Click, }

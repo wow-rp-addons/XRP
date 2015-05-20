@@ -42,24 +42,16 @@ xrp.fields = {
 	FR = _xrp.L.FIELD_FR,
 	FC = _xrp.L.FIELD_FC,
 	VA = _xrp.L.FIELD_VA,
---	VP = _xrp.L.FIELD_VP,
---	GC = _xrp.L.FIELD_GC,
---	GF = _xrp.L.FIELD_GF,
---	GR = _xrp.L.FIELD_GR,
---	GS = _xrp.L.FIELD_GS,
---	GU = _xrp.L.FIELD_GU,
 }
 
 xrp.values = {
 	FC = {
-		["0"] = PARENS_TEMPLATE:format(NONE),
 		["1"] = _xrp.L.VALUE_FC_1,
 		["2"] = _xrp.L.VALUE_FC_2,
 		["3"] = _xrp.L.VALUE_FC_3,
 		["4"] = _xrp.L.VALUE_FC_4,
 	},
 	FR = {
-		["0"] = PARENS_TEMPLATE:format(NONE),
 		["1"] = _xrp.L.VALUE_FR_1,
 		["2"] = _xrp.L.VALUE_FR_2,
 		["3"] = _xrp.L.VALUE_FR_3,
@@ -91,7 +83,7 @@ xrp.values = {
 		Worgen = _xrp.L.VALUE_GR_WORGEN,
 	},
 	GS = {
-		["1"] = _xrp.L.VALUE_GS_1,
+		["1"] = UNKNOWN,
 		["2"] = MALE,
 		["3"] = FEMALE,
 	},
@@ -99,6 +91,24 @@ xrp.values = {
 
 -- Match unknown class genders to player gender (non-English).
 xrp.values.GC["1"] = UnitSex("player") == 2 and xrp.values.GC["2"] or xrp.values.GC["3"]
+
+xrp.menuValues = setmetatable({
+	FC = {
+		["0"] = PARENS_TEMPLATE:format(NONE),
+		["1"] = _xrp.L.VALUE_FC_1_MENU,
+		["2"] = _xrp.L.VALUE_FC_2_MENU,
+		["3"] = _xrp.L.VALUE_FC_3_MENU,
+		["4"] = _xrp.L.VALUE_FC_4_MENU,
+	},
+	FR = {
+		["0"] = PARENS_TEMPLATE:format(NONE),
+		["1"] = _xrp.L.VALUE_FR_1_MENU,
+		["2"] = _xrp.L.VALUE_FR_2_MENU,
+		["3"] = _xrp.L.VALUE_FR_3_MENU,
+		["4"] = _xrp.L.VALUE_FR_4_MENU,
+		["5"] = _xrp.L.VALUE_FR_5_MENU,
+	},
+}, { __index = xrp.values })
 
 BINDING_HEADER_XRP = GetAddOnMetadata(addonName, "Title")
 BINDING_NAME_XRP_BOOKMARKS = _xrp.L.TOGGLE_BOOKMARKS

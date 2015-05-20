@@ -88,20 +88,19 @@ do
 
 		for i = 0, 4 do
 			local s = tostring(i)
-			Status_menuList[i + 1] = { text = xrp.values.FC[s], checked = Status_Checked, arg1 = i ~= 0 and s or nil, func = Status_Click, }
+			Status_menuList[i + 1] = { text = xrp.menuValues.FC[s], checked = Status_Checked, arg1 = i ~= 0 and s or nil, func = Status_Click, }
 		end
 	end
 
 	local Profiles_menuList = {}
 	XRPButton_baseMenuList = {
-		{ text = "XRP", isTitle = true, notCheckable = true, },
 		{ text = _xrp.L.PROFILES, notCheckable = true, hasArrow = true, menuList = Profiles_menuList, },
-		{ text = xrp.fields.FC, notCheckable = true, hasArrow = true, menuList = Status_menuList, },
-		{ text = _xrp.L.CURRENTLY_MENU, notCheckable = true, func = function() StaticPopup_Show("XRP_CURRENTLY") end, },
-		{ text = _xrp.L.BOOKMARKS_MENU, notCheckable = true, func = function() XRPBookmarks:Toggle(1) end, },
-		{ text = _xrp.L.VIEWER_MENU, notCheckable = true, func = function() XRPViewer:View() end, },
-		{ text = _xrp.L.EDITOR_MENU, notCheckable = true, func = function() XRPEditor:Edit() end, },
-		{ text = _xrp.L.OPTIONS_MENU, notCheckable = true, func = function() _xrp.Options() end, },
+		{ text = _xrp.L.CHARACTER_STATUS, notCheckable = true, hasArrow = true, menuList = Status_menuList, },
+		{ text = xrp.fields.CU .. CONTINUED, notCheckable = true, func = function() StaticPopup_Show("XRP_CURRENTLY") end, },
+		{ text = _xrp.L.BOOKMARKS, notCheckable = true, func = function() XRPBookmarks:Toggle(1) end, },
+		{ text = _xrp.L.VIEWER, notCheckable = true, func = function() XRPViewer:View() end, },
+		{ text = _xrp.L.EDITOR, notCheckable = true, func = function() XRPEditor:Edit() end, },
+		{ text = _xrp.L.OPTIONS, notCheckable = true, func = function() _xrp.Options() end, },
 		{ text = CANCEL, notCheckable = true, func = _xrp.noFunc, },
 	}
 

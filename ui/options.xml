@@ -64,7 +64,7 @@
 				<KeyValues>
 					<KeyValue key="popup" value="XRP_CACHE_CLEAR"/>
 				</KeyValues>
-				<Size x="96" y="21"/>
+				<Size x="128" y="21"/>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-15" y="15"/>
 				</Anchors>
@@ -76,7 +76,7 @@
 				<KeyValues>
 					<KeyValue key="popup" value="XRP_CACHE_TIDY"/>
 				</KeyValues>
-				<Size x="96" y="21"/>
+				<Size x="128" y="21"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.CacheClear" relativePoint="LEFT" x="-15"/>
 				</Anchors>
