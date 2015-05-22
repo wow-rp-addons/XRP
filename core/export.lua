@@ -56,9 +56,9 @@ function _xrp.ExportText(title, fields)
 		local fieldText = fields[field]
 		if fieldText then
 			if field == "AH" then
-				fieldText = xrp:Height(fieldText)
+				fieldText = xrp.Height(fieldText)
 			elseif field == "AW" then
-				fieldText = xrp:Weight(fieldText)
+				fieldText = xrp.Weight(fieldText)
 			end
 			export[#export + 1] = EXPORT_FORMATS[field]:format(fieldText)
 		end

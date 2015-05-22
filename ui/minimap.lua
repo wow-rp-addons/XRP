@@ -78,7 +78,7 @@ do
 	do
 		local function Status_Click(self, status, arg2, checked)
 			if not checked then
-				xrp:Status(status or "0")
+				xrp.Status(status or "0")
 			end
 			CloseDropDownMenus()
 		end
@@ -101,7 +101,7 @@ do
 		{ text = _xrp.L.VIEWER, notCheckable = true, func = function() XRPViewer:View() end, },
 		{ text = _xrp.L.EDITOR, notCheckable = true, func = function() XRPEditor:Edit() end, },
 		{ text = _xrp.L.OPTIONS, notCheckable = true, func = function() _xrp.Options() end, },
-		{ text = CANCEL, notCheckable = true, func = _xrp.noFunc, },
+		{ text = CANCEL, notCheckable = true, func = _xrp.DoNothing, },
 	}
 
 	do
@@ -118,7 +118,7 @@ do
 				if target and (target.hide or target.fields.VA) then
 					XRPViewer:View("target")
 				else
-					xrp:Status()
+					xrp.Status()
 				end
 				XRPButton_OnEnter(self, true)
 				CloseDropDownMenus()
@@ -205,8 +205,8 @@ end
 _xrp.settingsToggles.minimap = {
 	enabled = function(setting)
 		if setting then
-			xrp:HookEvent("UPDATE", XRPButton_UpdateIcon)
-			xrp:HookEvent("RECEIVE", XRPButton_UpdateIcon)
+			xrp.HookEvent("UPDATE", XRPButton_UpdateIcon)
+			xrp.HookEvent("RECEIVE", XRPButton_UpdateIcon)
 			if _xrp.settings.minimap.detached then
 				if Button and Button == LibDBIcon10_XRP then
 					Button:UnregisterAllEvents()
@@ -233,8 +233,8 @@ _xrp.settingsToggles.minimap = {
 			Button:RegisterEvent("PLAYER_ENTERING_WORLD")
 			Button:Show()
 		elseif Button ~= nil then
-			xrp:UnhookEvent("UPDATE", XRPButton_UpdateIcon)
-			xrp:UnhookEvent("RECEIVE", XRPButton_UpdateIcon)
+			xrp.UnhookEvent("UPDATE", XRPButton_UpdateIcon)
+			xrp.UnhookEvent("RECEIVE", XRPButton_UpdateIcon)
 			Button:UnregisterAllEvents()
 			Button:Hide()
 			Button = nil

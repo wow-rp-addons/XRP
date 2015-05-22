@@ -100,10 +100,10 @@ xrpCmds.bookmarks = function(args)
 end
 
 xrpCmds.export = function(args)
-	local name = xrp:Name(args:match("^[^%s]+"))
+	local name = xrp.FullName(args:match("^[^%s]+"))
 	if not name then return end
 	name = name:gsub("^%l", string.upper)
-	XRPExport:Export(xrp:Ambiguate(name), tostring(xrp.characters.noRequest.byName[name].fields))
+	XRPExport:Export(xrp.ShortName(name), tostring(xrp.characters.noRequest.byName[name].fields))
 end
 
 xrpCmds.profile = function(args)
@@ -140,7 +140,7 @@ xrpCmds.status = function(args)
 end
 
 xrpCmds.toggle = function(args)
-	xrp:Status()
+	xrp.Status()
 end
 
 xrpCmds.view = function(args)

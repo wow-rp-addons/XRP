@@ -120,8 +120,8 @@ StaticPopupDialogs["XRP_CACHE_SINGLE"] = {
 	button1 = YES,
 	button2 = NO,
 	showAlert = true,
-	OnAccept = function(self, name)
-		_xrp.DropCache(name)
+	OnAccept = function(self, character)
+		character:DropCache()
 	end,
 	whileDead = true,
 	hideOnEscape = true,
@@ -132,8 +132,8 @@ StaticPopupDialogs["XRP_FORCE_REFRESH"] = {
 	button1 = YES,
 	button2 = NO,
 	showAlert = true,
-	OnAccept = function(self, name)
-		_xrp.ForceRefresh(name)
+	OnAccept = function(self, character)
+		character:ForceRefresh()
 	end,
 	whileDead = true,
 	hideOnEscape = true,

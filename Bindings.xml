@@ -16,7 +16,7 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 	<Binding name="XRP_STATUS" header="XRP" category="ADDONS">
-		xrp:Status()
+		xrp.Status()
 	</Binding>
 	<Binding name="XRP_BOOKMARKS" category="ADDONS">
 		XRPBookmarks:Toggle()

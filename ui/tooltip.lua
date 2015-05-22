@@ -152,14 +152,14 @@ do
 					return
 				end
 			end
-			RenderLine(currentUnit.nameFormat:format(showProfile and TruncateLine(xrp:Strip(fields.NA), 65, 0, false) or xrp:Ambiguate(tostring(currentUnit.character))), currentUnit.icons)
+			RenderLine(currentUnit.nameFormat:format(showProfile and TruncateLine(xrp.Strip(fields.NA), 65, 0, false) or xrp.ShortName(tostring(currentUnit.character))), currentUnit.icons)
 			if replace and currentUnit.reaction then
 				RenderLine(GetText(REACTION:format(currentUnit.reaction), currentUnit.gender), nil, 1, 1, 1)
 			end
 			if showProfile then
 				local NI = fields.NI
-				RenderLine(NI and ("|cff6070a0%s|r %s"):format(STAT_FORMAT:format(xrp.fields.NI), _xrp.L.NICKNAME:format(TruncateLine(xrp:Strip(NI), 70, NI_LENGTH, false))) or nil, nil, 0.6, 0.7, 0.9)
-				RenderLine(TruncateLine(xrp:Strip(fields.NT), 70), nil, 0.8, 0.8, 0.8)
+				RenderLine(NI and ("|cff6070a0%s|r %s"):format(STAT_FORMAT:format(xrp.fields.NI), _xrp.L.NICKNAME:format(TruncateLine(xrp.Strip(NI), 70, NI_LENGTH, false))) or nil, nil, 0.6, 0.7, 0.9)
+				RenderLine(TruncateLine(xrp.Strip(fields.NT), 70), nil, 0.8, 0.8, 0.8)
 			end
 			if _xrp.settings.tooltip.extraSpace then
 				RenderLine(" ")
@@ -174,14 +174,14 @@ do
 			end
 			if showProfile then
 				local CU = fields.CU
-				RenderLine(CU and ("|cffa08050%s|r %s"):format(STAT_FORMAT:format(xrp.fields.CU), TruncateLine(xrp:Strip(CU), 70, CU_LENGTH)) or nil, nil, 0.9, 0.7, 0.6)
+				RenderLine(CU and ("|cffa08050%s|r %s"):format(STAT_FORMAT:format(xrp.fields.CU), TruncateLine(xrp.Strip(CU), 70, CU_LENGTH)) or nil, nil, 0.9, 0.7, 0.6)
 			end
-			RenderLine(currentUnit.info:format(showProfile and not _xrp.settings.tooltip.noRace and TruncateLine(xrp:Strip(fields.RA), 40, 0, false) or xrp.values.GR[fields.GR] or UNKNOWN, showProfile and not _xrp.settings.tooltip.noClass and TruncateLine(xrp:Strip(fields.RC), 40, 0, false) or xrp.values.GC[fields.GS] and xrp.values.GC[fields.GS][fields.GC] or xrp.values.GC["1"][fields.GC] or UNKNOWN, 40, 0, false), not replace and ParseVersion(fields.VA), 1, 1, 1, 0.5, 0.5, 0.5)
+			RenderLine(currentUnit.info:format(showProfile and not _xrp.settings.tooltip.noRace and TruncateLine(xrp.Strip(fields.RA), 40, 0, false) or xrp.values.GR[fields.GR] or UNKNOWN, showProfile and not _xrp.settings.tooltip.noClass and TruncateLine(xrp.Strip(fields.RC), 40, 0, false) or xrp.values.GC[fields.GS] and xrp.values.GC[fields.GS][fields.GC] or xrp.values.GC["1"][fields.GC] or UNKNOWN, 40, 0, false), not replace and ParseVersion(fields.VA), 1, 1, 1, 0.5, 0.5, 0.5)
 			if showProfile then
 				local FR, FC = fields.FR, fields.FC
 				if FR and FR ~= "0" or FC and FC ~= "0" then
 					local color = COLORS[FC == "1" and "OOC" or "IC"]
-					RenderLine((not FR or FR == "0") and " " or xrp.values.FR[FR] or TruncateLine(xrp:Strip(FR), 35, 0, false), FC and FC ~= "0" and (xrp.values.FC[FC] or TruncateLine(xrp:Strip(FC), 35, 0, false)) or nil, color.r, color.g, color.b, color.r, color.g, color.b)
+					RenderLine((not FR or FR == "0") and " " or xrp.values.FR[FR] or TruncateLine(xrp.Strip(FR), 35, 0, false), FC and FC ~= "0" and (xrp.values.FC[FC] or TruncateLine(xrp.Strip(FC), 35, 0, false)) or nil, color.r, color.g, color.b, color.r, color.g, color.b)
 				end
 			end
 			if replace then
@@ -193,7 +193,7 @@ do
 				RenderLine(GetText(REACTION:format(currentUnit.reaction), currentUnit.gender), nil, 1, 1, 1)
 			end
 			local color = COLORS[currentUnit.faction]
-			RenderLine(currentUnit.titleRealm:format(showProfile and TruncateLine(xrp:Strip(fields.NA), 60, 0, false) or xrp:Ambiguate(tostring(currentUnit.character))), nil, color.r, color.g, color.b)
+			RenderLine(currentUnit.titleRealm:format(showProfile and TruncateLine(xrp.Strip(fields.NA), 60, 0, false) or xrp.ShortName(tostring(currentUnit.character))), nil, color.r, color.g, color.b)
 			RenderLine(currentUnit.info, nil, 1, 1, 1)
 		end
 
@@ -264,8 +264,8 @@ do
 				if realm == _xrp.realm then
 					realm = nil
 				end
-				local name = UnitPVPName(unit) or xrp:Ambiguate(tostring(currentUnit.character))
-				currentUnit.titleRealm = (colorblind and _xrp.L.NAME_REALM or "%s"):format(realm and _xrp.L.NAME_REALM:format(name, xrp:RealmDisplayName(realm)) or name, colorblind and xrp.values.GF[currentUnit.faction] or nil)
+				local name = UnitPVPName(unit) or xrp.ShortName(tostring(currentUnit.character))
+				currentUnit.titleRealm = (colorblind and _xrp.L.NAME_REALM or "%s"):format(realm and _xrp.L.NAME_REALM:format(name, xrp.RealmDisplayName(realm)) or name, colorblind and xrp.values.GF[currentUnit.faction] or nil)
 
 				currentUnit.reaction = colorblind and UnitReaction("player", unit) or nil
 				currentUnit.gender = colorblind and UnitSex(unit) or nil
@@ -312,7 +312,7 @@ do
 			currentUnit.character = xrp.characters.byName[owner]
 
 			local realm = owner:match("%-([^%-]+)$")
-			currentUnit.titleRealm = (colorblind and _xrp.L.NAME_REALM or "%s"):format(realm and _xrp.L.NAME_REALM:format(petType, xrp:RealmDisplayName(realm)) or petType, colorblind and xrp.values.GF[currentUnit.faction] or nil)
+			currentUnit.titleRealm = (colorblind and _xrp.L.NAME_REALM or "%s"):format(realm and _xrp.L.NAME_REALM:format(petType, xrp.RealmDisplayName(realm)) or petType, colorblind and xrp.values.GF[currentUnit.faction] or nil)
 
 			currentUnit.reaction = colorblind and UnitReaction("player", unit) or nil
 			currentUnit.gender = colorblind and UnitSex(unit) or nil
@@ -421,12 +421,12 @@ _xrp.settingsToggles.tooltip = {
 				GameTooltip:HookScript("OnTooltipSetUnit", GameTooltip_OnTooltipSetUnit_Hook)
 				GameTooltip:HookScript("OnTooltipCleared", GameTooltip_OnTooltipCleared_Hook)
 			end
-			xrp:HookEvent("RECEIVE", Tooltip_RECEIVE)
+			xrp.HookEvent("RECEIVE", Tooltip_RECEIVE)
 			enabled = true
 			_xrp.settingsToggles.tooltip.replace(_xrp.settings.tooltip.replace)
 		elseif enabled ~= nil then
 			enabled = false
-			xrp:UnhookEvent("RECEIVE", Tooltip_RECEIVE)
+			xrp.UnhookEvent("RECEIVE", Tooltip_RECEIVE)
 		end
 	end,
 	replace = function(setting)

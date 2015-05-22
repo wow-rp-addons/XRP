@@ -43,6 +43,14 @@ local nameMap, requestMap = setmetatable({}, _xrp.weakKeyMeta), setmetatable({},
 
 local characterMeta
 do
+	local characterFunctions = {
+		DropCache = function(self)
+			_xrp.DropCache(nameMap[self])
+		end,
+		ForceRefresh = function(self)
+			_xrp.ForceRefresh(nameMap[self])
+		end,
+	}
 	local fieldsMeta = {
 		__index = function(self, field)
 			if not field:find("^%u%u$") then
@@ -61,12 +69,12 @@ do
 			end
 			return nil
 		end,
-		__newindex = _xrp.noFunc,
+		__newindex = _xrp.DoNothing,
 		__tostring = function(self)
 			local name = nameMap[self]
 			if not xrpCache[name] then return "" end
 			local shortName, realm = name:match("^([^%-]+)%-([^%-]+)$")
-			realm = xrp:RealmDisplayName(realm)
+			realm = xrp.RealmDisplayName(realm)
 			return _xrp.ExportText(_xrp.L.NAME_REALM:format(shortName, realm), name == _xrp.playerWithRealm and xrp.current.fields or xrpCache[name].fields)
 		end,
 		__metatable = false,
@@ -81,6 +89,8 @@ do
 				requestMap[fields] = requestMap[self]
 				rawset(self, "fields", fields)
 				return fields
+			elseif characterFunctions[component] then
+				return characterFunctions[component]
 			elseif component == "own" and name == _xrp.playerWithRealm then
 				return true
 			elseif component == "noRequest" then
@@ -130,89 +140,19 @@ do
 	}
 end
 
-local Filter
-do
-	local function SortString(sortType, name, cache)
-		if sortType == "date" then
-			return ("%d\30%s"):format(cache.lastReceive, name)
-		elseif sortType == "NA" then
-			return ("%s\30%s"):format((xrp:Strip(cache.fields.NA) or name):lower(), name)
-		elseif sortType == "realm" then
-			return ("%s\30%s"):format(name:match("%-([^%-]+)$"), name)
-		end
-		return "\30" .. name
+local function SortString(sortType, name, cache)
+	if sortType == "date" then
+		return ("%d\30%s"):format(cache.lastReceive, name)
+	elseif sortType == "NA" then
+		return ("%s\30%s"):format((xrp.Strip(cache.fields.NA) or name):lower(), name)
+	elseif sortType == "realm" then
+		return ("%s\30%s"):format(name:match("%-([^%-]+)$"), name)
 	end
+	return ("%s\30%s"):format(name:lower(), name)
+end
 
-	local function SortAsc(a, b)
-		return a > b
-	end
-
-	function Filter(self, request)
-		local results = {}
-		if type(request) ~= "table" then
-			return results
-		end
-		local totalCount = 0
-		local before = request.maxAge and (time() - request.maxAge)
-		local bookmarks, notes, hidden = xrpAccountSaved.bookmarks, xrpAccountSaved.notes, xrpAccountSaved.hidden
-		for name, cache in pairs(xrpCache) do
-			totalCount = totalCount + 1
-			local toAdd = true
-			if request.bookmark and not bookmarks[name] then
-				toAdd = false
-			elseif request.notes and not notes[name] then
-				toAdd = false
-			elseif not request.showHidden and hidden[name] then
-				toAdd = false
-			elseif request.own and not cache.own then
-				toAdd = false
-			elseif request.faction and request.faction[cache.fields.GF or "UNKNOWN"] then
-				toAdd = false
-			elseif request.class and request.class[cache.fields.GC or "UNKNOWN"] then
-				toAdd = false
-			elseif request.race and request.race[cache.fields.GR or "UNKNOWN"] then
-				toAdd = false
-			elseif before and cache.lastReceive < before then
-				toAdd = false
-			end
-			if toAdd and not request.fullText and request.text then
-				local searchText = request.text:lower()
-				local nameText = name:match(FULL_PLAYER_NAME:format("(.+)", ".+")):lower()
-				if not nameText:find(searchText, nil, true) then
-					toAdd = false
-				end
-			elseif toAdd and request.text then
-				local found = false
-				local searchText = request.text:lower()
-				for field, contents in pairs(cache.fields) do
-					if not FILTER_IGNORE[field] and contents:lower():find(searchText, nil, true) then
-						found = true
-						break
-					end
-				end
-				if not found then
-					toAdd = false
-				end
-			end
-			if toAdd then
-				results[#results + 1] = SortString(request.sortType, name, cache)
-			end
-		end
-		local sortAscending = request.sortReverse
-		if request.sortType == "date" then -- Default to newest first for date.
-			sortAscending = not sortAscending
-		end
-		if sortAscending then
-			table.sort(results, SortAsc)
-		else
-			table.sort(results)
-		end
-		for i, result in ipairs(results) do
-			results[i] = result:match("^.-\30(.+)$")
-		end
-		results.totalCount = totalCount
-		return results
-	end
+local function SortAsc(a, b)
+	return a > b
 end
 
 local requestTables = setmetatable({}, _xrp.weakMeta)
@@ -221,7 +161,7 @@ local noRequestTables = setmetatable({}, _xrp.weakMeta)
 xrp.characters = {
 	byName = setmetatable({}, {
 		__index = function(self, name)
-			name = xrp:Name(name)
+			name = xrp.FullName(name)
 			if not name then
 				return nil
 			elseif not requestTables[name] then
@@ -232,12 +172,12 @@ xrp.characters = {
 			end
 			return requestTables[name]
 		end,
-		__newindex = _xrp.noFunc,
+		__newindex = _xrp.DoNothing,
 		__metatable = false,
 	}),
 	byUnit = setmetatable({}, {
 		__index = function (self, unit)
-			local name = xrp:UnitName(unit)
+			local name = xrp.UnitFullName(unit)
 			if not name then
 				return nil
 			elseif not gCache[name] then
@@ -271,7 +211,7 @@ xrp.characters = {
 			end
 			return requestTables[name]
 		end,
-		__newindex = _xrp.noFunc,
+		__newindex = _xrp.DoNothing,
 		__metatable = false,
 	}),
 	byGUID = setmetatable({}, {
@@ -279,7 +219,7 @@ xrp.characters = {
 			-- This will return nil if the GUID hasn't been seen by the client
 			-- yet in the session.
 			local class, GC, race, GR, GS, name, realm = GetPlayerInfoByGUID(GU)
-			name = xrp:Name(name, realm)
+			name = xrp.FullName(name, realm)
 			if not name then
 				return nil
 			elseif not gCache[name] then
@@ -306,14 +246,77 @@ xrp.characters = {
 			end
 			return requestTables[name]
 		end,
-		__newindex = _xrp.noFunc,
+		__newindex = _xrp.DoNothing,
 		__metatable = false,
 	}),
-	Filter = Filter,
+	List = function(self, filter)
+		if not filter then
+			filter = {}
+		end
+		local results, totalCount = {}, 0
+		local before = filter.maxAge and (time() - filter.maxAge)
+		local bookmarks, notes, hidden = xrpAccountSaved.bookmarks, xrpAccountSaved.notes, xrpAccountSaved.hidden
+		for name, cache in pairs(xrpCache) do
+			totalCount = totalCount + 1
+			local toAdd = true
+			if filter.bookmark and not bookmarks[name] then
+				toAdd = false
+			elseif filter.notes and not notes[name] then
+				toAdd = false
+			elseif not filter.showHidden and hidden[name] then
+				toAdd = false
+			elseif filter.own and not cache.own then
+				toAdd = false
+			elseif filter.faction and filter.faction[cache.fields.GF or "UNKNOWN"] then
+				toAdd = false
+			elseif filter.class and filter.class[cache.fields.GC or "UNKNOWN"] then
+				toAdd = false
+			elseif filter.race and filter.race[cache.fields.GR or "UNKNOWN"] then
+				toAdd = false
+			elseif before and cache.lastReceive < before then
+				toAdd = false
+			elseif not filter.fullText and filter.text then
+				local searchText = filter.text:lower()
+				local nameText = name:match(FULL_PLAYER_NAME:format("(.+)", ".+")):lower()
+				if not nameText:find(searchText, nil, true) then
+					toAdd = false
+				end
+			elseif filter.text then
+				local found = false
+				local searchText = filter.text:lower()
+				for field, contents in pairs(cache.fields) do
+					if not FILTER_IGNORE[field] and contents:lower():find(searchText, nil, true) then
+						found = true
+						break
+					end
+				end
+				if not found then
+					toAdd = false
+				end
+			end
+			if toAdd then
+				results[#results + 1] = SortString(filter.sortType, name, cache)
+			end
+		end
+		local sortAscending = filter.sortReverse
+		if filter.sortType == "date" then -- Default to newest first for date.
+			sortAscending = not sortAscending
+		end
+		if sortAscending then
+			table.sort(results, SortAsc)
+		else
+			table.sort(results)
+		end
+		for i, result in ipairs(results) do
+			results[i] = result:match("^.-\30(.+)$")
+		end
+		results.totalCount = totalCount
+		return results
+	end,
 	noRequest = {
 		byName = setmetatable({}, {
 			__index = function(self, name)
-				name = xrp:Name(name)
+				name = xrp.FullName(name)
 				if not name then
 					return nil
 				elseif not noRequestTables[name] then
@@ -323,7 +326,7 @@ xrp.characters = {
 				end
 				return noRequestTables[name]
 			end,
-			__newindex = _xrp.noFunc,
+			__newindex = _xrp.DoNothing,
 			__metatable = false,
 		}),
 	},

@@ -29,7 +29,7 @@ do
 	}
 
 	local function SetField(field, contents)
-		contents = contents and xrp:Strip(contents) or nil
+		contents = contents and xrp.Strip(contents) or nil
 		if field == "VA" then
 			contents = contents and contents:gsub(";", PLAYER_LIST_DELIMITER) or NONE
 		elseif not contents then
@@ -37,9 +37,9 @@ do
 		elseif field == "NI" then
 			contents = _xrp.L.NICKNAME:format(contents)
 		elseif field == "AH" then
-			contents = xrp:Height(contents)
+			contents = xrp.Height(contents)
 		elseif field == "AW" then
-			contents = xrp:Weight(contents)
+			contents = xrp.Weight(contents)
 		elseif field == "CU" or field == "DE" or field == "MO" or field == "HI" then
 			-- Link URLs in scrolling fields.
 			contents = contents:gsub("([%w%-%.]+%.com%f[^%w%/])", "http://%1"):gsub("([%w%-%.]+%.net%f[^%w%/])", "http://%1"):gsub("([%w%-%.]+%.org%f[^%w%/])", "http://%1"):gsub("([%w%-%.]+%.[%w%-]+%/)", "http://%1"):gsub("(https?://)http://", "%1"):gsub("<?(https?://[%w%%%-%.%_%~%:%/%?#%[%]%@%!%$%&%'%(%)%*%+%,%;%=]+)>?", "|H%1|h|cffc845fa<%1>|r|h")
@@ -50,7 +50,7 @@ do
 	function Load(character)
 		local fields = character.fields
 		for i, field in ipairs(DISPLAY) do
-			SetField(field, fields[field] or field == "NA" and xrp:Ambiguate(tostring(character)) or field == "RA" and xrp.values.GR[fields.GR] or field == "RC" and xrp.values.GC[fields.GS or "1"][fields.GC] or nil)
+			SetField(field, fields[field] or field == "NA" and xrp.ShortName(tostring(character)) or field == "RA" and xrp.values.GR[fields.GR] or field == "RC" and xrp.values.GC[fields.GS or "1"][fields.GC] or nil)
 		end
 		XRPViewer.XC:SetText("")
 		failed = nil
@@ -167,21 +167,19 @@ do
 				Load(current)
 			end
 		elseif arg1 == "XRP_FRIEND" then
-			AddOrRemoveFriend(Ambiguate(tostring(current), "none"), xrp:Strip(current.fields.NA))
+			AddOrRemoveFriend(Ambiguate(tostring(current), "none"), xrp.Strip(current.fields.NA))
 		elseif arg1 == "XRP_BOOKMARK" then
 			current.bookmark = not checked
 		elseif arg1 == "XRP_HIDE" then
 			current.hide = not checked
 		elseif arg1 == "XRP_EXPORT" then
-			XRPExport:Export(xrp:Ambiguate(tostring(current)), tostring(current.fields))
+			XRPExport:Export(xrp.ShortName(tostring(current)), tostring(current.fields))
 		elseif arg1 == "XRP_REFRESH_FORCE" then
-			local fullName = tostring(current)
-			local name, realm = fullName:match("^([^%-]+)%-([^%-]+)")
-			StaticPopup_Show("XRP_FORCE_REFRESH", _xrp.L.NAME_REALM:format(name, xrp:RealmDisplayName(realm)), nil, fullName)
+			local name, realm = tostring(current):match("^([^%-]+)%-([^%-]+)")
+			StaticPopup_Show("XRP_FORCE_REFRESH", _xrp.L.NAME_REALM:format(name, xrp.RealmDisplayName(realm)), nil, current)
 		elseif arg1 == "XRP_CACHE_DROP" then
-			local fullName = tostring(current)
-			local name, realm = fullName:match("^([^%-]+)%-([^%-]+)")
-			StaticPopup_Show("XRP_CACHE_SINGLE", _xrp.L.NAME_REALM:format(name, xrp:RealmDisplayName(realm)), nil, fullName)
+			local name, realm = tostring(current):match("^([^%-]+)%-([^%-]+)")
+			StaticPopup_Show("XRP_CACHE_SINGLE", _xrp.L.NAME_REALM:format(name, xrp.RealmDisplayName(realm)), nil, current)
 		end
 		if arg2 then -- Second-level menu.
 			CloseDropDownMenus()
@@ -199,7 +197,7 @@ do
 		{ text = _xrp.L.BOOKMARK, arg1 = "XRP_BOOKMARK", isNotRadio = true, checked = Menu_Checked, func = Menu_Click, },
 		{ text = _xrp.L.HIDE_PROFILE, arg1 = "XRP_HIDE", isNotRadio = true, checked = Menu_Checked, func = Menu_Click, },
 		{ text = ADVANCED_LABEL, notCheckable = true, hasArrow = true, menuList = Advanced_menuList, },
-		{ text = CLOSE, notCheckable = true, func = _xrp.noFunc, },
+		{ text = CLOSE, notCheckable = true, func = _xrp.DoNothing, },
 	}
 end
 
@@ -305,13 +303,13 @@ function XRPViewer_OnLoad(self)
 	self.fields.NA = self.TitleText
 end
 
-xrp:HookEvent("FIELD", FIELD)
-xrp:HookEvent("RECEIVE", RECEIVE)
-xrp:HookEvent("NOCHANGE", RECEIVE)
-xrp:HookEvent("UPDATE", UPDATE)
-xrp:HookEvent("CHUNK", CHUNK)
-xrp:HookEvent("FAIL", FAIL)
-xrp:HookEvent("DROP", DROP)
+xrp.HookEvent("FIELD", FIELD)
+xrp.HookEvent("RECEIVE", RECEIVE)
+xrp.HookEvent("NOCHANGE", RECEIVE)
+xrp.HookEvent("UPDATE", UPDATE)
+xrp.HookEvent("CHUNK", CHUNK)
+xrp.HookEvent("FAIL", FAIL)
+xrp.HookEvent("DROP", DROP)
 
 function XRPViewer_View(self, player)
 	local isUnit, character
@@ -337,7 +335,7 @@ function XRPViewer_View(self, player)
 		if not isUnit then
 			local unit = Ambiguate(player, "none")
 			isUnit = UnitExists(unit)
-			player = isUnit and unit or xrp:Name(player):gsub("^%l", string.upper)
+			player = isUnit and unit or xrp.FullName(player):gsub("^%l", string.upper)
 		end
 		character = isUnit and xrp.characters.byUnit[player] or xrp.characters.byName[player]
 	end
