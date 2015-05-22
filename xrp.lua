@@ -30,7 +30,7 @@ do
 end
 
 _xrp.version = GetAddOnMetadata(addonName, "Version")
-_xrp.noFunc = function() end
+_xrp.DoNothing = function() end
 _xrp.weakMeta = { __mode = "v" }
 _xrp.weakKeyMeta = { __mode = "k" }
 
@@ -45,7 +45,7 @@ do
 		end
 		return true
 	end
-	function xrp:HookEvent(event, func)
+	function xrp.HookEvent(event, func)
 		if type(func) ~= "function" then
 			return false
 		elseif type(events[event]) ~= "table" then
@@ -56,7 +56,7 @@ do
 		events[event][func] = true
 		return true
 	end
-	function xrp:UnhookEvent(event, func)
+	function xrp.UnhookEvent(event, func)
 		if not events[event] or not events[event][func] then
 			return false
 		end
@@ -157,7 +157,7 @@ end
 local loadEvents = {}
 function loadEvents.ADDON_LOADED(event, addon)
 	if addon ~= addonName then return end
-	_xrp.playerWithRealm = xrp:UnitName("player")
+	_xrp.playerWithRealm = xrp.UnitFullName("player")
 	_xrp.player, _xrp.realm = _xrp.playerWithRealm:match("^([^%-]+)%-([^%-]+)$")
 	_xrp.SavedVariableSetup()
 
@@ -279,10 +279,10 @@ function loadEvents.PLAYER_LOGOUT(event)
 			end
 		end
 		if fields.AW then
-			fields.AW = xrp:Weight(fields.AW, "msp")
+			fields.AW = xrp.Weight(fields.AW, "msp")
 		end
 		if fields.AH then
-			fields.AH = xrp:Height(fields.AH, "msp")
+			fields.AH = xrp.Height(fields.AH, "msp")
 		end
 		xrpCache[_xrp.playerWithRealm] = {
 			fields = fields,

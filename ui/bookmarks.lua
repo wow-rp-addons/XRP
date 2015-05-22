@@ -72,11 +72,11 @@ function XRPBookmarksList_update(self, force)
 			if force or not button.character or tostring(character) ~= tostring(button.character) then
 				button.character = character
 				local name, realm = tostring(character):match("^([^%-]+)%-([^%-]+)$")
-				button.NA:SetText(xrp:Strip(character.fields.NA) or name)
+				button.NA:SetText(xrp.Strip(character.fields.NA) or name)
 				button.Name:SetText(name)
-				button.Realm:SetText(xrp:RealmDisplayName(realm))
+				button.Realm:SetText(xrp.RealmDisplayName(realm))
 				local GR = character.fields.GR
-				local RA = xrp:Strip(character.fields.RA) or xrp.values.GR[GR]
+				local RA = xrp.Strip(character.fields.RA) or xrp.values.GR[GR]
 				if RA then
 					button.RA:SetText(RA)
 					button.RA:Show()
@@ -96,7 +96,7 @@ function XRPBookmarksList_update(self, force)
 					button.RaceIcon:Hide()
 				end
 				local GC = character.fields.GC
-				local RC = xrp:Strip(character.fields.RC) or xrp.values.GC[character.fields.GS or "1"][GC]
+				local RC = xrp.Strip(character.fields.RC) or xrp.values.GC[character.fields.GS or "1"][GC]
 				if RC then
 					button.RC:SetText(RC)
 					button.RC:Show()
@@ -146,7 +146,7 @@ function XRPBookmarksList_update(self, force)
 end
 
 local function Refresh()
-	results = xrp.characters:Filter(request)
+	results = xrp.characters:List(request)
 	XRPBookmarks.List.range = #results * 72
 	XRPBookmarks.List:update()
 	XRPBookmarks.List.scrollBar:SetValue(request.offset)
@@ -174,7 +174,7 @@ local function DROP(event, name)
 		end
 	end
 end
-xrp:HookEvent("DROP", DROP)
+xrp.HookEvent("DROP", DROP)
 
 do
 	local function Menu_Checked(self)
@@ -196,7 +196,7 @@ do
 			XRPBookmarks.Notes:Show()
 		elseif arg1 == "XRP_FRIEND" then
 			local character = UIDROPDOWNMENU_OPEN_MENU.character
-			AddOrRemoveFriend(Ambiguate(tostring(character), "none"), xrp:Strip(character.fields.NA))
+			AddOrRemoveFriend(Ambiguate(tostring(character), "none"), xrp.Strip(character.fields.NA))
 		elseif arg1 == "XRP_BOOKMARK" then
 			UIDROPDOWNMENU_OPEN_MENU.character.bookmark = not checked
 			if request.bookmark then
@@ -211,11 +211,10 @@ do
 			end
 		elseif arg1 == "XRP_EXPORT" then
 			local character = UIDROPDOWNMENU_OPEN_MENU.character
-			XRPExport:Export(xrp:Ambiguate(tostring(character)), tostring(character.fields))
+			XRPExport:Export(xrp.ShortName(tostring(character)), tostring(character.fields))
 		elseif arg1 == "XRP_CACHE_DROP" then
-			local fullName = tostring(UIDROPDOWNMENU_OPEN_MENU.character)
-			local name, realm = fullName:match("^([^%-]+)%-([^%-]+)")
-			StaticPopup_Show("XRP_CACHE_SINGLE", _xrp.L.NAME_REALM:format(name, xrp:RealmDisplayName(realm)), nil, fullName)
+			local name, realm = tostring(UIDROPDOWNMENU_OPEN_MENU.character):match("^([^%-]+)%-([^%-]+)")
+			StaticPopup_Show("XRP_CACHE_SINGLE", _xrp.L.NAME_REALM:format(name, xrp.RealmDisplayName(realm)), nil, UIDROPDOWNMENU_OPEN_MENU.character)
 		end
 		if arg2 then -- Second-level menu.
 			CloseDropDownMenus()
@@ -233,7 +232,7 @@ do
 		{ text = _xrp.L.BOOKMARK, arg1 = "XRP_BOOKMARK", isNotRadio = true, checked = Menu_Checked, func = Menu_Click, },
 		{ text = _xrp.L.HIDE_PROFILE, arg1 = "XRP_HIDE", isNotRadio = true, checked = Menu_Checked, func = Menu_Click, },
 		{ text = ADVANCED_LABEL, notCheckable = true, hasArrow = true, menuList = Advanced_menuList, },
-		{ text = CANCEL, notCheckable = true, func = _xrp.noFunc, },
+		{ text = CANCEL, notCheckable = true, func = _xrp.DoNothing, },
 	}
 end
 
@@ -459,7 +458,7 @@ end
 
 function XRPBookmarksNotes_OnAttributeChanged(self, name, value)
 	if name == "character" then
-		self.Title:SetText(xrp:Ambiguate(tostring(value)))
+		self.Title:SetText(xrp.ShortName(tostring(value)))
 	end
 end
 

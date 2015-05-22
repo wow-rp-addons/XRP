@@ -17,14 +17,14 @@
 
 local addonName, _xrp = ...
 
-function xrp:UnitName(unit)
+function xrp.UnitFullName(unit)
 	if not (unit == "player" or UnitIsPlayer(unit)) then
 		return nil
 	end
-	return self:Name(UnitName(unit))
+	return xrp.FullName(UnitName(unit))
 end
 
-function xrp:Name(name, realm)
+function xrp.FullName(name, realm)
 	if not name or name == "" then
 		return nil
 	elseif name:find("-", nil, true) then
@@ -36,7 +36,7 @@ function xrp:Name(name, realm)
 end
 
 -- Dumb version of Ambiguate() which always strips.
-function xrp:Ambiguate(name)
+function xrp.ShortName(name)
 	if type(name) ~= "string" then
 		return UNKNOWN
 	end
@@ -53,13 +53,13 @@ do
 		["SistersofElune"] = "Sisters of Elune",
 	}
 
-	function xrp:RealmDisplayName(realm)
+	function xrp.RealmDisplayName(realm)
 		-- gsub: spaces lower followed by upper/number (i.e., Wyrmrest Accord).
 		return SPECIAL_REALMS[realm] or (realm:gsub("(%l)([%u%d])", "%1 %2"))
 	end
 end
 
-function xrp:Strip(text)
+function xrp.Strip(text)
 	if type(text) ~= "string" then
 		return nil
 	end
@@ -72,7 +72,7 @@ end
 local BASIC = "^%%s*%s%%s*$"
 local KG1, KG2 = BASIC:format(_xrp.L.KG1), BASIC:format(_xrp.L.KG2)
 local LBS1, LBS2 = BASIC:format(_xrp.L.LBS1), BASIC:format(_xrp.L.LBS2)
-function xrp:Weight(weight, units)
+function xrp.Weight(weight, units)
 	if not weight then
 		return nil
 	end
@@ -106,7 +106,7 @@ end
 local CM1, CM2 = BASIC:format(_xrp.L.CM1), BASIC:format(_xrp.L.CM2)
 local M1, M2 = BASIC:format(_xrp.L.M1), BASIC:format(_xrp.L.M2)
 local FT1, FT2, FT3 = BASIC:format(_xrp.L.FT1), BASIC:format(_xrp.L.FT2), BASIC:format(_xrp.L.FT3)
-function xrp:Height(height, units)
+function xrp.Height(height, units)
 	if not height then
 		return nil
 	end
@@ -160,16 +160,16 @@ function xrp:Height(height, units)
 	return height
 end
 
-function xrp:Status(desiredStatus)
-	local profileStatus = self.profiles.SELECTED.fullFields.FC or "0"
+function xrp.Status(desiredStatus)
+	local profileStatus = xrp.profiles.SELECTED.fullFields.FC or "0"
 	if not desiredStatus then
-		local currentStatus = self.current.fields.FC
+		local currentStatus = xrp.current.fields.FC
 		local currentIC, profileIC = currentStatus ~= nil and currentStatus ~= "1" and currentStatus ~= "0", profileStatus ~= nil and profileStatus ~= "1" and profileStatus ~= "0"
 		desiredStatus = currentStatus ~= profileStatus and currentIC ~= profileIC and profileStatus or currentIC and "1" or "2"
 	end
 	if desiredStatus ~= profileStatus then
-		self.current.fields.FC = desiredStatus ~= "0" and desiredStatus or ""
+		xrp.current.fields.FC = desiredStatus ~= "0" and desiredStatus or ""
 	else
-		self.current.fields.FC = nil
+		xrp.current.fields.FC = nil
 	end
 end

@@ -217,7 +217,7 @@ do
 		{ text = _xrp.L.EXPORT, arg1 = "XRP_EXPORT", notCheckable = true, func = Menu_Click, },
 		{ text = _xrp.L.RENAME .. CONTINUED, arg1 = "XRP_RENAME", notCheckable = true, func = Menu_Click, },
 		{ text = _xrp.L.COPY .. CONTINUED, arg1 = "XRP_COPY", notCheckable = true, func = Menu_Click, },
-		{ text = CLOSE, notCheckable = true, func = _xrp.noFunc, },
+		{ text = CLOSE, notCheckable = true, func = _xrp.DoNothing, },
 	}
 end
 

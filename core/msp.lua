@@ -72,7 +72,7 @@ local function RebuildBNList()
 		for j = 1, BNGetNumFriendToons(i) do
 			local active, toonName, client, realmName, realmID, faction, race, class, blank, zoneName, level, gameText, broadcastText, broadcastTime, isConnected, toonID = BNGetFriendToonInfo(i, j)
 			if isConnected and client == "WoW" and realmName ~= "" then
-				local name = xrp:Name(toonName, realmName)
+				local name = xrp.FullName(toonName, realmName)
 				if cache[name].nextCheck then
 					cache[name].nextCheck = 0
 				end
@@ -238,7 +238,7 @@ do
 	end
 
 	local tt
-	xrp:HookEvent("UPDATE", function(event, field)
+	xrp.HookEvent("UPDATE", function(event, field)
 		if tt and (not field or TT_FIELDS[field]) then
 			tt = nil
 		end
@@ -520,7 +520,7 @@ function gameEvents.CHAT_MSG_ADDON(event, prefix, message, channel, sender)
 	if not handlers[prefix] then return end
 	-- Sometimes won't have the realm attached because I dunno. Always
 	-- works correctly for different-realm messages.
-	local name = xrp:Name(sender)
+	local name = xrp.FullName(sender)
 
 	-- Ignore messages from ourselves (GMSP).
 	if name ~= _xrp.playerWithRealm then
@@ -532,7 +532,7 @@ end
 function gameEvents.BN_CHAT_MSG_ADDON(event, prefix, message, channel, presenceID)
 	if not handlers[prefix] then return end
 	local active, toonName, client, realmName = BNGetToonInfo(presenceID)
-	local name = xrp:Name(toonName, realmName)
+	local name = xrp.FullName(toonName, realmName)
 	if bnet then
 		bnet[name] = presenceID
 	end
@@ -546,7 +546,7 @@ function gameEvents.BN_TOON_NAME_UPDATE(event, presenceID)
 	if not bnet then return end
 	local active, toonName, client, realmName = BNGetToonInfo(presenceID)
 	if client == "WoW" and realmName ~= "" then
-		local name = xrp:Name(toonName, realmName)
+		local name = xrp.FullName(toonName, realmName)
 		if cache[name].nextCheck then
 			cache[name].nextCheck = 0
 		end
@@ -579,7 +579,7 @@ do
 		local units = IsInRaid() and raidUnits or partyUnits
 		local newInGroup = {}
 		for i, unit in ipairs(units) do
-			local name = xrp:UnitName(unit)
+			local name = xrp.UnitFullName(unit)
 			if not name then break end
 			if name ~= _xrp.playerWithRealm then
 				if not inGroup[name] and cache[name].nextCheck then
@@ -617,7 +617,7 @@ local function RunRequestQueue()
 end
 
 function _xrp.QueueRequest(name, field)
-	if disabled or name == _xrp.playerWithRealm or xrp:Ambiguate(name) == UNKNOWN or cache[name].time[field] and GetTime() < cache[name].time[field] then
+	if disabled or name == _xrp.playerWithRealm or xrp.ShortName(name) == UNKNOWN or cache[name].time[field] and GetTime() < cache[name].time[field] then
 		return
 	elseif not request[name] then
 		request[name] = {}
@@ -633,7 +633,7 @@ end
 -- but are much more reliable.
 local UNIT_REQUEST = { "GC", "GF", "GR", "GS" }
 function _xrp.Request(name, fields)
-	if disabled or name == _xrp.playerWithRealm or xrp:Ambiguate(name) == UNKNOWN then
+	if disabled or name == _xrp.playerWithRealm or xrp.ShortName(name) == UNKNOWN then
 		return false
 	end
 

@@ -53,7 +53,7 @@ msp.callback = {
 	received = {},
 }
 
-xrp:HookEvent("RECEIVE", function(event, name)
+xrp.HookEvent("RECEIVE", function(event, name)
 	for i, func in ipairs(msp.callback.received) do
 		pcall(func, name)
 		local ambiguated = Ambiguate(name, "none")
@@ -77,7 +77,7 @@ local fieldMeta = {
 		end
 		return xrpCache[name] and xrpCache[name].fields[field] or ""
 	end,
-	__newindex = _xrp.noFunc,
+	__newindex = _xrp.DoNothing,
 	__metatable = false,
 }
 
@@ -89,7 +89,7 @@ local verMeta = {
 		end
 		return xrpCache[name] and xrpCache[name].versions[field] or nil
 	end,
-	__newindex = _xrp.noFunc,
+	__newindex = _xrp.DoNothing,
 	__metatable = false,
 }
 
@@ -98,29 +98,29 @@ local timeTable = setmetatable({}, {
 	__index = function()
 		return loadTime -- Worst-case scenario, they re-run msp:Request().
 	end,
-	__newindex = _xrp.noFunc,
+	__newindex = _xrp.DoNothing,
 	__metatable = false,
 })
 
-local emptyMeta = { __newindex = _xrp.noFunc, __metatable = false, }
+local emptyMeta = { __newindex = _xrp.DoNothing, __metatable = false, }
 local emptyTable = setmetatable({}, emptyMeta)
 
 local emptychar = setmetatable({
-	field = setmetatable({}, { __index = function() return "" end, __newindex = _xrp.noFunc, __metatable = false, }),
+	field = setmetatable({}, { __index = function() return "" end, __newindex = _xrp.DoNothing, __metatable = false, }),
 	ver = emptyTable,
 	time = emptyTable,
 }, emptyMeta)
 
 -- Some addons try to mess with the frames we don't actually have.
 msp.dummyframe = {
-	RegisterEvent = _xrp.noFunc,
-	UnregisterEvent = _xrp.noFunc,
+	RegisterEvent = _xrp.DoNothing,
+	UnregisterEvent = _xrp.DoNothing,
 }
 msp.dummyframex = msp.dummyframe
 
 msp.char = setmetatable({}, {
 	__index = function (self, name)
-		name = xrp:Name(name) -- For pre-5.4.7 addons.
+		name = xrp.FullName(name) -- For pre-5.4.7 addons.
 		if xrpCache[name] then
 			local character = { field = setmetatable({}, fieldMeta), ver = setmetatable({}, verMeta), time = timeTable, }
 			nameMap[character.field] = name
@@ -130,7 +130,7 @@ msp.char = setmetatable({}, {
 		end
 		return emptychar -- LibMSP never returns nil.
 	end,
-	__newindex = _xrp.noFunc,
+	__newindex = _xrp.DoNothing,
 	__metatable = false,
 })
 
@@ -153,7 +153,7 @@ msp.myver = setmetatable({}, {
 	__index = function(self, field)
 		return _xrp.versions[field]
 	end,
-	__newindex = _xrp.noFunc,
+	__newindex = _xrp.DoNothing,
 	__metatable = false,
 })
 
@@ -165,18 +165,14 @@ function msp:Request(name, fields)
 	elseif type(fields) ~= "table" then
 		return false
 	end
-	return _xrp.Request(xrp:Name(name), fields)
-end
-
-function msp:Name(...)
-	return xrp:Name(...)
+	return _xrp.Request(xrp.FullName(name), fields)
 end
 
 -- Used by GHI... Working with the cache since GHI expects values to be
 -- present if we know about someone. Real weird, since this is all-but-
 -- explicitly noted as an internal LibMSP function in the library...
 function msp:PlayerKnownAbout(name)
-	name = xrp:Name(name)
+	name = xrp.FullName(name)
 	return name == _xrp.playerWithRealm or xrpCache[name] ~= nil
 end
 
@@ -192,8 +188,8 @@ function msp:Send()
 end
 
 -- Dummy functions for libmspx v2 enable/disable system.
-msp.Enable = _xrp.noFunc
-msp.Disable = _xrp.noFunc
+msp.Enable = _xrp.DoNothing
+msp.Disable = _xrp.DoNothing
 
 function msp:IsEnabled()
 	return true
@@ -205,6 +201,6 @@ setmetatable(msp, {
 			return _xrp.playerWithRealm
 		end
 	end,
-	__newindex = _xrp.noFunc,
+	__newindex = _xrp.DoNothing,
 	__metatable = false,
 })

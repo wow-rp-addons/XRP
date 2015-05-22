@@ -22,7 +22,7 @@ XRP_BIOGRAPHY = _xrp.L.BIOGRAPHY
 XRP_NOTES = _xrp.L.NOTES
 XRP_NOTES_INSTRUCTIONS = _xrp.L.NOTES_INSTRUCTIONS
 
-XRPTemplates_DoNothing = _xrp.noFunc
+XRPTemplates_DoNothing = _xrp.DoNothing
 
 function XRPTemplates_CloseDropDownMenus(self, ...)
 	CloseDropDownMenus()

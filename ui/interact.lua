@@ -39,7 +39,7 @@ do
 		if not mouseover then return end
 		-- 0.75s interaction time is guessed as Blizzard number from
 		-- in-game testing. Used for consistency.
-		if GetTime() - now < 0.75 and mouseover == xrp:UnitName("target") then
+		if GetTime() - now < 0.75 and mouseover == xrp.UnitFullName("target") then
 			if XRPCursorBook.mountable then
 				UIErrorsFrame:Clear() -- Hides errors on inteactable mount players.
 			end
@@ -80,13 +80,13 @@ _xrp.settingsToggles.interact = {
 				IsItemInRange(88589, "player")
 				CreateFrame("Frame", "XRPCursorBook", UIParent, "XRPCursorBookTemplate")
 			end
-			xrp:HookEvent("RECEIVE", Cursor_RECEIVE)
+			xrp.HookEvent("RECEIVE", Cursor_RECEIVE)
 			XRPCursorBook:RegisterEvent("UPDATE_MOUSEOVER_UNIT")
 			cursor = true
 		elseif cursor ~= nil then
 			XRPCursorBook:UnregisterAllEvents()
 			XRPCursorBook:Hide()
-			xrp:UnhookEvent("RECEIVE", Cursor_RECEIVE)
+			xrp.UnhookEvent("RECEIVE", Cursor_RECEIVE)
 			cursor = false
 		end
 	end,

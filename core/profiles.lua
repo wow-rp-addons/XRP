@@ -39,9 +39,9 @@ xrp.current = {
 			if not contents or contents == "" then
 				return nil
 			elseif field == "AH" then
-				contents = xrp:Height(contents, "msp")
+				contents = xrp.Height(contents, "msp")
 			elseif field == "AW" then
-				contents = xrp:Weight(contents, "msp")
+				contents = xrp.Weight(contents, "msp")
 			end
 			return contents
 		end,
@@ -57,7 +57,7 @@ xrp.current = {
 		__index = function(self, field)
 			return xrpSaved.overrides.fields[field] ~= nil
 		end,
-		__newindex = _xrp.noFunc,
+		__newindex = _xrp.DoNothing,
 		__metatable = false,
 	}),
 }
@@ -81,7 +81,7 @@ _xrp.versions = setmetatable({}, {
 		end
 		return xrpSaved.meta.versions[field] or nil
 	end,
-	__newindex = _xrp.noFunc,
+	__newindex = _xrp.DoNothing,
 })
 
 local function IsUsed(name, field)
@@ -263,7 +263,7 @@ do
 					fields[field] = contents
 				end
 			end
-			return _xrp.ExportText(("%s - %s"):format(_xrp.L.NAME_REALM:format(_xrp.player, xrp:RealmDisplayName(_xrp.realm)), name), fields)
+			return _xrp.ExportText(("%s - %s"):format(_xrp.L.NAME_REALM:format(_xrp.player, xrp.RealmDisplayName(_xrp.realm)), name), fields)
 		end,
 		__metatable = false,
 	}
@@ -282,7 +282,7 @@ do
 			end
 			return nil
 		end,
-		__newindex = _xrp.noFunc,
+		__newindex = _xrp.DoNothing,
 		__metatable = false,
 	}
 
@@ -388,6 +388,6 @@ xrp.profiles = setmetatable({
 		end
 		return profileTables[name]
 	end,
-	__newindex = _xrp.noFunc,
+	__newindex = _xrp.DoNothing,
 	__metatable = false,
 })
