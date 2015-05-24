@@ -27,33 +27,38 @@ local GTTL, GTTR = "GameTooltipTextLeft%d", "GameTooltipTextRight%d"
 
 local RenderTooltip
 do
-	local function TruncateLine(text, length, offset, double)
-		if not text then return end
-		offset = offset or 0
-		text = text:gsub("\n+", " ")
-		local line1, line2 = text
-		local isTruncated = false
-		if #text > length - offset and text:find(" ", 1, true) then
-			local position = 0
-			local line1pos = 0
-			while text:find(" ", position + 1, true) and (text:find(" ", position + 1, true)) <= (length - offset) do
-				position = text:find(" ", position + 1, true)
-			end
-			line1 = text:sub(1, position - 1)
-			line1pos = position + 1
-			if double ~= false and #text - #line1 > line1pos + offset then
-				while text:find(" ", position + 1, true) and (text:find(" ", position + 1, true)) <= (length - offset + length) do
+	local TruncateLine
+	do
+		local SINGLE, DOUBLE = "%s", "%s\n%s"
+		local SINGLE_TRUNC, DOUBLE_TRUNC = SINGLE .. CONTINUED, DOUBLE .. CONTINUED
+		function TruncateLine(text, length, offset, double)
+			if not text then return end
+			offset = offset or 0
+			text = text:gsub("\n+", " ")
+			local line1, line2 = text
+			local isTruncated = false
+			if #text > length - offset and text:find(" ", 1, true) then
+				local position = 0
+				local line1pos = 0
+				while text:find(" ", position + 1, true) and (text:find(" ", position + 1, true)) <= (length - offset) do
 					position = text:find(" ", position + 1, true)
 				end
-				isTruncated = true
-				line2 = text:sub(line1pos, position - 1)
-			elseif double ~= false then
-				line2 = text:sub(position + 1)
-			else
-				isTruncated = true
+				line1 = text:sub(1, position - 1)
+				line1pos = position + 1
+				if double ~= false and #text - #line1 > line1pos + offset then
+					while text:find(" ", position + 1, true) and (text:find(" ", position + 1, true)) <= (length - offset + length) do
+						position = text:find(" ", position + 1, true)
+					end
+					isTruncated = true
+					line2 = text:sub(line1pos, position - 1)
+				elseif double ~= false then
+					line2 = text:sub(position + 1)
+				else
+					isTruncated = true
+				end
 			end
+			return (line2 and (isTruncated and DOUBLE_TRUNC or DOUBLE) or isTruncated and SINGLE_TRUNC or SINGLE):format(line1, line2)
 		end
-		return (line2 and (isTruncated and "%s\n%s..." or "%s\n%s") or isTruncated and "%s..." or "%s"):format(line1, line2)
 	end
 
 	local ParseVersion
@@ -72,8 +77,7 @@ do
 		}
 		function ParseVersion(VA)
 			if not VA then return end
-			local short = {}
-			local hasProfile = false
+			local short, hasProfile = {}
 			for addon in VA:upper():gmatch("([^/;]+)/[^/;]+") do
 				if PROFILE_ADDONS[addon] and not hasProfile then
 					short[#short + 1] = PROFILE_ADDONS[addon]

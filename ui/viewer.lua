@@ -388,8 +388,8 @@ _xrp.settingsToggles.display.closeOnEscapeViewer = function(setting)
 	if setting and XRPViewer.TitleRegion then
 		if not closeOnEscape then
 			UISpecialFrames[#UISpecialFrames + 1] = "XRPViewer"
-			closeOnEscape = true
 		end
+		closeOnEscape = true
 	elseif closeOnEscape then
 		for i, frame in ipairs(UISpecialFrames) do
 			if frame == "XRPViewer" then

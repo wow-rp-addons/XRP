@@ -157,7 +157,7 @@ local function ParseText_Hook(line, send)
 	end
 end
 
-local BlizzardGetColoredName = GetColoredName
+local OldGetColoredName = GetColoredName
 _xrp.settingsToggles.chat = {
 	names = function(setting)
 		if setting then
@@ -166,12 +166,15 @@ _xrp.settingsToggles.chat = {
 			end
 			ChatFrame_AddMessageEventFilter("CHAT_MSG_EMOTE", MessageEventFilter_EMOTE)
 			ChatFrame_AddMessageEventFilter("CHAT_MSG_TEXT_EMOTE", MessageEventFilter_TEXT_EMOTE)
+			if GetColoredName ~= XRPGetColoredName then
+				OldGetColoredName = GetColoredName
+			end
 			GetColoredName = XRPGetColoredName
 			names = true
 		elseif names ~= nil then
 			ChatFrame_RemoveMessageEventFilter("CHAT_MSG_EMOTE", MessageEventFilter_EMOTE)
 			ChatFrame_RemoveMessageEventFilter("CHAT_MSG_TEXT_EMOTE", MessageEventFilter_TEXT_EMOTE)
-			GetColoredName = BlizzardGetColoredName
+			GetColoredName = OldGetColoredName
 			names = false
 		end
 	end,
