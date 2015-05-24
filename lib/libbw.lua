@@ -52,7 +52,7 @@
 		- libbw:SendAddonMessage(prefix, message, "GUILD", nil, "ALERT")
 ]]
 
-local LIBBW_VERSION = 4
+local LIBBW_VERSION = 5
 
 if libbw and libbw.version >= LIBBW_VERSION then return end
 
@@ -74,8 +74,8 @@ if not libbw or libbw.version < 4 then
 			},
 			avail = 0,
 			lastAvailUpdate = now,
-			BPS = 1275,
-			BURST = 4080,
+			BPS = 1280,
+			BURST = 4096,
 		},
 		[2] = {
 			[1] = {
@@ -92,20 +92,22 @@ if not libbw or libbw.version < 4 then
 			},
 			avail = 0,
 			lastAvailUpdate = now,
-			BPS = 4078,
-			BURST = 8156,
+			BPS = 4096,
+			BURST = 8192,
 		},
 		hooks = {},
+		isHooked = {},
+		bundled = ...,
 		version = LIBBW_VERSION,
 	}
 else
+	libbw.bundled = ...
 	libbw.version = LIBBW_VERSION
 end
 
 local function UpdateAvail(pool)
 	local BPS, BURST = pool.BPS, pool.BURST
 	if InCombatLockdown() then
-		-- Cut traffic by half in-combat.
 		BPS = BPS * 0.50
 		BURST = BURST * 0.50
 	end
@@ -126,21 +128,20 @@ local function RunQueue()
 	local hasQueue = false
 	for i, pool in ipairs(libbw) do
 		if pool.queueing then
-			hasQueue = true
-			if UpdateAvail(pool) > 0 then
-				local n = 0
-				for i, priority in ipairs(pool) do
-					if priority[1] then -- Priority has queues.
-						n = n + 1
-					elseif priority.avail > 0 then
-						-- Reclaim unused bandwidth.
-						pool.avail = pool.avail + priority.avail
-						priority.avail = 0
-					end
+			local active = 0
+			for i, priority in ipairs(pool) do
+				if priority[1] then -- Priority has queues.
+					active = active + 1
+				elseif priority.avail > 0 then
+					-- Reclaim unused bandwidth.
+					pool.avail = pool.avail + priority.avail
+					priority.avail = 0
 				end
-				if n > 0 then
-					hasQueue = true
-					local avail = pool.avail / n
+			end
+			if active > 0 then
+				hasQueue = true
+				if UpdateAvail(pool) > 0 then
+					local avail = pool.avail / active
 					pool.avail = 0
 					for i, priority in ipairs(pool) do
 						if priority[1] then
@@ -166,9 +167,9 @@ local function RunQueue()
 							end
 						end
 					end
-				else
-					pool.queueing = nil
 				end
+			else
+				pool.queueing = nil
 			end
 		end
 	end
@@ -187,13 +188,13 @@ local function Enqueue(pool, priorityName, queueName, message)
 	local priority = pool[PRIORITIES[priorityName] or 2]
 	local queue = priority.byName[queueName]
 	if not queue then
-		if not libbw.ticker then
-			libbw.ticker = C_Timer.NewTicker(0.1, RunQueue)
-		end
 		queue = {}
 		queue.name = queueName
 		priority.byName[queueName] = queue
 		priority[#priority + 1] = queue
+		if not libbw.ticker then
+			libbw.ticker = C_Timer.NewTicker(0.1, RunQueue)
+		end
 	end
 	queue[#queue + 1] = message
 	pool.queueing = true
@@ -326,7 +327,7 @@ function libbw:BNSendGameData(presenceID, prefix, text, priorityName, queueName,
 	if length > 4078 then
 		error("libbw:BNSendGameData(): message length cannot exceed 4078 bytes", 2)
 	end
-	length = length + 16 + #tostring(presenceID)
+	length = length + 18 -- Max 4096 per message.
 
 	if not pool.queueing and length <= UpdateAvail(pool) then
 		pool.avail = pool.avail - length
@@ -364,7 +365,6 @@ function libbw:BNSendWhisper(presenceID, text, priorityName, queueName, callback
 	if length > 255 then
 		error("libbw:BNSendWhisper(): message length cannot exceed 255 bytes", 2)
 	end
-	length = length + #tostring(presenceID)
 
 	if not pool.queueing and length <= UpdateAvail(pool) then
 		pool.avail = pool.avail - length
@@ -401,7 +401,6 @@ function libbw:BNSendConversationMessage(channelID, text, priorityName, queueNam
 	if length > 255 then
 		error("libbw:BNSendConversationMessage(): message length cannot exceed 255 bytes", 2)
 	end
-	length = length + #tostring(channelID)
 
 	if not pool.queueing and length <= UpdateAvail(pool) then
 		pool.avail = pool.avail - length
@@ -429,24 +428,15 @@ end
 -- Hooks won't be run if function calls error (improper arguments).
 function libbw.hooks.SendAddonMessage(prefix, text, kind, target)
 	if isSending then return end
-	libbw[1].avail = libbw[1].avail - #text - #kind - 16
-	if target then
-		libbw[1].avail = libbw[1].avail - #tostring(target)
-	end
+	libbw[1].avail = libbw[1].avail - (#text + #kind + 16 + (target and #tostring(target) or 0))
 end
 function libbw.hooks.SendChatMessage(text, kind, languageID, target)
 	if isSending then return end
-	libbw[1].avail = libbw[1].avail - #text
-	if kind then
-		libbw[1].avail = libbw[1].avail - #kind
-	end
-	if target then
-		libbw[1].avail = libbw[1].avail - #tostring(target)
-	end
+	libbw[1].avail = libbw[1].avail - (#text + (kind and #kind or 0) + (target and #tostring(target) or 0))
 end
 function libbw.hooks.BNSendGameData(presenceID, prefix, text)
 	if isSending then return end
-	libbw[2].avail = libbw[2].avail - #text - 16
+	libbw[2].avail = libbw[2].avail - (#text + 18)
 end
 function libbw.hooks.BNSendWhisper(presenceID, text)
 	if isSending then return end
@@ -461,8 +451,7 @@ do
 		self.lastDraw = self.lastDraw + elapsed
 	end
 	local function fake_OnEvent(self, event, ...)
-		local now = GetTime()
-		if self.lastDraw < now - 5 then
+		if self.lastDraw < GetTime() - 5 then
 			if libbw.ticker then
 				libbw.ticker._callback()
 			end
@@ -491,37 +480,32 @@ do
 			libbw.frame:RegisterEvent("GUILD_RANKS_UPDATE")
 			libbw.frame:RegisterEvent("PLAYER_GUILD_UPDATE")
 			libbw.frame:RegisterEvent("COMPANION_UPDATE")
-			local now = GetTime()
-			libbw.frame.lastDraw = now
+			libbw.frame.lastDraw = GetTime()
 			libbw.frame:Show()
 		elseif libbw.frame then
 			libbw.frame:UnregisterAllEvents()
 			libbw.frame:Hide()
 		end
 	end
+	if libbw.frame then
+		libbw.frame:SetScript("OnUpdate", fake_OnUpdate)
+		libbw.frame:SetScript("OnEvent", fake_OnEvent)
+	end
 	libbw.hooks.RestartGx()
 end
 
-if not libbw.hooked then
-	hooksecurefunc("SendAddonMessage", function(...)
-		return libbw.hooks.SendAddonMessage(...)
-	end)
-	hooksecurefunc("SendChatMessage", function(...)
-		return libbw.hooks.SendChatMessage(...)
-	end)
-	hooksecurefunc("BNSendGameData", function(...)
-		return libbw.hooks.BNSendGameData(...)
-	end)
-	hooksecurefunc("BNSendWhisper", function(...)
-		return libbw.hooks.BNSendWhisper(...)
-	end)
-	hooksecurefunc("BNSendConversationMessage", function(...)
-		return libbw.hooks.BNSendConversationMessage(...)
-	end)
-	hooksecurefunc("RestartGx", function(...)
-		return libbw.hooks.RestartGx(...)
-	end)
-	libbw.hooked = true
+for name, func in pairs(libbw.hooks) do
+	if not libbw.isHooked[name] then
+		hooksecurefunc(name, function(...)
+			return libbw.hooks[name](...)
+		end)
+		libbw.isHooked[name] = true
+	end
+end
+
+if libbw.ticker then
+	libbw.ticker:Cancel()
+	libbw.ticker = C_Timer.NewTicker(0.1, RunQueue)
 end
 
 -- The following code provides a compatibility layer for addons using
@@ -530,7 +514,6 @@ end
 local CTL_VERSION = 23
 
 if ChatThrottleLib and not ChatThrottleLib.libbw and ChatThrottleLib.version > CTL_VERSION then
-	-- Newer CTL already loaded, route through it.
 	libbw.ctl = true
 	return
 end
@@ -538,8 +521,6 @@ end
 if type(ChatThrottleLib) ~= "table" then
 	ChatThrottleLib = {}
 else
-	-- Remove any old libbw metatable, if present, before (re-)building the
-	-- compatibility layer.
 	setmetatable(ChatThrottleLib, nil)
 end
 ChatThrottleLib.version = nil -- Handled in metatable.
@@ -547,29 +528,29 @@ ChatThrottleLib.libbw = true
 
 function ChatThrottleLib:SendAddonMessage(priorityName, prefix, text, kind, target, queueName, callbackFn, callbackArg)
 	if not priorityName or not prefix or not text or not kind or not PRIORITIES[priorityName] then
-		error('Usage: ChatThrottleLib:SendAddonMessage("{BULK||NORMAL||ALERT}", "prefix", "text", "chattype"[, "target"])', 2)
+		error("Usage: ChatThrottleLib:SendAddonMessage(\"{BULK||NORMAL||ALERT}\", \"prefix\", \"text\", \"chattype\"[, \"target\"])", 2)
 	elseif callbackFn and type(callbackFn) ~= "function" then
-		error('ChatThrottleLib:SendAddonMessage(): callbackFn: expected function, got ' .. type(callbackFn), 2)
+		error("ChatThrottleLib:SendAddonMessage(): callbackFn: expected function, got " .. type(callbackFn), 2)
 	elseif #text > 255 then
 		error("ChatThrottleLib:SendAddonMessage(): message length cannot exceed 255 bytes", 2)
 	end
-	return libbw:SendAddonMessage(prefix, text, kind, target, priorityName, queueName, callbackFn, callbackArg)
+	libbw:SendAddonMessage(prefix, text, kind, target, priorityName, queueName or ("%s%s%s"):format(prefix, kind, (tostring(target) or "")), callbackFn, callbackArg)
 end
 
 function ChatThrottleLib:SendChatMessage(priorityName, prefix, text, kind, language, target, queueName, callbackFn, callbackArg)
 	if not priorityName or not prefix or not text or not PRIORITIES[priorityName] then
-		error('Usage: ChatThrottleLib:SendChatMessage("{BULK||NORMAL||ALERT}", "prefix", "text"[, "chattype"[, "language"[, "destination"]]]', 2)
+		error("Usage: ChatThrottleLib:SendChatMessage(\"{BULK||NORMAL||ALERT}\", \"prefix\", \"text\"[, \"chattype\"[, \"language\"[, \"destination\"]]]", 2)
 	elseif callbackFn and type(callbackFn) ~= "function" then
-		error('ChatThrottleLib:SendChatMessage(): callbackFn: expected function, got ' .. type(callbackFn), 2)
+		error("ChatThrottleLib:SendChatMessage(): callbackFn: expected function, got " .. type(callbackFn), 2)
 	elseif #text > 255 then
 		error("ChatThrottleLib:SendChatMessage(): message length cannot exceed 255 bytes", 2)
 	end
-	return libbw:SendChatMessage(text, kind, language, target, priorityName, queueName or ("%s%s%s"):format(prefix, (kind or "SAY"), (tostring(target) or "")), callbackFn, callbackArg)
+	libbw:SendChatMessage(text, kind, language, target, priorityName, queueName or ("%s%s%s"):format(prefix, (kind or "SAY"), (tostring(target) or "")), callbackFn, callbackArg)
 end
 
-function ChatThrottleLib.Hook_SendChatMessage()
+function ChatThrottleLib.Hook_SendAddonMessage()
 end
-ChatThrottleLib.Hook_SendAddonMessage = ChatThrottleLib.Hook_SendChatMessage
+ChatThrottleLib.Hook_SendChatMessage = ChatThrottleLib.Hook_SendAddonMessage
 
 -- This metatable catches changes to the CTL version, in case of a newer
 -- version of CTL replacing this compatibility layer.
