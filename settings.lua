@@ -230,7 +230,7 @@ local upgradeAccountVars = {
 		end
 		xrpAccountSaved.settings.display.preloadViewer = nil
 	end,
-	[8] = function() -- 6.1.0.0
+	[9] = function() -- 6.1.0.0
 		if not xrpAccountSaved.bookmarks then
 			xrpAccountSaved.bookmarks = {}
 		end
@@ -250,8 +250,6 @@ local upgradeAccountVars = {
 				end
 			end
 		end
-	end,
-	[9] = function() -- 6.1.0.0
 		xrpAccountSaved.settings.tooltip.replace = _xrp.DEFAULT_SETTINGS.tooltip.replace
 		xrpAccountSaved.settings.display.preloadBookmarks = nil
 		xrpAccountSaved.settings.display.preloadEditor = nil
@@ -280,7 +278,8 @@ local upgradeVars = {
 		end
 		xrpSaved.versions.VP = nil
 	end,
-	[4] = function() -- 6.1.2.0
+	[6] = function() -- 6.1.2.0
+		xrpSaved.versions.FC = nil
 		for name, profile in pairs(xrpSaved.profiles) do
 			if name == "SELECTED" then
 				local newName = _xrp.L.RENAMED_FORMAT:format("SELECTED")
@@ -295,11 +294,6 @@ local upgradeVars = {
 				xrpSaved.profiles[newName] = profile
 				xrpSaved.profiles[name] = nil
 			end
-		end
-	end,
-	[6] = function() -- 6.1.2.0
-		xrpSaved.versions.FC = nil
-		for name, profile in pairs(xrpSaved.profiles) do
 			for field, contents in pairs(profile.fields) do
 				if field == "FC" then
 					profile.versions[field] = _xrp.NewVersion(field, contents)
@@ -336,9 +330,7 @@ local function InitializeSavedVariables()
 				xrpAccountSaved.settings[section] = {}
 			end
 			for option, setting in pairs(defaults) do
-				if xrpAccountSaved.settings[section][option] == nil then
-					xrpAccountSaved.settings[section][option] = setting
-				end
+				xrpAccountSaved.settings[section][option] = setting
 			end
 		end
 	end
