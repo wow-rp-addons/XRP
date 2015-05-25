@@ -36,13 +36,13 @@ end
 
 for i, field in ipairs(EXPORT_FIELDS) do
 	if field == "NI" then
-		EXPORT_FORMATS[field] = QUOTED:format(xrp.fields[field])
+		EXPORT_FORMATS[field] = QUOTED:format(xrp.L.FIELDS[field])
 	elseif field == "CU" or field =="MO" then
-		EXPORT_FORMATS[field] = SPACED:format(xrp.fields[field])
+		EXPORT_FORMATS[field] = SPACED:format(xrp.L.FIELDS[field])
 	elseif field == "DE" or field == "HI" then
-		EXPORT_FORMATS[field] = UNDERLINED(xrp.fields[field])
+		EXPORT_FORMATS[field] = UNDERLINED(xrp.L.FIELDS[field])
 	else
-		EXPORT_FORMATS[field] = SIMPLE:format(xrp.fields[field])
+		EXPORT_FORMATS[field] = SIMPLE:format(xrp.L.FIELDS[field])
 	end
 end
 
