@@ -59,14 +59,19 @@ do
 	end
 end
 
-function xrp.Strip(text)
+function xrp.Strip(text, allowIndent)
 	if type(text) ~= "string" then
 		return nil
 	end
-	-- This fully removes all color escapes, newline escapes, texture escapes,
-	-- and most types of link and chat link escapes. Other UI escape sequences
-	-- are escaped themselves to not render on display (|| instead of |).
-	return text:gsub("||", "|"):gsub("|n", ""):gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|r", ""):gsub("|H.-|h(.-)|h", "%1"):gsub("|T.-|t", ""):gsub("|K.-|k.-|k", ""):gsub("|", "||"):trim()
+	-- This fully removes all color escapes, texture escapes, and most types of
+	-- link and chat link escapes. Other UI escape sequences are escaped
+	-- themselves to not render on display (|| instead of |).
+	text = text:gsub("%f[|]|c%x%x%x%x%x%x%x%x", ""):gsub("%f[|]|r", ""):gsub("%f[|]|H.-|h(.-)|h", "%1"):gsub("%f[|]|T.-|t", ""):gsub("%f[|]|K.-|k.-|k", ""):gsub("%f[|]|%f[^|]", "||")
+	if allowIndent then
+		return text:trim("\r\n"):match("^(.-)%s*$")
+	else
+		return text:trim()
+	end
 end
 
 local BASIC = "^%%s*%s%%s*$"
