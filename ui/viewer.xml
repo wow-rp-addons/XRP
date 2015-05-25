@@ -65,7 +65,7 @@
 				<FontString parentKey="Text" inherits="GameFontWhite" maxLines="1" justifyH="LEFT">
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
-						<Anchor point="BOTTOMRIGHT" x="-2"/>
+						<Anchor point="BOTTOMRIGHT" x="-5"/>
 					</Anchors>
 				</FontString>
 			</Layer>
