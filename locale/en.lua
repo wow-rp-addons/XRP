@@ -23,6 +23,7 @@ setfenv(1, _xrp.L)
 
 local UNTRANSLATED = " (Needs translation.)"
 
+-- Standard field names suited for most display.
 FIELD_NA = "Name"
 FIELD_NI = "Nickname"
 FIELD_NT = "Title"
@@ -42,6 +43,25 @@ FIELD_HI = "History"
 FIELD_FR = "Roleplaying style"
 FIELD_FC = "Character status"
 FIELD_VA = "Version"
+-- Below are metadata, not usually user-exposed.
+FIELD_VP = "Protocol version"
+FIELD_GC = "Toon class"
+FIELD_GF = "Toon faction"
+FIELD_GR = "Toon race"
+FIELD_GS = "Toon gender"
+FIELD_GU = "Toon GUID"
+-- Below are not implemented by XRP.
+FIELD_IC = "Icon"
+FIELD_CO = "Currently (OOC)"
+
+-- These are alternate field names suited for use in menus.
+FIELD_FR_MENU = "Roleplaying Style"
+FIELD_FC_MENU = "Character Status"
+FIELD_VP_MENU = "Protocol Version"
+FIELD_GC_MENU = "Toon Class"
+FIELD_GF_MENU = "Toon Faction"
+FIELD_GR_MENU = "Toon Race"
+FIELD_GS_MENU = "Toon Gender"
 
 -- Values not listed here have a context-appropriate translation available
 -- in Blizzard's localization.
@@ -73,7 +93,6 @@ VALUE_GF_NEUTRAL = "Neutral"
 VALUE_FC_1_MENU = "Out of Character"
 VALUE_FC_2_MENU = "In Character"
 VALUE_FC_3_MENU = "Looking for Contact"
-VALUE_FC_4_MENU = "Storyteller"
 VALUE_FR_1_MENU = "Normal Roleplayer"
 VALUE_FR_2_MENU = "Casual Roleplayer"
 VALUE_FR_3_MENU = "Full-Time Roleplayer"
@@ -339,7 +358,6 @@ CLICK_IC = "Click for in character."
 CLICK_OOC = "Click for out of character."
 RTCLICK_MENU = "Right click for the menu."
 PROFILES = "Profiles"
-CHARACTER_STATUS = "Character Status"
 VIEWER = "Viewer"
 EDITOR = "Editor"
 OPTIONS = "Options"

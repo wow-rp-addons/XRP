@@ -23,9 +23,9 @@ do
 		if xrpSaved.meta.fields[field] then
 			return xrpSaved.meta.fields[field]
 		elseif field == "RA" then
-			return xrp.values.GR[xrpSaved.meta.fields.GR]
+			return xrp.L.VALUES.GR[xrpSaved.meta.fields.GR]
 		elseif field == "RC" then
-			return xrp.values.GC["1"][xrpSaved.meta.fields.GC]
+			return xrp.L.VALUES.GC["1"][xrpSaved.meta.fields.GC]
 		end
 		return nil
 	end
@@ -191,7 +191,7 @@ do
 		local baseMenuList = {}
 		for i = 0, 4 do
 			local s = tostring(i)
-			baseMenuList[i + 1] = { text = xrp.menuValues.FC[s], checked = Checked, arg1 = i ~= 0 and s or nil, func = FC_Click }
+			baseMenuList[i + 1] = { text = xrp.L.MENU_VALUES.FC[s], checked = Checked, arg1 = i ~= 0 and s or nil, func = FC_Click }
 		end
 		XRPEditorFC_baseMenuList = baseMenuList
 	end
@@ -245,7 +245,7 @@ end
 function XRPEditorDropDown_OnAttributeChanged(self, name, value)
 	if name == "contents" then
 		self.contents = value
-		self.Text:SetText(xrp.menuValues[self.field][value or "0"])
+		self.Text:SetText(xrp.L.MENU_VALUES[self.field][value or "0"])
 	elseif name == "inherited" then
 		if value == true and not self.inherited then
 			self.Text:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b)
@@ -258,7 +258,7 @@ function XRPEditorDropDown_OnAttributeChanged(self, name, value)
 end
 
 function XRPEditorControls_OnLoad(self)
-	local fieldName = xrp.fields[self.field] or xrp.fields[self.labelKey]
+	local fieldName = xrp.L.FIELDS[self.field] or _xrp.L[self.labelKey]
 	self.Label:SetText(fieldName)
 	if self.EditBox then
 		self.EditBox.field = self.field

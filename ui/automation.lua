@@ -25,7 +25,7 @@ if not (playerClass == "DRUID" or playerClass == "PRIEST" or playerClass == "SHA
 end
 
 local FORM_NAMES = {
-	["DEFAULT"] = isWorgen and xrp.values.GR.Worgen or playerClass and (playerClass == "PRIEST" and _xrp.L.STANDARD or _xrp.L.HUMANOID) or _xrp.L.NOEQUIP,
+	["DEFAULT"] = isWorgen and xrp.L.VALUES.GR.Worgen or playerClass and (playerClass == "PRIEST" and _xrp.L.STANDARD or _xrp.L.HUMANOID) or _xrp.L.NOEQUIP,
 	["CAT"] = _xrp.L.CAT,
 	["BEAR"] = _xrp.L.BEAR,
 	["MOONKIN"] = _xrp.L.MOONKIN,
@@ -36,7 +36,7 @@ local FORM_NAMES = {
 	["TREANT"] = _xrp.L.TREANT,
 	["SHADOWFORM"] = _xrp.L.SHADOWFORM,
 	["GHOSTWOLF"] = _xrp.L.GHOST_WOLF,
-	["HUMAN"] = xrp.values.GR.Human,
+	["HUMAN"] = xrp.L.VALUES.GR.Human,
 	["DEFAULT\30SHADOWFORM"] = _xrp.L.WORGEN_SHADOW,
 	["HUMAN\30SHADOWFORM"] = _xrp.L.HUMAN_SHADOW,
 }

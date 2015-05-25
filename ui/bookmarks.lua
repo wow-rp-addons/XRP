@@ -76,7 +76,7 @@ function XRPBookmarksList_update(self, force)
 				button.Name:SetText(name)
 				button.Realm:SetText(xrp.RealmDisplayName(realm))
 				local GR = character.fields.GR
-				local RA = xrp.Strip(character.fields.RA) or xrp.values.GR[GR]
+				local RA = xrp.Strip(character.fields.RA) or xrp.L.VALUES.GR[GR]
 				if RA then
 					button.RA:SetText(RA)
 					button.RA:Show()
@@ -96,7 +96,7 @@ function XRPBookmarksList_update(self, force)
 					button.RaceIcon:Hide()
 				end
 				local GC = character.fields.GC
-				local RC = xrp.Strip(character.fields.RC) or xrp.values.GC[character.fields.GS or "1"][GC]
+				local RC = xrp.Strip(character.fields.RC) or xrp.L.VALUES.GC[character.fields.GS or "1"][GC]
 				if RC then
 					button.RC:SetText(RC)
 					button.RC:Show()
@@ -319,7 +319,7 @@ do
 		{ text = UNCHECK_ALL, notCheckable = true, keepShownOnClick = true, arg1 = "faction", arg2 = "NONE", func = Filter_Click, },
 	}
 	for i, faction in ipairs(lists.faction) do
-		factionMenu[#factionMenu + 1] = { text = xrp.values.GF[faction], isNotRadio = true, keepShownOnClick = true, arg1 = "faction", arg2 = faction, checked = Filter_Checked, func = Filter_Click, }
+		factionMenu[#factionMenu + 1] = { text = xrp.L.VALUES.GF[faction], isNotRadio = true, keepShownOnClick = true, arg1 = "faction", arg2 = faction, checked = Filter_Checked, func = Filter_Click, }
 	end
 	factionMenu[#factionMenu + 1] = { text = UNKNOWN, isNotRadio = true, keepShownOnClick = true, arg1 = "faction", arg2 = "UNKNOWN", checked = Filter_Checked, func = Filter_Click, }
 
@@ -328,7 +328,7 @@ do
 		{ text = UNCHECK_ALL, notCheckable = true, keepShownOnClick = true, arg1 = "race", arg2 = "NONE", func = Filter_Click, },
 	}
 	for i, race in ipairs(lists.race) do
-		raceMenu[#raceMenu + 1] = { text = xrp.values.GR[race], isNotRadio = true, keepShownOnClick = true, arg1 = "race", arg2 = race, checked = Filter_Checked, func = Filter_Click, }
+		raceMenu[#raceMenu + 1] = { text = xrp.L.VALUES.GR[race], isNotRadio = true, keepShownOnClick = true, arg1 = "race", arg2 = race, checked = Filter_Checked, func = Filter_Click, }
 	end
 	raceMenu[#raceMenu + 1] = { text = UNKNOWN, isNotRadio = true, keepShownOnClick = true, arg1 = "race", arg2 = "UNKNOWN", checked = Filter_Checked, func = Filter_Click, }
 
@@ -338,7 +338,7 @@ do
 		{ text = UNCHECK_ALL, notCheckable = true, keepShownOnClick = true, arg1 = "class", arg2 = "NONE", func = Filter_Click, },
 	}
 	for i, class in ipairs(lists.class) do
-		classMenu[#classMenu + 1] = { text = xrp.values.GC["1"][class], isNotRadio = true, keepShownOnClick = true, arg1 = "class", arg2 = class, checked = Filter_Checked, func = Filter_Click, }
+		classMenu[#classMenu + 1] = { text = xrp.L.VALUES.GC["1"][class], isNotRadio = true, keepShownOnClick = true, arg1 = "class", arg2 = class, checked = Filter_Checked, func = Filter_Click, }
 	end
 	classMenu[#classMenu + 1] = { text = UNKNOWN, isNotRadio = true, keepShownOnClick = true, arg1 = "class", arg2 = "UNKNOWN", checked = Filter_Checked, func = Filter_Click, }
 
