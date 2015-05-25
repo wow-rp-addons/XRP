@@ -282,7 +282,11 @@ function XRPEditorControls_CheckField(self)
 end
 
 function XRPEditorControls_OnTabPressed(self)
-	XRPEditor.fields[self.nextField or self:GetParent().nextField]:SetFocus()
+	if IsShiftKeyDown() and self:IsMultiLine() then
+		self:Insert("        ")
+	else
+		XRPEditor.fields[self.nextField or self:GetParent().nextField]:SetFocus()
+	end
 end
 
 function XRPEditorControls_OnTextChanged(self, userInput)

@@ -29,20 +29,21 @@ do
 	}
 
 	local function SetField(field, contents)
-		contents = contents and xrp.Strip(contents) or nil
 		if field == "VA" then
-			contents = contents and contents:gsub(";", PLAYER_LIST_DELIMITER) or NONE
+			contents = contents and xrp.Strip(contents):gsub(";", PLAYER_LIST_DELIMITER) or NONE
 		elseif not contents then
 			contents = ""
 		elseif field == "NI" then
-			contents = _xrp.L.NICKNAME:format(contents)
+			contents = _xrp.L.NICKNAME:format(xrp.Strip(contents))
 		elseif field == "AH" then
-			contents = xrp.Height(contents)
+			contents = xrp.Height(xrp.Strip(contents))
 		elseif field == "AW" then
-			contents = xrp.Weight(contents)
+			contents = xrp.Weight(xrp.Strip(contents))
 		elseif field == "CU" or field == "DE" or field == "MO" or field == "HI" then
 			-- Link URLs in scrolling fields.
-			contents = contents:gsub("([%w%-%.]+%.com%f[^%w%/])", "http://%1"):gsub("([%w%-%.]+%.net%f[^%w%/])", "http://%1"):gsub("([%w%-%.]+%.org%f[^%w%/])", "http://%1"):gsub("([%w%-%.]+%.[%w%-]+%/)", "http://%1"):gsub("(https?://)http://", "%1"):gsub("<?(https?://[%w%%%-%.%_%~%:%/%?#%[%]%@%!%$%&%'%(%)%*%+%,%;%=]+)>?", "|H%1|h|cffc845fa<%1>|r|h")
+			contents = xrp.Strip(contents, true):gsub("([%w%-%.]+%.com%f[^%w%/])", "http://%1"):gsub("([%w%-%.]+%.net%f[^%w%/])", "http://%1"):gsub("([%w%-%.]+%.org%f[^%w%/])", "http://%1"):gsub("([%w%-%.]+%.[%w%-]+%/)", "http://%1"):gsub("(https?://)http://", "%1"):gsub("<?(https?://[%w%%%-%.%_%~%:%/%?#%[%]%@%!%$%&%'%(%)%*%+%,%;%=]+)>?", "|H%1|h|cffc845fa<%1>|r|h")
+		else
+			contents = xrp.Strip(contents)
 		end
 		XRPViewer.fields[field]:SetText(contents)
 	end
