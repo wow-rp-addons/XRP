@@ -1,4 +1,4 @@
-6.1.2.0_beta3 (2015-05-14):
+6.1.2.0_rc1 (2015-05-25):
 
 	- If you are upgrading from 6.1.0.0 or earlier, please fully-restart the
 	  game client when upgrading. Some new files have been added, and a
@@ -7,9 +7,6 @@
 	- Private notes may now be added to information about characters. Adding
 	  or viewing notes may be done from the viewer, the bookmarks, or, for
 	  your current character, from the editor.
-
-		- Characters (excluding your own) with notes are automatically
-		  bookmarked and may not be unbookmarked until the notes are removed.
 
 	- Options have been added (under the new XRP -> Display category in the
 	  interface options) to replace certain race names with alternate or
@@ -20,33 +17,32 @@
 	  bottom-right of the frame to resize. Right-clicking the handle will
 	  reset the size to default.
 
-	- The addon version information displayed in the profile viewer may now be
-	  moused over in order to see any further addons or version numbers which
-	  do not fit in the available space.
+	- Some menu items have been moved in the profile viewer and editor. Please
+	  check the menus in the upper-right corner of each of these frames if you
+	  believe something to be missing. Additionally, the "Export" menu entry
+	  has been moved to the "Advanced" submenu in the viewer and bookmarks.
+
+	- Indentations are now properly handled in the profile viewer.
+	  Additionally, pressing "Shift+Tab" while editing a multi-line field in
+	  the editor will now input eight spaces (a tab width).
 
 	- Clickable URLs in profiles have been changed somewhat, now bracketed by
 	  angle brackets instead of square brackets. In addition, the URL-matching
 	  has been adjusted to (hopefully) match more URLs properly.
 
-		- Furthermore, additional changes have been made that make encasing
-		  URLs in your own profile in angle brackets (such as
-		  <http://example.com/something.html>) a good idea, as XRP will be
-		  certain to not include extra letters at the end when doing so. It is
-		  not required, but it is recommended.
-
-	- Some improvements have been made to field version handling, likely
-	  avoiding rare issues with profiles failing to update after the subject
-	  has recently reinstalled or wiped their addon data.
-
-		- More changes will be coming in the future, including the ability to
-		  force-reload profiles, without wiping the full cache, if absolutely
-		  necessary.
+	- Profiles may now be force-refreshed (if you suspect something hasn't
+	  loaded correctly) and profiles may also now be individually dropped from
+	  your stored cache. These are not normally necessary, and improvements
+	  have been made elsewhere to make them even less normally necessary.
 
 	- Colorblind mode should now be properly supported in XRP's tooltip.
 
 	- Support for translating XRP into languages other than English has been
 	  added. If you're interested in providing a translation, please get in
 	  contact with XRP's author.
+
+		- Support for multibyte characters (accented Latin, foreign scripts,
+		  etc.) has been significantly improved in the tooltip and export.
 
 	- Display of weights in kilograms is now slightly more precise.
 
