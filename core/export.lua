@@ -27,7 +27,7 @@ local SPACED = STAT_FORMAT:format("\n%s") .. "\n%%s\n"
 local function UNDERLINED(text)
 	local colon = STAT_FORMAT:format(text)
 	local ret = { "\n", colon, "\n" }
-	for i = 1, #colon do
+	for i = 1, strlenutf8(colon) do
 		ret[#ret + 1] = "-"
 	end
 	ret[#ret + 1] = "\n%s\n"
@@ -48,7 +48,7 @@ end
 
 function _xrp.ExportText(title, fields)
 	local export = { title, "\n" }
-	for i = 1, #title do
+	for i = 1, strlenutf8(title) do
 		export[#export + 1] = "="
 	end
 	export[#export + 1] = "\n"

@@ -33,28 +33,64 @@ do
 		local SINGLE_TRUNC, DOUBLE_TRUNC = SINGLE .. CONTINUED, DOUBLE .. CONTINUED
 		function TruncateLine(text, length, offset, double)
 			if not text then return end
-			offset = offset or 0
+			if not offset then offset = 0 end
 			text = text:gsub("\n+", " ")
+			local textLen = strlenutf8(text)
 			local line1, line2 = text
 			local isTruncated = false
-			if #text > length - offset and text:find(" ", 1, true) then
-				local position = 0
-				local line1pos = 0
-				while text:find(" ", position + 1, true) and (text:find(" ", position + 1, true)) <= (length - offset) do
-					position = text:find(" ", position + 1, true)
-				end
-				line1 = text:sub(1, position - 1)
-				line1pos = position + 1
-				if double ~= false and #text - #line1 > line1pos + offset then
-					while text:find(" ", position + 1, true) and (text:find(" ", position + 1, true)) <= (length - offset + length) do
-						position = text:find(" ", position + 1, true)
+			if textLen > length - offset then
+				local nextText = text:match("(.-) ")
+				if nextText and strlenutf8(nextText) <= length - offset then
+					local position = #nextText
+					local nextPos = text:find(" ", position + 1, true)
+					while nextPos and strlenutf8(nextText) <= length - offset do
+						position = nextPos
+						nextPos = text:find(" ", nextPos + 1, true)
+						nextText = nextPos and text:sub(1, nextPos - 1) or nil
 					end
-					isTruncated = true
-					line2 = text:sub(line1pos, position - 1)
-				elseif double ~= false then
-					line2 = text:sub(position + 1)
+					line1 = text:sub(1, position - 1)
+					if double ~= false then
+						local lineLen, linePos = strlenutf8(line1), position + 1
+						if textLen - lineLen > lineLen + offset then
+							nextPos = text:find(" ", linePos, true)
+							nextText = nextPos and text:sub(linePos, nextPos - 1) or nil
+							while nextPos and strlenutf8(nextText) <= lineLen + offset - 3 do
+								position = nextPos
+								nextPos = text:find(" ", nextPos + 1, true)
+								nextText = nextPos and text:sub(linePos, nextPos - 1) or nil
+							end
+							if position > linePos then
+								line2 = text:sub(linePos, position - 1)
+							end
+							isTruncated = true
+						else
+							line2 = text:sub(linePos)
+						end
+					else
+						isTruncated = true
+					end
 				else
-					isTruncated = true
+					local chars = {}
+					for char in text:gmatch("[\1-\127\192-\255][\128-\191]*") do
+						chars[#chars + 1] = char
+					end
+					local line1t = {}
+					for i = 1, length - offset do
+						line1t[i] = chars[i]
+					end
+					line1 = table.concat(line1t)
+					if double ~= false then
+						local line2t = {}
+						for i = #line1t + 1, #line1t * 2 + offset - 3 do
+							line2t[#line2t + 1] = chars[i]
+						end
+						line2 = table.concat(line2t)
+						if #chars > #line1t + #line2t then
+							isTruncated = true
+						end
+					else
+						isTruncated = true
+					end
 				end
 			end
 			return (line2 and (isTruncated and DOUBLE_TRUNC or DOUBLE) or isTruncated and SINGLE_TRUNC or SINGLE):format(line1, line2)
@@ -135,8 +171,8 @@ do
 		Neutral = { r = 1, g = 0.86, b = 0.36 },
 	}
 	local REACTION = "FACTION_STANDING_LABEL%d"
-	local NI_LENGTH = #xrp.L.FIELDS.NI + #STAT_FORMAT + 1
-	local CU_LENGTH = #xrp.L.FIELDS.CU + #STAT_FORMAT - 1
+	local NI_LENGTH = strlenutf8(xrp.L.FIELDS.NI) + strlenutf8(STAT_FORMAT) + strlenutf8(_xrp.L.NICKNAME) - 2
+	local CU_LENGTH = strlenutf8(xrp.L.FIELDS.CU) + strlenutf8(STAT_FORMAT) - 1
 	function RenderTooltip()
 		oldLines = Tooltip:NumLines()
 		lineNum = 0
