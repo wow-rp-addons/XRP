@@ -75,7 +75,7 @@ local function XRPGetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7
 	local name = _xrp.settings.chat[event] and character and not character.hide and xrp.Strip(character.fields.NA) or Ambiguate(arg2, "guild")
 	local nameFormat = event == "CHAT_MSG_EMOTE" and (_xrp.settings.chat.emoteBraced and "[%s]" or "%s") .. (arg9 or "") or "%s"
 
-	if arg12 and ChatTypeInfo[chatType] and ChatTypeInfo[chatType].colorNameByClass then
+	if character and ChatTypeInfo[chatType] and ChatTypeInfo[chatType].colorNameByClass then
 		local color = RAID_CLASS_COLORS[character.fields.GC]
 		if color and color.colorStr then
 			return nameFormat:format(("|c%s%s|r"):format(color.colorStr, name))
