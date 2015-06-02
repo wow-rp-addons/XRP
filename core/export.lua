@@ -19,6 +19,7 @@ local addonName, _xrp = ...
 
 -- Fields to export.
 local EXPORT_FIELDS = { "NA", "NI", "NT", "NH", "RA", "RC", "AE", "AH", "AW", "AG", "HH", "HB", "CU", "MO", "DE", "HI" }
+local ALLOW_INDENT = { CU = true, MO = true, DE = true, HI = true }
 local EXPORT_FORMATS = {}
 
 local SIMPLE = SUBTITLE_FORMAT:format("%s", "%%s\n")
@@ -53,7 +54,7 @@ function _xrp.ExportText(title, fields)
 	end
 	export[#export + 1] = "\n"
 	for i, field in ipairs(EXPORT_FIELDS) do
-		local fieldText = fields[field]
+		local fieldText = xrp.Strip(fields[field], ALLOW_INDENT[field])
 		if fieldText then
 			if field == "AH" then
 				fieldText = xrp.Height(fieldText)
