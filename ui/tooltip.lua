@@ -305,7 +305,7 @@ do
 					realm = nil
 				end
 				local name = UnitPVPName(unit) or xrp.ShortName(tostring(currentUnit.character))
-				currentUnit.titleRealm = (colorblind and _xrp.L.NAME_REALM or "%s"):format(realm and _xrp.L.NAME_REALM:format(name, xrp.RealmDisplayName(realm)) or name, colorblind and xrp.L.VALUES.GF[currentUnit.faction] or nil)
+				currentUnit.titleRealm = (colorblind and _xrp.L.ASIDE or "%s"):format(realm and _xrp.L.NAME_REALM:format(name, xrp.RealmDisplayName(realm)) or name, colorblind and xrp.L.VALUES.GF[currentUnit.faction] or nil)
 
 				currentUnit.reaction = colorblind and UnitReaction("player", unit) or nil
 				currentUnit.gender = colorblind and UnitSex(unit) or nil
@@ -352,7 +352,7 @@ do
 			currentUnit.character = xrp.characters.byName[owner]
 
 			local realm = owner:match("%-([^%-]+)$")
-			currentUnit.titleRealm = (colorblind and _xrp.L.NAME_REALM or "%s"):format(realm and _xrp.L.NAME_REALM:format(petType, xrp.RealmDisplayName(realm)) or petType, colorblind and xrp.L.VALUES.GF[currentUnit.faction] or nil)
+			currentUnit.titleRealm = (colorblind and _xrp.L.ASIDE or "%s"):format(realm and _xrp.L.NAME_REALM:format(petType, xrp.RealmDisplayName(realm)) or petType, colorblind and xrp.L.VALUES.GF[currentUnit.faction] or nil)
 
 			currentUnit.reaction = colorblind and UnitReaction("player", unit) or nil
 			currentUnit.gender = colorblind and UnitSex(unit) or nil

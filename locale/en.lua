@@ -107,6 +107,7 @@ VALUE_GR_TAUREN_ALT = "Shu'halo"
 
 NICKNAME = "\"%s\""
 NAME_REALM = "%s (%s)"
+ASIDE = "%s [%s]"
 
 -- xrp.lua
 NEW_VERSION = "There is a new version of |cffabd473XRP|r available. You should update to %s as soon as possible."
