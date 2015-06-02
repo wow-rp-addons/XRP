@@ -131,6 +131,7 @@
 			<OnLoad function="XRPTemplatesPanel_OnLoad"/>
 			<OnShow function="XRPTemplatesPanel_OnShow"/>
 			<OnHide function="XRPTemplatesPanel_OnHide"/>
+			<OnSizeChanged function="XRPTemplatesPanel_OnSizeChanged"/>
 		</Scripts>
 	</Frame>
 	<Frame name="XRPCursorBookTemplate" frameStrata="TOOLTIP" frameLevel="127" hidden="true" virtual="true">
