@@ -195,6 +195,19 @@ function XRPTemplatesPanel_OnHide(self)
 	PlaySound("igCharacterInfoClose")
 end
 
+function XRPTemplatesPanel_OnSizeChanged(self, width, height)
+	local uiWidth = UIParent:GetWidth()
+	if width > uiWidth then
+		self:SetWidth(uiWidth * 0.95)
+		return
+	end
+	local uiHeight = UIParent:GetHeight()
+	if height > uiHeight then
+		self:SetHeight(uiHeight * 0.95)
+		return
+	end
+end
+
 function XRPCursorBook_OnEvent(self, event)
 	if InCombatLockdown() or _xrp.settings.interact.disableInstance and (IsInInstance() or IsInActiveWorldPVP()) or _xrp.settings.interact.disablePvP and (UnitIsPVP("player") or UnitIsPVPFreeForAll("player")) or GetMouseFocus() ~= WorldFrame then
 		self:Hide()
