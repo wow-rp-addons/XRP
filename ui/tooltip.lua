@@ -268,6 +268,7 @@ do
 	}
 	local PVP_ICON = "|TInterface\\TargetingFrame\\UI-PVP-%s:18:18:4:0:8:8:0:5:0:5|t"
 	local FLAG_OFFLINE = CHAT_FLAG_AFK:gsub(AFK, PLAYER_OFFLINE)
+	local UnitEffectiveLevel = UnitEffectiveLevel or UnitLevel -- Remove in 6.2.
 	function SetUnit(unit)
 		currentUnit.type = UnitIsPlayer(unit) and "player" or replace and (UnitIsOtherPlayersPet(unit) or UnitIsUnit("playerpet", unit)) and "pet" or nil
 		if not currentUnit.type then return end
@@ -311,7 +312,8 @@ do
 				currentUnit.gender = colorblind and UnitSex(unit) or nil
 
 				local level = UnitLevel(unit)
-				level = level > 0 and tostring(level) or _xrp.L.LETHAL_LEVEL
+				local effectiveLevel = UnitEffectiveLevel(unit)
+				level = effectiveLevel < 1 and level < 1 and _xrp.L.LETHAL_LEVEL or effectiveLevel == level and tostring(level) or _xrp.L.ASIDE:format(tostring(effectiveLevel), tostring(level))
 				currentUnit.info = (TOOLTIP_UNIT_LEVEL_RACE_CLASS_TYPE):format(level, "%s", ("|c%s%%s|r"):format(RAID_CLASS_COLORS[classID] and RAID_CLASS_COLORS[classID].colorStr or "ffffffff"), colorblind and xrp.L.VALUES.GC["1"][classID] or PLAYER)
 
 				local location = connected and not UnitIsVisible(unit) and GameTooltipTextLeft3:GetText() or nil
@@ -367,7 +369,8 @@ do
 			-- pets. Mages and death knights only have one pet family each.
 			local classID = petType == UNITNAME_TITLE_MINION and (race == _xrp.L.PET_ELEMENTAL and "MAGE" or race == _xrp.L.PET_UNDEAD and "DEATHKNIGHT" or "WARLOCK") or petType == UNITNAME_TITLE_PET and "HUNTER"
 			local level = UnitLevel(unit)
-			level = level > 0 and tostring(level) or _xrp.L.LETHAL_LEVEL
+			local effectiveLevel = UnitEffectiveLevel(unit)
+			level = effectiveLevel < 1 and level < 1 and _xrp.L.LETHAL_LEVEL or effectiveLevel == level and tostring(level) or _xrp.L.ASIDE:format(tostring(effectiveLevel), tostring(level))
 			currentUnit.info = TOOLTIP_UNIT_LEVEL_CLASS_TYPE:format(level, ("|c%s%s|r"):format(RAID_CLASS_COLORS[classID] and RAID_CLASS_COLORS[classID].colorStr or "ffffffff", race), colorblind and ("%s %s"):format(xrp.L.VALUES.GC["1"][classID], PET) or PET)
 
 			if currentUnit.icons then
