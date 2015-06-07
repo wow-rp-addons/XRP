@@ -30,11 +30,7 @@ local LINKED_CHAT_MSG = {
 }
 
 local function XRPGetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14)
-	-- Some stupid addons feed an empty string in instead of either a GUID or
-	-- nil.
-	if arg12 == "" then
-		arg12 = nil
-	end
+	local character = arg12 and xrp.characters.byGUID[arg12]
 
 	-- Emotes from ourselves don't have our name in them, and Blizzard's
 	-- code can erroneously replace substrings of the emotes or of the
@@ -43,10 +39,10 @@ local function XRPGetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7
 	if event == "CHAT_MSG_TEXT_EMOTE" then
 		if arg2 == _xrp.player then
 			return arg2
-		elseif arg12 then
+		elseif character then
 			-- TEXT_EMOTE doesn't have realm attached to arg2, because
 			-- Blizzard's code is missing an escape for a gsub.
-			arg2 = xrp.FullName(arg2, select(7, GetPlayerInfoByGUID(arg12)))
+			arg2 = tostring(character)
 		end
 	end
 
@@ -71,7 +67,6 @@ local function XRPGetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7
 		event = LINKED_CHAT_MSG[event]
 	end
 
-	local character = arg12 and xrp.characters.byGUID[arg12] or nil
 	local name = _xrp.settings.chat[event] and character and not character.hide and xrp.Strip(character.fields.NA) or Ambiguate(arg2, "guild")
 	local nameFormat = event == "CHAT_MSG_EMOTE" and (_xrp.settings.chat.emoteBraced and "[%s]" or "%s") .. (arg9 or "") or "%s"
 
@@ -85,17 +80,12 @@ local function XRPGetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7
 end
 
 local function MessageEventFilter_TEXT_EMOTE(self, event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, ...)
-	if not arg12 or arg12 == "" then
+	local character = arg12 and xrp.characters.byGUID[arg12]
+	if not character then
 		return false
 	end
 
-	-- Blizzard doesn't include the realm name in TEXT_EMOTE events because
-	-- of bad string escaping practices.
-	local realm = select(7, GetPlayerInfoByGUID(arg12))
-
-	if realm and realm ~= "" then
-		arg1 = arg1:gsub((xrp.FullName(arg2, realm):gsub("%-", "%%%-")), arg2, 1)
-	end
+	arg1 = arg1:gsub((tostring(character):gsub("%-", "%%%-")), arg2, 1)
 
 	return false, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, ...
 end
@@ -103,18 +93,18 @@ end
 -- This fixes spacing at the start of emotes when using apostrophes,
 -- commas, and colons. This requires a modified GetColoredName, so it has
 -- to go hand-in-hand with chat names.
-local function MessageEventFilter_EMOTE(self, event, message, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, ...)
+local function MessageEventFilter_EMOTE(self, event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, ...)
 	-- Some addons, but not commonly real people, use a fancy unicode
 	-- apostrophe. Since Lua's string library isn't Unicode-aware, use
 	-- string.byte to check first three bytes.
-	local b1, b2, b3 = message:byte(1, 3)
+	local b1, b2, b3 = arg1:byte(1, 3)
 	-- 39 = ' | 44 = , | 58 = : | 226/128/153 = ’
 	if b1 == 39 or b1 == 44 or b1 == 58 or b1 == 226 and b2 == 128 and b3 == 153 then
 		-- arg9 isn't normally used for CHAT_MSG_EMOTE.
-		arg9 = message:match("^([^%s]*)")
-		message = message:match("^[^%s]*%s*(.*)")
+		arg9 = arg1:match("^([^%s]*)")
+		arg1 = arg1:match("^[^%s]*%s*(.*)")
 	end
-	return false, message, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, ...
+	return false, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, ...
 end
 
 local names, adding
