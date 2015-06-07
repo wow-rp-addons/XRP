@@ -193,8 +193,8 @@ end
 SlashCmdList["XRP"] = function(input, editBox)
 	local command, args = input:match("^([^%s]+)%s*(.*)$")
 	if command and xrpCmds[command:lower()] then
-		xrpCmds[command:lower()](args ~= "" and args or nil)
+		xrpCmds[command:lower()](args ~= "" and args)
 	else
-		xrpCmds["help"](args ~= "" and args or nil)
+		xrpCmds["help"](args ~= "" and args)
 	end
 end

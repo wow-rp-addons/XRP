@@ -89,7 +89,7 @@ function xrp.Weight(weight, units)
 	if not number then
 		-- Match "50lbs", "50 lbs", "50 pounds", etc.
 		number = ((tonumber(weight:lower():match(LBS1)) or tonumber(weight:lower():match(LBS2))) or 0) / 2.20462
-		number = number ~= 0 and number or nil
+		number = number ~= 0 and number
 	end
 	if not units then
 		units = _xrp.settings.display.weight
@@ -127,7 +127,7 @@ function xrp.Height(height, units)
 	if not number then
 		-- Match "1.05m", "1.05 m", "1.05 meters", "1.05 metres" etc..
 		number = (tonumber(height:lower():match(M1)) or tonumber(height:lower():match(M2)) or 0) * 100
-		number = number ~= 0 and number or nil
+		number = number ~= 0 and number
 	end
 	if not number then
 		-- Match "4'9", "4'9"", "4 ft 9 in", etc.
@@ -138,7 +138,7 @@ function xrp.Height(height, units)
 		if not feet then
 			feet, inches = height:lower():match(FT3)
 		end
-		number = feet and (((tonumber(feet) * 12) + (tonumber(inches) or 0)) * 2.54) or nil
+		number = feet and (((tonumber(feet) * 12) + (tonumber(inches) or 0)) * 2.54)
 	end
 	if not units then
 		units = _xrp.settings.display.height

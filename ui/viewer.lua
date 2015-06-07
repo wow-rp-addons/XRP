@@ -51,7 +51,7 @@ do
 	function Load(character)
 		local fields = character.fields
 		for i, field in ipairs(DISPLAY) do
-			SetField(field, fields[field] or field == "NA" and xrp.ShortName(tostring(character)) or field == "RA" and xrp.L.VALUES.GR[fields.GR] or field == "RC" and xrp.L.VALUES.GC[fields.GS or "1"][fields.GC] or nil)
+			SetField(field, fields[field] or field == "NA" and xrp.ShortName(tostring(character)) or field == "RA" and xrp.L.VALUES.GR[fields.GR] or field == "RC" and xrp.L.VALUES.GC[fields.GS or "1"][fields.GC])
 		end
 		XRPViewer.XC:SetText("")
 		failed = nil
@@ -81,7 +81,7 @@ do
 		end
 		if SUPPORTED[field] then
 			local fields = current.fields
-			SetField(field, fields[field] or field == "RA" and xrp.L.VALUES.GR[fields.GR] or field == "RC" and xrp.L.VALUES.GC[fields.GS or "1"][fields.GC] or nil)
+			SetField(field, fields[field] or field == "RA" and xrp.L.VALUES.GR[fields.GR] or field == "RC" and xrp.L.VALUES.GC[fields.GS or "1"][fields.GC])
 		end
 	end
 end

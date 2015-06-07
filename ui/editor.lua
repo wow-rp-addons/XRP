@@ -59,7 +59,7 @@ do
 				modified[field] = CheckField(XRPEditor.fields[field], profile, parent)
 			end
 		end
-		if next(modified) or (parent and tostring(parent) or nil) ~= profile.parent then
+		if next(modified) or (parent and tostring(parent)) ~= profile.parent then
 			XRPEditor.Save:Enable()
 			XRPEditor.Revert:Enable()
 		else
