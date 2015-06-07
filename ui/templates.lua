@@ -218,7 +218,7 @@ function XRPCursorBook_OnEvent(self, event)
 		self:Hide()
 		return
 	end
-	self.current = not UnitCanAttack("player", "mouseover") and tostring(character) or nil
+	self.current = not UnitCanAttack("player", "mouseover") and tostring(character)
 	-- Following two must be separate for UIErrorsFrame:Clear().
 	self.mountable = self.current and UnitVehicleSeatCount("mouseover") > 0
 	self.mountInParty = self.mountable and (UnitInParty("mouseover") or UnitInRaid("mouseover"))

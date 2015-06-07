@@ -87,7 +87,7 @@ local verMeta = {
 		if name == _xrp.playerWithRealm then
 			return _xrp.versions[field]
 		end
-		return xrpCache[name] and xrpCache[name].versions[field] or nil
+		return xrpCache[name] and xrpCache[name].versions[field]
 	end,
 	__newindex = _xrp.DoNothing,
 	__metatable = false,

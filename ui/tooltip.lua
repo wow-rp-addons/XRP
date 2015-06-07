@@ -46,18 +46,18 @@ do
 					while nextPos and strlenutf8(nextText) <= length - offset do
 						position = nextPos
 						nextPos = text:find(" ", nextPos + 1, true)
-						nextText = nextPos and text:sub(1, nextPos - 1) or nil
+						nextText = nextPos and text:sub(1, nextPos - 1)
 					end
 					line1 = text:sub(1, position - 1)
 					if double ~= false then
 						local lineLen, linePos = strlenutf8(line1), position + 1
 						if textLen - lineLen > lineLen + offset then
 							nextPos = text:find(" ", linePos, true)
-							nextText = nextPos and text:sub(linePos, nextPos - 1) or nil
+							nextText = nextPos and text:sub(linePos, nextPos - 1)
 							while nextPos and strlenutf8(nextText) <= lineLen + offset - 3 do
 								position = nextPos
 								nextPos = text:find(" ", nextPos + 1, true)
-								nextText = nextPos and text:sub(linePos, nextPos - 1) or nil
+								nextText = nextPos and text:sub(linePos, nextPos - 1)
 							end
 							if position > linePos then
 								line2 = text:sub(linePos, position - 1)
@@ -198,7 +198,7 @@ do
 			end
 			if showProfile then
 				local NI = fields.NI
-				RenderLine(NI and ("|cff6070a0%s|r %s"):format(STAT_FORMAT:format(xrp.L.FIELDS.NI), _xrp.L.NICKNAME:format(TruncateLine(xrp.Strip(NI), 70, NI_LENGTH, false))) or nil, nil, 0.6, 0.7, 0.9)
+				RenderLine(NI and ("|cff6070a0%s|r %s"):format(STAT_FORMAT:format(xrp.L.FIELDS.NI), _xrp.L.NICKNAME:format(TruncateLine(xrp.Strip(NI), 70, NI_LENGTH, false))), nil, 0.6, 0.7, 0.9)
 				RenderLine(TruncateLine(xrp.Strip(fields.NT), 70), nil, 0.8, 0.8, 0.8)
 			end
 			if _xrp.settings.tooltip.extraSpace then
@@ -214,14 +214,14 @@ do
 			end
 			if showProfile then
 				local CU = fields.CU
-				RenderLine(CU and ("|cffa08050%s|r %s"):format(STAT_FORMAT:format(xrp.L.FIELDS.CU), TruncateLine(xrp.Strip(CU), 70, CU_LENGTH)) or nil, nil, 0.9, 0.7, 0.6)
+				RenderLine(CU and ("|cffa08050%s|r %s"):format(STAT_FORMAT:format(xrp.L.FIELDS.CU), TruncateLine(xrp.Strip(CU), 70, CU_LENGTH)), nil, 0.9, 0.7, 0.6)
 			end
 			RenderLine(currentUnit.info:format(showProfile and not _xrp.settings.tooltip.noRace and TruncateLine(xrp.Strip(fields.RA), 40, 0, false) or xrp.L.VALUES.GR[fields.GR] or UNKNOWN, showProfile and not _xrp.settings.tooltip.noClass and TruncateLine(xrp.Strip(fields.RC), 40, 0, false) or xrp.L.VALUES.GC[fields.GS] and xrp.L.VALUES.GC[fields.GS][fields.GC] or xrp.L.VALUES.GC["1"][fields.GC] or UNKNOWN, 40, 0, false), not replace and ParseVersion(fields.VA), 1, 1, 1, 0.5, 0.5, 0.5)
 			if showProfile then
 				local FR, FC = fields.FR, fields.FC
 				if FR and FR ~= "0" or FC and FC ~= "0" then
 					local color = COLORS[FC == "1" and "OOC" or "IC"]
-					RenderLine((not FR or FR == "0") and " " or xrp.L.VALUES.FR[FR] or TruncateLine(xrp.Strip(FR), 35, 0, false), FC and FC ~= "0" and (xrp.L.VALUES.FC[FC] or TruncateLine(xrp.Strip(FC), 35, 0, false)) or nil, color.r, color.g, color.b, color.r, color.g, color.b)
+					RenderLine((not FR or FR == "0") and " " or xrp.L.VALUES.FR[FR] or TruncateLine(xrp.Strip(FR), 35, 0, false), FC and FC ~= "0" and (xrp.L.VALUES.FC[FC] or TruncateLine(xrp.Strip(FC), 35, 0, false)), color.r, color.g, color.b, color.r, color.g, color.b)
 				end
 			end
 			if replace then
@@ -270,7 +270,7 @@ do
 	local FLAG_OFFLINE = CHAT_FLAG_AFK:gsub(AFK, PLAYER_OFFLINE)
 	local UnitEffectiveLevel = UnitEffectiveLevel or UnitLevel -- Remove in 6.2.
 	function SetUnit(unit)
-		currentUnit.type = UnitIsPlayer(unit) and "player" or replace and (UnitIsOtherPlayersPet(unit) or UnitIsUnit("playerpet", unit)) and "pet" or nil
+		currentUnit.type = UnitIsPlayer(unit) and "player" or replace and (UnitIsOtherPlayersPet(unit) or UnitIsUnit("playerpet", unit)) and "pet"
 		if not currentUnit.type then return end
 
 		local defaultLines = 3
@@ -284,7 +284,7 @@ do
 
 			local connected = UnitIsConnected(unit)
 			local color = COLORS[(currentUnit.faction ~= playerFaction and currentUnit.faction ~= "Neutral" or attackMe and meAttack) and "hostile" or (currentUnit.faction == "Neutral" or meAttack or attackMe) and "neutral" or "friendly"]
-			local watchIcon = _xrp.settings.tooltip.watching and UnitIsUnit("player", unit .. "target") and "|TInterface\\LFGFrame\\BattlenetWorking0:28:28:10:0|t" or nil
+			local watchIcon = _xrp.settings.tooltip.watching and UnitIsUnit("player", unit .. "target") and "|TInterface\\LFGFrame\\BattlenetWorking0:28:28:10:0|t"
 			local class, classID = UnitClassBase(unit)
 
 			if replace then
@@ -295,29 +295,29 @@ do
 				currentUnit.nameFormat = ("|cff%s%%s|r%s"):format(color, not connected and (" |cff888888%s|r"):format(FLAG_OFFLINE) or isAFK and (" |cff99994d%s|r"):format(CHAT_FLAG_AFK) or isDND and (" |cff994d4d%s|r"):format(CHAT_FLAG_DND) or "")
 
 				local ffa = UnitIsPVPFreeForAll(unit)
-				local pvpIcon = (UnitIsPVP(unit) or ffa) and PVP_ICON:format((ffa or currentUnit.faction == "Neutral") and "FFA" or currentUnit.faction) or nil
+				local pvpIcon = (UnitIsPVP(unit) or ffa) and PVP_ICON:format((ffa or currentUnit.faction == "Neutral") and "FFA" or currentUnit.faction)
 				currentUnit.icons = watchIcon and pvpIcon and watchIcon .. pvpIcon or watchIcon or pvpIcon
 
 				local guildName, guildRank, guildIndex = GetGuildInfo(unit)
-				currentUnit.guild = guildName and (_xrp.settings.tooltip.guildRank and (_xrp.settings.tooltip.guildIndex and _xrp.L.GUILD_RANK_INDEX or _xrp.L.GUILD_RANK) or _xrp.L.GUILD):format(_xrp.settings.tooltip.guildRank and guildRank or guildName, _xrp.settings.tooltip.guildIndex and guildIndex + 1 or guildName, guildName) or nil
+				currentUnit.guild = guildName and (_xrp.settings.tooltip.guildRank and (_xrp.settings.tooltip.guildIndex and _xrp.L.GUILD_RANK_INDEX or _xrp.L.GUILD_RANK) or _xrp.L.GUILD):format(_xrp.settings.tooltip.guildRank and guildRank or guildName, _xrp.settings.tooltip.guildIndex and guildIndex + 1 or guildName, guildName)
 
 				local realm = tostring(currentUnit.character):match("%-([^%-]+)$")
 				if realm == _xrp.realm then
 					realm = nil
 				end
 				local name = UnitPVPName(unit) or xrp.ShortName(tostring(currentUnit.character))
-				currentUnit.titleRealm = (colorblind and _xrp.L.ASIDE or "%s"):format(realm and _xrp.L.NAME_REALM:format(name, xrp.RealmDisplayName(realm)) or name, colorblind and xrp.L.VALUES.GF[currentUnit.faction] or nil)
+				currentUnit.titleRealm = (colorblind and _xrp.L.ASIDE or "%s"):format(realm and _xrp.L.NAME_REALM:format(name, xrp.RealmDisplayName(realm)) or name, colorblind and xrp.L.VALUES.GF[currentUnit.faction])
 
-				currentUnit.reaction = colorblind and UnitReaction("player", unit) or nil
-				currentUnit.gender = colorblind and UnitSex(unit) or nil
+				currentUnit.reaction = colorblind and UnitReaction("player", unit)
+				currentUnit.gender = colorblind and currentUnit.character.fields.GS
 
 				local level = UnitLevel(unit)
 				local effectiveLevel = UnitEffectiveLevel(unit)
 				level = effectiveLevel < 1 and level < 1 and _xrp.L.LETHAL_LEVEL or effectiveLevel == level and tostring(level) or _xrp.L.ASIDE:format(tostring(effectiveLevel), tostring(level))
 				currentUnit.info = (TOOLTIP_UNIT_LEVEL_RACE_CLASS_TYPE):format(level, "%s", ("|c%s%%s|r"):format(RAID_CLASS_COLORS[classID] and RAID_CLASS_COLORS[classID].colorStr or "ffffffff"), colorblind and xrp.L.VALUES.GC["1"][classID] or PLAYER)
 
-				local location = connected and not UnitIsVisible(unit) and GameTooltipTextLeft3:GetText() or nil
-				currentUnit.location = location and ("|cffffeeaa%s|r %s"):format(ZONE_COLON, location) or nil
+				local location = connected and not UnitIsVisible(unit) and GameTooltipTextLeft3:GetText()
+				currentUnit.location = location and ("|cffffeeaa%s|r %s"):format(ZONE_COLON, location)
 
 				if pvpIcon then
 					defaultLines = defaultLines + 1
@@ -342,7 +342,7 @@ do
 			currentUnit.nameFormat = ("|cff%s%s|r"):format(color, name)
 
 			local ffa = UnitIsPVPFreeForAll(unit)
-			currentUnit.icons = (UnitIsPVP(unit) or ffa) and PVP_ICON:format((ffa or currentUnit.faction == "Neutral") and "FFA" or currentUnit.faction) or nil
+			currentUnit.icons = (UnitIsPVP(unit) or ffa) and PVP_ICON:format((ffa or currentUnit.faction == "Neutral") and "FFA" or currentUnit.faction)
 
 			local ownership = _G[GTTL:format(colorblind and 3 or 2)]:GetText()
 			local owner, petType = ownership:match(UNITNAME_TITLE_PET:format("(.+)")), UNITNAME_TITLE_PET
@@ -354,10 +354,10 @@ do
 			currentUnit.character = xrp.characters.byName[owner]
 
 			local realm = owner:match("%-([^%-]+)$")
-			currentUnit.titleRealm = (colorblind and _xrp.L.ASIDE or "%s"):format(realm and _xrp.L.NAME_REALM:format(petType, xrp.RealmDisplayName(realm)) or petType, colorblind and xrp.L.VALUES.GF[currentUnit.faction] or nil)
+			currentUnit.titleRealm = (colorblind and _xrp.L.ASIDE or "%s"):format(realm and _xrp.L.NAME_REALM:format(petType, xrp.RealmDisplayName(realm)) or petType, colorblind and xrp.L.VALUES.GF[currentUnit.faction])
 
-			currentUnit.reaction = colorblind and UnitReaction("player", unit) or nil
-			currentUnit.gender = colorblind and UnitSex(unit) or nil
+			currentUnit.reaction = colorblind and UnitReaction("player", unit)
+			currentUnit.gender = colorblind and UnitSex(unit)
 
 			local race = UnitCreatureFamily(unit) or UnitCreatureType(unit)
 			if race == _xrp.L.PET_GHOUL or race == _xrp.L.PET_WATER_ELEMENTAL or race == _xrp.L.PET_MT_WATER_ELEMENTAL then

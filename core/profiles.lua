@@ -79,7 +79,7 @@ _xrp.versions = setmetatable({}, {
 				profile = xrpSaved.profiles[profile.parent]
 			end
 		end
-		return xrpSaved.meta.versions[field] or nil
+		return xrpSaved.meta.versions[field]
 	end,
 	__newindex = _xrp.DoNothing,
 })
@@ -120,7 +120,7 @@ do
 			local profiles = xrpSaved.profiles
 			for profileName, profile in pairs(profiles) do
 				if profile.parent == name then
-					profile.parent = profiles[name].parent or nil
+					profile.parent = profiles[name].parent
 				end
 			end
 			for form, profileName in pairs(xrpSaved.auto) do
@@ -228,7 +228,7 @@ do
 			local profile = xrpSaved.profiles[name]
 			if profile and profile.fields[field] ~= contents then
 				profile.fields[field] = contents
-				profile.versions[field] = contents and _xrp.NewVersion(field, contents) or nil
+				profile.versions[field] = contents and _xrp.NewVersion(field, contents)
 				if IsUsed(name, field) then
 					_xrp.FireEvent("UPDATE", field)
 				end
