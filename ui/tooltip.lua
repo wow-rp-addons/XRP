@@ -171,8 +171,10 @@ do
 		Neutral = { r = 1, g = 0.86, b = 0.36 },
 	}
 	local REACTION = "FACTION_STANDING_LABEL%d"
-	local NI_LENGTH = strlenutf8(xrp.L.FIELDS.NI) + strlenutf8(STAT_FORMAT) + strlenutf8(_xrp.L.NICKNAME) - 2
-	local CU_LENGTH = strlenutf8(xrp.L.FIELDS.CU) + strlenutf8(STAT_FORMAT) - 1
+	local NI_FORMAT = ("|cff6070a0%s|r %s"):format(STAT_FORMAT:format(xrp.L.FIELDS.NI), _xrp.L.NICKNAME)
+	local CU_FORMAT = ("|cffa08050%s|r %%s"):format(STAT_FORMAT:format(xrp.L.FIELDS.CU))
+	local NI_LENGTH = strlenutf8(NI_FORMAT) - 14
+	local CU_LENGTH = strlenutf8(CU_FORMAT) - 14
 	function RenderTooltip()
 		oldLines = Tooltip:NumLines()
 		lineNum = 0
@@ -198,7 +200,7 @@ do
 			end
 			if showProfile then
 				local NI = fields.NI
-				RenderLine(NI and ("|cff6070a0%s|r %s"):format(STAT_FORMAT:format(xrp.L.FIELDS.NI), _xrp.L.NICKNAME:format(TruncateLine(xrp.Strip(NI), 70, NI_LENGTH, false))), nil, 0.6, 0.7, 0.9)
+				RenderLine(NI and NI_FORMAT:format(TruncateLine(xrp.Strip(NI), 70, NI_LENGTH, false)), nil, 0.6, 0.7, 0.9)
 				RenderLine(TruncateLine(xrp.Strip(fields.NT), 70), nil, 0.8, 0.8, 0.8)
 			end
 			if _xrp.settings.tooltip.extraSpace then
@@ -214,7 +216,7 @@ do
 			end
 			if showProfile then
 				local CU = fields.CU
-				RenderLine(CU and ("|cffa08050%s|r %s"):format(STAT_FORMAT:format(xrp.L.FIELDS.CU), TruncateLine(xrp.Strip(CU), 70, CU_LENGTH)), nil, 0.9, 0.7, 0.6)
+				RenderLine(CU and CU_FORMAT:format(TruncateLine(xrp.Strip(CU), 70, CU_LENGTH)), nil, 0.9, 0.7, 0.6)
 			end
 			RenderLine(currentUnit.info:format(showProfile and not _xrp.settings.tooltip.noRace and TruncateLine(xrp.Strip(fields.RA), 40, 0, false) or xrp.L.VALUES.GR[fields.GR] or UNKNOWN, showProfile and not _xrp.settings.tooltip.noClass and TruncateLine(xrp.Strip(fields.RC), 40, 0, false) or xrp.L.VALUES.GC[fields.GS] and xrp.L.VALUES.GC[fields.GS][fields.GC] or xrp.L.VALUES.GC["1"][fields.GC] or UNKNOWN, 40, 0, false), not replace and ParseVersion(fields.VA), 1, 1, 1, 0.5, 0.5, 0.5)
 			if showProfile then
@@ -267,7 +269,10 @@ do
 		hostile = "cc4d38",
 	}
 	local PVP_ICON = "|TInterface\\TargetingFrame\\UI-PVP-%s:18:18:4:0:8:8:0:5:0:5|t"
-	local FLAG_OFFLINE = CHAT_FLAG_AFK:gsub(AFK, PLAYER_OFFLINE)
+	local FLAG_OFFLINE = (" |cff888888%s|r"):format(CHAT_FLAG_AFK:gsub(AFK, PLAYER_OFFLINE))
+	local FLAG_AFK = (" |cff99994d%s|r"):format(CHAT_FLAG_AFK)
+	local FLAG_DND = (" |cff994d4d%s|r"):format(CHAT_FLAG_DND)
+	local LOCATION = ("|cffffeeaa%s|r %%s"):format(ZONE_COLON)
 	local UnitEffectiveLevel = UnitEffectiveLevel or UnitLevel -- Remove in 6.2.
 	function SetUnit(unit)
 		currentUnit.type = UnitIsPlayer(unit) and "player" or replace and (UnitIsOtherPlayersPet(unit) or UnitIsUnit("playerpet", unit)) and "pet"
@@ -292,7 +297,7 @@ do
 				-- Can only ever be one of AFK, DND, or offline.
 				local isAFK = connected and UnitIsAFK(unit)
 				local isDND = connected and not isAFK and UnitIsDND(unit)
-				currentUnit.nameFormat = ("|cff%s%%s|r%s"):format(color, not connected and (" |cff888888%s|r"):format(FLAG_OFFLINE) or isAFK and (" |cff99994d%s|r"):format(CHAT_FLAG_AFK) or isDND and (" |cff994d4d%s|r"):format(CHAT_FLAG_DND) or "")
+				currentUnit.nameFormat = ("|cff%s%%s|r%s"):format(color, not connected and FLAG_OFFLINE or isAFK and FLAG_AFK or isDND and FLAG_DND or "")
 
 				local ffa = UnitIsPVPFreeForAll(unit)
 				local pvpIcon = (UnitIsPVP(unit) or ffa) and PVP_ICON:format((ffa or currentUnit.faction == "Neutral") and "FFA" or currentUnit.faction)
@@ -317,7 +322,7 @@ do
 				currentUnit.info = (TOOLTIP_UNIT_LEVEL_RACE_CLASS_TYPE):format(level, "%s", ("|c%s%%s|r"):format(RAID_CLASS_COLORS[classID] and RAID_CLASS_COLORS[classID].colorStr or "ffffffff"), colorblind and xrp.L.VALUES.GC["1"][classID] or PLAYER)
 
 				local location = connected and not UnitIsVisible(unit) and GameTooltipTextLeft3:GetText()
-				currentUnit.location = location and ("|cffffeeaa%s|r %s"):format(ZONE_COLON, location)
+				currentUnit.location = location and LOCATION:format(location)
 
 				if pvpIcon then
 					defaultLines = defaultLines + 1
