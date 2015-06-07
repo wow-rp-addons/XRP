@@ -218,9 +218,9 @@ xrp.characters = {
 		__index = function (self, GU)
 			-- This will return nil if the GUID hasn't been seen by the client
 			-- yet in the session.
-			local class, GC, race, GR, GS, name, realm = GetPlayerInfoByGUID(GU)
+			local success, class, GC, race, GR, GS, name, realm = pcall(GetPlayerInfoByGUID, GU)
 			name = xrp.FullName(name, realm)
-			if not name then
+			if not success or not name then
 				return nil
 			elseif not gCache[name] then
 				gCache[name] = {
