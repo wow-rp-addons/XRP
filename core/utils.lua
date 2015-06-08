@@ -18,14 +18,14 @@
 local addonName, _xrp = ...
 
 function xrp.UnitFullName(unit)
-	if not (unit == "player" or UnitIsPlayer(unit)) then
+	if type(unit) ~= "string" or unit ~= "player" and not UnitIsPlayer(unit) then
 		return nil
 	end
-	return xrp.FullName(UnitName(unit))
+	return xrp.FullName(UnitFullName(unit))
 end
 
 function xrp.FullName(name, realm)
-	if not name or name == "" then
+	if type(name) ~= "string" or name == "" then
 		return nil
 	elseif name:find("-", nil, true) then
 		return name
@@ -35,7 +35,6 @@ function xrp.FullName(name, realm)
 	return FULL_PLAYER_NAME:format(name, (GetRealmName():gsub("%s*%-*", "")))
 end
 
--- Dumb version of Ambiguate() which always strips.
 function xrp.ShortName(name)
 	if type(name) ~= "string" then
 		return UNKNOWN
@@ -54,6 +53,9 @@ do
 	}
 
 	function xrp.RealmDisplayName(realm)
+		if type(realm) ~= "string" then
+			return UNKNOWN
+		end
 		-- gsub: spaces lower followed by upper/number (i.e., Wyrmrest Accord).
 		return SPECIAL_REALMS[realm] or (realm:gsub("(%l)([%u%d])", "%1 %2"))
 	end
@@ -78,18 +80,17 @@ local BASIC = "^%%s*%s%%s*$"
 local KG1, KG2 = BASIC:format(_xrp.L.KG1), BASIC:format(_xrp.L.KG2)
 local LBS1, LBS2 = BASIC:format(_xrp.L.LBS1), BASIC:format(_xrp.L.LBS2)
 function xrp.Weight(weight, units)
-	if not weight then
-		return nil
-	end
 	local number = tonumber(weight)
-	if not number then
+	if not number and type(weight) ~= "string" then
+		return nil
+	elseif not number then
 		-- Match "50kg", "50 kg", "50 kilograms", etc..
 		number = tonumber(weight:lower():match(KG1)) or tonumber(weight:lower():match(KG2))
 	end
 	if not number then
 		-- Match "50lbs", "50 lbs", "50 pounds", etc.
-		number = ((tonumber(weight:lower():match(LBS1)) or tonumber(weight:lower():match(LBS2))) or 0) / 2.20462
-		number = number ~= 0 and number
+		number = tonumber(weight:lower():match(LBS1)) or tonumber(weight:lower():match(LBS2))
+		number = number and number / 2.20462
 	end
 	if not units then
 		units = _xrp.settings.display.weight
@@ -112,11 +113,10 @@ local CM1, CM2 = BASIC:format(_xrp.L.CM1), BASIC:format(_xrp.L.CM2)
 local M1, M2 = BASIC:format(_xrp.L.M1), BASIC:format(_xrp.L.M2)
 local FT1, FT2, FT3 = BASIC:format(_xrp.L.FT1), BASIC:format(_xrp.L.FT2), BASIC:format(_xrp.L.FT3)
 function xrp.Height(height, units)
-	if not height then
-		return nil
-	end
 	local number = tonumber(height)
-	if number and number <= 10 then
+	if not number and type(height) ~= "string" then
+		return nil
+	elseif number and number <= 10 then
 		-- Under 10 is assumed to be meters if a plain number.
 		number = number * 100
 	end
@@ -166,6 +166,9 @@ function xrp.Height(height, units)
 end
 
 function xrp.Status(desiredStatus)
+	if desiredStatus and type(desiredStatus) ~= "string" then
+		desiredStatus = tostring(desiredStatus)
+	end
 	local profileStatus = xrp.profiles.SELECTED.fullFields.FC or "0"
 	if not desiredStatus then
 		local currentStatus = xrp.current.fields.FC

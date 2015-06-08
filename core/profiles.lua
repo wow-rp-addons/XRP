@@ -47,6 +47,7 @@ xrp.current = {
 		end,
 		__newindex = function(self, field, contents)
 			if xrpSaved.overrides.fields[field] == contents or NO_PROFILE[field] or not field:find("^%u%u$") then return end
+			contents = type(contents) == "string" and contents or nil
 			xrpSaved.overrides.fields[field] = contents
 			xrpSaved.overrides.versions[field] = contents and contents ~= "" and _xrp.NewVersion(field, contents) or nil
 			_xrp.FireEvent("UPDATE", field)
@@ -356,7 +357,7 @@ local profileTables = setmetatable({}, _xrp.weakMeta)
 
 xrp.profiles = setmetatable({
 	Add = function(self, name)
-		if xrpSaved.profiles[name] or FORBIDDEN_NAMES[name] then
+		if type(name) ~= "string" or xrpSaved.profiles[name] or FORBIDDEN_NAMES[name] then
 			return false
 		end
 		xrpSaved.profiles[name] = {
