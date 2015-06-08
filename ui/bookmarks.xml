@@ -81,7 +81,7 @@
 					</Anchors>
 				</Texture>
 				<FontString parentKey="RC" inherits="GameFontWhite" maxLines="1" justifyH="LEFT">
-					<Size x="180" y="0"/>
+					<Size x="155" y="0"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.ClassIcon" relativePoint="RIGHT" x="4"/>
 					</Anchors>
@@ -93,7 +93,7 @@
 					</Anchors>
 				</Texture>
 				<FontString parentKey="RA" inherits="GameFontWhite" maxLines="1" justifyH="LEFT">
-					<Size x="180" y="0"/>
+					<Size x="155" y="0"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.RaceIcon" relativePoint="RIGHT" x="4"/>
 					</Anchors>
