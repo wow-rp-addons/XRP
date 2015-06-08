@@ -99,11 +99,11 @@ function xrp.Weight(weight, units)
 	elseif number < 0 then
 		return nil
 	elseif units == "msp" then -- MSP internal format: kg without units as string.
-		return ("%.1f"):format(number + 0.05)
+		return ("%.1f"):format(number)
 	elseif units == "kg" then
-		return _xrp.L.KG:format(number + 0.05)
+		return _xrp.L.KG:format(number)
 	elseif units == "lb" then
-		return _xrp.L.LBS:format((number * 2.20462) + 0.5)
+		return _xrp.L.LBS:format(number * 2.20462)
 	end
 	return weight
 end
@@ -148,14 +148,14 @@ function xrp.Height(height, units)
 	elseif number < 0 then
 		return nil
 	elseif units == "msp" then -- MSP internal format: cm without units as string.
-		return ("%d"):format(number + 0.5)
+		return ("%.0f"):format(number)
 	elseif units == "cm" then
-		return _xrp.L.CM:format(number + 0.5)
+		return _xrp.L.CM:format(number)
 	elseif units == "m" then
-		return _xrp.L.M:format(math.floor(number + 0.5) * 0.01) -- Round first.
+		return _xrp.L.M:format(number * 0.01)
 	elseif units == "ft" then
 		local feet, inches = math.modf(number / 30.48)
-		inches = (inches * 12) + 0.5
+		inches = inches * 12
 		if inches >= 12 then
 			feet = feet + 1
 			inches = 0
