@@ -281,14 +281,14 @@ do
 					local tooltip = {}
 					for i, field in ipairs(TT_LIST) do
 						local contents = xrp.current.fields[field]
-						tooltip[#tooltip + 1] = not contents and field or ("%s%d=%s"):format(field, _xrp.versions[field], contents)
+						tooltip[#tooltip + 1] = not contents and field or ("%s%.0f=%s"):format(field, _xrp.versions[field], contents)
 					end
 					local newtt = table.concat(tooltip, "\1")
-					tt = ("%s\1TT%d"):format(newtt, newtt ~= xrpSaved.oldtt and _xrp.NewVersion("TT", newtt) or xrpSaved.versions.TT)
+					tt = ("%s\1TT%.0f"):format(newtt, newtt ~= xrpSaved.oldtt and _xrp.NewVersion("TT", newtt) or xrpSaved.versions.TT)
 					xrpSaved.oldtt = newtt
 				end
 				if version == xrpSaved.versions.TT then
-					return ("!TT%d"):format(version)
+					return ("!TT%.0f"):format(version)
 				end
 				return tt
 			end
@@ -297,9 +297,9 @@ do
 				-- Empty fields are versionless.
 				return field
 			elseif version == currentVersion then
-				return ("!%s%d"):format(field, version)
+				return ("!%s%.0f"):format(field, version)
 			end
-			return ("%s%d=%s"):format(field, currentVersion, xrp.current.fields[field])
+			return ("%s%.0f=%s"):format(field, currentVersion, xrp.current.fields[field])
 		elseif action == "!" and version == (xrpCache[name] and xrpCache[name].versions[field] or 0) then
 			cache[name].time[field] = GetTime() + FIELD_TIMES[field]
 			cache[name].fieldUpdated = cache[name].fieldUpdated or false
@@ -416,7 +416,9 @@ do
 		["MSP\1"] = function(name, message, channel)
 			local totalChunks = tonumber(message:match("^XC=(%d+)\1"))
 			if totalChunks then
-				cache[name].totalChunks = totalChunks
+				if totalChunks < 512 then
+					cache[name].totalChunks = totalChunks
+				end
 				message = message:gsub("^XC=%d+\1", "")
 			end
 			-- Queries (i.e., "?TT") are processed only after receive finishes.
@@ -681,7 +683,7 @@ function _xrp.Request(name, fields)
 			if not xrpCache[name] or not xrpCache[name].versions[field] then
 				out[#out + 1] = "?" .. field
 			else
-				out[#out + 1] = ("?%s%d"):format(field, xrpCache[name].versions[field])
+				out[#out + 1] = ("?%s%.0f"):format(field, xrpCache[name].versions[field])
 			end
 			cache[name].time[field] = now + FIELD_TIMES[field]
 			if field == "TT" then

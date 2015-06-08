@@ -136,10 +136,10 @@ FT2 = "([%d%.]+)%s*ft%.?%s*([%d%.]*)[in%.]*"
 FT3 = "([%d%.]+)%s*feet%s*([%d%.]*)[inches]*"
 -- Format strings for weight/height display.
 KG = "%.1f kg"
-LBS = "%d lbs"
-CM = "%d cm"
+LBS = "%.0f lbs"
+CM = "%.0f cm"
 M = "%.2f m"
-FT = "%d'%d\""
+FT = "%.0f'%.0f\""
 
 -- extra/fixes.lua
 CUF_WARNING = "The raid profile configuration panel has been accessed, which may cause UI problems due to Blizzard bugs (inaccurately blaming \"%s\" or others). You should reload your UI now to avoid this."
