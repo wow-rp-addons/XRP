@@ -100,6 +100,15 @@
 					<OnHyperlinkClick function="XRPViewerScrollFrameEditBox_OnHyperlinkClicked"/>
 				</Scripts>
 				<FontString inherits="GameFontWhite"/>
+				<Frames>
+					<Frame parentKey="Menu" hidden="true">
+						<KeyValues>
+							<KeyValue key="initialize" value="EasyMenu_Initialize" type="global"/>
+							<KeyValue key="displayMode" value="MENU"/>
+							<KeyValue key="baseMenuList" value="XRPViewerMultiline_baseMenuList" type="global"/>
+						</KeyValues>
+					</Frame>
+				</Frames>
 			</EditBox>
 		</ScrollChild>
 	</ScrollFrame>

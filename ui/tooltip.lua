@@ -219,7 +219,7 @@ do
 			end
 			if showProfile then
 				local CU = fields.CU
-				RenderLine(CU and CU_FORMAT:format(TruncateLine(xrp.Strip(CU), 70, CU_LENGTH)), nil, 0.9, 0.7, 0.6)
+				RenderLine(CU and CU_FORMAT:format(xrp.Link(TruncateLine(xrp.Link(xrp.Strip(CU), "prelink"), 70, CU_LENGTH), "fakelink")), nil, 0.9, 0.7, 0.6)
 			end
 			RenderLine(currentUnit.info:format(showProfile and not _xrp.settings.tooltip.noRace and TruncateLine(xrp.Strip(fields.RA), 40, 0, false) or xrp.L.VALUES.GR[fields.GR] or UNKNOWN, showProfile and not _xrp.settings.tooltip.noClass and TruncateLine(xrp.Strip(fields.RC), 40, 0, false) or xrp.L.VALUES.GC[fields.GS][fields.GC] or UNKNOWN), not replace and ParseVersion(fields.VA), 1, 1, 1, 0.5, 0.5, 0.5)
 			if showProfile then
