@@ -55,6 +55,9 @@ function _xrp.ExportText(title, fields)
 	export[#export + 1] = "\n"
 	for i, field in ipairs(EXPORT_FIELDS) do
 		local fieldText = xrp.Strip(fields[field], ALLOW_INDENT[field])
+		if ALLOW_INDENT[field] then
+			fieldText = xrp.Link(fieldText, "prelink")
+		end
 		if fieldText then
 			if field == "AH" then
 				fieldText = xrp.Height(fieldText)

@@ -57,7 +57,7 @@ function XRPButton_OnEnter(self, motion)
 		if CU then
 			GameTooltip:AddLine(" ")
 			GameTooltip:AddLine(STAT_FORMAT:format(xrp.L.FIELDS.CU))
-			GameTooltip:AddLine(("%s"):format(CU), 0.9, 0.7, 0.6, true)
+			GameTooltip:AddLine(("%s"):format(xrp.Link(xrp.Strip(CU))), 0.9, 0.7, 0.6, true)
 		end
 		GameTooltip:AddLine(" ")
 		local target = xrp.characters.byUnit.target

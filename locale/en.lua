@@ -458,6 +458,8 @@ NO_CHANGES = "No changes."
 ERR_OFFLINE = "Character is not online."
 ERR_FACTION = "Character is opposite faction."
 ERR_ADDON = "No RP addon appears to be active."
+SEND_TWEET = "Send Tweet"
+COPY_URL = "Copy URL"
 
 -- ui/viewer.xml
 PROFILE_VIEWER = "Profile Viewer"

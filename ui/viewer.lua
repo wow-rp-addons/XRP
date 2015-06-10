@@ -41,7 +41,7 @@ do
 			contents = xrp.Weight(xrp.Strip(contents))
 		elseif field == "CU" or field == "DE" or field == "MO" or field == "HI" then
 			-- Link URLs in scrolling fields.
-			contents = xrp.Strip(contents, true):gsub("([%w%-%.]+%.com%f[^%w%/])", "http://%1"):gsub("([%w%-%.]+%.net%f[^%w%/])", "http://%1"):gsub("([%w%-%.]+%.org%f[^%w%/])", "http://%1"):gsub("([%w%-%.]+%.[%w%-]+%/)", "http://%1"):gsub("(https?://)http://", "%1"):gsub("<?(https?://[%w%%%-%.%_%~%:%/%?#%[%]%@%!%$%&%'%(%)%*%+%,%;%=]+)>?", "|H%1|h|cffc845fa<%1>|r|h")
+			contents = xrp.Link(xrp.Strip(contents, true))
 		else
 			contents = xrp.Strip(contents)
 		end
@@ -219,9 +219,50 @@ function XRPViewerScrollFrameEditBox_OnLoad(self)
 	self:SetHyperlinksEnabled(true)
 end
 
+do
+	local function Menu_Click(self, arg1, arg2, checked)
+		if arg1 == "XRP_TWEET" then
+			if not SocialPostFrame then
+					SocialFrame_LoadUI()
+			end
+			SocialPostFrame:SetAttribute("action", "Show")
+			SocialPostFrame:SetAttribute("settext", ("|cff00aced%s|r "):format(UIDROPDOWNMENU_OPEN_MENU.linkData))
+		elseif arg1 == "XRP_URL" then
+			StaticPopup_Show("XRP_URL", nil, nil, ("https://twitter.com/%s"):format(UIDROPDOWNMENU_OPEN_MENU.linkData:match("^@(.-)$")))
+		end
+	end
+	XRPViewerMultiline_baseMenuList = {
+		{ text = _xrp.L.SEND_TWEET .. CONTINUED, arg1 = "XRP_TWEET", notCheckable = true, func = Menu_Click, },
+		{ text = _xrp.L.COPY_URL .. CONTINUED, arg1 = "XRP_URL", notCheckable = true, func = Menu_Click, },
+		{ text = CLOSE, notCheckable = true, func = _xrp.DoNothing, },
+	}
+end
+
 function XRPViewerScrollFrameEditBox_OnHyperlinkClicked(self, linkData, link, button)
-	if button == "LeftButton" then
-		StaticPopup_Show("XRP_URL", nil, nil, linkData)
+	if linkData:find("^https?://") then
+		if button == "LeftButton" then
+			StaticPopup_Show("XRP_URL", nil, nil, linkData)
+		end
+	elseif linkData:find("^@") then
+		if button == "LeftButton" then
+			if C_Social.IsSocialEnabled() then
+				if not SocialPostFrame then
+					SocialFrame_LoadUI()
+				end
+				SocialPostFrame:SetAttribute("action", "Show")
+				SocialPostFrame:SetAttribute("settext", ("|cff00aced%s|r "):format(linkData))
+			else
+				StaticPopup_Show("XRP_URL", nil, nil, ("https://twitter.com/%s"):format(linkData:match("^@(.-)$")))
+			end
+		elseif button == "RightButton" then
+			if not C_Social.IsSocialEnabled() then
+				self.Menu.baseMenuList[1].disabled = true
+			else
+				self.Menu.baseMenuList[1].disabled = nil
+			end
+			self.Menu.linkData = linkData
+			ToggleDropDownMenu(nil, nil, self.Menu, "cursor", nil, nil, self.Menu.baseMenuList)
+		end
 	end
 end
 
