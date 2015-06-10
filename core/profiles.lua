@@ -32,36 +32,27 @@ function _xrp.NewVersion(field, contents)
 	return xrpSaved.versions[field]
 end
 
-xrp.current = {
-	fields = setmetatable({}, {
-		__index = function(self, field)
-			local contents = xrpSaved.overrides.fields[field] or xrp.profiles.SELECTED.fullFields[field] or xrpSaved.meta.fields[field]
-			if not contents or contents == "" then
-				return nil
-			elseif field == "AH" then
-				contents = xrp.Height(contents, "msp")
-			elseif field == "AW" then
-				contents = xrp.Weight(contents, "msp")
-			end
-			return contents
-		end,
-		__newindex = function(self, field, contents)
-			if xrpSaved.overrides.fields[field] == contents or NO_PROFILE[field] or not field:find("^%u%u$") then return end
-			contents = type(contents) == "string" and contents or nil
-			xrpSaved.overrides.fields[field] = contents
-			xrpSaved.overrides.versions[field] = contents and contents ~= "" and _xrp.NewVersion(field, contents) or nil
-			_xrp.FireEvent("UPDATE", field)
-		end,
-		__metatable = false,
-	}),
-	overrides = setmetatable({}, {
-		__index = function(self, field)
-			return xrpSaved.overrides.fields[field] ~= nil
-		end,
-		__newindex = _xrp.DoNothing,
-		__metatable = false,
-	}),
-}
+xrp.current = setmetatable({}, {
+	__index = function(self, field)
+		local contents = xrpSaved.overrides.fields[field] or xrp.profiles.SELECTED.fullFields[field] or xrpSaved.meta.fields[field]
+		if not contents or contents == "" then
+			return nil
+		elseif field == "AH" then
+			contents = xrp.Height(contents, "msp")
+		elseif field == "AW" then
+			contents = xrp.Weight(contents, "msp")
+		end
+		return contents
+	end,
+	__newindex = function(self, field, contents)
+		if xrpSaved.overrides.fields[field] == contents or NO_PROFILE[field] or not field:find("^%u%u$") then return end
+		contents = type(contents) == "string" and contents or nil
+		xrpSaved.overrides.fields[field] = contents
+		xrpSaved.overrides.versions[field] = contents and contents ~= "" and _xrp.NewVersion(field, contents) or nil
+		_xrp.FireEvent("UPDATE", field)
+	end,
+	__metatable = false,
+})
 
 _xrp.versions = setmetatable({}, {
 	__index = function (self, field)

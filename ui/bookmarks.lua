@@ -257,7 +257,7 @@ function XRPBookmarksEntry_OnClick(self, button, down)
 			self.baseMenuList[1].disabled = nil
 			self.baseMenuList[2].disabled = nil
 			local GF = self.character.fields.GF
-			if GF and GF ~= xrp.current.fields.GF then
+			if GF and GF ~= xrp.current.GF then
 				self.baseMenuList[4].disabled = true
 			else
 				local name = Ambiguate(tostring(self.character), "none")

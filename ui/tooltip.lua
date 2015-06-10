@@ -284,7 +284,7 @@ do
 		if not currentUnit.type then return end
 
 		local defaultLines = 3
-		local playerFaction = xrp.current.fields.GF
+		local playerFaction = xrp.current.GF
 		local attackMe = UnitCanAttack(unit, "player")
 		local meAttack = UnitCanAttack("player", unit)
 		if currentUnit.type == "player" then

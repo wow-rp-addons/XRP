@@ -73,7 +73,7 @@ local fieldMeta = {
 	__index = function(self, field)
 		local name = nameMap[self]
 		if name == _xrp.playerWithRealm then
-			return xrp.current.fields[field]
+			return xrp.current[field]
 		end
 		return xrpCache[name] and xrpCache[name].fields[field] or ""
 	end,
@@ -137,12 +137,12 @@ msp.char = setmetatable({}, {
 msp.my = setmetatable({}, {
 	__index = function(self, field)
 		-- Return currently active profile field (incl. overrides).
-		return xrp.current.fields[field]
+		return xrp.current[field]
 	end,
 	__newindex = function(self, field, contents)
 		-- Sets a temporary override. Removes if empty string (unlike normal
 		-- overrides allowing explicitly empty).
-		xrp.current.fields[field] = contents ~= "" and contents or nil
+		xrp.current[field] = contents ~= "" and contents or nil
 	end,
 	__metatable = false,
 })
