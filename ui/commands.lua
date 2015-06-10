@@ -125,15 +125,15 @@ end
 
 xrpCmds.status = function(args)
 	if args == "nil" or args == _xrp.L.ARG_STATUS_NIL then
-		xrp.current.fields.FC = nil
+		xrp.current.FC = nil
 	elseif args == "ooc" or args == _xrp.L.ARG_STATUS_IC then
-		xrp.current.fields.FC = "1"
+		xrp.current.FC = "1"
 	elseif args == "ic" or args == _xrp.L.ARG_STATUS_OOC then
-		xrp.current.fields.FC = "2"
+		xrp.current.FC = "2"
 	elseif args == "lfc" or args == _xrp.L.ARG_STATUS_LFC then
-		xrp.current.fields.FC = "3"
+		xrp.current.FC = "3"
 	elseif args == "st" or args == _xrp.L.ARG_STATUS_ST then
-		xrp.current.fields.FC = "4"
+		xrp.current.FC = "4"
 	else
 		xrpCmds.help("status")
 	end

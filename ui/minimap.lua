@@ -33,7 +33,7 @@ function XRPButton_UpdateIcon()
 		Button:SetPushedTexture(TEXTURES[1])
 		return
 	end
-	local FC = xrp.current.fields.FC
+	local FC = xrp.current.FC
 	if not FC or FC == "0" or FC == "1" then
 		Button:SetNormalTexture(TEXTURES[2])
 		Button:SetPushedTexture(TEXTURES[2])
@@ -46,14 +46,14 @@ end
 function XRPButton_OnEnter(self, motion)
 	if motion then
 		GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT", 0, 32)
-		GameTooltip:SetText(xrp.current.fields.NA)
+		GameTooltip:SetText(xrp.current.NA)
 		GameTooltip:AddLine(" ")
 		GameTooltip:AddLine(SUBTITLE_FORMAT:format(_xrp.L.PROFILE, ("|cffffffff%s|r"):format(tostring(xrp.profiles.SELECTED))))
-		local FC = xrp.current.fields.FC
+		local FC = xrp.current.FC
 		if FC and FC ~= "0" then
 			GameTooltip:AddLine(SUBTITLE_FORMAT:format(_xrp.L.STATUS, ("|cff%s%s|r"):format(FC == "1" and "99664d" or "66b380", xrp.L.VALUES.FC[FC] or xrp.Strip(FC))))
 		end
-		local CU = xrp.current.fields.CU
+		local CU = xrp.current.CU
 		if CU then
 			GameTooltip:AddLine(" ")
 			GameTooltip:AddLine(STAT_FORMAT:format(xrp.L.FIELDS.CU))
@@ -83,7 +83,7 @@ do
 			CloseDropDownMenus()
 		end
 		local function Status_Checked(self)
-			return self.arg1 == xrp.current.fields.FC
+			return self.arg1 == xrp.current.FC
 		end
 
 		for i = 0, 4 do

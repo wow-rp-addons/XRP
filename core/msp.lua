@@ -110,7 +110,7 @@ do
 				return false
 			end
 			-- Same error message from offline and from opposite faction.
-			_xrp.FireEvent("FAIL", name, (not xrpCache[name] or not xrpCache[name].fields.GF or xrpCache[name].fields.GF == xrp.current.fields.GF) and "offline" or "faction")
+			_xrp.FireEvent("FAIL", name, (not xrpCache[name] or not xrpCache[name].fields.GF or xrpCache[name].fields.GF == xrp.current.GF) and "offline" or "faction")
 			return true
 		end)
 
@@ -280,7 +280,7 @@ do
 				if not tt then
 					local tooltip = {}
 					for i, field in ipairs(TT_LIST) do
-						local contents = xrp.current.fields[field]
+						local contents = xrp.current[field]
 						tooltip[#tooltip + 1] = not contents and field or ("%s%.0f=%s"):format(field, _xrp.versions[field], contents)
 					end
 					local newtt = table.concat(tooltip, "\1")
@@ -299,7 +299,7 @@ do
 			elseif version == currentVersion then
 				return ("!%s%.0f"):format(field, version)
 			end
-			return ("%s%.0f=%s"):format(field, currentVersion, xrp.current.fields[field])
+			return ("%s%.0f=%s"):format(field, currentVersion, xrp.current[field])
 		elseif action == "!" and version == (xrpCache[name] and xrpCache[name].versions[field] or 0) then
 			cache[name].time[field] = GetTime() + FIELD_TIMES[field]
 			cache[name].fieldUpdated = cache[name].fieldUpdated or false
@@ -641,7 +641,7 @@ function _xrp.Request(name, fields)
 
 	local now = GetTime()
 	if cache[name].nextCheck and now < cache[name].nextCheck then
-		_xrp.FireEvent("FAIL", name, (not xrpCache[name] or not xrpCache[name].fields.GF or xrpCache[name].fields.GF == xrp.current.fields.GF) and "nomsp" or "faction")
+		_xrp.FireEvent("FAIL", name, (not xrpCache[name] or not xrpCache[name].fields.GF or xrpCache[name].fields.GF == xrp.current.GF) and "nomsp" or "faction")
 		return false
 	elseif cache[name].nextCheck then
 		cache[name].nextCheck = now + 120

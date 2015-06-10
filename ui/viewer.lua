@@ -269,7 +269,7 @@ end
 function XRPViewerMenu_PreClick(self, button, down)
 	local name, isOwn = tostring(current), current.own
 	local GF = xrp.characters.noRequest.byName[name].fields.GF
-	if GF and GF ~= xrp.current.fields.GF then
+	if GF and GF ~= xrp.current.GF then
 		self.baseMenuList[3].disabled = true
 	else
 		local name = Ambiguate(name, "none")

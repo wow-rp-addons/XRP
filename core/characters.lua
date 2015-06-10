@@ -58,7 +58,7 @@ do
 			end
 			local name = nameMap[self]
 			if name == _xrp.playerWithRealm then
-				return xrp.current.fields[field]
+				return xrp.current[field]
 			elseif gCache[name] and gCache[name][field] then
 				return gCache[name][field]
 			elseif requestMap[self] then
@@ -75,7 +75,7 @@ do
 			if not xrpCache[name] then return "" end
 			local shortName, realm = name:match("^([^%-]+)%-([^%-]+)$")
 			realm = xrp.RealmDisplayName(realm)
-			return _xrp.ExportText(_xrp.L.NAME_REALM:format(shortName, realm), name == _xrp.playerWithRealm and xrp.current.fields or xrpCache[name].fields)
+			return _xrp.ExportText(_xrp.L.NAME_REALM:format(shortName, realm), name == _xrp.playerWithRealm and xrp.current or xrpCache[name].fields)
 		end,
 		__metatable = false,
 	}
