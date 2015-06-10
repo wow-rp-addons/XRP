@@ -241,7 +241,7 @@ function loadEvents.PLAYER_LOGOUT(event)
 	do
 		local fields, versions = {}, {}
 		local profiles, inherit = { xrpSaved.profiles[xrpSaved.selected] }, xrpSaved.profiles[xrpSaved.selected].parent
-		for i = 1, 50 do
+		for i = 1, _xrp.PROFILE_MAX_DEPTH do
 			if not xrpSaved.profiles[inherit] then
 				break
 			end

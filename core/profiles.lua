@@ -21,6 +21,8 @@ local MAX_DEPTH = 50
 
 local NO_PROFILE = { TT = true, VP = true, VA = true, GC = true, GF = true, GR = true, GS = true, GU = true }
 
+_xrp.PROFILE_MAX_DEPTH = MAX_DEPTH
+
 function _xrp.NewVersion(field, contents)
 	if field == "FC" or field == "FR" then
 		local number = tonumber(contents)
