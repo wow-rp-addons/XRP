@@ -132,7 +132,11 @@ do
 
 	local oldLines, lineNum = 0, 0
 	local function RenderLine(left, right, lR, lG, lB, rR, rG, rB)
-		if not left and not right then return end
+		if not left and not right then
+			return
+		elseif left == true then
+			left = nil
+		end
 		rendering = true
 		lineNum = lineNum + 1
 		-- First case: If there's already a line to replace. This only happens
@@ -156,8 +160,8 @@ do
 		else -- Second case: If there are no more lines to replace.
 			if right then
 				Tooltip:AddDoubleLine(left or " ", right, lR or 1, lG or 0.82, lB or 0, rR or 1, rG or 0.82, rB or 0)
-			elseif left then
-				Tooltip:AddLine(left, lR or 1, lG or 0.82, lB or 0)
+			else
+				Tooltip:AddLine(left or " ", lR or 1, lG or 0.82, lB or 0)
 			end
 		end
 		rendering = nil
@@ -170,7 +174,6 @@ do
 		Horde = { r = 1, g = 0.39, b = 0.41 },
 		Neutral = { r = 1, g = 0.86, b = 0.36 },
 	}
-	local REACTION = "FACTION_STANDING_LABEL%d"
 	local NI_FORMAT = ("|cff6070a0%s|r %s"):format(STAT_FORMAT:format(xrp.L.FIELDS.NI), _xrp.L.NICKNAME)
 	local CU_FORMAT = ("|cffa08050%s|r %%s"):format(STAT_FORMAT:format(xrp.L.FIELDS.CU))
 	local NI_LENGTH = strlenutf8(NI_FORMAT) - 14
@@ -196,7 +199,7 @@ do
 			end
 			RenderLine(currentUnit.nameFormat:format(showProfile and TruncateLine(xrp.Strip(fields.NA), 65, 0, false) or xrp.ShortName(tostring(currentUnit.character))), currentUnit.icons)
 			if replace and currentUnit.reaction then
-				RenderLine(GetText(REACTION:format(currentUnit.reaction), currentUnit.gender), nil, 1, 1, 1)
+				RenderLine(currentUnit.reaction, nil, 1, 1, 1)
 			end
 			if showProfile then
 				local NI = fields.NI
@@ -204,27 +207,25 @@ do
 				RenderLine(TruncateLine(xrp.Strip(fields.NT), 70), nil, 0.8, 0.8, 0.8)
 			end
 			if _xrp.settings.tooltip.extraSpace then
-				RenderLine(" ")
+				RenderLine(true)
 			end
 			if replace then
 				RenderLine(currentUnit.guild, nil, 1, 1, 1)
 				local color = COLORS[currentUnit.faction]
 				RenderLine(currentUnit.titleRealm, currentUnit.character.hide and _xrp.L.HIDDEN or showProfile and ParseVersion(fields.VA), color.r, color.g, color.b, 0.5, 0.5, 0.5)
 				if _xrp.settings.tooltip.extraSpace then
-					RenderLine(" ")
+					RenderLine(true)
 				end
 			end
 			if showProfile then
 				local CU = fields.CU
 				RenderLine(CU and CU_FORMAT:format(TruncateLine(xrp.Strip(CU), 70, CU_LENGTH)), nil, 0.9, 0.7, 0.6)
 			end
-			RenderLine(currentUnit.info:format(showProfile and not _xrp.settings.tooltip.noRace and TruncateLine(xrp.Strip(fields.RA), 40, 0, false) or xrp.L.VALUES.GR[fields.GR] or UNKNOWN, showProfile and not _xrp.settings.tooltip.noClass and TruncateLine(xrp.Strip(fields.RC), 40, 0, false) or xrp.L.VALUES.GC[fields.GS] and xrp.L.VALUES.GC[fields.GS][fields.GC] or xrp.L.VALUES.GC["1"][fields.GC] or UNKNOWN, 40, 0, false), not replace and ParseVersion(fields.VA), 1, 1, 1, 0.5, 0.5, 0.5)
+			RenderLine(currentUnit.info:format(showProfile and not _xrp.settings.tooltip.noRace and TruncateLine(xrp.Strip(fields.RA), 40, 0, false) or xrp.L.VALUES.GR[fields.GR] or UNKNOWN, showProfile and not _xrp.settings.tooltip.noClass and TruncateLine(xrp.Strip(fields.RC), 40, 0, false) or xrp.L.VALUES.GC[fields.GS][fields.GC] or UNKNOWN), not replace and ParseVersion(fields.VA), 1, 1, 1, 0.5, 0.5, 0.5)
 			if showProfile then
 				local FR, FC = fields.FR, fields.FC
-				if FR and FR ~= "0" or FC and FC ~= "0" then
-					local color = COLORS[FC == "1" and "OOC" or "IC"]
-					RenderLine((not FR or FR == "0") and " " or xrp.L.VALUES.FR[FR] or TruncateLine(xrp.Strip(FR), 35, 0, false), FC and FC ~= "0" and (xrp.L.VALUES.FC[FC] or TruncateLine(xrp.Strip(FC), 35, 0, false)), color.r, color.g, color.b, color.r, color.g, color.b)
-				end
+				local color = COLORS[FC == "1" and "OOC" or "IC"]
+				RenderLine(xrp.L.VALUES.FR[FR] or FR ~= "0" and TruncateLine(xrp.Strip(FR), 35, 0, false), xrp.L.VALUES.FC[FC] or FC ~= "0" and TruncateLine(xrp.Strip(FC), 35, 0, false), color.r, color.g, color.b, color.r, color.g, color.b)
 			end
 			if replace then
 				RenderLine(currentUnit.location, nil, 1, 1, 1)
@@ -232,7 +233,10 @@ do
 		elseif currentUnit.type == "pet" then
 			RenderLine(currentUnit.nameFormat, currentUnit.icons)
 			if currentUnit.reaction then
-				RenderLine(GetText(REACTION:format(currentUnit.reaction), currentUnit.gender), nil, 1, 1, 1)
+				RenderLine(currentUnit.reaction, nil, 1, 1, 1)
+				if _xrp.settings.tooltip.extraSpace then
+					RenderLine(true)
+				end
 			end
 			local color = COLORS[currentUnit.faction]
 			RenderLine(currentUnit.titleRealm:format(showProfile and TruncateLine(xrp.Strip(fields.NA), 60, 0, false) or xrp.ShortName(tostring(currentUnit.character))), nil, color.r, color.g, color.b)
@@ -272,6 +276,7 @@ do
 	local FLAG_OFFLINE = (" |cff888888%s|r"):format(CHAT_FLAG_AFK:gsub(AFK, PLAYER_OFFLINE))
 	local FLAG_AFK = (" |cff99994d%s|r"):format(CHAT_FLAG_AFK)
 	local FLAG_DND = (" |cff994d4d%s|r"):format(CHAT_FLAG_DND)
+	local REACTION = "FACTION_STANDING_LABEL%d"
 	local LOCATION = ("|cffffeeaa%s|r %%s"):format(ZONE_COLON)
 	local UnitEffectiveLevel = UnitEffectiveLevel or UnitLevel -- Remove in 6.2.
 	function SetUnit(unit)
@@ -290,7 +295,7 @@ do
 			local connected = UnitIsConnected(unit)
 			local color = COLORS[(currentUnit.faction ~= playerFaction and currentUnit.faction ~= "Neutral" or attackMe and meAttack) and "hostile" or (currentUnit.faction == "Neutral" or meAttack or attackMe) and "neutral" or "friendly"]
 			local watchIcon = _xrp.settings.tooltip.watching and UnitIsUnit("player", unit .. "target") and "|TInterface\\LFGFrame\\BattlenetWorking0:28:28:10:0|t"
-			local class, classID = UnitClassBase(unit)
+			local GC = currentUnit.character.fields.GC
 
 			if replace then
 				local colorblind = GetCVar("colorblindMode") == "1"
@@ -313,13 +318,13 @@ do
 				local name = UnitPVPName(unit) or xrp.ShortName(tostring(currentUnit.character))
 				currentUnit.titleRealm = (colorblind and _xrp.L.ASIDE or "%s"):format(realm and _xrp.L.NAME_REALM:format(name, xrp.RealmDisplayName(realm)) or name, colorblind and xrp.L.VALUES.GF[currentUnit.faction])
 
-				currentUnit.reaction = colorblind and UnitReaction("player", unit)
-				currentUnit.gender = colorblind and currentUnit.character.fields.GS
+				local GS = colorblind and currentUnit.character.fields.GS
+				currentUnit.reaction = colorblind and GetText(REACTION:format(UnitReaction("player", unit)), tonumber(GS))
 
 				local level = UnitLevel(unit)
 				local effectiveLevel = UnitEffectiveLevel(unit)
 				level = effectiveLevel < 1 and level < 1 and _xrp.L.LETHAL_LEVEL or effectiveLevel == level and tostring(level) or _xrp.L.ASIDE:format(tostring(effectiveLevel), tostring(level))
-				currentUnit.info = (TOOLTIP_UNIT_LEVEL_RACE_CLASS_TYPE):format(level, "%s", ("|c%s%%s|r"):format(RAID_CLASS_COLORS[classID] and RAID_CLASS_COLORS[classID].colorStr or "ffffffff"), colorblind and xrp.L.VALUES.GC["1"][classID] or PLAYER)
+				currentUnit.info = (TOOLTIP_UNIT_LEVEL_RACE_CLASS_TYPE):format(level, "%s", ("|c%s%%s|r"):format(RAID_CLASS_COLORS[GC] and RAID_CLASS_COLORS[GC].colorStr or "ffffffff"), colorblind and xrp.L.VALUES.GC[GS][GC] or PLAYER)
 
 				local location = connected and not UnitIsVisible(unit) and GameTooltipTextLeft3:GetText()
 				currentUnit.location = location and LOCATION:format(location)
@@ -330,13 +335,13 @@ do
 				if guildName then
 					defaultLines = defaultLines + 1
 				end
-				if colorblind then
+				if colorblind and currentUnit.reaction then
 					defaultLines = defaultLines + 1
 				end
 			else
 				currentUnit.nameFormat = ("|cff%s%%s|r"):format(color)
 				currentUnit.icons = watchIcon
-				currentUnit.info = ("%%s |c%s%%s|r"):format(RAID_CLASS_COLORS[classID] and RAID_CLASS_COLORS[classID].colorStr or "ffffffff")
+				currentUnit.info = ("%%s |c%s%%s|r"):format(RAID_CLASS_COLORS[GC] and RAID_CLASS_COLORS[GC].colorStr or "ffffffff")
 			end
 		elseif currentUnit.type == "pet" then
 			local colorblind = GetCVar("colorblindMode") == "1"
@@ -361,8 +366,7 @@ do
 			local realm = owner:match("%-([^%-]+)$")
 			currentUnit.titleRealm = (colorblind and _xrp.L.ASIDE or "%s"):format(realm and _xrp.L.NAME_REALM:format(petType, xrp.RealmDisplayName(realm)) or petType, colorblind and xrp.L.VALUES.GF[currentUnit.faction])
 
-			currentUnit.reaction = colorblind and UnitReaction("player", unit)
-			currentUnit.gender = colorblind and UnitSex(unit)
+			currentUnit.reaction = colorblind and GetText(REACTION:format(UnitReaction("player", unit)), UnitSex(unit))
 
 			local race = UnitCreatureFamily(unit) or UnitCreatureType(unit)
 			if race == _xrp.L.PET_GHOUL or race == _xrp.L.PET_WATER_ELEMENTAL or race == _xrp.L.PET_MT_WATER_ELEMENTAL then
@@ -372,11 +376,11 @@ do
 			end
 			-- Mages, death knights, and warlocks have minions, hunters have 
 			-- pets. Mages and death knights only have one pet family each.
-			local classID = petType == UNITNAME_TITLE_MINION and (race == _xrp.L.PET_ELEMENTAL and "MAGE" or race == _xrp.L.PET_UNDEAD and "DEATHKNIGHT" or "WARLOCK") or petType == UNITNAME_TITLE_PET and "HUNTER"
+			local GC = petType == UNITNAME_TITLE_MINION and (race == _xrp.L.PET_ELEMENTAL and "MAGE" or race == _xrp.L.PET_UNDEAD and "DEATHKNIGHT" or "WARLOCK") or petType == UNITNAME_TITLE_PET and "HUNTER"
 			local level = UnitLevel(unit)
 			local effectiveLevel = UnitEffectiveLevel(unit)
 			level = effectiveLevel < 1 and level < 1 and _xrp.L.LETHAL_LEVEL or effectiveLevel == level and tostring(level) or _xrp.L.ASIDE:format(tostring(effectiveLevel), tostring(level))
-			currentUnit.info = TOOLTIP_UNIT_LEVEL_CLASS_TYPE:format(level, ("|c%s%s|r"):format(RAID_CLASS_COLORS[classID] and RAID_CLASS_COLORS[classID].colorStr or "ffffffff", race), colorblind and ("%s %s"):format(xrp.L.VALUES.GC["1"][classID], PET) or PET)
+			currentUnit.info = TOOLTIP_UNIT_LEVEL_CLASS_TYPE:format(level, ("|c%s%s|r"):format(RAID_CLASS_COLORS[GC] and RAID_CLASS_COLORS[GC].colorStr or "ffffffff", race), colorblind and ("%s %s"):format(xrp.L.VALUES.GC[currentUnit.character.fields.GS][GC], PET) or PET)
 
 			if currentUnit.icons then
 				defaultLines = defaultLines + 1

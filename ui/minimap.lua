@@ -51,7 +51,7 @@ function XRPButton_OnEnter(self, motion)
 		GameTooltip:AddLine(SUBTITLE_FORMAT:format(_xrp.L.PROFILE, ("|cffffffff%s|r"):format(tostring(xrp.profiles.SELECTED))))
 		local FC = xrp.current.fields.FC
 		if FC and FC ~= "0" then
-			GameTooltip:AddLine(SUBTITLE_FORMAT:format(_xrp.L.STATUS, ("|cff%s%s|r"):format(FC == "1" and "99664d" or "66b380", xrp.L.VALUES.FC[FC])))
+			GameTooltip:AddLine(SUBTITLE_FORMAT:format(_xrp.L.STATUS, ("|cff%s%s|r"):format(FC == "1" and "99664d" or "66b380", xrp.L.VALUES.FC[FC] or xrp.Strip(FC))))
 		end
 		local CU = xrp.current.fields.CU
 		if CU then
