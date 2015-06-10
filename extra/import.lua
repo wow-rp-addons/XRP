@@ -55,7 +55,7 @@ local function ImportMyRolePlay()
 							value = ""
 						end
 					elseif field == "FR" and tonumber(value) then
-						value = value ~= "0" and xrp.L.VALUES.FR[value] or ""
+						value = xrp.L.VALUES.FR[value] or ""
 					end
 					profile.fields[field] = value ~= "" and value or nil
 				end

@@ -68,10 +68,10 @@ xrp.L = {
 			["4"] = _xrp.L.VALUE_FR_4,
 			["5"] = _xrp.L.VALUE_FR_5,
 		},
-		GC = {
+		GC = setmetatable({
 			["2"] = FillLocalizedClassList({}, false), -- Male forms
 			["3"] = FillLocalizedClassList({}, true), -- Female forms
-		},
+		}, { __index = function(self, key) return rawget(self, "1") end }),
 		GF = {
 			Alliance = FACTION_ALLIANCE,
 			Horde = FACTION_HORDE,
@@ -99,7 +99,7 @@ xrp.L = {
 		},
 	},
 }
--- Match unknown class genders to player gender (non-English).
+-- Match unknown class genders to player gender.
 xrp.L.VALUES.GC["1"] = UnitSex("player") == 2 and xrp.L.VALUES.GC["2"] or xrp.L.VALUES.GC["3"]
 
 xrp.L.MENU_FIELDS = setmetatable({
