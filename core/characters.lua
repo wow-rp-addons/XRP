@@ -96,7 +96,7 @@ do
 			elseif component == "noRequest" then
 				return not requestMap[self]
 			elseif component == "canRefresh" then
-				if xrpCache[name].own then
+				if xrpCache[name] and xrpCache[name].own then
 					return false
 				end
 				return not requestMap[self] or _xrp.CanRefresh(name)
