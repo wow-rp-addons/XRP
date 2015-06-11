@@ -110,7 +110,8 @@ do
 				return false
 			end
 			-- Same error message from offline and from opposite faction.
-			_xrp.FireEvent("FAIL", name, (not xrpCache[name] or not xrpCache[name].fields.GF or xrpCache[name].fields.GF == xrp.current.GF) and "offline" or "faction")
+			local GF = _xrp.gCache[name] and _xrp.gCache[name].GF or xrpCache[name] and xrpCache[name].fields.GF
+			_xrp.FireEvent("FAIL", name, (not GF or GF == xrp.current.GF) and "offline" or "faction")
 			return true
 		end)
 
@@ -641,7 +642,8 @@ function _xrp.Request(name, fields)
 
 	local now = GetTime()
 	if cache[name].nextCheck and now < cache[name].nextCheck then
-		_xrp.FireEvent("FAIL", name, (not xrpCache[name] or not xrpCache[name].fields.GF or xrpCache[name].fields.GF == xrp.current.GF) and "nomsp" or "faction")
+		local GF = _xrp.gCache[name] and _xrp.gCache[name].GF or xrpCache[name] and xrpCache[name].fields.GF
+		_xrp.FireEvent("FAIL", name, (not GF or GF == xrp.current.GF) and "nomsp" or "faction")
 		return false
 	elseif cache[name].nextCheck then
 		cache[name].nextCheck = now + 120
@@ -675,6 +677,8 @@ function _xrp.Request(name, fields)
 				end
 			end
 		end
+	elseif not _xrp.gCache[name].GF and (not xrpCache[name] or not xrpCache[name].fields.GF) then
+		fields[#fields + 1] = "GF"
 	end
 
 	local out = {}
