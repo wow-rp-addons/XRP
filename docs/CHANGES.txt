@@ -1,12 +1,16 @@
-6.1.2.0_rc1 (2015-05-25):
+6.2.0.0_rc2 (2015-06-11):
 
-	- If you are upgrading from 6.1.0.0 or earlier, please fully-restart the
-	  game client when upgrading. Some new files have been added, and a
+	- If you are upgrading from XRP 6.1.0.0 or earlier, please fully-restart
+	  the game client when upgrading. Some new files have been added, and a
 	  restart is necessary for the game client to see these.
+
+	- This version supports 6.1.2 (live) and 6.2.0 (PTR).
 
 	- Private notes may now be added to information about characters. Adding
 	  or viewing notes may be done from the viewer, the bookmarks, or, for
-	  your current character, from the editor.
+	  your current character, from the editor. These are accessible from the
+	  menus in the upper-right of the editor/viewer, or from the right-click
+	  menu in the bookmarks.
 
 	- Options have been added (under the new XRP -> Display category in the
 	  interface options) to replace certain race names with alternate or
@@ -24,31 +28,28 @@
 
 	- Indentations are now properly handled in the profile viewer.
 	  Additionally, pressing "Shift+Tab" while editing a multi-line field in
-	  the editor will now input eight spaces (a tab width).
+	  the editor will now input eight spaces (equivalent of a tab character).
 
 	- Clickable URLs in profiles have been changed somewhat, now bracketed by
 	  angle brackets instead of square brackets. In addition, the URL-matching
 	  has been adjusted to (hopefully) match more URLs properly.
 
+		- Direct links to Twitter accounts (@UserName or
+		  http://twitter.com/UserName) are now specially linked, and can be
+		  used to access the in-game Twitter functionality, if enabled.
+
 	- Profiles may now be force-refreshed (if you suspect something hasn't
 	  loaded correctly) and profiles may also now be individually dropped from
-	  your stored cache. These are not normally necessary, and improvements
-	  have been made elsewhere to make them even less normally necessary.
+	  your stored cache. These options are not normally needed, but have been
+	  added to help in abnormal circumstances.
 
 	- Colorblind mode should now be properly supported in XRP's tooltip.
 
 	- Support for translating XRP into languages other than English has been
-	  added. If you're interested in providing a translation, please get in
-	  contact with XRP's author.
+	  added. Support for multibyte characters has also been improved.
 
-		- Support for multibyte characters (accented Latin, foreign scripts,
-		  etc.) has been significantly improved in the tooltip and export.
-
-	- Display of weights in kilograms is now slightly more precise.
-
-	- (Bugfix) The "Roleplay Profile" entry will no longer show for Battle.net
-	  chat when the person isn't on your friends list (such as in a
-	  conversation).
+		- If you're interested in providing a translation, please get in
+		  contact with XRP's author.
 
 	- Quite a few aspects of the UI implementation have been overhauled. If
 	  you're modifying the UI (such as for skin authors), you may need to
