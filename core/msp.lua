@@ -110,7 +110,7 @@ do
 				return false
 			end
 			-- Same error message from offline and from opposite faction.
-			local GF = _xrp.gCache[name] and _xrp.gCache[name].GF or xrpCache[name] and xrpCache[name].fields.GF
+			local GF = _xrp.unitCache[name] and _xrp.unitCache[name].GF or xrpCache[name] and xrpCache[name].fields.GF
 			_xrp.FireEvent("FAIL", name, (not GF or GF == xrp.current.GF) and "offline" or "faction")
 			return true
 		end)
@@ -323,9 +323,9 @@ do
 					versions = {},
 					lastReceive = time(),
 				}
-				if _xrp.gCache[name] then
+				if _xrp.unitCache[name] then
 					for gField, isUnitField in pairs(UNIT_FIELDS) do
-						xrpCache[name].fields[gField] = _xrp.gCache[name][gField]
+						xrpCache[name].fields[gField] = _xrp.unitCache[name][gField]
 					end
 				end
 			elseif field == "TT" and xrpCache[name] and version < (xrpCache[name].versions.TT or 0) then
@@ -642,7 +642,7 @@ function _xrp.Request(name, fields)
 
 	local now = GetTime()
 	if cache[name].nextCheck and now < cache[name].nextCheck then
-		local GF = _xrp.gCache[name] and _xrp.gCache[name].GF or xrpCache[name] and xrpCache[name].fields.GF
+		local GF = _xrp.unitCache[name] and _xrp.unitCache[name].GF or xrpCache[name] and xrpCache[name].fields.GF
 		_xrp.FireEvent("FAIL", name, (not GF or GF == xrp.current.GF) and "nomsp" or "faction")
 		return false
 	elseif cache[name].nextCheck then
@@ -664,7 +664,7 @@ function _xrp.Request(name, fields)
 		table.insert(fields, 1, "TT")
 	end
 
-	if not _xrp.gCache[name] then
+	if not _xrp.unitCache[name] then
 		if not xrpCache[name] then
 			for i, field in ipairs(UNIT_REQUEST) do
 				fields[#fields + 1] = field
@@ -677,7 +677,7 @@ function _xrp.Request(name, fields)
 				end
 			end
 		end
-	elseif not _xrp.gCache[name].GF and (not xrpCache[name] or not xrpCache[name].fields.GF) then
+	elseif not _xrp.unitCache[name].GF and (not xrpCache[name] or not xrpCache[name].fields.GF) then
 		fields[#fields + 1] = "GF"
 	end
 
