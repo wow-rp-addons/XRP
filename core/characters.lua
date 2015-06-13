@@ -36,8 +36,8 @@ local RACE_FACTION = {
 	Pandaren = nil, -- Can't tell faction.
 }
 
-local gCache = {}
-_xrp.gCache = gCache
+local unitCache = {}
+_xrp.unitCache = unitCache
 
 local nameMap, requestMap = setmetatable({}, _xrp.weakKeyMeta), setmetatable({}, _xrp.weakKeyMeta)
 
@@ -59,8 +59,8 @@ do
 			local name = nameMap[self]
 			if name == _xrp.playerWithRealm then
 				return xrp.current[field]
-			elseif gCache[name] and gCache[name][field] then
-				return gCache[name][field]
+			elseif unitCache[name] and unitCache[name][field] then
+				return unitCache[name][field]
 			elseif requestMap[self] then
 				_xrp.QueueRequest(name, field)
 			end
@@ -180,10 +180,10 @@ xrp.characters = {
 			local name = xrp.UnitFullName(unit)
 			if not name then
 				return nil
-			elseif not gCache[name] then
+			elseif not unitCache[name] then
 				local GU = UnitGUID(unit)
 				local class, GC, race, GR, GS = GetPlayerInfoByGUID(GU)
-				gCache[name] = {
+				unitCache[name] = {
 					GC = GC,
 					GF = UnitFactionGroup(unit),
 					GR = GR,
@@ -191,16 +191,16 @@ xrp.characters = {
 					GU = GU,
 				}
 				if xrpCache[name] and name ~= _xrp.playerWithRealm then
-					for field, contents in pairs(gCache[name]) do
+					for field, contents in pairs(unitCache[name]) do
 						-- We DO want to overwrite these, to account for race,
 						-- faction, or sex changes.
 						xrpCache[name].fields[field] = contents
 					end
 				end
-			elseif not gCache[name].GF then -- GUID won't always get faction.
-				gCache[name].GF = UnitFactionGroup(unit)
+			elseif not unitCache[name].GF then -- GUID won't always get faction.
+				unitCache[name].GF = UnitFactionGroup(unit)
 				if xrpCache[name] and name ~= _xrp.playerWithRealm then
-					xrpCache[name].fields.GF = gCache[name].GF
+					xrpCache[name].fields.GF = unitCache[name].GF
 				end
 			end
 			if not requestTables[name] then
@@ -222,8 +222,8 @@ xrp.characters = {
 			name = xrp.FullName(name, realm)
 			if not success or not name then
 				return nil
-			elseif not gCache[name] then
-				gCache[name] = {
+			elseif not unitCache[name] then
+				unitCache[name] = {
 					GC = GC,
 					GF = RACE_FACTION[GR],
 					GR = GR,
@@ -231,7 +231,7 @@ xrp.characters = {
 					GU = GU,
 				}
 				if xrpCache[name] and name ~= _xrp.playerWithRealm then
-					for field, contents in pairs(gCache[name]) do
+					for field, contents in pairs(unitCache[name]) do
 						-- We DO want to overwrite these, to account for race,
 						-- faction, or sex changes.
 						xrpCache[name].fields[field] = contents

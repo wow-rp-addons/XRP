@@ -85,9 +85,8 @@ do
 
 		local equipSet
 		if not FORM_NO_EQUIPMENT[classForm] then
-			local numSets = GetNumEquipmentSets()
 			local bestMatch, bestScore = nil, 0
-			for i = 1, numSets do
+			for i = 1, GetNumEquipmentSets() do
 				local name, icon, setID, equipped, numItems, numEquip, numInv, numMissing = GetEquipmentSetInfo(i)
 				if equipped then
 					lastEquipSet = name
