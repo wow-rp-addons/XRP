@@ -116,7 +116,7 @@ do
 		end)
 
 		function AddFilter(name)
-			filter[name] = GetTime() + 2.500
+			filter[name] = GetTime() + (select(3, GetNetStats()) * 0.001) + 2.000
 		end
 	end
 
