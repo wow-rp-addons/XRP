@@ -545,7 +545,7 @@ function gameEvents.BN_CHAT_MSG_ADDON(event, prefix, message, channel, presenceI
 
 	handlers[prefix](name, message, "BN")
 end
-function gameEvents.BN_TOON_NAME_UPDATE(event, presenceID)
+function gameEvents.BN_TOON_NAME_UPDATED(event, presenceID)
 	if not bnet then return end
 	local active, toonName, client, realmName = BNGetToonInfo(presenceID)
 	if client == "WoW" and realmName ~= "" then
