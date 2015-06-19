@@ -66,32 +66,53 @@ local cache = setmetatable({}, {
 })
 
 local bnet
-local function RebuildBNList()
-	local newBnet = {}
-	for i = 1, select(2, BNGetNumFriends()) do
+local function FindPresenceID(nameFind)
+	local newBnet, doCache = {}, true
+	local presenceID
+	local totalFriends, onlineFriends = BNGetNumFriends()
+	for i = 1, onlineFriends do
 		for j = 1, BNGetNumFriendToons(i) do
 			local active, toonName, client, realmName, realmID, faction, race, class, blank, zoneName, level, gameText, broadcastText, broadcastTime, isConnected, toonID = BNGetFriendToonInfo(i, j)
-			if isConnected and client == "WoW" and realmName ~= "" then
-				local name = xrp.FullName(toonName, realmName)
-				if cache[name].nextCheck then
-					cache[name].nextCheck = 0
+			if isConnected and client == "WoW" then
+				if realmName == "" then
+					-- Something's gone wrong, don't want a bad list cached.
+					doCache = false
+				else
+					local name = xrp.FullName(toonName, realmName)
+					if cache[name].nextCheck then
+						cache[name].nextCheck = 0
+					end
+					newBnet[name] = toonID
+					if nameFind and name == nameFind then
+						presenceID = toonID
+					end
+					if not doCache and presenceID then
+						return presenceID
+					end
 				end
-				newBnet[name] = toonID
 			end
 		end
 	end
-	if not next(newBnet) then
-		return false
+	if doCache and (totalFriends > 0 or IsLoggedIn()) then
+		bnet = newBnet
 	end
-	bnet = newBnet
-	return true
+	return presenceID
 end
 
 local function GetPresenceID(name)
-	if not BNConnected() or not bnet and not RebuildBNList() or not bnet[name] or not select(15, BNGetToonInfo(bnet[name])) then
+	if not BNConnected() then
 		return nil
 	end
-	return bnet[name]
+	local presenceID
+	if not bnet then
+		presenceID = FindPresenceID(name)
+	else
+		presenceID = bnet[name]
+		if presenceID and not select(15, BNGetToonInfo(presenceID)) then
+			return nil
+		end
+	end
+	return presenceID
 end
 
 local Send, handlers
@@ -557,7 +578,7 @@ function gameEvents.BN_TOON_NAME_UPDATED(event, presenceID)
 	end
 end
 function gameEvents.BN_CONNECTED(event)
-	RebuildBNList()
+	FindPresenceID()
 	_xrp.HookGameEvent("BN_TOON_NAME_UPDATED", gameEvents.BN_TOON_NAME_UPDATED)
 	_xrp.HookGameEvent("BN_FRIEND_TOON_ONLINE", gameEvents.BN_TOON_NAME_UPDATED)
 end
