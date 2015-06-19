@@ -1,10 +1,10 @@
-6.2.0.0_rc2 (2015-06-11):
+6.2.0.0 (2015-06-19):
+
+	- This version supports World of Warcraft 6.1.2 and 6.2.0.
 
 	- If you are upgrading from XRP 6.1.0.0 or earlier, please fully-restart
 	  the game client when upgrading. Some new files have been added, and a
 	  restart is necessary for the game client to see these.
-
-	- This version supports 6.1.2 (live) and 6.2.0 (PTR).
 
 	- Private notes may now be added to information about characters. Adding
 	  or viewing notes may be done from the viewer, the bookmarks, or, for
@@ -21,18 +21,20 @@
 	  bottom-right of the frame to resize. Right-clicking the handle will
 	  reset the size to default.
 
+	- /xrp currently has been added, and can be used to change your currently
+	  via chat commands.
+
 	- Some menu items have been moved in the profile viewer and editor. Please
-	  check the menus in the upper-right corner of each of these frames if you
-	  believe something to be missing. Additionally, the "Export" menu entry
-	  has been moved to the "Advanced" submenu in the viewer and bookmarks.
+	  check the menus in the upper-right corner of each of these frames,
+	  including the Advanced submenu, if you believe something to be missing.
 
 	- Indentations are now properly handled in the profile viewer.
 	  Additionally, pressing "Shift+Tab" while editing a multi-line field in
 	  the editor will now input eight spaces (equivalent of a tab character).
 
-	- Clickable URLs in profiles have been changed somewhat, now bracketed by
-	  angle brackets instead of square brackets. In addition, the URL-matching
-	  has been adjusted to (hopefully) match more URLs properly.
+	- Clickable URLs in profiles are now bracketed by angle brackets instead
+	  of square brackets. In addition, the URL-matching has been adjusted to
+	  match more URLs properly.
 
 		- Direct links to Twitter accounts (@UserName or
 		  http://twitter.com/UserName) are now specially linked, and can be
@@ -50,7 +52,3 @@
 
 		- If you're interested in providing a translation, please get in
 		  contact with XRP's author.
-
-	- Quite a few aspects of the UI implementation have been overhauled. If
-	  you're modifying the UI (such as for skin authors), you may need to
-	  recheck some values. Most should be the same, but that's not guaranteed.
