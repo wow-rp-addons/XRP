@@ -24,12 +24,12 @@ do
 	XRP_AUTHOR = INFO:format(_xrp.L.AUTHOR, GetAddOnMetadata(addonName, "Author"))
 	XRP_VERSION = INFO:format(GAME_VERSION_LABEL, _xrp.version)
 end
+local XRP_HEADER = ("|cffffd100<|r|cffabd473%s|r|cffffd100>:|r %%s"):format(GetAddOnMetadata(addonName, "Title"))
 
--- Cannot define commands in static table, as they make use of each other.
 local xrpCmds = {}
 
 xrpCmds.about = function(args)
-	print(("|cffabd473%s|r"):format(GetAddOnMetadata(addonName, "Title")))
+	print(XRP_HEADER:format(""))
 	print(XRP_AUTHOR)
 	print(XRP_VERSION)
 	for line in _xrp.L.GPL_SHORT:gmatch("[^\n]+") do
@@ -37,8 +37,41 @@ xrpCmds.about = function(args)
 	end
 end
 
+xrpCmds.bookmarks = function(args)
+	XRPBookmarks:Toggle(1)
+end
+
+xrpCmds.currently = function(args)
+	if args == _xrp.L.ARG_CURRENTLY_NIL then
+		xrp.current.CU = nil
+		local CU = xrp.current.CU
+		if CU then
+			print(XRP_HEADER:format(_xrp.L.SET_CURRENTLY_PROFILE:format(args)))
+		else
+			print(XRP_HEADER:format(_xrp.L.SET_CURRENTLY_BLANK_PROFILE))
+		end
+	elseif type(args) == "string" then
+		xrp.current.CU = args
+		print(XRP_HEADER:format(_xrp.L.SET_CURRENTLY:format(args)))
+	else
+		xrp.current.CU = ""
+		print(XRP_HEADER:format(_xrp.L.SET_CURRENTLY_BLANK))
+	end
+end
+
+xrpCmds.edit = function(args)
+	XRPEditor:Edit(args)
+end
+
+xrpCmds.export = function(args)
+	local name = xrp.FullName(args:match("^[^%s]+"))
+	if not name then return end
+	name = name:gsub("^%l", string.upper)
+	XRPExport:Export(xrp.ShortName(name), tostring(xrp.characters.noRequest.byName[name].fields))
+end
+
 do
-	local USAGE = ("|cffabd473%s|r %%s"):format(STAT_FORMAT:format(_xrp.L.USAGE))
+	local USAGE = XRP_HEADER:format(("|cff9482c9%s|r %%s"):format(STAT_FORMAT:format(_xrp.L.USAGE)))
 	local ARG = (" - |cfffff569%s|r %%s"):format(STAT_FORMAT:format("%s"))
 	local NO_ARGS = SLASH_XRP .. " %s"
 	local HAS_ARGS = SLASH_XRP .. " %s %s"
@@ -49,6 +82,11 @@ do
 		elseif args == "bookmarks" or args and args == _xrp.L.CMD_BOOKMARKS then
 			print(USAGE:format(NO_ARGS:format(_xrp.L.CMD_BOOKMARKS)))
 			print(_xrp.L.BOOKMARKS_HELP)
+		elseif args == "currently" or args and args == _xrp.L.CMD_CURRENTLY then
+			print(USAGE:format(HAS_ARGS:format(_xrp.L.CMD_CURRENTLY, _xrp.L.CURRENTLY_ARGS)))
+			print(ARG:format(_xrp.L.CURRENTLY_ARG1, _xrp.L.CURRENTLY_ARG1_HELP))
+			print(ARG:format(_xrp.L.CURRENTLY_ARG2, _xrp.L.CURRENTLY_ARG2_HELP))
+			print(ARG:format(_xrp.L.ARG_CURRENTLY_NIL, _xrp.L.CURRENTLY_ARG3_HELP))
 		elseif args == "edit" or args and args == _xrp.L.CMD_EDIT then
 			print(USAGE:format(HAS_ARGS:format(_xrp.L.CMD_EDIT, _xrp.L.EDIT_ARGS)))
 			print(ARG:format(_xrp.L.EDIT_ARG1, _xrp.L.EDIT_ARG1_HELP))
@@ -70,7 +108,7 @@ do
 		elseif args == "toggle" or args and args == _xrp.L.CMD_TOGGLE then
 			print(USAGE:format(NO_ARGS:format(_xrp.L.CMD_TOGGLE)))
 			print(_xrp.L.TOGGLE_HELP)
-		elseif args == "view" or args == "show" or args and args == _xrp.L.CMD_VIEW then
+		elseif args == "view" or args and args == _xrp.L.CMD_VIEW then
 			print(USAGE:format(HAS_ARGS:format(_xrp.L.CMD_VIEW, _xrp.L.VIEW_ARGS)))
 			print(ARG:format(_xrp.L.VIEW_ARG1, _xrp.L.VIEW_ARG1_HELP))
 			print(ARG:format(_xrp.L.VIEW_ARG2, _xrp.L.VIEW_ARG2_HELP))
@@ -80,6 +118,7 @@ do
 			print(_xrp.L.COMMANDS_HELP)
 			print(ARG:format(_xrp.L.CMD_ABOUT, _xrp.L.ABOUT_HELP))
 			print(ARG:format(_xrp.L.CMD_BOOKMARKS, _xrp.L.BOOKMARKS_HELP))
+			print(ARG:format(_xrp.L.CMD_CURRENTLY, _xrp.L.CURRENTLY_HELP))
 			print(ARG:format(_xrp.L.CMD_EDIT, _xrp.L.EDIT_HELP))
 			print(ARG:format(_xrp.L.CMD_EXPORT, _xrp.L.EXPORT_HELP))
 			print(ARG:format(_xrp.L.CMD_HELP, _xrp.L.HELP_HELP))
@@ -91,32 +130,17 @@ do
 	end
 end
 
-xrpCmds.edit = function(args)
-	XRPEditor:Edit(args)
-end
-
-xrpCmds.bookmarks = function(args)
-	XRPBookmarks:Toggle(1)
-end
-
-xrpCmds.export = function(args)
-	local name = xrp.FullName(args:match("^[^%s]+"))
-	if not name then return end
-	name = name:gsub("^%l", string.upper)
-	XRPExport:Export(xrp.ShortName(name), tostring(xrp.characters.noRequest.byName[name].fields))
-end
-
 xrpCmds.profile = function(args)
 	if args == "list" or args == _xrp.L.ARG_PROFILE_LIST then
-		print(STAT_FORMAT:format(_xrp.L.PROFILES))
+		print(XRP_HEADER:format(STAT_FORMAT:format(_xrp.L.PROFILES)))
 		for i, profile in ipairs(xrp.profiles:List()) do
 			print(profile)
 		end
 	elseif type(args) == "string" then
 		if xrp.profiles[args] and xrp.profiles[args]:Activate() then
-			print(_xrp.L.SET_PROFILE:format(args))
+			print(XRP_HEADER:format(_xrp.L.SET_PROFILE:format(args)))
 		else
-			print(_xrp.L.SET_PROFILE_FAIL:format(args))
+			print(XRP_HEADER:format(_xrp.L.SET_PROFILE_FAIL:format(args)))
 		end
 	else
 		xrpCmds.help("profile")
@@ -126,14 +150,20 @@ end
 xrpCmds.status = function(args)
 	if args == "nil" or args == _xrp.L.ARG_STATUS_NIL then
 		xrp.current.FC = nil
-	elseif args == "ooc" or args == _xrp.L.ARG_STATUS_IC then
+		local FC = xrp.current.FC
+		print(XRP_HEADER:format(_xrp.L.SET_STATUS_PROFILE:format(xrp.L.VALUES.FC[FC] or FC or NONE)))
+	elseif args == "ooc" or args == _xrp.L.ARG_STATUS_OOC then
 		xrp.current.FC = "1"
-	elseif args == "ic" or args == _xrp.L.ARG_STATUS_OOC then
+		print(XRP_HEADER:format(_xrp.L.SET_STATUS:format(xrp.L.VALUES.FC["1"])))
+	elseif args == "ic" or args == _xrp.L.ARG_STATUS_IC then
 		xrp.current.FC = "2"
+		print(XRP_HEADER:format(_xrp.L.SET_STATUS:format(xrp.L.VALUES.FC["2"])))
 	elseif args == "lfc" or args == _xrp.L.ARG_STATUS_LFC then
 		xrp.current.FC = "3"
+		print(XRP_HEADER:format(_xrp.L.SET_STATUS:format(xrp.L.VALUES.FC["3"])))
 	elseif args == "st" or args == _xrp.L.ARG_STATUS_ST then
 		xrp.current.FC = "4"
+		print(XRP_HEADER:format(_xrp.L.SET_STATUS:format(xrp.L.VALUES.FC["4"])))
 	else
 		xrpCmds.help("status")
 	end
@@ -141,6 +171,8 @@ end
 
 xrpCmds.toggle = function(args)
 	xrp.Status()
+	local FC = xrp.current.FC
+	print(XRP_HEADER:format(_xrp.L.SET_STATUS:format(xrp.L.VALUES.FC[FC] or FC or NONE)))
 end
 
 xrpCmds.view = function(args)
@@ -152,8 +184,19 @@ xrpCmds.view = function(args)
 	XRPViewer:View(args)
 end
 
--- This allows /xrp show to match /mrp show. This is not localized by MRP,
--- so there is no localization for it here.
+-- Some aliases to match MRP's chat commands.
+xrpCmds.version = xrpCmds.about
+xrpCmds.c = xrpCmds.currently
+xrpCmds.cu = xrpCmds.currently
+xrpCmds.cur = xrpCmds.currently
+xrpCmds.ooc = function() xrpCmds.status("ooc") end
+xrpCmds.ic = function() xrpCmds.status("ic") end
+xrpCmds.lfc = function() xrpCmds.status("lfc") end
+xrpCmds.contact = xrpCmds.lfc
+xrpCmds.st = function() xrpCmds.status("st") end
+xrpCmds.storyteller = xrpCmds.st
+xrpCmds.browse = xrpCmds.view
+xrpCmds.browser = xrpCmds.view
 xrpCmds.show = xrpCmds.view
 
 -- Localized aliases.
@@ -162,6 +205,9 @@ if _xrp.L.CMD_ABOUT ~= "about" then
 end
 if _xrp.L.CMD_BOOKMARKS ~= "bookmarks" then
 	xrpCmds[_xrp.L.CMD_BOOKMARKS] = xrpCmds.bookmarks
+end
+if _xrp.L.CMD_CURRENTLY ~= "currently" then
+	xrpCmds[_xrp.L.CMD_CURRENTLY] = xrpCmds.currently
 end
 if _xrp.L.CMD_EDIT ~= "edit" then
 	xrpCmds[_xrp.L.CMD_EDIT] = xrpCmds.edit
