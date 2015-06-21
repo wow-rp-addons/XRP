@@ -70,10 +70,11 @@ function xrp.Strip(text, allowIndent)
 	-- themselves to not render on display (|| instead of |).
 	text = text:gsub("%f[|]|c%x%x%x%x%x%x%x%x", ""):gsub("%f[|]|r", ""):gsub("%f[|]|H.-|h(.-)|h", "%1"):gsub("%f[|]|T.-|t", ""):gsub("%f[|]|K.-|k.-|k", ""):gsub("%f[|]|%f[^|]", "||")
 	if allowIndent then
-		return text:trim("\r\n"):match("^(.-)%s*$")
+		text = text:trim("\r\n"):match("^(.-)%s*$")
 	else
-		return text:trim()
+		text = text:trim()
 	end
+	return text ~= "" and text or nil
 end
 
 function xrp.Link(text, linkType)

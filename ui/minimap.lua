@@ -49,15 +49,15 @@ function XRPButton_OnEnter(self, motion)
 		GameTooltip:SetText(xrp.current.NA)
 		GameTooltip:AddLine(" ")
 		GameTooltip:AddLine(SUBTITLE_FORMAT:format(_xrp.L.PROFILE, ("|cffffffff%s|r"):format(tostring(xrp.profiles.SELECTED))))
-		local FC = xrp.current.FC
+		local FC = xrp.Strip(xrp.current.FC)
 		if FC and FC ~= "0" then
-			GameTooltip:AddLine(SUBTITLE_FORMAT:format(_xrp.L.STATUS, ("|cff%s%s|r"):format(FC == "1" and "99664d" or "66b380", xrp.L.VALUES.FC[FC] or xrp.Strip(FC))))
+			GameTooltip:AddLine(SUBTITLE_FORMAT:format(_xrp.L.STATUS, ("|cff%s%s|r"):format(FC == "1" and "99664d" or "66b380", xrp.L.VALUES.FC[FC] or FC)))
 		end
-		local CU = xrp.current.CU
+		local CU = xrp.Strip(xrp.current.CU)
 		if CU then
 			GameTooltip:AddLine(" ")
 			GameTooltip:AddLine(STAT_FORMAT:format(xrp.L.FIELDS.CU))
-			GameTooltip:AddLine(("%s"):format(xrp.Link(xrp.Strip(CU))), 0.9, 0.7, 0.6, true)
+			GameTooltip:AddLine(("%s"):format(xrp.Link(CU)), 0.9, 0.7, 0.6, true)
 		end
 		GameTooltip:AddLine(" ")
 		local target = xrp.characters.byUnit.target

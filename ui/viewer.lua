@@ -29,21 +29,20 @@ do
 	}
 
 	local function SetField(field, contents)
+		contents = xrp.Strip(contents, field == "CU" or field == "DE" or field == "MO" or field == "HI")
 		if field == "VA" then
-			contents = contents and xrp.Strip(contents):gsub(";", PLAYER_LIST_DELIMITER) or NONE
+			contents = contents and contents:gsub(";", PLAYER_LIST_DELIMITER) or NONE
 		elseif not contents then
 			contents = ""
 		elseif field == "NI" then
-			contents = _xrp.L.NICKNAME:format(xrp.Strip(contents))
+			contents = _xrp.L.NICKNAME:format(contents)
 		elseif field == "AH" then
-			contents = xrp.Height(xrp.Strip(contents))
+			contents = xrp.Height(contents)
 		elseif field == "AW" then
-			contents = xrp.Weight(xrp.Strip(contents))
+			contents = xrp.Weight(contents)
 		elseif field == "CU" or field == "DE" or field == "MO" or field == "HI" then
 			-- Link URLs in scrolling fields.
-			contents = xrp.Link(xrp.Strip(contents, true))
-		else
-			contents = xrp.Strip(contents)
+			contents = xrp.Link(contents)
 		end
 		XRPViewer.fields[field]:SetText(contents)
 	end
@@ -168,7 +167,8 @@ do
 				Load(current)
 			end
 		elseif arg1 == "XRP_FRIEND" then
-			AddOrRemoveFriend(Ambiguate(tostring(current), "none"), xrp.Strip(current.fields.NA))
+			local name = tostring(current)
+			AddOrRemoveFriend(Ambiguate(name, "none"), xrp.Strip(current.fields.NA) or xrp.ShortName(name))
 		elseif arg1 == "XRP_BOOKMARK" then
 			current.bookmark = not checked
 		elseif arg1 == "XRP_HIDE" then
