@@ -202,8 +202,8 @@ do
 				RenderLine(currentUnit.reaction, nil, 1, 1, 1)
 			end
 			if showProfile then
-				local NI = fields.NI
-				RenderLine(NI and NI_FORMAT:format(TruncateLine(xrp.Strip(NI), 70, NI_LENGTH, false)), nil, 0.6, 0.7, 0.9)
+				local NI = xrp.Strip(fields.NI)
+				RenderLine(NI and NI_FORMAT:format(TruncateLine(NI, 70, NI_LENGTH, false)), nil, 0.6, 0.7, 0.9)
 				RenderLine(TruncateLine(xrp.Strip(fields.NT), 70), nil, 0.8, 0.8, 0.8)
 			end
 			if _xrp.settings.tooltip.extraSpace then
@@ -218,14 +218,14 @@ do
 				end
 			end
 			if showProfile then
-				local CU = fields.CU
-				RenderLine(CU and CU_FORMAT:format(xrp.Link(TruncateLine(xrp.Link(xrp.Strip(CU), "prelink"), 70, CU_LENGTH), "fakelink")), nil, 0.9, 0.7, 0.6)
+				local CU = xrp.Strip(fields.CU)
+				RenderLine(CU and CU_FORMAT:format(xrp.Link(TruncateLine(xrp.Link(CU, "prelink"), 70, CU_LENGTH), "fakelink")), nil, 0.9, 0.7, 0.6)
 			end
 			RenderLine(currentUnit.info:format(showProfile and not _xrp.settings.tooltip.noRace and TruncateLine(xrp.Strip(fields.RA), 40, 0, false) or xrp.L.VALUES.GR[fields.GR] or UNKNOWN, showProfile and not _xrp.settings.tooltip.noClass and TruncateLine(xrp.Strip(fields.RC), 40, 0, false) or xrp.L.VALUES.GC[fields.GS][fields.GC] or UNKNOWN), not replace and ParseVersion(fields.VA), 1, 1, 1, 0.5, 0.5, 0.5)
 			if showProfile then
-				local FR, FC = fields.FR, fields.FC
+				local FR, FC = xrp.Strip(fields.FR), xrp.Strip(fields.FC)
 				local color = COLORS[FC == "1" and "OOC" or "IC"]
-				RenderLine(xrp.L.VALUES.FR[FR] or FR ~= "0" and TruncateLine(xrp.Strip(FR), 35, 0, false), xrp.L.VALUES.FC[FC] or FC ~= "0" and TruncateLine(xrp.Strip(FC), 35, 0, false), color.r, color.g, color.b, color.r, color.g, color.b)
+				RenderLine(xrp.L.VALUES.FR[FR] or FR ~= "0" and TruncateLine(FR, 35, 0, false), xrp.L.VALUES.FC[FC] or FC ~= "0" and TruncateLine(FC, 35, 0, false), color.r, color.g, color.b, color.r, color.g, color.b)
 			end
 			if replace then
 				RenderLine(currentUnit.location, nil, 1, 1, 1)

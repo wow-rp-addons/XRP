@@ -196,7 +196,8 @@ do
 			XRPBookmarks.Notes:Show()
 		elseif arg1 == "XRP_FRIEND" then
 			local character = UIDROPDOWNMENU_OPEN_MENU.character
-			AddOrRemoveFriend(Ambiguate(tostring(character), "none"), xrp.Strip(character.fields.NA))
+			local name = tostring(character)
+			AddOrRemoveFriend(Ambiguate(name, "none"), xrp.Strip(character.fields.NA) or xrp.ShortName(name))
 		elseif arg1 == "XRP_BOOKMARK" then
 			UIDROPDOWNMENU_OPEN_MENU.character.bookmark = not checked
 			if request.bookmark then
