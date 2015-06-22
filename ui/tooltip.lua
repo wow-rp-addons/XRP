@@ -278,7 +278,6 @@ do
 	local FLAG_DND = (" |cff994d4d%s|r"):format(CHAT_FLAG_DND)
 	local REACTION = "FACTION_STANDING_LABEL%d"
 	local LOCATION = ("|cffffeeaa%s|r %%s"):format(ZONE_COLON)
-	local UnitEffectiveLevel = UnitEffectiveLevel or UnitLevel -- Remove in 6.2.
 	function SetUnit(unit)
 		currentUnit.type = UnitIsPlayer(unit) and "player" or replace and (UnitIsOtherPlayersPet(unit) or UnitIsUnit("playerpet", unit)) and "pet"
 		if not currentUnit.type then return end
