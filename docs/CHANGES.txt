@@ -1,4 +1,4 @@
-6.2.0.0 (2015-06-19):
+6.2.0.1 (2015-06-22):
 
 	- This version supports World of Warcraft 6.1.2 and 6.2.0.
 
@@ -6,49 +6,11 @@
 	  the game client when upgrading. Some new files have been added, and a
 	  restart is necessary for the game client to see these.
 
-	- Private notes may now be added to information about characters. Adding
-	  or viewing notes may be done from the viewer, the bookmarks, or, for
-	  your current character, from the editor. These are accessible from the
-	  menus in the upper-right of the editor/viewer, or from the right-click
-	  menu in the bookmarks.
+	- A Lua error for new installs has been fixed.
 
-	- Options have been added (under the new XRP -> Display category in the
-	  interface options) to replace certain race names with alternate or
-	  translated values (such as replacing "Undead" with "Forsaken" or "Blood
-	  Elf" with "Sin'dorei", among others).
+	- Fields which contain only whitespace are now treated as though they were
+	  completely empty (avoiding issues with lost information in tooltips,
+	  especially).
 
-	- XRP's profile viewer is now resizable. Use the handle at the
-	  bottom-right of the frame to resize. Right-clicking the handle will
-	  reset the size to default.
-
-	- /xrp currently has been added, and can be used to change your currently
-	  via chat commands.
-
-	- Some menu items have been moved in the profile viewer and editor. Please
-	  check the menus in the upper-right corner of each of these frames,
-	  including the Advanced submenu, if you believe something to be missing.
-
-	- Indentations are now properly handled in the profile viewer.
-	  Additionally, pressing "Shift+Tab" while editing a multi-line field in
-	  the editor will now input eight spaces (equivalent of a tab character).
-
-	- Clickable URLs in profiles are now bracketed by angle brackets instead
-	  of square brackets. In addition, the URL-matching has been adjusted to
-	  match more URLs properly.
-
-		- Direct links to Twitter accounts (@UserName or
-		  http://twitter.com/UserName) are now specially linked, and can be
-		  used to access the in-game Twitter functionality, if enabled.
-
-	- Profiles may now be force-refreshed (if you suspect something hasn't
-	  loaded correctly) and profiles may also now be individually dropped from
-	  your stored cache. These options are not normally needed, but have been
-	  added to help in abnormal circumstances.
-
-	- Colorblind mode should now be properly supported in XRP's tooltip.
-
-	- Support for translating XRP into languages other than English has been
-	  added. Support for multibyte characters has also been improved.
-
-		- If you're interested in providing a translation, please get in
-		  contact with XRP's author.
+	- Many other changes were made in 6.2.0.0. Please see the changelog for
+	  that version for more information.
