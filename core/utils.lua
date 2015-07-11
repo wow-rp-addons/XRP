@@ -175,7 +175,7 @@ function xrp.Height(height, units)
 	elseif units == "ft" then
 		local feet, inches = math.modf(number / 30.48)
 		inches = inches * 12
-		if inches >= 12 then
+		if inches >= 11.5 then
 			feet = feet + 1
 			inches = 0
 		end
