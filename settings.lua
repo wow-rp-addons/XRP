@@ -455,11 +455,9 @@ function _xrp.CacheTidy(timer, isInit)
 			end
 		end
 	end
-	if timer <= 60 then
+	if not isInit then
 		collectgarbage()
-		if not isInit then
-			_xrp.FireEvent("DROP", "ALL")
-		end
+		_xrp.FireEvent("DROP", "ALL")
 	end
 	return true
 end
