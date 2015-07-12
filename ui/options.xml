@@ -86,11 +86,9 @@
 			</Button>
 		</Frames>
 	</Frame>
-	<CheckButton name="XRPOptionsCheckboxTemplate" parentArray="controls" inherits="XRPCheckBoxTemplate" virtual="true">
+	<CheckButton name="XRPOptionsCheckboxTemplate" parentArray="controls" inherits="XRPCheckBoxTemplate" mixin="XRPOptionsControl_Mixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="type" value="CONTROLTYPE_CHECKBOX" type="global"/>
-			<KeyValue key="Get" value="XRPOptions_Get" type="global"/>
-			<KeyValue key="Set" value="XRPOptions_Set" type="global"/>
 		</KeyValues>
 		<Size x="26" y="26"/>
 		<HitRectInsets left="0" right="-500" top="0" bottom="0"/>
@@ -110,11 +108,9 @@
 			<OnLoad function="XRPOptionsControls_OnLoad"/>
 		</Scripts>
 	</CheckButton>
-	<Frame name="XRPOptionsDropDownTemplate" parentArray="controls" inherits="XRPDropDownTemplate" virtual="true">
+	<Frame name="XRPOptionsDropDownTemplate" parentArray="controls" inherits="XRPDropDownTemplate" mixin="XRPOptionsControl_Mixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="type" value="CONTROLTYPE_DROPDOWN" type="global"/>
-			<KeyValue key="Get" value="XRPOptions_Get" type="global"/>
-			<KeyValue key="Set" value="XRPOptions_Set" type="global"/>
 		</KeyValues>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -129,13 +125,9 @@
 			<OnLoad inherit="prepend" function="XRPOptionsControls_OnLoad"/>
 		</Scripts>
 	</Frame>
-	<Frame name="XRPOptionsTemplate" hidden="true" virtual="true">
+	<Frame name="XRPOptionsTemplate" hidden="true" mixin="XRPOptions_Mixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="parent" value="XRP"/>
-			<KeyValue key="okay" value="XRPOptions_okay" type="global"/>
-			<KeyValue key="refresh" value="XRPOptions_refresh" type="global"/>
-			<KeyValue key="cancel" value="XRPOptions_cancel" type="global"/>
-			<KeyValue key="default" value="XRPOptions_default" type="global"/>
 		</KeyValues>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -466,18 +458,13 @@
 					<KeyValue key="xrpSetting" value="CHAT_MSG_INSTANCE_CHAT"/>
 				</KeyValues>
 			</CheckButton>
-			<Frame name="XRPOptionsChatChannels" parentKey="Channels" inherits="XRPOptionsDropDownTemplate">
+			<Frame name="XRPOptionsChatChannels" parentKey="Channels" inherits="XRPOptionsDropDownTemplate" mixin="XRPOptionsChatChannels_Mixin">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.CHAT_MSG_INSTANCE_CHAT" relativePoint="BOTTOMLEFT" x="-15" y="-8"/>
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="textString" value="CHANNELS" type="global"/>
 					<KeyValue key="dependsOn" value="RPNames"/>
-					<KeyValue key="CustomRefresh" value="XRPOptionsChatChannels_CustomRefresh" type="global"/>
-					<KeyValue key="CustomOkay" value="XRPOptionsChatChannels_CustomOkay" type="global"/>
-					<KeyValue key="CustomDefault" value="XRPOptionsChatChannels_CustomDefault" type="global"/>
-					<KeyValue key="CustomCancel" value="XRPOptionsChatChannels_CustomCancel" type="global"/>
-					<KeyValue key="baseMenuList" value="XRPOptionsChatChannels_baseMenuList" type="global"/>
 				</KeyValues>
 			</Frame>
 			<CheckButton parentKey="EmoteBraced" inherits="XRPOptionsCheckboxTemplate">

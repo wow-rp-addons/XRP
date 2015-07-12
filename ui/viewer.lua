@@ -353,47 +353,50 @@ xrp.HookEvent("CHUNK", CHUNK)
 xrp.HookEvent("FAIL", FAIL)
 xrp.HookEvent("DROP", DROP)
 
-function XRPViewer_View(self, player)
-	local isUnit, character
-	if type(player) == "table" and player.fields then
-		character = player
-		local unit = Ambiguate(tostring(character), "none")
-		isUnit = UnitExists(unit)
-		player = isUnit and unit or tostring(character)
-	else
-		if not player then
-			if self:IsShown() then
-				HideUIPanel(self)
-				return
-			elseif not current then
-				player = "player"
-			else
-				ShowUIPanel(self)
-				return
-			end
-		end
-		isUnit = UnitExists(player)
-		if isUnit and not UnitIsPlayer(player) then return end
-		if not isUnit then
-			local unit = Ambiguate(player, "none")
+XRPViewer_Mixin = {
+	View = function(self, player)
+		local isUnit, character
+		if type(player) == "table" and player.fields then
+			character = player
+			local unit = Ambiguate(tostring(character), "none")
 			isUnit = UnitExists(unit)
-			player = isUnit and unit or xrp.FullName(player):gsub("^%l", string.upper)
+			player = isUnit and unit or tostring(character)
+		else
+			if not player then
+				if self:IsShown() then
+					HideUIPanel(self)
+					return
+				elseif not current then
+					player = "player"
+				else
+					ShowUIPanel(self)
+					return
+				end
+			end
+			isUnit = UnitExists(player)
+			if isUnit and not UnitIsPlayer(player) then return end
+			if not isUnit then
+				local unit = Ambiguate(player, "none")
+				isUnit = UnitExists(unit)
+				player = isUnit and unit or xrp.FullName(player):gsub("^%l", string.upper)
+			end
+			character = isUnit and xrp.characters.byUnit[player] or xrp.characters.byName[player]
 		end
-		character = isUnit and xrp.characters.byUnit[player] or xrp.characters.byName[player]
-	end
-	local isNew = Load(character)
-	if isUnit then
-		SetPortraitTexture(self.portrait, player)
-	elseif isNew then
-		local GF = character.fields.GF
-		SetPortraitToTexture(self.portrait, GF == "Alliance" and "Interface\\Icons\\INV_BannerPVP_02" or GF == "Horde" and "Interface\\Icons\\INV_BannerPVP_01" or "Interface\\Icons\\INV_Misc_Book_17")
-	end
-	self.Notes:SetAttribute("character", character)
-	ShowUIPanel(self)
-	if isNew and not self.panes[1]:IsVisible() then
-		self.Tab1:Click()
-	end
-end
+		local isNew = Load(character)
+		if isUnit then
+			SetPortraitTexture(self.portrait, player)
+		elseif isNew then
+			local GF = character.fields.GF
+			SetPortraitToTexture(self.portrait, GF == "Alliance" and "Interface\\Icons\\INV_BannerPVP_02" or GF == "Horde" and "Interface\\Icons\\INV_BannerPVP_01" or "Interface\\Icons\\INV_Misc_Book_17")
+		end
+		self.Notes:SetAttribute("character", character)
+		ShowUIPanel(self)
+		if isNew and not self.panes[1]:IsVisible() then
+			self.Tab1:Click()
+		end
+	end,
+	helpPlates = _xrp.help.viewer,
+}
 
 _xrp.settingsToggles.display.movableViewer = function(setting)
 	local wasShown = XRPViewer:IsShown()

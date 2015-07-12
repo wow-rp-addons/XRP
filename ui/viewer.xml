@@ -101,9 +101,8 @@
 				</Scripts>
 				<FontString inherits="GameFontWhite"/>
 				<Frames>
-					<Frame parentKey="Menu" hidden="true">
+					<Frame parentKey="Menu" hidden="true" mixin="XRPTemplatesMenu_Mixin">
 						<KeyValues>
-							<KeyValue key="initialize" value="EasyMenu_Initialize" type="global"/>
 							<KeyValue key="displayMode" value="MENU"/>
 							<KeyValue key="baseMenuList" value="XRPViewerMultiline_baseMenuList" type="global"/>
 						</KeyValues>
@@ -112,7 +111,7 @@
 			</EditBox>
 		</ScrollChild>
 	</ScrollFrame>
-	<Frame name="XRPViewer" parent="UIParent" inherits="XRPButtonFrameTemplate" resizable="true" clampedToScreen="true">
+	<Frame name="XRPViewer" parent="UIParent" inherits="XRPButtonFrameTemplate" resizable="true" clampedToScreen="true" mixin="XRPViewer_Mixin">
 		<Size x="439" y="525"/>
 		<ResizeBounds>
 			<minResize x="338" y="424"/>
@@ -356,8 +355,6 @@
 		</Attributes>
 		<KeyValues>
 			<KeyValue key="titleKey" value="PROFILE_VIEWER"/>
-			<KeyValue key="helpPlates" value="XRPViewer_helpPlates" type="global"/>
-			<KeyValue key="View" value="XRPViewer_View" type="global"/>
 		</KeyValues>
 		<Scripts>
 			<OnLoad inherit="prepend" function="XRPViewer_OnLoad"/>

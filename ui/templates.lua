@@ -22,8 +22,6 @@ XRP_BIOGRAPHY = _xrp.L.BIOGRAPHY
 XRP_NOTES = _xrp.L.NOTES
 XRP_NOTES_INSTRUCTIONS = _xrp.L.NOTES_INSTRUCTIONS
 
-XRPTemplates_DoNothing = _xrp.DoNothing
-
 function XRPTemplates_CloseDropDownMenus(self, ...)
 	CloseDropDownMenus()
 end
@@ -101,6 +99,11 @@ function XRPTemplatesDropDown_OnLoad(self)
 		button:SetScript("PreClick", self.preClick)
 	end
 end
+
+XRPTemplatesMenu_Mixin = {
+	initialize = EasyMenu_Initialize,
+	SetHeight = _xrp.DoNothing,
+}
 
 function XRPTemplatesMenu_OnClick(self, button, down)
 	-- This uses baseMenuList instead of the default menuList, as menuList is

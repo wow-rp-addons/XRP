@@ -22,121 +22,121 @@ XRP_LICENSE = _xrp.L.GPL_HEADER
 XRP_CLEAR_CACHE = _xrp.L.CLEAR_CACHE .. CONTINUED
 XRP_TIDY_CACHE = _xrp.L.TIDY_CACHE
 
-function XRPOptions_Get(self)
-	return _xrp.settings[self.xrpTable][self.xrpSetting]
-end
-
-function XRPOptions_Set(self, value)
-	_xrp.settings[self.xrpTable][self.xrpSetting] = value
-	if _xrp.settingsToggles[self.xrpTable] and _xrp.settingsToggles[self.xrpTable][self.xrpSetting] then
-		_xrp.settingsToggles[self.xrpTable][self.xrpSetting](value)
-	end
-end
-
-function XRPOptions_okay(self)
-	if not self.controls then return end
-	for i, control in ipairs(self.controls) do
-		if control.CustomOkay then
-			control:CustomOkay()
-		else
-			control.oldValue = control.value
+XRPOptionsControl_Mixin = {
+	Get = function(self)
+		return _xrp.settings[self.xrpTable][self.xrpSetting]
+	end,
+	Set = function(self, value)
+		_xrp.settings[self.xrpTable][self.xrpSetting] = value
+		if _xrp.settingsToggles[self.xrpTable] and _xrp.settingsToggles[self.xrpTable][self.xrpSetting] then
+			_xrp.settingsToggles[self.xrpTable][self.xrpSetting](value)
 		end
-	end
-end
+	end,
+}
 
-function XRPOptions_refresh(self)
-	if not self.controls then return end
-	for i, control in ipairs(self.controls) do
-		if control.CustomRefresh then
-			control:CustomRefresh()
-		else
-			local setting = control:Get()
-			control.value = setting
-			if control.oldValue == nil then
-				control.oldValue = setting
-			end
-			if control.type == CONTROLTYPE_CHECKBOX then
-				control:SetChecked(setting)
-			elseif control.type == CONTROLTYPE_DROPDOWN then
-				UIDropDownMenu_Initialize(control, control.initialize, nil, nil, control.baseMenuList)
-				UIDropDownMenu_SetSelectedValue(control, setting)
+XRPOptions_Mixin = {
+	okay = function(self)
+		if not self.controls then return end
+		for i, control in ipairs(self.controls) do
+			if control.CustomOkay then
+				control:CustomOkay()
+			else
+				control.oldValue = control.value
 			end
 		end
-		if control.dependsOn then
-			if control.type == CONTROLTYPE_CHECKBOX then
-				control:SetEnabled(self[control.dependsOn]:GetChecked())
-			elseif control.type == CONTROLTYPE_DROPDOWN then
-				local setting = self[control.dependsOn]:GetChecked()
-				if setting then
-					UIDropDownMenu_EnableDropDown(control)
-				else
-					UIDropDownMenu_DisableDropDown(control)
+	end,
+	refresh = function(self)
+		if not self.controls then return end
+		for i, control in ipairs(self.controls) do
+			if control.CustomRefresh then
+				control:CustomRefresh()
+			else
+				local setting = control:Get()
+				control.value = setting
+				if control.oldValue == nil then
+					control.oldValue = setting
+				end
+				if control.type == CONTROLTYPE_CHECKBOX then
+					control:SetChecked(setting)
+				elseif control.type == CONTROLTYPE_DROPDOWN then
+					UIDropDownMenu_Initialize(control, control.initialize, nil, nil, control.baseMenuList)
+					UIDropDownMenu_SetSelectedValue(control, setting)
+				end
+			end
+			if control.dependsOn then
+				if control.type == CONTROLTYPE_CHECKBOX then
+					control:SetEnabled(self[control.dependsOn]:GetChecked())
+				elseif control.type == CONTROLTYPE_DROPDOWN then
+					local setting = self[control.dependsOn]:GetChecked()
+					if setting then
+						UIDropDownMenu_EnableDropDown(control)
+					else
+						UIDropDownMenu_DisableDropDown(control)
+					end
 				end
 			end
 		end
-	end
-end
-
-function XRPOptions_cancel(self)
-	if not self.controls then return end
-	for i, control in ipairs(self.controls) do
-		if control.CustomCancel then
-			control:CustomCancel()
-		else
-			control:Set(control.oldValue)
-			control.value = control.oldValue
-			if control.type == CONTROLTYPE_CHECKBOX then
-				control:SetChecked(control.value)
-			elseif control.type == CONTROLTYPE_DROPDOWN then
-				UIDropDownMenu_Initialize(control, control.initialize, nil, nil, control.baseMenuList)
-				UIDropDownMenu_SetSelectedValue(control, control.value)
+	end,
+	cancel = function(self)
+		if not self.controls then return end
+		for i, control in ipairs(self.controls) do
+			if control.CustomCancel then
+				control:CustomCancel()
+			else
+				control:Set(control.oldValue)
+				control.value = control.oldValue
+				if control.type == CONTROLTYPE_CHECKBOX then
+					control:SetChecked(control.value)
+				elseif control.type == CONTROLTYPE_DROPDOWN then
+					UIDropDownMenu_Initialize(control, control.initialize, nil, nil, control.baseMenuList)
+					UIDropDownMenu_SetSelectedValue(control, control.value)
+				end
 			end
-		end
-		if control.dependsOn then
-			if control.type == CONTROLTYPE_CHECKBOX then
-				control:SetEnabled(self[control.dependsOn]:GetChecked())
-			elseif control.type == CONTROLTYPE_DROPDOWN then
-				local setting = self[control.dependsOn]:GetChecked()
-				if setting then
-					UIDropDownMenu_EnableDropDown(control)
-				else
-					UIDropDownMenu_DisableDropDown(control)
+			if control.dependsOn then
+				if control.type == CONTROLTYPE_CHECKBOX then
+					control:SetEnabled(self[control.dependsOn]:GetChecked())
+				elseif control.type == CONTROLTYPE_DROPDOWN then
+					local setting = self[control.dependsOn]:GetChecked()
+					if setting then
+						UIDropDownMenu_EnableDropDown(control)
+					else
+						UIDropDownMenu_DisableDropDown(control)
+					end
 				end
 			end
 		end
-	end
-end
-
-function XRPOptions_default(self)
-	if not self.controls then return end
-	for i, control in ipairs(self.controls) do
-		if control.CustomDefault then
-			control:CustomDefault()
-		else
-			local defaultValue = _xrp.DEFAULT_SETTINGS[control.xrpTable][control.xrpSetting]
-			control:Set(defaultValue)
-			control.value = defaultValue
-			if control.type == CONTROLTYPE_CHECKBOX then
-				control:SetChecked(control.value)
-			elseif control.type == CONTROLTYPE_DROPDOWN then
-				UIDropDownMenu_Initialize(control, control.initialize, nil, nil, control.baseMenuList)
-				UIDropDownMenu_SetSelectedValue(control, control.value)
+	end,
+	default = function(self)
+		if not self.controls then return end
+		for i, control in ipairs(self.controls) do
+			if control.CustomDefault then
+				control:CustomDefault()
+			else
+				local defaultValue = _xrp.DEFAULT_SETTINGS[control.xrpTable][control.xrpSetting]
+				control:Set(defaultValue)
+				control.value = defaultValue
+				if control.type == CONTROLTYPE_CHECKBOX then
+					control:SetChecked(control.value)
+				elseif control.type == CONTROLTYPE_DROPDOWN then
+					UIDropDownMenu_Initialize(control, control.initialize, nil, nil, control.baseMenuList)
+					UIDropDownMenu_SetSelectedValue(control, control.value)
+				end
 			end
-		end
-		if control.dependsOn then
-			if control.type == CONTROLTYPE_CHECKBOX then
-				control:SetEnabled(self[control.dependsOn]:GetChecked())
-			elseif control.type == CONTROLTYPE_DROPDOWN then
-				local setting = self[control.dependsOn]:GetChecked()
-				if setting then
-					UIDropDownMenu_EnableDropDown(control)
-				else
-					UIDropDownMenu_DisableDropDown(control)
+			if control.dependsOn then
+				if control.type == CONTROLTYPE_CHECKBOX then
+					control:SetEnabled(self[control.dependsOn]:GetChecked())
+				elseif control.type == CONTROLTYPE_DROPDOWN then
+					local setting = self[control.dependsOn]:GetChecked()
+					if setting then
+						UIDropDownMenu_EnableDropDown(control)
+					else
+						UIDropDownMenu_DisableDropDown(control)
+					end
 				end
 			end
 		end
-	end
-end
+	end,
+}
 
 function XRPOptionsAbout_OnShow(self)
 	if not self.wasShown then
@@ -340,40 +340,42 @@ do
 		menuList[#menuList + 1] = { text = channel:match("^CHAT_MSG_CHANNEL_(.+)"):lower():gsub("^%l", string.upper), arg1 = channel, isNotRadio = true, checked = Channels_Checked, func = Channels_OnClick, keepShownOnClick = true, }
 	end
 
-	function XRPOptionsChatChannels_CustomRefresh(self)
-		table.wipe(self.baseMenuList)
-		local seenChannels = {}
-		for i, name in ipairs(ChannelsTable(GetChannelList())) do
-			local channel = "CHAT_MSG_CHANNEL_" .. name:upper()
-			AddChannel(channel, self.baseMenuList, settingsList)
-			seenChannels[channel] = true
-		end
-		for channel, setting in pairs(_xrp.settings.chat) do
-			if not seenChannels[channel] and channel:find("CHAT_MSG_CHANNEL_", nil, true) then
+	XRPOptionsChatChannels_Mixin = {
+		CustomRefresh = function(self)
+			table.wipe(self.baseMenuList)
+			local seenChannels = {}
+			for i, name in ipairs(ChannelsTable(GetChannelList())) do
+				local channel = "CHAT_MSG_CHANNEL_" .. name:upper()
 				AddChannel(channel, self.baseMenuList, settingsList)
 				seenChannels[channel] = true
 			end
-		end
-	end
-	function XRPOptionsChatChannels_CustomOkay(self)
-		for channel, control in pairs(settingsList) do
-			control.oldValue = control.value
-		end
-	end
-	function XRPOptionsChatChannels_CustomDefault(self)
-		for channel, control in pairs(settingsList) do
-			_xrp.settings.chat[channel] = nil
-			control.value = nil
-		end
-	end
-	function XRPOptionsChatChannels_CustomCancel(self)
-		for channel, control in pairs(settingsList) do
-			_xrp.settings.chat[channel] = control.oldValue
-			control.value = control.oldValue
-		end
-	end
+			for channel, setting in pairs(_xrp.settings.chat) do
+				if not seenChannels[channel] and channel:find("CHAT_MSG_CHANNEL_", nil, true) then
+					AddChannel(channel, self.baseMenuList, settingsList)
+					seenChannels[channel] = true
+				end
+			end
+		end,
+		CustomOkay = function(self)
+			for channel, control in pairs(settingsList) do
+				control.oldValue = control.value
+			end
+		end,
+		CustomDefault = function(self)
+			for channel, control in pairs(settingsList) do
+				_xrp.settings.chat[channel] = nil
+				control.value = nil
+			end
+		end,
+		CustomCancel = function(self)
+			for channel, control in pairs(settingsList) do
+				_xrp.settings.chat[channel] = control.oldValue
+				control.value = control.oldValue
+			end
+		end,
+		baseMenuList = {},
+	}
 end
-XRPOptionsChatChannels_baseMenuList = {}
 
 do
 	local function DropDown_OnClick(self, arg1, arg2, checked)

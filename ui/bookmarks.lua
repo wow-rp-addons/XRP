@@ -225,15 +225,20 @@ do
 		{ text = _xrp.L.EXPORT, arg1 = "XRP_EXPORT", arg2 = true, notCheckable = true, func = Menu_Click, },
 		{ text = _xrp.L.DROP_CACHE .. CONTINUED, arg1 = "XRP_CACHE_DROP", arg2 = true, notCheckable = true, func = Menu_Click, },
 	}
-	XRPBookmarksEntry_baseMenuList = {
-		{ text = _xrp.L.VIEW_CACHED, arg1 = "XRP_VIEW_CACHED", notCheckable = true, func = Menu_Click, },
-		{ text = _xrp.L.VIEW_LIVE, arg1 = "XRP_VIEW_LIVE", notCheckable = true, func = Menu_Click, },
-		{ text = _xrp.L.NOTES, arg1 = "XRP_NOTES", notCheckable = true, func = Menu_Click, },
-		{ text = ADD_FRIEND, arg1 = "XRP_FRIEND", notCheckable = true, func = Menu_Click, },
-		{ text = _xrp.L.BOOKMARK, arg1 = "XRP_BOOKMARK", isNotRadio = true, checked = Menu_Checked, func = Menu_Click, },
-		{ text = _xrp.L.HIDE_PROFILE, arg1 = "XRP_HIDE", isNotRadio = true, checked = Menu_Checked, func = Menu_Click, },
-		{ text = ADVANCED_LABEL, notCheckable = true, hasArrow = true, menuList = Advanced_menuList, },
-		{ text = CANCEL, notCheckable = true, func = _xrp.DoNothing, },
+	XRPBookmarksEntry_Mixin = {
+		baseMenuList = {
+			{ text = _xrp.L.VIEW_CACHED, arg1 = "XRP_VIEW_CACHED", notCheckable = true, func = Menu_Click, },
+			{ text = _xrp.L.VIEW_LIVE, arg1 = "XRP_VIEW_LIVE", notCheckable = true, func = Menu_Click, },
+			{ text = _xrp.L.NOTES, arg1 = "XRP_NOTES", notCheckable = true, func = Menu_Click, },
+			{ text = ADD_FRIEND, arg1 = "XRP_FRIEND", notCheckable = true, func = Menu_Click, },
+			{ text = _xrp.L.BOOKMARK, arg1 = "XRP_BOOKMARK", isNotRadio = true, checked = Menu_Checked, func = Menu_Click, },
+			{ text = _xrp.L.HIDE_PROFILE, arg1 = "XRP_HIDE", isNotRadio = true, checked = Menu_Checked, func = Menu_Click, },
+			{ text = ADVANCED_LABEL, notCheckable = true, hasArrow = true, menuList = Advanced_menuList, },
+			{ text = CANCEL, notCheckable = true, func = _xrp.DoNothing, },
+		},
+		onHide = function(level)
+			UIDROPDOWNMENU_OPEN_MENU.Selected:Hide()
+		end,
 	}
 end
 
@@ -278,10 +283,6 @@ function XRPBookmarksEntry_OnClick(self, button, down)
 		ToggleDropDownMenu(nil, nil, self, "cursor", nil, nil, self.baseMenuList)
 		PlaySound("igMainMenuOptionCheckBoxOn")
 	end
-end
-
-function XRPBookmarksEntry_onHide(level)
-	UIDROPDOWNMENU_OPEN_MENU.Selected:Hide()
 end
 
 do
@@ -469,17 +470,20 @@ function XRPBookmarks_OnUpdate(self, elapsed)
 	Refresh()
 end
 
-function XRPBookmarks_Toggle(self, tabID)
-	if tabID and tabID ~= self.selectedTab then
-		local tab = self[("Tab%d"):format(tabID)]
-		if tab then
-			tab:Click()
-			ShowUIPanel(self)
+XRPBookmarks_Mixin = {
+	Toggle = function(self, tabID)
+		if tabID and tabID ~= self.selectedTab then
+			local tab = self[("Tab%d"):format(tabID)]
+			if tab then
+				tab:Click()
+				ShowUIPanel(self)
+				return
+			end
+		elseif self:IsShown() then
+			HideUIPanel(self)
 			return
 		end
-	elseif self:IsShown() then
-		HideUIPanel(self)
-		return
-	end
-	ShowUIPanel(self)
-end
+		ShowUIPanel(self)
+	end,
+	helpPlates = _xrp.help.bookmarks,
+}

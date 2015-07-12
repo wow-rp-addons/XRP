@@ -19,9 +19,11 @@ local addonName, _xrp = ...
 
 -- This file defines all the help plate tables for XRP.
 
+_xrp.help = {}
+
 local FRAME_POS = { x = 0, y = -22 }
 
-XRPBookmarks_helpPlates = {
+_xrp.help.bookmarks = {
 	FramePos = FRAME_POS,
 	FrameSize = { width = 338, height = 499 },
 	{
@@ -295,7 +297,7 @@ function XRPEditorHelpButton_PreClick(self, button, down)
 	end
 end
 
-XRPViewer_helpPlates = {
+_xrp.help.viewer = {
 	FramePos = FRAME_POS,
 	FrameSize = LARGE_SIZE,
 	{
@@ -345,7 +347,7 @@ function XRPViewerHelpButton_PreClick(self, button, down)
 	if HelpPlate_IsShowing(XRPViewer.helpPlates) then return end
 	local width, height = XRPViewer:GetWidth(), XRPViewer:GetHeight()
 	-- 439, 525 default
-	local plates = XRPViewer_helpPlates
+	local plates = XRPViewer.helpPlates
 	-- Menu
 	plates[1].ButtonPos.x = width - 81
 	plates[1].HighLightBox.x = width - 45

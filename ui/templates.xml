@@ -146,11 +146,9 @@
 			<OnUpdate function="XRPCursorBook_OnUpdate"/>
 		</Scripts>
 	</Frame>
-	<Button name="XRPMenuButtonTemplate" parentKey="Menu" inherits="UIPanelButtonTemplate" text=" v " virtual="true">
+	<Button name="XRPMenuButtonTemplate" parentKey="Menu" inherits="UIPanelButtonTemplate" text="v" mixin="XRPTemplatesMenu_Mixin" virtual="true">
 		<KeyValues>
-			<KeyValue key="initialize" value="EasyMenu_Initialize" type="global"/>
 			<KeyValue key="displayMode" value="MENU"/>
-			<KeyValue key="SetHeight" value="XRPTemplates_DoNothing" type="global"/>
 			<KeyValue key="point" value="TOPRIGHT"/>
 			<KeyValue key="relativePoint" value="BOTTOMRIGHT"/>
 			<KeyValue key="xOffset" value="0" type="number"/>

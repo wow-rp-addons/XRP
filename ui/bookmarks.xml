@@ -16,14 +16,10 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 	<Script file="bookmarks.lua"/>
-	<Button name="XRPBookmarksEntryTemplate" virtual="true">
+	<Button name="XRPBookmarksEntryTemplate" mixin="XRPTemplatesMenu_Mixin,XRPBookmarksEntry_Mixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="registerClicks" value="LeftButtonUp,RightButtonUp"/>
-			<KeyValue key="initialize" value="EasyMenu_Initialize" type="global"/>
 			<KeyValue key="displayMode" value="MENU"/>
-			<KeyValue key="SetHeight" value="XRPTemplates_DoNothing" type="global"/>
-			<KeyValue key="baseMenuList" value="XRPBookmarksEntry_baseMenuList" type="global"/>
-			<KeyValue key="onHide" value="XRPBookmarksEntry_onHide" type="global"/>
 		</KeyValues>
 		<Size x="0" y="72"/>
 		<Anchors>
@@ -129,7 +125,7 @@
 			<OnClick function="XRPBookmarksTab_OnClick"/>
 		</Scripts>
 	</Button>
-	<Frame name="XRPBookmarks" parent="UIParent" inherits="XRPButtonFrameTemplate">
+	<Frame name="XRPBookmarks" parent="UIParent" inherits="XRPButtonFrameTemplate" mixin="XRPBookmarks_Mixin">
 		<Size x="338" y="489"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -219,11 +215,9 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Frame name="$parentMenu" parentKey="Menu" hidden="true">
+					<Frame name="$parentMenu" parentKey="Menu" mixin="XRPTemplatesMenu_Mixin" hidden="true">
 						<KeyValues>
-							<KeyValue key="initialize" value="EasyMenu_Initialize" type="global"/>
 							<KeyValue key="displayMode" value="MENU"/>
-							<KeyValue key="SetHeight" value="XRPTemplates_DoNothing" type="global"/>
 							<KeyValue key="point" value="TOPLEFT"/>
 							<KeyValue key="relativePoint" value="BOTTOMLEFT"/>
 							<KeyValue key="xOffset" value="74" type="number"/>
@@ -309,8 +303,6 @@
 			<KeyValue key="titleKey" value="BOOKMARKS"/>
 			<KeyValue key="portraitTexture" value="Interface\Icons\INV_Misc_Book_05"/>
 			<KeyValue key="numTabs" value="4" type="number"/>
-			<KeyValue key="Toggle" value="XRPBookmarks_Toggle" type="global"/>
-			<KeyValue key="helpPlates" value="XRPBookmarks_helpPlates" type="global"/>
 		</KeyValues>
 		<Scripts>
 			<OnUpdate function="XRPBookmarks_OnUpdate"/>
