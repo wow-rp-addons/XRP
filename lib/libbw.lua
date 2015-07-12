@@ -52,7 +52,7 @@
 		- libbw:SendAddonMessage(prefix, message, "GUILD", nil, "ALERT")
 ]]
 
-local LIBBW_VERSION = 5
+local LIBBW_VERSION = 6
 
 if libbw and libbw.version >= LIBBW_VERSION then return end
 
