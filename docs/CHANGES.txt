@@ -1,16 +1,8 @@
-6.2.0.1 (2015-06-22):
+6.2.0.2 (2015-07-12):
 
-	- This version supports World of Warcraft 6.1.2 and 6.2.0.
+	- Fixed a rounding error when converting some heights for display.
 
-	- If you are upgrading from XRP 6.1.0.0 or earlier, please fully-restart
-	  the game client when upgrading. Some new files have been added, and a
-	  restart is necessary for the game client to see these.
+	- Dropped compatibility for 6.1, as 6.2 is now live in all regions.
 
-	- A Lua error for new installs has been fixed.
-
-	- Fields which contain only whitespace are now treated as though they were
-	  completely empty (avoiding issues with lost information in tooltips,
-	  especially).
-
-	- Many other changes were made in 6.2.0.0. Please see the changelog for
-	  that version for more information.
+	- Garbage collection is more reliably run when manually cleaning the
+	  cache.
