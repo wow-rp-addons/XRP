@@ -398,11 +398,9 @@
 					<Anchor point="LEFT" relativeKey="$parent.Plus" relativePoint="RIGHT"/>
 				</Anchors>
 			</Button>
-			<Button parentKey="Parent" inherits="MagicButtonTemplate">
+			<Button parentKey="Parent" inherits="MagicButtonTemplate" mixin="XRPTemplatesMenu_Mixin">
 				<Size x="192" y="22"/>
 				<KeyValues>
-					<KeyValue key="initialize" value="EasyMenu_Initialize" type="global"/>
-					<KeyValue key="SetHeight" value="XRPTemplates_DoNothing" type="global"/>
 					<KeyValue key="xOffset" value="0" type="number"/>
 					<KeyValue key="yOffset" value="0" type="number"/>
 				</KeyValues>
@@ -486,11 +484,9 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Frame name="$parentForm" parentKey="Form" inherits="XRPEditorDropDownTemplate">
+					<Frame name="$parentForm" parentKey="Form" inherits="XRPEditorDropDownTemplate" mixin="XRPEditorAutomationForm_Mixin">
 						<KeyValues>
 							<KeyValue key="labelKey" value="FORM_SET"/>
-							<KeyValue key="preClick" value="XRPEditorAutomationForm_PreClick" type="global"/>
-							<KeyValue key="baseMenuList" value="XRPEditorAutomationForm_baseMenuList" type="global"/>
 							<KeyValue key="width" value="159" type="number"/>
 						</KeyValues>
 						<Anchors>

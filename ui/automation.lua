@@ -124,27 +124,29 @@ do
 
 	local noSet = not isWorgen and not playerClass and { text = FORM_NAMES["DEFAULT"], value = "", checked = equipSets_Check, func = equipSets_Click, } or nil
 
-	function XRPEditorAutomationForm_PreClick(self, button, down)
-		table.wipe(equipSets) -- Keep table reference the same.
-		equipSets[1] = noSet
-		local numsets = GetNumEquipmentSets()
-		if numsets and numsets > 0 then
-			for i = 1, numsets do
-				local name = GetEquipmentSetInfo(i)
-				equipSets[#equipSets + 1] = {
-					text = name,
-					value = "\29" .. name,
-					checked = equipSets_Check,
-					func = equipSets_Click,
+	XRPEditorAutomationForm_Mixin = {
+		preClick = function(self, button, down)
+			table.wipe(equipSets) -- Keep table reference the same.
+			equipSets[1] = noSet
+			local numsets = GetNumEquipmentSets()
+			if numsets and numsets > 0 then
+				for i = 1, numsets do
+					local name = GetEquipmentSetInfo(i)
+					equipSets[#equipSets + 1] = {
+						text = name,
+						value = "\29" .. name,
+						checked = equipSets_Check,
+						func = equipSets_Click,
+					}
+				end
+			elseif not noSet then
+				equipSets[#equipSets + 1]  = {
+					text = _xrp.L.NO_SETS,
+					disabled = true,
 				}
 			end
-		elseif not noSet then
-			equipSets[#equipSets + 1]  = {
-				text = _xrp.L.NO_SETS,
-				disabled = true,
-			}
-		end
-	end
+		end,
+	}
 end
 
 do
@@ -166,7 +168,7 @@ do
 
 	if isWorgen then
 		if playerClass == "DRUID" then
-			XRPEditorAutomationForm_baseMenuList = {
+			XRPEditorAutomationForm_Mixin.baseMenuList = {
 				{ -- Worgen
 					text = FORM_NAMES["DEFAULT"],
 					value = "DEFAULT",
@@ -235,7 +237,7 @@ do
 				},
 			}
 		elseif playerClass == "PRIEST" then
-			XRPEditorAutomationForm_baseMenuList = {
+			XRPEditorAutomationForm_Mixin.baseMenuList = {
 				{ -- Worgen
 					text = FORM_NAMES["DEFAULT"],
 					value = "DEFAULT",
@@ -270,7 +272,7 @@ do
 				},
 			}
 		else
-			XRPEditorAutomationForm_baseMenuList = {
+			XRPEditorAutomationForm_Mixin.baseMenuList = {
 				{ -- Worgen
 					text = FORM_NAMES["DEFAULT"],
 					value = "DEFAULT",
@@ -291,7 +293,7 @@ do
 		end
 	else
 		if playerClass == "DRUID" then
-			XRPEditorAutomationForm_baseMenuList = {
+			XRPEditorAutomationForm_Mixin.baseMenuList = {
 				{ -- Humanoid
 					text = FORM_NAMES["DEFAULT"],
 					value = "DEFAULT",
@@ -352,7 +354,7 @@ do
 				}
 			}
 		elseif playerClass == "PRIEST" then
-			XRPEditorAutomationForm_baseMenuList = {
+			XRPEditorAutomationForm_Mixin.baseMenuList = {
 				{ -- Standard
 					text = FORM_NAMES["DEFAULT"],
 					value = "DEFAULT",
@@ -371,7 +373,7 @@ do
 				},
 			}
 		elseif playerClass == "SHAMAN" then
-			XRPEditorAutomationForm_baseMenuList = {
+			XRPEditorAutomationForm_Mixin.baseMenuList = {
 				{ -- Humanoid
 					text = FORM_NAMES["DEFAULT"],
 					value = "DEFAULT",
@@ -388,7 +390,7 @@ do
 				},
 			}
 		else
-			XRPEditorAutomationForm_baseMenuList = equipSets
+			XRPEditorAutomationForm_Mixin.baseMenuList = equipSets
 		end
 	end
 end

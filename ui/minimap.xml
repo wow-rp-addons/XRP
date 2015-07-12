@@ -16,12 +16,10 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 	<Script file="minimap.lua"/>
-	<Button name="XRPMinimapBaseTemplate" movable="true" dontSavePosition="true" virtual="true">
+	<Button name="XRPMinimapBaseTemplate" movable="true" dontSavePosition="true" mixin="XRPTemplatesMenu_Mixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="registerClicks" value="LeftButtonUp,RightButtonUp"/>
-			<KeyValue key="initialize" value="EasyMenu_Initialize" type="global"/>
 			<KeyValue key="displayMode" value="MENU"/>
-			<KeyValue key="SetHeight" value="XRPTemplates_DoNothing" type="global"/>
 			<KeyValue key="point" value="TOPLEFT"/>
 			<KeyValue key="relativePoint" value="BOTTOMLEFT"/>
 			<KeyValue key="xOffset" value="0" type="number"/>
