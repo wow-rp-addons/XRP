@@ -545,11 +545,9 @@ function gameEvents.CHAT_MSG_ADDON(event, prefix, message, channel, sender)
 	-- Sometimes won't have the realm attached because I dunno. Always
 	-- works correctly for different-realm messages.
 	local name = xrp.FullName(sender)
-
 	-- Ignore messages from ourselves (GMSP).
 	if name ~= _xrp.playerWithRealm then
 		cache[name].nextCheck = nil
-
 		handlers[prefix](name, message, channel)
 	end
 end
@@ -560,10 +558,8 @@ function gameEvents.BN_CHAT_MSG_ADDON(event, prefix, message, channel, presenceI
 	if bnet then
 		bnet[name] = presenceID
 	end
-
 	cache[name].bnet = true
 	cache[name].nextCheck = nil
-
 	handlers[prefix](name, message, "BN")
 end
 function gameEvents.BN_TOON_NAME_UPDATED(event, presenceID)
