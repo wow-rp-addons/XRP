@@ -69,7 +69,7 @@ _xrp.DEFAULT_SETTINGS = {
 	},
 	minimap = {
 		enabled = true,
-		angle = 200,
+		angle = 193,
 		detached = false,
 		point = "CENTER",
 		x = 0,
