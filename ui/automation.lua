@@ -39,6 +39,7 @@ local FORM_NAMES = {
 	["HUMAN"] = xrp.L.VALUES.GR.Human,
 	["DEFAULT\30SHADOWFORM"] = _xrp.L.WORGEN_SHADOW,
 	["HUMAN\30SHADOWFORM"] = _xrp.L.HUMAN_SHADOW,
+	["MERCENARY"] = _xrp.L.MERCENARY,
 }
 
 local function MakeWords(text)
@@ -122,7 +123,24 @@ do
 		return (UIDROPDOWNMENU_MENU_VALUE or "DEFAULT") .. self.value == UIDROPDOWNMENU_INIT_MENU.contents
 	end
 
+	local function forms_Click(self, arg1, arg2, checked)
+		if not checked then
+			UIDROPDOWNMENU_OPEN_MENU.contents = self.value
+			UIDROPDOWNMENU_OPEN_MENU.Text:SetText(MakeWords(self.value))
+			local Profile, formProfile = UIDROPDOWNMENU_OPEN_MENU:GetParent().Profile, _xrp.auto[self.value]
+			Profile.contents = formProfile
+			Profile.Text:SetText(formProfile or NONE)
+			ToggleButtons(UIDROPDOWNMENU_OPEN_MENU:GetParent())
+		end
+		CloseDropDownMenus()
+	end
+
+	local function forms_Check(self)
+		return UIDROPDOWNMENU_INIT_MENU.contents == self.value
+	end
+
 	local noSet = not isWorgen and not playerClass and { text = FORM_NAMES["DEFAULT"], value = "", checked = equipSets_Check, func = equipSets_Click, } or nil
+	local mercenarySet = not isWorgen and not playerClass and { text = FORM_NAMES["MERCENARY"], value = "MERCENARY", checked = forms_Check, func = forms_Click, } or nil
 
 	XRPEditorAutomationForm_Mixin = {
 		preClick = function(self, button, down)
@@ -145,26 +163,9 @@ do
 					disabled = true,
 				}
 			end
+			equipSets[#equipSets + 1] = mercenarySet
 		end,
 	}
-end
-
-do
-	local function forms_Click(self, arg1, arg2, checked)
-		if not checked then
-			UIDROPDOWNMENU_OPEN_MENU.contents = self.value
-			UIDROPDOWNMENU_OPEN_MENU.Text:SetText(MakeWords(self.value))
-			local Profile, formProfile = UIDROPDOWNMENU_OPEN_MENU:GetParent().Profile, _xrp.auto[self.value]
-			Profile.contents = formProfile
-			Profile.Text:SetText(formProfile or NONE)
-			ToggleButtons(UIDROPDOWNMENU_OPEN_MENU:GetParent())
-		end
-		CloseDropDownMenus()
-	end
-
-	local function forms_Check(self)
-		return UIDROPDOWNMENU_INIT_MENU.contents == self.value
-	end
 
 	if isWorgen then
 		if playerClass == "DRUID" then
@@ -235,6 +236,12 @@ do
 					func = forms_Click,
 					checked = forms_Check,
 				},
+				{ -- Mercenary
+					text = FORM_NAMES["MERCENARY"],
+					value = "MERCENARY",
+					func = forms_Click,
+					checked = forms_Check,
+				},
 			}
 		elseif playerClass == "PRIEST" then
 			XRPEditorAutomationForm_Mixin.baseMenuList = {
@@ -270,6 +277,12 @@ do
 					hasArrow = true,
 					menuList = equipSets,
 				},
+				{ -- Mercenary
+					text = FORM_NAMES["MERCENARY"],
+					value = "MERCENARY",
+					func = forms_Click,
+					checked = forms_Check,
+				},
 			}
 		else
 			XRPEditorAutomationForm_Mixin.baseMenuList = {
@@ -288,6 +301,12 @@ do
 					checked = forms_Check,
 					hasArrow = true,
 					menuList = equipSets,
+				},
+				{ -- Mercenary
+					text = FORM_NAMES["MERCENARY"],
+					value = "MERCENARY",
+					func = forms_Click,
+					checked = forms_Check,
 				},
 			}
 		end
@@ -351,7 +370,13 @@ do
 					value = "TREANT",
 					func = forms_Click,
 					checked = forms_Check,
-				}
+				},
+				{ -- Mercenary
+					text = FORM_NAMES["MERCENARY"],
+					value = "MERCENARY",
+					func = forms_Click,
+					checked = forms_Check,
+				},
 			}
 		elseif playerClass == "PRIEST" then
 			XRPEditorAutomationForm_Mixin.baseMenuList = {
@@ -371,6 +396,12 @@ do
 					hasArrow = true,
 					menuList = equipSets,
 				},
+				{ -- Mercenary
+					text = FORM_NAMES["MERCENARY"],
+					value = "MERCENARY",
+					func = forms_Click,
+					checked = forms_Check,
+				},
 			}
 		elseif playerClass == "SHAMAN" then
 			XRPEditorAutomationForm_Mixin.baseMenuList = {
@@ -385,6 +416,12 @@ do
 				{ -- Ghost Wolf
 					text = FORM_NAMES["GHOSTWOLF"],
 					value = "GHOSTWOLF",
+					func = forms_Click,
+					checked = forms_Check,
+				},
+				{ -- Mercenary
+					text = FORM_NAMES["MERCENARY"],
+					value = "MERCENARY",
 					func = forms_Click,
 					checked = forms_Check,
 				},

@@ -19,6 +19,7 @@ local addonName, _xrp = ...
 
 local GetCurrentForm
 do
+	local MERCENARY_BUFF = _xrp.L.MERCENARY_BUFF
 	local isWorgen = select(2, UnitRace("player")) == "Worgen"
 	local playerClass = select(2, UnitClassBase("player"))
 	if not (playerClass == "DRUID" or playerClass == "PRIEST" or playerClass == "SHAMAN") then
@@ -58,6 +59,8 @@ do
 	}
 	local lastEquipSet
 	function GetCurrentForm()
+		local mercenaryForm = UnitBuff("player", MERCENARY_BUFF[xrp.current.GF]) ~= nil
+
 		local classForm
 		if playerClass then
 			if playerClass == "DRUID" then
@@ -109,7 +112,7 @@ do
 			equipSet = lastEquipSet or bestMatch
 		end
 
-		return raceForm, classForm, equipSet
+		return mercenaryForm, raceForm, classForm, equipSet
 	end
 end
 
@@ -120,13 +123,16 @@ local function CancelTimer()
 	end
 end
 
-local race, class, equip
+local mercenary, race, class, equip
 
 local function DoSwap()
 	timer = nil
 
 	local form
-	if race then
+	if mercenary then
+		form = "MERCENARY"
+	end
+	if not _xrp.auto[form] and race then
 		-- RACE-CLASS-Equipment (Worgen only)
 		if class and equip then
 			form = ("%s\30%s\29%s"):format(race, class, equip)
@@ -166,15 +172,17 @@ end
 
 local function TestForm(event, unit)
 	if InCombatLockdown() or event == "UNIT_PORTRAIT_UPDATE" and unit ~= "player" then return end
-	local newRace, newClass, newEquip = GetCurrentForm()
-	local newForm = class ~= newClass or race ~= newRace or equip ~= newEquip
+	local newMercenary, newRace, newClass, newEquip = GetCurrentForm()
+	local newForm = mercenary ~= newMercenary or class ~= newClass or race ~= newRace or equip ~= newEquip
 	if event == "PLAYER_REGEN_ENABLED" and (newForm or timer and timer._cancelled) then
+		mercenary = newMercenary
 		race = newRace
 		class = newClass
 		equip = newEquip
 		CancelTimer()
 		timer = C_Timer.NewTimer(6, DoSwap)
 	elseif newForm then
+		mercenary = newMercenary
 		race = newRace
 		class = newClass
 		equip = newEquip
@@ -184,7 +192,7 @@ local function TestForm(event, unit)
 end
 
 local function RecheckForm()
-	race, class, equip = GetCurrentForm()
+	mercenary, race, class, equip = GetCurrentForm()
 	CancelTimer()
 	DoSwap()
 end
