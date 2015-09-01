@@ -142,7 +142,7 @@ M = "%.2f m"
 FT = "%.0f'%.0f\""
 
 -- extra/fixes.lua
-CUF_WARNING = "The raid profile configuration panel has been accessed, which may cause UI problems due to Blizzard bugs (inaccurately blaming \"%s\" or others). You should reload your UI now to avoid this."
+CUF_WARNING = "Changes have been made in the Raid Profiles settings that have a high probability of causing UI issues, inaccurately blaming addons, unless you reload your UI."
 
 -- extra/import.lua
 IMPORT_RELOAD = "Available profiles have been imported and may be found in the editor's profile list. You should reload your UI now."
