@@ -83,7 +83,7 @@ local EDITOR_AUTO = {
 	{
 		ButtonPos = { x = 610, y = -60 },
 		HighLightBox = { x = 456, y = -63, width = 177, height = 38 },
-		ToolTipDir = "UP",
+		ToolTipDir = "RIGHT",
 		ToolTipText = _xrp.L.HELP_EDITOR_AUTO_FORM,
 	},
 	{
