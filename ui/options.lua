@@ -59,8 +59,12 @@ XRPOptions_Mixin = {
 				if control.type == CONTROLTYPE_CHECKBOX then
 					control:SetChecked(setting)
 				elseif control.type == CONTROLTYPE_DROPDOWN then
-					UIDropDownMenu_Initialize(control, control.initialize, nil, nil, control.baseMenuList)
-					UIDropDownMenu_SetSelectedValue(control, setting)
+					for i, entry in ipairs(control.baseMenuList) do
+						if entry.arg1 == control.value then
+							UIDropDownMenu_SetText(control, entry.text)
+							break
+						end
+					end
 				end
 			end
 			if control.dependsOn then
@@ -88,8 +92,12 @@ XRPOptions_Mixin = {
 				if control.type == CONTROLTYPE_CHECKBOX then
 					control:SetChecked(control.value)
 				elseif control.type == CONTROLTYPE_DROPDOWN then
-					UIDropDownMenu_Initialize(control, control.initialize, nil, nil, control.baseMenuList)
-					UIDropDownMenu_SetSelectedValue(control, control.value)
+					for i, entry in ipairs(control.baseMenuList) do
+						if entry.arg1 == control.value then
+							UIDropDownMenu_SetText(control, entry.text)
+							break
+						end
+					end
 				end
 			end
 			if control.dependsOn then
@@ -118,8 +126,12 @@ XRPOptions_Mixin = {
 				if control.type == CONTROLTYPE_CHECKBOX then
 					control:SetChecked(control.value)
 				elseif control.type == CONTROLTYPE_DROPDOWN then
-					UIDropDownMenu_Initialize(control, control.initialize, nil, nil, control.baseMenuList)
-					UIDropDownMenu_SetSelectedValue(control, control.value)
+					for i, entry in ipairs(control.baseMenuList) do
+						if entry.arg1 == control.value then
+							UIDropDownMenu_SetText(control, entry.text)
+							break
+						end
+					end
 				end
 			end
 			if control.dependsOn then
@@ -380,32 +392,35 @@ end
 do
 	local function DropDown_OnClick(self, arg1, arg2, checked)
 		if not checked then
-			UIDROPDOWNMENU_OPEN_MENU.baseMenuList[UIDropDownMenu_GetSelectedID(UIDROPDOWNMENU_OPEN_MENU)].checked = nil
-			UIDropDownMenu_SetSelectedValue(UIDROPDOWNMENU_OPEN_MENU, self.value)
-			UIDROPDOWNMENU_OPEN_MENU.value = self.value
-			UIDROPDOWNMENU_OPEN_MENU:Set(self.value)
+			UIDropDownMenu_SetText(UIDROPDOWNMENU_OPEN_MENU, arg2)
+			UIDROPDOWNMENU_OPEN_MENU.value = arg1
+			UIDROPDOWNMENU_OPEN_MENU:Set(arg1)
 		end
 	end
 
+	local function DropDown_Checked(self)
+		return self.arg1 == UIDROPDOWNMENU_OPEN_MENU.value
+	end
+
 	XRPOptionsGeneralHeight_baseMenuList = {
-		{ text = _xrp.L.CENTIMETERS, value = "cm", func = DropDown_OnClick },
-		{ text = _xrp.L.FEET_INCHES, value = "ft", func = DropDown_OnClick },
-		{ text = _xrp.L.METERS, value = "m", func = DropDown_OnClick },
+		{ text = _xrp.L.CENTIMETERS, arg1 = "cm", arg2 = _xrp.L.CENTIMETERS, checked = DropDown_Checked, func = DropDown_OnClick },
+		{ text = _xrp.L.FEET_INCHES, arg1 = "ft", arg2 = _xrp.L.FEET_INCHES, checked = DropDown_Checked, func = DropDown_OnClick },
+		{ text = _xrp.L.METERS, arg1 = "m", arg2 = _xrp.L.METERS, checked = DropDown_Checked, func = DropDown_OnClick },
 	}
 
 	XRPOptionsGeneralWeight_baseMenuList = {
-		{ text = _xrp.L.KILOGRAMS, value = "kg", func = DropDown_OnClick },
-		{ text = _xrp.L.POUNDS, value = "lb", func = DropDown_OnClick },
+		{ text = _xrp.L.KILOGRAMS, arg1 = "kg", arg2 = _xrp.L.KILOGRAMS, checked = DropDown_Checked, func = DropDown_OnClick },
+		{ text = _xrp.L.POUNDS, arg1 = "lb", arg2 = _xrp.L.POUNDS, checked = DropDown_Checked, func = DropDown_OnClick },
 	}
 
 	XRPOptionsAdvancedTime_baseMenuList = {
-		{ text = _xrp.L.TIME_1DAY, value = 86400, func = DropDown_OnClick },
-		{ text = _xrp.L.TIME_3DAY, value = 259200, func = DropDown_OnClick },
-		{ text = _xrp.L.TIME_7DAY, value = 604800, func = DropDown_OnClick },
-		{ text = _xrp.L.TIME_10DAY, value = 864000, func = DropDown_OnClick },
-		{ text = _xrp.L.TIME_2WEEK, value = 1209600, func = DropDown_OnClick },
-		{ text = _xrp.L.TIME_1MONTH, value = 2419200, func = DropDown_OnClick },
-		{ text = _xrp.L.TIME_3MONTH, value = 7257600, func = DropDown_OnClick },
+		{ text = _xrp.L.TIME_1DAY, arg1 = 86400, arg2 = _xrp.L.TIME_1DAY, checked = DropDown_Checked, func = DropDown_OnClick },
+		{ text = _xrp.L.TIME_3DAY, arg1 = 259200, arg2 = _xrp.L.TIME_3DAY, checked = DropDown_Checked, func = DropDown_OnClick },
+		{ text = _xrp.L.TIME_7DAY, arg1 = 604800, arg2 = _xrp.L.TIME_7DAY, checked = DropDown_Checked, func = DropDown_OnClick },
+		{ text = _xrp.L.TIME_10DAY, arg1 = 864000, arg2 = _xrp.L.TIME_10DAY, checked = DropDown_Checked, func = DropDown_OnClick },
+		{ text = _xrp.L.TIME_2WEEK, arg1 = 1209600, arg2 = _xrp.L.TIME_2WEEK, checked = DropDown_Checked, func = DropDown_OnClick },
+		{ text = _xrp.L.TIME_1MONTH, arg1 = 2419200, arg2 = _xrp.L.TIME_1MONTH, checked = DropDown_Checked, func = DropDown_OnClick },
+		{ text = _xrp.L.TIME_3MONTH, arg1 = 7257600, arg2 = _xrp.L.TIME_3MONTH, checked = DropDown_Checked, func = DropDown_OnClick },
 	}
 end
 

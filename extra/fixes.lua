@@ -17,33 +17,17 @@
 
 local addonName, _xrp = ...
 
--- Closing interface options after viewing the raid profiles (compact raid
--- frames) section tends to horrifically taint most of the UI. Warn users about
--- that.
-local cufOpened, blamed = false, nil
-CompactUnitFrameProfiles:HookScript("OnShow", function(self)
-	cufOpened = true
-	local isSecure, blameName = issecurevariable("UIDROPDOWNMENU_MENU_LEVEL")
-	if not isSecure then
-		blamed = blameName
-	end
+-- Making use of the raid profile dropdowns to change settings taints the
+-- entire default raid frames. This warns if such changes have been made.
+local doWarning
+hooksecurefunc("CompactUnitFrameProfilesDropdownButton_OnClick", function(self, dropDown)
+	doWarning = true
 end)
-CompactUnitFrameProfiles:HookScript("OnHide", function(self)
-	if not cufOpened or blamed then return end
-	local isSecure, blameName = issecurevariable("UIDROPDOWNMENU_MENU_LEVEL")
-	if not isSecure then
-		blamed = blameName
-	else
-		-- If it was secure at open and close, it should be safe. This isn't a
-		-- perfect guarantee, but it's close.
-		cufOpened = false
-	end
-end)
+
 InterfaceOptionsFrame:HookScript("OnHide", function(self)
-	if not cufOpened then return end
-	cufOpened = false
-	StaticPopup_Show("XRP_RELOAD", _xrp.L.CUF_WARNING:format(GetAddOnMetadata(blamed, "Title")))
-	blamed = nil
+	if not doWarning then return end
+	doWarning = nil
+	StaticPopup_Show("XRP_RELOAD", _xrp.L.CUF_WARNING)
 end)
 
 -- This is kinda terrifying, but it fixes some major UI tainting when the user
@@ -62,7 +46,6 @@ function CompactUnitFrameProfiles_CancelChanges(self)
 	CompactUnitFrameProfiles_UpdateCurrentPanel()
 
 	-- The following is disabled because it's the actual function that taints
-	-- everything. The execution path is tainted by the time this function is
-	-- called if there's any addon with an Interface Options panel.
+	-- everything.
 	--CompactUnitFrameProfiles_ApplyCurrentSettings()
 end
