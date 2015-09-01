@@ -267,6 +267,11 @@ end
 
 local SetUnit, active
 do
+	local MERCENARY = {
+		Alliance = "Horde",
+		Horde = "Alliance",
+	}
+	local MERCENARY_BUFF = _xrp.L.MERCENARY_BUFF
 	local COLORS = {
 		friendly = "00991a",
 		neutral = "e6b300",
@@ -284,15 +289,20 @@ do
 
 		local defaultLines = 3
 		local playerFaction = xrp.current.GF
+		if UnitBuff("player", MERCENARY_BUFF[playerFaction]) then
+			playerFaction = MERCENARY[playerFaction]
+		end
 		local attackMe = UnitCanAttack(unit, "player")
 		local meAttack = UnitCanAttack("player", unit)
 		if currentUnit.type == "player" then
 			currentUnit.character = xrp.characters.byUnit[unit]
 
-			currentUnit.faction = currentUnit.character.fields.GF or "Neutral"
+			local inRaid = UnitInRaid(unit)
+
+			currentUnit.faction = (inRaid or UnitIsUnit("player", unit)) and playerFaction or currentUnit.character.fields.GF or "Neutral"
 
 			local connected = UnitIsConnected(unit)
-			local color = COLORS[(currentUnit.faction ~= playerFaction and currentUnit.faction ~= "Neutral" or attackMe and meAttack) and "hostile" or (currentUnit.faction == "Neutral" or meAttack or attackMe) and "neutral" or "friendly"]
+			local color = COLORS[(not inRaid and UnitIsEnemy("player", unit) or attackMe and meAttack) and "hostile" or (meAttack or attackMe) and "neutral" or "friendly"]
 			local watchIcon = _xrp.settings.tooltip.watching and UnitIsUnit("player", unit .. "target") and "|TInterface\\LFGFrame\\BattlenetWorking0:28:28:10:0|t"
 			local GC = currentUnit.character.fields.GC
 
@@ -347,7 +357,7 @@ do
 			currentUnit.faction = UnitFactionGroup(unit) or UnitIsUnit(unit, "playerpet") and playerFaction or "Neutral"
 
 			local name = UnitName(unit)
-			local color = COLORS[(currentUnit.faction ~= playerFaction and currentUnit.faction ~= "Neutral" or attackMe and meAttack) and "hostile" or (currentUnit.faction == "Neutral" or meAttack or attackMe) and "neutral" or "friendly"]
+			local color = COLORS[(UnitIsEnemy("player", unit) or attackMe and meAttack) and "hostile" or (meAttack or attackMe) and "neutral" or "friendly"]
 			currentUnit.nameFormat = ("|cff%s%s|r"):format(color, name)
 
 			local ffa = UnitIsPVPFreeForAll(unit)
