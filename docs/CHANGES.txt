@@ -1,8 +1,17 @@
-6.2.0.2 (2015-07-12):
+6.2.2.0 (2015-09-01):
 
-	- Fixed a rounding error when converting some heights for display.
+	- Support added for Mercenary mode. This support includes:
 
-	- Dropped compatibility for 6.1, as 6.2 is now live in all regions.
+		- Display fixes and adjustments to compensate for the issues
+		  introduced into the API by Mercenary mode.
 
-	- Garbage collection is more reliably run when manually cleaning the
-	  cache.
+		- Automated profile swapping when entering Mercenary mode. This swap,
+		  if enabled, takes precedence over all other forms and equipment sets
+		  when in Mercenary mode.
+
+	- The default position of the minimap button has been adjusted slightly,
+	  as to not overlap with the group finder button in the default UI.
+
+	- (Bugfix/Partial) Some reduction in the potential for triggering Blizzard
+	  bugs that can taint the standard raid frames. Most situations which can
+	  still taint the raid frames should warn and recommend reloading the UI.
