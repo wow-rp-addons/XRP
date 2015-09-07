@@ -131,12 +131,6 @@ xrp.L.MENU_VALUES = setmetatable({
 	}, { __index = xrp.L.VALUES.FR }),
 }, { __index = xrp.L.VALUES })
 
-_xrp.L.MERCENARY_BUFF = {
-	Alliance = FACTION_HORDE,
-	Horde = FACTION_ALLIANCE,
-	Neutral = "NO_BUFF_FOR_NEUTRAL",
-}
-
 BINDING_HEADER_XRP = GetAddOnMetadata(addonName, "Title")
 BINDING_NAME_XRP_BOOKMARKS = _xrp.L.TOGGLE_BOOKMARKS
 BINDING_NAME_XRP_EDITOR = _xrp.L.TOGGLE_EDITOR

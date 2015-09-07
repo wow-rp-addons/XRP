@@ -19,7 +19,6 @@ local addonName, _xrp = ...
 
 local GetCurrentForm
 do
-	local MERCENARY_BUFF = _xrp.L.MERCENARY_BUFF
 	local isWorgen = select(2, UnitRace("player")) == "Worgen"
 	local playerClass = select(2, UnitClassBase("player"))
 	if not (playerClass == "DRUID" or playerClass == "PRIEST" or playerClass == "SHAMAN") then
@@ -59,7 +58,7 @@ do
 	}
 	local lastEquipSet
 	function GetCurrentForm()
-		local mercenaryForm = UnitBuff("player", MERCENARY_BUFF[xrp.current.GF]) ~= nil
+		local mercenaryForm = UnitIsMercenary("player")
 
 		local classForm
 		if playerClass then
