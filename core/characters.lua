@@ -36,6 +36,11 @@ local RACE_FACTION = {
 	Pandaren = nil, -- Can't tell faction.
 }
 
+local MERCENARY = {
+	Alliance = "Horde",
+	Horde = "Alliance",
+}
+
 local unitCache = {}
 _xrp.unitCache = unitCache
 
@@ -183,32 +188,24 @@ xrp.characters = {
 			elseif not unitCache[name] then
 				local GU = UnitGUID(unit)
 				local class, GC, race, GR, GS = GetPlayerInfoByGUID(GU)
-				local reliable = (RACE_FACTION[GR] or (GetZonePVPInfo() ~= "combat" and (not UnitInBattleground("player") or IsRatedMap())) or not UnitIsVisible(unit)) and true or nil
 				unitCache[name] = {
 					GC = GC,
-					GF = RACE_FACTION[GR] or UnitFactionGroup(unit),
+					GF = RACE_FACTION[GR] or UnitIsMercenary(unit) and MERCENARY[UnitFactionGroup(unit)] or UnitFactionGroup(unit),
 					GR = GR,
 					GS = tostring(GS),
 					GU = GU,
-					reliable = reliable,
 				}
 				if xrpCache[name] and name ~= _xrp.playerWithRealm then
 					-- We DO want to overwrite these, to account for race,
 					-- faction, or sex changes.
 					for field, contents in pairs(unitCache[name]) do
-						-- Ugh, mercenary mode bugs workaround for Pandaren.
-						if field ~= "GF" or reliable then
-							xrpCache[name].fields[field] = contents
-						end
+						xrpCache[name].fields[field] = contents
 					end
 				end
-			elseif not unitCache[name].GF or not unitCache[name].reliable then
-				local reliable = (GetZonePVPInfo() ~= "combat" and (not UnitInBattleground("player") or IsRatedMap()) or not UnitIsVisible(unit)) and true or nil
-				-- GUID won't always get faction. Plus more ugly mercenary mode
-				-- Pandaren workarounds above.
-				unitCache[name].GF = UnitFactionGroup(unit)
-				unitCache[name].reliable = reliable
-				if reliable and xrpCache[name] and name ~= _xrp.playerWithRealm then
+			elseif not unitCache[name].GF then
+				-- GUID won't always get faction.
+				unitCache[name].GF = UnitIsMercenary(unit) and MERCENARY[UnitFactionGroup(unit)] or UnitFactionGroup(unit)
+				if xrpCache[name] and name ~= _xrp.playerWithRealm then
 					xrpCache[name].fields.GF = unitCache[name].GF
 				end
 			end

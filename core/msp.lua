@@ -182,12 +182,19 @@ do
 		end
 		if channel == "BN" then return end
 
-		if cache[name].whisper then
-			channel = "WHISPER"
+		local relationship, sameFaction
+		if channel ~= "WHISPER" then
+			local nameUnit = Ambiguate(name, "none")
+			relationship = UnitRealmRelationship(nameUnit)
+			if relationship then
+				if UnitIsMercenary(nameUnit) then
+					sameFaction = UnitFactionGroup(nameUnit) ~= xrpSaved.meta.fields.GF
+				else
+					sameFaction = UnitFactionGroup(nameUnit) == xrpSaved.meta.fields.GF
+				end
+			end
 		end
-
-		local relationship = channel ~= "WHISPER" and UnitRealmRelationship(Ambiguate(name, "none"))
-		if channel == "WHISPER" or relationship ~= LE_REALM_RELATION_COALESCED then
+		if channel == "WHISPER" or relationship ~= LE_REALM_RELATION_COALESCED and (not relationship or sameFaction) then
 			local queue = "XRP-" .. name
 			if #data <= 255 then
 				libbw:SendAddonMessage("MSP", data, "WHISPER", name, isRequest and "ALERT" or "NORMAL", queue, AddFilter, name)
@@ -206,8 +213,7 @@ do
 
 				libbw:SendAddonMessage("MSP\3", data:sub(position), "WHISPER", name, "BULK", queue, AddFilter, name)
 			end
-		end
-		if relationship and (relationship == LE_REALM_RELATION_COALESCED or GetZonePVPInfo() == "combat" or UnitInBattleground("player")) then -- GMSP
+		else -- GMSP
 			channel = channel ~= "GAME" and channel or IsInGroup(LE_PARTY_CATEGORY_INSTANCE) and "INSTANCE_CHAT" or "RAID"
 			local prepend = isRequest and name .. "\30" or ""
 			local chunkSize = 255 - #prepend
@@ -288,10 +294,6 @@ do
 			local now = GetTime()
 			-- Queried our fields. This should end in returning a string,
 			-- unless they're spamming requests.
-			if requestTime[name][field] and requestTime[name][field] > now then
-				requestTime[name][field] = now + 5
-				return nil
-			end
 			if isGroup then
 				-- In group, ignore every 2.5s to try and catch simultaneous
 				-- requests (such as from names-in-chat).
@@ -299,6 +301,10 @@ do
 					return nil
 				end
 				requestTime.GROUP[field] = now + 2.5
+			end
+			if requestTime[name][field] and requestTime[name][field] > now then
+				requestTime[name][field] = now + 5
+				return nil
 			end
 			requestTime[name][field] = now + 5
 			if field == "TT" then
@@ -351,9 +357,7 @@ do
 				}
 				if _xrp.unitCache[name] then
 					for gField, isUnitField in pairs(UNIT_FIELDS) do
-						if gField ~= "GF" or _xrp.unitCache[name].reliable then
-							xrpCache[name].fields[gField] = _xrp.unitCache[name][gField]
-						end
+						xrpCache[name].fields[gField] = _xrp.unitCache[name][gField]
 					end
 				end
 			elseif field == "TT" and xrpCache[name] and version < (xrpCache[name].versions.TT or 0) then
@@ -555,35 +559,18 @@ function gameEvents.CHAT_MSG_ADDON(event, prefix, message, channel, sender)
 	-- Ignore messages from ourselves (GMSP).
 	if name ~= _xrp.playerWithRealm then
 		cache[name].nextCheck = nil
-		if channel == "WHISPER" then
-			cache[name].whisper = true
-			if _xrp.unitCache[name] and not _xrp.unitCache[name].reliable then
-				_xrp.unitCache[name].GF = xrpSaved.meta.fields.GF
-				_xrp.unitCache[name].reliable = true
-				if xrpCache[name] then
-					xrpCache[name].fields.GF = xrpSaved.meta.fields.GF
-				end
-			end
-		end
 		handlers[prefix](name, message, channel)
 	end
 end
 function gameEvents.BN_CHAT_MSG_ADDON(event, prefix, message, channel, presenceID)
 	if not handlers[prefix] then return end
-	local active, toonName, client, realmName, realmID, faction = BNGetToonInfo(presenceID)
+	local active, toonName, client, realmName = BNGetToonInfo(presenceID)
 	local name = xrp.FullName(toonName, realmName)
 	if bnet then
 		bnet[name] = presenceID
 	end
 	cache[name].bnet = true
 	cache[name].nextCheck = nil
-	if _xrp.unitCache[name] and not _xrp.unitCache[name].reliable then
-		_xrp.unitCache[name].GF = faction
-		_xrp.unitCache[name].reliable = true
-		if xrpCache[name] then
-			xrpCache[name].fields.GF = faction
-		end
-	end
 	handlers[prefix](name, message, "BN")
 end
 function gameEvents.BN_TOON_NAME_UPDATED(event, presenceID)

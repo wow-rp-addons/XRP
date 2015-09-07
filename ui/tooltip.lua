@@ -271,7 +271,6 @@ do
 		Alliance = "Horde",
 		Horde = "Alliance",
 	}
-	local MERCENARY_BUFF = _xrp.L.MERCENARY_BUFF
 	local COLORS = {
 		friendly = "00991a",
 		neutral = "e6b300",
@@ -289,7 +288,7 @@ do
 
 		local defaultLines = 3
 		local playerFaction = xrp.current.GF
-		if UnitBuff("player", MERCENARY_BUFF[playerFaction]) then
+		if UnitIsMercenary("player") then
 			playerFaction = MERCENARY[playerFaction]
 		end
 		local attackMe = UnitCanAttack(unit, "player")
