@@ -1,17 +1,17 @@
-6.2.2.0 (2015-09-01):
+6.2.2.1 (2015-09-11):
 
-	- Support added for Mercenary mode. This support includes:
+	- Several changes have been made for Mercenary Mode to account for API
+	  improvements made late in the PTR cycle.
 
-		- Display fixes and adjustments to compensate for the issues
-		  introduced into the API by Mercenary mode.
+		- Improved faction detection when looking at other players as
+		  Mercenaries.
 
-		- Automated profile swapping when entering Mercenary mode. This swap,
-		  if enabled, takes precedence over all other forms and equipment sets
-		  when in Mercenary mode.
+		- Improved detection of being a Mercenary (rated battlegrounds will no
+		  longer sometimes be mistaken for Mercenary Mode).
 
-	- The default position of the minimap button has been adjusted slightly,
-	  as to not overlap with the group finder button in the default UI.
+		- Improved profile request attempts while a Mercenary or while
+		  examining Mercenaries.
 
-	- (Bugfix/Partial) Some reduction in the potential for triggering Blizzard
-	  bugs that can taint the standard raid frames. Most situations which can
-	  still taint the raid frames should warn and recommend reloading the UI.
+	- The Mercenary autoswap profile has explicitly been renamed to "Mercenary
+	  Mode" to avoid potential confusion with any equipment sets named
+	  "Mercenary" (if you name a set "Mercenary Mode", you're on your own).
