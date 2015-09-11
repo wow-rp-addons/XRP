@@ -61,7 +61,7 @@ XRPOptions_Mixin = {
 				elseif control.type == CONTROLTYPE_DROPDOWN then
 					for i, entry in ipairs(control.baseMenuList) do
 						if entry.arg1 == control.value then
-							UIDropDownMenu_SetText(control, entry.text)
+							control.Text:SetText(entry.text)
 							break
 						end
 					end
@@ -94,7 +94,7 @@ XRPOptions_Mixin = {
 				elseif control.type == CONTROLTYPE_DROPDOWN then
 					for i, entry in ipairs(control.baseMenuList) do
 						if entry.arg1 == control.value then
-							UIDropDownMenu_SetText(control, entry.text)
+							control.Text:SetText(entry.text)
 							break
 						end
 					end
@@ -128,7 +128,7 @@ XRPOptions_Mixin = {
 				elseif control.type == CONTROLTYPE_DROPDOWN then
 					for i, entry in ipairs(control.baseMenuList) do
 						if entry.arg1 == control.value then
-							UIDropDownMenu_SetText(control, entry.text)
+							control.Text:SetText(entry.text)
 							break
 						end
 					end
@@ -266,7 +266,7 @@ function XRPOptionsControls_OnLoad(self)
 		self.Label:SetText(OPTIONS_TEXT[self.xrpTable][self.xrpSetting])
 	end
 	if self.textString then
-		UIDropDownMenu_SetText(self, self.textString)
+		self.Text:SetText(self.textString)
 	end
 end
 
@@ -392,7 +392,7 @@ end
 do
 	local function DropDown_OnClick(self, arg1, arg2, checked)
 		if not checked then
-			UIDropDownMenu_SetText(UIDROPDOWNMENU_OPEN_MENU, arg2)
+			UIDROPDOWNMENU_OPEN_MENU.Text:SetText(arg2)
 			UIDROPDOWNMENU_OPEN_MENU.value = arg1
 			UIDROPDOWNMENU_OPEN_MENU:Set(arg1)
 		end
