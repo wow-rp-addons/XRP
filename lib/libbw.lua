@@ -52,7 +52,7 @@
 		- libbw:SendAddonMessage(prefix, message, "GUILD", nil, "ALERT")
 ]]
 
-local LIBBW_VERSION = 6
+local LIBBW_VERSION = 8
 
 if libbw and libbw.version >= LIBBW_VERSION then return end
 
@@ -428,23 +428,23 @@ end
 -- Hooks won't be run if function calls error (improper arguments).
 function libbw.hooks.SendAddonMessage(prefix, text, kind, target)
 	if isSending then return end
-	libbw[1].avail = libbw[1].avail - (#text + #kind + 16 + (target and #tostring(target) or 0))
+	libbw[1].avail = libbw[1].avail - (#tostring(text) + #kind + 16 + (target and #tostring(target) or 0))
 end
 function libbw.hooks.SendChatMessage(text, kind, languageID, target)
 	if isSending then return end
-	libbw[1].avail = libbw[1].avail - (#text + (kind and #kind or 0) + (target and #tostring(target) or 0))
+	libbw[1].avail = libbw[1].avail - (#tostring(text) + (kind and #kind or 0) + (target and #tostring(target) or 0))
 end
 function libbw.hooks.BNSendGameData(presenceID, prefix, text)
 	if isSending then return end
-	libbw[2].avail = libbw[2].avail - (#text + 18)
+	libbw[2].avail = libbw[2].avail - (#tostring(text) + 18)
 end
 function libbw.hooks.BNSendWhisper(presenceID, text)
 	if isSending then return end
-	libbw[2].avail = libbw[2].avail - #text
+	libbw[2].avail = libbw[2].avail - #tostring(text)
 end
 function libbw.hooks.BNSendConversationMessage(channelID, text)
 	if isSending then return end
-	libbw[2].avail = libbw[2].avail - #text
+	libbw[2].avail = libbw[2].avail - #tostring(text)
 end
 do
 	local function fake_OnUpdate(self, elapsed)
