@@ -49,3 +49,22 @@ function CompactUnitFrameProfiles_CancelChanges(self)
 	-- everything.
 	--CompactUnitFrameProfiles_ApplyCurrentSettings()
 end
+
+-- ElvUI (and some others) disable the entire HelpPlate system rather than
+-- specifically managing it on the frames they modify or handling the automated
+-- tutorials in a more granular way.
+--
+-- Since XRP makes use of it as the only help system, and very comprehensively,
+-- re-enable it. If those addons want to disable it on default frames, it
+-- should be done just for those frames.
+_xrp.HookGameEvent("PLAYER_LOGIN", function(event, ...)
+	if HelpPlate:GetParent() ~= UIParent then
+		HelpPlate:SetParent(UIParent)
+		HelpPlate:SetFrameStrata("DIALOG")
+	end
+	if HelpPlateTooltip:GetParent() ~= UIParent then
+		HelpPlateTooltip:SetParent(UIParent)
+		HelpPlateTooltip:SetFrameStrata("FULLSCREEN_DIALOG")
+		HelpPlateTooltip:SetFrameLevel(2)
+	end
+end)
