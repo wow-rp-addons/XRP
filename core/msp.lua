@@ -356,8 +356,8 @@ do
 					lastReceive = time(),
 				}
 				if _xrp.unitCache[name] then
-					for gField, isUnitField in pairs(UNIT_FIELDS) do
-						xrpCache[name].fields[gField] = _xrp.unitCache[name][gField]
+					for unitField, isUnitField in pairs(UNIT_FIELDS) do
+						xrpCache[name].fields[unitField] = _xrp.unitCache[name][unitField]
 					end
 				end
 			elseif field == "TT" and xrpCache[name] and version < (xrpCache[name].versions.TT or 0) then
@@ -401,10 +401,7 @@ do
 		end
 	end
 
-	-- Using GU is more efficient outgoing (~8 bytes less), but some addons don't
-	-- properly expose it always, and it's about as efficient for the other side if
-	-- we just ask for all the fields.
-	local TT_REQ = { "?TT", "?GC", "?GF", "?GR", "?GS" }
+	local TT_REQ = { "?TT" }
 	handlers = {
 		["MSP"] = function(name, message, channel)
 			local out
@@ -431,7 +428,7 @@ do
 			if out then
 				Send(name, out, channel)
 			end
-			if xrpCache[name] ~= nil then
+			if xrpCache[name] then
 				-- Cache timer. Last receive marked for clearing old entries.
 				xrpCache[name].lastReceive = time()
 			elseif not cache[name].time.TT then
@@ -660,9 +657,8 @@ function _xrp.QueueRequest(name, field)
 	end
 end
 
--- As also in TT_REQ, these are only slightly less efficient than using GF+GU,
--- but are much more reliable.
-local UNIT_REQUEST = { "GC", "GF", "GR", "GS" }
+-- Using GU+GF alone would be great, but it's not reliable.
+local UNIT_REQUEST = { "GC", "GF", "GR", "GS", "GU" }
 function _xrp.Request(name, fields)
 	if disabled or name == _xrp.playerWithRealm or xrp.ShortName(name) == UNKNOWN then
 		return false
@@ -693,19 +689,13 @@ function _xrp.Request(name, fields)
 	end
 
 	if not _xrp.unitCache[name] then
-		if not xrpCache[name] then
-			for i, field in ipairs(UNIT_REQUEST) do
+		for i, field in ipairs(UNIT_REQUEST) do
+			-- Only autorequest once per session.
+			if not cache[name].time[field] then
 				fields[#fields + 1] = field
 			end
-		else
-			local cached = xrpCache[name].fields
-			for i, field in ipairs(UNIT_REQUEST) do
-				if not cached[field] then
-					fields[#fields + 1] = field
-				end
-			end
 		end
-	elseif not _xrp.unitCache[name].GF and (not xrpCache[name] or not xrpCache[name].fields.GF) then
+	elseif not _xrp.unitCache[name].GF and not cache[name].time.GF then
 		fields[#fields + 1] = "GF"
 	end
 
