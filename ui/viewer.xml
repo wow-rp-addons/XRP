@@ -95,21 +95,21 @@
 					<Anchor point="TOPLEFT"/>
 				</Anchors>
 				<Scripts>
-					<OnTextChanged function="XRPTemplatesScrollFrameEditBox_ResetToStart"/>
+					<OnTextChanged function="XRPViewerScrollFrameEditBox_OnTextChanged"/>
 					<OnLoad function="XRPViewerScrollFrameEditBox_OnLoad"/>
 					<OnHyperlinkClick function="XRPViewerScrollFrameEditBox_OnHyperlinkClicked"/>
 				</Scripts>
 				<FontString inherits="GameFontWhite"/>
-				<Frames>
-					<Frame parentKey="Menu" hidden="true" mixin="XRPTemplatesMenu_Mixin">
-						<KeyValues>
-							<KeyValue key="displayMode" value="MENU"/>
-							<KeyValue key="baseMenuList" value="XRPViewerMultiline_baseMenuList" type="global"/>
-						</KeyValues>
-					</Frame>
-				</Frames>
 			</EditBox>
 		</ScrollChild>
+		<Frames>
+			<Frame parentKey="Menu" hidden="true" mixin="XRPTemplatesMenu_Mixin">
+				<KeyValues>
+					<KeyValue key="displayMode" value="MENU"/>
+					<KeyValue key="baseMenuList" value="XRPViewerMultiline_baseMenuList" type="global"/>
+				</KeyValues>
+			</Frame>
+		</Frames>
 	</ScrollFrame>
 	<Frame name="XRPViewer" parent="UIParent" inherits="XRPButtonFrameTemplate" resizable="true" clampedToScreen="true" mixin="XRPViewer_Mixin">
 		<Size x="439" y="525"/>
@@ -201,7 +201,7 @@
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Frame>
-			<Frame parentKey="Appearance" parentArray="panes" hidden="false">
+			<Frame parentKey="Appearance" parentArray="panes" useParentLevel="true" hidden="false">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.Inset" relativePoint="TOPLEFT"/>
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset" relativePoint="BOTTOMRIGHT"/>
@@ -274,7 +274,7 @@
 					</ScrollFrame>
 				</Frames>
 			</Frame>
-			<Frame parentKey="Biography" parentArray="panes" hidden="true">
+			<Frame parentKey="Biography" parentArray="panes" useParentLevel="true" hidden="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.Inset" relativePoint="TOPLEFT"/>
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset" relativePoint="BOTTOMRIGHT"/>

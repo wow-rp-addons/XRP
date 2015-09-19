@@ -159,7 +159,7 @@
 					<PreClick function="XRPEditorHelpButton_PreClick"/>
 				</Scripts>
 			</Button>
-			<Frame parentKey="Appearance" parentArray="panes" hidden="false">
+			<Frame parentKey="Appearance" parentArray="panes" useParentLevel="true" hidden="false">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.Inset" relativePoint="TOPLEFT"/>
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset" relativePoint="BOTTOMRIGHT"/>
@@ -283,7 +283,7 @@
 					</ScrollFrame>
 				</Frames>
 			</Frame>
-			<Frame parentKey="Biography" parentArray="panes" hidden="true">
+			<Frame parentKey="Biography" parentArray="panes" useParentLevel="true" hidden="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.Inset" relativePoint="TOPLEFT"/>
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset" relativePoint="BOTTOMRIGHT"/>

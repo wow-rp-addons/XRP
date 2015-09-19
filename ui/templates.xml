@@ -20,12 +20,12 @@
 	This file contains generic XRP frame templates. Component-specific
 	templates are held within the component's respective XML file.
 -->
-	<Button name="XRPTabButtonTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true">
+	<Button name="XRPTabButtonTemplate" useParentLevel="true" inherits="CharacterFrameTabButtonTemplate" virtual="true">
 		<Scripts>
 			<OnClick function="XRPTemplatesTabButton_OnClick"/>
 		</Scripts>
 	</Button>
-	<Frame name="XRPDropDownTemplate" inherits="UIDropDownMenuTemplate" virtual="true">
+	<Frame name="XRPDropDownTemplate" useParentLevel="true" inherits="UIDropDownMenuTemplate" virtual="true">
 		<KeyValues>
 			<KeyValue key="initialize" value="EasyMenu_Initialize" type="global"/>
 			<KeyValue key="point" value="TOPLEFT"/>
@@ -44,7 +44,7 @@
 		<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
 		<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
 	</CheckButton>
-	<ScrollFrame name="XRPScrollFrameTemplate" inherits="UIPanelScrollFrameTemplate" virtual="true">
+	<ScrollFrame name="XRPScrollFrameTemplate" useParentLevel="true" inherits="UIPanelScrollFrameTemplate" virtual="true">
 		<KeyValues>
 			<KeyValue key="scrollBarHideable" value="true" type="boolean"/>
 		</KeyValues>
@@ -163,7 +163,7 @@
 			<OnHide function="XRPTemplates_CloseDropDownMenus"/>
 		</Scripts>
 	</Button>
-	<Frame name="XRPPopoutTemplate" parentArray="popouts" enableMouse="true" hidden="true" virtual="true">
+	<Frame name="XRPPopoutTemplate" parentArray="popouts" toplevel="true" enableMouse="true" hidden="true" virtual="true">
 		<Anchors>
 			<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" y="-28"/>
 		</Anchors>
