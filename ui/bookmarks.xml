@@ -16,7 +16,7 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 	<Script file="bookmarks.lua"/>
-	<Button name="XRPBookmarksEntryTemplate" mixin="XRPTemplatesMenu_Mixin,XRPBookmarksEntry_Mixin" virtual="true">
+	<Button name="XRPBookmarksEntryTemplate" useParentLevel="true" mixin="XRPTemplatesMenu_Mixin,XRPBookmarksEntry_Mixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="registerClicks" value="LeftButtonUp,RightButtonUp"/>
 			<KeyValue key="displayMode" value="MENU"/>
@@ -143,7 +143,7 @@
 					<PreClick function="XRPBookmarksHelpButton_PreClick"/>
 				</Scripts>
 			</Button>
-			<ScrollFrame name="$parentList" parentKey="List" enableMouse="true" inherits="HybridScrollFrameTemplate">
+			<ScrollFrame name="$parentList" parentKey="List" enableMouse="true" useParentLevel="true" inherits="HybridScrollFrameTemplate">
 				<KeyValues>
 					<KeyValue key="update" value="XRPBookmarksList_update" type="global"/>
 				</KeyValues>
@@ -215,7 +215,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Frame name="$parentMenu" parentKey="Menu" mixin="XRPTemplatesMenu_Mixin" hidden="true">
+					<Frame name="$parentMenu" parentKey="Menu" useParentLevel="true" mixin="XRPTemplatesMenu_Mixin" hidden="true">
 						<KeyValues>
 							<KeyValue key="displayMode" value="MENU"/>
 							<KeyValue key="point" value="TOPLEFT"/>
@@ -229,7 +229,7 @@
 							</Layer>
 						</Layers>
 						<Frames>
-							<Frame name="$parentIcon" parentKey="Icon"/>
+							<Frame name="$parentIcon" parentKey="Icon" useParentLevel="true"/>
 						</Frames>
 					</Frame>
 				</Frames>
@@ -238,7 +238,7 @@
 					<OnHide function="XRPTemplates_CloseDropDownMenus"/>
 				</Scripts>
 			</Button>
-			<EditBox inherits="SearchBoxTemplate" parentKey="FilterText">
+			<EditBox parentKey="FilterText" inherits="SearchBoxTemplate">
 				<Size x="130" y="22"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.FilterButton" relativePoint="LEFT" x="-5" y="1"/>

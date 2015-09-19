@@ -219,6 +219,25 @@ function XRPViewerScrollFrameEditBox_OnLoad(self)
 	self:SetHyperlinksEnabled(true)
 end
 
+local function FixLevel(targetLevel, ...)
+	for i = 1, select("#", ...) do
+		local frame = select(i, ...)
+		if frame:GetFrameLevel() < targetLevel then
+			frame:SetFrameLevel(targetLevel)
+		end
+	end
+end
+
+local function XRPViewerScrollFrameEditBox_OnUpdate(self, elapsed)
+	FixLevel(self:GetFrameLevel() + 1, self:GetChildren())
+	self:SetScript("OnUpdate", nil)
+end
+
+function XRPViewerScrollFrameEditBox_OnTextChanged(self, userInput)
+	self:SetScript("OnUpdate", XRPViewerScrollFrameEditBox_OnUpdate)
+	XRPTemplatesScrollFrameEditBox_ResetToStart(self, userInput)
+end
+
 do
 	local function Menu_Click(self, arg1, arg2, checked)
 		if arg1 == "XRP_TWEET" then
@@ -255,13 +274,14 @@ function XRPViewerScrollFrameEditBox_OnHyperlinkClicked(self, linkData, link, bu
 				StaticPopup_Show("XRP_URL", nil, nil, ("https://twitter.com/%s"):format(linkData:match("^@(.-)$")))
 			end
 		elseif button == "RightButton" then
+			local parent = self:GetParent()
 			if not C_Social.IsSocialEnabled() then
-				self.Menu.baseMenuList[1].disabled = true
+				parent.Menu.baseMenuList[1].disabled = true
 			else
-				self.Menu.baseMenuList[1].disabled = nil
+				parent.Menu.baseMenuList[1].disabled = nil
 			end
-			self.Menu.linkData = linkData
-			ToggleDropDownMenu(nil, nil, self.Menu, "cursor", nil, nil, self.Menu.baseMenuList)
+			parent.Menu.linkData = linkData
+			ToggleDropDownMenu(nil, nil, parent.Menu, "cursor", nil, nil, parent.Menu.baseMenuList)
 		end
 	end
 end
