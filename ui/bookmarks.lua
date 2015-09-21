@@ -237,7 +237,9 @@ do
 			{ text = CANCEL, notCheckable = true, func = _xrp.DoNothing, },
 		},
 		onHide = function(level)
-			UIDROPDOWNMENU_OPEN_MENU.Selected:Hide()
+			if level < 3 then
+				UIDROPDOWNMENU_OPEN_MENU.Selected:Hide()
+			end
 		end,
 	}
 end
