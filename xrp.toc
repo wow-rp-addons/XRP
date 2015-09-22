@@ -33,6 +33,7 @@ ui\viewer.xml
 ui\bookmarks.xml
 ui\editor.xml
 ui\options.xml
+lib\dropfix.lua
 extra\fixes.lua
 extra\libmsp_compat.lua
 extra\import.lua
