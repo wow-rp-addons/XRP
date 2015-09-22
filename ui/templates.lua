@@ -80,35 +80,43 @@ function XRPTemplatesTabButton_OnClick(self, button, down)
 	PlaySound("igCharacterInfoTab")
 end
 
-local function XRPTemplatesDropDown_OnClick(self, button, down)
-	local parent = self:GetParent()
-	-- This uses baseMenuList instead of the default menuList, as menuList is
-	-- overwritten when a second-level menu pops out.
-	ToggleDropDownMenu(nil, nil, parent, nil, nil, nil, parent.baseMenuList)
-	PlaySound("igMainMenuOptionCheckBoxOn")
-end
-
 function XRPTemplatesDropDown_OnLoad(self)
-	local button = _G[self:GetName() .. "Button"]
-	button:SetScript("OnClick", XRPTemplatesDropDown_OnClick)
 	self.Text = _G[self:GetName() .. "Text"]
 	if self.width then
 		UIDropDownMenu_SetWidth(self, self.width, 0)
 	end
 	if self.preClick then
-		button:SetScript("PreClick", self.preClick)
+		_G[self:GetName() .. "Button"]:SetScript("PreClick", self.preClick)
 	end
 end
 
-XRPTemplatesMenu_Mixin = {
-	initialize = EasyMenu_Initialize,
-	SetHeight = _xrp.DoNothing,
-}
+do
+	local function Menu_Initialize(self, level, menuList)
+		if level == 1 then
+			menuList = self.baseMenuList or self:GetParent().baseMenuList
+		end
+		for i, entry in ipairs(menuList) do
+			if (entry.text) then
+				UIDropDownMenu_AddButton(entry, level)
+			end
+		end
+	end
+
+	XRPTemplatesDropDown_Mixin = {
+		initialize = Menu_Initialize,
+		relativePoint = "BOTTOMRIGHT",
+		xOffset = -11,
+		yOffset = 22,
+	}
+
+	XRPTemplatesMenu_Mixin = {
+		initialize = Menu_Initialize,
+		SetHeight = _xrp.DoNothing,
+	}
+end
 
 function XRPTemplatesMenu_OnClick(self, button, down)
-	-- This uses baseMenuList instead of the default menuList, as menuList is
-	-- overwritten when a second-level menu pops out.
-	ToggleDropDownMenu(nil, nil, self.Menu or self, self, nil, nil, self.baseMenuList)
+	ToggleDropDownMenu(nil, nil, self.Menu or self, self)
 	PlaySound("igMainMenuOptionCheckBoxOn")
 end
 

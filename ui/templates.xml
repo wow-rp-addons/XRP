@@ -25,14 +25,7 @@
 			<OnClick function="XRPTemplatesTabButton_OnClick"/>
 		</Scripts>
 	</Button>
-	<Frame name="XRPDropDownTemplate" useParentLevel="true" inherits="UIDropDownMenuTemplate" virtual="true">
-		<KeyValues>
-			<KeyValue key="initialize" value="EasyMenu_Initialize" type="global"/>
-			<KeyValue key="point" value="TOPLEFT"/>
-			<KeyValue key="relativePoint" value="BOTTOMRIGHT"/>
-			<KeyValue key="xOffset" value="-11" type="number"/>
-			<KeyValue key="yOffset" value="22" type="number"/>
-		</KeyValues>
+	<Frame name="XRPDropDownTemplate" useParentLevel="true" inherits="UIDropDownMenuTemplate" mixin="XRPTemplatesDropDown_Mixin" virtual="true">
 		<Scripts>
 			<OnLoad function="XRPTemplatesDropDown_OnLoad"/>
 		</Scripts>
