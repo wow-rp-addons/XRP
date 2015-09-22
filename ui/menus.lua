@@ -68,9 +68,8 @@ _xrp.settingsToggles.menus = {
 			if standard == nil then
 				hooksecurefunc("UnitPopup_HideButtons", UnitPopup_HideButtons_Hook)
 				for i, button in ipairs(UnitPopupMenus["FRIEND"]) do
-					if button == "TARGET" then
+					if button == "TARGET" or button == "PVP_REPORT_AFK" then
 						table.remove(UnitPopupMenus["FRIEND"], i)
-						break
 					end
 				end
 				for i, button in ipairs(UnitPopupMenus["GUILD"]) do
@@ -145,15 +144,13 @@ _xrp.settingsToggles.menus = {
 					end
 				end
 				for i, button in ipairs(UnitPopupMenus["PARTY"]) do
-					if button == "SET_FOCUS" then
+					if button == "SET_FOCUS" or button == "PVP_REPORT_AFK" then
 						table.remove(UnitPopupMenus["PARTY"], i)
-						break
 					end
 				end
 				for i, button in ipairs(UnitPopupMenus["RAID_PLAYER"]) do
-					if button == "SET_FOCUS" then
+					if button == "SET_FOCUS" or button == "PVP_REPORT_AFK" then
 						table.remove(UnitPopupMenus["RAID_PLAYER"], i)
-						break
 					end
 				end
 			end
