@@ -22,7 +22,7 @@ _xrp.settingsToggles = {
 }
 
 local DATA_VERSION = 6
-local DATA_VERSION_ACCOUNT = 12
+local DATA_VERSION_ACCOUNT = 13
 
 _xrp.DEFAULT_SETTINGS = {
 	cache = {
@@ -267,6 +267,11 @@ local upgradeAccountVars = {
 	[12] = function() -- 6.1.2.0
 		if not xrpAccountSaved.notes then
 			xrpAccountSaved.notes = {}
+		end
+	end,
+	[13] = function() -- 6.2.2.2
+		for name, cache in pairs(xrpCache) do
+			cache.fields.reliable = nil
 		end
 	end,
 }
