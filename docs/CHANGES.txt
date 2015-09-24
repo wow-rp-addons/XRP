@@ -1,17 +1,25 @@
-6.2.2.1 (2015-09-11):
+6.2.2.2 (2015-09-23):
 
-	- Several changes have been made for Mercenary Mode to account for API
-	  improvements made late in the PTR cycle.
+	- (Bugfix) Fixed a rare issue that could create unclickable links in the
+	  profile viewer.
 
-		- Improved faction detection when looking at other players as
-		  Mercenaries.
+	- (Bugfix) Fixed an issue that could prevent the bookmarks full-text
+	  search from working.
 
-		- Improved detection of being a Mercenary (rated battlegrounds will no
-		  longer sometimes be mistaken for Mercenary Mode).
+	- (Bugfix) Completely (hopefully) fixed the tainting issues with dropdown
+	  menus and, especially, the built-in raid frames. In theory, WoW should
+	  never blame XRP for taint now.
 
-		- Improved profile request attempts while a Mercenary or while
-		  examining Mercenaries.
+	- (Bugfix) Prevent "Report player Away" menu entries in Battlegrounds from
+	  failing, by removing those buttons where appropriate.
 
-	- The Mercenary autoswap profile has explicitly been renamed to "Mercenary
-	  Mode" to avoid potential confusion with any equipment sets named
-	  "Mercenary" (if you name a set "Mercenary Mode", you're on your own).
+		- Note: Players may still be reported AFK from the scoreboard or from
+		  the battleground map. The only menus affected are the chat menus and
+		  unit frame menus -- and only if XRP's integration with those is
+		  enabled.
+
+	- (Bugfix) Fixed an issue with non-string values in the bandwidth library.
+
+	- (Compatibility) The help overlay system will now properly work in ElvUI
+	  and derivatives. You may note similar help systems appearing in other
+	  addons where they formerly did not.
