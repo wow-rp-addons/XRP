@@ -45,10 +45,15 @@ local function UnitPopup_HideButtons_Hook()
 	if not standard or UIDROPDOWNMENU_INIT_MENU.which ~= "BN_FRIEND" or UIDROPDOWNMENU_MENU_VALUE and UIDROPDOWNMENU_MENU_VALUE ~= "BN_FRIEND" then return end
 	for i, button in ipairs(UnitPopupMenus["BN_FRIEND"]) do
 		if button == "XRP_VIEW_BN" then
-			if not UIDROPDOWNMENU_INIT_MENU.presenceID or select(3, BNGetToonInfo(select(6, BNGetFriendInfoByID(UIDROPDOWNMENU_INIT_MENU.presenceID)))) ~= "WoW" then
+			if not UIDROPDOWNMENU_INIT_MENU.presenceID then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][i] = 0
 			else
-				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][i] = 1
+				local active, toonName, client, realmName = BNGetToonInfo(select(6, BNGetFriendInfoByID(UIDROPDOWNMENU_INIT_MENU.presenceID)))
+				if client ~= "WoW" or realmName == "" then
+					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][i] = 0
+				else
+					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][i] = 1
+				end
 			end
 			break
 		end
