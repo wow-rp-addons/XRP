@@ -54,16 +54,16 @@ _xrp.help.bookmarks = {
 
 local EDITOR_MAIN = {
 	{
-		ButtonPos = { x = 114, y = 3 },
-		HighLightBox = { x = 152, y = -3, width = 179, height = 32 },
+		ButtonPos = { x = 74, y = 0 },
+		HighLightBox = { x = 112, y = -6, width = 261, height = 32 },
 		ToolTipDir = "DOWN",
 		ToolTipText = _xrp.L.HELP_EDITOR_CONTROLS,
 	},
 	{
-		ButtonPos = { x = 358, y = 34 },
-		HighLightBox = { x = 394, y = 22, width = 22, height = 22 },
+		ButtonPos = { x = 370, y = 0 },
+		HighLightBox = { x = 406, y = 0, width = 28, height = 42 },
 		ToolTipDir = "DOWN",
-		ToolTipText = _xrp.L.HELP_EDITOR_MENU,
+		ToolTipText = _xrp.L.HELP_EDITOR_POPOUTS,
 	},
 	{
 		ButtonPos = { x = 174, y = -466 },
@@ -310,7 +310,13 @@ _xrp.help.viewer = {
 		ButtonPos = { x = 355, y = 1 },
 		HighLightBox = { x = 79, y = -1, width = 285, height = 42 },
 		ToolTipDir = "RIGHT",
-		ToolTipText = _xrp.L.HELP_VIEWER_LINES
+		ToolTipText = _xrp.L.HELP_VIEWER_LINES,
+	},
+	{
+		ButtonPos = { x = 424, y = -8 },
+		HighLightBox = { x = 406, y = -18, width = 28, height = 24 },
+		ToolTipDir = "RIGHT",
+		ToolTipText = _xrp.L.HELP_VIEWER_POPOUTS,
 	},
 	{
 		ButtonPos = { x = 388, y = -38 },
@@ -354,26 +360,29 @@ function XRPViewerHelpButton_PreClick(self, button, down)
 	-- Single lines
 	plates[2].ButtonPos.x = width - 84
 	plates[2].HighLightBox.width = width - 154
+	-- Notes button
+	plates[3].ButtonPos.x = width - 15
+	plates[3].HighLightBox.x = width - 33
 	-- Single boxes
-	plates[3].ButtonPos.x = width - 51
-	plates[3].HighLightBox.width = width - 25
-	-- Multiline boxes
 	plates[4].ButtonPos.x = width - 51
 	plates[4].HighLightBox.width = width - 25
-	plates[4].HighLightBox.height = height - 170
+	-- Multiline boxes
+	plates[5].ButtonPos.x = width - 51
+	plates[5].HighLightBox.width = width - 25
+	plates[5].HighLightBox.height = height - 170
 	-- Addon info
-	plates[5].ButtonPos.x = width - 255
-	plates[5].ButtonPos.y = 59 - height
-	plates[5].HighLightBox.y = 48 - height
-	plates[5].HighLightBox.width = width - 239
-	-- Status info
-	plates[6].ButtonPos.x = width - 221
+	plates[6].ButtonPos.x = width - 255
 	plates[6].ButtonPos.y = 59 - height
-	plates[6].HighLightBox.x = width - 201
 	plates[6].HighLightBox.y = 48 - height
+	plates[6].HighLightBox.width = width - 239
+	-- Status info
+	plates[7].ButtonPos.x = width - 221
+	plates[7].ButtonPos.y = 59 - height
+	plates[7].HighLightBox.x = width - 201
+	plates[7].HighLightBox.y = 48 - height
 	-- Resize handle
-	plates[7].ButtonPos.x = width - 10
-	plates[7].ButtonPos.y = 54 - height
-	plates[7].HighLightBox.x = width - 13
-	plates[7].HighLightBox.y = 39 - height
+	plates[8].ButtonPos.x = width - 10
+	plates[8].ButtonPos.y = 54 - height
+	plates[8].HighLightBox.x = width - 13
+	plates[8].HighLightBox.y = 39 - height
 end

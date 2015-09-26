@@ -261,6 +261,40 @@ do
 	end
 end
 
+function XRPTemplatesPopoutButton_OnLoad(self)
+	self:SetFrameLevel(self:GetFrameLevel() + 1)
+	local popout = self:GetParent()[self.popout]
+	popout:HookScript("OnShow", function(...)
+		self.Icon:SetTexCoord(1, 0, 0, 1)
+	end)
+	popout:HookScript("OnHide", function(...)
+		self.Icon:SetTexCoord(0, 1, 0, 1)
+	end)
+end
+
+function XRPTemplatesPopoutButton_OnMouseDown(self)
+	if self:IsEnabled() and self.MainIcon then
+		local point, relativeTo, relativePoint, x, y = self.MainIcon:GetPoint(1)
+		self.MainIcon:SetPoint(point, x + 1, y - 1)
+	end
+end
+
+function XRPTemplatesPopoutButton_OnMouseUp(self)
+	if self:IsEnabled() and self.MainIcon then
+		local point, relativeTo, relativePoint, x, y = self.MainIcon:GetPoint(1)
+		self.MainIcon:SetPoint(point, x - 1, y + 1)
+	end
+end
+
+function XRPTemplatesPopoutButton_OnClick(self, button, down)
+	local popout = self:GetParent()[self.popout]
+	if not popout:IsShown() then
+		popout:Show()
+	else
+		popout:Hide()
+	end
+end
+
 function XRPTemplatesPopout_OnShow(self)
 	for i, popout in ipairs(self:GetParent().popouts) do
 		if popout ~= self and popout:IsVisible() then

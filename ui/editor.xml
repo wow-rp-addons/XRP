@@ -377,7 +377,7 @@
 					<KeyValue key="width" value="100" type="number"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-200" y="-27"/>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-242" y="-30"/>
 				</Anchors>
 			</Button>
 			<Button parentKey="Plus" inherits="XRPEditorProfileControlTemplate" text=" + ">
@@ -397,6 +397,35 @@
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.Plus" relativePoint="RIGHT"/>
 				</Anchors>
+			</Button>
+			<Button parentKey="R" inherits="XRPEditorProfileControlTemplate" text=" R ">
+				<KeyValues>
+					<KeyValue key="popup" value="XRP_EDITOR_RENAME"/>
+					<KeyValue key="tooltipKey" value="RENAME"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Minus" relativePoint="RIGHT"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="C" inherits="XRPEditorProfileControlTemplate" text=" C ">
+				<KeyValues>
+					<KeyValue key="popup" value="XRP_EDITOR_COPY"/>
+					<KeyValue key="tooltipKey" value="COPY"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.R" relativePoint="RIGHT"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="E" inherits="XRPEditorProfileControlTemplate" text=" E ">
+				<KeyValues>
+					<KeyValue key="tooltipKey" value="EXPORT"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.C" relativePoint="RIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="XRPEditorEButton_OnClick"/>
+				</Scripts>
 			</Button>
 			<Button parentKey="Parent" inherits="MagicButtonTemplate" mixin="XRPTemplatesMenu_Mixin">
 				<Size x="192" y="22"/>
@@ -429,14 +458,6 @@
 				</Anchors>
 				<Scripts>
 					<OnClick function="XRPEditorRevert_OnClick"/>
-				</Scripts>
-			</Button>
-			<Button inherits="XRPMenuButtonTemplate">
-				<KeyValues>
-					<KeyValue key="baseMenuList" value="XRPEditorMenu_baseMenuList" type="global"/>
-				</KeyValues>
-				<Scripts>
-					<PreClick function="XRPEditorMenu_PreClick"/>
 				</Scripts>
 			</Button>
 			<Button name="$parentTab1" parentKey="Tab1" inherits="XRPTabButtonTemplate" id="1" text="XRP_APPEARANCE">
@@ -537,6 +558,26 @@
 					<OnShow inherit="append" function="XRPEditorNotes_OnShow"/>
 				</Scripts>
 			</Frame>
+			<Button name="$parentNotesButton" inherits="XRPNotesButtonTemplate"/>
+			<Button name="$parentAutomationButton" parentKey="AutomationButton" inherits="XRPPopoutButtonTemplate" virtual="true">
+				<KeyValues>
+					<KeyValue key="popout" value="Automation"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="BOTTOM" relativeKey="$parent.NotesButton" relativePoint="TOP" y="-2"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="MainIcon" file="Interface/ChatFrame/UI-ChatConversationIcon">
+							<Size x="12" y="13"/>
+							<Anchors>
+								<Anchor point="CENTER" x="-2"/>
+							</Anchors>
+							<Color r="1.0" g="0.80" b="0.20"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Button>
 		</Frames>
 		<Attributes>
 			<Attribute name="UIPanelLayout-pushable" type="number" value="4"/>

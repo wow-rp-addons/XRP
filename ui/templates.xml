@@ -139,22 +139,47 @@
 			<OnUpdate function="XRPCursorBook_OnUpdate"/>
 		</Scripts>
 	</Frame>
-	<Button name="XRPMenuButtonTemplate" parentKey="Menu" inherits="UIPanelButtonTemplate" text="v" mixin="XRPTemplatesMenu_Mixin" virtual="true">
-		<KeyValues>
-			<KeyValue key="displayMode" value="MENU"/>
-			<KeyValue key="point" value="TOPRIGHT"/>
-			<KeyValue key="relativePoint" value="BOTTOMRIGHT"/>
-			<KeyValue key="xOffset" value="0" type="number"/>
-			<KeyValue key="yOffset" value="0" type="number"/>
-		</KeyValues>
-		<Size x="23" y="19"/>
-		<Anchors>
-			<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-23" y="-1"/>
-		</Anchors>
+	<Button name="XRPPopoutButtonTemplate" inherits="UIMenuButtonStretchTemplate" virtual="true">
+		<Size x="24" y="20"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon" file="Interface\ChatFrame\ChatFrameExpandArrow">
+					<Size x="8" y="12"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="RIGHT" x="-2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
 		<Scripts>
-			<OnClick function="XRPTemplatesMenu_OnClick"/>
-			<OnHide function="XRPTemplates_CloseDropDownMenus"/>
+			<OnLoad function="XRPTemplatesPopoutButton_OnLoad"/>
+			<OnMouseDown inherit="prepend" function="XRPTemplatesPopoutButton_OnMouseDown"/>
+			<OnMouseUp inherit="prepend" function="XRPTemplatesPopoutButton_OnMouseUp"/>
+			<OnClick function="XRPTemplatesPopoutButton_OnClick"/>
 		</Scripts>
+		<HighlightTexture file="Interface\Buttons\UI-Silver-Button-Highlight" alphaMode="ADD">
+			<TexCoords left="0" right="1.0" top="0.03" bottom="0.7175"/>
+			<Color r="1.0" g="0.5" b="0.5"/>
+		</HighlightTexture>
+	</Button>
+	<Button name="XRPNotesButtonTemplate" parentKey="NotesButton" inherits="XRPPopoutButtonTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="popout" value="Notes"/>
+		</KeyValues>
+		<Anchors>
+			<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset" relativePoint="TOPRIGHT" y="-2"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="MainIcon" file="Interface/FriendsFrame/UI-FriendsFrame-Note">
+					<Size x="12" y="10"/>
+					<Anchors>
+						<Anchor point="CENTER" x="-1"/>
+					</Anchors>
+					<Color r="0.95" g="0.77" b="0.1"/>
+				</Texture>
+			</Layer>
+		</Layers>
 	</Button>
 	<Frame name="XRPPopoutTemplate" parentArray="popouts" toplevel="true" enableMouse="true" hidden="true" virtual="true">
 		<Anchors>
