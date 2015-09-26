@@ -41,7 +41,7 @@
 	by simply wiping them out.
 ]]
 
-local DROPFIX_VERSION = 1
+local DROPFIX_VERSION = 2
 
 if dropfix and dropfix.version >= DROPFIX_VERSION then return end
 
@@ -54,24 +54,29 @@ if not dropfix then
 	}
 end
 
-local safe = {
+-- The following are default components of the DropDownList buttons. Even if
+-- they're tainted, they should never be removed. Taint is better than
+-- completely breaking it.
+local default = {
 	[0] = true,
 	invisibleButton = true,
 }
 function dropfix.hooks.UIDropDownMenu_InitializeHelper(frame)
-	local menuName = UIDROPDOWNMENU_INIT_MENU.GetName and UIDROPDOWNMENU_INIT_MENU:GetName()
+	-- First conditional checks for poor coding practices where someone fakes
+	-- being a frame too well for a simple check, but too poorly to actually
+	-- work like a real frame.
+	local menuName = type(rawget(UIDROPDOWNMENU_INIT_MENU, 0)) == "userdata" and UIDROPDOWNMENU_INIT_MENU.GetName and UIDROPDOWNMENU_INIT_MENU:GetName()
 	local isSecure = menuName and issecurevariable(menuName)
 	if isSecure and not dropfix.lastSecure then
-		-- Any non-default component of the dropdown buttons could be tainted
-		-- and could cause taint to spread (especially with the GetSelectedX
-		-- functions). It would be more 'proper' to check issecurevariable(),
-		-- but that'd be a waste of cycles when this is perfectly safe to do
-		-- during initialization.
+		-- Any non-default component of the dropdown buttons which become
+		-- tainted could cause taint to spread rapidly. This typically happens
+		-- through value and UIDropDownMenu_SetSelectedValue(), but it can
+		-- happen elsewhere too.
 		for i = 1, UIDROPDOWNMENU_MAXLEVELS do
 			for j = 1, UIDROPDOWNMENU_MAXBUTTONS do
 				local button = _G[("DropDownList%dButton%d"):format(i, j)]
 				for k, v in pairs(button) do
-					if not safe[k] then
+					if not default[k] and not issecurevariable(button, k) then
 						button[k] = nil
 					end
 				end
@@ -83,8 +88,7 @@ function dropfix.hooks.UIDropDownMenu_InitializeHelper(frame)
 		-- UIDropDownMenu_Initialize() reads it. This temporarily removes the
 		-- displayMode key from the offending frame, followed by re-adding it
 		-- as soon as possible (before the next framedraw, but after the
-		-- current execution completes). I'm not fond of the closure, but it
-		-- shouldn't be run enough to *really* matter.
+		-- current execution completes).
 		local fixMenu, fixDisplayMode = UIDROPDOWNMENU_OPEN_MENU, UIDROPDOWNMENU_OPEN_MENU.displayMode
 		UIDROPDOWNMENU_OPEN_MENU.displayMode = nil
 		C_Timer.After(0, function()
