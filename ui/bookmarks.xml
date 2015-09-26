@@ -197,9 +197,9 @@
 				</Scripts>
 			</Button>
 			<Button name="$parentFilterButton" parentKey="FilterButton" inherits="UIMenuButtonStretchTemplate" text="FILTER">
-			<KeyValues>
-				<KeyValue key="baseMenuList" value="XRPBookmarksFilterButton_baseMenuList" type="global"/>
-			</KeyValues>
+				<KeyValues>
+					<KeyValue key="baseMenuList" value="XRPBookmarksFilterButton_baseMenuList" type="global"/>
+				</KeyValues>
 				<Size x="93" y="28"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.RefreshButton" relativePoint="LEFT" x="-5" y="-1"/>
