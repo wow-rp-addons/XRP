@@ -158,9 +158,7 @@ do
 		end
 	end
 	local function Menu_Click(self, arg1, arg2, checked)
-		if arg1 == "XRP_NOTES" then
-			XRPViewer.Notes:Show()
-		elseif arg1 == "XRP_REFRESH" then
+		if arg1 == "XRP_REFRESH" then
 			if current.noRequest then
 				Load(xrp.characters.byName[tostring(current)])
 			else
@@ -187,18 +185,17 @@ do
 		end
 	end
 	local Advanced_menuList = {
-		{ text = _xrp.L.EXPORT, arg1 = "XRP_EXPORT", arg2 = true, notCheckable = true, func = Menu_Click, },
 		{ text = _xrp.L.FORCE_REFRESH .. CONTINUED, arg1 = "XRP_REFRESH_FORCE", arg2 = true, notCheckable = true, func = Menu_Click, },
 		{ text = _xrp.L.DROP_CACHE .. CONTINUED, arg1 = "XRP_CACHE_DROP", arg2 = true, notCheckable = true, func = Menu_Click, },
 	}
 	XRPViewerMenu_baseMenuList = {
-		{ text = _xrp.L.NOTES, arg1 = "XRP_NOTES", notCheckable = true, func = Menu_Click, },
 		{ text = REFRESH, arg1 = "XRP_REFRESH", notCheckable = true, func = Menu_Click, },
 		{ text = ADD_FRIEND, arg1 = "XRP_FRIEND", notCheckable = true, func = Menu_Click, },
 		{ text = _xrp.L.BOOKMARK, arg1 = "XRP_BOOKMARK", isNotRadio = true, checked = Menu_Checked, func = Menu_Click, },
 		{ text = _xrp.L.HIDE_PROFILE, arg1 = "XRP_HIDE", isNotRadio = true, checked = Menu_Checked, func = Menu_Click, },
+		{ text = _xrp.L.EXPORT, arg1 = "XRP_EXPORT", notCheckable = true, func = Menu_Click, },
 		{ text = ADVANCED_LABEL, notCheckable = true, hasArrow = true, menuList = Advanced_menuList, },
-		{ text = CLOSE, notCheckable = true, func = _xrp.DoNothing, },
+		{ text = CANCEL, notCheckable = true, func = _xrp.DoNothing, },
 	}
 end
 
@@ -290,7 +287,7 @@ function XRPViewerMenu_PreClick(self, button, down)
 	local name, isOwn = tostring(current), current.own
 	local GF = xrp.characters.noRequest.byName[name].fields.GF
 	if GF and GF ~= xrp.current.GF then
-		self.baseMenuList[3].disabled = true
+		self.baseMenuList[2].disabled = true
 	else
 		local name = Ambiguate(name, "none")
 		local isFriend = isOwn
@@ -302,35 +299,33 @@ function XRPViewerMenu_PreClick(self, button, down)
 				end
 			end
 		end
-		self.baseMenuList[3].disabled = isFriend
+		self.baseMenuList[2].disabled = isFriend
 	end
 	if not current.canRefresh then
-		self.baseMenuList[2].disabled = true
+		self.baseMenuList[1].disabled = true
 	else
-		self.baseMenuList[2].disabled = nil
+		self.baseMenuList[1].disabled = nil
 	end
 	local noProfile = not xrp.characters.noRequest.byName[name].fields.VA
 	if isOwn or noProfile then
+		self.baseMenuList[3].disabled = true
 		self.baseMenuList[4].disabled = true
-		self.baseMenuList[5].disabled = true
-		self.baseMenuList[6].menuList[2].disabled = true
+		self.baseMenuList[6].menuList[1].disabled = true
 		if name == _xrp.playerWithRealm or noProfile then
-			self.baseMenuList[6].menuList[3].disabled = true
+			self.baseMenuList[6].menuList[2].disabled = true
 		else
-			self.baseMenuList[6].menuList[3].disabled = nil
+			self.baseMenuList[6].menuList[2].disabled = nil
 		end
 	else
+		self.baseMenuList[3].disabled = nil
 		self.baseMenuList[4].disabled = nil
-		self.baseMenuList[5].disabled = nil
+		self.baseMenuList[6].menuList[1].disabled = nil
 		self.baseMenuList[6].menuList[2].disabled = nil
-		self.baseMenuList[6].menuList[3].disabled = nil
 	end
 	if noProfile then
-		self.baseMenuList[1].disabled = true
-		self.baseMenuList[6].menuList[1].disabled = true
+		self.baseMenuList[5].disabled = true
 	else
-		self.baseMenuList[1].disabled = nil
-		self.baseMenuList[6].menuList[1].disabled = nil
+		self.baseMenuList[5].disabled = nil
 	end
 end
 

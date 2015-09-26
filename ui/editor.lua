@@ -133,6 +133,10 @@ function XRPEditorPopup_OnClick(self, button, down)
 	StaticPopup_Show(self.popup, XRPEditor.Profiles.contents)
 end
 
+function XRPEditorEButton_OnClick(self, button, down)
+	XRPExport:Export(XRPEditor.Profiles.contents, tostring(xrp.profiles[XRPEditor.Profiles.contents].fields))
+end
+
 function XRPEditorRevert_OnClick(self, button, down)
 	XRPEditor:Edit(XRPEditor.Profiles.contents)
 end
@@ -195,30 +199,6 @@ do
 		end
 		XRPEditorFC_baseMenuList = baseMenuList
 	end
-end
-
-do
-	local function Menu_Click(self, arg1, arg2, checked)
-		if arg1 == "XRP_NOTES" then
-			XRPEditor.Notes:Show()
-		elseif arg1 == "XRP_AUTOMATION" then
-			XRPEditor.Automation:Show()
-		elseif arg1 == "XRP_EXPORT" then
-			XRPExport:Export(XRPEditor.Profiles.contents, tostring(xrp.profiles[XRPEditor.Profiles.contents].fields))
-		elseif arg1 == "XRP_RENAME" then
-			StaticPopup_Show("XRP_EDITOR_RENAME", XRPEditor.Profiles.contents)
-		elseif arg1 == "XRP_COPY" then
-			StaticPopup_Show("XRP_EDITOR_COPY", XRPEditor.Profiles.contents)
-		end
-	end
-	XRPEditorMenu_baseMenuList = {
-		{ text = _xrp.L.NOTES, arg1 = "XRP_NOTES", notCheckable = true, func = Menu_Click, },
-		{ text = _xrp.L.AUTOMATION, arg1 = "XRP_AUTOMATION", notCheckable = true, func = Menu_Click, },
-		{ text = _xrp.L.EXPORT, arg1 = "XRP_EXPORT", notCheckable = true, func = Menu_Click, },
-		{ text = _xrp.L.RENAME .. CONTINUED, arg1 = "XRP_RENAME", notCheckable = true, func = Menu_Click, },
-		{ text = _xrp.L.COPY .. CONTINUED, arg1 = "XRP_COPY", notCheckable = true, func = Menu_Click, },
-		{ text = CLOSE, notCheckable = true, func = _xrp.DoNothing, },
-	}
 end
 
 function XRPEditorControls_OnAttributeChanged(self, name, value)

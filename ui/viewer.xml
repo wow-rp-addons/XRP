@@ -329,12 +329,23 @@
 					</ScrollFrame>
 				</Frames>
 			</Frame>
-			<Button inherits="XRPMenuButtonTemplate">
+			<Button parentKey="Menu" inherits="UIPanelButtonTemplate" text="v" mixin="XRPTemplatesMenu_Mixin">
 				<KeyValues>
+					<KeyValue key="displayMode" value="MENU"/>
+					<KeyValue key="point" value="TOPRIGHT"/>
+					<KeyValue key="relativePoint" value="BOTTOMRIGHT"/>
+					<KeyValue key="xOffset" value="0" type="number"/>
+					<KeyValue key="yOffset" value="0" type="number"/>
 					<KeyValue key="baseMenuList" value="XRPViewerMenu_baseMenuList" type="global"/>
 				</KeyValues>
+				<Size x="23" y="19"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-23" y="-1"/>
+				</Anchors>
 				<Scripts>
 					<PreClick function="XRPViewerMenu_PreClick"/>
+					<OnClick function="XRPTemplatesMenu_OnClick"/>
+					<OnHide function="XRPTemplates_CloseDropDownMenus"/>
 				</Scripts>
 			</Button>
 			<Button name="$parentTab1" parentKey="Tab1" inherits="XRPTabButtonTemplate" id="1" text="XRP_APPEARANCE">
@@ -348,6 +359,7 @@
 				</Anchors>
 			</Button>
 			<Frame name="$parentNotes" inherits="XRPNotesTemplate"/>
+			<Button name="$parentNotesButton" inherits="XRPNotesButtonTemplate"/>
 		</Frames>
 		<Attributes>
 			<Attribute name="UIPanelLayout-pushable" type="number" value="2"/>
