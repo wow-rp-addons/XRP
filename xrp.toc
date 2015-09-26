@@ -1,6 +1,6 @@
 ## Interface: 60200
 ## Title: XRP
-## Version: 6.2.2.2
+## Version: 6.2.2.3
 ## Author: Bor of Wyrmrest Accord (US)
 ## Notes: Yet another roleplaying profile addon.
 ## X-Category: Roleplay
