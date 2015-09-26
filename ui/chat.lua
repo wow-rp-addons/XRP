@@ -127,11 +127,9 @@ local function ChatFrame_AddMessageEventFilter_Hook(event, filter)
 end
 
 -- This replaces %xt and %xf with the target's/focus's RP name or, if that is
--- unavailable, unit name. Note that this has the minor oddity of saving the
--- replaced value in the chat history, rather than the %xt/%xf replacement
--- pattern.
-local replacements
-local function ParseText_Hook(line, send)
+-- unavailable, unit name.
+local replacements, newText, lastText, lastLine
+local function ChatEdit_ParseText_Hook(line, send)
 	if send == 1 and replacements then
 		local oldText = line:GetText()
 		local text = oldText
@@ -142,9 +140,22 @@ local function ParseText_Hook(line, send)
 			text = text:gsub("%%xf", xrp.characters.byUnit.focus and xrp.Strip(xrp.characters.byUnit.focus.fields.NA) or UnitName("focus") or _xrp.L.NOBODY)
 		end
 		if text ~= oldText then
+			newText = text
+			lastLine = line
+			lastText = oldText
 			line:SetText(text)
 		end
 	end
+end
+-- This returns the text to its original form after being read for sending, but
+-- before being saved to the chat history.
+local function SubstituteChatMessageBeforeSend_Hook(text)
+	if lastText and newText == text then
+		lastLine:SetText(lastText)
+	end
+	lastText = nil
+	newText = nil
+	lastLine = nil
 end
 
 local OldGetColoredName = GetColoredName
@@ -171,7 +182,8 @@ _xrp.settingsToggles.chat = {
 	replacements = function(setting)
 		if setting then
 			if replacements == nil then
-				hooksecurefunc("ChatEdit_ParseText", ParseText_Hook)
+				hooksecurefunc("ChatEdit_ParseText", ChatEdit_ParseText_Hook)
+				hooksecurefunc("SubstituteChatMessageBeforeSend", SubstituteChatMessageBeforeSend_Hook)
 			end
 			replacements = true
 		elseif replacements ~= nil then
