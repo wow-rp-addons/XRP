@@ -1,25 +1,29 @@
-6.2.2.2 (2015-09-23):
+6.2.2.3 (2015-09-26):
 
-	- (Bugfix) Fixed a rare issue that could create unclickable links in the
-	  profile viewer.
+	- Access to several UI elements in the viewer and editor have been moved
+	  to be more easily accessible and intuitive.
 
-	- (Bugfix) Fixed an issue that could prevent the bookmarks full-text
-	  search from working.
+		- Access to the notes panel (viewer/editor) is now provided by a small
+		  button near the upper-right with a note icon and an arrow.
 
-	- (Bugfix) Completely (hopefully) fixed the tainting issues with dropdown
-	  menus and, especially, the built-in raid frames. In theory, WoW should
-	  never blame XRP for taint now.
+		- Access to the automation panel (editor) is now provided by a small
+		  button near the upper-right with two small person outlines and an
+		  arrow.
 
-	- (Bugfix) Prevent "Report player Away" menu entries in Battlegrounds from
-	  failing, by removing those buttons where appropriate.
+		- Access to the rename/copy/export functions (editor) have been moved
+		  to buttons next to the add/remove controls.
 
-		- Note: Players may still be reported AFK from the scoreboard or from
-		  the battleground map. The only menus affected are the chat menus and
-		  unit frame menus -- and only if XRP's integration with those is
-		  enabled.
+		- Access to the profile export (viewer) has been moved to the main
+		  dropdown menu rather than the Advanced submenu.
 
-	- (Bugfix) Fixed an issue with non-string values in the bandwidth library.
+	- Using the %xt and %xf replacements should now save the originally
+	  entered text (preserving the %xt/%xf) in the chat history, rather than
+	  saving the replaced RP name.
 
-	- (Compatibility) The help overlay system will now properly work in ElvUI
-	  and derivatives. You may note similar help systems appearing in other
-	  addons where they formerly did not.
+	- The "Roleplay Profile" entry will no longer show on Battle.net friends
+	  when the profile has no possibility of being viewed (i.e., when the
+	  Battle.net system is not providing accurate realm information).
+
+	- (Bugfix) Fixed an issue with the taint-fixing code that could produce
+	  Lua errors in combination with certain questionable practices used by
+	  other addons.
