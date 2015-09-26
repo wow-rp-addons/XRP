@@ -250,7 +250,7 @@ do
 	XRPViewerMultiline_baseMenuList = {
 		{ text = _xrp.L.SEND_TWEET .. CONTINUED, arg1 = "XRP_TWEET", notCheckable = true, func = Menu_Click, },
 		{ text = _xrp.L.COPY_URL .. CONTINUED, arg1 = "XRP_URL", notCheckable = true, func = Menu_Click, },
-		{ text = CLOSE, notCheckable = true, func = _xrp.DoNothing, },
+		{ text = CANCEL, notCheckable = true, func = _xrp.DoNothing, },
 	}
 end
 

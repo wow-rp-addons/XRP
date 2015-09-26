@@ -217,13 +217,13 @@ do
 			local name, realm = tostring(UIDROPDOWNMENU_OPEN_MENU.character):match("^([^%-]+)%-([^%-]+)")
 			StaticPopup_Show("XRP_CACHE_SINGLE", _xrp.L.NAME_REALM:format(name, xrp.RealmDisplayName(realm)), nil, UIDROPDOWNMENU_OPEN_MENU.character)
 		end
-		if arg2 then -- Second-level menu.
+		if UIDROPDOWNMENU_MENU_LEVEL > 1 then
 			CloseDropDownMenus()
 		end
 	end
 	local Advanced_menuList = {
-		{ text = _xrp.L.EXPORT, arg1 = "XRP_EXPORT", arg2 = true, notCheckable = true, func = Menu_Click, },
-		{ text = _xrp.L.DROP_CACHE .. CONTINUED, arg1 = "XRP_CACHE_DROP", arg2 = true, notCheckable = true, func = Menu_Click, },
+		{ text = _xrp.L.EXPORT, arg1 = "XRP_EXPORT", notCheckable = true, func = Menu_Click, },
+		{ text = _xrp.L.DROP_CACHE .. CONTINUED, arg1 = "XRP_CACHE_DROP", notCheckable = true, func = Menu_Click, },
 	}
 	XRPBookmarksEntry_Mixin = {
 		baseMenuList = {
