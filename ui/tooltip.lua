@@ -331,7 +331,7 @@ do
 
 				local level = UnitLevel(unit)
 				local effectiveLevel = UnitEffectiveLevel(unit)
-				level = effectiveLevel < 1 and level < 1 and _xrp.L.LETHAL_LEVEL or effectiveLevel == level and tostring(level) or _xrp.L.ASIDE:format(tostring(effectiveLevel), tostring(level))
+				level = effectiveLevel < 1 and level < 1 and _xrp.L.LETHAL_LEVEL or effectiveLevel == level and tostring(level) or EFFECTIVE_LEVEL_FORMAT:format(tostring(effectiveLevel), tostring(level))
 				currentUnit.info = (TOOLTIP_UNIT_LEVEL_RACE_CLASS_TYPE):format(level, "%s", ("|c%s%%s|r"):format(RAID_CLASS_COLORS[GC] and RAID_CLASS_COLORS[GC].colorStr or "ffffffff"), colorblind and xrp.L.VALUES.GC[GS][GC] or PLAYER)
 
 				local location = connected and not UnitIsVisible(unit) and GameTooltipTextLeft3:GetText()
@@ -387,7 +387,7 @@ do
 			local GC = petType == UNITNAME_TITLE_MINION and (race == _xrp.L.PET_ELEMENTAL and "MAGE" or race == _xrp.L.PET_UNDEAD and "DEATHKNIGHT" or "WARLOCK") or petType == UNITNAME_TITLE_PET and "HUNTER"
 			local level = UnitLevel(unit)
 			local effectiveLevel = UnitEffectiveLevel(unit)
-			level = effectiveLevel < 1 and level < 1 and _xrp.L.LETHAL_LEVEL or effectiveLevel == level and tostring(level) or _xrp.L.ASIDE:format(tostring(effectiveLevel), tostring(level))
+			level = effectiveLevel < 1 and level < 1 and _xrp.L.LETHAL_LEVEL or effectiveLevel == level and tostring(level) or EFFECTIVE_LEVEL_FORMAT:format(tostring(effectiveLevel), tostring(level))
 			currentUnit.info = TOOLTIP_UNIT_LEVEL_CLASS_TYPE:format(level, ("|c%s%s|r"):format(RAID_CLASS_COLORS[GC] and RAID_CLASS_COLORS[GC].colorStr or "ffffffff", race), colorblind and ("%s %s"):format(xrp.L.VALUES.GC[currentUnit.character.fields.GS][GC], PET) or PET)
 
 			if currentUnit.icons then
