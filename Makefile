@@ -15,7 +15,7 @@ build/xrp-%.zip:
 	git rev-parse v$* > /dev/null
 	mkdir -p $(@D)/tmp-$*/
 	git archive --prefix=xrp/ v$* | tar -xC $(@D)/tmp-$*/
-	cd $(@D)/tmp-$*/ && zip -q -D -X -l -9 -r $(CURDIR)/$@ xrp/ -x xrp/Makefile xrp/docs/CHANGES.txt xrp/.gitignore
+	cd $(@D)/tmp-$*/ && zip -q -D -X -l -9 -r $(CURDIR)/$@ xrp/ -x xrp/Makefile xrp/CHANGES.txt xrp/.gitignore
 	rm -rf $(@D)/tmp-$*/
 
 build/xrp-%.zip.SHA512: build/xrp-%.zip
@@ -25,7 +25,7 @@ build/xrp-%.zip.SHA512: build/xrp-%.zip
 build/xrp-%.CHANGELOG: build/xrp-%.zip.SHA512
 	git rev-parse v$* > /dev/null
 	mkdir -p $(@D)/
-	git show v$*:docs/CHANGES.txt > $@
+	git show v$*:CHANGES.txt > $@
 	echo >> $@
 	echo "SHA512:" >> $@
 	cat $< >> $@
