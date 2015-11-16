@@ -65,18 +65,22 @@ local cache = setmetatable({}, {
 	end,
 })
 
-local bnet
+local bnet, lastBadBnet
+local badBnetCount = 0
 local function FindPresenceID(nameFind)
-	local newBnet, doCache = {}, true
+	local newBnet, badList = {}
 	local presenceID
 	local totalFriends, onlineFriends = BNGetNumFriends()
 	for i = 1, onlineFriends do
 		for j = 1, BNGetNumFriendToons(i) do
 			local active, toonName, client, realmName, realmID, faction, race, class, blank, zoneName, level, gameText, broadcastText, broadcastTime, isConnected, toonID = BNGetFriendToonInfo(i, j)
-			if isConnected and client == "WoW" then
+			if isConnected and client == BNET_CLIENT_WOW then
 				if realmName == "" then
-					-- Something's gone wrong, don't want a bad list cached.
-					doCache = false
+					-- Something's gone wrong. It can happen around first login
+					-- without indicating a real issue, but if it carries on
+					-- there's probably something broken with the B.net service
+					-- or connection.
+					badList = true
 				else
 					local name = xrp.FullName(toonName, realmName)
 					if cache[name].nextCheck then
@@ -86,15 +90,15 @@ local function FindPresenceID(nameFind)
 					if nameFind and name == nameFind then
 						presenceID = toonID
 					end
-					if not doCache and presenceID then
-						return presenceID
-					end
 				end
 			end
 		end
 	end
-	if doCache and (totalFriends > 0 or IsLoggedIn()) then
+	if not badList or badBnetCount > 4 then
 		bnet = newBnet
+	elseif not lastBadBnet or lastBadBnet < GetTime() - 5 then
+		badBnetCount = badBnetCount + 1
+		lastBadBnet = GetTime()
 	end
 	return presenceID
 end
@@ -562,18 +566,20 @@ end
 function gameEvents.BN_CHAT_MSG_ADDON(event, prefix, message, channel, presenceID)
 	if not handlers[prefix] then return end
 	local active, toonName, client, realmName = BNGetToonInfo(presenceID)
-	local name = xrp.FullName(toonName, realmName)
-	if bnet then
-		bnet[name] = presenceID
+	if client == BNET_CLIENT_WOW and realmName ~= "" then
+		local name = xrp.FullName(toonName, realmName)
+		if bnet then
+			bnet[name] = presenceID
+		end
+		cache[name].bnet = true
+		cache[name].nextCheck = nil
+		handlers[prefix](name, message, "BN")
 	end
-	cache[name].bnet = true
-	cache[name].nextCheck = nil
-	handlers[prefix](name, message, "BN")
 end
 function gameEvents.BN_TOON_NAME_UPDATED(event, presenceID)
 	if not bnet then return end
 	local active, toonName, client, realmName = BNGetToonInfo(presenceID)
-	if client == "WoW" and realmName ~= "" then
+	if client == BNET_CLIENT_WOW and realmName ~= "" then
 		local name = xrp.FullName(toonName, realmName)
 		if cache[name].nextCheck then
 			cache[name].nextCheck = 0
@@ -582,7 +588,6 @@ function gameEvents.BN_TOON_NAME_UPDATED(event, presenceID)
 	end
 end
 function gameEvents.BN_CONNECTED(event)
-	FindPresenceID()
 	_xrp.HookGameEvent("BN_TOON_NAME_UPDATED", gameEvents.BN_TOON_NAME_UPDATED)
 	_xrp.HookGameEvent("BN_FRIEND_TOON_ONLINE", gameEvents.BN_TOON_NAME_UPDATED)
 end

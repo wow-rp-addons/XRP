@@ -35,7 +35,7 @@ local function UnitPopup_OnClick_Hook(self)
 		XRPViewer:View(UIDROPDOWNMENU_INIT_MENU.unit)
 	elseif self.value == "XRP_VIEW_BN" then
 		local active, toonName, client, realmName = BNGetToonInfo(select(6, BNGetFriendInfoByID(UIDROPDOWNMENU_INIT_MENU.presenceID)))
-		if client == "WoW" and realmName ~= "" then
+		if client == BNET_CLIENT_WOW and realmName ~= "" then
 			XRPViewer:View(xrp.FullName(toonName, realmName))
 		end
 	end
@@ -49,7 +49,7 @@ local function UnitPopup_HideButtons_Hook()
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][i] = 0
 			else
 				local active, toonName, client, realmName = BNGetToonInfo(select(6, BNGetFriendInfoByID(UIDROPDOWNMENU_INIT_MENU.presenceID)))
-				if client ~= "WoW" or realmName == "" then
+				if client ~= BNET_CLIENT_WOW or realmName == "" then
 					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][i] = 0
 				else
 					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][i] = 1
