@@ -118,8 +118,8 @@ do
 end
 
 local function CompareVersion(newVersion, oldVersion)
-	local newMajor, newMinor, newPatch, newAddOn, newRelType, newRelRev = newVersion:match("(%d+)%.(%d+)%.(%d+)%.(%d+)%_?(%l*)(%d*)")
-	local oldMajor, oldMinor, oldPatch, oldAddOn, oldRelType, oldRelRev = oldVersion:match("(%d+)%.(%d+)%.(%d+)%.(%d+)%_?(%l*)(%d*)")
+	local newMajor, newMinor, newPatch, newAddOn, newRelType, newRelRev = newVersion:match("(%d+)%.(%d+)%.(%d+)%.(%d+)[%_%-]?(%l*)(%d*)")
+	local oldMajor, oldMinor, oldPatch, oldAddOn, oldRelType, oldRelRev = oldVersion:match("(%d+)%.(%d+)%.(%d+)%.(%d+)[%_%-]?(%l*)(%d*)")
 
 	newRelType = newRelType == "alpha" and 1 or newRelType == "beta" and 2 or newRelType == "rc" and 3 or 4
 	oldRelType = oldRelType == "alpha" and 1 or oldRelType == "beta" and 2 or oldRelType == "rc" and 3 or 4

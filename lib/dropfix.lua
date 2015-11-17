@@ -21,7 +21,7 @@
 	(often inaccurately identified as UIDROPDOWNMENU_MENU_LEVEL taint,
 	including initially by myself), one to do with the
 	UIDropDownMenu_GetSelectedX() functions, and the other to do with
-	UIDropDownMenu_Initialize() and the last opened menu (via
+	UIDropDownMenu_AddButton() and the last opened menu (via
 	ToggleDropDownMenu()) having an insecure displayMode key.
 
 	Second, it fixes the issue of tainting the Interface Options panel when an
@@ -85,7 +85,7 @@ function dropfix.hooks.UIDropDownMenu_InitializeHelper(frame)
 	end
 	if isSecure and UIDROPDOWNMENU_OPEN_MENU and not issecurevariable(UIDROPDOWNMENU_OPEN_MENU, "displayMode") then
 		-- Insecure displayMode on UIDROPDOWNMENU_OPEN_MENU causes taint when
-		-- UIDropDownMenu_Initialize() reads it. This temporarily removes the
+		-- UIDropDownMenu_AddButton() reads it. This temporarily removes the
 		-- displayMode key from the offending frame, followed by re-adding it
 		-- as soon as possible (before the next framedraw, but after the
 		-- current execution completes).
