@@ -1,29 +1,14 @@
-6.2.2.3 (2015-09-26):
+6.2.3.0 (2015-11-17):
 
-	- Access to several UI elements in the viewer and editor have been moved
-	  to be more easily accessible and intuitive.
+	- This is a small update, primarily released to handle the issue with
+	  absent Battle.net realms more gracefully, as the bug has been
+	  reintroduced following this morning's maintenance.
 
-		- Access to the notes panel (viewer/editor) is now provided by a small
-		  button near the upper-right with a note icon and an arrow.
+		- Crossrealm/crossfaction profiles will *NOT* work so long as the
+		  realm name is unavailable, but XRP will now give up after about 30
+		  seconds of failed attempts to find realm names, saving some CPU
+		  cycles.
 
-		- Access to the automation panel (editor) is now provided by a small
-		  button near the upper-right with two small person outlines and an
-		  arrow.
-
-		- Access to the rename/copy/export functions (editor) have been moved
-		  to buttons next to the add/remove controls.
-
-		- Access to the profile export (viewer) has been moved to the main
-		  dropdown menu rather than the Advanced submenu.
-
-	- Using the %xt and %xf replacements should now save the originally
-	  entered text (preserving the %xt/%xf) in the chat history, rather than
-	  saving the replaced RP name.
-
-	- The "Roleplay Profile" entry will no longer show on Battle.net friends
-	  when the profile has no possibility of being viewed (i.e., when the
-	  Battle.net system is not providing accurate realm information).
-
-	- (Bugfix) Fixed an issue with the taint-fixing code that could produce
-	  Lua errors in combination with certain questionable practices used by
-	  other addons.
+	- Effective level display in the tooltip (i.e., timewalking, level-up
+	  battlegrounds, etc.) has been changed to match how it is displayed in
+	  default UI elements.
