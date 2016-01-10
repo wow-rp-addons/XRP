@@ -233,11 +233,11 @@ do
 			local fields = {}
 			local profiles, inherit = { xrpSaved.profiles[name] }, xrpSaved.profiles[name].parent
 			for i = 1, MAX_DEPTH do
-				profiles[#profiles + 1] = xrpSaved.profiles[inherit]
-				inherit = xrpSaved.profiles[inherit].parent
 				if not xrpSaved.profiles[inherit] then
 					break
 				end
+				profiles[#profiles + 1] = xrpSaved.profiles[inherit]
+				inherit = xrpSaved.profiles[inherit].parent
 			end
 			for i = #profiles, 1, -1 do
 				local profile = profiles[i]
