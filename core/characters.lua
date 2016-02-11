@@ -18,7 +18,7 @@
 local addonName, _xrp = ...
 
 -- These fields are not searched in a full-text search.
-local FILTER_IGNORE = { CO = true, FC = true, FR = true, GC = true, GF = true, GR = true, GS = true, GU = true, IC = true, VA = true, VP = true }
+local FILTER_IGNORE = { FC = true, FR = true, GC = true, GF = true, GR = true, GS = true, GU = true, IC = true, VA = true, VP = true }
 
 local RACE_FACTION = {
 	Human = "Alliance",

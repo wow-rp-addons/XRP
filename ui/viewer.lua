@@ -28,11 +28,22 @@ do
 		"DE", "HI", -- High-bandwidth.
 	}
 
-	local function SetField(field, contents)
+	local function SetField(field, contents, secondary, tertiary)
 		contents = xrp.Strip(contents, field == "CU" or field == "DE" or field == "MO" or field == "HI")
 		if field == "VA" then
 			contents = contents and contents:gsub(";", PLAYER_LIST_DELIMITER) or NONE
-		elseif not contents then
+		elseif field == "CU" then
+			contents = xrp.MergeCurrently(xrp.Link(contents), xrp.Link(xrp.Strip(secondary, true)))
+		elseif secondary then
+			if field == "NA" then
+				contents = xrp.ShortName(secondary)
+			elseif field =="RA" then
+				contents = xrp.L.VALUES.GR[secondary]
+			elseif field =="RC" then
+				contents = xrp.L.VALUES.GC[tertiary or "1"][secondary]
+			end
+		end
+		if not contents then
 			contents = ""
 		elseif field == "NI" then
 			contents = _xrp.L.NICKNAME:format(contents)
@@ -40,7 +51,7 @@ do
 			contents = xrp.Height(contents)
 		elseif field == "AW" then
 			contents = xrp.Weight(contents)
-		elseif field == "CU" or field == "DE" or field == "MO" or field == "HI" then
+		elseif field == "DE" or field == "MO" or field == "HI" then
 			-- Link URLs in scrolling fields.
 			contents = xrp.Link(contents)
 		end
@@ -50,7 +61,8 @@ do
 	function Load(character)
 		local fields = character.fields
 		for i, field in ipairs(DISPLAY) do
-			SetField(field, fields[field] or field == "NA" and xrp.ShortName(tostring(character)) or field == "RA" and xrp.L.VALUES.GR[fields.GR] or field == "RC" and xrp.L.VALUES.GC[fields.GS or "1"][fields.GC])
+			local contents = fields[field]
+			SetField(field, contents, field == "CU" and fields.CO or not contents and (field == "NA" and tostring(character) or field == "RA" and fields.GR or field == "RC" and fields.GC), not contents and field == "RC" and fields.GS)
 		end
 		XRPViewer.XC:SetText("")
 		failed = nil
@@ -80,7 +92,8 @@ do
 		end
 		if SUPPORTED[field] then
 			local fields = current.fields
-			SetField(field, fields[field] or field == "RA" and xrp.L.VALUES.GR[fields.GR] or field == "RC" and xrp.L.VALUES.GC[fields.GS or "1"][fields.GC])
+			local contents = fields[field]
+			SetField(field, contents, field == "CU" and fields.CO or not contents and (field == "NA" and tostring(character) or field == "RA" and fields.GR or field == "RC" and fields.GC), not contents and field == "RC" and fields.GS)
 		end
 	end
 end

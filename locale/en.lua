@@ -109,6 +109,8 @@ NICKNAME = "\"%s\""
 NAME_REALM = "%s (%s)"
 ASIDE = "%s [%s]"
 
+OOC_TEXT = "((%s))"
+
 -- xrp.lua
 NEW_VERSION = "There is a new version of |cffabd473XRP|r available. You should update to %s as soon as possible."
 

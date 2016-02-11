@@ -185,7 +185,7 @@ local function ImportTotalRP3()
 		local CU = {}
 		CU[#CU + 1] = oldProfile.player.character.CU
 		if oldProfile.player.character.CO then
-			CU[#CU + 1] = ("((%s))"):format(oldProfile.player.character.CO)
+			CU[#CU + 1] = _xrp.L.OOC_TEXT:format(oldProfile.player.character.CO)
 		end
 		profile.fields.CU = table.concat(CU, " ")
 	end
