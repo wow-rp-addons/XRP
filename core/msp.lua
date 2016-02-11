@@ -38,8 +38,8 @@ end
 -- Protocol version two indicates Battle.net support.
 _xrp.msp = 2
 
--- Fields in tooltip.
-local TT_FIELDS = { VP = true, VA = true, NA = true, NH = true, NI = true, NT = true, RA = true, RC = true, FR = true, FC = true, CU = true }
+-- Fields in tooltip (sent by other addons).
+local TT_FIELDS = { VP = true, VA = true, NA = true, NH = true, NI = true, NT = true, RA = true, RC = true, FR = true, FC = true, CU = true, CO = true, IC = true }
 
 -- These fields are (or should) be generated from UnitSomething() functions.
 local UNIT_FIELDS = { GC = true, GF = true, GR = true, GS = true, GU = true }
@@ -288,6 +288,7 @@ do
 		end,
 		__mode = "v", -- Worst case, we rarely send too soon again.
 	})
+	-- This list is for the tooltip fields we send.
 	local TT_LIST = { "VP", "VA", "NA", "NH", "NI", "NT", "RA", "RC", "CU", "FR", "FC" }
 	local function Process(name, command, isGroup)
 		local action, field, version, contents = command:match("(%p?)(%u%u)(%d*)=?(.*)")

@@ -184,6 +184,19 @@ function xrp.Height(height, units)
 	return height
 end
 
+function xrp.MergeCurrently(CU, CO)
+	if not CU and not CO then
+		return nil
+	elseif CU and not CO then
+		return CU
+	elseif not CU then
+		return _xrp.L.OOC_TEXT:format(CO)
+	elseif CU:find("\n", nil, true) or CO:find("\n", nil, true) then
+		return ("%s\n\n%s"):format(CU, _xrp.L.OOC_TEXT:format(CO))
+	end
+	return ("%s %s"):format(CU, _xrp.L.OOC_TEXT:format(CO))
+end
+
 function xrp.Status(desiredStatus)
 	if desiredStatus and type(desiredStatus) ~= "string" then
 		desiredStatus = tostring(desiredStatus)

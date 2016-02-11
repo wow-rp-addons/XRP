@@ -55,6 +55,9 @@ function _xrp.ExportText(title, fields)
 	export[#export + 1] = "\n"
 	for i, field in ipairs(EXPORT_FIELDS) do
 		local fieldText = xrp.Strip(fields[field], ALLOW_INDENT[field])
+		if field == "CU" then
+			fieldText = xrp.MergeCurrently(fieldText, xrp.Strip(fields.CO))
+		end
 		if ALLOW_INDENT[field] then
 			fieldText = xrp.Link(fieldText, "prelink")
 		end
