@@ -237,6 +237,7 @@ local OPTIONS_TEXT = {
 	minimap = {
 		enabled = _xrp.L.MINIMAP_ENABLE,
 		detached = _xrp.L.DETACH_MINIMAP,
+		ldbObject = _xrp.L.LDB_OBJECT,
 	},
 	tooltip = {
 		enabled = _xrp.L.TOOLTIP_ENABLE,

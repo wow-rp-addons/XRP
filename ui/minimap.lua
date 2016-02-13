@@ -18,7 +18,7 @@
 
 local addonName, _xrp = ...
 
-local Button
+local Button, LDBObject
 
 local TEXTURES = {
 	"Interface\\Icons\\INV_Misc_Book_03", -- Target
@@ -29,46 +29,67 @@ local TEXTURES = {
 function XRPButton_UpdateIcon()
 	local target = xrp.characters.byUnit.target
 	if target and (target.hide or target.fields.VA) then
-		Button:SetNormalTexture(TEXTURES[1])
-		Button:SetPushedTexture(TEXTURES[1])
+		if Button then
+			Button:SetNormalTexture(TEXTURES[1])
+			Button:SetPushedTexture(TEXTURES[1])
+		end
+		if LDBObject then
+			LDBObject.icon = "Interface\\MINIMAP\\TRACKING\\Class"
+		end
 		return
 	end
 	local FC = xrp.current.FC
 	if not FC or FC == "0" or FC == "1" then
-		Button:SetNormalTexture(TEXTURES[2])
-		Button:SetPushedTexture(TEXTURES[2])
+		if Button then
+			Button:SetNormalTexture(TEXTURES[2])
+			Button:SetPushedTexture(TEXTURES[2])
+		end
+		if LDBObject then
+			LDBObject.icon = "Interface\\FriendsFrame\\StatusIcon-DnD"
+			LDBObject.text = xrp.L.VALUES.FC["1"]
+		end
 	else
-		Button:SetNormalTexture(TEXTURES[3])
-		Button:SetPushedTexture(TEXTURES[3])
+		if Button then
+			Button:SetNormalTexture(TEXTURES[3])
+			Button:SetPushedTexture(TEXTURES[3])
+		end
+		if LDBObject then
+			LDBObject.icon = "Interface\\FriendsFrame\\StatusIcon-Online"
+			LDBObject.text = xrp.L.VALUES.FC["2"]
+		end
 	end
+end
+
+local function RenderTooltip(Tooltip)
+	Tooltip:AddLine(xrp.current.NA)
+	Tooltip:AddLine(" ")
+	Tooltip:AddLine(SUBTITLE_FORMAT:format(_xrp.L.PROFILE, ("|cffffffff%s|r"):format(tostring(xrp.profiles.SELECTED))))
+	local FC = xrp.Strip(xrp.current.FC)
+	if FC and FC ~= "0" then
+		Tooltip:AddLine(SUBTITLE_FORMAT:format(_xrp.L.STATUS, ("|cff%s%s|r"):format(FC == "1" and "99664d" or "66b380", xrp.L.VALUES.FC[FC] or FC)))
+	end
+	local CU = xrp.Strip(xrp.current.CU)
+	if CU then
+		Tooltip:AddLine(" ")
+		Tooltip:AddLine(STAT_FORMAT:format(xrp.L.FIELDS.CU))
+		Tooltip:AddLine(("%s"):format(xrp.Link(CU)), 0.9, 0.7, 0.6, true)
+	end
+	Tooltip:AddLine(" ")
+	local target = xrp.characters.byUnit.target
+	if target and (target.hide or target.fields.VA) then
+		Tooltip:AddLine(_xrp.L.CLICK_VIEW_TARGET, 1, 0.93, 0.67)
+	elseif not FC or FC == "0" or FC == "1" then
+		Tooltip:AddLine(_xrp.L.CLICK_IC, 0.4, 0.7, 0.5)
+	else
+		Tooltip:AddLine(_xrp.L.CLICK_OOC, 0.6, 0.4, 0.3)
+	end
+	Tooltip:AddLine(_xrp.L.RTCLICK_MENU, 0.6, 0.6, 0.6)
 end
 
 function XRPButton_OnEnter(self, motion)
 	if motion then
 		GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT", 0, 32)
-		GameTooltip:SetText(xrp.current.NA)
-		GameTooltip:AddLine(" ")
-		GameTooltip:AddLine(SUBTITLE_FORMAT:format(_xrp.L.PROFILE, ("|cffffffff%s|r"):format(tostring(xrp.profiles.SELECTED))))
-		local FC = xrp.Strip(xrp.current.FC)
-		if FC and FC ~= "0" then
-			GameTooltip:AddLine(SUBTITLE_FORMAT:format(_xrp.L.STATUS, ("|cff%s%s|r"):format(FC == "1" and "99664d" or "66b380", xrp.L.VALUES.FC[FC] or FC)))
-		end
-		local CU = xrp.Strip(xrp.current.CU)
-		if CU then
-			GameTooltip:AddLine(" ")
-			GameTooltip:AddLine(STAT_FORMAT:format(xrp.L.FIELDS.CU))
-			GameTooltip:AddLine(("%s"):format(xrp.Link(CU)), 0.9, 0.7, 0.6, true)
-		end
-		GameTooltip:AddLine(" ")
-		local target = xrp.characters.byUnit.target
-		if target and (target.hide or target.fields.VA) then
-			GameTooltip:AddLine(_xrp.L.CLICK_VIEW_TARGET, 1, 0.93, 0.67)
-		elseif not FC or FC == "0" or FC == "1" then
-			GameTooltip:AddLine(_xrp.L.CLICK_IC, 0.4, 0.7, 0.5)
-		else
-			GameTooltip:AddLine(_xrp.L.CLICK_OOC, 0.6, 0.4, 0.3)
-		end
-		GameTooltip:AddLine(_xrp.L.RTCLICK_MENU, 0.6, 0.6, 0.6)
+		RenderTooltip(GameTooltip)
 		GameTooltip:Show()
 	end
 end
@@ -112,6 +133,7 @@ do
 			CloseDropDownMenus()
 		end
 
+		local ldbMenu
 		function XRPButton_OnClick(self, button, down)
 			if button == "LeftButton" then
 				local target = xrp.characters.byUnit.target
@@ -120,15 +142,24 @@ do
 				else
 					xrp.Status()
 				end
-				XRPButton_OnEnter(self, true)
+				if self == Button then
+					XRPButton_OnEnter(self, true)
+				end
 				CloseDropDownMenus()
 			elseif button == "RightButton" then
+				if self ~= Button and not ldbMenu then
+					ldbMenu = CreateFrame("Frame")
+					ldbMenu.baseMenuList = XRPButton_baseMenuList
+					ldbMenu.initialize = XRPTemplatesMenu_Mixin.initialize
+					ldbMenu.displayMode = "MENU"
+					ldbMenu.anchor = "cursor"
+				end
 				table.wipe(Profiles_menuList)
 				local selected = tostring(xrp.profiles.SELECTED)
 				for i, profileName in ipairs(xrp.profiles:List()) do
 					Profiles_menuList[#Profiles_menuList + 1] = { text = profileName, checked = selected == profileName, arg1 = profileName, func = Profiles_Click, }
 				end
-				XRPTemplatesMenu_OnClick(self, button, down)
+				XRPTemplatesMenu_OnClick(self == Button and self or ldbMenu, button, down)
 			end
 		end
 	end
@@ -202,6 +233,34 @@ function XRPButtonDetached_OnDragStop(self)
 	self:UnlockHighlight()
 end
 
+local function CreateLDBObject()
+	if LDBObject then return end
+	local ldb = LibStub and LibStub:GetLibrary("LibDataBroker-1.1")
+	if not ldb then return end
+	LDBObject = {
+		type = "data source",
+		text = UNKNOWN,
+		label = GetAddOnMetadata(addonName, "Title"),
+		icon = "Interface\\Icons\\INV_Misc_QuestionMark",
+		OnClick = XRPButton_OnClick,
+		OnTooltipShow = RenderTooltip,
+	}
+	ldb:NewDataObject(LDBObject.label, LDBObject)
+end
+
+_xrp.HookGameEvent("PLAYER_LOGIN", function(event)
+	if LDBObject == false then
+		LDBObject = nil
+		CreateLDBObject()
+	end
+	if not LDBObject and not (LibStub and LibStub:GetLibrary("LibDataBroker-1.1")) then
+		-- No LDB library, meaning no chance of a viewer.
+		InterfaceOptionsFramePanelContainer.XRPGeneral.LDBObject:SetEnabled(false)
+	elseif LDBObject then
+		XRPButton_UpdateIcon()
+	end
+end)
+
 _xrp.settingsToggles.minimap = {
 	enabled = function(setting)
 		if setting then
@@ -243,5 +302,15 @@ _xrp.settingsToggles.minimap = {
 	detached = function(setting)
 		if not _xrp.settings.minimap.enabled or not Button or setting and Button == XRPButton or not setting and Button == LibDBIcon10_XRP then return end
 		_xrp.settingsToggles.minimap.enabled(_xrp.settings.minimap.enabled)
+	end,
+	ldbObject = function(setting)
+		if setting then
+			CreateLDBObject()
+			if not LDBObject then
+				LDBObject = false
+			else
+				XRPButton_UpdateIcon()
+			end
+		end
 	end,
 }

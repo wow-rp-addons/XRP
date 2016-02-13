@@ -116,7 +116,7 @@ do
 end
 
 function XRPTemplatesMenu_OnClick(self, button, down)
-	ToggleDropDownMenu(nil, nil, self.Menu or self, self)
+	ToggleDropDownMenu(nil, nil, self.Menu or self, self.anchor or self)
 	PlaySound("igMainMenuOptionCheckBoxOn")
 end
 
