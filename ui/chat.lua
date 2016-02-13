@@ -17,18 +17,6 @@
 
 local addonName, _xrp = ...
 
--- The following chat types are linked together.
-local LINKED_CHAT_MSG = {
-	["CHAT_MSG_TEXT_EMOTE"] = "CHAT_MSG_EMOTE",
-	["CHAT_MSG_OFFICER"] = "CHAT_MSG_GUILD",
-	["CHAT_MSG_AFK"] = "CHAT_MSG_WHISPER",
-	["CHAT_MSG_DND"] = "CHAT_MSG_WHISPER",
-	["CHAT_MSG_PARTY_LEADER"] = "CHAT_MSG_PARTY",
-	["CHAT_MSG_RAID_LEADER"] = "CHAT_MSG_RAID",
-	["CHAT_MSG_RAID_WARNING"] = "CHAT_MSG_RAID",
-	["CHAT_MSG_INSTANCE_CHAT_LEADER"] = "CHAT_MSG_INSTANCE_CHAT",
-}
-
 local function XRPGetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14)
 	local character = arg12 and xrp.characters.byGUID[arg12]
 
@@ -47,28 +35,20 @@ local function XRPGetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7
 	end
 
 	local chatType = event:sub(10)
-	do
-		local shortType = chatType:sub(1, 7)
-		if shortType == "WHISPER" then
-			event = "CHAT_MSG_WHISPER"
-			chatType = "WHISPER"
-		elseif shortType == "CHANNEL" then
-			event = "CHAT_MSG_CHANNEL"
-			chatType = ("CHANNEL%d"):format(arg8)
-		end
+	local chatCategory = Chat_GetChatCategory(ChatTypeGroupInverted[event] or chatType)
+	if chatCategory == "CHANNEL" then
+		chatType = ("CHANNEL%d"):format(arg8)
 	end
 
 	-- RP name in channels is from case-insensitive NAME, not the number.
-	if event == "CHAT_MSG_CHANNEL" and type(arg9) == "string" and arg9 ~= "" then
+	if chatCategory == "CHANNEL" and type(arg9) == "string" then
 		-- The match() strips trims names like "General - Stormwind City"
 		-- down to just "General".
-		event = "CHAT_MSG_CHANNEL_" .. arg9:match("^([^%s]+)"):upper()
-	elseif LINKED_CHAT_MSG[event] then
-		event = LINKED_CHAT_MSG[event]
+		chatCategory = "CHANNEL_" .. arg9:match("^([^%s]*)"):upper()
 	end
 
-	local name = _xrp.settings.chat[event] and character and not character.hide and xrp.Strip(character.fields.NA) or Ambiguate(arg2, "guild")
-	local nameFormat = event == "CHAT_MSG_EMOTE" and (_xrp.settings.chat.emoteBraced and "[%s]" or "%s") .. (arg9 or "") or "%s"
+	local name = _xrp.settings.chat[chatCategory] and character and not character.hide and xrp.Strip(character.fields.NA) or Ambiguate(arg2, "guild")
+	local nameFormat = chatCategory == "EMOTE" and (_xrp.settings.chat.emoteBraced and "[%s]" or "%s") .. (arg9 or "") or "%s"
 
 	if character and ChatTypeInfo[chatType] and ChatTypeInfo[chatType].colorNameByClass then
 		local color = RAID_CLASS_COLORS[character.fields.GC]
@@ -101,8 +81,7 @@ local function MessageEventFilter_EMOTE(self, event, arg1, arg2, arg3, arg4, arg
 	-- 39 = ' | 44 = , | 58 = : | 226/128/153 = ’
 	if b1 == 39 or b1 == 44 or b1 == 58 or b1 == 226 and b2 == 128 and b3 == 153 then
 		-- arg9 isn't normally used for CHAT_MSG_EMOTE.
-		arg9 = arg1:match("^([^%s]*)")
-		arg1 = arg1:match("^[^%s]*%s*(.*)")
+		arg9, arg1 = arg1:match("^([^%s]*)%s*(.*)$")
 	end
 	return false, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, ...
 end
@@ -158,7 +137,41 @@ local function SubstituteChatMessageBeforeSend_Hook(text)
 	lastLine = nil
 end
 
-local OldGetColoredName = GetColoredName
+local pratModule
+_xrp.HookGameEvent("PLAYER_LOGIN", function(event)
+	-- This is done at login to account for any addon load order.
+	if Prat then
+		pratModule = Prat:NewModule("XRPNames")
+		Prat:SetModuleDefaults(pratModule.name, {
+			profile = {
+				on = true,
+			},
+		})
+		function pratModule:Prat_PreAddMessage(arg, message, frame, event)
+			local character = message.GUID and xrp.characters.byGUID[message.ORG.GUID]
+			if not character then
+				return
+			end
+			local chatCategory = Chat_GetChatCategory(ChatTypeGroupInverted[event] or event:sub(10))
+			if chatCategory == "CHANNEL" and type(message.ORG.CHANNEL) == "string" then
+				chatCategory = "CHANNEL_" .. message.ORG.CHANNEL:upper()
+			end
+			local rpName = _xrp.settings.chat[chatCategory] and not character.hide and xrp.Strip(character.fields.NA)
+			if not rpName then
+				return
+			end
+			message.PLAYER = message.PLAYER:gsub(message.ORG.PLAYER, rpName)
+			message.sS = nil
+			message.SERVER = nil
+			message.Ss = nil
+		end
+		if names then
+			Prat.RegisterChatEvent(pratModule, "Prat_PreAddMessage")
+		end
+	end
+end)
+
+local OldGetColoredName
 _xrp.settingsToggles.chat = {
 	names = function(setting)
 		if setting then
@@ -171,11 +184,17 @@ _xrp.settingsToggles.chat = {
 				OldGetColoredName = GetColoredName
 			end
 			GetColoredName = XRPGetColoredName
+			if pratModule then
+				Prat.RegisterChatEvent(pratModule, "Prat_PreAddMessage")
+			end
 			names = true
 		elseif names ~= nil then
 			ChatFrame_RemoveMessageEventFilter("CHAT_MSG_EMOTE", MessageEventFilter_EMOTE)
 			ChatFrame_RemoveMessageEventFilter("CHAT_MSG_TEXT_EMOTE", MessageEventFilter_TEXT_EMOTE)
 			GetColoredName = OldGetColoredName
+			if pratModule then
+				Prat.UnregisterAllChatEvents(pratModule)
+			end
 			names = false
 		end
 	end,

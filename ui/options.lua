@@ -200,14 +200,14 @@ local OPTIONS_TEXT = {
 		names = _xrp.L.ENABLE_ROLEPLAY_NAMES,
 		emoteBraced = _xrp.L.EMOTE_SQUARE_BRACES,
 		replacements = _xrp.L.XT_XF_REPLACE,
-		CHAT_MSG_SAY = SAY,
-		CHAT_MSG_EMOTE = EMOTE,
-		CHAT_MSG_YELL = YELL,
-		CHAT_MSG_WHISPER = WHISPER,
-		CHAT_MSG_GUILD = GUILD,
-		CHAT_MSG_PARTY = PARTY,
-		CHAT_MSG_RAID = RAID,
-		CHAT_MSG_INSTANCE_CHAT = INSTANCE_CHAT,
+		SAY = SAY,
+		EMOTE = EMOTE,
+		YELL = YELL,
+		WHISPER = WHISPER,
+		GUILD = GUILD,
+		PARTY = PARTY,
+		RAID = RAID,
+		INSTANCE_CHAT = INSTANCE_CHAT,
 	},
 	display = {
 		altBloodElf = _xrp.L.ALT_RACE:format(_xrp.L.VALUE_GR_BLOODELF_ALT, _xrp.L.VALUE_GR_BLOODELF),
@@ -350,7 +350,7 @@ do
 		if not settingsList[channel] then
 			settingsList[channel] = { value = setting, oldValue = oldSetting }
 		end
-		menuList[#menuList + 1] = { text = channel:match("^CHAT_MSG_CHANNEL_(.+)"):lower():gsub("^%l", string.upper), arg1 = channel, isNotRadio = true, checked = Channels_Checked, func = Channels_OnClick, keepShownOnClick = true, }
+		menuList[#menuList + 1] = { text = channel:match("^CHANNEL_(.+)"):lower():gsub("^%l", string.upper), arg1 = channel, isNotRadio = true, checked = Channels_Checked, func = Channels_OnClick, keepShownOnClick = true, }
 	end
 
 	XRPOptionsChatChannels_Mixin = {
@@ -358,12 +358,12 @@ do
 			table.wipe(self.baseMenuList)
 			local seenChannels = {}
 			for i, name in ipairs(ChannelsTable(GetChannelList())) do
-				local channel = "CHAT_MSG_CHANNEL_" .. name:upper()
+				local channel = "CHANNEL_" .. name:upper()
 				AddChannel(channel, self.baseMenuList, settingsList)
 				seenChannels[channel] = true
 			end
 			for channel, setting in pairs(_xrp.settings.chat) do
-				if not seenChannels[channel] and channel:find("CHAT_MSG_CHANNEL_", nil, true) then
+				if not seenChannels[channel] and channel:find("^CHANNEL_") then
 					AddChannel(channel, self.baseMenuList, settingsList)
 					seenChannels[channel] = true
 				end

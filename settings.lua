@@ -31,14 +31,14 @@ _xrp.DEFAULT_SETTINGS = {
 	},
 	chat = {
 		names = true,
-		["CHAT_MSG_SAY"] = true,
-		["CHAT_MSG_YELL"] = true,
-		["CHAT_MSG_EMOTE"] = true, -- CHAT_MSG_TEXT_EMOTE.
-		["CHAT_MSG_GUILD"] = false, -- CHAT_MSG_OFFICER.
-		["CHAT_MSG_WHISPER"] = false, -- CHAT_MSG_WHISPER_*, CHAT_MSG_AFK, CHAT_MSG_DND
-		["CHAT_MSG_PARTY"] = false, -- CHAT_MSG_PARTY_LEADER
-		["CHAT_MSG_RAID"] = false, -- CHAT_MSG_RAID_LEADER
-		["CHAT_MSG_INSTANCE_CHAT"] = false, -- CHAT_MSG_INSTANCE_CHAT_LEADER
+		["SAY"] = true,
+		["YELL"] = true,
+		["EMOTE"] = true,
+		["GUILD"] = false,
+		["WHISPER"] = false,
+		["PARTY"] = false,
+		["RAID"] = false,
+		["INSTANCE_CHAT"] = false,
 		emoteBraced = false,
 		replacements = true,
 	},
@@ -277,6 +277,16 @@ local upgradeAccountVars = {
 	end,
 	[14] = function() -- 6.2.3.1
 		xrpAccountSaved.settings.minimap.ldbObject = _xrp.DEFAULT_SETTINGS.minimap.ldbObject
+		local newSettings = {}
+		for setting, value in pairs(xrpAccountSaved.settings.chat) do
+			if setting:find("^CHAT_MSG_") then
+				xrpAccountSaved.settings.chat[setting] = nil
+				newSettings[setting:match("^CHAT_MSG_(.+)$")] = value
+			end
+		end
+		for setting, value in pairs(newSettings) do
+			xrpAccountSaved.settings.chat[setting] = value
+		end
 	end,
 }
 
