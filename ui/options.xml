@@ -259,6 +259,15 @@
 					<KeyValue key="xrpSetting" value="detached"/>
 				</KeyValues>
 			</CheckButton>
+			<CheckButton parentKey="LDBObject" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.MinimapDetached" relativePoint="BOTTOMLEFT" x="-24" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="xrpTable" value="minimap"/>
+					<KeyValue key="xrpSetting" value="ldbObject"/>
+				</KeyValues>
+			</CheckButton>
 		</Frames>
 	</Frame>
 	<Frame parentKey="XRPDisplay" parent="InterfaceOptionsFramePanelContainer" inherits="XRPOptionsTemplate">

@@ -22,7 +22,7 @@ _xrp.settingsToggles = {
 }
 
 local DATA_VERSION = 6
-local DATA_VERSION_ACCOUNT = 13
+local DATA_VERSION_ACCOUNT = 14
 
 _xrp.DEFAULT_SETTINGS = {
 	cache = {
@@ -74,6 +74,7 @@ _xrp.DEFAULT_SETTINGS = {
 		point = "CENTER",
 		x = 0,
 		y = 0,
+		ldbObject = false,
 	},
 	tooltip = {
 		enabled = true,
@@ -273,6 +274,9 @@ local upgradeAccountVars = {
 		for name, cache in pairs(xrpCache) do
 			cache.fields.reliable = nil
 		end
+	end,
+	[14] = function() -- 6.2.3.1
+		xrpAccountSaved.settings.minimap.ldbObject = _xrp.DEFAULT_SETTINGS.minimap.ldbObject
 	end,
 }
 
