@@ -77,7 +77,7 @@ do
 		for func, isFunc in pairs(nextFrame) do
 			func(elapsed)
 		end
-		wipe(nextFrame)
+		table.wipe(nextFrame)
 		self:Hide()
 	end)
 	frame:Hide()

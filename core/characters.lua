@@ -181,7 +181,7 @@ xrp.characters = {
 		__metatable = false,
 	}),
 	byUnit = setmetatable({}, {
-		__index = function (self, unit)
+		__index = function(self, unit)
 			local name = xrp.UnitFullName(unit)
 			if not name then
 				return nil
@@ -221,7 +221,7 @@ xrp.characters = {
 		__metatable = false,
 	}),
 	byGUID = setmetatable({}, {
-		__index = function (self, GU)
+		__index = function(self, GU)
 			-- This will return nil if the GUID hasn't been seen by the client
 			-- yet in the session.
 			local success, class, GC, race, GR, GS, name, realm = pcall(GetPlayerInfoByGUID, GU)

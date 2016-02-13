@@ -55,7 +55,7 @@ StaticPopupDialogs["XRP_URL"] = {
 	button1 = DONE,
 	hasEditBox = true,
 	editBoxWidth = 250,
-	OnShow = function (self, url)
+	OnShow = function(self, url)
 		self.editBox:SetText(url or "")
 		self.editBox:HighlightText()
 	end,

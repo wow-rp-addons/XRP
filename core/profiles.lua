@@ -57,7 +57,7 @@ xrp.current = setmetatable({}, {
 })
 
 _xrp.versions = setmetatable({}, {
-	__index = function (self, field)
+	__index = function(self, field)
 		if xrpSaved.overrides.fields[field] == "" then
 			return nil
 		elseif xrpSaved.overrides.versions[field] then

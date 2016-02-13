@@ -119,7 +119,7 @@ msp.dummyframe = {
 msp.dummyframex = msp.dummyframe
 
 msp.char = setmetatable({}, {
-	__index = function (self, name)
+	__index = function(self, name)
 		name = xrp.FullName(name) -- For pre-5.4.7 addons.
 		if xrpCache[name] then
 			local character = { field = setmetatable({}, fieldMeta), ver = setmetatable({}, verMeta), time = timeTable, }
