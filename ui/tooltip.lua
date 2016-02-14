@@ -303,7 +303,8 @@ do
 
 			local connected = UnitIsConnected(unit)
 			local color = COLORS[(not inRaid and UnitIsEnemy("player", unit) or attackMe and meAttack) and "hostile" or (meAttack or attackMe) and "neutral" or "friendly"]
-			local watchIcon = _xrp.settings.tooltip.watching and UnitIsUnit("player", unit .. "target") and "|TInterface\\LFGFrame\\BattlenetWorking0:28:28:10:0|t"
+			local watchIcon = _xrp.settings.tooltip.watching and UnitIsUnit("player", unit .. "target") and "|TInterface\\LFGFrame\\BattlenetWorking0:28:28:8:1|t"
+			local bookmarkIcon = _xrp.settings.tooltip.bookmark and currentUnit.character.bookmark and "|TInterface\\MINIMAP\\POIICONS:18:18:4:0:256:512:54:72:54:72|t"
 			local GC = currentUnit.character.fields.GC
 
 			if replace then
@@ -315,7 +316,11 @@ do
 
 				local ffa = UnitIsPVPFreeForAll(unit)
 				local pvpIcon = (UnitIsPVP(unit) or ffa) and PVP_ICON:format((ffa or currentUnit.faction == "Neutral") and "FFA" or currentUnit.faction)
-				currentUnit.icons = watchIcon and pvpIcon and watchIcon .. pvpIcon or watchIcon or pvpIcon
+				if watchIcon or pvpIcon or bookmarkIcon then
+					currentUnit.icons = ("%s%s%s"):format(watchIcon or "", pvpIcon or "", bookmarkIcon or "")
+				else
+					currentUnit.icons = nil
+				end
 
 				local guildName, guildRank, guildIndex = GetGuildInfo(unit)
 				currentUnit.guild = guildName and (_xrp.settings.tooltip.guildRank and (_xrp.settings.tooltip.guildIndex and _xrp.L.GUILD_RANK_INDEX or _xrp.L.GUILD_RANK) or _xrp.L.GUILD):format(_xrp.settings.tooltip.guildRank and guildRank or guildName, _xrp.settings.tooltip.guildIndex and guildIndex + 1 or guildName, guildName)
@@ -349,7 +354,11 @@ do
 				end
 			else
 				currentUnit.nameFormat = ("|cff%s%%s|r"):format(color)
-				currentUnit.icons = watchIcon
+				if watchIcon or bookmarkIcon then
+					currentUnit.icons = (watchIcon or "") .. (bookmarkIcon or "")
+				else
+					currentUnit.icons = nil
+				end
 				currentUnit.info = ("%%s |c%s%%s|r"):format(RAID_CLASS_COLORS[GC] and RAID_CLASS_COLORS[GC].colorStr or "ffffffff")
 			end
 		elseif currentUnit.type == "pet" then

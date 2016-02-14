@@ -531,9 +531,19 @@
 					<KeyValue key="xrpSetting" value="watching"/>
 				</KeyValues>
 			</CheckButton>
-			<CheckButton parentKey="TooltipExtraSpace" inherits="XRPOptionsCheckboxTemplate">
+			<CheckButton parentKey="TooltipBookmark" inherits="XRPOptionsCheckboxTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.TooltipWatching" relativePoint="BOTTOMLEFT" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="dependsOn" value="TooltipEnabled"/>
+					<KeyValue key="xrpTable" value="tooltip"/>
+					<KeyValue key="xrpSetting" value="bookmark"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="TooltipExtraSpace" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.TooltipBookmark" relativePoint="BOTTOMLEFT" y="-8"/>
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="dependsOn" value="TooltipEnabled"/>
