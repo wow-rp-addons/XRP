@@ -243,6 +243,7 @@ local OPTIONS_TEXT = {
 		enabled = _xrp.L.TOOLTIP_ENABLE,
 		replace = _xrp.L.REPLACE_DEFAULT_TOOLTIP,
 		watching = _xrp.L.EYE_ICON_TARGET,
+		bookmark = _xrp.L.BOOKMARK_INDICATOR,
 		extraSpace = _xrp.L.EXTRA_SPACE_TOOLTIP,
 		guildRank = _xrp.L.DISPLAY_GUILD_RANK,
 		guildIndex = _xrp.L.DISPLAY_GUILD_RANK_INDEX,

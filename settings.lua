@@ -80,6 +80,7 @@ _xrp.DEFAULT_SETTINGS = {
 		enabled = true,
 		replace = true,
 		watching = true,
+		bookmark = true,
 		extraSpace = false,
 		guildRank = false,
 		guildIndex = false,
@@ -277,6 +278,7 @@ local upgradeAccountVars = {
 	end,
 	[14] = function() -- 6.2.3.1
 		xrpAccountSaved.settings.minimap.ldbObject = _xrp.DEFAULT_SETTINGS.minimap.ldbObject
+		xrpAccountSaved.settings.tooltip.bookmark = _xrp.DEFAULT_SETTINGS.tooltip.bookmark
 		local newSettings = {}
 		for setting, value in pairs(xrpAccountSaved.settings.chat) do
 			if setting:find("^CHAT_MSG_") then

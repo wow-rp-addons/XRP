@@ -425,6 +425,7 @@ LDB_OBJECT = "Provide a LibDataBroker object (for Titan Panel, Chocolate Bar, et
 TOOLTIP_ENABLE = "Enable tooltip"
 REPLACE_DEFAULT_TOOLTIP = "Replace default tooltip for players and pets"
 EYE_ICON_TARGET = "Show eye icon if player is targeting you"
+BOOKMARK_INDICATOR = "Show flag icon if player's profile is bookmarked"
 EXTRA_SPACE_TOOLTIP = "Add extra spacing lines to the tooltip"
 DISPLAY_GUILD_RANK = "Display guild rank in tooltip"
 DISPLAY_GUILD_RANK_INDEX = "Also display guild rank index (numerical ranking) in tooltip"
