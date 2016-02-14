@@ -114,6 +114,10 @@ do
 		for func, isFunc in pairs(gameEvents[event]) do
 			func(event, ...)
 		end
+		if event == "ADDON_LOADED" and ... == addonName or event == "PLAYER_LOGIN" then
+			gameEvents[event] = nil
+			self:UnregisterEvent(event)
+		end
 	end)
 end
 
@@ -154,8 +158,7 @@ function _xrp.AddonUpdate(version)
 	end
 end
 
-local loadEvents = {}
-function loadEvents.ADDON_LOADED(event, addon)
+_xrp.HookGameEvent("ADDON_LOADED", function(event, addon)
 	if addon ~= addonName then return end
 	_xrp.playerWithRealm = xrp.UnitFullName("player")
 	_xrp.player, _xrp.realm = _xrp.playerWithRealm:match("^([^%-]+)%-([^%-]+)$")
@@ -216,14 +219,15 @@ function loadEvents.ADDON_LOADED(event, addon)
 		end
 	end
 
-	_xrp.UnhookGameEvent(event, loadEvents[event])
 	if fields.GF == "Neutral" then
-		_xrp.HookGameEvent("NEUTRAL_FACTION_SELECT_RESULT", loadEvents.NEUTRAL_FACTION_SELECT_RESULT)
+		_xrp.HookGameEvent("NEUTRAL_FACTION_SELECT_RESULT", function(event)
+			xrpSaved.meta.fields.GF = UnitFactionGroup("player")
+			xrpSaved.meta.versions.GF = _xrp.NewVersion("GF", xrpSaved.meta.fields.GF)
+			_xrp.FireEvent("UPDATE", "GF")
+		end)
 	end
-	_xrp.HookGameEvent("PLAYER_LOGIN", loadEvents.PLAYER_LOGIN)
-	_xrp.HookGameEvent("PLAYER_LOGOUT", loadEvents.PLAYER_LOGOUT)
-end
-function loadEvents.PLAYER_LOGIN(event)
+end)
+_xrp.HookGameEvent("PLAYER_LOGIN", function(event)
 	-- UnitGUID() does not work prior to first PLAYER_LOGIN (but does
 	-- work after ReloadUI()).
 	local GU = UnitGUID("player")
@@ -231,9 +235,8 @@ function loadEvents.PLAYER_LOGIN(event)
 		xrpSaved.meta.fields.GU = GU
 		xrpSaved.meta.versions.GU = _xrp.NewVersion("GU", GU)
 	end
-	_xrp.UnhookGameEvent(event, loadEvents[event])
-end
-function loadEvents.PLAYER_LOGOUT(event)
+end)
+_xrp.HookGameEvent("PLAYER_LOGOUT", function(event)
 	-- Note: This code must be thoroughly tested if any changes are
 	-- made. If there are any errors in here, they are not visible in
 	-- any manner in-game.
@@ -294,12 +297,4 @@ function loadEvents.PLAYER_LOGOUT(event)
 	if next(xrpSaved.overrides.fields) then
 		xrpSaved.overrides.logout = now
 	end
-end
-function loadEvents.NEUTRAL_FACTION_SELECT_RESULT(event)
-	xrpSaved.meta.fields.GF = UnitFactionGroup("player")
-	xrpSaved.meta.versions.GF = _xrp.NewVersion("GF", xrpSaved.meta.fields.GF)
-	_xrp.FireEvent("UPDATE", "GF")
-	_xrp.UnhookGameEvent(event, loadEvents[event])
-end
-
-_xrp.HookGameEvent("ADDON_LOADED", loadEvents.ADDON_LOADED)
+end)
