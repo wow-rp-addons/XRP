@@ -314,10 +314,14 @@ local upgradeVars = {
 				end
 				xrpSaved.profiles[newName] = profile
 				xrpSaved.profiles[name] = nil
+				break
 			end
+		end
+		for name, profile in pairs(xrpSaved.profiles) do
 			for field, contents in pairs(profile.fields) do
 				if field == "FC" then
 					profile.versions[field] = _xrp.NewVersion(field, contents)
+					break
 				end
 			end
 			for field, doInherit in pairs(profile.inherits) do
@@ -329,6 +333,7 @@ local upgradeVars = {
 		for field, contents in pairs(xrpSaved.meta.fields) do
 			if field == "FC" then
 				xrpSaved.meta.versions[field] = _xrp.NewVersion(field, contents)
+				break
 			end
 		end
 		_xrp.FireEvent("UPDATE", "FC")
@@ -357,66 +362,27 @@ local function InitializeSavedVariables()
 		end
 	end
 	if not xrpSaved then
-		if type(xrp_profiles) == "table" then
-			xrpSaved = {
-				meta = {
-					fields = {},
-					versions = {},
-				},
-				overrides = {
-					fields = {},
-					versions = {},
-				},
-				profiles = xrp_profiles,
-				selected = xrp_selectedprofile,
-				versions = xrp_versions or {},
-				dataVersion = 1, -- Leave this at 1.
-			}
-			for name, profile in pairs(xrpSaved.profiles) do
-				if type(profile.versions) ~= "table" then
-					profile.versions = {}
-					for field, contents in pairs(profile.fields) do
-						profile.versions[field] = _xrp.NewVersion(field, contents)
-					end
-				end
-				if type(profile.inherits) ~= "table" then
-					profile.inherits = profile.defaults or {}
-					profile.defaults = nil
-					if name ~= "Default" then
-						profile.parent = "Default"
-					end
-				end
-				if name == "Add" or name == "List" then
-					xrpSaved.profiles[_xrp.L.RENAMED_FORMAT:format(name)] = profile
-					if xrpSaved.selected == name then
-						xrpSaved.selected = _xrp.L.RENAMED_FORMAT:format(name)
-					end
-					xrpSaved.profiles[name] = nil
-				end
-			end
-		else
-			xrpSaved = {
-				auto = {},
-				meta = {
-					fields = {},
-					versions = {},
-				},
-				overrides = {
-					fields = {},
-					versions = {},
-				},
-				profiles = {
-					[DEFAULT] = {
-						fields = {},
-						inherits = {},
-						versions = {},
-					},
-				},
-				selected = DEFAULT,
+		xrpSaved = {
+			auto = {},
+			meta = {
+				fields = {},
 				versions = {},
-				dataVersion = DATA_VERSION,
-			}
-		end
+			},
+			overrides = {
+				fields = {},
+				versions = {},
+			},
+			profiles = {
+				[DEFAULT] = {
+					fields = {},
+					inherits = {},
+					versions = {},
+				},
+			},
+			selected = DEFAULT,
+			versions = {},
+			dataVersion = DATA_VERSION,
+		}
 	end
 end
 
@@ -438,6 +404,8 @@ function _xrp.SavedVariableSetup()
 		end
 		xrpSaved.dataVersion = DATA_VERSION
 	end
+	upgradeAccountVars = nil
+	upgradeVars = nil
 
 	_xrp.settings = xrpAccountSaved.settings
 end
