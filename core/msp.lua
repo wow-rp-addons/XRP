@@ -143,6 +143,24 @@ do
 		function AddFilter(name)
 			filter[name] = GetTime() + (select(3, GetNetStats()) * 0.001) + 2.000
 		end
+		local unloadTime
+		local function FilterLoadScreen(event)
+			if event == "PLAYER_LEAVING_WORLD" then
+				unloadTime = GetTime()
+			elseif unloadTime and event == "PLAYER_ENTERING_WORLD" then
+				local loadTime = GetTime() - unloadTime
+				for name, filterTime in pairs(filter) do
+					if filterTime >= unloadTime then
+						filter[name] = filterTime + loadTime
+					else
+						filter[name] = nil
+					end
+				end
+				unloadTime = nil
+			end
+		end
+		_xrp.HookGameEvent("PLAYER_LEAVING_WORLD", FilterLoadScreen)
+		_xrp.HookGameEvent("PLAYER_ENTERING_WORLD", FilterLoadScreen)
 	end
 
 	-- Group outgoing field tracking.
