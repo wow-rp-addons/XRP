@@ -125,8 +125,8 @@ local function CompareVersion(newVersion, oldVersion)
 	local newMajor, newMinor, newPatch, newAddOn, newRelType, newRelRev = newVersion:match("(%d+)%.(%d+)%.(%d+)%.(%d+)[%_%-]?(%l*)(%d*)")
 	local oldMajor, oldMinor, oldPatch, oldAddOn, oldRelType, oldRelRev = oldVersion:match("(%d+)%.(%d+)%.(%d+)%.(%d+)[%_%-]?(%l*)(%d*)")
 
-	newRelType = newRelType == "alpha" and 1 or newRelType == "beta" and 2 or newRelType == "rc" and 3 or 4
-	oldRelType = oldRelType == "alpha" and 1 or oldRelType == "beta" and 2 or oldRelType == "rc" and 3 or 4
+	newRelType = (newRelType == "alpha" or newRelType == "a") and 1 or (newRelType == "beta" or oldRelType == "b") and 2 or newRelType == "rc" and 3 or 4
+	oldRelType = (oldRelType == "alpha" or oldRelType == "a") and 1 or (oldRelType == "beta" or oldRelType == "b") and 2 or oldRelType == "rc" and 3 or 4
 
 	local newWoW = (tonumber(newMajor) * 1000000) + (tonumber(newMinor) * 10000) + (tonumber(newPatch) * 100)
 	local oldWoW = (tonumber(oldMajor) * 1000000) + (tonumber(oldMinor) * 10000) + (tonumber(oldPatch) * 100)
