@@ -102,10 +102,11 @@ do
 		local PROFILE_ADDONS = {
 			["XRP"] = "XRP",
 			["MYROLEPLAY"] = "MRP",
-			["TOTALRP2"] = "TRP2",
-			["TOTALRP3"] = "TRP3",
-			["GNOMTEC_BADGE"] = "GTEC",
+			["TOTALRP2"] = "TRP",
+			["TOTALRP3"] = "TRP",
+			["GNOMTEC_BADGE"] = "GTB",
 			["FLAGRSP"] = "RSP",
+			["FLAGRSP2"] = "RSP",
 		}
 		local EXTRA_ADDONS = {
 			["GHI"] = "GHI",
