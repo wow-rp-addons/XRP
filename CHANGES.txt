@@ -1,14 +1,34 @@
-6.2.3.0 (2015-11-17):
+6.2.3.1_beta1 (2016-02-15):
 
-	- This is a small update, primarily released to handle the issue with
-	  absent Battle.net realms more gracefully, as the bug has been
-	  reintroduced following this morning's maintenance.
+	- Support for names in chat in Prat-3.0 has been added.
 
-		- Crossrealm/crossfaction profiles will *NOT* work so long as the
-		  realm name is unavailable, but XRP will now give up after about 30
-		  seconds of failed attempts to find realm names, saving some CPU
-		  cycles.
+	- Support for an optional LibDataBroker object (for Titan Panel, Chocolate
+	  Bar, etc.) has been added. This may be enabled in the general XRP
+	  options.
 
-	- Effective level display in the tooltip (i.e., timewalking, level-up
-	  battlegrounds, etc.) has been changed to match how it is displayed in
-	  default UI elements.
+	- An optional (enabled by default) flag icon has been added to the
+	  tooltip, indicating a bookmarked profile.
+
+	- Support for reading the OOC currently field from TRP users has been
+	  added. For maximum compatibility, XRP will *not* send this field to
+	  other addons, but *will* see it when other addons send it.
+
+	- The tooltip eye icon, indicating a player is targeting you, is enabled
+	  by default now. The setting for existing installs will not be changed.
+
+	- Support for upgrading from VERY old versions of XRP (pre-6.0) has been
+	  dropped.
+
+	- (BUGFIX) The export button in the profile editor should now always work.
+
+	- (BUGFIX) Fixed an issue where player not found errors could sometimes
+	  spam the chatbox following a loading screen.
+
+	- The addon folder name has been changed from "xrp" to "XRP". As this only
+	  changes the case of the name, no issues should occur on
+	  Blizzard-supported installs.
+
+		- For Linux/WINE users, be sure to remove the old
+		  Interface/AddOns/xrp/ folder prior to installing the new version,
+		  and rename any WTF/Account/**/SavedVariables/xrp.lua files to
+		  XRP.lua if you encounter any issues.
