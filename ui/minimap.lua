@@ -26,7 +26,7 @@ local TEXTURES = {
 	"Interface\\Icons\\Ability_Malkorok_BlightofYshaarj_Green", -- IC
 }
 
-function XRPButton_UpdateIcon()
+local function XRPButton_UpdateIcon()
 	local target = xrp.characters.byUnit.target
 	if target and (target.hide or target.fields.VA) then
 		if Button then
@@ -233,6 +233,13 @@ function XRPButtonDetached_OnDragStop(self)
 	self:UnlockHighlight()
 end
 
+local function HookEvents()
+	xrp.HookEvent("UPDATE", XRPButton_UpdateIcon)
+	xrp.HookEvent("RECEIVE", XRPButton_UpdateIcon)
+	_xrp.HookGameEvent("PLAYER_TARGET_CHANGED", XRPButton_UpdateIcon)
+	_xrp.HookGameEvent("PLAYER_ENTERING_WORLD", XRPButton_UpdateIcon)
+end
+
 local function CreateLDBObject()
 	if LDBObject then return end
 	local ldb = LibStub and LibStub:GetLibrary("LibDataBroker-1.1")
@@ -246,6 +253,10 @@ local function CreateLDBObject()
 		OnTooltipShow = RenderTooltip,
 	}
 	ldb:NewDataObject(LDBObject.label, LDBObject)
+	if not Button then
+		HookEvents()
+	end
+	XRPButton_UpdateIcon()
 end
 
 _xrp.HookGameEvent("PLAYER_LOGIN", function(event)
@@ -256,16 +267,12 @@ _xrp.HookGameEvent("PLAYER_LOGIN", function(event)
 	if not LDBObject and not (LibStub and LibStub:GetLibrary("LibDataBroker-1.1")) then
 		-- No LDB library, meaning no chance of a viewer.
 		InterfaceOptionsFramePanelContainer.XRPGeneral.LDBObject:SetEnabled(false)
-	elseif LDBObject then
-		XRPButton_UpdateIcon()
 	end
 end)
 
 _xrp.settingsToggles.minimap = {
 	enabled = function(setting)
 		if setting then
-			xrp.HookEvent("UPDATE", XRPButton_UpdateIcon)
-			xrp.HookEvent("RECEIVE", XRPButton_UpdateIcon)
 			if _xrp.settings.minimap.detached then
 				if Button and Button == LibDBIcon10_XRP then
 					Button:UnregisterAllEvents()
@@ -287,14 +294,18 @@ _xrp.settingsToggles.minimap = {
 				end
 				Button = LibDBIcon10_XRP
 			end
+			if not LDBObject then
+				HookEvents()
+			end
 			XRPButton_UpdateIcon()
-			Button:RegisterEvent("PLAYER_TARGET_CHANGED")
-			Button:RegisterEvent("PLAYER_ENTERING_WORLD")
 			Button:Show()
 		elseif Button ~= nil then
-			xrp.UnhookEvent("UPDATE", XRPButton_UpdateIcon)
-			xrp.UnhookEvent("RECEIVE", XRPButton_UpdateIcon)
-			Button:UnregisterAllEvents()
+			if not LDBObject then
+				xrp.UnhookEvent("UPDATE", XRPButton_UpdateIcon)
+				xrp.UnhookEvent("RECEIVE", XRPButton_UpdateIcon)
+				_xrp.UnhookGameEvent("PLAYER_TARGET_CHANGED", XRPButton_UpdateIcon)
+				_xrp.UnhookGameEvent("PLAYER_ENTERING_WORLD", XRPButton_UpdateIcon)
+			end
 			Button:Hide()
 			Button = nil
 		end
@@ -308,8 +319,6 @@ _xrp.settingsToggles.minimap = {
 			CreateLDBObject()
 			if not LDBObject then
 				LDBObject = false
-			else
-				XRPButton_UpdateIcon()
 			end
 		end
 	end,
