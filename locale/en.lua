@@ -371,6 +371,7 @@ HELP_VIEWER_RESIZE = "The small handle here may be clicked and dragged to resize
 ROLEPLAY_PROFILE = "Roleplay Profile"
 
 -- ui/minimap.lua
+VIEW_TARGET_LDB = "View Target"
 PROFILE = "Profile"
 STATUS = "Status"
 CLICK_VIEW_TARGET = "Click to view your target's profile."

@@ -35,6 +35,7 @@ local function XRPButton_UpdateIcon()
 		end
 		if LDBObject then
 			LDBObject.icon = "Interface\\MINIMAP\\TRACKING\\Class"
+			LDBObject.text = _xrp.L.VIEW_TARGET_LDB
 		end
 		return
 	end
@@ -46,7 +47,7 @@ local function XRPButton_UpdateIcon()
 		end
 		if LDBObject then
 			LDBObject.icon = "Interface\\FriendsFrame\\StatusIcon-DnD"
-			LDBObject.text = xrp.L.VALUES.FC["1"]
+			LDBObject.text = xrp.L.MENU_VALUES.FC["1"]
 		end
 	else
 		if Button then
@@ -55,7 +56,7 @@ local function XRPButton_UpdateIcon()
 		end
 		if LDBObject then
 			LDBObject.icon = "Interface\\FriendsFrame\\StatusIcon-Online"
-			LDBObject.text = xrp.L.VALUES.FC["2"]
+			LDBObject.text = xrp.L.MENU_VALUES.FC["2"]
 		end
 	end
 end
