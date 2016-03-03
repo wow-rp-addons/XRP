@@ -220,6 +220,8 @@ local OPTIONS_TEXT = {
 		altTaurenForce = _xrp.L.ALT_RACE_FORCE:format(_xrp.L.VALUE_GR_TAUREN_ALT),
 		movableViewer = _xrp.L.MOVABLE_VIEWER,
 		closeOnEscapeViewer = _xrp.L.CLOSE_ESCAPE_VIEWER,
+		friendsOnly = _xrp.L.SHOW_FRIENDS_ONLY,
+		guildIsFriends = _xrp.L.GUILD_IS_FRIENDS,
 		height = _xrp.L.HEIGHT_DISPLAY,
 		weight = _xrp.L.WEIGHT_DISPLAY,
 	},

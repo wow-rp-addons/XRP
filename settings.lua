@@ -22,7 +22,7 @@ _xrp.settingsToggles = {
 }
 
 local DATA_VERSION = 6
-local DATA_VERSION_ACCOUNT = 14
+local DATA_VERSION_ACCOUNT = 15
 
 _xrp.DEFAULT_SETTINGS = {
 	cache = {
@@ -52,6 +52,8 @@ _xrp.DEFAULT_SETTINGS = {
 		altTauren = false,
 		altTaurenForce = false,
 		closeOnEscapeViewer = true,
+		friendsOnly = false,
+		guildIsFriends = true,
 		height = "ft",
 		movableViewer = false,
 		weight = "lb",
@@ -289,6 +291,10 @@ local upgradeAccountVars = {
 		for setting, value in pairs(newSettings) do
 			xrpAccountSaved.settings.chat[setting] = value
 		end
+	end,
+	[15] = function() -- 6.2.4.0
+		xrpAccountSaved.settings.display.friendsOnly = _xrp.DEFAULT_SETTINGS.display.friendsOnly
+		xrpAccountSaved.settings.display.guildIsFriends = _xrp.DEFAULT_SETTINGS.display.guildIsFriends
 	end,
 }
 
