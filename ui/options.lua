@@ -154,10 +154,14 @@ function XRPOptionsAbout_OnShow(self)
 	if not self.wasShown then
 		self.wasShown = true
 		InterfaceOptionsFrame_OpenToCategory(self.GENERAL)
-	elseif self.ADVANCED.AutoClean:Get() then
-		self.CacheTidy:Hide()
+	end
+end
+
+function XRPOptionsAdvancedAutoClean_OnClick(self, button, down)
+	if self:Get() then
+		self:GetParent().CacheTidy:Hide()
 	else
-		self.CacheTidy:Show()
+		self:GetParent().CacheTidy:Show()
 	end
 end
 
@@ -290,6 +294,11 @@ function XRPOptionsCheckButton_OnClick(self, button, down)
 				end
 			end
 		end
+	end
+	if setting and self.enableWarn then
+		StaticPopup_Show("XRP_ERROR", _xrp.L[self.enableWarn])
+	elseif not setting and self.disableWarn then
+		StaticPopup_Show("XRP_ERROR", _xrp.L[self.disableWarn])
 	end
 	self:Set(setting)
 end
