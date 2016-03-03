@@ -1,4 +1,4 @@
-6.2.3.1_beta1 (2016-02-15):
+6.2.3.1_beta2 (2016-03-03):
 
 	- Support for names in chat in Prat-3.0 has been added.
 
@@ -15,6 +15,12 @@
 
 	- The tooltip eye icon, indicating a player is targeting you, is enabled
 	  by default now. The setting for existing installs will not be changed.
+
+	- An option has been added to only show profiles from characters on your
+	  friends list (in-game and Battle.net) and, optionally, in your current
+	  character's guild. This is NOT RECOMMENDED for use unless you know why
+	  you want to use it and exactly what it does; it may be found in the
+	  advanced options.
 
 	- Support for upgrading from VERY old versions of XRP (pre-6.0) has been
 	  dropped.
