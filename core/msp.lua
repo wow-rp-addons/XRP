@@ -65,7 +65,7 @@ local cache = setmetatable({}, {
 	end,
 })
 
-local bnet, lastBadBnet
+local bnet, friends, guildies, lastBadBnet
 local badBnetCount = 0
 local function FindPresenceID(nameFind)
 	local newBnet, badList = {}
@@ -96,6 +96,9 @@ local function FindPresenceID(nameFind)
 	end
 	if not badList or badBnetCount > 4 then
 		bnet = newBnet
+		if not nameFind then
+			return true
+		end
 	elseif not lastBadBnet or lastBadBnet < GetTime() - 5 then
 		badBnetCount = badBnetCount + 1
 		lastBadBnet = GetTime()
@@ -356,6 +359,8 @@ do
 				return ("!%s%.0f"):format(field, version)
 			end
 			return ("%s%.0f=%s"):format(field, currentVersion, xrp.current[field])
+		elseif friends and not ((bnet or FindPresenceID()) and bnet[name] or friends[name] or guildies and guildies[name]) then
+			return nil
 		elseif action == "!" and version == (xrpCache[name] and xrpCache[name].versions[field] or 0) then
 			cache[name].time[field] = GetTime() + FIELD_TIMES[field]
 			cache[name].fieldUpdated = cache[name].fieldUpdated or false
@@ -454,7 +459,7 @@ do
 			if xrpCache[name] then
 				-- Cache timer. Last receive marked for clearing old entries.
 				xrpCache[name].lastReceive = time()
-			elseif not cache[name].time.TT then
+			elseif not cache[name].time.TT and (not friends or (bnet or FindPresenceID()) and bnet[name] or friends[name] or guildies and guildies[name]) then
 				-- If we don't have any info for them and haven't requested the
 				-- tooltip in this session, also send a tooltip request.
 				local now = GetTime()
@@ -644,6 +649,30 @@ do
 	end
 end
 
+function gameEvents.FRIENDLIST_UPDATE(event)
+	if not friends then return end
+	table.wipe(friends)
+	for i = 1, select(2, GetNumFriends()) do
+		friends[xrp.FullName((GetFriendInfo(i)))] = true
+	end
+end
+
+function gameEvents.GUILD_ROSTER_UPDATE(event)
+	if not guildies then return end
+	local showOffline = GetGuildRosterShowOffline()
+	table.wipe(guildies)
+	for i = 1, select(2, GetNumGuildMembers()) do
+		if showOffline then
+			local name, rank, rankIndex, level, class, zone, note, officerNote, online = GetGuildRosterInfo(i)
+			if online then
+				guildies[xrp.FullName(name)] = true
+			end
+		else
+			guildies[xrp.FullName((GetGuildRosterInfo(i)))] = true
+		end
+	end
+end
+
 if not disabled then
 	for prefix, handler in pairs(handlers) do
 		RegisterAddonMessagePrefix(prefix)
@@ -669,7 +698,7 @@ local function RunRequestQueue()
 end
 
 function _xrp.QueueRequest(name, field)
-	if disabled or name == _xrp.playerWithRealm or xrp.ShortName(name) == UNKNOWN or cache[name].time[field] and GetTime() < cache[name].time[field] then
+	if disabled or name == _xrp.playerWithRealm or cache[name].time[field] and GetTime() < cache[name].time[field] or friends and not ((bnet or FindPresenceID()) and bnet[name] or friends[name] or guildies and guildies[name]) or xrp.ShortName(name) == UNKNOWN then
 		return
 	elseif not request[name] then
 		request[name] = {}
@@ -684,7 +713,7 @@ end
 -- Using GU+GF alone would be great, but it's not reliable.
 local UNIT_REQUEST = { "GC", "GF", "GR", "GS", "GU" }
 function _xrp.Request(name, fields)
-	if disabled or name == _xrp.playerWithRealm or xrp.ShortName(name) == UNKNOWN then
+	if disabled or name == _xrp.playerWithRealm or friends and not ((bnet or FindPresenceID()) and bnet[name] or friends[name] or guildies and guildies[name]) or xrp.ShortName(name) == UNKNOWN then
 		return false
 	end
 
@@ -811,5 +840,28 @@ function _xrp.ForceRefresh(name, skipTT)
 		-- Not a fan of using a closure like this, but this won't be run often
 		-- enough to matter.
 		C_Timer.After(5.5, function() _xrp.Request(name, requestLater) end)
+	end
+end
+
+_xrp.settingsToggles.display.friendsOnly = function(setting)
+	if setting then
+		friends = {}
+		gameEvents.FRIENDLIST_UPDATE()
+		_xrp.HookGameEvent("FRIENDLIST_UPDATE", gameEvents.FRIENDLIST_UPDATE)
+		_xrp.settingsToggles.display.guildIsFriends(_xrp.settings.display.guildIsFriends)
+	elseif friends then
+		_xrp.settingsToggles.display.guildIsFriends(false)
+		_xrp.UnhookGameEvent("FRIENDLIST_UPDATE", gameEvents.FRIENDLIST_UPDATE)
+		friends = nil
+	end
+end
+_xrp.settingsToggles.display.guildIsFriends = function(setting)
+	if setting and friends then
+		guildies = {}
+		gameEvents.GUILD_ROSTER_UPDATE()
+		_xrp.HookGameEvent("GUILD_ROSTER_UPDATE", gameEvents.GUILD_ROSTER_UPDATE)
+	elseif guildies and friends then
+		_xrp.UnhookGameEvent("GUILD_ROSTER_UPDATE", gameEvents.GUILD_ROSTER_UPDATE)
+		guildies = nil
 	end
 end

@@ -637,6 +637,25 @@
 					<KeyValue key="xrpSetting" value="autoClean"/>
 				</KeyValues>
 			</CheckButton>
+			<CheckButton parentKey="FriendsOnly" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.AutoClean" relativePoint="BOTTOMLEFT" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="xrpTable" value="display"/>
+					<KeyValue key="xrpSetting" value="friendsOnly"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="GuildIsFriends" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.FriendsOnly" relativePoint="BOTTOMLEFT" x="24" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="dependsOn" value="FriendsOnly"/>
+					<KeyValue key="xrpTable" value="display"/>
+					<KeyValue key="xrpSetting" value="guildIsFriends"/>
+				</KeyValues>
+			</CheckButton>
 		</Frames>
 	</Frame>
 </Ui>
