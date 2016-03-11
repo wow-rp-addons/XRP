@@ -662,19 +662,29 @@ function gameEvents.FRIENDLIST_UPDATE(event)
 	end
 end
 
-function gameEvents.GUILD_ROSTER_UPDATE(event)
-	if not guildies then return end
-	local showOffline = GetGuildRosterShowOffline()
-	table.wipe(guildies)
-	for i = 1, select(2, GetNumGuildMembers()) do
+do
+	local function UpdateGuildRoster()
+		local showOffline = GetGuildRosterShowOffline()
+		table.wipe(guildies)
 		if showOffline then
-			local name, rank, rankIndex, level, class, zone, note, officerNote, online = GetGuildRosterInfo(i)
-			if online then
-				guildies[xrp.FullName(name)] = true
+			for i = 1, GetNumGuildMembers() do
+				local name, rank, rankIndex, level, class, zone, note, officerNote, online = GetGuildRosterInfo(i)
+				if online then
+					guildies[xrp.FullName(name)] = true
+				end
 			end
 		else
-			guildies[xrp.FullName((GetGuildRosterInfo(i)))] = true
+			for i = 1, select(2, GetNumGuildMembers()) do
+				guildies[xrp.FullName((GetGuildRosterInfo(i)))] = true
+			end
 		end
+	end
+
+	function gameEvents.GUILD_ROSTER_UPDATE(event)
+		if not guildies then return end
+		-- Workaround for ugly issue with the show offline tickbox on the
+		-- guild roster UI.
+		C_Timer.After(0, UpdateGuildRoster)
 	end
 end
 
