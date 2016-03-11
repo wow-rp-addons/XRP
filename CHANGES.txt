@@ -1,4 +1,6 @@
-6.2.3.1_beta2 (2016-03-03):
+6.2.4.0_beta3 (2016-03-11):
+
+	- This version supports both World of Warcraft 6.2.3 and 6.2.4.
 
 	- Support for names in chat in Prat-3.0 has been added.
 
