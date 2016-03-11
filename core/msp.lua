@@ -17,6 +17,12 @@
 
 local addonName, _xrp = ...
 
+local BNGetGameAccountInfo, BNGetFriendGameAccountInfo, BNGetNumFriendGameAccounts = BNGetGameAccountInfo, BNGetFriendGameAccountInfo, BNGetNumFriendGameAccounts
+
+if not BNGetGameAccountInfo then
+	BNGetGameAccountInfo, BNGetFriendGameAccountInfo, BNGetNumFriendGameAccounts = BNGetToonInfo, BNGetFriendToonInfo, BNGetNumFriendToons
+end
+
 local disabled = false
 if not msp_RPAddOn then
 	msp_RPAddOn = GetAddOnMetadata(addonName, "Title")
@@ -65,61 +71,59 @@ local cache = setmetatable({}, {
 	end,
 })
 
-local bnet, friends, guildies, lastBadBnet
-local badBnetCount = 0
-local function FindPresenceID(nameFind)
-	local newBnet, badList = {}
-	local presenceID
-	local totalFriends, onlineFriends = BNGetNumFriends()
-	for i = 1, onlineFriends do
-		for j = 1, BNGetNumFriendToons(i) do
-			local active, toonName, client, realmName, realmID, faction, race, class, blank, zoneName, level, gameText, broadcastText, broadcastTime, isConnected, toonID = BNGetFriendToonInfo(i, j)
-			if isConnected and client == BNET_CLIENT_WOW then
-				if realmName == "" then
-					-- Something's gone wrong. It can happen around first login
-					-- without indicating a real issue, but if it carries on
-					-- there's probably something broken with the B.net service
-					-- or connection.
-					badList = true
-				else
-					local name = xrp.FullName(toonName, realmName)
-					if cache[name].nextCheck then
-						cache[name].nextCheck = 0
-					end
-					newBnet[name] = toonID
-					if nameFind and name == nameFind then
-						presenceID = toonID
+local bnet, friends, guildies
+local GetGameAccountID
+do
+	local badBnetCount, lastBadBnet = 0
+	local function FindGameAccountID(nameFind)
+		local newBnet, badList = {}
+		for i = 1, select(2, BNGetNumFriends()) do
+			for j = 1, BNGetNumFriendGameAccounts(i) do
+				local active, characterName, client, realmName, realmID, faction, race, class, blank, zoneName, level, gameText, broadcastText, broadcastTime, isConnected, bnetIDGameAccount = BNGetFriendGameAccountInfo(i, j)
+				if isConnected and client == BNET_CLIENT_WOW then
+					if realmName == "" then
+						-- Something's gone wrong. It can happen around first login
+						-- without indicating a real issue, but if it carries on
+						-- there's probably something broken with the B.net service
+						-- or connection.
+						badList = true
+					else
+						local name = xrp.FullName(characterName, realmName)
+						if cache[name].nextCheck then
+							cache[name].nextCheck = 0
+						end
+						newBnet[name] = bnetIDGameAccount
 					end
 				end
 			end
 		end
-	end
-	if not badList or badBnetCount > 4 then
-		bnet = newBnet
-		if not nameFind then
-			return true
+		if not badList or badBnetCount > 4 then
+			bnet = newBnet
+			if not badList then
+				badBnetCount = 0
+			end
+		elseif not lastBadBnet or lastBadBnet < GetTime() - 5 then
+			badBnetCount = badBnetCount + 1
+			lastBadBnet = GetTime()
 		end
-	elseif not lastBadBnet or lastBadBnet < GetTime() - 5 then
-		badBnetCount = badBnetCount + 1
-		lastBadBnet = GetTime()
+		return newBnet[nameFind]
 	end
-	return presenceID
-end
 
-local function GetPresenceID(name)
-	if not BNConnected() then
-		return nil
-	end
-	local presenceID
-	if not bnet then
-		presenceID = FindPresenceID(name)
-	else
-		presenceID = bnet[name]
-		if presenceID and not select(15, BNGetToonInfo(presenceID)) then
+	function GetGameAccountID(name)
+		if not BNConnected() then
 			return nil
 		end
+		local bnetIDGameAccount
+		if not bnet then
+			bnetIDGameAccount = FindGameAccountID(name)
+		else
+			bnetIDGameAccount = bnet[name]
+			if bnetIDGameAccount and not select(15, BNGetGameAccountInfo(bnetIDGameAccount)) then
+				return nil
+			end
+		end
+		return bnetIDGameAccount
 	end
-	return presenceID
 end
 
 local Send, handlers
@@ -177,10 +181,10 @@ do
 	function Send(name, dataTable, channel, isRequest)
 		local data = table.concat(dataTable, "\1")
 
-		local presenceID
+		local bnetIDGameAccount
 		if not channel or channel == "BN" then
-			presenceID = GetPresenceID(name)
-			if not channel and presenceID then
+			bnetIDGameAccount = GetGameAccountID(name)
+			if not channel and bnetIDGameAccount then
 				if cache[name].bnet == false then
 					channel = "GAME"
 				elseif cache[name].bnet == true then
@@ -189,20 +193,20 @@ do
 			end
 		end
 
-		if (not channel or channel == "BN") and presenceID then
-			local queue = ("XRP-%d"):format(presenceID)
+		if (not channel or channel == "BN") and bnetIDGameAccount then
+			local queue = ("XRP-%d"):format(bnetIDGameAccount)
 			if #data <= 4078 then
-				libbw:BNSendGameData(presenceID, "MSP", data, isRequest and "ALERT" or "NORMAL", queue)
+				libbw:BNSendGameData(bnetIDGameAccount, "MSP", data, isRequest and "ALERT" or "NORMAL", queue)
 			else
 				-- Guess five added characters from metadata.
 				data = ("XC=%d\1%s"):format(((#data + 5) / 4078) + 1, data)
-				libbw:BNSendGameData(presenceID, "MSP\1", data:sub(1, 4078), "BULK", queue)
+				libbw:BNSendGameData(bnetIDGameAccount, "MSP\1", data:sub(1, 4078), "BULK", queue)
 				local position = 4079
 				while position + 4078 <= #data do
-					libbw:BNSendGameData(presenceID, "MSP\2", data:sub(position, position + 4077), "BULK", queue)
+					libbw:BNSendGameData(bnetIDGameAccount, "MSP\2", data:sub(position, position + 4077), "BULK", queue)
 					position = position + 4078
 				end
-				libbw:BNSendGameData(presenceID, "MSP\3", data:sub(position), "BULK", queue)
+				libbw:BNSendGameData(bnetIDGameAccount, "MSP\3", data:sub(position), "BULK", queue)
 			end
 		end
 		if channel == "BN" then return end
@@ -359,7 +363,7 @@ do
 				return ("!%s%.0f"):format(field, version)
 			end
 			return ("%s%.0f=%s"):format(field, currentVersion, xrp.current[field])
-		elseif friends and not ((bnet or FindPresenceID()) and bnet[name] or friends[name] or guildies and guildies[name]) then
+		elseif friends and not (GetGameAccountID(name) or friends[name] or guildies and guildies[name]) then
 			return nil
 		elseif action == "!" and version == (xrpCache[name] and xrpCache[name].versions[field] or 0) then
 			cache[name].time[field] = GetTime() + FIELD_TIMES[field]
@@ -464,7 +468,7 @@ do
 				if xrpCache[name].own then
 					xrpCache[name].own = nil
 				end
-			elseif not cache[name].time.TT and (not friends or (bnet or FindPresenceID()) and bnet[name] or friends[name] or guildies and guildies[name]) then
+			elseif not cache[name].time.TT and (not friends or GetGameAccountID(name) or friends[name] or guildies and guildies[name]) then
 				-- If we don't have any info for them and haven't requested the
 				-- tooltip in this session, also send a tooltip request.
 				local now = GetTime()
@@ -592,37 +596,29 @@ function gameEvents.CHAT_MSG_ADDON(event, prefix, message, channel, sender)
 		handlers[prefix](name, message, channel)
 	end
 end
-function gameEvents.BN_CHAT_MSG_ADDON(event, prefix, message, channel, presenceID)
+function gameEvents.BN_CHAT_MSG_ADDON(event, prefix, message, channel, bnetIDGameAccount)
 	if not handlers[prefix] then return end
-	local active, toonName, client, realmName = BNGetToonInfo(presenceID)
+	local active, characterName, client, realmName = BNGetGameAccountInfo(bnetIDGameAccount)
 	if client == BNET_CLIENT_WOW and realmName ~= "" then
-		local name = xrp.FullName(toonName, realmName)
+		local name = xrp.FullName(characterName, realmName)
 		if bnet then
-			bnet[name] = presenceID
+			bnet[name] = bnetIDGameAccount
 		end
 		cache[name].bnet = true
 		cache[name].nextCheck = nil
 		handlers[prefix](name, message, "BN")
 	end
 end
-function gameEvents.BN_TOON_NAME_UPDATED(event, presenceID)
-	if not bnet then return end
-	local active, toonName, client, realmName = BNGetToonInfo(presenceID)
-	if client == BNET_CLIENT_WOW and realmName ~= "" then
-		local name = xrp.FullName(toonName, realmName)
-		if cache[name].nextCheck then
-			cache[name].nextCheck = 0
-		end
-		bnet[name] = presenceID
+function gameEvents.BN_FRIEND_INFO_CHANGED(event, bnetIndex)
+	if not bnetIndex then
+		bnet = nil
 	end
 end
 function gameEvents.BN_CONNECTED(event)
-	_xrp.HookGameEvent("BN_TOON_NAME_UPDATED", gameEvents.BN_TOON_NAME_UPDATED)
-	_xrp.HookGameEvent("BN_FRIEND_TOON_ONLINE", gameEvents.BN_TOON_NAME_UPDATED)
+	_xrp.HookGameEvent("BN_FRIEND_INFO_CHANGED", gameEvents.BN_FRIEND_INFO_CHANGED)
 end
 function gameEvents.BN_DISCONNECTED(event)
-	_xrp.UnhookGameEvent("BN_TOON_NAME_UPDATED", gameEvents.BN_TOON_NAME_UPDATED)
-	_xrp.UnhookGameEvent("BN_FRIEND_TOON_ONLINE", gameEvents.BN_TOON_NAME_UPDATED)
+	_xrp.UnhookGameEvent("BN_FRIEND_INFO_CHANGED", gameEvents.BN_FRIEND_INFO_CHANGED)
 	bnet = nil
 end
 do
@@ -697,8 +693,7 @@ if not disabled then
 end
 _xrp.HookGameEvent("GROUP_ROSTER_UPDATE", gameEvents.GROUP_ROSTER_UPDATE)
 if BNConnected() then
-	_xrp.HookGameEvent("BN_TOON_NAME_UPDATED", gameEvents.BN_TOON_NAME_UPDATED)
-	_xrp.HookGameEvent("BN_FRIEND_TOON_ONLINE", gameEvents.BN_TOON_NAME_UPDATED)
+	_xrp.HookGameEvent("BN_FRIEND_INFO_CHANGED", gameEvents.BN_FRIEND_INFO_CHANGED)
 end
 _xrp.HookGameEvent("BN_CONNECTED", gameEvents.BN_CONNECTED)
 _xrp.HookGameEvent("BN_DISCONNECTED", gameEvents.BN_DISCONNECTED)
@@ -713,7 +708,7 @@ local function RunRequestQueue()
 end
 
 function _xrp.QueueRequest(name, field)
-	if disabled or name == _xrp.playerWithRealm or cache[name].time[field] and GetTime() < cache[name].time[field] or friends and not ((bnet or FindPresenceID()) and bnet[name] or friends[name] or guildies and guildies[name]) or xrp.ShortName(name) == UNKNOWN then
+	if disabled or name == _xrp.playerWithRealm or cache[name].time[field] and GetTime() < cache[name].time[field] or friends and not (GetGameAccountID(name) or friends[name] or guildies and guildies[name]) or xrp.ShortName(name) == UNKNOWN then
 		return
 	elseif not request[name] then
 		request[name] = {}
@@ -728,7 +723,7 @@ end
 -- Using GU+GF alone would be great, but it's not reliable.
 local UNIT_REQUEST = { "GC", "GF", "GR", "GS", "GU" }
 function _xrp.Request(name, fields)
-	if disabled or name == _xrp.playerWithRealm or friends and not ((bnet or FindPresenceID()) and bnet[name] or friends[name] or guildies and guildies[name]) or xrp.ShortName(name) == UNKNOWN then
+	if disabled or name == _xrp.playerWithRealm or friends and not (GetGameAccountID(name) or friends[name] or guildies and guildies[name]) or xrp.ShortName(name) == UNKNOWN then
 		return false
 	end
 
