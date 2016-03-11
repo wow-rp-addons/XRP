@@ -21,17 +21,17 @@ local addonName, _xrp = ...
 local Button, LDBObject
 
 local TEXTURES = {
-	"Interface\\Icons\\INV_Misc_Book_03", -- Target
-	"Interface\\Icons\\Ability_Malkorok_BlightofYshaarj_Red", -- OOC
-	"Interface\\Icons\\Ability_Malkorok_BlightofYshaarj_Green", -- IC
+	target = "Interface\\Icons\\INV_Misc_Book_03",
+	ooc = "Interface\\Icons\\Ability_Malkorok_BlightofYshaarj_Red",
+	ic = "Interface\\Icons\\Ability_Malkorok_BlightofYshaarj_Green",
 }
 
 local function XRPButton_UpdateIcon()
 	local target = xrp.characters.byUnit.target
 	if target and (target.hide or target.fields.VA) then
 		if Button then
-			Button:SetNormalTexture(TEXTURES[1])
-			Button:SetPushedTexture(TEXTURES[1])
+			Button:SetNormalTexture(TEXTURES.target)
+			Button:SetPushedTexture(TEXTURES.target)
 		end
 		if LDBObject then
 			LDBObject.icon = "Interface\\MINIMAP\\TRACKING\\Class"
@@ -42,8 +42,8 @@ local function XRPButton_UpdateIcon()
 	local FC = xrp.current.FC
 	if not FC or FC == "0" or FC == "1" then
 		if Button then
-			Button:SetNormalTexture(TEXTURES[2])
-			Button:SetPushedTexture(TEXTURES[2])
+			Button:SetNormalTexture(TEXTURES.ooc)
+			Button:SetPushedTexture(TEXTURES.ooc)
 		end
 		if LDBObject then
 			LDBObject.icon = "Interface\\FriendsFrame\\StatusIcon-DnD"
@@ -51,8 +51,8 @@ local function XRPButton_UpdateIcon()
 		end
 	else
 		if Button then
-			Button:SetNormalTexture(TEXTURES[3])
-			Button:SetPushedTexture(TEXTURES[3])
+			Button:SetNormalTexture(TEXTURES.ic)
+			Button:SetPushedTexture(TEXTURES.ic)
 		end
 		if LDBObject then
 			LDBObject.icon = "Interface\\FriendsFrame\\StatusIcon-Online"
