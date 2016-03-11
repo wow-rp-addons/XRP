@@ -25,10 +25,9 @@
 
 	The public functions provided are:
 		- libbw:SendAddonMessage(prefix, message, type[, target])
-		- libbw:BNSendGameData(presenceID, prefix, message)
+		- libbw:BNSendGameData(bnetIDGameAccount, prefix, message)
 		- (*)libbw:SendChatMessage(message, type, languageID[, target])
-		- (*)libbw:BNSendWhisper(presenceID, message)
-		- (*)libbw:BNSendConversationMessage(channelID, message)
+		- (*)libbw:BNSendWhisper(bnetIDAccount, message)
 
 	(*) These functions may be subject to extra spam filtering, which is not
 		handled by libbw.
@@ -52,7 +51,7 @@
 		- libbw:SendAddonMessage(prefix, message, "GUILD", nil, "ALERT")
 ]]
 
-local LIBBW_VERSION = 8
+local LIBBW_VERSION = 9
 
 if libbw and libbw.version >= LIBBW_VERSION then return end
 
@@ -315,10 +314,10 @@ function libbw:SendChatMessage(text, kind, languageID, target, priorityName, que
 	Enqueue(pool, priorityName, queueName or kind .. (target or ""), message)
 end
 
-function libbw:BNSendGameData(presenceID, prefix, text, priorityName, queueName, callbackFn, callbackArg)
+function libbw:BNSendGameData(bnetIDGameAccount, prefix, text, priorityName, queueName, callbackFn, callbackArg)
 	local pool = self[2]
-	if type(presenceID) ~= "number" or type(prefix) ~= "string" or type(text) ~= "string" then
-		error("Usage: libbw:BNSendGameData(presenceID, \"prefix\", \"text\")", 2)
+	if type(bnetIDGameAccount) ~= "number" or type(prefix) ~= "string" or type(text) ~= "string" then
+		error("Usage: libbw:BNSendGameData(bnetIDGameAccount, \"prefix\", \"text\")", 2)
 	elseif callbackFn and type(callbackFn) ~= "function" then
 		error("libbw:BNSendGameData(): callbackFn: expected function, got " .. type(callbackFn), 2)
 	end
@@ -332,7 +331,7 @@ function libbw:BNSendGameData(presenceID, prefix, text, priorityName, queueName,
 	if not pool.queueing and length <= UpdateAvail(pool) then
 		pool.avail = pool.avail - length
 		isSending = true
-		BNSendGameData(presenceID, prefix, text)
+		BNSendGameData(bnetIDGameAccount, prefix, text)
 		isSending = false
 		if callbackFn then
 			pcall(callbackFn, callbackArg, didSend)
@@ -342,7 +341,7 @@ function libbw:BNSendGameData(presenceID, prefix, text, priorityName, queueName,
 
 	local message = {
 		f = BNSendGameData,
-		[1] = presenceID,
+		[1] = bnetIDGameAccount,
 		[2] = prefix,
 		[3] = text,
 		length = length,
@@ -350,13 +349,13 @@ function libbw:BNSendGameData(presenceID, prefix, text, priorityName, queueName,
 		callbackArg = callbackArg,
 	}
 
-	Enqueue(pool, priorityName, queueName or ("%s%d"):format(prefix, presenceID), message)
+	Enqueue(pool, priorityName, queueName or ("%s%d"):format(prefix, bnetIDGameAccount), message)
 end
 
-function libbw:BNSendWhisper(presenceID, text, priorityName, queueName, callbackFn, callbackArg)
+function libbw:BNSendWhisper(bnetIDAccount, text, priorityName, queueName, callbackFn, callbackArg)
 	local pool = self[2]
-	if type(presenceID) ~= "number" or type(text) ~= "string" then
-		error("Usage: libbw:BNSendWhisper(presenceID, \"text\")", 2)
+	if type(bnetIDAccount) ~= "number" or type(text) ~= "string" then
+		error("Usage: libbw:BNSendWhisper(bnetIDAccount, \"text\")", 2)
 	elseif callbackFn and type(callbackFn) ~= "function" then
 		error("libbw:BNSendWhisper(): callbackFn: expected function, got " .. type(callbackFn), 2)
 	end
@@ -365,11 +364,12 @@ function libbw:BNSendWhisper(presenceID, text, priorityName, queueName, callback
 	if length > 255 then
 		error("libbw:BNSendWhisper(): message length cannot exceed 255 bytes", 2)
 	end
+	length = length + 2
 
 	if not pool.queueing and length <= UpdateAvail(pool) then
 		pool.avail = pool.avail - length
 		isSending = true
-		BNSendWhisper(presenceID, text)
+		BNSendWhisper(bnetIDAccount, text)
 		isSending = false
 		if callbackFn then
 			pcall(callbackFn, callbackArg, didSend)
@@ -379,50 +379,14 @@ function libbw:BNSendWhisper(presenceID, text, priorityName, queueName, callback
 
 	local message = {
 		f = BNSendWhisper,
-		[1] = presenceID,
+		[1] = bnetIDAccount,
 		[2] = text,
 		length = length,
 		callbackFn = callbackFn,
 		callbackArg = callbackArg,
 	}
 
-	Enqueue(pool, priorityName, queueName or tostring(presenceID), message)
-end
-
-function libbw:BNSendConversationMessage(channelID, text, priorityName, queueName, callbackFn, callbackArg)
-	local pool = self[2]
-	if type(channelID) ~= "number" or type(text) ~= "string" then
-		error("Usage: libbw:BNSendConversationMessage(channelID, \"text\")", 2)
-	elseif callbackFn and type(callbackFn) ~= "function" then
-		error("libbw:BNSendConversationMessage(): callbackFn: expected function, got " .. type(callbackFn), 2)
-	end
-
-	local length = #text
-	if length > 255 then
-		error("libbw:BNSendConversationMessage(): message length cannot exceed 255 bytes", 2)
-	end
-
-	if not pool.queueing and length <= UpdateAvail(pool) then
-		pool.avail = pool.avail - length
-		isSending = true
-		BNSendConversationMessage(channelID, text)
-		isSending = false
-		if callbackFn then
-			pcall(callbackFn, callbackArg, didSend)
-		end
-		return
-	end
-
-	local message = {
-		f = BNSendConversationMessage,
-		[1] = channelID,
-		[2] = text,
-		length = length,
-		callbackFn = callbackFn,
-		callbackArg = callbackArg,
-	}
-
-	Enqueue(pool, priorityName, queueName or tostring(channelID), message)
+	Enqueue(pool, priorityName, queueName or tostring(bnetIDAccount), message)
 end
 
 -- Hooks won't be run if function calls error (improper arguments).
@@ -434,17 +398,13 @@ function libbw.hooks.SendChatMessage(text, kind, languageID, target)
 	if isSending then return end
 	libbw[1].avail = libbw[1].avail - (#tostring(text) + (kind and #kind or 0) + (target and #tostring(target) or 0))
 end
-function libbw.hooks.BNSendGameData(presenceID, prefix, text)
+function libbw.hooks.BNSendGameData(bnetIDGameAccount, prefix, text)
 	if isSending then return end
 	libbw[2].avail = libbw[2].avail - (#tostring(text) + 18)
 end
-function libbw.hooks.BNSendWhisper(presenceID, text)
+function libbw.hooks.BNSendWhisper(bnetIDAccount, text)
 	if isSending then return end
-	libbw[2].avail = libbw[2].avail - #tostring(text)
-end
-function libbw.hooks.BNSendConversationMessage(channelID, text)
-	if isSending then return end
-	libbw[2].avail = libbw[2].avail - #tostring(text)
+	libbw[2].avail = libbw[2].avail - (#tostring(text) + 2)
 end
 do
 	local function fake_OnUpdate(self, elapsed)
