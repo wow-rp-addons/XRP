@@ -459,6 +459,11 @@ do
 			if xrpCache[name] then
 				-- Cache timer. Last receive marked for clearing old entries.
 				xrpCache[name].lastReceive = time()
+				-- Clear own marking on recieve -- character must have
+				-- transferred accounts.
+				if xrpCache[name].own then
+					xrpCache[name].own = nil
+				end
 			elseif not cache[name].time.TT and (not friends or (bnet or FindPresenceID()) and bnet[name] or friends[name] or guildies and guildies[name]) then
 				-- If we don't have any info for them and haven't requested the
 				-- tooltip in this session, also send a tooltip request.
