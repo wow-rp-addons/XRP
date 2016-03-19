@@ -1,4 +1,4 @@
-6.2.4.0_beta3 (2016-03-11):
+6.2.4.0 (2016-03-19):
 
 	- This version supports both World of Warcraft 6.2.3 and 6.2.4.
 
