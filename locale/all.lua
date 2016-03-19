@@ -43,6 +43,8 @@ xrp.L = {
 		FR = _xrp.L.FIELD_FR,
 		FC = _xrp.L.FIELD_FC,
 		VA = _xrp.L.FIELD_VA,
+		-- Read-only.
+		CO = _xrp.L.FIELD_CO,
 		-- Metadata fields.
 		VP = _xrp.L.FIELD_VP,
 		GC = _xrp.L.FIELD_GC,
@@ -52,7 +54,6 @@ xrp.L = {
 		GU = _xrp.L.FIELD_GU,
 		-- Unimplemented.
 		IC = _xrp.L.FIELD_IC,
-		CO = _xrp.L.FIELD_CO,
 	},
 	VALUES = {
 		FC = {

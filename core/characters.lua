@@ -18,7 +18,7 @@
 local addonName, _xrp = ...
 
 -- These fields are not searched in a full-text search.
-local FILTER_IGNORE = { FC = true, FR = true, GC = true, GF = true, GR = true, GS = true, GU = true, IC = true, VA = true, VP = true }
+local FILTER_SEARCH = { NA = true, NI = true, NT = true, NH = true, AH = true, AW = true, AE = true, RA = true, RC = true, CU = true, DE = true, AG = true, HH = true, HB = true, MO = true, HI = true, CO = true }
 
 local RACE_FACTION = {
 	Human = "Alliance",
@@ -291,7 +291,7 @@ xrp.characters = {
 				local found = false
 				local searchText = filter.text:lower()
 				for field, contents in pairs(cache.fields) do
-					if not FILTER_IGNORE[field] and contents:lower():find(searchText, nil, true) then
+					if FILTER_SEARCH[field] and contents:lower():find(searchText, nil, true) then
 						found = true
 						break
 					end
