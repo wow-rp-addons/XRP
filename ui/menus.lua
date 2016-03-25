@@ -17,13 +17,6 @@
 
 local addonName, _xrp = ...
 
-local BNGetGameAccountInfo = BNGetGameAccountInfo
-local bnetIDAccount = "bnetIDAccount"
-if not BNGetGameAccountInfo then
-	BNGetGameAccountInfo = BNGetToonInfo
-	bnetIDAccount = "presenceID"
-end
-
 -- This adds "Roleplay Profile" menu entries to several menus for a more
 -- convenient way to access profiles (including chat names, guild lists, and
 -- chat rosters).
@@ -41,7 +34,7 @@ local function UnitPopup_OnClick_Hook(self)
 	elseif self.value == "XRP_VIEW_UNIT" then
 		XRPViewer:View(UIDROPDOWNMENU_INIT_MENU.unit)
 	elseif self.value == "XRP_VIEW_BN" then
-		local active, characterName, client, realmName = BNGetGameAccountInfo(select(6, BNGetFriendInfoByID(UIDROPDOWNMENU_INIT_MENU[bnetIDAccount])))
+		local active, characterName, client, realmName = BNGetGameAccountInfo(select(6, BNGetFriendInfoByID(UIDROPDOWNMENU_INIT_MENU.bnetIDAccount)))
 		if client == BNET_CLIENT_WOW and realmName ~= "" then
 			XRPViewer:View(xrp.FullName(characterName, realmName))
 		end
@@ -52,10 +45,10 @@ local function UnitPopup_HideButtons_Hook()
 	if not standard or UIDROPDOWNMENU_INIT_MENU.which ~= "BN_FRIEND" or UIDROPDOWNMENU_MENU_VALUE and UIDROPDOWNMENU_MENU_VALUE ~= "BN_FRIEND" then return end
 	for i, button in ipairs(UnitPopupMenus["BN_FRIEND"]) do
 		if button == "XRP_VIEW_BN" then
-			if not UIDROPDOWNMENU_INIT_MENU[bnetIDAccount] then
+			if not UIDROPDOWNMENU_INIT_MENU.bnetIDAccount then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][i] = 0
 			else
-				local active, characterName, client, realmName = BNGetGameAccountInfo(select(6, BNGetFriendInfoByID(UIDROPDOWNMENU_INIT_MENU[bnetIDAccount])))
+				local active, characterName, client, realmName = BNGetGameAccountInfo(select(6, BNGetFriendInfoByID(UIDROPDOWNMENU_INIT_MENU.bnetIDAccount)))
 				if client ~= BNET_CLIENT_WOW or realmName == "" then
 					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][i] = 0
 				else
