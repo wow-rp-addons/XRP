@@ -17,12 +17,6 @@
 
 local addonName, _xrp = ...
 
-local BNGetGameAccountInfo, BNGetFriendGameAccountInfo, BNGetNumFriendGameAccounts = BNGetGameAccountInfo, BNGetFriendGameAccountInfo, BNGetNumFriendGameAccounts
-
-if not BNGetGameAccountInfo then
-	BNGetGameAccountInfo, BNGetFriendGameAccountInfo, BNGetNumFriendGameAccounts = BNGetToonInfo, BNGetFriendToonInfo, BNGetNumFriendToons
-end
-
 local disabled = false
 if not msp_RPAddOn then
 	msp_RPAddOn = GetAddOnMetadata(addonName, "Title")
