@@ -415,9 +415,19 @@
 					<KeyValue key="xrpSetting" value="GUILD"/>
 				</KeyValues>
 			</CheckButton>
-			<CheckButton parentKey="PARTY" inherits="XRPOptionsCheckboxTemplate">
+			<CheckButton parentKey="OFFICER" inherits="XRPOptionsCheckboxTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.GUILD" relativePoint="BOTTOMLEFT" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="dependsOn" value="RPNames"/>
+					<KeyValue key="xrpTable" value="chat"/>
+					<KeyValue key="xrpSetting" value="OFFICER"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="PARTY" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.OFFICER" relativePoint="BOTTOMLEFT" y="-8"/>
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="dependsOn" value="RPNames"/>
