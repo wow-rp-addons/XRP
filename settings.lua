@@ -22,7 +22,7 @@ _xrp.settingsToggles = {
 }
 
 local DATA_VERSION = 6
-local DATA_VERSION_ACCOUNT = 15
+local DATA_VERSION_ACCOUNT = 16
 
 _xrp.DEFAULT_SETTINGS = {
 	cache = {
@@ -35,6 +35,7 @@ _xrp.DEFAULT_SETTINGS = {
 		["YELL"] = true,
 		["EMOTE"] = true,
 		["GUILD"] = false,
+		["OFFICER"] = false,
 		["WHISPER"] = false,
 		["PARTY"] = false,
 		["RAID"] = false,
@@ -295,6 +296,9 @@ local upgradeAccountVars = {
 	[15] = function() -- 6.2.4.0
 		xrpAccountSaved.settings.display.friendsOnly = _xrp.DEFAULT_SETTINGS.display.friendsOnly
 		xrpAccountSaved.settings.display.guildIsFriends = _xrp.DEFAULT_SETTINGS.display.guildIsFriends
+	end,
+	[16] = function() -- 7.0.3.0
+		xrpAccountSaved.settings.chat["OFFICER"] = xrpAccountSaved.settings.chat["GUILD"]
 	end,
 }
 
