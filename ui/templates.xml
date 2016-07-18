@@ -249,7 +249,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<ScrollFrame name="$parentText" parentKey="Text" inherits="XRPScrollFrameTemplate">
+			<ScrollFrame parentKey="Text" inherits="XRPScrollFrameTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.HeaderTop" relativePoint="BOTTOMLEFT" x="5"/>
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.HeaderBottom" relativePoint="TOPRIGHT" x="-5"/>

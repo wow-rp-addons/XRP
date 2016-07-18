@@ -252,7 +252,7 @@
 							<Anchor point="RIGHT" relativeKey="$parent.AW" relativePoint="LEFT" x="-10"/>
 						</Anchors>
 					</Frame>
-					<ScrollFrame name="$parentCU" parentKey="CU" inherits="XRPViewerMultiLineTemplate">
+					<ScrollFrame parentKey="CU" inherits="XRPViewerMultiLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="CU"/>
 						</KeyValues>
@@ -262,7 +262,7 @@
 							<Anchor point="TOPRIGHT" relativeKey="$parent.AW" relativePoint="BOTTOMRIGHT" x="-5" y="-20"/>
 						</Anchors>
 					</ScrollFrame>
-					<ScrollFrame name="$parentDE" parentKey="DE" inherits="XRPViewerMultiLineTemplate">
+					<ScrollFrame parentKey="DE" inherits="XRPViewerMultiLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="DE"/>
 						</KeyValues>
@@ -307,7 +307,7 @@
 							<Anchor point="LEFT" relativeKey="$parent.AG" relativePoint="RIGHT" x="10"/>
 						</Anchors>
 					</Frame>
-					<ScrollFrame name="$parentMO" parentKey="MO" inherits="XRPViewerMultiLineTemplate">
+					<ScrollFrame parentKey="MO" inherits="XRPViewerMultiLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="MO"/>
 						</KeyValues>
@@ -317,7 +317,7 @@
 							<Anchor point="TOPRIGHT" relativeKey="$parent.HB" relativePoint="BOTTOMRIGHT" x="-5" y="-20"/>
 						</Anchors>
 					</ScrollFrame>
-					<ScrollFrame name="$parentHI" parentKey="HI" inherits="XRPViewerMultiLineTemplate">
+					<ScrollFrame parentKey="HI" inherits="XRPViewerMultiLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="HI"/>
 						</KeyValues>
@@ -358,8 +358,8 @@
 					<Anchor point="LEFT" relativeKey="$parent.Tab1" relativePoint="RIGHT" x="-16"/>
 				</Anchors>
 			</Button>
-			<Frame name="$parentNotes" inherits="XRPNotesTemplate"/>
-			<Button name="$parentNotesButton" inherits="XRPNotesButtonTemplate"/>
+			<Frame inherits="XRPNotesTemplate"/>
+			<Button inherits="XRPNotesButtonTemplate"/>
 		</Frames>
 		<Attributes>
 			<Attribute name="UIPanelLayout-pushable" type="number" value="2"/>

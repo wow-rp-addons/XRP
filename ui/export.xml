@@ -52,7 +52,7 @@
 					<Anchor point="TOPRIGHT" x="-2" y="-3"/>
 				</Anchors>
 			</Button>
-			<ScrollFrame name="$parentText" parentKey="Text" inherits="XRPScrollFrameTemplate">
+			<ScrollFrame parentKey="Text" inherits="XRPScrollFrameTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="20" y="-35"/>
 					<Anchor point="BOTTOMRIGHT" x="-34" y="42"/>

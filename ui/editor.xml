@@ -150,7 +150,7 @@
 	<Frame name="XRPEditor" parent="UIParent" inherits="XRPButtonFrameTemplate">
 		<Size x="439" y="525"/>
 		<Frames>
-			<Button name="$parentHelpButton" inherits="XRPHelpButtonTemplate">
+			<Button inherits="XRPHelpButtonTemplate">
 				<Scripts>
 					<PreClick function="XRPEditorHelpButton_PreClick"/>
 				</Scripts>
@@ -267,7 +267,7 @@
 							<Anchor point="TOPLEFT" relativeKey="$parent.AE" relativePoint="BOTTOMLEFT" y="-15"/>
 						</Anchors>
 					</EditBox>
-					<ScrollFrame name="$parentDE" parentKey="DE" inherits="XRPEditorMultiLineTemplate">
+					<ScrollFrame parentKey="DE" inherits="XRPEditorMultiLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="DE"/>
 							<KeyValue key="nextField" value="NA"/>
@@ -326,7 +326,7 @@
 							<Anchor point="TOPLEFT" relativeKey="$parent.AG" relativePoint="BOTTOMLEFT" y="-15"/>
 						</Anchors>
 					</EditBox>
-					<ScrollFrame name="$parentHI" parentKey="HI" inherits="XRPEditorMultiLineTemplate">
+					<ScrollFrame parentKey="HI" inherits="XRPEditorMultiLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="HI"/>
 							<KeyValue key="nextField" value="FR"/>
@@ -549,13 +549,13 @@
 					<OnShow inherit="prepend" function="XRPEditorAutomation_OnShow"/>
 				</Scripts>
 			</Frame>
-			<Frame name="$parentNotes" inherits="XRPNotesTemplate">
+			<Frame inherits="XRPNotesTemplate">
 				<Scripts>
 					<OnShow inherit="append" function="XRPEditorNotes_OnShow"/>
 				</Scripts>
 			</Frame>
-			<Button name="$parentNotesButton" inherits="XRPNotesButtonTemplate"/>
-			<Button name="$parentAutomationButton" parentKey="AutomationButton" inherits="XRPPopoutButtonTemplate" virtual="true">
+			<Button inherits="XRPNotesButtonTemplate"/>
+			<Button parentKey="AutomationButton" inherits="XRPPopoutButtonTemplate" virtual="true">
 				<KeyValues>
 					<KeyValue key="popout" value="Automation"/>
 				</KeyValues>
