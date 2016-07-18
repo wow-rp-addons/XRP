@@ -134,7 +134,7 @@ CM1 = "([%d%.]+)%s*cm%.?"
 CM2 = "([%d%.]+)%s*centimet[ers]+"
 M1 = "([%d%.]+)%s*m%.?"
 M2 = "([%d%.]+)%s*met[ers]+"
-FT1 = "(%d+)%s*'%s*(%d*)%s*\"?"
+FT1 = "(%d+)%s*'%s*(%d*)%s*[\"']*"
 FT2 = "([%d%.]+)%s*ft%.?%s*([%d%.]*)[in%.]*"
 FT3 = "([%d%.]+)%s*feet%s*([%d%.]*)[inches]*"
 -- Format strings for weight/height display.
