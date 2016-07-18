@@ -138,12 +138,12 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button name="$parentHelpButton" inherits="XRPHelpButtonTemplate">
+			<Button inherits="XRPHelpButtonTemplate">
 				<Scripts>
 					<PreClick function="XRPBookmarksHelpButton_PreClick"/>
 				</Scripts>
 			</Button>
-			<ScrollFrame name="$parentList" parentKey="List" enableMouse="true" useParentLevel="true" inherits="HybridScrollFrameTemplate">
+			<ScrollFrame parentKey="List" enableMouse="true" useParentLevel="true" inherits="HybridScrollFrameTemplate">
 				<KeyValues>
 					<KeyValue key="update" value="XRPBookmarksList_update" type="global"/>
 				</KeyValues>
@@ -288,7 +288,7 @@
 					<Anchor point="LEFT" relativeKey="$parent.Tab3" relativePoint="RIGHT" x="-16"/>
 				</Anchors>
 			</Button>
-			<Frame name="$parentNotes" inherits="XRPNotesTemplate">
+			<Frame inherits="XRPNotesTemplate">
 				<Scripts>
 					<OnHide inherit="prepend" function="XRPBookmarksNotes_OnHide"/>
 					<OnAttributeChanged inherit="prepend" function="XRPBookmarksNotes_OnAttributeChanged"/>
