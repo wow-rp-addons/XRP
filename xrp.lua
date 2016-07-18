@@ -234,6 +234,7 @@ _xrp.HookGameEvent("PLAYER_LOGIN", function(event)
 	if xrpSaved.meta.fields.GU ~= GU then
 		xrpSaved.meta.fields.GU = GU
 		xrpSaved.meta.versions.GU = _xrp.NewVersion("GU", GU)
+		_xrp.FireEvent("UPDATE", "GU")
 	end
 end)
 _xrp.HookGameEvent("PLAYER_LOGOUT", function(event)
