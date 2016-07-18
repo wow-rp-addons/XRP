@@ -31,7 +31,6 @@ do
 		[5] = "BEAR",
 		[16] = "GHOSTWOLF",
 		[27] = "FLIGHT",
-		[28] = "SHADOWFORM",
 		[29] = "FLIGHT",
 		[31] = "MOONKIN",
 	}
@@ -62,21 +61,15 @@ do
 
 		local classForm
 		if playerClass then
-			if playerClass == "DRUID" then
+			if playerClass == "DRUID" or playerClass == "SHAMAN" then
 				classForm = FORM_ID[GetShapeshiftFormID()]
-				if classForm == "MOONKIN" then
-					for i = 1, NUM_GLYPH_SLOTS do
-						local spellID = select(4, GetGlyphSocketInfo(i))
-						if spellID == 114301 then
-							classForm = "ASTRAL"
-							break
-						end
-					end
-				elseif not classForm and UnitBuff("player", _xrp.L.TREANT_BUFF) then
+				if classForm == "MOONKIN" and HasAttachedGlyph(24858) then
+					classForm = "ASTRAL"
+				elseif not classForm and playerClass == "DRUID" and UnitBuff("player", _xrp.L.TREANT_BUFF) then
 					classForm = "TREANT"
 				end
-			elseif playerClass == "PRIEST" or playerClass == "SHAMAN" then
-				classForm = FORM_ID[GetShapeshiftFormID()]
+			elseif playerClass == "PRIEST" and GetSpecialization() == 3 then
+				classForm = "SHADOWFORM"
 			end
 		end
 

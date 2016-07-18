@@ -45,7 +45,7 @@ do
 		end
 		if not contents then
 			contents = ""
-		elseif field == "NI" then
+		elseif field == "NI" and not contents:find(_xrp.L.QUOTE_MATCH) then
 			contents = _xrp.L.NICKNAME:format(contents)
 		elseif field == "AH" then
 			contents = xrp.Height(contents)

@@ -176,6 +176,7 @@ do
 		Neutral = { r = 1, g = 0.86, b = 0.36 },
 	}
 	local NI_FORMAT = ("|cff6070a0%s|r %s"):format(STAT_FORMAT:format(xrp.L.FIELDS.NI), _xrp.L.NICKNAME)
+	local NI_FORMAT_NOQUOTE = ("|cff6070a0%s|r %s"):format(STAT_FORMAT:format(xrp.L.FIELDS.NI), "%s")
 	local CU_FORMAT = ("|cffa08050%s|r %%s"):format(STAT_FORMAT:format(xrp.L.FIELDS.CU))
 	local NI_LENGTH = strlenutf8(NI_FORMAT) - 14
 	local CU_LENGTH = strlenutf8(CU_FORMAT) - 14
@@ -204,7 +205,7 @@ do
 			end
 			if showProfile then
 				local NI = xrp.Strip(fields.NI)
-				RenderLine(NI and NI_FORMAT:format(TruncateLine(NI, 70, NI_LENGTH, false)), nil, 0.6, 0.7, 0.9)
+				RenderLine(NI and (not NI:find(_xrp.L.QUOTE_MATCH) and NI_FORMAT or NI_FORMAT_NOQUOTE):format(TruncateLine(NI, 70, NI_LENGTH, false)), nil, 0.6, 0.7, 0.9)
 				RenderLine(TruncateLine(xrp.Strip(fields.NT), 70), nil, 0.8, 0.8, 0.8)
 			end
 			if _xrp.settings.tooltip.extraSpace then

@@ -464,6 +464,7 @@ POPUP_EDITOR_UNAVAILABLE = "The name \"%s\" is unavailable or already in use."
 POPUP_EDITOR_INUSE = "The profile \"%s\" is currently in-use directly or as a parent profile. In-use profiles cannot be removed."
 
 -- ui/tooltip.lua
+QUOTE_MATCH = "^['\"].-['\"]$"
 HIDDEN = "Hidden"
 LETHAL_LEVEL = "??"
 GUILD = "<%s>"
