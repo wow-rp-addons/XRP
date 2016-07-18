@@ -128,12 +128,6 @@ function XRPTemplatesScrollFrame_OnLoad(self)
 	self.ScrollBar.ScrollUpButton:SetPoint("BOTTOM", self.ScrollBar, "TOP", 0, -4)
 	self.ScrollBar.ScrollUpButton:Disable()
 	self.ScrollBar:Hide()
-	if self.FocusButton then
-		self.ScrollBar:SetFrameLevel(self.FocusButton:GetFrameLevel() + 2)
-		if self.EditBox then
-			self.EditBox:SetFrameLevel(self.FocusButton:GetFrameLevel() + 1)
-		end
-	end
 end
 
 function XRPTemplatesScrollFrame_OnSizeChanged(self, width, height)
@@ -142,10 +136,11 @@ function XRPTemplatesScrollFrame_OnSizeChanged(self, width, height)
 	end
 end
 
-function XRPTemplatesScrollFrameFocusButton_OnClick(self, button, down)
-	local editBox = self:GetParent().EditBox
-	editBox:SetFocus()
-	editBox:SetCursorPosition(#editBox:GetText())
+function XRPTemplatesScrollFrame_OnMouseDown(self, button)
+	if self.EditBox then
+		self.EditBox:SetFocus()
+		self.EditBox:SetCursorPosition(#self.EditBox:GetText())
+	end
 end
 
 function XRPTemplatesRefresh_OnMouseDown(self)

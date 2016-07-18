@@ -37,7 +37,7 @@
 		<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
 		<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
 	</CheckButton>
-	<ScrollFrame name="XRPScrollFrameTemplate" useParentLevel="true" inherits="UIPanelScrollFrameTemplate" virtual="true">
+	<ScrollFrame name="XRPScrollFrameTemplate" inherits="UIPanelScrollFrameTemplate" virtual="true">
 		<KeyValues>
 			<KeyValue key="scrollBarHideable" value="true" type="boolean"/>
 		</KeyValues>
@@ -254,13 +254,6 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.HeaderTop" relativePoint="BOTTOMLEFT" x="5"/>
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.HeaderBottom" relativePoint="TOPRIGHT" x="-5"/>
 				</Anchors>
-				<Frames>
-					<Button parentKey="FocusButton" setAllPoints="true">
-						<Scripts>
-							<OnClick function="XRPTemplatesScrollFrameFocusButton_OnClick"/>
-						</Scripts>
-					</Button>
-				</Frames>
 				<ScrollChild>
 					<EditBox parentKey="EditBox" multiLine="true" autoFocus="false">
 						<Anchors>
@@ -290,6 +283,9 @@
 						<FontString inherits="GameFontWhite"/>
 					</EditBox>
 				</ScrollChild>
+				<Scripts>
+					<OnMouseDown function="XRPTemplatesScrollFrame_OnMouseDown"/>
+				</Scripts>
 			</ScrollFrame>
 			<Button parentKey="Close" inherits="UIPanelButtonTemplate" text="CLOSE">
 				<Size x="90" y="20"/>
