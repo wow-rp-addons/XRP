@@ -1,42 +1,28 @@
-6.2.4.0 (2016-03-19):
+7.0.3.0_alpha1 (2016-07-18):
 
-	- This version supports both World of Warcraft 6.2.3 and 6.2.4.
+	- This version supports World of Warcraft 7.0 (Legion pre-patch) only.
 
-	- Support for names in chat in Prat-3.0 has been added.
+		- A number of minor fixes have been made. Using previous versions of
+		  XRP in 7.0 will NOT work properly, updating is STRONGLY recommended.
 
-	- Support for an optional LibDataBroker object (for Titan Panel, Chocolate
-	  Bar, etc.) has been added. This may be enabled in the general XRP
-	  options.
+	- Officer chat again supports RP names. This setting will default to that
+	  of your guild chat, but may be changed independently.
 
-	- An optional (enabled by default) flag icon has been added to the
-	  tooltip, indicating a bookmarked profile.
+	- Default settings changed (for new installs, existing installs unchanged):
 
-	- Support for reading the OOC currently field from TRP users has been
-	  added. For maximum compatibility, XRP will *not* send this field to
-	  other addons, but *will* see it when other addons send it.
+		- Chat replacements (%xt/%xf) now default to off, as they're somewhat
+		  CPU-intensive while typing in chat.
 
-	- The tooltip eye icon, indicating a player is targeting you, is enabled
-	  by default now. The setting for existing installs will not be changed.
+		- Replacement of "Undead" with "Forsaken" for Undead-race players in
+		  XRP's tooltips and viewer now defaults to on, as Blizzard has
+		  switched to using Forsaken in many of the in-game references to this
+		  race (and it's less likely to be confused with the Undead creature
+		  type or Undead battle pet type).
 
-	- An option has been added to only show profiles from characters on your
-	  friends list (in-game and Battle.net) and, optionally, in your current
-	  character's guild. This is NOT RECOMMENDED for use unless you know why
-	  you want to use it and exactly what it does; it may be found in the
-	  advanced options.
+	- Nicknames that already include opening/closing quotation marks should
+	  now display properly.
 
-	- Support for upgrading from VERY old versions of XRP (pre-6.0) has been
-	  dropped.
+	- Unusual ways of listing height in ft/in should more commonly convert
+	  properly (such as 9'9'', using double apostrophes).
 
-	- (BUGFIX) The export button in the profile editor should now always work.
-
-	- (BUGFIX) Fixed an issue where player not found errors could sometimes
-	  spam the chatbox following a loading screen.
-
-	- The addon folder name has been changed from "xrp" to "XRP". As this only
-	  changes the case of the name, no issues should occur on
-	  Blizzard-supported installs.
-
-		- For Linux/WINE users, be sure to remove the old
-		  Interface/AddOns/xrp/ folder prior to installing the new version,
-		  and rename any WTF/Account/**/SavedVariables/xrp.lua files to
-		  XRP.lua if you encounter any issues.
+	- Support for importing from TotalRP2 has been dropped.
