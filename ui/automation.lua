@@ -88,9 +88,9 @@ do
 
 	local function Profile_Click(self, arg1, arg2, checked)
 		if not checked then
-			UIDROPDOWNMENU_OPEN_MENU.contents = arg1
-			UIDROPDOWNMENU_OPEN_MENU.Text:SetText(arg1 or NONE)
-			ToggleButtons(UIDROPDOWNMENU_OPEN_MENU:GetParent())
+			UIDROPDOWNMENU_INIT_MENU.contents = arg1
+			UIDROPDOWNMENU_INIT_MENU.Text:SetText(arg1 or NONE)
+			ToggleButtons(UIDROPDOWNMENU_INIT_MENU:GetParent())
 		end
 	end
 
@@ -109,12 +109,12 @@ do
 	local function equipSets_Click(self, arg1, arg2, checked)
 		if not checked then
 			local set = (UIDROPDOWNMENU_MENU_VALUE or "DEFAULT") .. self.value
-			UIDROPDOWNMENU_OPEN_MENU.contents = set
-			UIDROPDOWNMENU_OPEN_MENU.Text:SetText(MakeWords(set))
-			local Profile, setProfile = UIDROPDOWNMENU_OPEN_MENU:GetParent().Profile, _xrp.auto[set]
+			UIDROPDOWNMENU_INIT_MENU.contents = set
+			UIDROPDOWNMENU_INIT_MENU.Text:SetText(MakeWords(set))
+			local Profile, setProfile = UIDROPDOWNMENU_INIT_MENU:GetParent().Profile, _xrp.auto[set]
 			Profile.contents = setProfile
 			Profile.Text:SetText(setProfile or NONE)
-			ToggleButtons(UIDROPDOWNMENU_OPEN_MENU:GetParent())
+			ToggleButtons(UIDROPDOWNMENU_INIT_MENU:GetParent())
 		end
 		CloseDropDownMenus()
 	end
@@ -125,12 +125,12 @@ do
 
 	local function forms_Click(self, arg1, arg2, checked)
 		if not checked then
-			UIDROPDOWNMENU_OPEN_MENU.contents = self.value
-			UIDROPDOWNMENU_OPEN_MENU.Text:SetText(MakeWords(self.value))
-			local Profile, formProfile = UIDROPDOWNMENU_OPEN_MENU:GetParent().Profile, _xrp.auto[self.value]
+			UIDROPDOWNMENU_INIT_MENU.contents = self.value
+			UIDROPDOWNMENU_INIT_MENU.Text:SetText(MakeWords(self.value))
+			local Profile, formProfile = UIDROPDOWNMENU_INIT_MENU:GetParent().Profile, _xrp.auto[self.value]
 			Profile.contents = formProfile
 			Profile.Text:SetText(formProfile or NONE)
-			ToggleButtons(UIDROPDOWNMENU_OPEN_MENU:GetParent())
+			ToggleButtons(UIDROPDOWNMENU_INIT_MENU:GetParent())
 		end
 		CloseDropDownMenus()
 	end

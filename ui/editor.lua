@@ -165,8 +165,8 @@ do
 	do
 		local function Parent_Click(self, arg1, arg2, checked)
 			if not checked then
-				UIDROPDOWNMENU_OPEN_MENU.contents = arg1
-				UIDROPDOWNMENU_OPEN_MENU:SetFormattedText(SUBTITLE_FORMAT, _xrp.L.PARENT, arg1 or NONE)
+				UIDROPDOWNMENU_INIT_MENU.contents = arg1
+				UIDROPDOWNMENU_INIT_MENU:SetFormattedText(SUBTITLE_FORMAT, _xrp.L.PARENT, arg1 or NONE)
 				CheckFields()
 			end
 		end
@@ -185,9 +185,9 @@ do
 
 	do
 		local function FC_Click(self, arg1, arg2, checked)
-			if not checked or UIDROPDOWNMENU_OPEN_MENU.inherited then
-				UIDROPDOWNMENU_OPEN_MENU:SetAttribute("contents", arg1)
-				UIDROPDOWNMENU_OPEN_MENU:SetAttribute("inherited", false)
+			if not checked or UIDROPDOWNMENU_INIT_MENU.inherited then
+				UIDROPDOWNMENU_INIT_MENU:SetAttribute("contents", arg1)
+				UIDROPDOWNMENU_INIT_MENU:SetAttribute("inherited", false)
 				CheckFields("FC")
 			end
 		end

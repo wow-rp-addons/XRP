@@ -406,14 +406,14 @@ end
 do
 	local function DropDown_OnClick(self, arg1, arg2, checked)
 		if not checked then
-			UIDROPDOWNMENU_OPEN_MENU.Text:SetText(arg2)
-			UIDROPDOWNMENU_OPEN_MENU.value = arg1
-			UIDROPDOWNMENU_OPEN_MENU:Set(arg1)
+			UIDROPDOWNMENU_INIT_MENU.Text:SetText(arg2)
+			UIDROPDOWNMENU_INIT_MENU.value = arg1
+			UIDROPDOWNMENU_INIT_MENU:Set(arg1)
 		end
 	end
 
 	local function DropDown_Checked(self)
-		return self.arg1 == UIDROPDOWNMENU_OPEN_MENU.value
+		return self.arg1 == UIDROPDOWNMENU_INIT_MENU.value
 	end
 
 	XRPOptionsGeneralHeight_baseMenuList = {

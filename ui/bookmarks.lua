@@ -188,34 +188,34 @@ do
 	end
 	local function Menu_Click(self, arg1, arg2, checked)
 		if arg1 == "XRP_VIEW_CACHED" then
-			XRPViewer:View(UIDROPDOWNMENU_OPEN_MENU.character)
+			XRPViewer:View(UIDROPDOWNMENU_INIT_MENU.character)
 		elseif arg1 == "XRP_VIEW_LIVE" then
-			XRPViewer:View(tostring(UIDROPDOWNMENU_OPEN_MENU.character))
+			XRPViewer:View(tostring(UIDROPDOWNMENU_INIT_MENU.character))
 		elseif arg1 == "XRP_NOTES" then
-			XRPBookmarks.Notes:SetAttribute("character", UIDROPDOWNMENU_OPEN_MENU.character)
+			XRPBookmarks.Notes:SetAttribute("character", UIDROPDOWNMENU_INIT_MENU.character)
 			XRPBookmarks.Notes:Show()
 		elseif arg1 == "XRP_FRIEND" then
-			local character = UIDROPDOWNMENU_OPEN_MENU.character
+			local character = UIDROPDOWNMENU_INIT_MENU.character
 			local name = tostring(character)
 			AddOrRemoveFriend(Ambiguate(name, "none"), xrp.Strip(character.fields.NA) or xrp.ShortName(name))
 		elseif arg1 == "XRP_BOOKMARK" then
-			UIDROPDOWNMENU_OPEN_MENU.character.bookmark = not checked
+			UIDROPDOWNMENU_INIT_MENU.character.bookmark = not checked
 			if request.bookmark then
 				request.offset = XRPBookmarks.List.scrollBar:GetValue()
 				Refresh()
 			end
 		elseif arg1 == "XRP_HIDE" then
-			UIDROPDOWNMENU_OPEN_MENU.character.hide = not checked
+			UIDROPDOWNMENU_INIT_MENU.character.hide = not checked
 			if not request.showHidden then
 				request.offset = XRPBookmarks.List.scrollBar:GetValue()
 				Refresh()
 			end
 		elseif arg1 == "XRP_EXPORT" then
-			local character = UIDROPDOWNMENU_OPEN_MENU.character
+			local character = UIDROPDOWNMENU_INIT_MENU.character
 			XRPExport:Export(xrp.ShortName(tostring(character)), tostring(character.fields))
 		elseif arg1 == "XRP_CACHE_DROP" then
-			local name, realm = tostring(UIDROPDOWNMENU_OPEN_MENU.character):match("^([^%-]+)%-([^%-]+)")
-			StaticPopup_Show("XRP_CACHE_SINGLE", _xrp.L.NAME_REALM:format(name, xrp.RealmDisplayName(realm)), nil, UIDROPDOWNMENU_OPEN_MENU.character)
+			local name, realm = tostring(UIDROPDOWNMENU_INIT_MENU.character):match("^([^%-]+)%-([^%-]+)")
+			StaticPopup_Show("XRP_CACHE_SINGLE", _xrp.L.NAME_REALM:format(name, xrp.RealmDisplayName(realm)), nil, UIDROPDOWNMENU_INIT_MENU.character)
 		end
 		if UIDROPDOWNMENU_MENU_LEVEL > 1 then
 			CloseDropDownMenus()
@@ -238,7 +238,7 @@ do
 		},
 		onHide = function(level)
 			if level < 3 then
-				UIDROPDOWNMENU_OPEN_MENU.Selected:Hide()
+				UIDROPDOWNMENU_INIT_MENU.Selected:Hide()
 			end
 		end,
 	}
