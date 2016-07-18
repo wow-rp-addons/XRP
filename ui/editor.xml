@@ -97,14 +97,10 @@
 					<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="7" y="5"/>
 				</Anchors>
 			</Frame>
-			<Button parentKey="FocusButton" setAllPoints="true">
-				<Scripts>
-					<OnClick function="XRPTemplatesScrollFrameFocusButton_OnClick"/>
-				</Scripts>
-			</Button>
 		</Frames>
 		<Scripts>
 			<OnLoad inherit="prepend" function="XRPEditorControls_OnLoad"/>
+			<OnMouseDown function="XRPTemplatesScrollFrame_OnMouseDown"/>
 		</Scripts>
 		<ScrollChild>
 			<EditBox parentKey="EditBox" multiLine="true" autoFocus="false">
