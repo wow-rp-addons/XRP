@@ -15,7 +15,7 @@ build/xrp-%.zip:
 	git rev-parse v$* > /dev/null
 	mkdir -p $(@D)/tmp-$*/
 	git archive --prefix=XRP/ v$* | tar -xC $(@D)/tmp-$*/
-	cd $(@D)/tmp-$*/ && zip -q -D -X -l -9 -r $(CURDIR)/$@ XRP/ -x XRP/Makefile XRP/CHANGES.txt XRP/.gitignore
+	cd $(@D)/tmp-$*/ && bzip2 -9 XRP/GPL.txt && zip -q -D -X -l -9 -r $(CURDIR)/$@ XRP/ -x XRP/Makefile XRP/CHANGES.txt XRP/.gitignore
 	rm -rf $(@D)/tmp-$*/
 
 build/xrp-%.zip.SHA256: build/xrp-%.zip
