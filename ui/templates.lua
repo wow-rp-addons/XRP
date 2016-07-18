@@ -81,7 +81,6 @@ function XRPTemplatesTabButton_OnClick(self, button, down)
 end
 
 function XRPTemplatesDropDown_OnLoad(self)
-	self.Text = _G[self:GetName() .. "Text"]
 	if self.width then
 		UIDropDownMenu_SetWidth(self, self.width, 0)
 	end
