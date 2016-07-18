@@ -56,6 +56,7 @@ local RACE_ICON_TCOORDS = {
 }
 
 function XRPBookmarksList_update(self, force)
+	if not self.buttons then return end
 	local offset = HybridScrollFrame_GetOffset(self)
 	local matches = #results
 
