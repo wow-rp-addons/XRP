@@ -15,8 +15,8 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local hasMRP, hasTRP2, hasTRP3 = (IsAddOnLoaded("MyRolePlay")), (IsAddOnLoaded("totalRP2")), (IsAddOnLoaded("totalRP3"))
-if not (hasMRP or hasTRP2 or hasTRP3) then return end
+local hasMRP, hasTRP3 = (IsAddOnLoaded("MyRolePlay")), (IsAddOnLoaded("totalRP3"))
+if not (hasMRP or hasTRP3) then return end
 
 local addonName, _xrp = ...
 
@@ -69,72 +69,6 @@ local function ImportMyRolePlay()
 		end
 	end
 	return imported
-end
-
-local ImportTotalRP2
-do
-	local TRP2_HEIGHT = {
-		[1] = _xrp.L.HEIGHT_VSHORT,
-		[2] = _xrp.L.HEIGHT_SHORT,
-		[3] = _xrp.L.HEIGHT_AVERAGE,
-		[4] = _xrp.L.HEIGHT_TALL,
-		[5] = _xrp.L.HEIGHT_VTALL,
-	}
-	local TRP2_WEIGHT = {
-		[1] = _xrp.L.WEIGHT_HEAVY,
-		[2] = _xrp.L.WEIGHT_REGULAR,
-		[3] = _xrp.L.WEIGHT_MUSCULAR,
-		[4] = _xrp.L.WEIGHT_SKINNY,
-	}
-	-- This is a bit more complex. And partly in French.
-	function ImportTotalRP2()
-		if not TRP2_Module_PlayerInfo then
-			return 0
-		end
-		local profile = xrp.profiles:Add("TRP2")
-		if not profile then
-			return 0
-		end
-		local realm = GetRealmName()
-		local oldProfile = TRP2_Module_PlayerInfo[realm][_xrp.player]
-		if oldProfile.Actu then
-			profile.fields.CU = oldProfile.Actu.ActuTexte
-			profile.fields.FC = oldProfile.Actu.StatutRP and oldProfile.Actu.StatutRP ~= 0 and tostring(oldProfile.Actu.StatutRP) or nil
-		end
-		local DE = {}
-		if oldProfile.Registre and oldProfile.Registre.TraitVisage then
-			DE[#DE + 1] = _xrp.L.IMPORT_FACE:format(oldProfile.Registre.TraitVisage)
-		end
-		if oldProfile.Registre and oldProfile.Registre.Piercing then
-			DE[#DE + 1] = _xrp.L.IMPORT_MODS:format(oldProfile.Registre.Piercing)
-		end
-		if oldProfile.Physique and oldProfile.Physique.PhysiqueTexte then
-			DE[#DE + 1] = oldProfile.Physique.PhysiqueTexte
-		end
-		profile.fields.DE = table.concat(DE, "\n\n")
-		if oldProfile.Histoire then
-			profile.fields.HI = oldProfile.Histoire.HistoireTexte
-		end
-		if oldProfile.Registre then
-			do
-				local NA = ("%s %s"):format(oldProfile.Registre.Prenom or "", oldProfile.Registre.Nom or ""):trim()
-				profile.fields.NA = NA ~= "" and NA or nil
-			end
-			profile.fields.RA = oldProfile.Registre.RacePerso
-			profile.fields.RC = oldProfile.Registre.ClassePerso
-			profile.fields.AE = oldProfile.Registre.YeuxVisage
-			do
-				local NT = ("%s | %s"):format(oldProfile.Registre.Titre or "", oldProfile.Registre.TitreComplet or ""):trim(" |")
-				profile.fields.NT = NT ~= "" and NT or nil
-			end
-			profile.fields.AG = oldProfile.Registre.Age
-			profile.fields.HH = oldProfile.Registre.Habitation
-			profile.fields.HB = oldProfile.Registre.Origine
-			profile.fields.AH = TRP2_HEIGHT[oldProfile.Registre.Taille or 3]
-			profile.fields.AW = TRP2_WEIGHT[oldProfile.Registre.Silhouette or 2]
-		end
-		return 1
-	end
 end
 
 -- They really like intricate data structures.
@@ -214,13 +148,6 @@ _xrp.HookGameEvent("PLAYER_LOGIN", function(event)
 		local count = ImportMyRolePlay()
 		if count > 0 then
 			DisableAddOn("MyRolePlay", _xrp.player)
-			imported = true
-		end
-	end
-	if hasTRP2 then
-		local count = ImportTotalRP2()
-		if count > 0 then
-			DisableAddOn("totalRP2", _xrp.player)
 			imported = true
 		end
 	end
