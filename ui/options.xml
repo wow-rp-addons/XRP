@@ -52,7 +52,7 @@
 					</Anchors>
 				</FontString>
 				<FontString parentKey="License" inherits="GameFontWhite" justifyH="LEFT" text="XRP_LICENSE">
-					<Size x="435"/>
+					<Size x="440"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Copyright" relativePoint="BOTTOMLEFT" y="-10"/>
 					</Anchors>
