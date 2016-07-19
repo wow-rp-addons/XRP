@@ -1,4 +1,4 @@
-7.0.3.0_alpha1 (2016-07-18):
+7.0.3.0 (2016-07-19):
 
 	- This version supports World of Warcraft 7.0 (Legion pre-patch) only.
 
