@@ -337,7 +337,11 @@ do
 	end
 	raceMenu[#raceMenu + 1] = { text = UNKNOWN, isNotRadio = true, keepShownOnClick = true, arg1 = "race", arg2 = "UNKNOWN", checked = Filter_Checked, func = Filter_Click, }
 
-	lists.class = { "DEATHKNIGHT", "DRUID", "HUNTER", "MAGE", "MONK", "PALADIN", "PRIEST", "ROGUE", "SHAMAN", "WARLOCK", "WARRIOR" }
+	lists.class = {}
+	for class, localized in pairs(xrp.L.VALUES.GC["1"]) do
+		lists.class[#lists.class + 1] = class
+	end
+	table.sort(lists.class)
 	local classMenu = {
 		{ text = CHECK_ALL, notCheckable = true, keepShownOnClick = true, arg1 = "class", arg2 = "ALL", func = Filter_Click, },
 		{ text = UNCHECK_ALL, notCheckable = true, keepShownOnClick = true, arg1 = "class", arg2 = "NONE", func = Filter_Click, },
