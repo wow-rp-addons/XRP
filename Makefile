@@ -15,7 +15,7 @@ build/xrp-%.zip:
 	git rev-parse v$* > /dev/null
 	mkdir -p $(@D)/tmp-$*/
 	git archive --prefix=XRP/ v$* | tar -xC $(@D)/tmp-$*/
-	cd $(@D)/tmp-$*/ && bzip2 -9 XRP/GPL.txt && zip -q -D -X -l -9 -r $(CURDIR)/$@ XRP/ -x XRP/Makefile XRP/CHANGES.txt XRP/.gitignore
+	cd $(@D)/tmp-$*/ && zip -q -D -X -l -9 -r $(CURDIR)/$@ XRP/ -x XRP/Makefile XRP/CHANGES.txt XRP/.gitignore
 	rm -rf $(@D)/tmp-$*/
 
 build/xrp-%.zip.SHA256: build/xrp-%.zip
@@ -37,7 +37,7 @@ upload-stormlord: upload-stormlord-$(NEW_VERSION)
 upload-%: upload-stormlord-% upload-curse-%
 
 upload-curse-%: build/xrp-%.zip build/xrp-%.CHANGELOG
-	curl -F "name=v$*" -F "game_versions=$(shell curl -s http://wow.curseforge.com/game-versions.json | jq -r 'to_entries | map({id: .key, name: .value.name}) | .[] | select(.name | contains("6.2.3")) | .id')" -F "file_type=$(shell echo $* | sed -e 's#^[^_]*$$#r#' -e 's#.*_alpha.*#a#' -e 's#.*_\(beta\|rc\).*#b#')" -F "change_log=<$(word 2,$^)" -F "change_markup_type=plain" -F "file=@$<" -H "X-API-Key: $(CURSE_API_KEY)" "http://wow.curseforge.com/addons/xrp/upload-file.json"
+	curl -F "name=v$*" -F "game_versions=$(shell curl -s http://wow.curseforge.com/game-versions.json | jq -r 'to_entries | map({id: .key, name: .value.name}) | .[] | select(.name | contains("7.0.3")) | .id')" -F "file_type=$(shell echo $* | sed -e 's#^[^_]*$$#r#' -e 's#.*_alpha.*#a#' -e 's#.*_\(beta\|rc\).*#b#')" -F "change_log=<$(word 2,$^)" -F "change_markup_type=plain" -F "file=@$<" -H "X-API-Key: $(CURSE_API_KEY)" "http://wow.curseforge.com/addons/xrp/upload-file.json"
 
 upload-stormlord-%: build/xrp-%.zip build/xrp-%.zip.SHA256
 	scp $^ asgard.stormlord.ca:~/pub/xrp/
