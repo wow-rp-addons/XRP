@@ -480,7 +480,7 @@ local function GameTooltip_OnTooltipSetUnit_Hook(self)
 	if not enabled then return end
 	local tooltip, unit = self:GetUnit()
 	if not unit then
-		_xrp.NextFrame(NoUnit)
+		C_Timer.After(0, NoUnit)
 	else
 		SetUnit(unit)
 	end
