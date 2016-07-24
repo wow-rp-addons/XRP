@@ -469,13 +469,14 @@ HIDDEN = "Hidden"
 GUILD = "<%s>"
 GUILD_RANK = "%s of <%s>"
 GUILD_RANK_INDEX = "%s (%d) of <%s>"
--- These must match in-game returns from UnitCreatureFamily() and
--- UnitCreatureType().
-PET_GHOUL = "Ghoul"
-PET_WATER_ELEMENTAL = "Water Elemental"
-PET_MT_WATER_ELEMENTAL = "MT - Water Elemental"
-PET_ELEMENTAL = "Elemental"
+-- These must match in-game returns from UnitCreatureType().
+PET_BEAST = "Beast"
+PET_MECHANICAL = "Mechanical"
 PET_UNDEAD = "Undead"
+PET_ELEMENTAL = "Elemental"
+PET_DEMON = "Demon"
+-- This must match UnitCreatureFamily() return.
+PET_GHOUL = "Ghoul"
 
 -- ui/viewer.lua
 RECEIVED = "Received!"

@@ -285,6 +285,15 @@ do
 	local FLAG_DND = (" |cff994d4d%s|r"):format(CHAT_FLAG_DND)
 	local REACTION = "FACTION_STANDING_LABEL%d"
 	local LOCATION = ("|cffffeeaa%s|r %%s"):format(ZONE_COLON)
+	local UNITNAME_TITLE_PET_MATCH = UNITNAME_TITLE_PET:format("(.+)")
+	local UNITNAME_TITLE_MINION_MATCH = UNITNAME_TITLE_MINION:format("(.+)")
+	local PET_TYPE_CLASS = {
+		[_xrp.L.PET_BEAST] = "HUNTER",
+		[_xrp.L.PET_MECHANICAL] = "HUNTER",
+		[_xrp.L.PET_UNDEAD] = "DEATHKNIGHT",
+		[_xrp.L.PET_ELEMENTAL] = "MAGE",
+		[_xrp.L.PET_DEMON] = "WARLOCK",
+	}
 	function SetUnit(unit)
 		currentUnit.type = UnitIsPlayer(unit) and "player" or replace and (UnitIsOtherPlayersPet(unit) or UnitIsUnit("playerpet", unit)) and "pet"
 		if not currentUnit.type then return end
@@ -375,32 +384,32 @@ do
 			currentUnit.icons = (UnitIsPVP(unit) or ffa) and PVP_ICON:format((ffa or currentUnit.faction == "Neutral") and "FFA" or currentUnit.faction)
 
 			local ownership = _G[GTTL:format(colorblind and 3 or 2)]:GetText()
-			local owner, petType = ownership:match(UNITNAME_TITLE_PET:format("(.+)")), UNITNAME_TITLE_PET
-			if not owner then
-				owner, petType = ownership:match(UNITNAME_TITLE_MINION:format("(.+)")), UNITNAME_TITLE_MINION
-			end
+			local owner = ownership:match(UNITNAME_TITLE_PET_MATCH) or ownership:match(UNITNAME_TITLE_MINION_MATCH)
 
 			if not owner then return end
-			currentUnit.character = xrp.characters.byName[owner]
+
+			local race = UnitCreatureFamily(unit)
+			local creatureType = UnitCreatureType(unit)
+			local GC = PET_TYPE_CLASS[creatureType]
+
+			if not GC then return end
+			if race == _xrp.L.PET_GHOUL then
+				-- Replace "Ghoul" with "Undead", for geist/skeleton glyphs.
+				race = creatureType
+			end
 
 			local realm = owner:match("%-([^%-]+)$")
-			currentUnit.titleRealm = (colorblind and _xrp.L.ASIDE or "%s"):format(realm and _xrp.L.NAME_REALM:format(petType, xrp.RealmDisplayName(realm)) or petType, colorblind and xrp.L.VALUES.GF[currentUnit.faction])
+			local petLabel = creatureType == _xrp.L.PET_BEAST and UNITNAME_TITLE_PET or UNITNAME_TITLE_MINION
+			currentUnit.titleRealm = (colorblind and _xrp.L.ASIDE or "%s"):format(realm and _xrp.L.NAME_REALM:format(petLabel, xrp.RealmDisplayName(realm)) or petLabel, colorblind and xrp.L.VALUES.GF[currentUnit.faction])
 
 			currentUnit.reaction = colorblind and GetText(REACTION:format(UnitReaction("player", unit)), UnitSex(unit))
 
-			local race = UnitCreatureFamily(unit) or UnitCreatureType(unit)
-			if race == _xrp.L.PET_GHOUL or race == _xrp.L.PET_WATER_ELEMENTAL or race == _xrp.L.PET_MT_WATER_ELEMENTAL then
-				race = UnitCreatureType(unit)
-			elseif not race then
-				race = UNKNOWN
-			end
-			-- Mages, death knights, and warlocks have minions, hunters have 
-			-- pets. Mages and death knights only have one pet family each.
-			local GC = petType == UNITNAME_TITLE_MINION and (race == _xrp.L.PET_ELEMENTAL and "MAGE" or race == _xrp.L.PET_UNDEAD and "DEATHKNIGHT" or "WARLOCK") or petType == UNITNAME_TITLE_PET and "HUNTER"
+			currentUnit.character = xrp.characters.byName[owner]
+
 			local level = UnitLevel(unit)
 			local effectiveLevel = UnitEffectiveLevel(unit)
 			level = effectiveLevel == level and tostring(level) or effectiveLevel < 1 and tostring(level) or EFFECTIVE_LEVEL_FORMAT:format(tostring(effectiveLevel), tostring(level))
-			currentUnit.info = TOOLTIP_UNIT_LEVEL_CLASS_TYPE:format(level, ("|c%s%s|r"):format(RAID_CLASS_COLORS[GC] and RAID_CLASS_COLORS[GC].colorStr or "ffffffff", race), colorblind and ("%s %s"):format(xrp.L.VALUES.GC[currentUnit.character.fields.GS][GC], PET) or PET)
+			currentUnit.info = TOOLTIP_UNIT_LEVEL_CLASS_TYPE:format(level, ("|c%s%s|r"):format(RAID_CLASS_COLORS[GC] and RAID_CLASS_COLORS[GC].colorStr or "ffffffff", race or creatureType or UNKNOWN), colorblind and ("%s %s"):format(xrp.L.VALUES.GC[currentUnit.character.fields.GS][GC], PET) or PET)
 
 			if currentUnit.icons then
 				defaultLines = defaultLines + 1
