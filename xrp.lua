@@ -67,19 +67,6 @@ end
 
 do
 	local frame = CreateFrame("Frame")
-	local nextFrame = {}
-	function _xrp.NextFrame(func)
-		if type(func) ~= "function" or nextFrame[func] then return end
-		nextFrame[func] = true
-		frame:Show()
-	end
-	frame:SetScript("OnUpdate", function(self, elapsed)
-		for func, isFunc in pairs(nextFrame) do
-			func(elapsed)
-		end
-		table.wipe(nextFrame)
-		self:Hide()
-	end)
 	frame:Hide()
 
 	local gameEvents = {}
