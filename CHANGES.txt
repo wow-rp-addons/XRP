@@ -1,28 +1,16 @@
-7.0.3.0 (2016-07-19):
+7.0.3.1 (2016-07-29):
 
-	- This version supports World of Warcraft 7.0 (Legion pre-patch) only.
+	- Tooltip pet class detection has been fixed for Mechanicals (Hunter) and
+	  Abominations (Death Knight).
 
-		- A number of minor fixes have been made. Using previous versions of
-		  XRP in 7.0 will NOT work properly, updating is STRONGLY recommended.
+	- Tooltip player level detection for hostile players ten levels or more
+	  above you has been fixed (to show their real level).
 
-	- Officer chat again supports RP names. This setting will default to that
-	  of your guild chat, but may be changed independently.
+	- Support for filtering demon hunters from the bookmarks browser has been
+	  added.
 
-	- Default settings changed (for new installs, existing installs unchanged):
+	- Issues with tooltips sometimes not drawing (usually when mousing over
+	  target-of-target frames from custom unit frame addons) have been fixed.
 
-		- Chat replacements (%xt/%xf) now default to off, as they're somewhat
-		  CPU-intensive while typing in chat.
-
-		- Replacement of "Undead" with "Forsaken" for Undead-race players in
-		  XRP's tooltips and viewer now defaults to on, as Blizzard has
-		  switched to using Forsaken in many of the in-game references to this
-		  race (and it's less likely to be confused with the Undead creature
-		  type or Undead battle pet type).
-
-	- Nicknames that already include opening/closing quotation marks should
-	  now display properly.
-
-	- Unusual ways of listing height in ft/in should more commonly convert
-	  properly (such as 9'9'', using double apostrophes).
-
-	- Support for importing from TotalRP2 has been dropped.
+	- Issues with importing from other addons have hopefully been fixed (rare
+	  issue).
