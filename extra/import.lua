@@ -15,10 +15,10 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local hasMRP, hasTRP3 = (IsAddOnLoaded("MyRolePlay")), (IsAddOnLoaded("totalRP3"))
-if not (hasMRP or hasTRP3) then return end
-
 local addonName, _xrp = ...
+
+local hasMRP, hasTRP3 = (GetAddOnEnableState(_xrp.player, "MyRolePlay") == 2), (GetAddOnEnableState(_xrp.player, "totalRP3") == 2)
+if not (hasMRP or hasTRP3) then return end
 
 local MRP_NO_IMPORT = { TT = true, VA = true, VP = true, GC = true, GF = true, GR = true, GS = true, GU = true }
 
@@ -144,14 +144,14 @@ end
 
 _xrp.HookGameEvent("PLAYER_LOGIN", function(event)
 	local imported = false
-	if hasMRP then
+	if hasMRP and select(2, IsAddOnLoaded("MyRolePlay")) then
 		local count = ImportMyRolePlay()
 		if count > 0 then
 			DisableAddOn("MyRolePlay", _xrp.player)
 			imported = true
 		end
 	end
-	if hasTRP3 then
+	if hasTRP3 and select(2, IsAddOnLoaded("totalRP3")) then
 		local count = ImportTotalRP3()
 		if count > 0 then
 			DisableAddOn("totalRP3", _xrp.player)
