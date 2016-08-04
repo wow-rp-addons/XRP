@@ -189,9 +189,10 @@ local function RecheckForm()
 	DoSwap()
 end
 
--- Shadowform (and possibly others) don't trigger a portrait update. Worgen
--- form and equipment sets don't trigger a shapeshift update.
+-- Portrait update catches worgen form, equipment sets. Talent group catches
+-- Shadowform. Shapeshift form catches others.
 _xrp.HookGameEvent("UNIT_PORTRAIT_UPDATE", TestForm, "player")
+_xrp.HookGameEvent("ACTIVE_TALENT_GROUP_CHANGED", TestForm)
 _xrp.HookGameEvent("UPDATE_SHAPESHIFT_FORM", TestForm)
 _xrp.HookGameEvent("PLAYER_REGEN_ENABLED", TestForm)
 _xrp.HookGameEvent("PLAYER_REGEN_DISABLED", CancelTimer)
