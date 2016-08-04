@@ -466,6 +466,7 @@ POPUP_EDITOR_INUSE = "The profile \"%s\" is currently in-use directly or as a pa
 -- ui/tooltip.lua
 QUOTE_MATCH = "^['\"].-['\"]$"
 HIDDEN = "Hidden"
+LETHAL_LEVEL = "??"
 GUILD = "<%s>"
 GUILD_RANK = "%s of <%s>"
 GUILD_RANK_INDEX = "%s (%d) of <%s>"

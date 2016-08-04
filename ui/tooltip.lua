@@ -348,7 +348,7 @@ do
 
 				local level = UnitLevel(unit)
 				local effectiveLevel = UnitEffectiveLevel(unit)
-				level = effectiveLevel == level and tostring(level) or effectiveLevel < 1 and tostring(level) or EFFECTIVE_LEVEL_FORMAT:format(tostring(effectiveLevel), tostring(level))
+				level = effectiveLevel == level and (level < 1 and _xrp.L.LETHAL_LEVEL or tostring(level)) or effectiveLevel < 1 and tostring(level) or EFFECTIVE_LEVEL_FORMAT:format(tostring(effectiveLevel), tostring(level))
 				currentUnit.info = (TOOLTIP_UNIT_LEVEL_RACE_CLASS_TYPE):format(level, "%s", ("|c%s%%s|r"):format(RAID_CLASS_COLORS[GC] and RAID_CLASS_COLORS[GC].colorStr or "ffffffff"), colorblind and xrp.L.VALUES.GC[GS][GC] or PLAYER)
 
 				local location = connected and not UnitIsVisible(unit) and GameTooltipTextLeft3:GetText()
@@ -408,7 +408,7 @@ do
 
 			local level = UnitLevel(unit)
 			local effectiveLevel = UnitEffectiveLevel(unit)
-			level = effectiveLevel == level and tostring(level) or effectiveLevel < 1 and tostring(level) or EFFECTIVE_LEVEL_FORMAT:format(tostring(effectiveLevel), tostring(level))
+			level = effectiveLevel == level and (level < 1 and _xrp.L.LETHAL_LEVEL or tostring(level)) or effectiveLevel < 1 and tostring(level) or EFFECTIVE_LEVEL_FORMAT:format(tostring(effectiveLevel), tostring(level))
 			currentUnit.info = TOOLTIP_UNIT_LEVEL_CLASS_TYPE:format(level, ("|c%s%s|r"):format(RAID_CLASS_COLORS[GC] and RAID_CLASS_COLORS[GC].colorStr or "ffffffff", race or creatureType or UNKNOWN), colorblind and ("%s %s"):format(xrp.L.VALUES.GC[currentUnit.character.fields.GS][GC], PET) or PET)
 
 			if currentUnit.icons then
