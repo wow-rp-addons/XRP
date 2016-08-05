@@ -207,6 +207,9 @@ do
 				local NI = xrp.Strip(fields.NI)
 				RenderLine(NI and (not NI:find(_xrp.L.QUOTE_MATCH) and NI_FORMAT or NI_FORMAT_NOQUOTE):format(TruncateLine(NI, 70, NI_LENGTH, false)), nil, 0.6, 0.7, 0.9)
 				RenderLine(TruncateLine(xrp.Strip(fields.NT), 70), nil, 0.8, 0.8, 0.8)
+				if _xrp.settings.tooltip.showHouse then
+					RenderLine(TruncateLine(xrp.Strip(fields.NH), 70), nil, 0.4, 0.6, 0.7)
+				end
 			end
 			if _xrp.settings.tooltip.extraSpace then
 				RenderLine(true)

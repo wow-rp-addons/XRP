@@ -22,7 +22,7 @@ _xrp.settingsToggles = {
 }
 
 local DATA_VERSION = 6
-local DATA_VERSION_ACCOUNT = 16
+local DATA_VERSION_ACCOUNT = 17
 
 _xrp.DEFAULT_SETTINGS = {
 	cache = {
@@ -85,6 +85,7 @@ _xrp.DEFAULT_SETTINGS = {
 		watching = true,
 		bookmark = true,
 		extraSpace = false,
+		showHouse = false,
 		guildRank = false,
 		guildIndex = false,
 		noHostile = true,
@@ -299,6 +300,9 @@ local upgradeAccountVars = {
 	end,
 	[16] = function() -- 7.0.3.0
 		xrpAccountSaved.settings.chat["OFFICER"] = xrpAccountSaved.settings.chat["GUILD"]
+	end,
+	[17] = function() -- 7.0.3.2
+		xrpAccountSaved.settings.tooltip.showHouse = _xrp.DEFAULT_SETTINGS.tooltip.showHouse
 	end,
 }
 

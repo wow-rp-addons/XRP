@@ -252,6 +252,7 @@ local OPTIONS_TEXT = {
 		watching = _xrp.L.EYE_ICON_TARGET,
 		bookmark = _xrp.L.BOOKMARK_INDICATOR,
 		extraSpace = _xrp.L.EXTRA_SPACE_TOOLTIP,
+		showHouse = _xrp.L.SHOW_HOUSE_TOOLTIP,
 		guildRank = _xrp.L.DISPLAY_GUILD_RANK,
 		guildIndex = _xrp.L.DISPLAY_GUILD_RANK_INDEX,
 		noHostile = _xrp.L.NO_HOSTILE,
