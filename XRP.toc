@@ -1,6 +1,6 @@
 ## Interface: 70000
 ## Title: XRP
-## Version: 7.0.3.1
+## Version: 7.0.3.2
 ## Author: Bor of Wyrmrest Accord (US)
 ## Notes: A pretty good roleplaying profile addon.
 ## X-Category: Roleplay

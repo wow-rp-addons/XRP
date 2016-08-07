@@ -1,16 +1,15 @@
-7.0.3.1 (2016-07-29):
+7.0.3.2 (2016-08-06):
 
-	- Tooltip pet class detection has been fixed for Mechanicals (Hunter) and
-	  Abominations (Death Knight).
+	- Support for displaying house/clan/tribe in tooltip has been added. This
+	  is off by default, and may be toggled on in the tooltip options.
 
-	- Tooltip player level detection for hostile players ten levels or more
-	  above you has been fixed (to show their real level).
+	- Broader support for pets, including temporary pets/guardians, has been
+	  added to XRP's tooltip support. This does NOT include battle pets.
 
-	- Support for filtering demon hunters from the bookmarks browser has been
-	  added.
+	- A number of minor errors with class colors on pet tooltips have been
+	  fixed (only permanent pets/guardians should show a class color now).
 
-	- Issues with tooltips sometimes not drawing (usually when mousing over
-	  target-of-target frames from custom unit frame addons) have been fixed.
+	- Detection of switching into/out of Shadowform has been fixed.
 
-	- Issues with importing from other addons have hopefully been fixed (rare
-	  issue).
+	- Tooltips will now again display "Level ??" if the unit's level is truly
+	  unknown.
