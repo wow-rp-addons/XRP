@@ -477,8 +477,12 @@ PET_MECHANICAL = "Mechanical"
 PET_UNDEAD = "Undead"
 PET_ELEMENTAL = "Elemental"
 PET_DEMON = "Demon"
--- This must match UnitCreatureFamily() return.
+-- These must match UnitCreatureFamily() returns.
 PET_GHOUL = "Ghoul"
+PET_WATER_ELEMENTAL = "Water Elemental"
+-- These must match UnitName() returns.
+PET_NAME_RISEN_SKULKER = "Risen Skulker"
+PET_NAME_HATI = "Hati"
 
 -- ui/viewer.lua
 RECEIVED = "Received!"
