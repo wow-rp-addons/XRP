@@ -288,8 +288,22 @@ do
 	local FLAG_DND = (" |cff994d4d%s|r"):format(CHAT_FLAG_DND)
 	local REACTION = "FACTION_STANDING_LABEL%d"
 	local LOCATION = ("|cffffeeaa%s|r %%s"):format(ZONE_COLON)
-	local UNITNAME_TITLE_PET_MATCH = UNITNAME_TITLE_PET:format("(.+)")
-	local UNITNAME_TITLE_MINION_MATCH = UNITNAME_TITLE_MINION:format("(.+)")
+	local UNITNAME_TITLE, UNITNAME_MATCH = {}, {}
+	for i = 1, 99 do
+		local title = _G[("UNITNAME_SUMMON_TITLE%d"):format(i)]
+		if not title then break end
+		if title:find("%s", nil, true) and not title:find("^%%s$") then
+			UNITNAME_TITLE[#UNITNAME_TITLE + 1] = title
+			UNITNAME_MATCH[#UNITNAME_MATCH + 1] = title:format("(.+)")
+		end
+	end
+	local PET_TITLE_CLASS = {
+		[UNITNAME_SUMMON_TITLE1] = true,
+		[UNITNAME_SUMMON_TITLE3] = true,
+		[UNITNAME_SUMMON_TITLE4] = "SHAMAN",
+		[UNITNAME_SUMMON_TITLE14] = "WARLOCK",
+		[UNITNAME_SUMMON_TITLE16] = "MONK",
+	}
 	local PET_TYPE_CLASS = {
 		[_xrp.L.PET_BEAST] = "HUNTER",
 		[_xrp.L.PET_MECHANICAL] = "HUNTER",
@@ -298,7 +312,7 @@ do
 		[_xrp.L.PET_DEMON] = "WARLOCK",
 	}
 	function SetUnit(unit)
-		currentUnit.type = UnitIsPlayer(unit) and "player" or replace and (UnitIsOtherPlayersPet(unit) or UnitIsUnit("playerpet", unit)) and "pet"
+		currentUnit.type = UnitIsPlayer(unit) and "player" or replace and UnitPlayerControlled(unit) and not UnitIsBattlePet(unit) and "pet"
 		if not currentUnit.type then return end
 
 		local defaultLines = 3
@@ -377,7 +391,21 @@ do
 			end
 		elseif currentUnit.type == "pet" then
 			local colorblind = GetCVar("colorblindMode") == "1"
-			currentUnit.faction = UnitFactionGroup(unit) or UnitIsUnit(unit, "playerpet") and playerFaction or "Neutral"
+			local ownership = _G[GTTL:format(colorblind and 3 or 2)]:GetText()
+			if not ownership then return end
+			local owner, petLabel
+			for i, pattern in ipairs(UNITNAME_MATCH) do
+				owner = ownership:match(pattern)
+				if owner then
+					petLabel = UNITNAME_TITLE[i]
+					break
+				end
+			end
+
+			if not owner or not petLabel then return end
+
+			local isOwnPet = UnitIsUnit(unit, "playerpet")
+			currentUnit.faction = UnitFactionGroup(unit) or (isOwnPet or owner == _xrp.player) and playerFaction or "Neutral"
 
 			local name = UnitName(unit)
 			local color = COLORS[(UnitIsEnemy("player", unit) or attackMe and meAttack) and "hostile" or (meAttack or attackMe) and "neutral" or "friendly"]
@@ -386,23 +414,21 @@ do
 			local ffa = UnitIsPVPFreeForAll(unit)
 			currentUnit.icons = (UnitIsPVP(unit) or ffa) and PVP_ICON:format((ffa or currentUnit.faction == "Neutral") and "FFA" or currentUnit.faction)
 
-			local ownership = _G[GTTL:format(colorblind and 3 or 2)]:GetText()
-			local owner = ownership:match(UNITNAME_TITLE_PET_MATCH) or ownership:match(UNITNAME_TITLE_MINION_MATCH)
-
-			if not owner then return end
-
 			local race = UnitCreatureFamily(unit)
 			local creatureType = UnitCreatureType(unit)
-			local GC = PET_TYPE_CLASS[creatureType]
+			local GC = (isOwnPet or UnitIsOtherPlayersPet(unit)) and PET_TITLE_CLASS[petLabel] == true and PET_TYPE_CLASS[creatureType] or PET_TITLE_CLASS[petLabel]
 
-			if not GC then return end
 			if race == _xrp.L.PET_GHOUL then
-				-- Replace "Ghoul" with "Undead", for geist/skeleton glyphs.
 				race = creatureType
+			elseif name == _xrp.L.PET_NAME_RISEN_SKULKER then
+				GC = "DEATHKNIGHT"
+			elseif name == _xrp.L.PET_NAME_HATI then
+				GC = "HUNTER"
+			elseif GC == "HUNTER" and not race or GC == "MAGE" and creatureType ~= _xrp.L.PET_WATER_ELEMENTAL or UnitIsCharmed(unit) then
+				GC = nil
 			end
 
 			local realm = owner:match("%-([^%-]+)$")
-			local petLabel = creatureType == _xrp.L.PET_BEAST and UNITNAME_TITLE_PET or UNITNAME_TITLE_MINION
 			currentUnit.titleRealm = (colorblind and _xrp.L.ASIDE or "%s"):format(realm and _xrp.L.NAME_REALM:format(petLabel, xrp.RealmDisplayName(realm)) or petLabel, colorblind and xrp.L.VALUES.GF[currentUnit.faction])
 
 			currentUnit.reaction = colorblind and GetText(REACTION:format(UnitReaction("player", unit)), UnitSex(unit))
@@ -412,7 +438,7 @@ do
 			local level = UnitLevel(unit)
 			local effectiveLevel = UnitEffectiveLevel(unit)
 			level = effectiveLevel == level and (level < 1 and _xrp.L.LETHAL_LEVEL or tostring(level)) or effectiveLevel < 1 and tostring(level) or EFFECTIVE_LEVEL_FORMAT:format(tostring(effectiveLevel), tostring(level))
-			currentUnit.info = TOOLTIP_UNIT_LEVEL_CLASS_TYPE:format(level, ("|c%s%s|r"):format(RAID_CLASS_COLORS[GC] and RAID_CLASS_COLORS[GC].colorStr or "ffffffff", race or creatureType or UNKNOWN), colorblind and ("%s %s"):format(xrp.L.VALUES.GC[currentUnit.character.fields.GS][GC], PET) or PET)
+			currentUnit.info = TOOLTIP_UNIT_LEVEL_CLASS_TYPE:format(level, GC and ("|c%s%s|r"):format(RAID_CLASS_COLORS[GC] and RAID_CLASS_COLORS[GC].colorStr or "ffffffff", race or creatureType or UNKNOWN) or race or creatureType or UNKNOWN, colorblind and GC and ("%s %s"):format(xrp.L.VALUES.GC[currentUnit.character.fields.GS][GC], PET) or PET)
 
 			if currentUnit.icons then
 				defaultLines = defaultLines + 1
