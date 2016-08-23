@@ -33,6 +33,7 @@ do
 		[27] = "FLIGHT",
 		[29] = "FLIGHT",
 		[31] = "MOONKIN",
+		[35] = "MOONKIN",
 	}
 	local FORM_NO_RACE = {
 		["CAT"] = true,
@@ -62,8 +63,9 @@ do
 		local classForm
 		if playerClass then
 			if playerClass == "DRUID" or playerClass == "SHAMAN" then
-				classForm = FORM_ID[GetShapeshiftFormID()]
-				if classForm == "MOONKIN" and HasAttachedGlyph(24858) then
+				local formID = GetShapeshiftFormID()
+				classForm = FORM_ID[formID]
+				if classForm == "MOONKIN" and (formID == 31 and HasAttachedGlyph(24858) or formID == 35 and HasAttachedGlyph(197625)) then
 					classForm = "ASTRAL"
 				elseif not classForm and playerClass == "DRUID" and UnitBuff("player", _xrp.L.TREANT_BUFF) then
 					classForm = "TREANT"
