@@ -397,6 +397,25 @@ local function InitializeSavedVariables()
 			versions = {},
 			dataVersion = DATA_VERSION,
 		}
+	elseif not xrpSaved.selected or not xrpSaved.profiles[xrpSaved.selected] then
+		-- Something is very wrong, try to fix it.
+		if xrpSaved.profiles[DEFAULT] then
+			-- Try to set default.
+			xrpSaved.selected = DEFAULT
+		elseif next(xrpSaved.profiles) then
+			-- Try to set any profile.
+			local profileName, profile = next(xrpSaved.profiles)
+			xrpSaved.selected = profileName
+		else
+			-- Make a new empty profile.
+			xrpSaved.profiles[DEFAULT] = {
+				fields = {},
+				inherits = {},
+				versions = {},
+			}
+			xrpSaved.selected = DEFAULT
+		end
+		StaticPopup_Show("XRP_ERROR", _xrp.L.PROFILE_MISSING)
 	end
 end
 

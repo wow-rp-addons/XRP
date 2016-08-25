@@ -117,6 +117,7 @@ NEW_VERSION = "There is a new version of |cffabd473XRP|r available. You should u
 
 -- settings.lua
 RENAMED_FORMAT = "%s Renamed"
+PROFILE_MISSING = "Your active profile was not available to be used and XRP has tried to select an alternate profile.\n\nThis should not have happened and may indicate data corruption -- you should check your profiles for any problems."
 
 -- core/automation.lua
 TREANT_BUFF = "Treant Form" -- Must match in-game name of Treant buff.
