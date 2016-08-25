@@ -44,13 +44,17 @@ _xrp.DEFAULT_SETTINGS = {
 		replacements = false,
 	},
 	display = {
+		altScourge = true,
+		altScourgeLimit = false,
+		altScourgeForce = false,
 		altBloodElf = false,
+		altBloodElfLimit = true,
 		altBloodElfForce = false,
 		altNightElf = false,
+		altNightElfLimit = true,
 		altNightElfForce = false,
-		altScourge = true,
-		altScourgeForce = false,
 		altTauren = false,
+		altTaurenLimit = true,
 		altTaurenForce = false,
 		closeOnEscapeViewer = true,
 		friendsOnly = false,
@@ -435,7 +439,7 @@ end
 function _xrp.LoadSettings()
 	for xrpTable, category in pairs(_xrp.settingsToggles) do
 		for xrpSetting, func in pairs(category) do
-			func(_xrp.settings[xrpTable][xrpSetting])
+			func(_xrp.settings[xrpTable][xrpSetting], xrpSetting)
 		end
 	end
 end
