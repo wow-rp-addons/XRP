@@ -22,7 +22,7 @@ _xrp.settingsToggles = {
 }
 
 local DATA_VERSION = 6
-local DATA_VERSION_ACCOUNT = 17
+local DATA_VERSION_ACCOUNT = 18
 
 _xrp.DEFAULT_SETTINGS = {
 	cache = {
@@ -222,7 +222,6 @@ local upgradeAccountVars = {
 			settings.tooltip.noRace = settings.tooltip.norprace
 			settings.tooltip.norprace = nil
 		end
-		settings.display.movableViewer = _xrp.DEFAULT_SETTINGS.display.movableViewer
 	end,
 	[7] = function() -- 6.0.3.3
 		if xrpAccountSaved.settings.display.preloadViewer == true and xrpAccountSaved.settings.display.movableViewer == true then
@@ -256,19 +255,8 @@ local upgradeAccountVars = {
 				end
 			end
 		end
-		xrpAccountSaved.settings.tooltip.replace = _xrp.DEFAULT_SETTINGS.tooltip.replace
 		xrpAccountSaved.settings.display.preloadBookmarks = nil
 		xrpAccountSaved.settings.display.preloadEditor = nil
-	end,
-	[10] = function() -- 6.1.2.0
-		xrpAccountSaved.settings.display.altBloodElf = _xrp.DEFAULT_SETTINGS.display.altBloodElf
-		xrpAccountSaved.settings.display.altBloodElfForce = _xrp.DEFAULT_SETTINGS.display.altBloodElfForce
-		xrpAccountSaved.settings.display.altNightElf = _xrp.DEFAULT_SETTINGS.display.altNightElf
-		xrpAccountSaved.settings.display.altNightElfForce = _xrp.DEFAULT_SETTINGS.display.altNightElfForce
-		xrpAccountSaved.settings.display.altScourge = _xrp.DEFAULT_SETTINGS.display.altScourge
-		xrpAccountSaved.settings.display.altScourgeForce = _xrp.DEFAULT_SETTINGS.display.altScourgeForce
-		xrpAccountSaved.settings.display.altTauren = _xrp.DEFAULT_SETTINGS.display.altTauren
-		xrpAccountSaved.settings.display.altTaurenForce = _xrp.DEFAULT_SETTINGS.display.altTaurenForce
 	end,
 	[12] = function() -- 6.1.2.0
 		if not xrpAccountSaved.notes then
@@ -281,8 +269,6 @@ local upgradeAccountVars = {
 		end
 	end,
 	[14] = function() -- 6.2.3.1
-		xrpAccountSaved.settings.minimap.ldbObject = _xrp.DEFAULT_SETTINGS.minimap.ldbObject
-		xrpAccountSaved.settings.tooltip.bookmark = _xrp.DEFAULT_SETTINGS.tooltip.bookmark
 		local newSettings = {}
 		for setting, value in pairs(xrpAccountSaved.settings.chat) do
 			if setting:find("^CHAT_MSG_") then
@@ -294,15 +280,8 @@ local upgradeAccountVars = {
 			xrpAccountSaved.settings.chat[setting] = value
 		end
 	end,
-	[15] = function() -- 6.2.4.0
-		xrpAccountSaved.settings.display.friendsOnly = _xrp.DEFAULT_SETTINGS.display.friendsOnly
-		xrpAccountSaved.settings.display.guildIsFriends = _xrp.DEFAULT_SETTINGS.display.guildIsFriends
-	end,
 	[16] = function() -- 7.0.3.0
 		xrpAccountSaved.settings.chat["OFFICER"] = xrpAccountSaved.settings.chat["GUILD"]
-	end,
-	[17] = function() -- 7.0.3.2
-		xrpAccountSaved.settings.tooltip.showHouse = _xrp.DEFAULT_SETTINGS.tooltip.showHouse
 	end,
 }
 
@@ -440,6 +419,16 @@ function _xrp.SavedVariableSetup()
 	upgradeAccountVars = nil
 	upgradeVars = nil
 
+	for section, defaults in pairs(_xrp.DEFAULT_SETTINGS) do
+		if not xrpAccountSaved.settings[section] then
+			xrpAccountSaved.settings[section] = {}
+		end
+		for option, setting in pairs(defaults) do
+			if xrpAccountSaved.settings[section][option] == nil then
+				xrpAccountSaved.settings[section][option] = setting
+			end
+		end
+	end
 	_xrp.settings = xrpAccountSaved.settings
 end
 
