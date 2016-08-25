@@ -140,91 +140,50 @@ BINDING_NAME_XRP_VIEWER = _xrp.L.VIEW_TARGET_MOUSEOVER
 BINDING_NAME_XRP_VIEWER_TARGET = _xrp.L.VIEW_TARGET
 BINDING_NAME_XRP_VIEWER_MOUSEOVER = _xrp.L.VIEW_MOUSEOVER
 
-_xrp.settingsToggles.display.altBloodElf = function(setting)
-	if setting and xrp.L.VALUES.GR.BloodElf == _xrp.L.VALUE_GR_BLOODELF then
-		xrp.L.VALUES.GR.BloodElf = _xrp.L.VALUE_GR_BLOODELF_ALT
-		_xrp.settingsToggles.display.altBloodElfForce(_xrp.settings.display.altBloodElfForce)
-	elseif not setting then
-		if xrp.L.VALUES.GR.BloodElf == _xrp.L.VALUE_GR_BLOODELF_ALT then
-			xrp.L.VALUES.GR.BloodElf = _xrp.L.VALUE_GR_BLOODELF
-		end
-		_xrp.settingsToggles.display.altBloodElfForce(false)
+local function AltToggle(setting, settingName)
+	local raceName = settingName:match("^alt(.+)$")
+	local forceSetting = settingName .. "Force"
+	local raceUpperValue = "VALUE_GR_" .. raceName:upper()
+	local raceUpperAltValue = raceUpperValue .. "_ALT"
+	if setting and xrp.L.VALUES.GR[raceName] == _xrp.L[raceUpperValue] and (not _xrp.settings.display[settingName .. "Limit"] or xrpSaved.meta.fields.GR == raceName) then
+		xrp.L.VALUES.GR[raceName] = _xrp.L[raceUpperAltValue]
+		_xrp.settingsToggles.display[forceSetting](_xrp.settings.display[forceSetting], forceSetting)
+	elseif xrp.L.VALUES.GR[raceName] ~= _xrp.L[raceUpperAltValue] then
+		xrp.L.VALUES.GR[raceName] = _xrp.L[raceUpperValue]
+		_xrp.settingsToggles.display[forceSetting](false, forceSetting)
 	end
 end
-_xrp.settingsToggles.display.altBloodElfForce = function(setting)
-	if setting and xrpSaved.meta.fields.GR == "BloodElf" and xrpSaved.meta.fields.RA ~= _xrp.L.VALUE_GR_BLOODELF_ALT then
-		xrpSaved.meta.fields.RA = _xrp.L.VALUE_GR_BLOODELF_ALT
-		xrpSaved.meta.versions.RA = _xrp.NewVersion("RA", _xrp.L.VALUE_GR_BLOODELF_ALT)
+
+local function AltToggleForce(setting, settingName)
+	local raceName = settingName:match("^alt(.+)Force$")
+	local raceAlt = _xrp.L[("VALUE_GR_%s_ALT"):format(raceName:upper())]
+	if setting and xrpSaved.meta.fields.GR == raceName and xrpSaved.meta.fields.RA ~= raceAlt then
+		xrpSaved.meta.fields.RA = raceAlt
+		xrpSaved.meta.versions.RA = _xrp.NewVersion("RA", raceAlt)
 		_xrp.FireEvent("UPDATE", "RA")
-	elseif (not setting or xrpSaved.meta.fields.GR ~= "BloodElf") and xrpSaved.meta.fields.RA == _xrp.L.VALUE_GR_BLOODELF_ALT then
+	elseif (not setting or xrpSaved.meta.fields.GR ~= raceName) and xrpSaved.meta.fields.RA == raceAlt then
 		xrpSaved.meta.fields.RA = nil
 		xrpSaved.meta.versions.RA = nil
 		_xrp.FireEvent("UPDATE", "RA")
 	end
 end
-_xrp.settingsToggles.display.altNightElf = function(setting)
-	if setting and xrp.L.VALUES.GR.NightElf == _xrp.L.VALUE_GR_NIGHTELF then
-		xrp.L.VALUES.GR.NightElf = _xrp.L.VALUE_GR_NIGHTELF_ALT
-		_xrp.settingsToggles.display.altNightElfForce(_xrp.settings.display.altNightElfForce)
-	elseif not setting then
-		if xrp.L.VALUES.GR.NightElf == _xrp.L.VALUE_GR_NIGHTELF_ALT then
-			xrp.L.VALUES.GR.NightElf = _xrp.L.VALUE_GR_NIGHTELF
-		end
-		_xrp.settingsToggles.display.altNightElfForce(false)
+
+local function AltToggleLimit(setting, settingName)
+	local raceSettingName = settingName:match("^(.+)Limit$")
+	if _xrp.settings.display[raceSettingName] then
+		_xrp.settingsToggles.display[raceSettingName](true, raceSettingName)
 	end
 end
-_xrp.settingsToggles.display.altNightElfForce = function(setting)
-	if setting and xrpSaved.meta.fields.GR == "NightElf" and xrpSaved.meta.fields.RA ~= _xrp.L.VALUE_GR_NIGHTELF_ALT then
-		xrpSaved.meta.fields.RA = _xrp.L.VALUE_GR_NIGHTELF_ALT
-		xrpSaved.meta.versions.RA = _xrp.NewVersion("RA", _xrp.L.VALUE_GR_NIGHTELF_ALT)
-		_xrp.FireEvent("UPDATE", "RA")
-	elseif (not setting or xrpSaved.meta.fields.GR ~= "NightElf") and xrpSaved.meta.fields.RA == _xrp.L.VALUE_GR_NIGHTELF_ALT then
-		xrpSaved.meta.fields.RA = nil
-		xrpSaved.meta.versions.RA = nil
-		_xrp.FireEvent("UPDATE", "RA")
-	end
-end
-_xrp.settingsToggles.display.altScourge = function(setting)
-	if setting and xrp.L.VALUES.GR.Scourge == _xrp.L.VALUE_GR_SCOURGE then
-		xrp.L.VALUES.GR.Scourge = _xrp.L.VALUE_GR_SCOURGE_ALT
-		_xrp.settingsToggles.display.altScourgeForce(_xrp.settings.display.altScourgeForce)
-	elseif not setting then
-		if xrp.L.VALUES.GR.Scourge == _xrp.L.VALUE_GR_SCOURGE_ALT then
-			xrp.L.VALUES.GR.Scourge = _xrp.L.VALUE_GR_SCOURGE
-		end
-		_xrp.settingsToggles.display.altScourgeForce(false)
-	end
-end
-_xrp.settingsToggles.display.altScourgeForce = function(setting)
-	if setting and xrpSaved.meta.fields.GR == "Scourge" and xrpSaved.meta.fields.RA ~= _xrp.L.VALUE_GR_SCOURGE_ALT then
-		xrpSaved.meta.fields.RA = _xrp.L.VALUE_GR_SCOURGE_ALT
-		xrpSaved.meta.versions.RA = _xrp.NewVersion("RA", _xrp.L.VALUE_GR_SCOURGE_ALT)
-		_xrp.FireEvent("UPDATE", "RA")
-	elseif (not setting or xrpSaved.meta.fields.GR ~= "Scourge") and xrpSaved.meta.fields.RA == _xrp.L.VALUE_GR_SCOURGE_ALT then
-		xrpSaved.meta.fields.RA = nil
-		xrpSaved.meta.versions.RA = nil
-		_xrp.FireEvent("UPDATE", "RA")
-	end
-end
-_xrp.settingsToggles.display.altTauren = function(setting)
-	if setting and xrp.L.VALUES.GR.Tauren == _xrp.L.VALUE_GR_TAUREN then
-		xrp.L.VALUES.GR.Tauren = _xrp.L.VALUE_GR_TAUREN_ALT
-		_xrp.settingsToggles.display.altTaurenForce(_xrp.settings.display.altTaurenForce)
-	elseif not setting then
-		if xrp.L.VALUES.GR.Tauren == _xrp.L.VALUE_GR_TAUREN_ALT then
-			xrp.L.VALUES.GR.Tauren = _xrp.L.VALUE_GR_TAUREN
-		end
-		_xrp.settingsToggles.display.altTaurenForce(false)
-	end
-end
-_xrp.settingsToggles.display.altTaurenForce = function(setting)
-	if setting and xrpSaved.meta.fields.GR == "Tauren" and xrpSaved.meta.fields.RA ~= _xrp.L.VALUE_GR_TAUREN_ALT then
-		xrpSaved.meta.fields.RA = _xrp.L.VALUE_GR_TAUREN_ALT
-		xrpSaved.meta.versions.RA = _xrp.NewVersion("RA", _xrp.L.VALUE_GR_TAUREN_ALT)
-		_xrp.FireEvent("UPDATE", "RA")
-	elseif (not setting or xrpSaved.meta.fields.GR ~= "Tauren") and xrpSaved.meta.fields.RA == _xrp.L.VALUE_GR_TAUREN_ALT then
-		xrpSaved.meta.fields.RA = nil
-		xrpSaved.meta.versions.RA = nil
-		_xrp.FireEvent("UPDATE", "RA")
-	end
-end
+
+_xrp.settingsToggles.display.altScourge = AltToggle
+_xrp.settingsToggles.display.altScourgeForce = AltToggleForce
+_xrp.settingsToggles.display.altScourgeLimit = AltToggleLimit
+_xrp.settingsToggles.display.altBloodElf = AltToggle
+_xrp.settingsToggles.display.altBloodElfForce = AltToggleForce
+_xrp.settingsToggles.display.altBloodElfLimit = AltToggleLimit
+_xrp.settingsToggles.display.altNightElf = AltToggle
+_xrp.settingsToggles.display.altNightElfForce = AltToggleForce
+_xrp.settingsToggles.display.altNightElfLimit = AltToggleLimit
+_xrp.settingsToggles.display.altTauren = AltToggle
+_xrp.settingsToggles.display.altTaurenForce = AltToggleForce
+_xrp.settingsToggles.display.altTaurenLimit = AltToggleLimit
