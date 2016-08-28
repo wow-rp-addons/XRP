@@ -95,130 +95,118 @@ function XRPButton_OnEnter(self, motion)
 	end
 end
 
-do
-	local Status_menuList = {}
-	do
-		local function Status_Click(self, status, arg2, checked)
-			if not checked then
-				xrp.Status(status or "0")
-			end
-			CloseDropDownMenus()
-		end
-		local function Status_Checked(self)
-			return self.arg1 == xrp.current.FC
-		end
-
-		for i = 0, 4 do
-			local s = tostring(i)
-			Status_menuList[i + 1] = { text = xrp.L.MENU_VALUES.FC[s], checked = Status_Checked, arg1 = i ~= 0 and s or nil, func = Status_Click, }
-		end
+local Status_menuList = {}
+local function Status_Click(self, status, arg2, checked)
+	if not checked then
+		xrp.Status(status or "0")
 	end
+	CloseDropDownMenus()
+end
+local function Status_Checked(self)
+	return self.arg1 == xrp.current.FC
+end
+for i = 0, 4 do
+	local s = tostring(i)
+	Status_menuList[i + 1] = { text = xrp.L.MENU_VALUES.FC[s], checked = Status_Checked, arg1 = i ~= 0 and s or nil, func = Status_Click, }
+end
 
-	local Profiles_menuList = {}
-	XRPButton_baseMenuList = {
-		{ text = _xrp.L.PROFILES, notCheckable = true, hasArrow = true, menuList = Profiles_menuList, },
-		{ text = xrp.L.MENU_FIELDS.FC, notCheckable = true, hasArrow = true, menuList = Status_menuList, },
-		{ text = xrp.L.MENU_FIELDS.CU .. CONTINUED, notCheckable = true, func = function() StaticPopup_Show("XRP_CURRENTLY") end, },
-		{ text = _xrp.L.BOOKMARKS, notCheckable = true, func = function() XRPBookmarks:Toggle(1) end, },
-		{ text = _xrp.L.VIEWER, notCheckable = true, func = function() XRPViewer:View() end, },
-		{ text = _xrp.L.EDITOR, notCheckable = true, func = function() XRPEditor:Edit() end, },
-		{ text = _xrp.L.OPTIONS, notCheckable = true, func = function() _xrp.Options() end, },
-		{ text = CANCEL, notCheckable = true, func = _xrp.DoNothing, },
-	}
+local Profiles_menuList = {}
+XRPButton_baseMenuList = {
+	{ text = _xrp.L.PROFILES, notCheckable = true, hasArrow = true, menuList = Profiles_menuList, },
+	{ text = xrp.L.MENU_FIELDS.FC, notCheckable = true, hasArrow = true, menuList = Status_menuList, },
+	{ text = xrp.L.MENU_FIELDS.CU .. CONTINUED, notCheckable = true, func = function() StaticPopup_Show("XRP_CURRENTLY") end, },
+	{ text = _xrp.L.BOOKMARKS, notCheckable = true, func = function() XRPBookmarks:Toggle(1) end, },
+	{ text = _xrp.L.VIEWER, notCheckable = true, func = function() XRPViewer:View() end, },
+	{ text = _xrp.L.EDITOR, notCheckable = true, func = function() XRPEditor:Edit() end, },
+	{ text = _xrp.L.OPTIONS, notCheckable = true, func = function() _xrp.Options() end, },
+	{ text = CANCEL, notCheckable = true, func = _xrp.DoNothing, },
+}
 
-	do
-		local function Profiles_Click(self, profileName, arg2, checked)
-			if not checked and xrp.profiles[profileName] then
-				xrp.profiles[profileName]:Activate()
-			end
-			CloseDropDownMenus()
+local function Profiles_Click(self, profileName, arg2, checked)
+	if not checked and xrp.profiles[profileName] then
+		xrp.profiles[profileName]:Activate()
+	end
+	CloseDropDownMenus()
+end
+
+local ldbMenu
+function XRPButton_OnClick(self, button, down)
+	if button == "LeftButton" then
+		local target = xrp.characters.byUnit.target
+		if target and (target.hide or target.fields.VA) then
+			XRPViewer:View("target")
+		else
+			xrp.Status()
 		end
-
-		local ldbMenu
-		function XRPButton_OnClick(self, button, down)
-			if button == "LeftButton" then
-				local target = xrp.characters.byUnit.target
-				if target and (target.hide or target.fields.VA) then
-					XRPViewer:View("target")
-				else
-					xrp.Status()
-				end
-				if self == Button then
-					XRPButton_OnEnter(self, true)
-				end
-				CloseDropDownMenus()
-			elseif button == "RightButton" then
-				if self ~= Button and not ldbMenu then
-					ldbMenu = CreateFrame("Frame")
-					ldbMenu.baseMenuList = XRPButton_baseMenuList
-					ldbMenu.initialize = XRPTemplatesMenu_Mixin.initialize
-					ldbMenu.displayMode = "MENU"
-					ldbMenu.anchor = "cursor"
-				end
-				table.wipe(Profiles_menuList)
-				local selected = tostring(xrp.profiles.SELECTED)
-				for i, profileName in ipairs(xrp.profiles:List()) do
-					Profiles_menuList[#Profiles_menuList + 1] = { text = profileName, checked = selected == profileName, arg1 = profileName, func = Profiles_Click, }
-				end
-				XRPTemplatesMenu_OnClick(self == Button and self or ldbMenu, button, down)
-			end
+		if self == Button then
+			XRPButton_OnEnter(self, true)
 		end
+		CloseDropDownMenus()
+	elseif button == "RightButton" then
+		if self ~= Button and not ldbMenu then
+			ldbMenu = CreateFrame("Frame")
+			ldbMenu.baseMenuList = XRPButton_baseMenuList
+			ldbMenu.initialize = XRPTemplatesMenu_Mixin.initialize
+			ldbMenu.displayMode = "MENU"
+			ldbMenu.anchor = "cursor"
+		end
+		table.wipe(Profiles_menuList)
+		local selected = tostring(xrp.profiles.SELECTED)
+		for i, profileName in ipairs(xrp.profiles:List()) do
+			Profiles_menuList[#Profiles_menuList + 1] = { text = profileName, checked = selected == profileName, arg1 = profileName, func = Profiles_Click, }
+		end
+		XRPTemplatesMenu_OnClick(self == Button and self or ldbMenu, button, down)
 	end
 end
 
-local UpdatePositionAttached
-do
-	do
-		local MINIMAP_SHAPES = {
-			["ROUND"] = { true, true, true, true },
-			["SQUARE"] = { false, false, false, false },
-			["CORNER-TOPLEFT"] = { false, false, false, true },
-			["CORNER-TOPRIGHT"] = { false, false, true, false },
-			["CORNER-BOTTOMLEFT"] = { false, true, false, false },
-			["CORNER-BOTTOMRIGHT"] = { true, false, false, false },
-			["SIDE-LEFT"] = { false, true, false, true },
-			["SIDE-RIGHT"] = { true, false, true, false },
-			["SIDE-TOP"] = { false, false, true, true },
-			["SIDE-BOTTOM"] = { true, true, false, false },
-			["TRICORNER-TOPLEFT"] = { false, true, true, true },
-			["TRICORNER-TOPRIGHT"] = { true, false, true, true },
-			["TRICORNER-BOTTOMLEFT"] = { true, true, false, true },
-			["TRICORNER-BOTTOMRIGHT"] = { true, true, true, false },
-		}
-		function UpdatePositionAttached(self)
-			local angle = math.rad(_xrp.settings.minimap.angle)
-			local x, y, q = math.cos(angle), math.sin(angle), 1
-			if x < 0 then q = q + 1 end
-			if y > 0 then q = q + 2 end
-			if MINIMAP_SHAPES[GetMinimapShape and GetMinimapShape() or "ROUND"][q] then
-				x, y = x * 80, y * 80
-			else
-				-- 103.13708498985 = math.sqrt(2*(80)^2)-10
-				x = math.max(-80, math.min(x * 103.13708498985, 80))
-				y = math.max(-80, math.min(y * 103.13708498985, 80))
-			end
-			self:ClearAllPoints()
-			self:SetPoint("CENTER", Minimap, "CENTER", x, y)
-		end
+local MINIMAP_SHAPES = {
+	["ROUND"] = { true, true, true, true },
+	["SQUARE"] = { false, false, false, false },
+	["CORNER-TOPLEFT"] = { false, false, false, true },
+	["CORNER-TOPRIGHT"] = { false, false, true, false },
+	["CORNER-BOTTOMLEFT"] = { false, true, false, false },
+	["CORNER-BOTTOMRIGHT"] = { true, false, false, false },
+	["SIDE-LEFT"] = { false, true, false, true },
+	["SIDE-RIGHT"] = { true, false, true, false },
+	["SIDE-TOP"] = { false, false, true, true },
+	["SIDE-BOTTOM"] = { true, true, false, false },
+	["TRICORNER-TOPLEFT"] = { false, true, true, true },
+	["TRICORNER-TOPRIGHT"] = { true, false, true, true },
+	["TRICORNER-BOTTOMLEFT"] = { true, true, false, true },
+	["TRICORNER-BOTTOMRIGHT"] = { true, true, true, false },
+}
+local function UpdatePositionAttached(self)
+	local angle = math.rad(_xrp.settings.minimap.angle)
+	local x, y, q = math.cos(angle), math.sin(angle), 1
+	if x < 0 then q = q + 1 end
+	if y > 0 then q = q + 2 end
+	if MINIMAP_SHAPES[GetMinimapShape and GetMinimapShape() or "ROUND"][q] then
+		x, y = x * 80, y * 80
+	else
+		-- 103.13708498985 = math.sqrt(2*(80)^2)-10
+		x = math.max(-80, math.min(x * 103.13708498985, 80))
+		y = math.max(-80, math.min(y * 103.13708498985, 80))
 	end
-	local function Minimap_OnUpdate(self, elapsed)
-		local mx, my = Minimap:GetCenter()
-		local px, py = GetCursorPosition()
-		local scale = Minimap:GetEffectiveScale()
-		px, py = px / scale, py / scale
-		_xrp.settings.minimap.angle = math.deg(math.atan2(py - my, px - mx)) % 360
-		UpdatePositionAttached(self)
-	end
+	self:ClearAllPoints()
+	self:SetPoint("CENTER", Minimap, "CENTER", x, y)
+end
+local function Minimap_OnUpdate(self, elapsed)
+	local mx, my = Minimap:GetCenter()
+	local px, py = GetCursorPosition()
+	local scale = Minimap:GetEffectiveScale()
+	px, py = px / scale, py / scale
+	_xrp.settings.minimap.angle = math.deg(math.atan2(py - my, px - mx)) % 360
+	UpdatePositionAttached(self)
+end
 
-	function XRPButtonAttached_OnDragStart(self, button)
-		self:LockHighlight()
-		self:SetScript("OnUpdate", Minimap_OnUpdate)
-	end
+function XRPButtonAttached_OnDragStart(self, button)
+	self:LockHighlight()
+	self:SetScript("OnUpdate", Minimap_OnUpdate)
+end
 
-	function XRPButtonAttached_OnDragStop(self)
-		self:SetScript("OnUpdate", nil)
-		self:UnlockHighlight()
-	end
+function XRPButtonAttached_OnDragStop(self)
+	self:SetScript("OnUpdate", nil)
+	self:UnlockHighlight()
 end
 
 function XRPButtonDetached_OnDragStart(self, button)

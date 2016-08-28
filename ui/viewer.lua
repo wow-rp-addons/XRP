@@ -19,82 +19,79 @@ local addonName, _xrp = ...
 
 local current, status, failed
 
-local Load, FIELD
-do
-	-- This will request fields in the order listed.
-	local DISPLAY = {
-		"VA", "NA", "NH", "NI", "NT", "RA", "RC", "CU", -- In TT.
-		"AE", "AH", "AW", "AG", "HH", "HB", "MO", -- Not in TT.
-		"DE", "HI", -- High-bandwidth.
-	}
+-- This will request fields in the order listed.
+local DISPLAY = {
+	"VA", "NA", "NH", "NI", "NT", "RA", "RC", "CU", -- In TT.
+	"AE", "AH", "AW", "AG", "HH", "HB", "MO", -- Not in TT.
+	"DE", "HI", -- High-bandwidth.
+}
 
-	local function SetField(field, contents, secondary, tertiary)
-		contents = xrp.Strip(contents, field == "CU" or field == "DE" or field == "MO" or field == "HI")
-		if field == "VA" then
-			contents = contents and contents:gsub(";", PLAYER_LIST_DELIMITER) or NONE
-		elseif field == "CU" then
-			contents = xrp.MergeCurrently(xrp.Link(contents), xrp.Link(xrp.Strip(secondary, true)))
-		elseif secondary then
-			if field == "NA" then
-				contents = xrp.ShortName(secondary)
-			elseif field =="RA" then
-				contents = xrp.L.VALUES.GR[secondary]
-			elseif field =="RC" then
-				contents = xrp.L.VALUES.GC[tertiary or "1"][secondary]
-			end
+local function SetField(field, contents, secondary, tertiary)
+	contents = xrp.Strip(contents, field == "CU" or field == "DE" or field == "MO" or field == "HI")
+	if field == "VA" then
+		contents = contents and contents:gsub(";", PLAYER_LIST_DELIMITER) or NONE
+	elseif field == "CU" then
+		contents = xrp.MergeCurrently(xrp.Link(contents), xrp.Link(xrp.Strip(secondary, true)))
+	elseif secondary then
+		if field == "NA" then
+			contents = xrp.ShortName(secondary)
+		elseif field =="RA" then
+			contents = xrp.L.VALUES.GR[secondary]
+		elseif field =="RC" then
+			contents = xrp.L.VALUES.GC[tertiary or "1"][secondary]
 		end
-		if not contents then
-			contents = ""
-		elseif field == "NI" and not contents:find(_xrp.L.QUOTE_MATCH) then
-			contents = _xrp.L.NICKNAME:format(contents)
-		elseif field == "AH" then
-			contents = xrp.Height(contents)
-		elseif field == "AW" then
-			contents = xrp.Weight(contents)
-		elseif field == "DE" or field == "MO" or field == "HI" then
-			-- Link URLs in scrolling fields.
-			contents = xrp.Link(contents)
-		end
-		XRPViewer.fields[field]:SetText(contents)
 	end
-
-	function Load(character)
-		local fields = character.fields
-		for i, field in ipairs(DISPLAY) do
-			local contents = fields[field]
-			SetField(field, contents, field == "CU" and fields.CO or not contents and (field == "NA" and tostring(character) or field == "RA" and fields.GR or field == "RC" and fields.GC), not contents and field == "RC" and fields.GS)
-		end
-		XRPViewer.XC:SetText("")
-		failed = nil
-		status = nil
-		if character == current then
-			return false
-		elseif current and tostring(character) == tostring(current) then
-			current = character
-			return false
-		end
-		current = character
-		return true
+	if not contents then
+		contents = ""
+	elseif field == "NI" and not contents:find(_xrp.L.QUOTE_MATCH) then
+		contents = _xrp.L.NICKNAME:format(contents)
+	elseif field == "AH" then
+		contents = xrp.Height(contents)
+	elseif field == "AW" then
+		contents = xrp.Weight(contents)
+	elseif field == "DE" or field == "MO" or field == "HI" then
+		-- Link URLs in scrolling fields.
+		contents = xrp.Link(contents)
 	end
+	XRPViewer.fields[field]:SetText(contents)
+end
 
-	local SUPPORTED = {}
+local function Load(character)
+	local fields = character.fields
 	for i, field in ipairs(DISPLAY) do
-		SUPPORTED[field] = true
+		local contents = fields[field]
+		SetField(field, contents, field == "CU" and fields.CO or not contents and (field == "NA" and tostring(character) or field == "RA" and fields.GR or field == "RC" and fields.GC), not contents and field == "RC" and fields.GS)
 	end
-	local META_SUPPORTED = {
-		GR = "RA",
-		GC = "RC",
-	}
-	function FIELD(event, name, field)
-		if tostring(current) ~= name or current.noRequest then return end
-		if META_SUPPORTED[field] then
-			field = META_SUPPORTED[field]
-		end
-		if SUPPORTED[field] then
-			local fields = current.fields
-			local contents = fields[field]
-			SetField(field, contents, field == "CU" and fields.CO or not contents and (field == "NA" and tostring(character) or field == "RA" and fields.GR or field == "RC" and fields.GC), not contents and field == "RC" and fields.GS)
-		end
+	XRPViewer.XC:SetText("")
+	failed = nil
+	status = nil
+	if character == current then
+		return false
+	elseif current and tostring(character) == tostring(current) then
+		current = character
+		return false
+	end
+	current = character
+	return true
+end
+
+local SUPPORTED = {}
+for i, field in ipairs(DISPLAY) do
+	SUPPORTED[field] = true
+end
+local META_SUPPORTED = {
+	GR = "RA",
+	GC = "RC",
+}
+local function FIELD(event, name, field)
+	if tostring(current) ~= name or current.noRequest then return end
+	if META_SUPPORTED[field] then
+		field = META_SUPPORTED[field]
+	end
+	if SUPPORTED[field] then
+		local fields = current.fields
+		local contents = fields[field]
+		SetField(field, contents, field == "CU" and fields.CO or not contents and (field == "NA" and tostring(character) or field == "RA" and fields.GR or field == "RC" and fields.GC), not contents and field == "RC" and fields.GS)
 	end
 end
 
@@ -160,57 +157,55 @@ local function DROP(event, name)
 	end
 end
 
-do
-	local function Menu_Checked(self)
-		if self.disabled then
-			return false
-		elseif self.arg1 == "XRP_BOOKMARK" then
-			return current.bookmark ~= nil
-		elseif self.arg1 == "XRP_HIDE" then
-			return current.hide ~= nil
-		end
+local function Menu_Checked(self)
+	if self.disabled then
+		return false
+	elseif self.arg1 == "XRP_BOOKMARK" then
+		return current.bookmark ~= nil
+	elseif self.arg1 == "XRP_HIDE" then
+		return current.hide ~= nil
 	end
-	local function Menu_Click(self, arg1, arg2, checked)
-		if arg1 == "XRP_REFRESH" then
-			if current.noRequest then
-				Load(xrp.characters.byName[tostring(current)])
-			else
-				Load(current)
-			end
-		elseif arg1 == "XRP_FRIEND" then
-			local name = tostring(current)
-			AddOrRemoveFriend(Ambiguate(name, "none"), xrp.Strip(current.fields.NA) or xrp.ShortName(name))
-		elseif arg1 == "XRP_BOOKMARK" then
-			current.bookmark = not checked
-		elseif arg1 == "XRP_HIDE" then
-			current.hide = not checked
-		elseif arg1 == "XRP_EXPORT" then
-			XRPExport:Export(xrp.ShortName(tostring(current)), tostring(current.fields))
-		elseif arg1 == "XRP_REFRESH_FORCE" then
-			local name, realm = tostring(current):match("^([^%-]+)%-([^%-]+)")
-			StaticPopup_Show("XRP_FORCE_REFRESH", _xrp.L.NAME_REALM:format(name, xrp.RealmDisplayName(realm)), nil, current)
-		elseif arg1 == "XRP_CACHE_DROP" then
-			local name, realm = tostring(current):match("^([^%-]+)%-([^%-]+)")
-			StaticPopup_Show("XRP_CACHE_SINGLE", _xrp.L.NAME_REALM:format(name, xrp.RealmDisplayName(realm)), nil, current)
-		end
-		if arg2 then -- Second-level menu.
-			CloseDropDownMenus()
-		end
-	end
-	local Advanced_menuList = {
-		{ text = _xrp.L.FORCE_REFRESH .. CONTINUED, arg1 = "XRP_REFRESH_FORCE", arg2 = true, notCheckable = true, func = Menu_Click, },
-		{ text = _xrp.L.DROP_CACHE .. CONTINUED, arg1 = "XRP_CACHE_DROP", arg2 = true, notCheckable = true, func = Menu_Click, },
-	}
-	XRPViewerMenu_baseMenuList = {
-		{ text = REFRESH, arg1 = "XRP_REFRESH", notCheckable = true, func = Menu_Click, },
-		{ text = ADD_FRIEND, arg1 = "XRP_FRIEND", notCheckable = true, func = Menu_Click, },
-		{ text = _xrp.L.BOOKMARK, arg1 = "XRP_BOOKMARK", isNotRadio = true, checked = Menu_Checked, func = Menu_Click, },
-		{ text = _xrp.L.HIDE_PROFILE, arg1 = "XRP_HIDE", isNotRadio = true, checked = Menu_Checked, func = Menu_Click, },
-		{ text = _xrp.L.EXPORT, arg1 = "XRP_EXPORT", notCheckable = true, func = Menu_Click, },
-		{ text = ADVANCED_LABEL, notCheckable = true, hasArrow = true, menuList = Advanced_menuList, },
-		{ text = CANCEL, notCheckable = true, func = _xrp.DoNothing, },
-	}
 end
+local function Menu_Click(self, arg1, arg2, checked)
+	if arg1 == "XRP_REFRESH" then
+		if current.noRequest then
+			Load(xrp.characters.byName[tostring(current)])
+		else
+			Load(current)
+		end
+	elseif arg1 == "XRP_FRIEND" then
+		local name = tostring(current)
+		AddOrRemoveFriend(Ambiguate(name, "none"), xrp.Strip(current.fields.NA) or xrp.ShortName(name))
+	elseif arg1 == "XRP_BOOKMARK" then
+		current.bookmark = not checked
+	elseif arg1 == "XRP_HIDE" then
+		current.hide = not checked
+	elseif arg1 == "XRP_EXPORT" then
+		XRPExport:Export(xrp.ShortName(tostring(current)), tostring(current.fields))
+	elseif arg1 == "XRP_REFRESH_FORCE" then
+		local name, realm = tostring(current):match("^([^%-]+)%-([^%-]+)")
+		StaticPopup_Show("XRP_FORCE_REFRESH", _xrp.L.NAME_REALM:format(name, xrp.RealmDisplayName(realm)), nil, current)
+	elseif arg1 == "XRP_CACHE_DROP" then
+		local name, realm = tostring(current):match("^([^%-]+)%-([^%-]+)")
+		StaticPopup_Show("XRP_CACHE_SINGLE", _xrp.L.NAME_REALM:format(name, xrp.RealmDisplayName(realm)), nil, current)
+	end
+	if arg2 then -- Second-level menu.
+		CloseDropDownMenus()
+	end
+end
+local Advanced_menuList = {
+	{ text = _xrp.L.FORCE_REFRESH .. CONTINUED, arg1 = "XRP_REFRESH_FORCE", arg2 = true, notCheckable = true, func = Menu_Click, },
+	{ text = _xrp.L.DROP_CACHE .. CONTINUED, arg1 = "XRP_CACHE_DROP", arg2 = true, notCheckable = true, func = Menu_Click, },
+}
+XRPViewerMenu_baseMenuList = {
+	{ text = REFRESH, arg1 = "XRP_REFRESH", notCheckable = true, func = Menu_Click, },
+	{ text = ADD_FRIEND, arg1 = "XRP_FRIEND", notCheckable = true, func = Menu_Click, },
+	{ text = _xrp.L.BOOKMARK, arg1 = "XRP_BOOKMARK", isNotRadio = true, checked = Menu_Checked, func = Menu_Click, },
+	{ text = _xrp.L.HIDE_PROFILE, arg1 = "XRP_HIDE", isNotRadio = true, checked = Menu_Checked, func = Menu_Click, },
+	{ text = _xrp.L.EXPORT, arg1 = "XRP_EXPORT", notCheckable = true, func = Menu_Click, },
+	{ text = ADVANCED_LABEL, notCheckable = true, hasArrow = true, menuList = Advanced_menuList, },
+	{ text = CANCEL, notCheckable = true, func = _xrp.DoNothing, },
+}
 
 function XRPViewerControls_OnLoad(self)
 	if self.Label then
@@ -248,24 +243,22 @@ function XRPViewerScrollFrameEditBox_OnTextChanged(self, userInput)
 	XRPTemplatesScrollFrameEditBox_ResetToStart(self, userInput)
 end
 
-do
-	local function Menu_Click(self, arg1, arg2, checked)
-		if arg1 == "XRP_TWEET" then
-			if not SocialPostFrame then
-					SocialFrame_LoadUI()
-			end
-			SocialPostFrame:SetAttribute("action", "Show")
-			SocialPostFrame:SetAttribute("settext", ("|cff00aced%s|r "):format(UIDROPDOWNMENU_INIT_MENU.linkData))
-		elseif arg1 == "XRP_URL" then
-			StaticPopup_Show("XRP_URL", nil, nil, ("https://twitter.com/%s"):format(UIDROPDOWNMENU_INIT_MENU.linkData:match("^@(.-)$")))
+local function Menu_Click(self, arg1, arg2, checked)
+	if arg1 == "XRP_TWEET" then
+		if not SocialPostFrame then
+				SocialFrame_LoadUI()
 		end
+		SocialPostFrame:SetAttribute("action", "Show")
+		SocialPostFrame:SetAttribute("settext", ("|cff00aced%s|r "):format(UIDROPDOWNMENU_INIT_MENU.linkData))
+	elseif arg1 == "XRP_URL" then
+		StaticPopup_Show("XRP_URL", nil, nil, ("https://twitter.com/%s"):format(UIDROPDOWNMENU_INIT_MENU.linkData:match("^@(.-)$")))
 	end
-	XRPViewerMultiline_baseMenuList = {
-		{ text = _xrp.L.SEND_TWEET .. CONTINUED, arg1 = "XRP_TWEET", notCheckable = true, func = Menu_Click, },
-		{ text = _xrp.L.COPY_URL .. CONTINUED, arg1 = "XRP_URL", notCheckable = true, func = Menu_Click, },
-		{ text = CANCEL, notCheckable = true, func = _xrp.DoNothing, },
-	}
 end
+XRPViewerMultiline_baseMenuList = {
+	{ text = _xrp.L.SEND_TWEET .. CONTINUED, arg1 = "XRP_TWEET", notCheckable = true, func = Menu_Click, },
+	{ text = _xrp.L.COPY_URL .. CONTINUED, arg1 = "XRP_URL", notCheckable = true, func = Menu_Click, },
+	{ text = CANCEL, notCheckable = true, func = _xrp.DoNothing, },
+}
 
 function XRPViewerScrollFrameEditBox_OnHyperlinkClicked(self, linkData, link, button)
 	if linkData:find("^https?://") then

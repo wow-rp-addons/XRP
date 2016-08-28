@@ -89,30 +89,28 @@ function XRPTemplatesDropDown_OnLoad(self)
 	end
 end
 
-do
-	local function Menu_Initialize(self, level, menuList)
-		if level == 1 then
-			menuList = self.baseMenuList or self:GetParent().baseMenuList
-		end
-		for i, entry in ipairs(menuList) do
-			if (entry.text) then
-				UIDropDownMenu_AddButton(entry, level)
-			end
+local function Menu_Initialize(self, level, menuList)
+	if level == 1 then
+		menuList = self.baseMenuList or self:GetParent().baseMenuList
+	end
+	for i, entry in ipairs(menuList) do
+		if (entry.text) then
+			UIDropDownMenu_AddButton(entry, level)
 		end
 	end
-
-	XRPTemplatesDropDown_Mixin = {
-		initialize = Menu_Initialize,
-		relativePoint = "BOTTOMRIGHT",
-		xOffset = -11,
-		yOffset = 22,
-	}
-
-	XRPTemplatesMenu_Mixin = {
-		initialize = Menu_Initialize,
-		SetHeight = _xrp.DoNothing,
-	}
 end
+
+XRPTemplatesDropDown_Mixin = {
+	initialize = Menu_Initialize,
+	relativePoint = "BOTTOMRIGHT",
+	xOffset = -11,
+	yOffset = 22,
+}
+
+XRPTemplatesMenu_Mixin = {
+	initialize = Menu_Initialize,
+	SetHeight = _xrp.DoNothing,
+}
 
 function XRPTemplatesMenu_OnClick(self, button, down)
 	ToggleDropDownMenu(nil, nil, self.Menu or self, self.anchor or self)
@@ -234,9 +232,9 @@ function XRPCursorBook_OnEvent(self, event)
 	end
 end
 
+local previousX, previousY
+-- Crazy optimization crap since it's run every frame.
 do
-	local previousX, previousY
-	-- Crazy optimization crap since it's run every frame.
 	local UnitIsPlayer, InCombatLockdown, GetMouseFocus, WorldFrame, GetCursorPosition, IsItemInRange, UIParent, GetEffectiveScale = UnitIsPlayer, InCombatLockdown, GetMouseFocus, WorldFrame, GetCursorPosition, IsItemInRange, UIParent, UIParent.GetEffectiveScale
 	function XRPCursorBook_OnUpdate(self, elapsed)
 		if not UnitIsPlayer("mouseover") or InCombatLockdown() or GetMouseFocus() ~= WorldFrame then

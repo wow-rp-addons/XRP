@@ -19,38 +19,35 @@ local addonName, _xrp = ...
 
 local cursor, rightClick
 
-local Cursor_TurnOrActionStart, Cursor_TurnOrActionStop
-do
-	-- There is no mouseover unit available during TurnOrAction*, but
-	-- if a unit is right-clicked, it will be the target unit by Stop.
-	local now, mouseover, autoInteract
-	function Cursor_TurnOrActionStart()
-		if not cursor or not rightClick or InCombatLockdown() or not XRPCursorBook:IsVisible() then return end
-		mouseover = XRPCursorBook.current
-		now = GetTime()
-		if XRPCursorBook.mountable then
-			autoInteract = GetCVar("AutoInteract") == "1"
-			if autoInteract then
-				SetCVar("AutoInteract", "0")
-			end
-		end
-	end
-	function Cursor_TurnOrActionStop()
-		if not mouseover then return end
-		-- 0.75s interaction time is guessed as Blizzard number from
-		-- in-game testing. Used for consistency.
-		if GetTime() - now < 0.75 and mouseover == xrp.UnitFullName("target") then
-			if XRPCursorBook.mountable then
-				UIErrorsFrame:Clear() -- Hides errors on inteactable mount players.
-			end
-			XRPViewer:View("target")
-		end
+-- There is no mouseover unit available during TurnOrAction*, but if a unit is
+-- right-clicked, it will be the target unit by Stop.
+local now, mouseover, autoInteract
+local function Cursor_TurnOrActionStart()
+	if not cursor or not rightClick or InCombatLockdown() or not XRPCursorBook:IsVisible() then return end
+	mouseover = XRPCursorBook.current
+	now = GetTime()
+	if XRPCursorBook.mountable then
+		autoInteract = GetCVar("AutoInteract") == "1"
 		if autoInteract then
-			SetCVar("AutoInteract", "1")
+			SetCVar("AutoInteract", "0")
 		end
-		mouseover = nil
-		autoInteract = nil
 	end
+end
+local function Cursor_TurnOrActionStop()
+	if not mouseover then return end
+	-- 0.75s interaction time is guessed as Blizzard number from in-game
+	-- testing. Used for consistency.
+	if GetTime() - now < 0.75 and mouseover == xrp.UnitFullName("target") then
+		if XRPCursorBook.mountable then
+			UIErrorsFrame:Clear() -- Hides errors on inteactable mount players.
+		end
+		XRPViewer:View("target")
+	end
+	if autoInteract then
+		SetCVar("AutoInteract", "1")
+	end
+	mouseover = nil
+	autoInteract = nil
 end
 
 local function Cursor_RECEIVE(event, name)

@@ -17,97 +17,94 @@
 
 local addonName, _xrp = ...
 
-local GetCurrentForm
-do
-	local isWorgen = select(2, UnitRace("player")) == "Worgen"
-	local playerClass = select(2, UnitClassBase("player"))
-	if not (playerClass == "DRUID" or playerClass == "PRIEST" or playerClass == "SHAMAN") then
-		playerClass = nil
-	end
-	local FORM_ID = {
-		[1] = "CAT",
-		[3] = "TRAVEL",
-		[4] = "AQUATIC",
-		[5] = "BEAR",
-		[16] = "GHOSTWOLF",
-		[27] = "FLIGHT",
-		[29] = "FLIGHT",
-		[31] = "MOONKIN",
-		[35] = "MOONKIN",
-	}
-	local FORM_NO_RACE = {
-		["CAT"] = true,
-		["TREANT"] = true,
-		["TRAVEL"] = true,
-		["AQUATIC"] = true,
-		["BEAR"] = true,
-		["GHOSTWOLF"] = true,
-		["FLIGHT"] = true,
-		["MOONKIN"] = true,
-		["ASTRAL"] = true, -- Shows worgen model, but cannot be human and astral.
-	}
-	local FORM_NO_EQUIPMENT = {
-		["CAT"] = true,
-		["TREANT"] = true,
-		["TRAVEL"] = true,
-		["AQUATIC"] = true,
-		["BEAR"] = true,
-		["GHOSTWOLF"] = true,
-		["FLIGHT"] = true,
-		["MOONKIN"] = true,
-	}
-	local lastEquipSet
-	function GetCurrentForm()
-		local mercenaryForm = UnitIsMercenary("player")
+local isWorgen = select(2, UnitRace("player")) == "Worgen"
+local playerClass = select(2, UnitClassBase("player"))
+if not (playerClass == "DRUID" or playerClass == "PRIEST" or playerClass == "SHAMAN") then
+	playerClass = nil
+end
+local FORM_ID = {
+	[1] = "CAT",
+	[3] = "TRAVEL",
+	[4] = "AQUATIC",
+	[5] = "BEAR",
+	[16] = "GHOSTWOLF",
+	[27] = "FLIGHT",
+	[29] = "FLIGHT",
+	[31] = "MOONKIN",
+	[35] = "MOONKIN",
+}
+local FORM_NO_RACE = {
+	["CAT"] = true,
+	["TREANT"] = true,
+	["TRAVEL"] = true,
+	["AQUATIC"] = true,
+	["BEAR"] = true,
+	["GHOSTWOLF"] = true,
+	["FLIGHT"] = true,
+	["MOONKIN"] = true,
+	["ASTRAL"] = true, -- Shows worgen model, but cannot be human and astral.
+}
+local FORM_NO_EQUIPMENT = {
+	["CAT"] = true,
+	["TREANT"] = true,
+	["TRAVEL"] = true,
+	["AQUATIC"] = true,
+	["BEAR"] = true,
+	["GHOSTWOLF"] = true,
+	["FLIGHT"] = true,
+	["MOONKIN"] = true,
+}
+local lastEquipSet
+local function GetCurrentForm()
+	local mercenaryForm = UnitIsMercenary("player")
 
-		local classForm
-		if playerClass then
-			if playerClass == "DRUID" or playerClass == "SHAMAN" then
-				local formID = GetShapeshiftFormID()
-				classForm = FORM_ID[formID]
-				if classForm == "MOONKIN" and (formID == 31 and HasAttachedGlyph(24858) or formID == 35 and HasAttachedGlyph(197625)) then
-					classForm = "ASTRAL"
-				elseif not classForm and playerClass == "DRUID" and UnitBuff("player", _xrp.L.TREANT_BUFF) then
-					classForm = "TREANT"
-				end
-			elseif playerClass == "PRIEST" and GetSpecialization() == 3 then
-				classForm = "SHADOWFORM"
+	local classForm
+	if playerClass then
+		if playerClass == "DRUID" or playerClass == "SHAMAN" then
+			local formID = GetShapeshiftFormID()
+			classForm = FORM_ID[formID]
+			if classForm == "MOONKIN" and (formID == 31 and HasAttachedGlyph(24858) or formID == 35 and HasAttachedGlyph(197625)) then
+				classForm = "ASTRAL"
+			elseif not classForm and playerClass == "DRUID" and UnitBuff("player", _xrp.L.TREANT_BUFF) then
+				classForm = "TREANT"
 			end
+		elseif playerClass == "PRIEST" and GetSpecialization() == 3 then
+			classForm = "SHADOWFORM"
 		end
+	end
 
-		local raceForm
-		if isWorgen and not FORM_NO_RACE[classForm] then
-			raceForm = select(2, HasAlternateForm()) and "HUMAN" or "DEFAULT"
-		end
+	local raceForm
+	if isWorgen and not FORM_NO_RACE[classForm] then
+		raceForm = select(2, HasAlternateForm()) and "HUMAN" or "DEFAULT"
+	end
 
-		local equipSet
-		if not FORM_NO_EQUIPMENT[classForm] then
-			local bestMatch, bestScore = nil, 0
-			for i = 1, GetNumEquipmentSets() do
-				local name, icon, setID, equipped, numItems, numEquip, numInv, numMissing = GetEquipmentSetInfo(i)
-				if equipped then
-					lastEquipSet = name
-					break
-				elseif not lastEquipSet and numItems > 0 then
-					if numEquip == numItems then
-						-- Sets with all items equipped (but slots that should
-						-- be empty aren't) are penalized slightly. No way to
-						-- find out how many slots should be empty.
-						numEquip = numEquip - 1
-					end
-					-- Sets with items not in inventory are penalized.
-					local score = numEquip / (numItems + numMissing)
-					if score > bestScore then
-						bestScore = score
-						bestMatch = name
-					end
+	local equipSet
+	if not FORM_NO_EQUIPMENT[classForm] then
+		local bestMatch, bestScore = nil, 0
+		for i = 1, GetNumEquipmentSets() do
+			local name, icon, setID, equipped, numItems, numEquip, numInv, numMissing = GetEquipmentSetInfo(i)
+			if equipped then
+				lastEquipSet = name
+				break
+			elseif not lastEquipSet and numItems > 0 then
+				if numEquip == numItems then
+					-- Sets with all items equipped (but slots that should
+					-- be empty aren't) are penalized slightly. No way to find
+					-- out how many slots should be empty.
+					numEquip = numEquip - 1
+				end
+				-- Sets with items not in inventory are penalized.
+				local score = numEquip / (numItems + numMissing)
+				if score > bestScore then
+					bestScore = score
+					bestMatch = name
 				end
 			end
-			equipSet = lastEquipSet or bestMatch
 		end
-
-		return mercenaryForm, raceForm, classForm, equipSet
+		equipSet = lastEquipSet or bestMatch
 	end
+
+	return mercenaryForm, raceForm, classForm, equipSet
 end
 
 local timer

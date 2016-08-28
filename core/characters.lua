@@ -46,104 +46,101 @@ _xrp.unitCache = unitCache
 
 local nameMap, requestMap = setmetatable({}, _xrp.weakKeyMeta), setmetatable({}, _xrp.weakKeyMeta)
 
-local characterMeta
-do
-	local characterFunctions = {
-		DropCache = function(self)
-			_xrp.DropCache(nameMap[self])
-		end,
-		ForceRefresh = function(self)
-			_xrp.ForceRefresh(nameMap[self])
-		end,
-	}
-	local fieldsMeta = {
-		__index = function(self, field)
-			if not field:find("^%u%u$") then
-				return nil
-			end
-			local name = nameMap[self]
-			if name == _xrp.playerWithRealm then
-				return xrp.current[field]
-			elseif unitCache[name] and unitCache[name][field] then
-				return unitCache[name][field]
-			elseif requestMap[self] then
-				_xrp.QueueRequest(name, field)
-			end
-			if xrpCache[name] and xrpCache[name].fields[field] then
-				return xrpCache[name].fields[field]
-			end
+local characterFunctions = {
+	DropCache = function(self)
+		_xrp.DropCache(nameMap[self])
+	end,
+	ForceRefresh = function(self)
+		_xrp.ForceRefresh(nameMap[self])
+	end,
+}
+local fieldsMeta = {
+	__index = function(self, field)
+		if not field:find("^%u%u$") then
 			return nil
-		end,
-		__newindex = _xrp.DoNothing,
-		__tostring = function(self)
-			local name = nameMap[self]
-			if not xrpCache[name] then return "" end
-			local shortName, realm = name:match("^([^%-]+)%-([^%-]+)$")
-			realm = xrp.RealmDisplayName(realm)
-			return _xrp.ExportText(_xrp.L.NAME_REALM:format(shortName, realm), name == _xrp.playerWithRealm and xrp.current or xrpCache[name].fields)
-		end,
-		__metatable = false,
-	}
+		end
+		local name = nameMap[self]
+		if name == _xrp.playerWithRealm then
+			return xrp.current[field]
+		elseif unitCache[name] and unitCache[name][field] then
+			return unitCache[name][field]
+		elseif requestMap[self] then
+			_xrp.QueueRequest(name, field)
+		end
+		if xrpCache[name] and xrpCache[name].fields[field] then
+			return xrpCache[name].fields[field]
+		end
+		return nil
+	end,
+	__newindex = _xrp.DoNothing,
+	__tostring = function(self)
+		local name = nameMap[self]
+		if not xrpCache[name] then return "" end
+		local shortName, realm = name:match("^([^%-]+)%-([^%-]+)$")
+		realm = xrp.RealmDisplayName(realm)
+		return _xrp.ExportText(_xrp.L.NAME_REALM:format(shortName, realm), name == _xrp.playerWithRealm and xrp.current or xrpCache[name].fields)
+	end,
+	__metatable = false,
+}
 
-	characterMeta = {
-		__index = function(self, component)
-			local name = nameMap[self]
-			if component == "fields" then
-				local fields = setmetatable({}, fieldsMeta)
-				nameMap[fields] = name
-				requestMap[fields] = requestMap[self]
-				rawset(self, "fields", fields)
-				return fields
-			elseif characterFunctions[component] then
-				return characterFunctions[component]
-			elseif component == "own" and name == _xrp.playerWithRealm then
-				return true
-			elseif component == "noRequest" then
-				return not requestMap[self]
-			elseif component == "canRefresh" then
-				if xrpCache[name] and xrpCache[name].own then
-					return false
-				end
-				return not requestMap[self] or _xrp.CanRefresh(name)
-			elseif not xrpCache[name] then
-				return nil
-			elseif component == "notes" then
-				return xrpAccountSaved.notes[name]
-			elseif component == "bookmark" then
-				return xrpAccountSaved.bookmarks[name]
-			elseif component == "hide" then
-				return xrpAccountSaved.hidden[name]
-			elseif component == "own" then
-				return xrpCache[name].own
-			elseif component == "date" then
-				return xrpCache[name].lastReceive
+local characterMeta = {
+	__index = function(self, component)
+		local name = nameMap[self]
+		if component == "fields" then
+			local fields = setmetatable({}, fieldsMeta)
+			nameMap[fields] = name
+			requestMap[fields] = requestMap[self]
+			rawset(self, "fields", fields)
+			return fields
+		elseif characterFunctions[component] then
+			return characterFunctions[component]
+		elseif component == "own" and name == _xrp.playerWithRealm then
+			return true
+		elseif component == "noRequest" then
+			return not requestMap[self]
+		elseif component == "canRefresh" then
+			if xrpCache[name] and xrpCache[name].own then
+				return false
 			end
-		end,
-		__newindex = function(self, component, value)
-			local name = nameMap[self]
-			if not xrpCache[name] then return end
-			if component == "notes" then
-				xrpAccountSaved.notes[name] = value
-			elseif component == "bookmark" then
-				if value and not xrpAccountSaved.bookmarks[name] then
-					xrpAccountSaved.bookmarks[name] = time()
-				elseif not value and xrpAccountSaved.bookmarks[name] then
-					xrpAccountSaved.bookmarks[name] = nil
-				end
-			elseif component == "hide" then
-				if value and not xrpAccountSaved.hidden[name] then
-					xrpAccountSaved.hidden[name] = true
-				elseif not value and xrpAccountSaved.hidden[name] then
-					xrpAccountSaved.hidden[name] = nil
-				end
+			return not requestMap[self] or _xrp.CanRefresh(name)
+		elseif not xrpCache[name] then
+			return nil
+		elseif component == "notes" then
+			return xrpAccountSaved.notes[name]
+		elseif component == "bookmark" then
+			return xrpAccountSaved.bookmarks[name]
+		elseif component == "hide" then
+			return xrpAccountSaved.hidden[name]
+		elseif component == "own" then
+			return xrpCache[name].own
+		elseif component == "date" then
+			return xrpCache[name].lastReceive
+		end
+	end,
+	__newindex = function(self, component, value)
+		local name = nameMap[self]
+		if not xrpCache[name] then return end
+		if component == "notes" then
+			xrpAccountSaved.notes[name] = value
+		elseif component == "bookmark" then
+			if value and not xrpAccountSaved.bookmarks[name] then
+				xrpAccountSaved.bookmarks[name] = time()
+			elseif not value and xrpAccountSaved.bookmarks[name] then
+				xrpAccountSaved.bookmarks[name] = nil
 			end
-		end,
-		__tostring = function(self)
-			return nameMap[self]
-		end,
-		__metatable = false,
-	}
-end
+		elseif component == "hide" then
+			if value and not xrpAccountSaved.hidden[name] then
+				xrpAccountSaved.hidden[name] = true
+			elseif not value and xrpAccountSaved.hidden[name] then
+				xrpAccountSaved.hidden[name] = nil
+			end
+		end
+	end,
+	__tostring = function(self)
+		return nameMap[self]
+	end,
+	__metatable = false,
+}
 
 local function SortString(sortType, name, cache)
 	if sortType == "date" then
