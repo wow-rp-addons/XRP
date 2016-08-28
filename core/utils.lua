@@ -42,24 +42,23 @@ function xrp.ShortName(name)
 	return name:match("^([^%-]+)")
 end
 
-do
-	-- Realms just needing title case spacing are handled via gsub. These are
-	-- more complex, such as lower case words or dashes.
-	local SPECIAL_REALMS = {
-		["AltarofStorms"] = "Altar of Storms",
-		["AzjolNerub"] = "Azjol-Nerub",
-		["ChamberofAspects"] = "Chamber of Aspects",
-		["SistersofElune"] = "Sisters of Elune",
-	}
+-- Realms just needing title case spacing are handled via gsub. These are more
+-- complex, such as lower case words or dashes.
+local SPECIAL_REALMS = {
+	["AltarofStorms"] = "Altar of Storms",
+	["AzjolNerub"] = "Azjol-Nerub",
+	["ChamberofAspects"] = "Chamber of Aspects",
+	["SistersofElune"] = "Sisters of Elune",
+}
 
-	function xrp.RealmDisplayName(realm)
-		if type(realm) ~= "string" then
-			return UNKNOWN
-		end
-		-- gsub: spaces lower followed by upper/number (i.e., Wyrmrest Accord).
-		return SPECIAL_REALMS[realm] or (realm:gsub("(%l)([%u%d])", "%1 %2"))
+function xrp.RealmDisplayName(realm)
+	if type(realm) ~= "string" then
+		return UNKNOWN
 	end
+	-- gsub: spaces lower followed by upper/number (i.e., Wyrmrest Accord).
+	return SPECIAL_REALMS[realm] or (realm:gsub("(%l)([%u%d])", "%1 %2"))
 end
+
 
 function xrp.Strip(text, allowIndent)
 	if type(text) ~= "string" then

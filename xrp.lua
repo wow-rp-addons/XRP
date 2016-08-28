@@ -21,92 +21,86 @@ xrp = {}
 
 _xrp.L = {}
 
-do
-	local supported = {
-		enUS = "en",
-		enGB = "en",
-	}
-	_xrp.language = supported[GetLocale()] or "en"
-end
+local SUPPORTED_LANGUAGES = {
+	enUS = "en",
+	enGB = "en",
+}
+_xrp.language = SUPPORTED_LANGUAGES[GetLocale()] or "en"
 
 _xrp.version = GetAddOnMetadata(addonName, "Version")
 _xrp.DoNothing = function() end
 _xrp.weakMeta = { __mode = "v" }
 _xrp.weakKeyMeta = { __mode = "k" }
 
-do
-	local events = {}
-	function _xrp.FireEvent(event, ...)
-		if not events[event] then
-			return false
-		end
-		for func, isFunc in pairs(events[event]) do
-			pcall(func, event, ...)
-		end
-		return true
+local events = {}
+function _xrp.FireEvent(event, ...)
+	if not events[event] then
+		return false
 	end
-	function xrp.HookEvent(event, func)
-		if type(func) ~= "function" then
-			return false
-		elseif type(events[event]) ~= "table" then
-			events[event] = {}
-		elseif events[event][func] then
-			return false
-		end
-		events[event][func] = true
-		return true
+	for func, isFunc in pairs(events[event]) do
+		pcall(func, event, ...)
 	end
-	function xrp.UnhookEvent(event, func)
-		if not events[event] or not events[event][func] then
-			return false
-		end
-		events[event][func] = nil
-		return true
+	return true
+end
+function xrp.HookEvent(event, func)
+	if type(func) ~= "function" then
+		return false
+	elseif type(events[event]) ~= "table" then
+		events[event] = {}
+	elseif events[event][func] then
+		return false
 	end
+	events[event][func] = true
+	return true
+end
+function xrp.UnhookEvent(event, func)
+	if not events[event] or not events[event][func] then
+		return false
+	end
+	events[event][func] = nil
+	return true
 end
 
-do
-	local frame = CreateFrame("Frame")
-	frame:Hide()
+local frame = CreateFrame("Frame")
+frame:Hide()
 
-	local gameEvents = {}
-	function _xrp.HookGameEvent(event, func, unit)
-		if type(func) ~= "function" then
-			return false
-		elseif not gameEvents[event] then
-			gameEvents[event] = {}
-		elseif gameEvents[event][func] then
-			return false
-		end
-		gameEvents[event][func] = true
-		if not unit then
-			frame:RegisterEvent(event)
-		else
-			frame:RegisterUnitEvent(event, unit)
-		end
-		return true
+local gameEvents = {}
+function _xrp.HookGameEvent(event, func, unit)
+	if type(func) ~= "function" then
+		return false
+	elseif not gameEvents[event] then
+		gameEvents[event] = {}
+	elseif gameEvents[event][func] then
+		return false
 	end
-	function _xrp.UnhookGameEvent(event, func)
-		if not gameEvents[event] or not gameEvents[event][func] then
-			return false
-		end
-		gameEvents[event][func] = nil
-		if not next(gameEvents[event]) then
-			gameEvents[event] = nil
-			frame:UnregisterEvent(event)
-		end
-		return true
+	gameEvents[event][func] = true
+	if not unit then
+		frame:RegisterEvent(event)
+	else
+		frame:RegisterUnitEvent(event, unit)
 	end
-	frame:SetScript("OnEvent", function(self, event, ...)
-		for func, isFunc in pairs(gameEvents[event]) do
-			func(event, ...)
-		end
-		if event == "ADDON_LOADED" and ... == addonName or event == "PLAYER_LOGIN" then
-			gameEvents[event] = nil
-			self:UnregisterEvent(event)
-		end
-	end)
+	return true
 end
+function _xrp.UnhookGameEvent(event, func)
+	if not gameEvents[event] or not gameEvents[event][func] then
+		return false
+	end
+	gameEvents[event][func] = nil
+	if not next(gameEvents[event]) then
+		gameEvents[event] = nil
+		frame:UnregisterEvent(event)
+	end
+	return true
+end
+frame:SetScript("OnEvent", function(self, event, ...)
+	for func, isFunc in pairs(gameEvents[event]) do
+		func(event, ...)
+	end
+	if event == "ADDON_LOADED" and ... == addonName or event == "PLAYER_LOGIN" then
+		gameEvents[event] = nil
+		self:UnregisterEvent(event)
+	end
+end)
 
 local function CompareVersion(newVersion, oldVersion)
 	local newMajor, newMinor, newPatch, newAddOn, newRelType, newRelRev = newVersion:match("(%d+)%.(%d+)%.(%d+)%.(%d+)[%_%-]?(%l*)(%d*)")
@@ -151,24 +145,21 @@ _xrp.HookGameEvent("ADDON_LOADED", function(event, addon)
 	_xrp.player, _xrp.realm = _xrp.playerWithRealm:match("^([^%-]+)%-([^%-]+)$")
 	_xrp.SavedVariableSetup()
 
-	local newFields
-	do
-		local addonString = "%s/%s"
-		local VA = { addonString:format(GetAddOnMetadata(addonName, "Title"), _xrp.version) }
-		for i, addon in ipairs({ "GHI", "Tongues" }) do
-			if IsAddOnLoaded(addon) then
-				VA[#VA + 1] = addonString:format(addon, GetAddOnMetadata(addon, "Version"))
-			end
+	local addonString = "%s/%s"
+	local VA = { addonString:format(GetAddOnMetadata(addonName, "Title"), _xrp.version) }
+	for i, addon in ipairs({ "GHI", "Tongues" }) do
+		if IsAddOnLoaded(addon) then
+			VA[#VA + 1] = addonString:format(addon, GetAddOnMetadata(addon, "Version"))
 		end
-		newFields = {
-			GC = select(2, UnitClassBase("player")),
-			GF = UnitFactionGroup("player"),
-			GR = select(2, UnitRace("player")),
-			GS = tostring(UnitSex("player")),
-			NA = _xrp.player, -- Fallback NA field.
-			VA = table.concat(VA, ";"),
-		}
 	end
+	local newFields = {
+		GC = select(2, UnitClassBase("player")),
+		GF = UnitFactionGroup("player"),
+		GR = select(2, UnitRace("player")),
+		GS = tostring(UnitSex("player")),
+		NA = _xrp.player, -- Fallback NA field.
+		VA = table.concat(VA, ";"),
+	}
 	local fields, versions = xrpSaved.meta.fields, xrpSaved.meta.versions
 	for field, contents in pairs(newFields) do
 		if contents ~= fields[field] then
@@ -229,59 +220,57 @@ _xrp.HookGameEvent("PLAYER_LOGOUT", function(event)
 	-- made. If there are any errors in here, they are not visible in
 	-- any manner in-game.
 	local now = time()
-	do
-		local fields, versions = {}, {}
-		local profiles, inherit = { xrpSaved.profiles[xrpSaved.selected] }, xrpSaved.profiles[xrpSaved.selected].parent
-		for i = 1, _xrp.PROFILE_MAX_DEPTH do
-			if not xrpSaved.profiles[inherit] then
-				break
-			end
-			profiles[#profiles + 1] = xrpSaved.profiles[inherit]
-			inherit = xrpSaved.profiles[inherit].parent
+	local fields, versions = {}, {}
+	local profiles, inherit = { xrpSaved.profiles[xrpSaved.selected] }, xrpSaved.profiles[xrpSaved.selected].parent
+	for i = 1, _xrp.PROFILE_MAX_DEPTH do
+		if not xrpSaved.profiles[inherit] then
+			break
 		end
-		for i = #profiles, 1, -1 do
-			local profile = profiles[i]
-			for field, doInherit in pairs(profile.inherits) do
-				if doInherit == false then
-					fields[field] = nil
-					versions[field] = nil
-				end
-			end
-			for field, contents in pairs(profile.fields) do
-				if not fields[field] then
-					fields[field] = contents
-					versions[field] = profile.versions[field]
-				end
-			end
-		end
-		for field, contents in pairs(xrpSaved.meta.fields) do
-			if not fields[field] then
-				fields[field] = contents
-				versions[field] = xrpSaved.meta.versions[field]
-			end
-		end
-		for field, contents in pairs(xrpSaved.overrides.fields) do
-			if contents == "" then
+		profiles[#profiles + 1] = xrpSaved.profiles[inherit]
+		inherit = xrpSaved.profiles[inherit].parent
+	end
+	for i = #profiles, 1, -1 do
+		local profile = profiles[i]
+		for field, doInherit in pairs(profile.inherits) do
+			if doInherit == false then
 				fields[field] = nil
 				versions[field] = nil
-			else
-				fields[field] = contents
-				versions[field] = xrpSaved.overrides.versions[field]
 			end
 		end
-		if fields.AW then
-			fields.AW = xrp.Weight(fields.AW, "msp")
+		for field, contents in pairs(profile.fields) do
+			if not fields[field] then
+				fields[field] = contents
+				versions[field] = profile.versions[field]
+			end
 		end
-		if fields.AH then
-			fields.AH = xrp.Height(fields.AH, "msp")
-		end
-		xrpCache[_xrp.playerWithRealm] = {
-			fields = fields,
-			versions = versions,
-			own = true,
-			lastReceive = now,
-		}
 	end
+	for field, contents in pairs(xrpSaved.meta.fields) do
+		if not fields[field] then
+			fields[field] = contents
+			versions[field] = xrpSaved.meta.versions[field]
+		end
+	end
+	for field, contents in pairs(xrpSaved.overrides.fields) do
+		if contents == "" then
+			fields[field] = nil
+			versions[field] = nil
+		else
+			fields[field] = contents
+			versions[field] = xrpSaved.overrides.versions[field]
+		end
+	end
+	if fields.AW then
+		fields.AW = xrp.Weight(fields.AW, "msp")
+	end
+	if fields.AH then
+		fields.AH = xrp.Height(fields.AH, "msp")
+	end
+	xrpCache[_xrp.playerWithRealm] = {
+		fields = fields,
+		versions = versions,
+		own = true,
+		lastReceive = now,
+	}
 	if next(xrpSaved.overrides.fields) then
 		xrpSaved.overrides.logout = now
 	end

@@ -339,109 +339,105 @@ function XRPOptionsCheckButton_OnDisable(self)
 	end
 end
 
-do
-	local settingsList = {}
+local settingsList = {}
 
-	local function Channels_Checked(self)
-		return settingsList[self.arg1].value
-	end
-	local function Channels_OnClick(self, channel, arg2, checked)
-		settingsList[channel].value = checked
-		_xrp.settings.chat[channel] = checked
-	end
+local function Channels_Checked(self)
+	return settingsList[self.arg1].value
+end
+local function Channels_OnClick(self, channel, arg2, checked)
+	settingsList[channel].value = checked
+	_xrp.settings.chat[channel] = checked
+end
 
-	local function ChannelsTable(...)
-		local list, i = {}, 2
-		while select(i, ...) do
-			list[i * 0.5] = select(i, ...)
-			i = i + 2
+local function ChannelsTable(...)
+	local list, i = {}, 2
+	while select(i, ...) do
+		list[i * 0.5] = select(i, ...)
+		i = i + 2
+	end
+	return list
+end
+
+local function AddChannel(channel, menuList)
+	local setting = _xrp.settings.chat[channel]
+	local oldSetting = setting
+	if setting == nil then
+		setting = false
+	end
+	if not settingsList[channel] then
+		settingsList[channel] = { value = setting, oldValue = oldSetting }
+	end
+	menuList[#menuList + 1] = { text = channel:match("^CHANNEL_(.+)"):lower():gsub("^%l", string.upper), arg1 = channel, isNotRadio = true, checked = Channels_Checked, func = Channels_OnClick, keepShownOnClick = true, }
+end
+
+XRPOptionsChatChannels_Mixin = {
+	CustomRefresh = function(self)
+		table.wipe(self.baseMenuList)
+		local seenChannels = {}
+		for i, name in ipairs(ChannelsTable(GetChannelList())) do
+			local channel = "CHANNEL_" .. name:upper()
+			AddChannel(channel, self.baseMenuList, settingsList)
+			seenChannels[channel] = true
 		end
-		return list
-	end
-
-	local function AddChannel(channel, menuList)
-		local setting = _xrp.settings.chat[channel]
-		local oldSetting = setting
-		if setting == nil then
-			setting = false
-		end
-		if not settingsList[channel] then
-			settingsList[channel] = { value = setting, oldValue = oldSetting }
-		end
-		menuList[#menuList + 1] = { text = channel:match("^CHANNEL_(.+)"):lower():gsub("^%l", string.upper), arg1 = channel, isNotRadio = true, checked = Channels_Checked, func = Channels_OnClick, keepShownOnClick = true, }
-	end
-
-	XRPOptionsChatChannels_Mixin = {
-		CustomRefresh = function(self)
-			table.wipe(self.baseMenuList)
-			local seenChannels = {}
-			for i, name in ipairs(ChannelsTable(GetChannelList())) do
-				local channel = "CHANNEL_" .. name:upper()
+		for channel, setting in pairs(_xrp.settings.chat) do
+			if not seenChannels[channel] and channel:find("^CHANNEL_") then
 				AddChannel(channel, self.baseMenuList, settingsList)
 				seenChannels[channel] = true
 			end
-			for channel, setting in pairs(_xrp.settings.chat) do
-				if not seenChannels[channel] and channel:find("^CHANNEL_") then
-					AddChannel(channel, self.baseMenuList, settingsList)
-					seenChannels[channel] = true
-				end
-			end
-		end,
-		CustomOkay = function(self)
-			for channel, control in pairs(settingsList) do
-				control.oldValue = control.value
-			end
-		end,
-		CustomDefault = function(self)
-			for channel, control in pairs(settingsList) do
-				_xrp.settings.chat[channel] = nil
-				control.value = nil
-			end
-		end,
-		CustomCancel = function(self)
-			for channel, control in pairs(settingsList) do
-				_xrp.settings.chat[channel] = control.oldValue
-				control.value = control.oldValue
-			end
-		end,
-		baseMenuList = {},
-	}
-end
-
-do
-	local function DropDown_OnClick(self, arg1, arg2, checked)
-		if not checked then
-			UIDROPDOWNMENU_INIT_MENU.Text:SetText(arg2)
-			UIDROPDOWNMENU_INIT_MENU.value = arg1
-			UIDROPDOWNMENU_INIT_MENU:Set(arg1)
 		end
+	end,
+	CustomOkay = function(self)
+		for channel, control in pairs(settingsList) do
+			control.oldValue = control.value
+		end
+	end,
+	CustomDefault = function(self)
+		for channel, control in pairs(settingsList) do
+			_xrp.settings.chat[channel] = nil
+			control.value = nil
+		end
+	end,
+	CustomCancel = function(self)
+		for channel, control in pairs(settingsList) do
+			_xrp.settings.chat[channel] = control.oldValue
+			control.value = control.oldValue
+		end
+	end,
+	baseMenuList = {},
+}
+
+local function DropDown_OnClick(self, arg1, arg2, checked)
+	if not checked then
+		UIDROPDOWNMENU_INIT_MENU.Text:SetText(arg2)
+		UIDROPDOWNMENU_INIT_MENU.value = arg1
+		UIDROPDOWNMENU_INIT_MENU:Set(arg1)
 	end
-
-	local function DropDown_Checked(self)
-		return self.arg1 == UIDROPDOWNMENU_INIT_MENU.value
-	end
-
-	XRPOptionsGeneralHeight_baseMenuList = {
-		{ text = _xrp.L.CENTIMETERS, arg1 = "cm", arg2 = _xrp.L.CENTIMETERS, checked = DropDown_Checked, func = DropDown_OnClick },
-		{ text = _xrp.L.FEET_INCHES, arg1 = "ft", arg2 = _xrp.L.FEET_INCHES, checked = DropDown_Checked, func = DropDown_OnClick },
-		{ text = _xrp.L.METERS, arg1 = "m", arg2 = _xrp.L.METERS, checked = DropDown_Checked, func = DropDown_OnClick },
-	}
-
-	XRPOptionsGeneralWeight_baseMenuList = {
-		{ text = _xrp.L.KILOGRAMS, arg1 = "kg", arg2 = _xrp.L.KILOGRAMS, checked = DropDown_Checked, func = DropDown_OnClick },
-		{ text = _xrp.L.POUNDS, arg1 = "lb", arg2 = _xrp.L.POUNDS, checked = DropDown_Checked, func = DropDown_OnClick },
-	}
-
-	XRPOptionsAdvancedTime_baseMenuList = {
-		{ text = _xrp.L.TIME_1DAY, arg1 = 86400, arg2 = _xrp.L.TIME_1DAY, checked = DropDown_Checked, func = DropDown_OnClick },
-		{ text = _xrp.L.TIME_3DAY, arg1 = 259200, arg2 = _xrp.L.TIME_3DAY, checked = DropDown_Checked, func = DropDown_OnClick },
-		{ text = _xrp.L.TIME_7DAY, arg1 = 604800, arg2 = _xrp.L.TIME_7DAY, checked = DropDown_Checked, func = DropDown_OnClick },
-		{ text = _xrp.L.TIME_10DAY, arg1 = 864000, arg2 = _xrp.L.TIME_10DAY, checked = DropDown_Checked, func = DropDown_OnClick },
-		{ text = _xrp.L.TIME_2WEEK, arg1 = 1209600, arg2 = _xrp.L.TIME_2WEEK, checked = DropDown_Checked, func = DropDown_OnClick },
-		{ text = _xrp.L.TIME_1MONTH, arg1 = 2419200, arg2 = _xrp.L.TIME_1MONTH, checked = DropDown_Checked, func = DropDown_OnClick },
-		{ text = _xrp.L.TIME_3MONTH, arg1 = 7257600, arg2 = _xrp.L.TIME_3MONTH, checked = DropDown_Checked, func = DropDown_OnClick },
-	}
 end
+
+local function DropDown_Checked(self)
+	return self.arg1 == UIDROPDOWNMENU_INIT_MENU.value
+end
+
+XRPOptionsGeneralHeight_baseMenuList = {
+	{ text = _xrp.L.CENTIMETERS, arg1 = "cm", arg2 = _xrp.L.CENTIMETERS, checked = DropDown_Checked, func = DropDown_OnClick },
+	{ text = _xrp.L.FEET_INCHES, arg1 = "ft", arg2 = _xrp.L.FEET_INCHES, checked = DropDown_Checked, func = DropDown_OnClick },
+	{ text = _xrp.L.METERS, arg1 = "m", arg2 = _xrp.L.METERS, checked = DropDown_Checked, func = DropDown_OnClick },
+}
+
+XRPOptionsGeneralWeight_baseMenuList = {
+	{ text = _xrp.L.KILOGRAMS, arg1 = "kg", arg2 = _xrp.L.KILOGRAMS, checked = DropDown_Checked, func = DropDown_OnClick },
+	{ text = _xrp.L.POUNDS, arg1 = "lb", arg2 = _xrp.L.POUNDS, checked = DropDown_Checked, func = DropDown_OnClick },
+}
+
+XRPOptionsAdvancedTime_baseMenuList = {
+	{ text = _xrp.L.TIME_1DAY, arg1 = 86400, arg2 = _xrp.L.TIME_1DAY, checked = DropDown_Checked, func = DropDown_OnClick },
+	{ text = _xrp.L.TIME_3DAY, arg1 = 259200, arg2 = _xrp.L.TIME_3DAY, checked = DropDown_Checked, func = DropDown_OnClick },
+	{ text = _xrp.L.TIME_7DAY, arg1 = 604800, arg2 = _xrp.L.TIME_7DAY, checked = DropDown_Checked, func = DropDown_OnClick },
+	{ text = _xrp.L.TIME_10DAY, arg1 = 864000, arg2 = _xrp.L.TIME_10DAY, checked = DropDown_Checked, func = DropDown_OnClick },
+	{ text = _xrp.L.TIME_2WEEK, arg1 = 1209600, arg2 = _xrp.L.TIME_2WEEK, checked = DropDown_Checked, func = DropDown_OnClick },
+	{ text = _xrp.L.TIME_1MONTH, arg1 = 2419200, arg2 = _xrp.L.TIME_1MONTH, checked = DropDown_Checked, func = DropDown_OnClick },
+	{ text = _xrp.L.TIME_3MONTH, arg1 = 7257600, arg2 = _xrp.L.TIME_3MONTH, checked = DropDown_Checked, func = DropDown_OnClick },
+}
 
 function _xrp.Options(pane)
 	local XRPOptions = InterfaceOptionsFramePanelContainer.XRP

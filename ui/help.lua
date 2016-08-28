@@ -217,68 +217,54 @@ local EDITOR_BIOGRAPHY = {
 local LARGE_SIZE = { width = 439, height = 500 }
 local AUTO_SIZE = { width = 648, height = 500 }
 
-local EDITOR_APPEARANCE_NOAUTO
-do
-	local plates = {
-		FramePos = FRAME_POS,
-		FrameSize = LARGE_SIZE,
-	}
-	for i, helpPlate in ipairs(EDITOR_MAIN) do
-		plates[#plates + 1] = helpPlate
-	end
-	for i, helpPlate in ipairs(EDITOR_APPEARANCE) do
-		plates[#plates + 1] = helpPlate
-	end
-	EDITOR_APPEARANCE_NOAUTO = plates
+local EDITOR_APPEARANCE_NOAUTO = {
+	FramePos = FRAME_POS,
+	FrameSize = LARGE_SIZE,
+}
+for i, helpPlate in ipairs(EDITOR_MAIN) do
+	EDITOR_APPEARANCE_NOAUTO[#EDITOR_APPEARANCE_NOAUTO + 1] = helpPlate
 end
-local EDITOR_APPEARANCE_AUTO
-do
-	local plates = {
-		FramePos = FRAME_POS,
-		FrameSize = AUTO_SIZE,
-	}
-	for i, helpPlate in ipairs(EDITOR_MAIN) do
-		plates[#plates + 1] = helpPlate
-	end
-	for i, helpPlate in ipairs(EDITOR_AUTO) do
-		plates[#plates + 1] = helpPlate
-	end
-	for i, helpPlate in ipairs(EDITOR_APPEARANCE) do
-		plates[#plates + 1] = helpPlate
-	end
-	EDITOR_APPEARANCE_AUTO = plates
+for i, helpPlate in ipairs(EDITOR_APPEARANCE) do
+	EDITOR_APPEARANCE_NOAUTO[#EDITOR_APPEARANCE_NOAUTO + 1] = helpPlate
 end
 
-local EDITOR_BIOGRAPHY_NOAUTO
-do
-	local plates = {
-		FramePos = FRAME_POS,
-		FrameSize = LARGE_SIZE,
-	}
-	for i, helpPlate in ipairs(EDITOR_MAIN) do
-		plates[#plates + 1] = helpPlate
-	end
-	for i, helpPlate in ipairs(EDITOR_BIOGRAPHY) do
-		plates[#plates + 1] = helpPlate
-	end
-	EDITOR_BIOGRAPHY_NOAUTO = plates
+local EDITOR_APPEARANCE_AUTO = {
+	FramePos = FRAME_POS,
+	FrameSize = AUTO_SIZE,
+}
+for i, helpPlate in ipairs(EDITOR_MAIN) do
+	EDITOR_APPEARANCE_AUTO[#EDITOR_APPEARANCE_AUTO + 1] = helpPlate
 end
-local EDITOR_BIOGRAPHY_AUTO
-do
-	local plates = {
-		FramePos = FRAME_POS,
-		FrameSize = AUTO_SIZE,
-	}
-	for i, helpPlate in ipairs(EDITOR_MAIN) do
-		plates[#plates + 1] = helpPlate
-	end
-	for i, helpPlate in ipairs(EDITOR_AUTO) do
-		plates[#plates + 1] = helpPlate
-	end
-	for i, helpPlate in ipairs(EDITOR_BIOGRAPHY) do
-		plates[#plates + 1] = helpPlate
-	end
-	EDITOR_BIOGRAPHY_AUTO = plates
+for i, helpPlate in ipairs(EDITOR_AUTO) do
+	EDITOR_APPEARANCE_AUTO[#EDITOR_APPEARANCE_AUTO + 1] = helpPlate
+end
+for i, helpPlate in ipairs(EDITOR_APPEARANCE) do
+	EDITOR_APPEARANCE_AUTO[#EDITOR_APPEARANCE_AUTO + 1] = helpPlate
+end
+
+local EDITOR_BIOGRAPHY_NOAUTO = {
+	FramePos = FRAME_POS,
+	FrameSize = LARGE_SIZE,
+}
+for i, helpPlate in ipairs(EDITOR_MAIN) do
+	EDITOR_BIOGRAPHY_NOAUTO[#EDITOR_BIOGRAPHY_NOAUTO + 1] = helpPlate
+end
+for i, helpPlate in ipairs(EDITOR_BIOGRAPHY) do
+	EDITOR_BIOGRAPHY_NOAUTO[#EDITOR_BIOGRAPHY_NOAUTO + 1] = helpPlate
+end
+
+local EDITOR_BIOGRAPHY_AUTO = {
+	FramePos = FRAME_POS,
+	FrameSize = AUTO_SIZE,
+}
+for i, helpPlate in ipairs(EDITOR_MAIN) do
+	EDITOR_BIOGRAPHY_AUTO[#EDITOR_BIOGRAPHY_AUTO + 1] = helpPlate
+end
+for i, helpPlate in ipairs(EDITOR_AUTO) do
+	EDITOR_BIOGRAPHY_AUTO[#EDITOR_BIOGRAPHY_AUTO + 1] = helpPlate
+end
+for i, helpPlate in ipairs(EDITOR_BIOGRAPHY) do
+	EDITOR_BIOGRAPHY_AUTO[#EDITOR_BIOGRAPHY_AUTO + 1] = helpPlate
 end
 
 function XRPEditorHelpButton_PreClick(self, button, down)

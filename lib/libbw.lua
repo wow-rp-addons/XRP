@@ -406,53 +406,52 @@ function libbw.hooks.BNSendWhisper(bnetIDAccount, text)
 	if isSending then return end
 	libbw[2].avail = libbw[2].avail - (#tostring(text) + 2)
 end
-do
-	local function fake_OnUpdate(self, elapsed)
-		self.lastDraw = self.lastDraw + elapsed
-	end
-	local function fake_OnEvent(self, event, ...)
-		if self.lastDraw < GetTime() - 5 then
-			if libbw.ticker then
-				libbw.ticker._callback()
-			end
-			if libbw.ctl and ChatThrottleLib.Frame:IsVisible() then
-				ChatThrottleLib.Frame:GetScript("OnUpdate")(ChatThrottleLib.Frame, 0.10)
-			end
-		end
-	end
-	function libbw.hooks.RestartGx()
-		if GetCVar("gxWindow") == "0" then
-			if not libbw.frame then
-				libbw.frame = CreateFrame("Frame")
-				libbw.frame:SetScript("OnUpdate", fake_OnUpdate)
-				libbw.frame:SetScript("OnEvent", fake_OnEvent)
-			end
-			-- These events are somewhat regular while idling tabbed out.
-			libbw.frame:RegisterEvent("CHAT_MSG_ADDON")
-			libbw.frame:RegisterEvent("CHAT_MSG_CHANNEL")
-			libbw.frame:RegisterEvent("CHAT_MSG_GUILD")
-			libbw.frame:RegisterEvent("CHAT_MSG_SAY")
-			libbw.frame:RegisterEvent("CHAT_MSG_YELL")
-			libbw.frame:RegisterEvent("CHAT_MSG_EMOTE")
-			libbw.frame:RegisterEvent("CHAT_MSG_TEXT_EMOTE")
-			libbw.frame:RegisterEvent("GUILD_ROSTER_UPDATE")
-			libbw.frame:RegisterEvent("GUILD_TRADESKILL_UPDATE")
-			libbw.frame:RegisterEvent("GUILD_RANKS_UPDATE")
-			libbw.frame:RegisterEvent("PLAYER_GUILD_UPDATE")
-			libbw.frame:RegisterEvent("COMPANION_UPDATE")
-			libbw.frame.lastDraw = GetTime()
-			libbw.frame:Show()
-		elseif libbw.frame then
-			libbw.frame:UnregisterAllEvents()
-			libbw.frame:Hide()
-		end
-	end
-	if libbw.frame then
-		libbw.frame:SetScript("OnUpdate", fake_OnUpdate)
-		libbw.frame:SetScript("OnEvent", fake_OnEvent)
-	end
-	libbw.hooks.RestartGx()
+
+local function fake_OnUpdate(self, elapsed)
+	self.lastDraw = self.lastDraw + elapsed
 end
+local function fake_OnEvent(self, event, ...)
+	if self.lastDraw < GetTime() - 5 then
+		if libbw.ticker then
+			libbw.ticker._callback()
+		end
+		if libbw.ctl and ChatThrottleLib.Frame:IsVisible() then
+			ChatThrottleLib.Frame:GetScript("OnUpdate")(ChatThrottleLib.Frame, 0.10)
+		end
+	end
+end
+function libbw.hooks.RestartGx()
+	if GetCVar("gxWindow") == "0" then
+		if not libbw.frame then
+			libbw.frame = CreateFrame("Frame")
+			libbw.frame:SetScript("OnUpdate", fake_OnUpdate)
+			libbw.frame:SetScript("OnEvent", fake_OnEvent)
+		end
+		-- These events are somewhat regular while idling tabbed out.
+		libbw.frame:RegisterEvent("CHAT_MSG_ADDON")
+		libbw.frame:RegisterEvent("CHAT_MSG_CHANNEL")
+		libbw.frame:RegisterEvent("CHAT_MSG_GUILD")
+		libbw.frame:RegisterEvent("CHAT_MSG_SAY")
+		libbw.frame:RegisterEvent("CHAT_MSG_YELL")
+		libbw.frame:RegisterEvent("CHAT_MSG_EMOTE")
+		libbw.frame:RegisterEvent("CHAT_MSG_TEXT_EMOTE")
+		libbw.frame:RegisterEvent("GUILD_ROSTER_UPDATE")
+		libbw.frame:RegisterEvent("GUILD_TRADESKILL_UPDATE")
+		libbw.frame:RegisterEvent("GUILD_RANKS_UPDATE")
+		libbw.frame:RegisterEvent("PLAYER_GUILD_UPDATE")
+		libbw.frame:RegisterEvent("COMPANION_UPDATE")
+		libbw.frame.lastDraw = GetTime()
+		libbw.frame:Show()
+	elseif libbw.frame then
+		libbw.frame:UnregisterAllEvents()
+		libbw.frame:Hide()
+	end
+end
+if libbw.frame then
+	libbw.frame:SetScript("OnUpdate", fake_OnUpdate)
+	libbw.frame:SetScript("OnEvent", fake_OnEvent)
+end
+libbw.hooks.RestartGx()
 
 for name, func in pairs(libbw.hooks) do
 	if not libbw.isHooked[name] then

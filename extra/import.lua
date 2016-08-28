@@ -84,13 +84,12 @@ local function ImportTotalRP3()
 	if not profile then
 		return 0
 	end
-	do
-		local NA = {}
-		NA[#NA + 1] = oldProfile.player.characteristics.TI
-		NA[#NA + 1] = oldProfile.player.characteristics.FN or _xrp.player
-		NA[#NA + 1] = oldProfile.player.characteristics.LN
-		profile.fields.NA = table.concat(NA, " ")
-	end
+
+	local NA = {}
+	NA[#NA + 1] = oldProfile.player.characteristics.TI
+	NA[#NA + 1] = oldProfile.player.characteristics.FN or _xrp.player
+	NA[#NA + 1] = oldProfile.player.characteristics.LN
+	profile.fields.NA = table.concat(NA, " ")
 	profile.fields.NT = oldProfile.player.characteristics.FT
 	profile.fields.AG = oldProfile.player.characteristics.AG
 	profile.fields.RA = oldProfile.player.characteristics.RA
@@ -115,14 +114,12 @@ local function ImportTotalRP3()
 		profile.fields.NH = table.concat(NH, " | ")
 		profile.fields.MO = table.concat(MO, " | ")
 	end
-	do
-		local CU = {}
-		CU[#CU + 1] = oldProfile.player.character.CU
-		if oldProfile.player.character.CO then
-			CU[#CU + 1] = _xrp.L.OOC_TEXT:format(oldProfile.player.character.CO)
-		end
-		profile.fields.CU = table.concat(CU, " ")
+	local CU = {}
+	CU[#CU + 1] = oldProfile.player.character.CU
+	if oldProfile.player.character.CO then
+		CU[#CU + 1] = _xrp.L.OOC_TEXT:format(oldProfile.player.character.CO)
 	end
+	profile.fields.CU = table.concat(CU, " ")
 	profile.fields.FC = tostring(oldProfile.player.character.RP)
 	if oldProfile.player.about.TE == 1 then
 		profile.fields.DE = oldProfile.player.about["T1"].TX

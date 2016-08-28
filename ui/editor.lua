@@ -17,116 +17,111 @@
 
 local addonName, _xrp = ...
 
-local CheckFields
-do
-	local function FallbackFieldContents(field)
-		if xrpSaved.meta.fields[field] then
-			return xrpSaved.meta.fields[field]
-		elseif field == "RA" then
-			return xrp.L.VALUES.GR[xrpSaved.meta.fields.GR]
-		elseif field == "RC" then
-			return xrp.L.VALUES.GC["1"][xrpSaved.meta.fields.GC]
-		end
-		return nil
+local function FallbackFieldContents(field)
+	if xrpSaved.meta.fields[field] then
+		return xrpSaved.meta.fields[field]
+	elseif field == "RA" then
+		return xrp.L.VALUES.GR[xrpSaved.meta.fields.GR]
+	elseif field == "RC" then
+		return xrp.L.VALUES.GC["1"][xrpSaved.meta.fields.GC]
 	end
+	return nil
+end
 
-	local function CheckField(self, profile, parent)
-		if (not self.HasFocus or not self:HasFocus()) and (not self.contents or self.inherited) then
-			if parent and self.Inherit:GetChecked() then
-				self:SetAttribute("inherited", true)
-				self:SetAttribute("contents", parent.fullFields[self.field] or FallbackFieldContents(self.field))
-			else
-				local fallback = FallbackFieldContents(self.field)
-				self:SetAttribute("inherited", fallback ~= nil)
-				self:SetAttribute("contents", fallback)
-			end
-		end
-		if parent then
-			self.Inherit:Show()
+local function CheckField(self, profile, parent)
+	if (not self.HasFocus or not self:HasFocus()) and (not self.contents or self.inherited) then
+		if parent and self.Inherit:GetChecked() then
+			self:SetAttribute("inherited", true)
+			self:SetAttribute("contents", parent.fullFields[self.field] or FallbackFieldContents(self.field))
 		else
-			self.Inherit:Hide()
+			local fallback = FallbackFieldContents(self.field)
+			self:SetAttribute("inherited", fallback ~= nil)
+			self:SetAttribute("contents", fallback)
 		end
-		return self.inherited and profile.fields[self.field] ~= nil or not self.inherited and self.contents ~= profile.fields[self.field] or self.Inherit:GetChecked() ~= profile.inherit[self.field] or nil
 	end
+	if parent then
+		self.Inherit:Show()
+	else
+		self.Inherit:Hide()
+	end
+	return self.inherited and profile.fields[self.field] ~= nil or not self.inherited and self.contents ~= profile.fields[self.field] or self.Inherit:GetChecked() ~= profile.inherit[self.field] or nil
+end
 
-	local modified = {}
-	function CheckFields(field)
-		local profile, parent = xrp.profiles[XRPEditor.Profiles.contents], xrp.profiles[XRPEditor.Parent.contents]
-		if XRPEditor.fields[field] then
+local modified = {}
+local function CheckFields(field)
+	local profile, parent = xrp.profiles[XRPEditor.Profiles.contents], xrp.profiles[XRPEditor.Parent.contents]
+	if XRPEditor.fields[field] then
+		modified[field] = CheckField(XRPEditor.fields[field], profile, parent)
+	else
+		for field, control in pairs(XRPEditor.fields) do
 			modified[field] = CheckField(XRPEditor.fields[field], profile, parent)
-		else
-			for field, control in pairs(XRPEditor.fields) do
-				modified[field] = CheckField(XRPEditor.fields[field], profile, parent)
-			end
 		end
-		if next(modified) or (parent and tostring(parent)) ~= profile.parent then
-			XRPEditor.Save:Enable()
-			XRPEditor.Revert:Enable()
-		else
-			XRPEditor.Save:Disable()
-			XRPEditor.Revert:Disable()
-		end
+	end
+	if next(modified) or (parent and tostring(parent)) ~= profile.parent then
+		XRPEditor.Save:Enable()
+		XRPEditor.Revert:Enable()
+	else
+		XRPEditor.Save:Disable()
+		XRPEditor.Revert:Disable()
 	end
 end
 
-do
-	local function ClearAllFocus()
-		local focused = GetCurrentKeyBoardFocus()
-		if focused then
-			focused:ClearFocus()
-		end
+local function ClearAllFocus()
+	local focused = GetCurrentKeyBoardFocus()
+	if focused then
+		focused:ClearFocus()
+	end
+end
+
+function XRPEditorSave_OnClick(self, button, down)
+	ClearAllFocus()
+
+	local name = XRPEditor.Profiles.contents
+	local profile = xrp.profiles[name]
+	for field, control in pairs(XRPEditor.fields) do
+		profile.fields[field] = not control.inherited and control.contents or nil
+		profile.inherit[field] = control.Inherit:GetChecked()
+	end
+	profile.parent = XRPEditor.Parent.contents
+
+	CheckFields()
+end
+
+function XRPEditor_Edit(self, name)
+	if not self:IsShown() then
+		ShowUIPanel(self)
+	elseif not name then
+		HideUIPanel(self)
+		return
+	end
+	if not name and (not self.Profiles.contents or self.Revert:GetButtonState() == "DISABLED" and self.Profiles.contents ~= tostring(xrp.profiles.SELECTED)) then
+		name = tostring(xrp.profiles.SELECTED)
+	elseif not name then
+		return
+	end
+	ClearAllFocus()
+
+	local fields, inherit = xrp.profiles[name].fields, xrp.profiles[name].inherit
+	for field, control in pairs(self.fields) do
+		control:SetAttribute("inherited", false)
+		control:SetAttribute("contents", fields[field])
+		control.Inherit:SetChecked(inherit[field])
 	end
 
-	function XRPEditorSave_OnClick(self, button, down)
-		ClearAllFocus()
-
-		local name = XRPEditor.Profiles.contents
-		local profile = xrp.profiles[name]
-		for field, control in pairs(XRPEditor.fields) do
-			profile.fields[field] = not control.inherited and control.contents or nil
-			profile.inherit[field] = control.Inherit:GetChecked()
-		end
-		profile.parent = XRPEditor.Parent.contents
-
-		CheckFields()
+	if self.Profiles.contents ~= name and not self.panes[1]:IsVisible() then
+		self.Tab1:Click()
 	end
 
-	function XRPEditor_Edit(self, name)
-		if not self:IsShown() then
-			ShowUIPanel(self)
-		elseif not name then
-			HideUIPanel(self)
-			return
-		end
-		if not name and (not self.Profiles.contents or self.Revert:GetButtonState() == "DISABLED" and self.Profiles.contents ~= tostring(xrp.profiles.SELECTED)) then
-			name = tostring(xrp.profiles.SELECTED)
-		elseif not name then
-			return
-		end
-		ClearAllFocus()
+	self.Profiles.contents = name
+	self.Profiles.Text:SetText(name)
 
-		local fields, inherit = xrp.profiles[name].fields, xrp.profiles[name].inherit
-		for field, control in pairs(self.fields) do
-			control:SetAttribute("inherited", false)
-			control:SetAttribute("contents", fields[field])
-			control.Inherit:SetChecked(inherit[field])
-		end
+	local value = xrp.profiles[name].parent
+	self.Parent.contents = value
+	self.Parent:SetFormattedText(SUBTITLE_FORMAT, _xrp.L.PARENT, value or NONE)
 
-		if self.Profiles.contents ~= name and not self.panes[1]:IsVisible() then
-			self.Tab1:Click()
-		end
+	self.TitleText:SetFormattedText(SUBTITLE_FORMAT, _xrp.L.PROFILE_EDITOR, name)
 
-		self.Profiles.contents = name
-		self.Profiles.Text:SetText(name)
-
-		local value = xrp.profiles[name].parent
-		self.Parent.contents = value
-		self.Parent:SetFormattedText(SUBTITLE_FORMAT, _xrp.L.PARENT, value or NONE)
-
-		self.TitleText:SetFormattedText(SUBTITLE_FORMAT, _xrp.L.PROFILE_EDITOR, name)
-
-		CheckFields()
-	end
+	CheckFields()
 end
 
 function XRPEditorPopup_OnClick(self, button, down)
@@ -141,65 +136,57 @@ function XRPEditorRevert_OnClick(self, button, down)
 	XRPEditor:Edit(XRPEditor.Profiles.contents)
 end
 
-do
-	local function Checked(self)
-		return self.arg1 == UIDROPDOWNMENU_INIT_MENU.contents
-	end
+local function Checked(self)
+	return self.arg1 == UIDROPDOWNMENU_INIT_MENU.contents
+end
 
-	do
-		local function Profiles_Click(self, arg1, arg2, checked)
-			if not checked then
-				XRPEditor:Edit(arg1)
-			end
-		end
-
-		function XRPEditorProfiles_PreClick(self, button, down)
-			local parent = self:GetParent()
-			parent.baseMenuList = {}
-			for i, profile in ipairs(xrp.profiles:List()) do
-				parent.baseMenuList[i] = { text = profile, checked = Checked, arg1 = profile, func = Profiles_Click }
-			end
-		end
-	end
-
-	do
-		local function Parent_Click(self, arg1, arg2, checked)
-			if not checked then
-				UIDROPDOWNMENU_INIT_MENU.contents = arg1
-				UIDROPDOWNMENU_INIT_MENU:SetFormattedText(SUBTITLE_FORMAT, _xrp.L.PARENT, arg1 or NONE)
-				CheckFields()
-			end
-		end
-
-		local NONE = { text = NONE, checked = Checked, arg1 = nil, func = Parent_Click }
-		function XRPEditorParent_PreClick(self, button, down)
-			self.baseMenuList = { NONE }
-			local editingProfile = XRPEditor.Profiles.contents
-			for i, profile in ipairs(xrp.profiles:List()) do
-				if profile ~= editingProfile and xrp.profiles[editingProfile]:IsParentValid(profile) then
-					self.baseMenuList[#self.baseMenuList + 1] = { text = profile, checked = Checked, arg1 = profile, func = Parent_Click }
-				end
-			end
-		end
-	end
-
-	do
-		local function FC_Click(self, arg1, arg2, checked)
-			if not checked or UIDROPDOWNMENU_INIT_MENU.inherited then
-				UIDROPDOWNMENU_INIT_MENU:SetAttribute("contents", arg1)
-				UIDROPDOWNMENU_INIT_MENU:SetAttribute("inherited", false)
-				CheckFields("FC")
-			end
-		end
-
-		local baseMenuList = {}
-		for i = 0, 4 do
-			local s = tostring(i)
-			baseMenuList[i + 1] = { text = xrp.L.MENU_VALUES.FC[s], checked = Checked, arg1 = i ~= 0 and s or nil, func = FC_Click }
-		end
-		XRPEditorFC_baseMenuList = baseMenuList
+local function Profiles_Click(self, arg1, arg2, checked)
+	if not checked then
+		XRPEditor:Edit(arg1)
 	end
 end
+
+function XRPEditorProfiles_PreClick(self, button, down)
+	local parent = self:GetParent()
+	parent.baseMenuList = {}
+	for i, profile in ipairs(xrp.profiles:List()) do
+		parent.baseMenuList[i] = { text = profile, checked = Checked, arg1 = profile, func = Profiles_Click }
+	end
+end
+
+local function Parent_Click(self, arg1, arg2, checked)
+	if not checked then
+		UIDROPDOWNMENU_INIT_MENU.contents = arg1
+		UIDROPDOWNMENU_INIT_MENU:SetFormattedText(SUBTITLE_FORMAT, _xrp.L.PARENT, arg1 or NONE)
+		CheckFields()
+	end
+end
+
+local NONE_MENU = { text = NONE, checked = Checked, arg1 = nil, func = Parent_Click }
+function XRPEditorParent_PreClick(self, button, down)
+	self.baseMenuList = { NONE_MENU }
+	local editingProfile = XRPEditor.Profiles.contents
+	for i, profile in ipairs(xrp.profiles:List()) do
+		if profile ~= editingProfile and xrp.profiles[editingProfile]:IsParentValid(profile) then
+			self.baseMenuList[#self.baseMenuList + 1] = { text = profile, checked = Checked, arg1 = profile, func = Parent_Click }
+		end
+	end
+end
+
+local function FC_Click(self, arg1, arg2, checked)
+	if not checked or UIDROPDOWNMENU_INIT_MENU.inherited then
+		UIDROPDOWNMENU_INIT_MENU:SetAttribute("contents", arg1)
+		UIDROPDOWNMENU_INIT_MENU:SetAttribute("inherited", false)
+		CheckFields("FC")
+	end
+end
+
+local baseMenuList = {}
+for i = 0, 4 do
+	local s = tostring(i)
+	baseMenuList[i + 1] = { text = xrp.L.MENU_VALUES.FC[s], checked = Checked, arg1 = i ~= 0 and s or nil, func = FC_Click }
+end
+XRPEditorFC_baseMenuList = baseMenuList
 
 function XRPEditorControls_OnAttributeChanged(self, name, value)
 	if name == "contents" then
