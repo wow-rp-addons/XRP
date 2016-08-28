@@ -346,7 +346,7 @@ local function Channels_Checked(self)
 end
 local function Channels_OnClick(self, channel, arg2, checked)
 	settingsList[channel].value = checked
-	_xrp.settings.chat[channel] = checked
+	_xrp.settings.chat[channel] = checked or nil
 end
 
 local function ChannelsTable(...)
@@ -359,11 +359,8 @@ local function ChannelsTable(...)
 end
 
 local function AddChannel(channel, menuList)
-	local setting = _xrp.settings.chat[channel]
+	local setting = _xrp.settings.chat[channel] or false
 	local oldSetting = setting
-	if setting == nil then
-		setting = false
-	end
 	if not settingsList[channel] then
 		settingsList[channel] = { value = setting, oldValue = oldSetting }
 	end
