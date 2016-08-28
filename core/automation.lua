@@ -196,6 +196,84 @@ _xrp.HookGameEvent("UPDATE_SHAPESHIFT_FORM", TestForm)
 _xrp.HookGameEvent("PLAYER_REGEN_ENABLED", TestForm)
 _xrp.HookGameEvent("PLAYER_REGEN_DISABLED", CancelTimer)
 
+_xrp.HookGameEvent("ADDON_LOADED", function(event, addon)
+	if addon ~= addonName then return end
+	local now = time()
+	if xrpSaved.lastCleanUp and xrpSaved.lastCleanUp > time() - 72000 then return end
+
+	validForms = {
+		["DEFAULT"] = true,
+		["MERCENARY"] = true,
+	}
+	if playerRace == "Worgen" then
+		validForms["HUMAN"] = true
+	end
+	if playerClass == "DRUID" then
+		validForms["CAT"] = true
+		validForms["TRAVEL"] = true
+		validForms["AQUATIC"] = true
+		validForms["BEAR"] = true
+		validForms["FLIGHT"] = true
+		validForms["MOONKIN"] = true
+		validForms["ASTRAL"] = true
+		validForms["TREANT"] = true
+	elseif playerClass == "PRIEST" then
+		validForms["SHADOWFORM"] = true
+	elseif playerClass == "SHAMAN" then
+		validForms["GHOSTWOLF"] = true
+	end
+	local validEquipSets = {}
+	for i = 1, GetNumEquipmentSets() do
+		validEquipSets[(GetEquipmentSetInfo(i))] = true
+	end
+
+	local toRemove = {}
+	local importantRemove
+	for form, profile in pairs(xrpSaved.auto) do
+		if not xrpSaved.profiles[profile] then
+			xrpSaved.auto[form] = nil
+		else
+			local form1, form2, equipSet = form:match("^([^\30\29]+)\30?([^\30\29]*)\29?(.*)$")
+			if form1 ~= "" and not validForms[form1] or form2 ~= "" and not validForms[form2] then
+				xrpSaved.auto[form] = nil
+				importantRemove = true
+			elseif equipSet ~= "" and not validEquipSets[equipSet] then
+				toRemove[form] = 1
+			end
+		end
+	end
+	xrpSaved.lastCleanUp = now
+
+	if importantRemove then
+		StaticPopup_Show("XRP_ERROR", _xrp.L.REMOVED_AUTO_FORMS)
+	end
+
+	if not next(toRemove) then
+		xrpSaved.autoCleanUp = nil
+		return
+	elseif not xrpSaved.autoCleanUp then
+		xrpSaved.autoCleanUp = {}
+	end
+
+	for form, removeCount in pairs(xrpSaved.autoCleanUp) do
+		if not toRemove[form] then
+			xrpSaved.autoCleanUp[form] = nil
+		end
+	end
+	for form, removeCount in pairs(toRemove) do
+		xrpSaved.autoCleanUp[form] = (xrpSaved.autoCleanUp[form] or 0) + removeCount
+	end
+	for form, removeCount in pairs(xrpSaved.autoCleanUp) do
+		if removeCount >= 3 then
+			xrpSaved.auto[form] = nil
+			xrpSaved.autoCleanUp[form] = nil
+		end
+	end
+	if not next(xrpSaved.autoCleanUp) then
+		xrpSaved.autoCleanUp = nil
+	end
+end)
+
 _xrp.auto = setmetatable({}, {
 	__index = function(self, form)
 		local profile = xrpSaved.auto[form]
