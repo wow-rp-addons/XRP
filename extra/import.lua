@@ -15,7 +15,7 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local addonName, _xrp = ...
+local FOLDER, _xrp = ...
 
 local hasMRP, hasTRP3 = (GetAddOnEnableState(_xrp.player, "MyRolePlay") == 2), (GetAddOnEnableState(_xrp.player, "totalRP3") == 2)
 if not (hasMRP or hasTRP3) then return end

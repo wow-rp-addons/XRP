@@ -16,7 +16,7 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local addonName, _xrp = ...
+local FOLDER, _xrp = ...
 
 local Button, LDBObject
 
@@ -236,7 +236,7 @@ local function CreateLDBObject()
 	LDBObject = {
 		type = "data source",
 		text = UNKNOWN,
-		label = GetAddOnMetadata(addonName, "Title"),
+		label = GetAddOnMetadata(FOLDER, "Title"),
 		icon = "Interface\\Icons\\INV_Misc_QuestionMark",
 		OnClick = XRPButton_OnClick,
 		OnTooltipShow = RenderTooltip,

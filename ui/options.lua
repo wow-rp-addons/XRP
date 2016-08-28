@@ -15,7 +15,7 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local addonName, _xrp = ...
+local FOLDER, _xrp = ...
 
 XRP_LICENSE_HEADER = _xrp.L.LICENSE_COPYRIGHT
 XRP_LICENSE = _xrp.L.GPL_HEADER

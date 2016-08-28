@@ -15,14 +15,14 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local addonName, _xrp = ...
+local FOLDER, _xrp = ...
 
 local SLASH_XRP = _xrp.L.SLASH_XRP or "/xrp"
 local INFO = STAT_FORMAT:format("|cff99b3e6%s") .. "|r %s"
 -- Also used in ui/options.xml.
-XRP_AUTHOR = INFO:format(_xrp.L.AUTHOR, GetAddOnMetadata(addonName, "Author"))
+XRP_AUTHOR = INFO:format(_xrp.L.AUTHOR, GetAddOnMetadata(FOLDER, "Author"))
 XRP_VERSION = INFO:format(GAME_VERSION_LABEL, _xrp.version)
-local XRP_HEADER = ("|cffffd100<|r|cffabd473%s|r|cffffd100>:|r %%s"):format(GetAddOnMetadata(addonName, "Title"))
+local XRP_HEADER = ("|cffffd100<|r|cffabd473%s|r|cffffd100>:|r %%s"):format(GetAddOnMetadata(FOLDER, "Title"))
 
 local xrpCmds = {}
 

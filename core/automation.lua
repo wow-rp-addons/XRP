@@ -15,7 +15,7 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local addonName, _xrp = ...
+local FOLDER, _xrp = ...
 
 local isWorgen = select(2, UnitRace("player")) == "Worgen"
 local playerClass = select(2, UnitClassBase("player"))
@@ -197,7 +197,7 @@ _xrp.HookGameEvent("PLAYER_REGEN_ENABLED", TestForm)
 _xrp.HookGameEvent("PLAYER_REGEN_DISABLED", CancelTimer)
 
 _xrp.HookGameEvent("ADDON_LOADED", function(event, addon)
-	if addon ~= addonName then return end
+	if addon ~= FOLDER then return end
 	local now = time()
 	if xrpSaved.lastCleanUp and xrpSaved.lastCleanUp > time() - 72000 then return end
 

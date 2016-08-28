@@ -15,7 +15,7 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local addonName, _xrp = ...
+local FOLDER, _xrp = ...
 
 xrp = {}
 
@@ -27,7 +27,7 @@ local SUPPORTED_LANGUAGES = {
 }
 _xrp.language = SUPPORTED_LANGUAGES[GetLocale()] or "en"
 
-_xrp.version = GetAddOnMetadata(addonName, "Version")
+_xrp.version = GetAddOnMetadata(FOLDER, "Version")
 _xrp.DoNothing = function() end
 _xrp.weakMeta = { __mode = "v" }
 _xrp.weakKeyMeta = { __mode = "k" }
@@ -96,7 +96,7 @@ frame:SetScript("OnEvent", function(self, event, ...)
 	for func, isFunc in pairs(gameEvents[event]) do
 		func(event, ...)
 	end
-	if event == "ADDON_LOADED" and ... == addonName or event == "PLAYER_LOGIN" then
+	if event == "ADDON_LOADED" and ... == FOLDER or event == "PLAYER_LOGIN" then
 		gameEvents[event] = nil
 		self:UnregisterEvent(event)
 	end
@@ -140,13 +140,13 @@ function _xrp.AddonUpdate(version)
 end
 
 _xrp.HookGameEvent("ADDON_LOADED", function(event, addon)
-	if addon ~= addonName then return end
+	if addon ~= FOLDER then return end
 	_xrp.playerWithRealm = xrp.UnitFullName("player")
 	_xrp.player, _xrp.realm = _xrp.playerWithRealm:match("^([^%-]+)%-([^%-]+)$")
 	_xrp.SavedVariableSetup()
 
 	local addonString = "%s/%s"
-	local VA = { addonString:format(GetAddOnMetadata(addonName, "Title"), _xrp.version) }
+	local VA = { addonString:format(GetAddOnMetadata(FOLDER, "Title"), _xrp.version) }
 	for i, addon in ipairs({ "GHI", "Tongues" }) do
 		if IsAddOnLoaded(addon) then
 			VA[#VA + 1] = addonString:format(addon, GetAddOnMetadata(addon, "Version"))

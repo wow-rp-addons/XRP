@@ -17,7 +17,7 @@
 
 local LANGUAGE = "en"
 
-local addonName, _xrp = ...
+local FOLDER, _xrp = ...
 if _xrp.language ~= LANGUAGE then return end
 setfenv(1, _xrp.L)
 

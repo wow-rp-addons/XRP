@@ -15,7 +15,7 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local addonName, _xrp = ...
+local FOLDER, _xrp = ...
 
 function xrp.UnitFullName(unit)
 	if type(unit) ~= "string" or unit ~= "player" and not UnitIsPlayer(unit) then

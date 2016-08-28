@@ -15,7 +15,7 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local addonName, _xrp = ...
+local FOLDER, _xrp = ...
 
 -- Fields to export.
 local EXPORT_FIELDS = { "NA", "NI", "NT", "NH", "RA", "RC", "AE", "AH", "AW", "AG", "HH", "HB", "CU", "MO", "DE", "HI" }
