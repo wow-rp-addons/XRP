@@ -287,6 +287,13 @@ local upgradeAccountVars = {
 	[16] = function() -- 7.0.3.0
 		xrpAccountSaved.settings.chat["OFFICER"] = xrpAccountSaved.settings.chat["GUILD"]
 	end,
+	[18] = function() -- 7.0.3.3
+		for channel, isEnabled in pairs(xrpAccountSaved.settings.chat) do
+			if not isEnabled and channel:find("^CHANNEL_") then
+				xrpAccountSaved.settings.chat[channel] = nil
+			end
+		end
+	end,
 }
 
 local upgradeVars = {
