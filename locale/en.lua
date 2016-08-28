@@ -121,6 +121,7 @@ PROFILE_MISSING = "Your active profile was not available to be used and XRP has 
 
 -- core/automation.lua
 TREANT_BUFF = "Treant Form" -- Must match in-game name of Treant buff.
+REMOVED_AUTO_FORMS = "Some of your settings for automated profile swaps based on class or race forms are no longer are valid, likely due to a race or name change.\n\nYou should re-check your automated profile swap settings in the editor, to be sure they are to your liking."
 
 -- core/msp.lua
 MSP_DISABLED = "You are currently running two roleplay profile addons. XRP's support for sending and receiving profiles is disabled; to fully use XRP, disable \"%s\" and reload your UI."
