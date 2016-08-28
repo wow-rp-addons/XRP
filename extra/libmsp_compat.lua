@@ -15,9 +15,9 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local addonName, _xrp = ...
+local FOLDER, _xrp = ...
 
-if msp_RPAddOn ~= GetAddOnMetadata(addonName, "Title") then return end
+if msp_RPAddOn ~= GetAddOnMetadata(FOLDER, "Title") then return end
 
 -- This file provides emulation of reference LibMSP for XRP. This is used by
 -- some addons (such as GHI) to interact with a RP profile. For the most part,

@@ -15,7 +15,7 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local addonName, _xrp = ...
+local FOLDER, _xrp = ...
 
 XRP_EXPORT_PROFILE = _xrp.L.EXPORT_PROFILE
 XRP_EXPORT_INSTRUCTIONS = _xrp.L.EXPORT_INSTRUCTIONS:format(not IsMacClient() and "Ctrl+C" or "Cmd+C")

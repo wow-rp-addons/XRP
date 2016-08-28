@@ -20,7 +20,7 @@
 -- used repeatedly throughout XRP, but more specialized ones are also built
 -- elsewhere.
 
-local addonName, _xrp = ...
+local FOLDER, _xrp = ...
 
 xrp.L = {
 	FIELDS = {
@@ -132,7 +132,7 @@ xrp.L.MENU_VALUES = setmetatable({
 	}, { __index = xrp.L.VALUES.FR }),
 }, { __index = xrp.L.VALUES })
 
-BINDING_HEADER_XRP = GetAddOnMetadata(addonName, "Title")
+BINDING_HEADER_XRP = GetAddOnMetadata(FOLDER, "Title")
 BINDING_NAME_XRP_BOOKMARKS = _xrp.L.TOGGLE_BOOKMARKS
 BINDING_NAME_XRP_EDITOR = _xrp.L.TOGGLE_EDITOR
 BINDING_NAME_XRP_STATUS = _xrp.L.TOGGLE_STATUS

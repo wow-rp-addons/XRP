@@ -15,7 +15,7 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local addonName, _xrp = ...
+local FOLDER, _xrp = ...
 
 XRP_APPEARANCE = _xrp.L.APPEARANCE
 XRP_BIOGRAPHY = _xrp.L.BIOGRAPHY

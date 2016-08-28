@@ -15,7 +15,7 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local addonName, _xrp = ...
+local FOLDER, _xrp = ...
 
 -- This adds "Roleplay Profile" menu entries to several menus for a more
 -- convenient way to access profiles (including chat names, guild lists, and
