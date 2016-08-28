@@ -66,27 +66,30 @@ local cache = setmetatable({}, {
 })
 
 local bnet, friends, guildies
-local GetGameAccountID
-do
-	local badBnetCount, lastBadBnet = 0
-	local function FindGameAccountID(nameFind)
+local badBnetCount, lastBadBnet = 0
+local function GetGameAccountID(name)
+	if not BNConnected() then
+		return nil
+	end
+	local bnetIDGameAccount
+	if not bnet then
 		local newBnet, badList = {}
 		for i = 1, select(2, BNGetNumFriends()) do
 			for j = 1, BNGetNumFriendGameAccounts(i) do
 				local active, characterName, client, realmName, realmID, faction, race, class, blank, zoneName, level, gameText, broadcastText, broadcastTime, isConnected, bnetIDGameAccount = BNGetFriendGameAccountInfo(i, j)
 				if isConnected and client == BNET_CLIENT_WOW then
 					if realmName == "" then
-						-- Something's gone wrong. It can happen around first login
-						-- without indicating a real issue, but if it carries on
-						-- there's probably something broken with the B.net service
-						-- or connection.
+						-- Something's gone wrong. It can happen around first
+						-- login without indicating a real issue, but if it
+						-- carries on there's probably something broken with
+						-- the B.net service or connection.
 						badList = true
 					else
-						local name = xrp.FullName(characterName, realmName)
-						if cache[name].nextCheck then
-							cache[name].nextCheck = 0
+						local curName = xrp.FullName(characterName, realmName)
+						if cache[curName].nextCheck then
+							cache[curName].nextCheck = 0
 						end
-						newBnet[name] = bnetIDGameAccount
+						newBnet[curName] = bnetIDGameAccount
 					end
 				end
 			end
@@ -100,24 +103,14 @@ do
 			badBnetCount = badBnetCount + 1
 			lastBadBnet = GetTime()
 		end
-		return newBnet[nameFind]
-	end
-
-	function GetGameAccountID(name)
-		if not BNConnected() then
+		bnetIDGameAccount = newBnet[name]
+	else
+		bnetIDGameAccount = bnet[name]
+		if bnetIDGameAccount and not select(15, BNGetGameAccountInfo(bnetIDGameAccount)) then
 			return nil
 		end
-		local bnetIDGameAccount
-		if not bnet then
-			bnetIDGameAccount = FindGameAccountID(name)
-		else
-			bnetIDGameAccount = bnet[name]
-			if bnetIDGameAccount and not select(15, BNGetGameAccountInfo(bnetIDGameAccount)) then
-				return nil
-			end
-		end
-		return bnetIDGameAccount
 	end
+	return bnetIDGameAccount
 end
 
 -- Filter visible "No such..." errors from addon messages.
