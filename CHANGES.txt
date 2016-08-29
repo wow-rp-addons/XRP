@@ -1,4 +1,7 @@
-7.0.3.3 (2016-08-28):
+7.0.3.4 (2016-08-29):
+
+	- (7.0.3.4) Fixed a Lua error changing settings for alternate race names.
+	  Changes for 7.0.3.3 follow.
 
 	- Options to only use alternate race names when on characters of that race
 	  have been added. These default to on for all races other than Forsaken;
