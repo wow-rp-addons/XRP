@@ -142,7 +142,11 @@ end
 
 local function Profiles_Click(self, arg1, arg2, checked)
 	if not checked then
-		XRPEditor:Edit(arg1)
+		if XRPEditor.Revert:GetButtonState() == "DISABLED" then
+			XRPEditor:Edit(arg1)
+		else
+			StaticPopup_Show("XRP_EDITOR_UNSAVED", XRPEditor.Profiles.contents, nil, arg1)
+		end
 	end
 end
 
