@@ -1,15 +1,22 @@
-7.0.3.2 (2016-08-06):
+7.0.3.3 (2016-08-28):
 
-	- Support for displaying house/clan/tribe in tooltip has been added. This
-	  is off by default, and may be toggled on in the tooltip options.
+	- Options to only use alternate race names when on characters of that race
+	  have been added. These default to on for all races other than Forsaken;
+	  you may need to change these from the interface options if you want the
+	  old behaviour.
 
-	- Broader support for pets, including temporary pets/guardians, has been
-	  added to XRP's tooltip support. This does NOT include battle pets.
+	- Unsaved changes to profiles being edited are no longer discarded when a
+	  new profile is switched to edit. Instead, confirming whether discarding
+	  changes is intended is asked.
 
-	- A number of minor errors with class colors on pet tooltips have been
-	  fixed (only permanent pets/guardians should show a class color now).
+	- Multiple profile automation mappings can now be saved at once instead of
+	  one at a time.
 
-	- Detection of switching into/out of Shadowform has been fixed.
+	- Detection of Moonkin Affinity form and Astral Moonkin Affinity form has
+	  been fixed.
 
-	- Tooltips will now again display "Level ??" if the unit's level is truly
-	  unknown.
+	- Additional warnings and attempts to fix the problem has been added for
+	  potential cases of data corruption.
+
+	- Some garbage collection for unused saved data has been added for profile
+	  swap automation and roleplay names in chat channels.
