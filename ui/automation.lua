@@ -53,10 +53,10 @@ local function MakeWords(text)
 	end
 end
 
+local unsaved = {}
 local function ToggleButtons(self)
-	local form, profile = self.Form.contents, self.Profile.contents
-	local changes = _xrp.auto[form] ~= profile
-	if next(xrpSaved.auto) and not _xrp.auto["DEFAULT"] then
+	local changes = next(unsaved) ~= nil
+	if next(xrpSaved.auto) and not _xrp.auto["DEFAULT"] and not unsaved["DEFAULT"] then
 		self.Warning:Show()
 		self.Warning:SetFormattedText(_xrp.L.WARN_FALLBACK, FORM_NAMES["DEFAULT"])
 	else
@@ -67,10 +67,11 @@ local function ToggleButtons(self)
 end
 
 function XRPEditorAutomationSave_OnClick(self, button, down)
-	local parent = self:GetParent()
-	local form, profile = parent.Form.contents, parent.Profile.contents
-	_xrp.auto[form] = profile
-	ToggleButtons(parent)
+	for form, profile in pairs(unsaved) do
+		_xrp.auto[form] = profile or nil
+	end
+	table.wipe(unsaved)
+	ToggleButtons(self:GetParent())
 end
 
 function XRPEditorAutomationRevert_OnClick(self, button, down)
@@ -78,6 +79,7 @@ function XRPEditorAutomationRevert_OnClick(self, button, down)
 	local formProfile = _xrp.auto[parent.Form.contents]
 	parent.Profile.contents = formProfile
 	parent.Profile.Text:SetText(formProfile or NONE)
+	table.wipe(unsaved)
 	ToggleButtons(parent)
 end
 
@@ -89,14 +91,16 @@ local function Profile_Click(self, arg1, arg2, checked)
 	if not checked then
 		UIDROPDOWNMENU_INIT_MENU.contents = arg1
 		UIDROPDOWNMENU_INIT_MENU.Text:SetText(arg1 or NONE)
-		ToggleButtons(UIDROPDOWNMENU_INIT_MENU:GetParent())
+		local parent = UIDROPDOWNMENU_INIT_MENU:GetParent()
+		unsaved[parent.Form.contents] = arg1 or false
+		ToggleButtons(parent)
 	end
 end
 
-local NONE = { text = NONE, checked = Profile_Checked, arg1 = nil, func = Profile_Click }
+local NONE_MENU = { text = NONE, checked = Profile_Checked, arg1 = nil, func = Profile_Click }
 function XRPEditorAutomationProfile_PreClick(self, button, down)
 	local parent = self:GetParent()
-	parent.baseMenuList = { NONE }
+	parent.baseMenuList = { NONE_MENU }
 	for i, profile in ipairs(xrp.profiles:List()) do
 		parent.baseMenuList[i + 1] = { text = profile, checked = Profile_Checked, arg1 = profile, func = Profile_Click }
 	end
@@ -108,10 +112,16 @@ local function equipSets_Click(self, arg1, arg2, checked)
 		local set = (UIDROPDOWNMENU_MENU_VALUE or "DEFAULT") .. self.value
 		UIDROPDOWNMENU_INIT_MENU.contents = set
 		UIDROPDOWNMENU_INIT_MENU.Text:SetText(MakeWords(set))
-		local Profile, setProfile = UIDROPDOWNMENU_INIT_MENU:GetParent().Profile, _xrp.auto[set]
-		Profile.contents = setProfile
-		Profile.Text:SetText(setProfile or NONE)
-		ToggleButtons(UIDROPDOWNMENU_INIT_MENU:GetParent())
+		local parent = UIDROPDOWNMENU_INIT_MENU:GetParent()
+		local setProfile
+		if unsaved[set] ~= nil then
+			setProfile = unsaved[set] or nil
+		else
+			setProfile = _xrp.auto[set]
+		end
+		parent.Profile.contents = setProfile
+		parent.Profile.Text:SetText(setProfile or NONE)
+		ToggleButtons(parent)
 	end
 	CloseDropDownMenus()
 end
@@ -124,10 +134,16 @@ local function forms_Click(self, arg1, arg2, checked)
 	if not checked then
 		UIDROPDOWNMENU_INIT_MENU.contents = self.value
 		UIDROPDOWNMENU_INIT_MENU.Text:SetText(MakeWords(self.value))
-		local Profile, formProfile = UIDROPDOWNMENU_INIT_MENU:GetParent().Profile, _xrp.auto[self.value]
-		Profile.contents = formProfile
-		Profile.Text:SetText(formProfile or NONE)
-		ToggleButtons(UIDROPDOWNMENU_INIT_MENU:GetParent())
+		local parent = UIDROPDOWNMENU_INIT_MENU:GetParent()
+		local formProfile
+		if unsaved[self.value] ~= nil then
+			formProfile = unsaved[self.value] or nil
+		else
+			formProfile = _xrp.auto[self.value]
+		end
+		parent.Profile.contents = formProfile
+		parent.Profile.Text:SetText(formProfile or NONE)
+		ToggleButtons(parent)
 	end
 	CloseDropDownMenus()
 end
@@ -434,13 +450,19 @@ function XRPEditorAutomation_OnShow(self)
 		selectedForm = "DEFAULT"
 		self.Form.contents = "DEFAULT"
 		self.Form.Text:SetText(MakeWords("DEFAULT"))
-	end
-	if selectedForm:find("\29", nil, true) then
+	elseif selectedForm:find("\29", nil, true) then
 		if not GetEquipmentSetInfoByName(selectedForm:match("^.*\29(.+)$")) then
 			selectedForm = "DEFAULT"
 			self.Form.Text:SetText(MakeWords(selectedForm))
 			self.Form.contents = selectedForm
 			needsUpdate = true
+		end
+	end
+	for form, profile in pairs(unsaved) do
+		if form:find("\29", nil, true) then
+			if not GetEquipmentSetInfoByName(selectedForm:match("^.*\29(.+)$")) or not xrp.profiles[profile] then
+				unsaved[form] = nil
+			end
 		end
 	end
 	needsUpdate = needsUpdate or not xrp.profiles[self.Profile.contents]
