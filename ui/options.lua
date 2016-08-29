@@ -29,7 +29,7 @@ XRPOptionsControl_Mixin = {
 	Set = function(self, value)
 		_xrp.settings[self.xrpTable][self.xrpSetting] = value
 		if _xrp.settingsToggles[self.xrpTable] and _xrp.settingsToggles[self.xrpTable][self.xrpSetting] then
-			_xrp.settingsToggles[self.xrpTable][self.xrpSetting](value)
+			_xrp.settingsToggles[self.xrpTable][self.xrpSetting](value, self.xrpSetting)
 		end
 	end,
 }
