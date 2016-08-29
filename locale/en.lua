@@ -460,6 +460,7 @@ POPUP_ASK_CACHE_SINGLE = "It is typically unnecessary to indiviudally drop cache
 POPUP_ASK_FORCE_REFRESH = "Force refreshing is rarely necessary and should be done sparingly.\n\nDo you wish to forcibly refresh all fields for %s as soon as possible anyway?"
 POPUP_CLEAR_CACHE = "The cache has been cleared."
 POPUP_TIDY_CACHE = "Old entries have been pruned from the cache."
+POPUP_EDITOR_UNSAVED = "You have unsaved changes to \"%s\". Discard them?"
 POPUP_EDITOR_ADD = "Enter a name for the new profile:"
 POPUP_EDITOR_DELETE = "Are you sure you want to remove \"%s\"?"
 POPUP_EDITOR_RENAME = "Enter a new name for \"%s\":"

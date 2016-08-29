@@ -161,6 +161,17 @@ StaticPopupDialogs["XRP_CACHE_TIDY"] = {
 	hideOnEscape = true,
 }
 
+StaticPopupDialogs["XRP_EDITOR_UNSAVED"] = {
+	text = _xrp.L.POPUP_EDITOR_UNSAVED,
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function(self, profile)
+		XRPEditor:Edit(profile)
+	end,
+	whileDead = true,
+	hideOnEscape = true,
+}
+
 StaticPopupDialogs["XRP_EDITOR_ADD"] = {
 	text = _xrp.L.POPUP_EDITOR_ADD,
 	button1 = ACCEPT,
