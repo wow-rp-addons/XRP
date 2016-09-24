@@ -205,7 +205,7 @@ _xrp.HookGameEvent("ADDON_LOADED", function(event, addon)
 		["DEFAULT"] = true,
 		["MERCENARY"] = true,
 	}
-	if playerRace == "Worgen" then
+	if isWorgen then
 		validForms["HUMAN"] = true
 	end
 	if playerClass == "DRUID" then
