@@ -171,7 +171,7 @@ _xrp.HookGameEvent("ADDON_LOADED", function(event, addon)
 	fields.VP = tostring(_xrp.msp)
 	versions.VP = _xrp.msp
 
-	if not xrpSaved.overrides.logout or xrpSaved.overrides.logout + 600 < time() then
+	if not xrpSaved.overrides.logout or xrpSaved.overrides.logout + 900 < time() then
 		xrpSaved.overrides.fields = {}
 		xrpSaved.overrides.versions = {}
 	end
