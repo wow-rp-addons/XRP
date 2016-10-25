@@ -351,7 +351,7 @@ HELP_EDITOR_AW = "The weight field is for your character's physical weight.\n\nA
 HELP_EDITOR_AE = "The eyes field is for a brief description of your character's eyes.\n\nFor many characters this will be simple, often just indicating their eye color.\n\nA short, straightforward description is typically best -- while poetic language may be tempting, it can be difficult for others to understand."
 HELP_EDITOR_RA = "The race field is for your character's race, if it is different from their race in-game.\n\nThis can be used for sub-races, such as \"Dark Iron Dwarf\", or for entirely separate races.\n\nIn general, exercise caution when using this field, as exotic races can be difficult to roleplay."
 HELP_EDITOR_RC = "The class field is for your character's class, if it is different from their in-game class\n\nThis can be used as a more accurate description of your character's skills, such as \"Sniper\", or to explicitly note that their in-game class is irrelevant in roleplay, such as by using \"Civilian\"."
-HELP_EDITOR_CU = "The currently field is for what your character is currently doing, usually no more than a single sentence.\n\nIf this is set here, it will be the default setting when using this profile.\n\nSetting this from XRP's minimap icon will set a temporary state, which reverts ten minutes after logging out."
+HELP_EDITOR_CU = "The currently field is for what your character is currently doing, usually no more than a single sentence.\n\nIf this is set here, it will be the default setting when using this profile.\n\nSetting this from XRP's minimap icon will set a temporary state, which reverts fifteen minutes after logging out."
 HELP_EDITOR_DE = "The description field is for a physical description of your character.\n\nGenerally it is most useful to restrict yourself to what would be visible to others about your character in a normal setting.\n\nAdditionally, try to keep this to a reasonable length. Much more than a few hundred words may be excessively long."
 HELP_EDITOR_AG = "The age field is, unsurprisingly, for your character's age.\n\nYou may either enter a specific value (generally assumed to be in years), or a brief description, such as \"Old\".\n\nSome races age at different rates, and some of those rates are poorly explained in lore. If in doubt, a brief description may be best."
 HELP_EDITOR_HH = "The home field is for your character's current residence.\n\nFairly self-explanatorily, this typically means where they spend most of their time, be it a city, town, or even something vague, such as \"Wherever they happen to be.\"."
@@ -453,7 +453,7 @@ TIDY_CACHE = "Tidy Cache"
 
 -- ui/popups.lua
 POPUP_URL = "Copy the URL (%s) and paste into your web browser."
-POPUP_CURRENTLY = "What are you currently doing?\n(This will reset ten minutes after logout; use the editor to set this more permanently.)"
+POPUP_CURRENTLY = "What are you currently doing?\n(This will reset fifteen minutes after logout; use the editor to set this more permanently.)"
 POPUP_ASK_CACHE = "Are you sure you wish to fully clear the cache?"
 POPUP_ASK_CACHE_SINGLE = "It is typically unnecessary to indiviudally drop cached profiles.\n\nAre you sure you wish to drop %s from the cache anyway?"
 POPUP_ASK_FORCE_REFRESH = "Force refreshing is rarely necessary and should be done sparingly.\n\nDo you wish to forcibly refresh all fields for %s as soon as possible anyway?"
