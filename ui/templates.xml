@@ -256,6 +256,9 @@
 				</Anchors>
 				<ScrollChild>
 					<EditBox parentKey="EditBox" multiLine="true" autoFocus="false">
+						<KeyValues>
+							<KeyValue key="cursorOffset" value="0" type="number"/>
+						</KeyValues>
 						<Anchors>
 							<Anchor point="TOPLEFT"/>
 						</Anchors>
