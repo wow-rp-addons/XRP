@@ -29,13 +29,14 @@ local FORM_ID = {
 	[5] = "BEAR",
 	[16] = "GHOSTWOLF",
 	[27] = "FLIGHT",
+	[28] = "SHADOWFORM",
 	[29] = "FLIGHT",
 	[31] = "MOONKIN",
-	[35] = "MOONKIN",
+	[35] = "MOONKIN", -- Affinity form.
+	[36] = "TREANT",
 }
 local FORM_NO_RACE = {
 	["CAT"] = true,
-	["TREANT"] = true,
 	["TRAVEL"] = true,
 	["AQUATIC"] = true,
 	["BEAR"] = true,
@@ -43,16 +44,17 @@ local FORM_NO_RACE = {
 	["FLIGHT"] = true,
 	["MOONKIN"] = true,
 	["ASTRAL"] = true, -- Shows worgen model, but cannot be human and astral.
+	["TREANT"] = true,
 }
 local FORM_NO_EQUIPMENT = {
 	["CAT"] = true,
-	["TREANT"] = true,
 	["TRAVEL"] = true,
 	["AQUATIC"] = true,
 	["BEAR"] = true,
 	["GHOSTWOLF"] = true,
 	["FLIGHT"] = true,
 	["MOONKIN"] = true,
+	["TREANT"] = true,
 }
 local lastEquipSet
 local function GetCurrentForm()
@@ -60,15 +62,13 @@ local function GetCurrentForm()
 
 	local classForm
 	if playerClass then
-		if playerClass == "DRUID" or playerClass == "SHAMAN" then
-			local formID = GetShapeshiftFormID()
-			classForm = FORM_ID[formID]
-			if classForm == "MOONKIN" and (formID == 31 and HasAttachedGlyph(24858) or formID == 35 and HasAttachedGlyph(197625)) then
-				classForm = "ASTRAL"
-			elseif not classForm and playerClass == "DRUID" and UnitBuff("player", _xrp.L.TREANT_BUFF) then
-				classForm = "TREANT"
-			end
-		elseif playerClass == "PRIEST" and GetSpecialization() == 3 then
+		local formID = GetShapeshiftFormID()
+		classForm = FORM_ID[formID]
+		if classForm == "MOONKIN" and (formID == 31 and HasAttachedGlyph(24858) or formID == 35 and HasAttachedGlyph(197625)) then
+			classForm = "ASTRAL"
+		elseif not classForm and playerClass == "PRIEST" and GetSpecialization() == 3 and GetShapeshiftForm() == 1 then
+			-- Shadowform detection via formID is buggy as of 7.1. If it works,
+			-- it works properly, but if it doesn't, this is the backup way.
 			classForm = "SHADOWFORM"
 		end
 	end
@@ -188,11 +188,10 @@ local function RecheckForm()
 	DoSwap()
 end
 
--- Portrait update catches worgen form, equipment sets. Talent group catches
--- Shadowform. Shapeshift form catches others.
+-- Portrait update catches worgen, equipment sets. Shapeshift catches others.
 _xrp.HookGameEvent("UNIT_PORTRAIT_UPDATE", TestForm, "player")
-_xrp.HookGameEvent("ACTIVE_TALENT_GROUP_CHANGED", TestForm)
 _xrp.HookGameEvent("UPDATE_SHAPESHIFT_FORM", TestForm)
+-- Catch combat, for delaying changes.
 _xrp.HookGameEvent("PLAYER_REGEN_ENABLED", TestForm)
 _xrp.HookGameEvent("PLAYER_REGEN_DISABLED", CancelTimer)
 
