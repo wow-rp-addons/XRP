@@ -120,7 +120,6 @@ RENAMED_FORMAT = "%s Renamed"
 PROFILE_MISSING = "Your active profile was not available to be used and XRP has tried to select an alternate profile.\n\nThis should not have happened and may indicate data corruption -- you should check your profiles for any problems."
 
 -- core/automation.lua
-TREANT_BUFF = "Treant Form" -- Must match in-game name of Treant buff.
 REMOVED_AUTO_FORMS = "Some of your settings for automated profile swaps based on class or race forms are no longer are valid, likely due to a race or name change.\n\nYou should re-check your automated profile swap settings in the editor, to be sure they are to your liking."
 
 -- core/msp.lua
