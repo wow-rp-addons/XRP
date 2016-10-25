@@ -1,4 +1,13 @@
-7.0.3.5 (2016-09-23):
+7.1.0.0 (2016-10-25):
 
-	- Fixed profile swaps for worgens' human form, to not remove profile
-	  associations erroneously during garbage collection.
+	- Updated for 7.1 compatibility.
+
+	- Increased logout timer to fifteen minutes (up from ten).
+
+	- Fixed Shadowform detection for its return as a non-innate form.
+
+	- Fixed right-click profile book appearing when mousing over the player's
+	  power display (player's own nameplate).
+
+	- Fixed tooltip eye icon appearing when the player was targeting
+	  themselves.
