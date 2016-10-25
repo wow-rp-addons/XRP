@@ -320,7 +320,7 @@ local function SetUnit(unit)
 
 		local connected = UnitIsConnected(unit)
 		local color = COLORS[(not inRaid and UnitIsEnemy("player", unit) or attackMe and meAttack) and "hostile" or (meAttack or attackMe) and "neutral" or "friendly"]
-		local watchIcon = _xrp.settings.tooltip.watching and UnitIsUnit("player", unit .. "target") and "|TInterface\\LFGFrame\\BattlenetWorking0:28:28:8:1|t"
+		local watchIcon = _xrp.settings.tooltip.watching and unit ~= "player" and UnitIsUnit("player", unit .. "target") and "|TInterface\\LFGFrame\\BattlenetWorking0:28:28:8:1|t"
 		local bookmarkIcon = _xrp.settings.tooltip.bookmark and currentUnit.character.bookmark and "|TInterface\\MINIMAP\\POIICONS:18:18:4:0:256:512:54:72:54:72|t"
 		local GC = currentUnit.character.fields.GC
 
