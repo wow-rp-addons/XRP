@@ -433,16 +433,25 @@ _xrp.settingsToggles.display.movableViewer = function(setting)
 			XRPViewer:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 50, -125)
 		end
 		if not XRPViewer.TitleRegion then
-			XRPViewer.TitleRegion = XRPViewer:CreateTitleRegion()
+			XRPViewer.TitleRegion = CreateFrame("Frame", nil, XRPViewer)
+			XRPViewer.TitleRegion:SetScript("OnDragStart", function(self, button)
+				self:GetParent():StartMoving()
+			end)
+			XRPViewer.TitleRegion:SetScript("OnDragStop", function(self)
+				self:GetParent():StopMovingOrSizing()
+			end)
+			XRPViewer.TitleRegion:EnableMouse(true)
+			XRPViewer.TitleRegion:RegisterForDrag("LeftButton")
+			XRPViewer.TitleRegion:SetAllPoints("XRPViewerTitleBg")
 		end
-		XRPViewer.TitleRegion:SetAllPoints("XRPViewerTitleBg")
+		XRPViewer.TitleRegion:Show()
 		_xrp.settingsToggles.display.closeOnEscapeViewer(_xrp.settings.display.closeOnEscapeViewer)
 	elseif XRPViewer.TitleRegion then
 		XRPViewer:SetAttribute("UIPanelLayout-defined", true)
 		XRPViewer:SetAttribute("UIPanelLayout-enabled", true)
 		XRPViewer:SetMovable(false)
 		XRPViewer:SetFrameStrata("MEDIUM")
-		XRPViewer.TitleRegion:SetPoint("BOTTOMLEFT", XRPViewer, "TOPLEFT")
+		XRPViewer.TitleRegion:Hide()
 		_xrp.settingsToggles.display.closeOnEscapeViewer(false)
 	end
 	if wasShown then
