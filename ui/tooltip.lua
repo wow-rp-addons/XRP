@@ -413,7 +413,7 @@ local function SetUnit(unit)
 			GC = "DEATHKNIGHT"
 		elseif name == _xrp.L.PET_NAME_HATI then
 			GC = "HUNTER"
-		elseif GC == "HUNTER" and not race or GC == "MAGE" and creatureType ~= _xrp.L.PET_WATER_ELEMENTAL or UnitIsCharmed(unit) then
+		elseif GC == "HUNTER" and not race or GC == "MAGE" and race ~= _xrp.L.PET_WATER_ELEMENTAL or UnitIsCharmed(unit) then
 			GC = nil
 		end
 
