@@ -116,7 +116,7 @@ end
 -- Filter visible "No such..." errors from addon messages.
 local filter = {}
 local function AddFilter(name)
-	filter[name] = GetTime() + (select(3, GetNetStats()) * 0.001) + 2.000
+	filter[name] = GetTime() + (select(3, GetNetStats()) * 0.001) + 5.000
 end
 ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", function(self, event, message)
 	local name = message:match(ERR_CHAT_PLAYER_NOT_FOUND_S:format("(.+)"))
