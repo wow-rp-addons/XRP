@@ -18,28 +18,23 @@
 	and should be included as a standalone file if you wish to use it.
 
 	First, it fixes the tainting issues with the UIDropDownMenu subsystem
-	(often inaccurately identified as UIDROPDOWNMENU_MENU_LEVEL taint,
-	including initially by myself), primarily to do with the
-	UIDropDownMenu_GetSelectedX() functions.
+	(often inaccurately identified as UIDROPDOWNMENU_MENU_LEVEL taint),
+	primarily to do with the UIDropDownMenu_Refresh() function.
 
 	Second, it fixes the issue of tainting the Interface Options panel when an
-	addon makes use of InterfaceOptions_AddCategory() (which was designed for
-	addons to use). The issue is that InterfaceOptionsFrameCategories.selection
-	sometimes becomes tainted and proceeds to taint the full panel refresh.
+	addon uses InterfaceOptions_AddCategory(). The issue is that
+	InterfaceOptionsFrameCategories.selection sometimes becomes tainted and
+	proceeds to taint the next full panel refresh.
 
-	The two of these are both most famous for tainting the built-in raid
-	frames, and for having that taint easily spread to other secure UI
-	elements.
-
-	The fixes for these take advantage of a quirk, likely intentional, of the
-	secure variable system in the Lua API. Any variable in a table other than
-	_G will become secure if it is set to nil, regardless of if it is set to
-	nil from insecure code. This means that problematic insecure keys, which
-	are the source of every taint issue this code addresses, can be "secured"
-	by simply wiping them out.
+	The fixes for these take advantage of a quirk of the secure variable system
+	in the Lua API. Any variable in a table other than _G will become secure if
+	it is set to nil, regardless of if it is set to nil from insecure code.
+	This means that problematic insecure keys, which are the source of every
+	taint issue this code addresses, can be "secured" by simply wiping them
+	out.
 ]]
 
-local DROPFIX_VERSION = 3
+local DROPFIX_VERSION = 4
 
 if dropfix and dropfix.version >= DROPFIX_VERSION then return end
 
@@ -47,50 +42,40 @@ if not dropfix then
 	dropfix = {
 		hooks = {},
 		hooked = {},
-		lastSecure = false,
 		version = 0,
 	}
 end
 
--- The following are default components of the DropDownList buttons. Even if
--- they're tainted, they should never be removed. Taint is better than
--- completely breaking it.
-local default = {
-	[0] = true,
-	invisibleButton = true,
-}
 function dropfix.hooks.UIDropDownMenu_InitializeHelper(frame)
-	-- First conditional checks for poor coding practices where someone fakes
-	-- being a frame too well for a simple check, but too poorly to actually
-	-- work like a real frame.
-	local menuName = type(rawget(UIDROPDOWNMENU_INIT_MENU, 0)) == "userdata" and UIDROPDOWNMENU_INIT_MENU.GetName and UIDROPDOWNMENU_INIT_MENU:GetName()
-	local isSecure = menuName and issecurevariable(menuName)
-	if isSecure and not dropfix.lastSecure then
-		-- Any non-default component of the dropdown buttons which become
-		-- tainted could cause taint to spread rapidly. This typically happens
-		-- through value and UIDropDownMenu_SetSelectedValue(), but it can
-		-- happen elsewhere too.
+	if UIDROPDOWNMENU_MENU_LEVEL > 1 then return end
+	-- pcall() to catch non-frames masquerading as frames.
+	local success, menuName = pcall(UIDROPDOWNMENU_INIT_MENU.GetName, UIDROPDOWNMENU_INIT_MENU)
+	if success and menuName and issecurevariable(menuName) then
+		-- Some non-default components of the dropdown buttons which were not
+		-- securely set could cause taint to spread rapidly. This usually
+		-- happens through leftover 'value' keys and UIDropDownMenu_Refresh()
+		-- iterating through buttons while checking that key.
 		for i = 1, UIDROPDOWNMENU_MAXLEVELS do
 			for j = 1, UIDROPDOWNMENU_MAXBUTTONS do
 				local button = _G[("DropDownList%dButton%d"):format(i, j)]
 				for k, v in pairs(button) do
-					if not default[k] and not issecurevariable(button, k) then
+					-- 0 and invisibleButton are default elements.
+					if k ~= 0 and k ~= "invisibleButton" and not issecurevariable(button, k) then
 						button[k] = nil
 					end
 				end
 			end
 		end
 	end
-
-	dropfix.lastSecure = isSecure
 end
 
--- This is not a UIDropDownMenu fix, it fixes the tainting related to addons
--- having interface options panels. This value can become tainted somehow, and
--- then taints the execution path of the entire interface options refreshing
--- when opened the next time.
+-- This fixes the tainting related to addons having interface options panels.
+-- This value can become tainted, which then taints the execution path of the
+-- entire interface options refreshing when next opened.
 function dropfix.hooks.InterfaceOptionsFrame_OnHide(self)
-	InterfaceOptionsFrameCategories.selection = nil
+	if not issecurevariable(InterfaceOptionsFrameCategories, "selection") then
+		InterfaceOptionsFrameCategories.selection = nil
+	end
 end
 
 if not dropfix.hooked["UIDropDownMenu_InitializeHelper"] then
