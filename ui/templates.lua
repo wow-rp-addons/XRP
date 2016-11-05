@@ -226,6 +226,7 @@ function XRPCursorBook_OnEvent(self, event)
 	self.mountable = self.current and UnitVehicleSeatCount("mouseover") > 0
 	self.mountInParty = self.mountable and (UnitInParty("mouseover") or UnitInRaid("mouseover"))
 	if self.current and character.fields.VA and (not self.mountInParty or not IsItemInRange(88589, "mouseover")) then
+		XRPCursorBook_OnUpdate(self, 0)
 		self:Show()
 	else
 		self:Hide()
