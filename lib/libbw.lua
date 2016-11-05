@@ -16,8 +16,7 @@
 	libbw is partly based upon ChatThrottleLib, written by Mikk. This
 	fork/rewrite adds support for Battle.net (BattleTag/RealID) communications,
 	doesn't handle ancient WoW versions, and trusts the Lua garbage collector
-	to do its job. As of version 4, it also takes advantage of newer features
-	in the WoW API, such as C_Timer.NewTicker().
+	to do its job.
 
 	libbw provides throttling for outgoing communication in order to avoid
 	situations where communications either trigger disconnects (with in-game
@@ -36,9 +35,7 @@
 	Blizzard. In addition, each function takes up to four additional arguments:
 		- priority: ALERT, NORMAL, BULK (defaults to NORMAL).
 		- queue: Aribtrary value. Messages in the same queue and priority are
-		  guaranteed to be sent in-order for most data. SendChatMessage() with
-		  types of SAY, YELL, and EMOTE are not guaranteed to be in-order when
-		  combined with other types of messages.
+		  guaranteed to be sent in-order for most data.
 		- callbackFunction: A function to call when message is sent or dropped.
 		  This is called in protected mode so ANY errors will NOT be displayed.
 		- callbackArgument: The first argument provided to callbackFunction
@@ -47,11 +44,11 @@
 
 	Please keep in mind that empty arguments should be filled with nil if you
 	intend to provide later arguments. For instance, a SendAddonMessage to
-	GUILD with an ALERT priority and a callback should be called like:
+	GUILD with an ALERT priority should be called like:
 		- libbw:SendAddonMessage(prefix, message, "GUILD", nil, "ALERT")
 ]]
 
-local LIBBW_VERSION = 9
+local LIBBW_VERSION = 10
 
 if libbw and libbw.version >= LIBBW_VERSION then return end
 
@@ -102,6 +99,13 @@ if not libbw or libbw.version < 4 then
 else
 	libbw.bundled = ...
 	libbw.version = LIBBW_VERSION
+end
+
+local function SafeCall(func, ...)
+	local success, message = pcall(func, ...)
+	if not success then
+		geterrorhandler()(message)
+	end
 end
 
 local function UpdateAvail(pool)
@@ -161,7 +165,7 @@ local function RunQueue()
 									isSending = false
 								end
 								if message.callbackFn then
-									pcall(message.callbackFn, message.callbackArg, didSend)
+									SafeCall(message.callbackFn, message.callbackArg, didSend)
 								end
 							end
 						end
@@ -236,7 +240,7 @@ function libbw:SendAddonMessage(prefix, text, kind, target, priorityName, queueN
 		SendAddonMessage(prefix, text, kind, target)
 		isSending = false
 		if callbackFn then
-			pcall(callbackFn, callbackArg, true)
+			SafeCall(callbackFn, callbackArg, true)
 		end
 		return
 	end
@@ -294,7 +298,7 @@ function libbw:SendChatMessage(text, kind, languageID, target, priorityName, que
 		SendChatMessage(text, kind, languageID, target)
 		isSending = false
 		if callbackFn then
-			pcall(callbackFn, callbackArg, true)
+			SafeCall(callbackFn, callbackArg, true)
 		end
 		return
 	end
@@ -334,7 +338,7 @@ function libbw:BNSendGameData(bnetIDGameAccount, prefix, text, priorityName, que
 		BNSendGameData(bnetIDGameAccount, prefix, text)
 		isSending = false
 		if callbackFn then
-			pcall(callbackFn, callbackArg, didSend)
+			SafeCall(callbackFn, callbackArg, didSend)
 		end
 		return
 	end
@@ -372,7 +376,7 @@ function libbw:BNSendWhisper(bnetIDAccount, text, priorityName, queueName, callb
 		BNSendWhisper(bnetIDAccount, text)
 		isSending = false
 		if callbackFn then
-			pcall(callbackFn, callbackArg, didSend)
+			SafeCall(callbackFn, callbackArg, didSend)
 		end
 		return
 	end
