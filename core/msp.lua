@@ -626,7 +626,6 @@ function gameEvents.GROUP_ROSTER_UPDATE(event)
 	inGroup = newInGroup
 end
 
-
 function gameEvents.FRIENDLIST_UPDATE(event)
 	if not friends then return end
 	table.wipe(friends)
