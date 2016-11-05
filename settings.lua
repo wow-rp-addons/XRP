@@ -409,12 +409,14 @@ local function InitializeSavedVariables()
 	end
 end
 
+local SafeCall = _xrp.SafeCall
+
 function _xrp.SavedVariableSetup()
 	InitializeSavedVariables()
 	if (xrpAccountSaved.dataVersion or 1) < DATA_VERSION_ACCOUNT then
 		for i = (xrpAccountSaved.dataVersion or 1) + 1, DATA_VERSION_ACCOUNT do
 			if upgradeAccountVars[i] then
-				upgradeAccountVars[i]()
+				SafeCall(upgradeAccountVars[i])
 			end
 		end
 		xrpAccountSaved.dataVersion = DATA_VERSION_ACCOUNT
@@ -422,7 +424,7 @@ function _xrp.SavedVariableSetup()
 	if (xrpSaved.dataVersion or 1) < DATA_VERSION then
 		for i = (xrpSaved.dataVersion or 1) + 1, DATA_VERSION do
 			if upgradeVars[i] then
-				upgradeVars[i]()
+				SafeCall(upgradeVars[i])
 			end
 		end
 		xrpSaved.dataVersion = DATA_VERSION
@@ -446,7 +448,7 @@ end
 function _xrp.LoadSettings()
 	for xrpTable, category in pairs(_xrp.settingsToggles) do
 		for xrpSetting, func in pairs(category) do
-			func(_xrp.settings[xrpTable][xrpSetting], xrpSetting)
+			SafeCall(func, _xrp.settings[xrpTable][xrpSetting], xrpSetting)
 		end
 	end
 end

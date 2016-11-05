@@ -32,13 +32,21 @@ _xrp.DoNothing = function() end
 _xrp.weakMeta = { __mode = "v" }
 _xrp.weakKeyMeta = { __mode = "k" }
 
+local function SafeCall(func, ...)
+	local success, message = pcall(func, ...)
+	if not success then
+		geterrorhandler()(message)
+	end
+end
+_xrp.SafeCall = SafeCall
+
 local events = {}
 function _xrp.FireEvent(event, ...)
 	if not events[event] then
 		return false
 	end
 	for func, isFunc in pairs(events[event]) do
-		pcall(func, event, ...)
+		SafeCall(func, event, ...)
 	end
 	return true
 end
@@ -94,7 +102,7 @@ function _xrp.UnhookGameEvent(event, func)
 end
 frame:SetScript("OnEvent", function(self, event, ...)
 	for func, isFunc in pairs(gameEvents[event]) do
-		func(event, ...)
+		SafeCall(func, event, ...)
 	end
 	if event == "ADDON_LOADED" and ... == FOLDER or event == "PLAYER_LOGIN" then
 		gameEvents[event] = nil
