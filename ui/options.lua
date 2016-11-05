@@ -339,13 +339,13 @@ function XRPOptionsCheckButton_OnDisable(self)
 	end
 end
 
-local settingsList = {}
+local channelsList = {}
 
 local function Channels_Checked(self)
-	return settingsList[self.arg1].value
+	return channelsList[self.arg1].value
 end
 local function Channels_OnClick(self, channel, arg2, checked)
-	settingsList[channel].value = checked
+	channelsList[channel].value = checked
 	_xrp.settings.chat[channel] = checked or nil
 end
 
@@ -361,8 +361,8 @@ end
 local function AddChannel(channel, menuList)
 	local setting = _xrp.settings.chat[channel] or false
 	local oldSetting = setting
-	if not settingsList[channel] then
-		settingsList[channel] = { value = setting, oldValue = oldSetting }
+	if not channelsList[channel] then
+		channelsList[channel] = { value = setting, oldValue = oldSetting }
 	end
 	menuList[#menuList + 1] = { text = channel:match("^CHANNEL_(.+)"):lower():gsub("^%l", string.upper), arg1 = channel, isNotRadio = true, checked = Channels_Checked, func = Channels_OnClick, keepShownOnClick = true, }
 end
@@ -373,29 +373,29 @@ XRPOptionsChatChannels_Mixin = {
 		local seenChannels = {}
 		for i, name in ipairs(ChannelsTable(GetChannelList())) do
 			local channel = "CHANNEL_" .. name:upper()
-			AddChannel(channel, self.baseMenuList, settingsList)
+			AddChannel(channel, self.baseMenuList, channelsList)
 			seenChannels[channel] = true
 		end
 		for channel, setting in pairs(_xrp.settings.chat) do
 			if not seenChannels[channel] and channel:find("^CHANNEL_") then
-				AddChannel(channel, self.baseMenuList, settingsList)
+				AddChannel(channel, self.baseMenuList, channelsList)
 				seenChannels[channel] = true
 			end
 		end
 	end,
 	CustomOkay = function(self)
-		for channel, control in pairs(settingsList) do
+		for channel, control in pairs(channelsList) do
 			control.oldValue = control.value
 		end
 	end,
 	CustomDefault = function(self)
-		for channel, control in pairs(settingsList) do
+		for channel, control in pairs(channelsList) do
 			_xrp.settings.chat[channel] = nil
 			control.value = nil
 		end
 	end,
 	CustomCancel = function(self)
-		for channel, control in pairs(settingsList) do
+		for channel, control in pairs(channelsList) do
 			_xrp.settings.chat[channel] = control.oldValue
 			control.value = control.oldValue
 		end
