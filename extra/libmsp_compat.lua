@@ -53,14 +53,15 @@ msp.callback = {
 	received = {},
 }
 
+local SafeCall = _xrp.SafeCall
 xrp.HookEvent("RECEIVE", function(event, name)
 	for i, func in ipairs(msp.callback.received) do
-		pcall(func, name)
+		SafeCall(func, name)
 		local ambiguated = Ambiguate(name, "none")
 		if ambiguated ~= name then
 			-- Some unmaintained code expects names without realms for
 			-- same-realm.
-			pcall(func, ambiguated)
+			SafeCall(func, ambiguated)
 		end
 	end
 end)
