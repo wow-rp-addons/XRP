@@ -106,7 +106,7 @@ local timeTable = setmetatable({}, {
 local emptyMeta = { __newindex = _xrp.DoNothing, __metatable = false, }
 local emptyTable = setmetatable({}, emptyMeta)
 
-local emptychar = setmetatable({
+local emptyChar = setmetatable({
 	field = setmetatable({}, { __index = function() return "" end, __newindex = _xrp.DoNothing, __metatable = false, }),
 	ver = emptyTable,
 	time = emptyTable,
@@ -129,7 +129,7 @@ msp.char = setmetatable({}, {
 			mspChars[name] = character
 			return mspChars[name]
 		end
-		return emptychar -- LibMSP never returns nil.
+		return emptyChar -- LibMSP never returns nil.
 	end,
 	__newindex = _xrp.DoNothing,
 	__metatable = false,
@@ -169,16 +169,13 @@ function msp:Request(name, fields)
 	return _xrp.Request(xrp.FullName(name), fields)
 end
 
--- Used by GHI... Working with the cache since GHI expects values to be
--- present if we know about someone. Real weird, since this is all-but-
--- explicitly noted as an internal LibMSP function in the library...
+-- Used by GHI.
 function msp:PlayerKnownAbout(name)
 	name = xrp.FullName(name)
 	return name == _xrp.playerWithRealm or xrpCache[name] ~= nil
 end
 
--- Dummy function. Updates are processed as they're set in XRP. Benefits of
--- a more tightly-integrated MSP implementation.
+-- Dummy function. Updates are processed as they're set in XRP.
 function msp:Update()
 	return false
 end
@@ -188,20 +185,7 @@ function msp:Send()
 	return 0, 0
 end
 
--- Dummy functions for libmspx v2 enable/disable system.
-msp.Enable = _xrp.DoNothing
-msp.Disable = _xrp.DoNothing
-
-function msp:IsEnabled()
-	return true
-end
-
 setmetatable(msp, {
-	__index = function(self, key)
-		if key == "player" then
-			return _xrp.playerWithRealm
-		end
-	end,
 	__newindex = _xrp.DoNothing,
 	__metatable = false,
 })
