@@ -425,13 +425,6 @@ _xrp.settingsToggles.display.movableViewer = function(setting)
 		HideUIPanel(XRPViewer)
 	end
 	if setting then
-		XRPViewer:SetAttribute("UIPanelLayout-defined", false)
-		XRPViewer:SetAttribute("UIPanelLayout-enabled", false)
-		XRPViewer:SetMovable(true)
-		XRPViewer:SetFrameStrata("HIGH")
-		if not XRPViewer:GetPoint() then
-			XRPViewer:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 50, -125)
-		end
 		if not XRPViewer.TitleRegion then
 			XRPViewer.TitleRegion = CreateFrame("Frame", nil, XRPViewer)
 			XRPViewer.TitleRegion:SetScript("OnDragStart", function(self, button)
@@ -443,6 +436,13 @@ _xrp.settingsToggles.display.movableViewer = function(setting)
 			XRPViewer.TitleRegion:EnableMouse(true)
 			XRPViewer.TitleRegion:RegisterForDrag("LeftButton")
 			XRPViewer.TitleRegion:SetAllPoints("XRPViewerTitleBg")
+		end
+		XRPViewer:SetAttribute("UIPanelLayout-defined", false)
+		XRPViewer:SetAttribute("UIPanelLayout-enabled", false)
+		XRPViewer:SetMovable(true)
+		XRPViewer:SetFrameStrata("HIGH")
+		if not XRPViewer:GetPoint() then
+			XRPViewer:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 50, -125)
 		end
 		XRPViewer.TitleRegion:Show()
 		_xrp.settingsToggles.display.closeOnEscapeViewer(_xrp.settings.display.closeOnEscapeViewer)
