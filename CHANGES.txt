@@ -1,16 +1,15 @@
-7.1.0.1 (2016-10-26):
+7.1.0.2 (2016-11-07):
 
-	- (7.1.0.1) Fixed issues with Viewer movement (including other things
-	  breaking, such as tooltip, right-click viewing, etc.).
+	- The cursor book icon will no longer flicker briefly on the screen at its
+	  last location prior to being displayed.
 
-	- Updated for 7.1 compatibility.
+	- Water Elementals (Frost Mage) will once again properly display their
+	  class color.
 
-	- Increased logout timer to fifteen minutes (up from ten).
+	- Latency spike tolerance for hiding player not found errors has been
+	  increased to 5 seconds (from 2 seconds).
 
-	- Fixed Shadowform detection for its return as a non-innate form.
+	- In cases of problems, more Lua errors will now be shown, but those
+	  errors are less likely to cause other failures.
 
-	- Fixed right-click profile book appearing when mousing over the player's
-	  power display (player's own nameplate).
-
-	- Fixed tooltip eye icon appearing when the player was targeting
-	  themselves.
+	- Some more taint issues have (hopefully) been fixed.
