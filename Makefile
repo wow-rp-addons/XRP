@@ -17,10 +17,12 @@ build/xrp-%.zip:
 	git archive --prefix=XRP/ v$* | tar -xC $(@D)/tmp-$*/
 	cd $(@D)/tmp-$*/ && zip -q -D -X -l -9 -r $(CURDIR)/$@ XRP/ -x XRP/Makefile XRP/CHANGES.txt XRP/.gitignore
 	rm -rf $(@D)/tmp-$*/
+	touch -m -d '$(shell date -d '$(shell git log --date=local -1 --format=%ai v$*)')' $(CURDIR)/$@
 
 build/xrp-%.zip.SHA256: build/xrp-%.zip
 	sha256sum $< >> $@
 	sed -i 's#$(@D)/##' $@
+	touch -m -d '$(shell date -d '$(shell git log --date=local -1 --format=%ai v$*)')' $@
 
 build/xrp-%.CHANGELOG: build/xrp-%.zip.SHA256
 	git rev-parse v$* > /dev/null
@@ -29,6 +31,7 @@ build/xrp-%.CHANGELOG: build/xrp-%.zip.SHA256
 	echo >> $@
 	echo "SHA256:" >> $@
 	cat $< >> $@
+	touch -m -d '$(shell date -d '$(shell git log --date=local -1 --format=%ai v$*)')' $@
 
 upload-curse: upload-curse-$(NEW_VERSION)
 
