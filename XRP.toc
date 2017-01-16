@@ -1,7 +1,7 @@
 ## Interface: 70100
 ## Title: XRP
 ## Version: 7.1.0.2
-## Author: Bor of Wyrmrest Accord (US)
+## Author: Bor Blasthammer
 ## Notes: A pretty good roleplaying profile addon.
 ## X-Category: Roleplay
 ## X-License: GPLv3
