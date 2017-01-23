@@ -159,7 +159,7 @@ local function GroupSent(fields)
 end
 
 local function Send(name, dataTable, channel, isRequest)
-	local data = table.concat(dataTable, "\1")
+	local data = table.concat(dataTable, "\001")
 
 	local bnetIDGameAccount
 	if not channel or channel == "BN" then
@@ -179,14 +179,14 @@ local function Send(name, dataTable, channel, isRequest)
 			libbw:BNSendGameData(bnetIDGameAccount, "MSP", data, isRequest and "ALERT" or "NORMAL", queue)
 		else
 			-- Guess five added characters from metadata.
-			data = ("XC=%d\1%s"):format(((#data + 5) / 4078) + 1, data)
-			libbw:BNSendGameData(bnetIDGameAccount, "MSP\1", data:sub(1, 4078), "BULK", queue)
+			data = ("XC=%d\001%s"):format(((#data + 5) / 4078) + 1, data)
+			libbw:BNSendGameData(bnetIDGameAccount, "MSP\001", data:sub(1, 4078), "BULK", queue)
 			local position = 4079
 			while position + 4078 <= #data do
-				libbw:BNSendGameData(bnetIDGameAccount, "MSP\2", data:sub(position, position + 4077), "BULK", queue)
+				libbw:BNSendGameData(bnetIDGameAccount, "MSP\002", data:sub(position, position + 4077), "BULK", queue)
 				position = position + 4078
 			end
-			libbw:BNSendGameData(bnetIDGameAccount, "MSP\3", data:sub(position), "BULK", queue)
+			libbw:BNSendGameData(bnetIDGameAccount, "MSP\003", data:sub(position), "BULK", queue)
 		end
 	end
 	if channel == "BN" then return end
@@ -209,22 +209,22 @@ local function Send(name, dataTable, channel, isRequest)
 			libbw:SendAddonMessage("MSP", data, "WHISPER", name, isRequest and "ALERT" or "NORMAL", queue, AddFilter, name)
 		else
 			-- Guess six added characters from metadata.
-			data = ("XC=%d\1%s"):format(((#data + 6) / 255) + 1, data)
+			data = ("XC=%d\001%s"):format(((#data + 6) / 255) + 1, data)
 
-			libbw:SendAddonMessage("MSP\1", data:sub(1, 255), "WHISPER", name, "BULK", queue, AddFilter, name)
+			libbw:SendAddonMessage("MSP\001", data:sub(1, 255), "WHISPER", name, "BULK", queue, AddFilter, name)
 
 			local position = 256
 			while position + 255 <= #data do
 
-				libbw:SendAddonMessage("MSP\2", data:sub(position, position + 254), "WHISPER", name, "BULK", queue, AddFilter, name)
+				libbw:SendAddonMessage("MSP\002", data:sub(position, position + 254), "WHISPER", name, "BULK", queue, AddFilter, name)
 				position = position + 255
 			end
 
-			libbw:SendAddonMessage("MSP\3", data:sub(position), "WHISPER", name, "BULK", queue, AddFilter, name)
+			libbw:SendAddonMessage("MSP\003", data:sub(position), "WHISPER", name, "BULK", queue, AddFilter, name)
 		end
 	else -- GMSP
 		channel = channel ~= "GAME" and channel or IsInGroup(LE_PARTY_CATEGORY_INSTANCE) and "INSTANCE_CHAT" or "RAID"
-		local prepend = isRequest and name .. "\30" or ""
+		local prepend = isRequest and name .. "\030" or ""
 		local chunkSize = 255 - #prepend
 
 		if #data <= chunkSize then
@@ -233,7 +233,7 @@ local function Send(name, dataTable, channel, isRequest)
 			chunkSize = chunkSize - 1
 
 			-- Guess six added characters from metadata.
-			local chunkString = ("XC=%d\1"):format(((#data + 6) / chunkSize) + 1)
+			local chunkString = ("XC=%d\001"):format(((#data + 6) / chunkSize) + 1)
 			data = chunkString .. data
 
 			-- Which fields are in which messages is tracked so that they won't
@@ -246,7 +246,7 @@ local function Send(name, dataTable, channel, isRequest)
 				for i, chunk in ipairs(dataTable) do
 					total = total + #chunk
 					if i ~= totalFields then
-						total = total + 1 -- +1 for the \1 separator byte.
+						total = total + 1 -- +1 for the \001 separator byte.
 					end
 					local field = chunk:match("^(%u%u)")
 					if field then
@@ -263,18 +263,18 @@ local function Send(name, dataTable, channel, isRequest)
 			end
 
 			local messageFields = fields and fields[1]
-			libbw:SendAddonMessage("GMSP", ("%s\1%s"):format(prepend, data:sub(1, chunkSize)), channel, name, "BULK", "XRP-GROUP", messageFields and GroupSent, messageFields)
+			libbw:SendAddonMessage("GMSP", ("%s\001%s"):format(prepend, data:sub(1, chunkSize)), channel, name, "BULK", "XRP-GROUP", messageFields and GroupSent, messageFields)
 
 			local position, messageNum = chunkSize + 1, 2
 			while position + chunkSize <= #data do
 				messageFields = fields and fields[messageNum]
-				libbw:SendAddonMessage("GMSP", ("%s\2%s"):format(prepend, data:sub(position, position + chunkSize - 1)), channel, name, "BULK", "XRP-GROUP", messageFields and GroupSent, messageFields)
+				libbw:SendAddonMessage("GMSP", ("%s\002%s"):format(prepend, data:sub(position, position + chunkSize - 1)), channel, name, "BULK", "XRP-GROUP", messageFields and GroupSent, messageFields)
 				position = position + chunkSize
 				messageNum = messageNum + 1
 			end
 
 			messageFields = fields and fields[messageNum]
-			libbw:SendAddonMessage("GMSP", ("%s\3%s"):format(prepend, data:sub(position)), channel, name, "BULK", "XRP-GROUP", messageFields and GroupSent, messageFields)
+			libbw:SendAddonMessage("GMSP", ("%s\003%s"):format(prepend, data:sub(position)), channel, name, "BULK", "XRP-GROUP", messageFields and GroupSent, messageFields)
 		end
 	end
 end
@@ -326,8 +326,8 @@ local function Process(name, command, isGroup)
 					local contents = xrp.current[field]
 					tooltip[#tooltip + 1] = not contents and field or ("%s%.0f=%s"):format(field, _xrp.versions[field], contents)
 				end
-				local newtt = table.concat(tooltip, "\1")
-				tt = ("%s\1TT%.0f"):format(newtt, newtt ~= xrpSaved.oldtt and _xrp.NewVersion("TT", newtt) or xrpSaved.versions.TT)
+				local newtt = table.concat(tooltip, "\001")
+				tt = ("%s\001TT%.0f"):format(newtt, newtt ~= xrpSaved.oldtt and _xrp.NewVersion("TT", newtt) or xrpSaved.versions.TT)
 				xrpSaved.oldtt = newtt
 			end
 			if version == xrpSaved.versions.TT then
@@ -418,7 +418,7 @@ local handlers
 handlers = {
 	["MSP"] = function(name, message, channel)
 		local out
-		for command in message:gmatch("([^\1]+)\1*") do
+		for command in message:gmatch("([^\001]+)\001*") do
 			local response = Process(name, command, channel ~= "WHISPER" and channel ~= "BN")
 			if response then
 				if not out then
@@ -461,37 +461,37 @@ handlers = {
 			Send(name, TT_REQ, channel, true)
 		end
 	end,
-	["MSP\1"] = function(name, message, channel)
-		local totalChunks = tonumber(message:match("^XC=(%d+)\1"))
+	["MSP\001"] = function(name, message, channel)
+		local totalChunks = tonumber(message:match("^XC=(%d+)\001"))
 		if totalChunks then
 			if totalChunks < 512 then
 				cache[name].totalChunks = totalChunks
 			end
-			message = message:gsub("^XC=%d+\1", "")
+			message = message:gsub("^XC=%d+\001", "")
 		end
 		-- Queries (i.e., "?TT") are processed only after receive finishes.
-		for command in message:gmatch("([^\1]+)\1") do
+		for command in message:gmatch("([^\001]+)\001") do
 			if command:find("^[^%?]") then
 				Process(name, command)
-				message = message:gsub(command:gsub("(%W)","%%%1") .. "\1", "")
+				message = message:gsub(command:gsub("(%W)","%%%1") .. "\001", "")
 			end
 		end
 		cache[name].chunks = 1
 		cache[name][channel] = message
 		_xrp.FireEvent("CHUNK", name, 1, totalChunks)
 	end,
-	["MSP\2"] = function(name, message, channel)
+	["MSP\002"] = function(name, message, channel)
 		local buffer = cache[name][channel]
 		-- If we don't have a buffer (i.e., no prior received message), still
 		-- try to process as many full commands as we can.
 		if not buffer then
-			message = message:match("^.-\1(.+)$")
+			message = message:match("^.-\001(.+)$")
 			if not message then return end
 			buffer = { "", partial = true }
 			cache[name][channel] = buffer
 		end
 		-- Only merge the contents if there's an end-of-command to process.
-		if message:find("\1", nil, true) then
+		if message:find("\001", nil, true) then
 			if type(buffer) == "string" then
 				message = buffer .. message
 			else
@@ -501,10 +501,10 @@ handlers = {
 				buffer[#buffer + 1] = message
 				message = table.concat(buffer)
 			end
-			for command in message:gmatch("([^\1]+)\1") do
+			for command in message:gmatch("([^\001]+)\001") do
 				if command:find("^[^%?]") then
 					Process(name, command)
-					message = message:gsub(command:gsub("(%W)","%%%1") .. "\1", "")
+					message = message:gsub(command:gsub("(%W)","%%%1") .. "\001", "")
 				end
 			end
 			if cache[name].partialMessage then
@@ -523,12 +523,12 @@ handlers = {
 		cache[name].chunks = (cache[name].chunks or 0) + 1
 		_xrp.FireEvent("CHUNK", name, cache[name].chunks, cache[name].totalChunks)
 	end,
-	["MSP\3"] = function(name, message, channel)
+	["MSP\003"] = function(name, message, channel)
 		local buffer = cache[name][channel]
 		-- If we don't have a buffer (i.e., no prior received message), still
 		-- try to process as many full commands as we can.
 		if not buffer then
-			message = message:match("^.-\1(.+)$")
+			message = message:match("^.-\001(.+)$")
 			if not message then return end
 			buffer = ""
 			cache[name].partialMessage = true
@@ -554,10 +554,10 @@ handlers = {
 	end,
 	["GMSP"] = function(name, message, channel)
 		local target, prefix
-		if message:find("\30", nil, true) then
-			target, prefix, message = message:match("^(.-)\30([\1\2\3]?)(.+)$")
+		if message:find("\030", nil, true) then
+			target, prefix, message = message:match("^(.-)\030([\001\002\003]?)(.+)$")
 		else
-			prefix, message = message:match("^([\1\2\3]?)(.+)$")
+			prefix, message = message:match("^([\001\002\003]?)(.+)$")
 		end
 		if target and target ~= _xrp.playerWithRealm then return end
 		handlers["MSP" .. prefix](name, message, channel)

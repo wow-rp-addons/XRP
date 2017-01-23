@@ -37,13 +37,13 @@ local FORM_NAMES = {
 	["SHADOWFORM"] = _xrp.L.SHADOWFORM,
 	["GHOSTWOLF"] = _xrp.L.GHOST_WOLF,
 	["HUMAN"] = xrp.L.VALUES.GR.Human,
-	["DEFAULT\30SHADOWFORM"] = _xrp.L.WORGEN_SHADOW,
-	["HUMAN\30SHADOWFORM"] = _xrp.L.HUMAN_SHADOW,
+	["DEFAULT\030SHADOWFORM"] = _xrp.L.WORGEN_SHADOW,
+	["HUMAN\030SHADOWFORM"] = _xrp.L.HUMAN_SHADOW,
 	["MERCENARY"] = _xrp.L.MERCENARY,
 }
 
 local function MakeWords(text)
-	local form, equipment = text:match("^([^\29]+)\29?([^\29]*)$")
+	local form, equipment = text:match("^([^\029]+)\029?([^\029]*)$")
 	if not equipment or equipment == "" then
 		return FORM_NAMES[form]
 	elseif not isWorgen and not playerClass then
@@ -165,7 +165,7 @@ XRPEditorAutomationForm_Mixin = {
 				local name = GetEquipmentSetInfo(i)
 				equipSets[#equipSets + 1] = {
 					text = name,
-					value = "\29" .. name,
+					value = "\029" .. name,
 					checked = equipSets_Check,
 					func = equipSets_Click,
 				}
@@ -275,16 +275,16 @@ if isWorgen then
 				menuList = equipSets,
 			},
 			{ -- Shadowform (Worgen)
-				text = FORM_NAMES["DEFAULT\30SHADOWFORM"],
-				value = "DEFAULT\30SHADOWFORM",
+				text = FORM_NAMES["DEFAULT\030SHADOWFORM"],
+				value = "DEFAULT\030SHADOWFORM",
 				func = forms_Click,
 				checked = forms_Check,
 				hasArrow = true,
 				menuList = equipSets,
 			},
 			{ -- Shadowform (Human)
-				text = FORM_NAMES["HUMAN\30SHADOWFORM"],
-				value = "HUMAN\30SHADOWFORM",
+				text = FORM_NAMES["HUMAN\030SHADOWFORM"],
+				value = "HUMAN\030SHADOWFORM",
 				func = forms_Click,
 				checked = forms_Check,
 				hasArrow = true,
@@ -450,8 +450,8 @@ function XRPEditorAutomation_OnShow(self)
 		selectedForm = "DEFAULT"
 		self.Form.contents = "DEFAULT"
 		self.Form.Text:SetText(MakeWords("DEFAULT"))
-	elseif selectedForm:find("\29", nil, true) then
-		if not GetEquipmentSetInfoByName(selectedForm:match("^.*\29(.+)$")) then
+	elseif selectedForm:find("\029", nil, true) then
+		if not GetEquipmentSetInfoByName(selectedForm:match("^.*\029(.+)$")) then
 			selectedForm = "DEFAULT"
 			self.Form.Text:SetText(MakeWords(selectedForm))
 			self.Form.contents = selectedForm
@@ -459,8 +459,8 @@ function XRPEditorAutomation_OnShow(self)
 		end
 	end
 	for form, profile in pairs(unsaved) do
-		if form:find("\29", nil, true) then
-			if not GetEquipmentSetInfoByName(selectedForm:match("^.*\29(.+)$")) or not xrp.profiles[profile] then
+		if form:find("\029", nil, true) then
+			if not GetEquipmentSetInfoByName(selectedForm:match("^.*\029(.+)$")) or not xrp.profiles[profile] then
 				unsaved[form] = nil
 			end
 		end
