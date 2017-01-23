@@ -144,13 +144,13 @@ local characterMeta = {
 
 local function SortString(sortType, name, cache)
 	if sortType == "date" then
-		return ("%d\30%s"):format(cache.lastReceive, name)
+		return ("%d\030%s"):format(cache.lastReceive, name)
 	elseif sortType == "NA" then
-		return ("%s\30%s"):format((xrp.Strip(cache.fields.NA) or name):lower(), name)
+		return ("%s\030%s"):format((xrp.Strip(cache.fields.NA) or name):lower(), name)
 	elseif sortType == "realm" then
-		return ("%s\30%s"):format(name:match("%-([^%-]+)$"), name)
+		return ("%s\030%s"):format(name:match("%-([^%-]+)$"), name)
 	end
-	return ("%s\30%s"):format(name:lower(), name)
+	return ("%s\030%s"):format(name:lower(), name)
 end
 
 local function SortAsc(a, b)
@@ -311,7 +311,7 @@ xrp.characters = {
 			table.sort(results)
 		end
 		for i, result in ipairs(results) do
-			results[i] = result:match("^.-\30(.+)$")
+			results[i] = result:match("^.-\030(.+)$")
 		end
 		results.totalCount = totalCount
 		return results

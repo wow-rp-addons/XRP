@@ -126,16 +126,16 @@ local function DoSwap()
 	if not _xrp.auto[form] and race then
 		-- RACE-CLASS-Equipment (Worgen only)
 		if class and equip then
-			form = ("%s\30%s\29%s"):format(race, class, equip)
+			form = ("%s\030%s\029%s"):format(race, class, equip)
 		end
 		-- RACE-CLASS (Worgen only)
 		if not _xrp.auto[form] and class then
-			form = ("%s\30%s"):format(race, class)
+			form = ("%s\030%s"):format(race, class)
 		end
 	end
 	-- RACE-Equipment (Worgen only)/CLASS-Equipment
 	if not _xrp.auto[form] and (race or class) and equip then
-		form = ("%s\29%s"):format(race or class, equip)
+		form = ("%s\029%s"):format(race or class, equip)
 	end
 	-- RACE (Worgen only)/CLASS
 	if not _xrp.auto[form] and (race or class) then
@@ -143,18 +143,18 @@ local function DoSwap()
 	end
 	-- DEFAULT-CLASS-Equipment (Worgen only)
 	if not _xrp.auto[form] and race and race ~= "DEFAULT" and class and equip then
-		form = ("DEFAULT\30%s\29%s"):format(class, equip)
+		form = ("DEFAULT\030%s\029%s"):format(class, equip)
 	end
 	-- DEFAULT-Equipment
 	if not _xrp.auto[form] and equip then
-		form = ("DEFAULT\29%s"):format(equip)
+		form = ("DEFAULT\029%s"):format(equip)
 	end
 	-- DEFAULT
 	if not _xrp.auto[form] then
 		form = "DEFAULT"
 	end
 
-	--print(form and (form:gsub("\30", "-"):gsub("\29", "-")) or "NONE")
+	--print(form and (form:gsub("\030", "-"):gsub("\029", "-")) or "NONE")
 	if not _xrp.auto[form] then
 		return
 	end
@@ -232,7 +232,7 @@ _xrp.HookGameEvent("ADDON_LOADED", function(event, addon)
 		if not xrpSaved.profiles[profile] then
 			xrpSaved.auto[form] = nil
 		else
-			local form1, form2, equipSet = form:match("^([^\30\29]+)\30?([^\30\29]*)\29?(.*)$")
+			local form1, form2, equipSet = form:match("^([^\030\029]+)\030?([^\030\029]*)\029?(.*)$")
 			if form1 ~= "" and not validForms[form1] or form2 ~= "" and not validForms[form2] then
 				xrpSaved.auto[form] = nil
 				importantRemove = true
