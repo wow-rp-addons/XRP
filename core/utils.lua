@@ -189,11 +189,11 @@ function xrp.MergeCurrently(CU, CO)
 	elseif CU and not CO then
 		return CU
 	elseif not CU then
-		return _xrp.L.OOC_TEXT:format(CO)
+		return _xrp.L.OOC_TEXT:format(CO:match(_xrp.L.OOC_STRIP) or CO)
 	elseif CU:find("\n", nil, true) or CO:find("\n", nil, true) then
-		return ("%s\n\n%s"):format(CU, _xrp.L.OOC_TEXT:format(CO))
+		return ("%s\n\n%s"):format(CU, _xrp.L.OOC_TEXT:format(CO:match(_xrp.L.OOC_STRIP) or CO))
 	end
-	return ("%s %s"):format(CU, _xrp.L.OOC_TEXT:format(CO))
+	return ("%s %s"):format(CU, _xrp.L.OOC_TEXT:format(CO:match(_xrp.L.OOC_STRIP) or CO))
 end
 
 function xrp.Status(desiredStatus)
