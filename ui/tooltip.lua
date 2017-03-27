@@ -393,8 +393,10 @@ local function SetUnit(unit)
 
 		if not owner or not petLabel then return end
 
+		currentUnit.character = xrp.characters.byName[owner]
+
 		local isOwnPet = UnitIsUnit(unit, "playerpet")
-		currentUnit.faction = UnitFactionGroup(unit) or (isOwnPet or owner == _xrp.player) and playerFaction or "Neutral"
+		currentUnit.faction = UnitFactionGroup(unit) or (isOwnPet or owner == _xrp.player) and playerFaction or currentUnit.character.fields.GF or "Neutral"
 
 		local name = UnitName(unit)
 		local color = COLORS[(UnitIsEnemy("player", unit) or attackMe and meAttack) and "hostile" or (meAttack or attackMe) and "neutral" or "friendly"]
@@ -421,8 +423,6 @@ local function SetUnit(unit)
 		currentUnit.titleRealm = (colorblind and _xrp.L.ASIDE or "%s"):format(realm and _xrp.L.NAME_REALM:format(petLabel, xrp.RealmDisplayName(realm)) or petLabel, colorblind and xrp.L.VALUES.GF[currentUnit.faction])
 
 		currentUnit.reaction = colorblind and GetText(REACTION:format(UnitReaction("player", unit)), UnitSex(unit))
-
-		currentUnit.character = xrp.characters.byName[owner]
 
 		local level = UnitLevel(unit)
 		local effectiveLevel = UnitEffectiveLevel(unit)
