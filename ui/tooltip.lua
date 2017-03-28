@@ -162,6 +162,13 @@ end
 local COLORS = {
 	OOC = { r = 0.6, g = 0.4, b = 0.3 },
 	IC = { r = 0.4, g = 0.7, b = 0.5 },
+	Alliance = { r = 0.38, g = 0.42, b = 1.00},
+	Horde = { r = 1.00, g = 0.38, b = 0.42},
+	Neutral = FACTION_BAR_COLORS[4],
+}
+local OLD_COLORS = {
+	OOC = COLORS.OOC,
+	IC = COLORS.IC,
 	Alliance = { r = 0.53, g = 0.56, b = 1 },
 	Horde = { r = 1, g = 0.39, b = 0.41 },
 	Neutral = { r = 1, g = 0.86, b = 0.36 },
@@ -176,6 +183,7 @@ local function RenderTooltip()
 	lineNum = 0
 	local showProfile = not (currentUnit.noProfile or currentUnit.character.hide)
 	local fields = currentUnit.character.fields
+	local COLORS = not _xrp.settings.tooltip.oldColors and COLORS or OLD_COLORS
 
 	if currentUnit.type == "player" then
 		if not replace then
@@ -266,10 +274,31 @@ local MERCENARY = {
 	Alliance = "Horde",
 	Horde = "Alliance",
 }
-local COLORS = {
-	friendly = "00991a",
-	neutral = "e6b300",
-	hostile = "cc4d38",
+local REACTION_COLORS = {
+	friendly = "|cff00991a",
+	neutral = "|cffe6b300",
+	hostile = "|cffcc4d38",
+}
+local SELECTION_COLORS = {
+	[100] = {
+		[0] = {
+			[0] = RGBTableToColorCode(FACTION_BAR_COLORS[2]), -- Red
+		},
+		[50] = {
+			[0] = RGBTableToColorCode(FACTION_BAR_COLORS[3]), -- Orange
+		},
+		[100] = {
+			[0] = RGBTableToColorCode(FACTION_BAR_COLORS[4]), -- Yellow
+		},
+	},
+	[0] = {
+		[100] = {
+			[0] = RGBTableToColorCode(FACTION_BAR_COLORS[5]), -- Green
+		},
+		[0] = {
+			[100] = RGBToColorCode(LIGHTBLUE_FONT_COLOR:GetRGB()), -- Blue
+		},
+	},
 }
 local PVP_ICON = "|TInterface\\TargetingFrame\\UI-PVP-%s:18:18:4:0:8:8:0:5:0:5|t"
 local FLAG_OFFLINE = (" |cff888888%s|r"):format(CHAT_FLAG_AFK:gsub(AFK, PLAYER_OFFLINE))
@@ -319,7 +348,14 @@ local function SetUnit(unit)
 		currentUnit.faction = (inRaid or UnitIsUnit("player", unit)) and playerFaction or currentUnit.character.fields.GF or "Neutral"
 
 		local connected = UnitIsConnected(unit)
-		local color = COLORS[(not inRaid and UnitIsEnemy("player", unit) or attackMe and meAttack) and "hostile" or (meAttack or attackMe) and "neutral" or "friendly"]
+		local color
+		if not _xrp.settings.tooltip.oldColors then
+			local r, g, b = UnitSelectionColor(unit)
+			color = SELECTION_COLORS[math.floor(r * 100 + 0.5)][math.floor(g * 100 + 0.5)][math.floor(b * 100 + 0.5)]
+		else
+			color = REACTION_COLORS[(not inRaid and UnitIsEnemy("player", unit) or attackMe and meAttack) and "hostile" or (meAttack or attackMe) and "neutral" or "friendly"]
+		end
+
 		local watchIcon = _xrp.settings.tooltip.watching and unit ~= "player" and UnitIsUnit("player", unit .. "target") and "|TInterface\\LFGFrame\\BattlenetWorking0:28:28:8:1|t"
 		local bookmarkIcon = _xrp.settings.tooltip.bookmark and currentUnit.character.bookmark and "|TInterface\\MINIMAP\\POIICONS:18:18:4:0:256:512:54:72:54:72|t"
 		local GC = currentUnit.character.fields.GC
@@ -329,7 +365,7 @@ local function SetUnit(unit)
 			-- Can only ever be one of AFK, DND, or offline.
 			local isAFK = connected and UnitIsAFK(unit)
 			local isDND = connected and not isAFK and UnitIsDND(unit)
-			currentUnit.nameFormat = ("|cff%s%%s|r%s"):format(color, not connected and FLAG_OFFLINE or isAFK and FLAG_AFK or isDND and FLAG_DND or "")
+			currentUnit.nameFormat = ("%s%%s|r%s"):format(color, not connected and FLAG_OFFLINE or isAFK and FLAG_AFK or isDND and FLAG_DND or "")
 
 			local ffa = UnitIsPVPFreeForAll(unit)
 			local pvpIcon = (UnitIsPVP(unit) or ffa) and PVP_ICON:format((ffa or currentUnit.faction == "Neutral") and "FFA" or currentUnit.faction)
@@ -370,7 +406,7 @@ local function SetUnit(unit)
 				defaultLines = defaultLines + 1
 			end
 		else
-			currentUnit.nameFormat = ("|cff%s%%s|r"):format(color)
+			currentUnit.nameFormat = ("%s%%s|r"):format(color)
 			if watchIcon or bookmarkIcon then
 				currentUnit.icons = (watchIcon or "") .. (bookmarkIcon or "")
 			else
@@ -399,8 +435,14 @@ local function SetUnit(unit)
 		currentUnit.faction = UnitFactionGroup(unit) or (isOwnPet or owner == _xrp.player) and playerFaction or currentUnit.character.fields.GF or "Neutral"
 
 		local name = UnitName(unit)
-		local color = COLORS[(UnitIsEnemy("player", unit) or attackMe and meAttack) and "hostile" or (meAttack or attackMe) and "neutral" or "friendly"]
-		currentUnit.nameFormat = ("|cff%s%s|r"):format(color, name)
+		local color
+		if not _xrp.settings.tooltip.oldColors then
+			local r, g, b = UnitSelectionColor(unit)
+			color = SELECTION_COLORS[math.floor(r * 100 + 0.5)][math.floor(g * 100 + 0.5)][math.floor(b * 100 + 0.5)]
+		else
+			color = REACTION_COLORS[(UnitIsEnemy("player", unit) or attackMe and meAttack) and "hostile" or (meAttack or attackMe) and "neutral" or "friendly"]
+		end
+		currentUnit.nameFormat = ("%s%s|r"):format(color, name)
 
 		local ffa = UnitIsPVPFreeForAll(unit)
 		currentUnit.icons = (UnitIsPVP(unit) or ffa) and PVP_ICON:format((ffa or currentUnit.faction == "Neutral") and "FFA" or currentUnit.faction)

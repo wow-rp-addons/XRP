@@ -444,6 +444,7 @@ NO_HOSTILE = "Disable roleplay information display on hostile characters"
 NO_OP_FACTION = "Disable roleplay information display on all opposite faction characters"
 NO_RP_CLASS = "Hide roleplay class information on tooltip"
 NO_RP_RACE = "Hide roleplay race information on tooltip"
+OLD_TOOLTIP_COLORS = "Use old (pre-7.2) tooltip colors"
 
 -- ui/options.xml
 LICENSE_COPYRIGHT = "License/Copyright"
