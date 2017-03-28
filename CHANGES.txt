@@ -1,15 +1,13 @@
-7.1.0.2 (2016-11-07):
+7.2.0.0 (2017-03-28):
 
-	- The cursor book icon will no longer flicker briefly on the screen at its
-	  last location prior to being displayed.
+	- Default tooltip colors have been changed for names (matching outline
+	  colors) and for factions (slightly more distinct color for Alliance,
+	  especially).
 
-	- Water Elementals (Frost Mage) will once again properly display their
-	  class color.
+		- The old colors are available in XRP's options. These may be removed
+		  at some point in the future, depending on feedback.
 
-	- Latency spike tolerance for hiding player not found errors has been
-	  increased to 5 seconds (from 2 seconds).
+	- OOC brackets are no longer sometimes duplicated in currently strings
+	  from TRP users.
 
-	- In cases of problems, more Lua errors will now be shown, but those
-	  errors are less likely to cause other failures.
-
-	- Some more taint issues have (hopefully) been fixed.
+	- Pet faction detection should work more reliably.
