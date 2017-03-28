@@ -265,6 +265,7 @@ local OPTIONS_TEXT = {
 		noOpFaction = _xrp.L.NO_OP_FACTION,
 		noClass = _xrp.L.NO_RP_CLASS,
 		noRace = _xrp.L.NO_RP_RACE,
+		oldColors = _xrp.L.OLD_TOOLTIP_COLORS,
 	},
 }
 

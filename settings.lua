@@ -96,6 +96,7 @@ _xrp.DEFAULT_SETTINGS = {
 		noOpFaction = false,
 		noClass = false,
 		noRace = false,
+		oldColors = false,
 	},
 }
 
