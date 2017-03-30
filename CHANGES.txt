@@ -1,13 +1,11 @@
-7.2.0.0 (2017-03-28):
+7.2.0.1 (2017-03-30):
 
-	- Default tooltip colors have been changed for names (matching outline
-	  colors) and for factions (slightly more distinct color for Alliance,
-	  especially).
+	- The player's own tooltip is now more responsive to changes in their own
+	  profile.
 
-		- The old colors are available in XRP's options. These may be removed
-		  at some point in the future, depending on feedback.
+	- Fixed profile automation settings for equipment sets sometimes being
+	  lost due to overzealous cleanup code.
 
-	- OOC brackets are no longer sometimes duplicated in currently strings
-	  from TRP users.
+	- Fixed Lua error related to new colors and combat.
 
-	- Pet faction detection should work more reliably.
+	- Fixed Lua error related to LDB object.
