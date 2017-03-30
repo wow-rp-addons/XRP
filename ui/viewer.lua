@@ -84,7 +84,7 @@ local META_SUPPORTED = {
 	GC = "RC",
 }
 local function FIELD(event, name, field)
-	if tostring(current) ~= name or current.noRequest then return end
+	if tostring(current) ~= name or current.noRequest or name == _xrp.playerWithRealm then return end
 	if META_SUPPORTED[field] then
 		field = META_SUPPORTED[field]
 	end
@@ -97,7 +97,10 @@ end
 
 local function RECEIVE(event, name)
 	if tostring(current) == name and not current.noRequest then
-		if failed then
+		if name == _xrp.playerWithRealm then
+			Load(current)
+			return
+		elseif failed then
 			Load(current)
 		end
 		if status ~= "received" then
@@ -108,16 +111,6 @@ local function RECEIVE(event, name)
 				XRPViewer.XC:SetText(_xrp.L.RECEIVED)
 				status = "received"
 			end
-		end
-	end
-end
-
-local function UPDATE(event, field)
-	if tostring(current) == _xrp.playerWithRealm then
-		if field then
-			FIELD("FIELD", _xrp.playerWithRealm, field)
-		else
-			Load(current)
 		end
 	end
 end
@@ -369,7 +362,6 @@ end
 xrp.HookEvent("FIELD", FIELD)
 xrp.HookEvent("RECEIVE", RECEIVE)
 xrp.HookEvent("NOCHANGE", RECEIVE)
-xrp.HookEvent("UPDATE", UPDATE)
 xrp.HookEvent("CHUNK", CHUNK)
 xrp.HookEvent("FAIL", FAIL)
 xrp.HookEvent("DROP", DROP)
