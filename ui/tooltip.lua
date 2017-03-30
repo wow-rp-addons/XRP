@@ -279,27 +279,23 @@ local REACTION_COLORS = {
 	neutral = "|cffe6b300",
 	hostile = "|cffcc4d38",
 }
-local SELECTION_COLORS = {
-	[100] = {
-		[0] = {
-			[0] = RGBTableToColorCode(FACTION_BAR_COLORS[2]), -- Red
-		},
-		[50] = {
-			[0] = RGBTableToColorCode(FACTION_BAR_COLORS[3]), -- Orange
-		},
-		[100] = {
-			[0] = RGBTableToColorCode(FACTION_BAR_COLORS[4]), -- Yellow
-		},
-	},
-	[0] = {
-		[100] = {
-			[0] = RGBTableToColorCode(FACTION_BAR_COLORS[5]), -- Green
-		},
-		[0] = {
-			[100] = RGBToColorCode(LIGHTBLUE_FONT_COLOR:GetRGB()), -- Blue
-		},
-	},
-}
+local SELECTION_COLORS = setmetatable({
+	["0000ff"] = RGBToColorCode(LIGHTBLUE_FONT_COLOR:GetRGB()), -- Blue
+	["00ff00"] = RGBTableToColorCode(FACTION_BAR_COLORS[5]), -- Green
+	["ff00ff"] = RGBTableToColorCode(FACTION_BAR_COLORS[2]), -- Red
+	["ff8000"] = RGBTableToColorCode(FACTION_BAR_COLORS[3]), -- Orange
+	["ffff00"] = RGBTableToColorCode(FACTION_BAR_COLORS[4]), -- Yellow
+}, {
+	__index = function(self, hex)
+		if hex ~= "ffff8b" then
+			return "|cffffffff"
+		end
+		if UnitIsPVP("player") then
+			return self["00ff00"]
+		end
+		return self["0000ff"]
+	end,
+})
 local PVP_ICON = "|TInterface\\TargetingFrame\\UI-PVP-%s:18:18:4:0:8:8:0:5:0:5|t"
 local FLAG_OFFLINE = (" |cff888888%s|r"):format(CHAT_FLAG_AFK:gsub(AFK, PLAYER_OFFLINE))
 local FLAG_AFK = (" |cff99994d%s|r"):format(CHAT_FLAG_AFK)
@@ -351,7 +347,7 @@ local function SetUnit(unit)
 		local color
 		if not _xrp.settings.tooltip.oldColors then
 			local r, g, b = UnitSelectionColor(unit)
-			color = SELECTION_COLORS[math.floor(r * 100 + 0.5)][math.floor(g * 100 + 0.5)][math.floor(b * 100 + 0.5)]
+			color = SELECTION_COLORS[("%02x%02x%02x"):format(math.ceil(r * 255), math.ceil(g * 255), math.ceil(b * 255))]
 		else
 			color = REACTION_COLORS[(not inRaid and UnitIsEnemy("player", unit) or attackMe and meAttack) and "hostile" or (meAttack or attackMe) and "neutral" or "friendly"]
 		end
@@ -438,7 +434,7 @@ local function SetUnit(unit)
 		local color
 		if not _xrp.settings.tooltip.oldColors then
 			local r, g, b = UnitSelectionColor(unit)
-			color = SELECTION_COLORS[math.floor(r * 100 + 0.5)][math.floor(g * 100 + 0.5)][math.floor(b * 100 + 0.5)]
+			color = SELECTION_COLORS[("%02x%02x%02x"):format(math.ceil(r * 255), math.ceil(g * 255), math.ceil(b * 255))]
 		else
 			color = REACTION_COLORS[(UnitIsEnemy("player", unit) or attackMe and meAttack) and "hostile" or (meAttack or attackMe) and "neutral" or "friendly"]
 		end
