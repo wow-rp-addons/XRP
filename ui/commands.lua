@@ -44,7 +44,7 @@ xrpCmds.currently = function(args)
 		xrp.current.CU = nil
 		local CU = xrp.current.CU
 		if CU then
-			print(XRP_HEADER:format(_xrp.L.SET_CURRENTLY_PROFILE:format(args)))
+			print(XRP_HEADER:format(_xrp.L.SET_CURRENTLY_PROFILE:format(CU)))
 		else
 			print(XRP_HEADER:format(_xrp.L.SET_CURRENTLY_BLANK_PROFILE))
 		end
