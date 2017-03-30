@@ -231,7 +231,7 @@ end
 
 local function CreateLDBObject()
 	if LDBObject then return end
-	local ldb = LibStub and LibStub:GetLibrary("LibDataBroker-1.1")
+	local ldb = LibStub and LibStub:GetLibrary("LibDataBroker-1.1", true)
 	if not ldb then return end
 	LDBObject = {
 		type = "data source",
