@@ -382,3 +382,10 @@ xrp.profiles = setmetatable({
 	__newindex = _xrp.DoNothing,
 	__metatable = false,
 })
+
+xrp.HookEvent("UPDATE", function(event, field)
+	if field then
+		_xrp.FireEvent("FIELD", _xrp.playerWithRealm, field)
+	end
+	_xrp.FireEvent("RECEIVE", _xrp.playerWithRealm)
+end)
