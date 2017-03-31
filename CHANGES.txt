@@ -1,11 +1,7 @@
-7.2.0.1 (2017-03-30):
+7.2.0.2 (2017-03-31):
 
-	- The player's own tooltip is now more responsive to changes in their own
-	  profile.
+	- Removed some accidentally-included debug code. (It would helpfully list
+	  all your equipment sets every so often, which most people wouldn't find
+	  helpful, really.)
 
-	- Fixed profile automation settings for equipment sets sometimes being
-	  lost due to overzealous cleanup code.
-
-	- Fixed Lua error related to new colors and combat.
-
-	- Fixed Lua error related to LDB object.
+	- Fixed an incorrect color being used for hostile players in tooltips.
