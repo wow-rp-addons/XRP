@@ -1,12 +1,9 @@
 NEW_VERSION = $(shell git describe --abbrev=0 --tags | sed -e 's/^v//')
 HEAD_VERSION = $(shell git describe | sed -e 's/^v//')
-CURSE_API_KEY = $(shell git config --get curse.apikey)
 
 all: build/xrp-$(NEW_VERSION).zip build/xrp-$(NEW_VERSION).zip.SHA256 build/xrp-$(NEW_VERSION).CHANGELOG
 
 head: build/xrp-$(HEAD_VERSION).zip
-
-upload: upload-curse upload-stormlord
 
 clean:
 	rm -rf build/
@@ -33,16 +30,4 @@ build/xrp-%.CHANGELOG: build/xrp-%.zip.SHA256
 	cat $< >> $@
 	touch -m -d '$(shell date -d '$(shell git log --date=local -1 --format=%ai v$*)')' $@
 
-upload-curse: upload-curse-$(NEW_VERSION)
-
-upload-stormlord: upload-stormlord-$(NEW_VERSION)
-
-upload-%: upload-stormlord-% upload-curse-%
-
-upload-curse-%: build/xrp-%.zip build/xrp-%.CHANGELOG
-	curl -F "name=v$*" -F "game_versions=$(shell curl -s https://wow.curseforge.com/game-versions.json | jq -r 'to_entries | map({id: .key, name: .value.name}) | .[] | select(.name | contains("7.2.0")) | .id')" -F "file_type=$(shell echo $* | sed -e 's#^[^_]*$$#r#' -e 's#.*_alpha.*#a#' -e 's#.*_\(beta\|rc\).*#b#')" -F "change_log=<$(word 2,$^)" -F "change_markup_type=plain" -F "file=@$<" -H "X-API-Key: $(CURSE_API_KEY)" "https://wow.curseforge.com/addons/xrp/upload-file.json"
-
-upload-stormlord-%: build/xrp-%.zip build/xrp-%.zip.SHA256
-	scp $^ asgard.stormlord.ca:~/pub/xrp/
-
-.PHONY: all clean head upload upload-curse upload-stormlord upload-% upload-curse-% upload-stormlord-%
+.PHONY: all clean head
