@@ -282,7 +282,7 @@ local REACTION_COLORS = {
 local SELECTION_COLORS = setmetatable({
 	["0000ff"] = RGBToColorCode(LIGHTBLUE_FONT_COLOR:GetRGB()), -- Blue
 	["00ff00"] = RGBTableToColorCode(FACTION_BAR_COLORS[5]), -- Green
-	["ff00ff"] = RGBTableToColorCode(FACTION_BAR_COLORS[2]), -- Red
+	["ff0000"] = RGBTableToColorCode(FACTION_BAR_COLORS[2]), -- Red
 	["ff8000"] = RGBTableToColorCode(FACTION_BAR_COLORS[3]), -- Orange
 	["ffff00"] = RGBTableToColorCode(FACTION_BAR_COLORS[4]), -- Yellow
 }, {
