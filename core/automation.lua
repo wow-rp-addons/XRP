@@ -224,7 +224,6 @@ _xrp.HookGameEvent("PLAYER_LOGIN", function(event)
 		local validEquipSets = {}
 		for i = 1, GetNumEquipmentSets() do
 			validEquipSets[(GetEquipmentSetInfo(i))] = true
-			print((GetEquipmentSetInfo(i)))
 		end
 
 		local toRemove = {}
