@@ -253,7 +253,7 @@ _xrp.HookGameEvent("PLAYER_LOGIN", function(event)
 		LDBObject = nil
 		CreateLDBObject()
 	end
-	if not LDBObject and not (LibStub and LibStub:GetLibrary("LibDataBroker-1.1")) then
+	if not LDBObject and not (LibStub and LibStub:GetLibrary("LibDataBroker-1.1", true)) then
 		-- No LDB library, meaning no chance of a viewer.
 		InterfaceOptionsFramePanelContainer.XRPGeneral.LDBObject:SetEnabled(false)
 	end
