@@ -67,7 +67,7 @@ local function TruncateLine(text, length, offset, double)
 			end
 		else
 			local chars = {}
-			for char in text:gmatch("[\001-\127\192-\255][\128-\191]*") do
+			for char in text:gmatch("[%z\001-\127\192-\255][\128-\191]*") do
 				chars[#chars + 1] = char
 			end
 			local line1t = {}
