@@ -47,8 +47,14 @@ local function XRPGetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7
 		chatCategory = "CHANNEL_" .. arg9:match("^([^%s]*)"):upper()
 	end
 
-	local name = _xrp.settings.chat[chatCategory] and character and not character.hide and xrp.Strip(character.fields.NA) or Ambiguate(arg2, "guild")
-	local nameFormat = chatCategory == "EMOTE" and (_xrp.settings.chat.emoteBraced and "[%s]" or "%s") .. (arg9 or "") or "%s"
+	local name, nameFormat
+	if chatCategory == "EMOTE" and arg9 == "|" then
+		name = arg2:match("^(\032-\126\194-\244][\128-\191]*)") or Ambiguate(arg2, "guild")
+		nameFormat = "[%s]"
+	else
+		name = _xrp.settings.chat[chatCategory] and character and not character.hide and xrp.Strip(character.fields.NA) or Ambiguate(arg2, "guild")
+		nameFormat = chatCategory == "EMOTE" and (_xrp.settings.chat.emoteBraced and "[%s]" or "%s") .. (arg9 or "") or "%s"
+	end
 
 	if character and ChatTypeInfo[chatType] and ChatTypeInfo[chatType].colorNameByClass then
 		local color = RAID_CLASS_COLORS[character.fields.GC]
@@ -74,14 +80,15 @@ end
 -- commas, and colons. This requires a modified GetColoredName, so it has
 -- to go hand-in-hand with chat names.
 local function MessageEventFilter_EMOTE(self, event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, ...)
-	-- Some addons, but not commonly real people, use a fancy unicode
-	-- apostrophe. Since Lua's string library isn't Unicode-aware, use
-	-- string.byte to check first three bytes.
-	local b1, b2, b3 = arg1:byte(1, 3)
-	-- 39 = ' | 44 = , | 58 = : | 226/128/153 = ’
-	if b1 == 39 or b1 == 44 or b1 == 58 or b1 == 226 and b2 == 128 and b3 == 153 then
-		-- arg9 isn't normally used for CHAT_MSG_EMOTE.
+	local char = arg1:match("^%s*([%z\001-\127\192-\255][\128-\191]*)")
+	-- arg9 isn't normally used for CHAT_MSG_EMOTE.
+	if char and (char == "'" or char == "," or char == "’") then
+		-- Matches apostrophes, commas, and fancy apostrophes (addons use
+		-- these).
 		arg9, arg1 = arg1:match("^([^%s]*)%s*(.*)$")
+	elseif char == "|" then
+		-- Match any number of pipes, since it'll be an escaped pipe (||).
+		arg9, arg1 = "|", arg1:match("^[%s%|]*(.*)$")
 	end
 	return false, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, ...
 end
