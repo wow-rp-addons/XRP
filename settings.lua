@@ -94,6 +94,7 @@ _xrp.DEFAULT_SETTINGS = {
 		guildIndex = false,
 		noHostile = true,
 		noOpFaction = false,
+		noCombatInstance = false,
 		noClass = false,
 		noRace = false,
 		oldColors = false,

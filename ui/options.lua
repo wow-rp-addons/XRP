@@ -263,6 +263,7 @@ local OPTIONS_TEXT = {
 		guildIndex = _xrp.L.DISPLAY_GUILD_RANK_INDEX,
 		noHostile = _xrp.L.NO_HOSTILE,
 		noOpFaction = _xrp.L.NO_OP_FACTION,
+		noCombatInstance = _xrp.L.NO_INSTANCE_COMBAT,
 		noClass = _xrp.L.NO_RP_CLASS,
 		noRace = _xrp.L.NO_RP_RACE,
 		oldColors = _xrp.L.OLD_TOOLTIP_COLORS,
