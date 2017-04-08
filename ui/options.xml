@@ -629,9 +629,19 @@
 					<KeyValue key="xrpSetting" value="noOpFaction"/>
 				</KeyValues>
 			</CheckButton>
-			<CheckButton parentKey="TooltipNoRPClass" inherits="XRPOptionsCheckboxTemplate">
+			<CheckButton parentKey="TooltipNoCombatInstance" inherits="XRPOptionsCheckboxTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.TooltipNoOpFaction" relativePoint="BOTTOMLEFT" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="dependsOn" value="TooltipEnabled"/>
+					<KeyValue key="xrpTable" value="tooltip"/>
+					<KeyValue key="xrpSetting" value="noCombatInstance"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="TooltipNoRPClass" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.TooltipNoCombatInstance" relativePoint="BOTTOMLEFT" y="-8"/>
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="dependsOn" value="TooltipEnabled"/>

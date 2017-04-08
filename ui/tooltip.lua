@@ -474,7 +474,7 @@ local function SetUnit(unit)
 			defaultLines = defaultLines + 1
 		end
 	end
-	currentUnit.noProfile = _xrp.settings.tooltip.noOpFaction and currentUnit.faction ~= playerFaction and currentUnit.faction ~= "Neutral" or _xrp.settings.tooltip.noHostile and attackMe and meAttack
+	currentUnit.noProfile = _xrp.settings.tooltip.noCombatInstance and InCombatLockdown() and (IsInInstance() or IsInActiveWorldPVP()) or _xrp.settings.tooltip.noOpFaction and currentUnit.faction ~= playerFaction and currentUnit.faction ~= "Neutral" or _xrp.settings.tooltip.noHostile and attackMe and meAttack
 
 	if replace then
 		table.wipe(currentUnit.lines)
