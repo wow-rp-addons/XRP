@@ -45,10 +45,42 @@ end
 -- Realms just needing title case spacing are handled via gsub. These are more
 -- complex, such as lower case words or dashes.
 local SPECIAL_REALMS = {
+	-- English
 	["AltarofStorms"] = "Altar of Storms",
 	["AzjolNerub"] = "Azjol-Nerub",
 	["ChamberofAspects"] = "Chamber of Aspects",
 	["SistersofElune"] = "Sisters of Elune",
+	-- French
+	["Arakarahm"] = "Arak-arahm",
+	["Chantséternels"] = "Chants éternels",
+	["ConfrérieduThorium"] = "Confrérie du Thorium",
+	["ConseildesOmbres"] = "Conseil des Ombres",
+	["CultedelaRivenoire"] = "Culte de la Rive noire",
+	["LaCroisadeécarlate"] = "La Croisade écarlate",
+	["MarécagedeZangar"] = "Marécage de Zangar",
+	["Templenoir"] = "Temple noir",
+	-- German
+	["DerabyssischeRat"] = "Der abyssische Rat",
+	["DerRatvonDalaran"] = "Der Rat von Dalaran",
+	["DieewigeWacht"] = "Die ewige Wacht",
+	["FestungderStürme"] = "Festung der Stürme",
+	["KultderVerdammten"] = "Kult der Verdammten",
+	["ZirkeldesCenarius"] = "Zirkel des Cenarius",
+	-- Russian
+	["Борейскаятундра"] = "Борейская тундра",
+	["ВечнаяПесня"] = "Вечная Песня",
+	["Пиратскаябухта"] = "Пиратская бухта ",
+	["ТкачСмерти"] = "Ткач Смерти",
+	["Корольлич"] = "Король-лич",
+	["Ревущийфьорд"] = "Ревущий фьорд",
+	["Свежевательдуш"] = "Свежеватель душ",
+	["СтражСмерти"] = "Страж Смерти",
+	["ЧерныйШрам"] = "Черный Шрам",
+	["Ясеневыйлес"] = "Ясеневый лес",
+	-- Italian
+	["Pozzodell'Eternità"] = "Pozzo dell'Eternità",
+	-- Korean
+	["불타는군단"] = "불타는 군단",
 }
 
 function xrp.RealmDisplayName(realm)
