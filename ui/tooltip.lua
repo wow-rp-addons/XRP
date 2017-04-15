@@ -26,11 +26,11 @@ local Tooltip, replace, rendering
 local GTTL, GTTR = "GameTooltipTextLeft%d", "GameTooltipTextRight%d"
 
 local SINGLE, DOUBLE = "%s", "%s\n%s"
-local SINGLE_TRUNC, DOUBLE_TRUNC = ("%s|r%s"):format(SINGLE, CONTINUED), ("%s|r%s"):format(DOUBLE, CONTINUED)
+local SINGLE_TRUNC, DOUBLE_TRUNC = SINGLE .. CONTINUED, DOUBLE .. CONTINUED
 local function TruncateLine(text, length, offset, double)
 	if not text then return end
 	if not offset then offset = 0 end
-	text = text:gsub("\n+", " ")
+	text = text:gsub("%s+", " ")
 	local textLen = strlenutf8(text)
 	local line1, line2 = text
 	local isTruncated = false
@@ -67,7 +67,7 @@ local function TruncateLine(text, length, offset, double)
 			end
 		else
 			local chars = {}
-			for char in text:gmatch("[%z\001-\127\192-\255][\128-\191]*") do
+			for char in text:gmatch("[\032-\126\194-\244][\128-\191]*") do
 				chars[#chars + 1] = char
 			end
 			local line1t = {}
@@ -222,8 +222,7 @@ local function RenderTooltip()
 			end
 		end
 		if showProfile then
-			local CU = xrp.Strip(fields.CU)
-			local CO = xrp.Strip(fields.CO)
+			local CU, CO = xrp.Strip(fields.CU), xrp.Strip(fields.CO)
 			RenderLine((CU or CO) and CU_FORMAT:format(xrp.Link(TruncateLine(xrp.MergeCurrently(xrp.Link(CU, "prelink"), xrp.Link(CO, "prelink")), 70, CU_LENGTH), "fakelink")), nil, 0.9, 0.7, 0.6)
 		end
 		RenderLine(currentUnit.info:format(showProfile and not _xrp.settings.tooltip.noRace and TruncateLine(xrp.Strip(fields.RA), 40, 0, false) or xrp.L.VALUES.GR[fields.GR] or UNKNOWN, showProfile and not _xrp.settings.tooltip.noClass and TruncateLine(xrp.Strip(fields.RC), 40, 0, false) or xrp.L.VALUES.GC[fields.GS][fields.GC] or UNKNOWN), not replace and ParseVersion(fields.VA), 1, 1, 1, 0.5, 0.5, 0.5)
