@@ -1,7 +1,19 @@
-7.2.0.2 (2017-03-31):
+7.2.0.3 (2017-04-14):
 
-	- Removed some accidentally-included debug code. (It would helpfully list
-	  all your equipment sets every so often, which most people wouldn't find
-	  helpful, really.)
+	- Added support for non-player emotes. Beginning an emote with | (a pipe
+	  character) will reduce the name displayed to [X], where X is the first
+	  character of the player's name.
 
-	- Fixed an incorrect color being used for hostile players in tooltips.
+		- This short name can be right-clicked for the standard chat menu to
+		  find the player's full name and options to ignore or report.
+
+	- Added an option to disable roleplay information on tooltips while in
+	  instance combat (PvE/PvP instances and active world PvP zones).
+
+	- Support displaying non-English realm names properly (with spaces,
+	  hyphens, etc.) in tooltip.
+
+	- Remove invalid byte sequences from displayed text. If special/accented
+	  characters fail to display properly ever, please report this as a bug.
+
+	- Fixed a Lua error on start related to LibDataBroker.
