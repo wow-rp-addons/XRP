@@ -1,6 +1,6 @@
 ## Interface: 70200
 ## Title: XRP
-## Version: 7.2.0.2
+## Version: 7.2.0.3
 ## Author: Bor Blasthammer
 ## Notes: A pretty good roleplaying profile addon.
 ## X-Category: Roleplay
