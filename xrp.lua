@@ -101,10 +101,11 @@ function _xrp.UnhookGameEvent(event, func)
 	return true
 end
 frame:SetScript("OnEvent", function(self, event, ...)
+	if event == "ADDON_LOADED" and ... ~= FOLDER then return end
 	for func, isFunc in pairs(gameEvents[event]) do
 		SafeCall(func, event, ...)
 	end
-	if event == "ADDON_LOADED" and ... == FOLDER or event == "PLAYER_LOGIN" then
+	if event == "ADDON_LOADED" or event == "PLAYER_LOGIN" then
 		gameEvents[event] = nil
 		self:UnregisterEvent(event)
 	end
@@ -148,7 +149,6 @@ function _xrp.AddonUpdate(version)
 end
 
 _xrp.HookGameEvent("ADDON_LOADED", function(event, addon)
-	if addon ~= FOLDER then return end
 	_xrp.playerWithRealm = xrp.UnitFullName("player")
 	_xrp.player, _xrp.realm = _xrp.playerWithRealm:match("^([^%-]+)%-([^%-]+)$")
 	_xrp.SavedVariableSetup()
