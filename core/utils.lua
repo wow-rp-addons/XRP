@@ -91,11 +91,13 @@ function xrp.RealmDisplayName(realm)
 	return SPECIAL_REALMS[realm] or (realm:gsub("(%l)([%u%d])", "%1 %2"))
 end
 
-
 function xrp.Strip(text, allowIndent)
 	if type(text) ~= "string" then
 		return nil
 	end
+	-- Swap tabs for eight spaces, remove control characters, and
+	-- unquestionably invalid UTF-8 sequences.
+	text = text:gsub("\009", "\032\032\032\032\032\032\032\032"):gsub("[%z\001-\008\011\012\014-\031\127\192\193\245-\255]", ""):gsub("([\010\013\032-\126])[\128-\191]*", "%1"):gsub("[\194-\244]+([\194-\244])", "%1"):gsub("[\194-\244]([\010\013\032-\126])", "%1")
 	-- This fully removes all color escapes, texture escapes, and most types of
 	-- link and chat link escapes. Other UI escape sequences are escaped
 	-- themselves to not render on display (|| instead of |).
