@@ -17,7 +17,6 @@
 
 local FOLDER, _xrp = ...
 
--- These fields are not searched in a full-text search.
 local FILTER_SEARCH = { NA = true, NI = true, NT = true, NH = true, AH = true, AW = true, AE = true, RA = true, RC = true, CU = true, DE = true, AG = true, HH = true, HB = true, MO = true, HI = true, CO = true }
 
 local RACE_FACTION = {
