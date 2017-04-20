@@ -49,7 +49,7 @@ local function XRPGetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7
 
 	local name, nameFormat
 	if chatCategory == "EMOTE" and arg9 == "|" then
-		name = arg2:match("^(\032-\126\194-\244][\128-\191]*)") or Ambiguate(arg2, "guild")
+		name = arg2:match("^[\032-\126\194-\244][\128-\191]*") or Ambiguate(arg2, "guild")
 		nameFormat = "[%s]"
 	else
 		name = _xrp.settings.chat[chatCategory] and character and not character.hide and xrp.Strip(character.fields.NA) or Ambiguate(arg2, "guild")
