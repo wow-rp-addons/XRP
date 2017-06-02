@@ -159,10 +159,14 @@ XRPEditorAutomationForm_Mixin = {
 	preClick = function(self, button, down)
 		table.wipe(equipSets) -- Keep table reference the same.
 		equipSets[1] = noSet
-		local numsets = GetNumEquipmentSets()
+		local numsets = C_EquipmentSet.GetNumEquipmentSets()
 		if numsets and numsets > 0 then
+			local sets = {}
 			for i = 1, numsets do
-				local name = GetEquipmentSetInfo(i)
+				sets[#sets + 1] = C_EquipmentSet.GetEquipmentSetInfo(i - 1)
+			end
+			table.sort(sets)
+			for i, name in ipairs(sets) do
 				equipSets[#equipSets + 1] = {
 					text = name,
 					value = "\029" .. name,
@@ -451,7 +455,7 @@ function XRPEditorAutomation_OnShow(self)
 		self.Form.contents = "DEFAULT"
 		self.Form.Text:SetText(MakeWords("DEFAULT"))
 	elseif selectedForm:find("\029", nil, true) then
-		if not GetEquipmentSetInfoByName(selectedForm:match("^.*\029(.+)$")) then
+		if not C_EquipmentSet.GetEquipmentSetID(selectedForm:match("^.*\029(.+)$")) then
 			selectedForm = "DEFAULT"
 			self.Form.Text:SetText(MakeWords(selectedForm))
 			self.Form.contents = selectedForm
@@ -460,7 +464,7 @@ function XRPEditorAutomation_OnShow(self)
 	end
 	for form, profile in pairs(unsaved) do
 		if form:find("\029", nil, true) then
-			if not GetEquipmentSetInfoByName(selectedForm:match("^.*\029(.+)$")) or not xrp.profiles[profile] then
+			if not C_EquipmentSet.GetEquipmentSetID(selectedForm:match("^.*\029(.+)$")) or not xrp.profiles[profile] then
 				unsaved[form] = nil
 			end
 		end
