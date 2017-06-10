@@ -184,264 +184,73 @@ XRPEditorAutomationForm_Mixin = {
 	end,
 }
 
+local function FormMenuItem(form)
+	local hasEquip = not _xrp.FORM_NO_EQUIPMENT[form]
+	return {
+		text = FORM_NAMES[form],
+		value = form,
+		func = forms_Click,
+		checked = forms_Check,
+		hasArrow = hasEquip and true or nil,
+		menuList = hasEquip and equipSets or nil,
+	}
+end
+
 if isWorgen then
 	if playerClass == "DRUID" then
 		XRPEditorAutomationForm_Mixin.baseMenuList = {
-			{ -- Worgen
-				text = FORM_NAMES["DEFAULT"],
-				value = "DEFAULT",
-				func = forms_Click,
-				checked = forms_Check,
-				hasArrow = true,
-				menuList = equipSets,
-			},
-			{ -- Human
-				text = FORM_NAMES["HUMAN"],
-				value = "HUMAN",
-				func = forms_Click,
-				checked = forms_Check,
-				hasArrow = true,
-				menuList = equipSets,
-			},
-			{ -- Cat
-				text = FORM_NAMES["CAT"],
-				value = "CAT",
-				func = forms_Click,
-				checked = forms_Check,
-			},
-			{ -- Bear
-				text = FORM_NAMES["BEAR"],
-				value = "BEAR",
-				func = forms_Click,
-				checked = forms_Check,
-			},
-			{ -- Moonkin
-				text = FORM_NAMES["MOONKIN"],
-				value = "MOONKIN",
-				func = forms_Click,
-				checked = forms_Check,
-			},
-			{ -- Astral
-				text = FORM_NAMES["ASTRAL"],
-				value = "ASTRAL",
-				func = forms_Click,
-				checked = forms_Check,
-				hasArrow = true,
-				menuList = equipSets,
-			},
-			{ -- Travel
-				text = FORM_NAMES["TRAVEL"],
-				value = "TRAVEL",
-				func = forms_Click,
-				checked = forms_Check,
-			},
-			{ -- Flight
-				text = FORM_NAMES["FLIGHT"],
-				value = "FLIGHT",
-				func = forms_Click,
-				checked = forms_Check,
-			},
-			{ -- Aquatic
-				text = FORM_NAMES["AQUATIC"],
-				value = "AQUATIC",
-				func = forms_Click,
-				checked = forms_Check,
-			},
-			{ -- Treant
-				text = FORM_NAMES["TREANT"],
-				value = "TREANT",
-				func = forms_Click,
-				checked = forms_Check,
-			},
-			{ -- Mercenary
-				text = FORM_NAMES["MERCENARY"],
-				value = "MERCENARY",
-				func = forms_Click,
-				checked = forms_Check,
-			},
+			FormMenuItem("DEFAULT"),
+			FormMenuItem("HUMAN"),
+			FormMenuItem("CAT"),
+			FormMenuItem("BEAR"),
+			FormMenuItem("MOONKIN"),
+			FormMenuItem("ASTRAL"),
+			FormMenuItem("TRAVEL"),
+			FormMenuItem("FLIGHT"),
+			FormMenuItem("AQUATIC"),
+			FormMenuItem("TREANT"),
+			FormMenuItem("MERCENARY"),
 		}
 	elseif playerClass == "PRIEST" then
 		XRPEditorAutomationForm_Mixin.baseMenuList = {
-			{ -- Worgen
-				text = FORM_NAMES["DEFAULT"],
-				value = "DEFAULT",
-				func = forms_Click,
-				checked = forms_Check,
-				hasArrow = true,
-				menuList = equipSets,
-			},
-			{ -- Human
-				text = FORM_NAMES["HUMAN"],
-				value = "HUMAN",
-				func = forms_Click,
-				checked = forms_Check,
-				hasArrow = true,
-				menuList = equipSets,
-			},
-			{ -- Shadowform (Worgen)
-				text = FORM_NAMES["DEFAULT\030SHADOWFORM"],
-				value = "DEFAULT\030SHADOWFORM",
-				func = forms_Click,
-				checked = forms_Check,
-				hasArrow = true,
-				menuList = equipSets,
-			},
-			{ -- Shadowform (Human)
-				text = FORM_NAMES["HUMAN\030SHADOWFORM"],
-				value = "HUMAN\030SHADOWFORM",
-				func = forms_Click,
-				checked = forms_Check,
-				hasArrow = true,
-				menuList = equipSets,
-			},
-			{ -- Mercenary
-				text = FORM_NAMES["MERCENARY"],
-				value = "MERCENARY",
-				func = forms_Click,
-				checked = forms_Check,
-			},
+			FormMenuItem("DEFAULT"),
+			FormMenuItem("HUMAN"),
+			FormMenuItem("DEFAULT\030SHADOWFORM"),
+			FormMenuItem("HUMAN\030SHADOWFORM"),
+			FormMenuItem("MERCENARY"),
 		}
 	else
 		XRPEditorAutomationForm_Mixin.baseMenuList = {
-			{ -- Worgen
-				text = FORM_NAMES["DEFAULT"],
-				value = "DEFAULT",
-				func = forms_Click,
-				checked = forms_Check,
-				hasArrow = true,
-				menuList = equipSets,
-			},
-			{ -- Human
-				text = FORM_NAMES["HUMAN"],
-				value = "HUMAN",
-				func = forms_Click,
-				checked = forms_Check,
-				hasArrow = true,
-				menuList = equipSets,
-			},
-			{ -- Mercenary
-				text = FORM_NAMES["MERCENARY"],
-				value = "MERCENARY",
-				func = forms_Click,
-				checked = forms_Check,
-			},
+			FormMenuItem("DEFAULT"),
+			FormMenuItem("HUMAN"),
+			FormMenuItem("MERCENARY"),
 		}
 	end
 else
 	if playerClass == "DRUID" then
 		XRPEditorAutomationForm_Mixin.baseMenuList = {
-			{ -- Humanoid
-				text = FORM_NAMES["DEFAULT"],
-				value = "DEFAULT",
-				func = forms_Click,
-				checked = forms_Check,
-				hasArrow = true,
-				menuList = equipSets,
-			},
-			{ -- Cat
-				text = FORM_NAMES["CAT"],
-				value = "CAT",
-				func = forms_Click,
-				checked = forms_Check,
-			},
-			{ -- Bear
-				text = FORM_NAMES["BEAR"],
-				value = "BEAR",
-				func = forms_Click,
-				checked = forms_Check,
-			},
-			{ -- Moonkin
-				text = FORM_NAMES["MOONKIN"],
-				value = "MOONKIN",
-				func = forms_Click,
-				checked = forms_Check,
-			},
-			{ -- Astral
-				text = FORM_NAMES["ASTRAL"],
-				value = "ASTRAL",
-				func = forms_Click,
-				checked = forms_Check,
-				hasArrow = true,
-				menuList = equipSets,
-			},
-			{ -- Travel
-				text = FORM_NAMES["TRAVEL"],
-				value = "TRAVEL",
-				func = forms_Click,
-				checked = forms_Check,
-			},
-			{ -- Flight
-				text = FORM_NAMES["FLIGHT"],
-				value = "FLIGHT",
-				func = forms_Click,
-				checked = forms_Check,
-			},
-			{ -- Aquatic
-				text = FORM_NAMES["AQUATIC"],
-				value = "AQUATIC",
-				func = forms_Click,
-				checked = forms_Check,
-			},
-			{ -- Treant
-				text = FORM_NAMES["TREANT"],
-				value = "TREANT",
-				func = forms_Click,
-				checked = forms_Check,
-			},
-			{ -- Mercenary
-				text = FORM_NAMES["MERCENARY"],
-				value = "MERCENARY",
-				func = forms_Click,
-				checked = forms_Check,
-			},
+			FormMenuItem("DEFAULT"),
+			FormMenuItem("CAT"),
+			FormMenuItem("BEAR"),
+			FormMenuItem("MOONKIN"),
+			FormMenuItem("ASTRAL"),
+			FormMenuItem("TRAVEL"),
+			FormMenuItem("FLIGHT"),
+			FormMenuItem("AQUATIC"),
+			FormMenuItem("TREANT"),
+			FormMenuItem("MERCENARY"),
 		}
 	elseif playerClass == "PRIEST" then
 		XRPEditorAutomationForm_Mixin.baseMenuList = {
-			{ -- Standard
-				text = FORM_NAMES["DEFAULT"],
-				value = "DEFAULT",
-				func = forms_Click,
-				checked = forms_Check,
-				hasArrow = true,
-				menuList = equipSets,
-			},
-			{ -- Shadowform
-				text = FORM_NAMES["SHADOWFORM"],
-				value = "SHADOWFORM",
-				func = forms_Click,
-				checked = forms_Check,
-				hasArrow = true,
-				menuList = equipSets,
-			},
-			{ -- Mercenary
-				text = FORM_NAMES["MERCENARY"],
-				value = "MERCENARY",
-				func = forms_Click,
-				checked = forms_Check,
-			},
+			FormMenuItem("DEFAULT"),
+			FormMenuItem("SHADOWFORM"),
+			FormMenuItem("MERCENARY"),
 		}
 	elseif playerClass == "SHAMAN" then
 		XRPEditorAutomationForm_Mixin.baseMenuList = {
-			{ -- Humanoid
-				text = FORM_NAMES["DEFAULT"],
-				value = "DEFAULT",
-				func = forms_Click,
-				checked = forms_Check,
-				hasArrow = true,
-				menuList = equipSets,
-			},
-			{ -- Ghost Wolf
-				text = FORM_NAMES["GHOSTWOLF"],
-				value = "GHOSTWOLF",
-				func = forms_Click,
-				checked = forms_Check,
-			},
-			{ -- Mercenary
-				text = FORM_NAMES["MERCENARY"],
-				value = "MERCENARY",
-				func = forms_Click,
-				checked = forms_Check,
-			},
+			FormMenuItem("DEFAULT"),
+			FormMenuItem("GHOSTWOLF"),
+			FormMenuItem("MERCENARY"),
 		}
 	else
 		XRPEditorAutomationForm_Mixin.baseMenuList = equipSets

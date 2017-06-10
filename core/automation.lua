@@ -55,7 +55,9 @@ local FORM_NO_EQUIPMENT = {
 	["FLIGHT"] = true,
 	["MOONKIN"] = true,
 	["TREANT"] = true,
+	["MERCENARY"] = true,
 }
+_xrp.FORM_NO_EQUIPMENT = FORM_NO_EQUIPMENT
 local lastEquipSet
 local function GetCurrentForm()
 	local mercenaryForm = UnitIsMercenary("player")
