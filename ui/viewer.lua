@@ -309,10 +309,11 @@ function XRPViewerMenu_PreClick(self, button, down)
 	if isOwn or noProfile then
 		self.baseMenuList[3].disabled = true
 		self.baseMenuList[4].disabled = true
-		self.baseMenuList[6].menuList[1].disabled = true
 		if name == _xrp.playerWithRealm or noProfile then
+			self.baseMenuList[6].menuList[1].disabled = true
 			self.baseMenuList[6].menuList[2].disabled = true
 		else
+			self.baseMenuList[6].menuList[1].disabled = nil
 			self.baseMenuList[6].menuList[2].disabled = nil
 		end
 	else
