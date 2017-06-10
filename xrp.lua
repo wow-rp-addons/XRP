@@ -32,6 +32,8 @@ _xrp.DoNothing = function() end
 _xrp.weakMeta = { __mode = "v" }
 _xrp.weakKeyMeta = { __mode = "k" }
 
+_xrp.own = {}
+
 local function SafeCall(func, ...)
 	local success, message = pcall(func, ...)
 	if not success then
@@ -221,6 +223,20 @@ _xrp.HookGameEvent("PLAYER_LOGIN", function(event)
 		xrpSaved.meta.fields.GU = GU
 		xrpSaved.meta.versions.GU = _xrp.NewVersion("GU", GU)
 		_xrp.FireEvent("UPDATE", "GU")
+	end
+	-- GetAutoCompleteResults() also doesn't work.
+	_xrp.own[_xrp.playerWithRealm] = true
+	for i, character in ipairs(GetAutoCompleteResults("", 0x00000080, 0, 0)) do
+		local name = xrp.FullName(character.name)
+		_xrp.own[name] = true
+		if xrpCache[name] and not xrpCache[name].own then
+			xrpCache[name].own = true
+		end
+	end
+	for name, data in pairs(xrpCache) do
+		if data.own and not _xrp.own[name] and name:match("%-([^%-]+)$") == _xrp.realm then
+			data.own = nil
+		end
 	end
 end)
 _xrp.HookGameEvent("PLAYER_LOGOUT", function(event)

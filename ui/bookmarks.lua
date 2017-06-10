@@ -250,11 +250,9 @@ function XRPBookmarksEntry_OnClick(self, button, down)
 		if self.character.own then
 			if tostring(self.character) == _xrp.playerWithRealm then
 				self.baseMenuList[1].disabled = true
-				self.baseMenuList[2].disabled = nil
 				self.baseMenuList[7].menuList[2].disabled = true
 			else
 				self.baseMenuList[1].disabled = nil
-				self.baseMenuList[2].disabled = true
 				self.baseMenuList[7].menuList[2].disabled = nil
 			end
 			self.baseMenuList[4].disabled = true
@@ -262,7 +260,6 @@ function XRPBookmarksEntry_OnClick(self, button, down)
 			self.baseMenuList[6].disabled = true
 		else
 			self.baseMenuList[1].disabled = nil
-			self.baseMenuList[2].disabled = nil
 			local GF = self.character.fields.GF
 			if GF and GF ~= xrp.current.GF then
 				self.baseMenuList[4].disabled = true
