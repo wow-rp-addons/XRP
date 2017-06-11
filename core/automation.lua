@@ -198,10 +198,9 @@ _xrp.HookGameEvent("PLAYER_REGEN_ENABLED", TestForm)
 _xrp.HookGameEvent("PLAYER_REGEN_DISABLED", CancelTimer)
 
 _xrp.HookGameEvent("PLAYER_LOGIN", function(event)
+	local now = time()
+	if xrpSaved.lastCleanUp and xrpSaved.lastCleanUp > now - 72000 then return end
 	C_Timer.After(10, function()
-		local now = time()
-		if xrpSaved.lastCleanUp and xrpSaved.lastCleanUp > time() - 72000 then return end
-
 		local validForms = {
 			["DEFAULT"] = true,
 			["MERCENARY"] = true,
