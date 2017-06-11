@@ -216,8 +216,7 @@ _xrp.HookGameEvent("ADDON_LOADED", function(event, addon)
 	end
 end)
 _xrp.HookGameEvent("PLAYER_LOGIN", function(event)
-	-- UnitGUID() does not work prior to first PLAYER_LOGIN (but does
-	-- work after ReloadUI()).
+	-- UnitGUID() does not work prior to first PLAYER_LOGIN.
 	local GU = UnitGUID("player")
 	if xrpSaved.meta.fields.GU ~= GU then
 		xrpSaved.meta.fields.GU = GU
