@@ -1,9 +1,3 @@
-7.2.5.0 (2017-06-12):
+7.2.5.1 (2017-06-13):
 
-	- Updated for 7.2.5 compatibility.
-
-	- Alts are now tracked, in the own character's tab of bookmarks, across
-	  multiple WoW licenses on the same Blizzard account.
-
-	- Non-break spaces are now replaced with standard spaces to avoid breaking
-	  layouts.
+	- Fix sometimes-broken equipment set detection.
