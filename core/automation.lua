@@ -83,8 +83,8 @@ local function GetCurrentForm()
 	local equipSet
 	if not FORM_NO_EQUIPMENT[classForm] then
 		local bestMatch, bestScore = nil, 0
-		for i = 1, C_EquipmentSet.GetNumEquipmentSets() do
-			local name, icon, setID, equipped, numItems, numEquip, numInv, numMissing, numIgnored = C_EquipmentSet.GetEquipmentSetInfo(i - 1)
+		for i, id in ipairs(C_EquipmentSet.GetEquipmentSetIDs()) do
+			local name, icon, setID, equipped, numItems, numEquip, numInv, numMissing, numIgnored = C_EquipmentSet.GetEquipmentSetInfo(id)
 			if equipped then
 				lastEquipSet = name
 				break
@@ -223,8 +223,8 @@ _xrp.HookGameEvent("PLAYER_LOGIN", function(event)
 			validForms["GHOSTWOLF"] = true
 		end
 		local validEquipSets = {}
-		for i = 1, C_EquipmentSet.GetNumEquipmentSets() do
-			validEquipSets[(C_EquipmentSet.GetEquipmentSetInfo(i - 1))] = true
+		for i, id in ipairs(C_EquipmentSet.GetEquipmentSetIDs()) do
+			validEquipSets[(C_EquipmentSet.GetEquipmentSetInfo(id))] = true
 		end
 
 		local toRemove = {}

@@ -159,11 +159,10 @@ XRPEditorAutomationForm_Mixin = {
 	preClick = function(self, button, down)
 		table.wipe(equipSets) -- Keep table reference the same.
 		equipSets[1] = noSet
-		local numsets = C_EquipmentSet.GetNumEquipmentSets()
-		if numsets and numsets > 0 then
-			local sets = {}
-			for i = 1, numsets do
-				sets[#sets + 1] = C_EquipmentSet.GetEquipmentSetInfo(i - 1)
+		local sets = C_EquipmentSet.GetEquipmentSetIDs()
+		if #sets > 0 then
+			for i, id in ipairs(sets) do
+				sets[i] = C_EquipmentSet.GetEquipmentSetInfo(id)
 			end
 			table.sort(sets)
 			for i, name in ipairs(sets) do
