@@ -27,7 +27,7 @@ local function Cursor_TurnOrActionStart()
 	mouseover = XRPCursorBook.current
 	now = GetTime()
 	if XRPCursorBook.mountable then
-		autoInteract = GetCVar("AutoInteract") == "1"
+		autoInteract = GetCVarBool("AutoInteract")
 		if autoInteract then
 			SetCVar("AutoInteract", "0")
 		end
@@ -63,7 +63,7 @@ local keybind
 local function InteractUnit_Hook(unit)
 	if not keybind or InCombatLockdown() or not UnitIsPlayer(unit) or UnitCanAttack("player", unit) then return end
 	local mountable = UnitVehicleSeatCount(unit) > 0
-	if mountable and ((UnitInParty(unit) or UnitInRaid(unit)) and IsItemInRange(88589, unit) or GetCVar("AutoInteract") == "1") then return end
+	if mountable and ((UnitInParty(unit) or UnitInRaid(unit)) and IsItemInRange(88589, unit) or GetCVarBool("AutoInteract")) then return end
 	if mountable then
 		UIErrorsFrame:Clear() -- Hides errors on inteactable mount players.
 	end
