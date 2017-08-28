@@ -77,7 +77,7 @@ function XRPTemplatesTabButton_OnClick(self, button, down)
 			end
 		end
 	end
-	PlaySound("igCharacterInfoTab")
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB)
 end
 
 function XRPTemplatesDropDown_OnLoad(self)
@@ -114,7 +114,7 @@ XRPTemplatesMenu_Mixin = {
 
 function XRPTemplatesMenu_OnClick(self, button, down)
 	ToggleDropDownMenu(nil, nil, self.Menu or self, self.anchor or self)
-	PlaySound("igMainMenuOptionCheckBoxOn")
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
 end
 
 function XRPTemplatesScrollFrame_OnLoad(self)
@@ -186,7 +186,7 @@ function XRPTemplatesPanel_OnShow(self)
 	if self.portraitUnit then
 		SetPortraitTexture(self.portrait, self.portraitUnit)
 	end
-	PlaySound("igCharacterInfoOpen")
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN)
 end
 
 function XRPTemplatesPanel_OnHide(self)
@@ -195,7 +195,7 @@ function XRPTemplatesPanel_OnHide(self)
 			popout:Hide()
 		end
 	end
-	PlaySound("igCharacterInfoClose")
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE)
 end
 
 function XRPTemplatesPanel_OnSizeChanged(self, width, height)
@@ -299,7 +299,7 @@ function XRPTemplatesPopout_OnShow(self)
 	if parent:GetAttribute("UIPanelLayout-defined") then
 		UpdateUIPanelPositions(parent)
 	end
-	PlaySound("UChatScrollButton")
+	PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON)
 end
 
 function XRPTemplatesPopout_OnHide(self)
@@ -308,7 +308,7 @@ function XRPTemplatesPopout_OnHide(self)
 	if parent:GetAttribute("UIPanelLayout-defined") then
 		UpdateUIPanelPositions(parent)
 	end
-	PlaySound("UChatScrollButton")
+	PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON)
 end
 
 local function XRPTemplatesNotes_Hook_OnSizeChanged(self, width, height)
