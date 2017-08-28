@@ -279,7 +279,7 @@ function XRPBookmarksEntry_OnClick(self, button, down)
 			self.baseMenuList[7].menuList[2].disabled = nil
 		end
 		ToggleDropDownMenu(nil, nil, self, "cursor", nil, nil, self.baseMenuList)
-		PlaySound("igMainMenuOptionCheckBoxOn")
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
 	end
 end
 
@@ -419,7 +419,7 @@ end
 function XRPBookmarksRefreshButton_OnClick(self, button, down)
 	request.offset = 0
 	Refresh()
-	PlaySound("igMainMenuOptionCheckBoxOn")
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
 end
 
 local BOOKMARKS_TAB = {
@@ -449,7 +449,7 @@ function XRPBookmarksTab_OnClick(self, button, down)
 	Refresh()
 	PanelTemplates_SetTab(XRPBookmarks, tabID)
 	XRPBookmarks.TitleText:SetText(BOOKMARKS_TAB[tabID])
-	PlaySound("igCharacterInfoTab")
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB)
 end
 
 function XRPBookmarksNotes_OnHide(self)

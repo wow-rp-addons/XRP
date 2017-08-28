@@ -290,7 +290,7 @@ end
 
 function XRPOptionsCheckButton_OnClick(self, button, down)
 	local setting = self:GetChecked()
-	PlaySound(setting and "igMainMenuOptionCheckBoxOn" or "igMainMenuOptionCheckBoxOff")
+	PlaySound(setting and SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON or SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF)
 	self.value = setting
 	if self.dependentControls then
 		for i, control in ipairs(self.dependentControls) do
