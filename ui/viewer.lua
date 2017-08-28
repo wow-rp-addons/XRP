@@ -82,6 +82,7 @@ end
 local META_SUPPORTED = {
 	GR = "RA",
 	GC = "RC",
+	CO = "CU",
 }
 local function FIELD(event, name, field)
 	if tostring(current) ~= name or current.noRequest or name == _xrp.playerWithRealm then return end
