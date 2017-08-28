@@ -101,7 +101,7 @@ function xrp.Strip(text, allowIndent)
 	-- This fully removes all color escapes, texture escapes, and most types of
 	-- link and chat link escapes. Other UI escape sequences are escaped
 	-- themselves to not render on display (|| instead of |).
-	text = text:gsub("%f[|]|c%x%x%x%x%x%x%x%x", ""):gsub("%f[|]|r", ""):gsub("%f[|]|H.-|h(.-)|h", "%1"):gsub("%f[|]|T.-|t", ""):gsub("%f[|]|K.-|k.-|k", ""):gsub("%f[|]|%f[^|]", "||")
+	text = text:gsub("||", "\001"):gsub("%f[|]|c%x%x%x%x%x%x%x%x", ""):gsub("%f[|]|r", ""):gsub("%f[|]|H.-|h(.-)|h", "%1"):gsub("%f[|]|T.-|t", ""):gsub("%f[|]|K.-|k.-|k", ""):gsub("\001", "||"):gsub("%f[|]|%f[^|]", "||")
 	if allowIndent then
 		text = text:trim("\r\n"):match("^(.-)%s*$")
 	else
