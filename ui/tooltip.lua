@@ -356,7 +356,7 @@ local function SetUnit(unit)
 		local GC = currentUnit.character.fields.GC
 
 		if replace then
-			local colorblind = GetCVar("colorblindMode") == "1"
+			local colorblind = GetCVarBool("colorblindMode")
 			-- Can only ever be one of AFK, DND, or offline.
 			local isAFK = connected and UnitIsAFK(unit)
 			local isDND = connected and not isAFK and UnitIsDND(unit)
@@ -410,7 +410,7 @@ local function SetUnit(unit)
 			currentUnit.info = ("%%s |c%s%%s|r"):format(RAID_CLASS_COLORS[GC] and RAID_CLASS_COLORS[GC].colorStr or "ffffffff")
 		end
 	elseif currentUnit.type == "pet" then
-		local colorblind = GetCVar("colorblindMode") == "1"
+		local colorblind = GetCVarBool("colorblindMode")
 		local ownership = _G[GTTL:format(colorblind and 3 or 2)]:GetText()
 		if not ownership then return end
 		local owner, petLabel
