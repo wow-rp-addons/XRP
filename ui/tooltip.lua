@@ -549,12 +549,20 @@ local function GameTooltip_OnTooltipSetUnit_Hook(self)
 	end
 end
 
+local function DoHooks()
+	GameTooltip:HookScript("OnTooltipSetUnit", GameTooltip_OnTooltipSetUnit_Hook)
+	GameTooltip:HookScript("OnTooltipCleared", GameTooltip_OnTooltipCleared_Hook)
+end
+
 _xrp.settingsToggles.tooltip = {
 	enabled = function(setting)
 		if setting then
 			if enabled == nil then
-				GameTooltip:HookScript("OnTooltipSetUnit", GameTooltip_OnTooltipSetUnit_Hook)
-				GameTooltip:HookScript("OnTooltipCleared", GameTooltip_OnTooltipCleared_Hook)
+				if not IsLoggedIn() then
+					_xrp.HookGameEvent("PLAYER_LOGIN", DoHooks)
+				else
+					DoHooks()
+				end
 			end
 			xrp.HookEvent("RECEIVE", Tooltip_RECEIVE)
 			enabled = true
