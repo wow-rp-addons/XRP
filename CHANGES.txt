@@ -1,3 +1,10 @@
-7.2.5.1 (2017-06-13):
+7.3.0.0 (2017-08-29):
 
-	- Fix sometimes-broken equipment set detection.
+	- Fixed compatibility with 7.3.
+
+	- Fixed a format filtering bug.
+
+	- Fixed viewer not reloading "Currently" under some circumstances it
+	  should do so in.
+
+	- Attempted a fix at tooltip interaction with ElvUI, untested.
