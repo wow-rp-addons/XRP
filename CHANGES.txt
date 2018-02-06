@@ -1,10 +1,3 @@
-7.3.0.0 (2017-08-29):
+7.3.0.1 (2018-02-05):
 
-	- Fixed compatibility with 7.3.
-
-	- Fixed a format filtering bug.
-
-	- Fixed viewer not reloading "Currently" under some circumstances it
-	  should do so in.
-
-	- Attempted a fix at tooltip interaction with ElvUI, untested.
+	- Quick fix for allied race names appearing as Unknown.
