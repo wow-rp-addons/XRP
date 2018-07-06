@@ -15,7 +15,7 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-	<Script file="bookmarks.lua"/>
+	<Script file="Archive.lua"/>
 	<Button name="XRPBookmarksEntryTemplate" useParentLevel="true" mixin="XRPTemplatesMenu_Mixin,XRPBookmarksEntry_Mixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="registerClicks" value="LeftButtonUp,RightButtonUp"/>

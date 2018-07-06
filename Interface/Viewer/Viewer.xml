@@ -15,7 +15,7 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-	<Script file="viewer.lua"/>
+	<Script file="Viewer.lua"/>
 	<Frame name="XRPViewerTextLineTemplate" enableMouse="true" virtual="true">
 		<Size y="13"/>
 		<Layers>

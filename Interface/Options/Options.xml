@@ -15,7 +15,7 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-	<Script file="options.lua"/>
+	<Script file="Options.lua"/>
 	<Frame parentKey="XRP" parent="InterfaceOptionsFramePanelContainer" hidden="true">
 		<KeyValues>
 			<KeyValue key="name" value="XRP"/>

@@ -15,7 +15,7 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-	<Script file="templates.lua"/>
+	<Script file="Templates.lua"/>
 <!--
 	This file contains generic XRP frame templates. Component-specific
 	templates are held within the component's respective XML file.
