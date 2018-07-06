@@ -1,0 +1,6 @@
+[submodule "Libraries/Chomp"]
+	path = Libraries/Chomp
+	url = https://github.com/Itarater/Chomp.git
+[submodule "Libraries/BlueBugs"]
+	path = Libraries/BlueBugs
+	url = https://github.com/Itarater/BlueBugs.git

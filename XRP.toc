@@ -8,6 +8,7 @@
 ## SavedVariablesPerCharacter: xrpSaved
 ## SavedVariables: xrpAccountSaved, xrpCache
 
+Libraries\Libraries.xml
 Backend\Init.lua
 Backend\Settings.lua
 Locale\enUS.lua

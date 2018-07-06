@@ -1,0 +1,4 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+	<Include file="Chomp\Chomp.xml"/>
+	<Include file="BlueBugs\BlueBugs.xml"/>
+</Ui>
