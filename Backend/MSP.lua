@@ -176,17 +176,17 @@ local function Send(name, dataTable, channel, isRequest)
 	if (not channel or channel == "BN") and bnetIDGameAccount then
 		local queue = ("XRP-%d"):format(bnetIDGameAccount)
 		if #data <= 4078 then
-			AddOn_Chomp.BNSendGameData(bnetIDGameAccount, "MSP", data, isRequest and "ALERT" or "NORMAL", queue)
+			AddOn_Chomp.BNSendGameData(bnetIDGameAccount, "MSP", data, isRequest and "HIGH" or "MEDIUM", queue)
 		else
 			-- Guess five added characters from metadata.
 			data = ("XC=%d\001%s"):format(((#data + 5) / 4078) + 1, data)
-			AddOn_Chomp.BNSendGameData(bnetIDGameAccount, "MSP\001", data:sub(1, 4078), "BULK", queue)
+			AddOn_Chomp.BNSendGameData(bnetIDGameAccount, "MSP\001", data:sub(1, 4078), "LOW", queue)
 			local position = 4079
 			while position + 4078 <= #data do
-				AddOn_Chomp.BNSendGameData(bnetIDGameAccount, "MSP\002", data:sub(position, position + 4077), "BULK", queue)
+				AddOn_Chomp.BNSendGameData(bnetIDGameAccount, "MSP\002", data:sub(position, position + 4077), "LOW", queue)
 				position = position + 4078
 			end
-			AddOn_Chomp.BNSendGameData(bnetIDGameAccount, "MSP\003", data:sub(position), "BULK", queue)
+			AddOn_Chomp.BNSendGameData(bnetIDGameAccount, "MSP\003", data:sub(position), "LOW", queue)
 		end
 	end
 	if channel == "BN" then return end
@@ -206,21 +206,21 @@ local function Send(name, dataTable, channel, isRequest)
 	if channel == "WHISPER" or relationship ~= LE_REALM_RELATION_COALESCED and (not relationship or sameFaction) then
 		local queue = "XRP-" .. name
 		if #data <= 255 then
-			AddOn_Chomp.SendAddonMessage("MSP", data, "WHISPER", name, isRequest and "ALERT" or "NORMAL", queue, AddFilter, name)
+			AddOn_Chomp.SendAddonMessage("MSP", data, "WHISPER", name, isRequest and "HIGH" or "MEDIUM", queue, AddFilter, name)
 		else
 			-- Guess six added characters from metadata.
 			data = ("XC=%d\001%s"):format(((#data + 6) / 255) + 1, data)
 
-			AddOn_Chomp.SendAddonMessage("MSP\001", data:sub(1, 255), "WHISPER", name, "BULK", queue, AddFilter, name)
+			AddOn_Chomp.SendAddonMessage("MSP\001", data:sub(1, 255), "WHISPER", name, "LOW", queue, AddFilter, name)
 
 			local position = 256
 			while position + 255 <= #data do
 
-				AddOn_Chomp.SendAddonMessage("MSP\002", data:sub(position, position + 254), "WHISPER", name, "BULK", queue, AddFilter, name)
+				AddOn_Chomp.SendAddonMessage("MSP\002", data:sub(position, position + 254), "WHISPER", name, "LOW", queue, AddFilter, name)
 				position = position + 255
 			end
 
-			AddOn_Chomp.SendAddonMessage("MSP\003", data:sub(position), "WHISPER", name, "BULK", queue, AddFilter, name)
+			AddOn_Chomp.SendAddonMessage("MSP\003", data:sub(position), "WHISPER", name, "LOW", queue, AddFilter, name)
 		end
 	else -- GMSP
 		channel = channel ~= "GAME" and channel or IsInGroup(LE_PARTY_CATEGORY_INSTANCE) and "INSTANCE_CHAT" or "RAID"
@@ -228,7 +228,7 @@ local function Send(name, dataTable, channel, isRequest)
 		local chunkSize = 255 - #prepend
 
 		if #data <= chunkSize then
-			AddOn_Chomp.SendAddonMessage("GMSP", prepend .. data, channel, name, isRequest and "ALERT" or "NORMAL", "XRP-GROUP")
+			AddOn_Chomp.SendAddonMessage("GMSP", prepend .. data, channel, name, isRequest and "HIGH" or "MEDIUM", "XRP-GROUP")
 		else
 			chunkSize = chunkSize - 1
 
@@ -263,18 +263,18 @@ local function Send(name, dataTable, channel, isRequest)
 			end
 
 			local messageFields = fields and fields[1]
-			AddOn_Chomp.SendAddonMessage("GMSP", ("%s\001%s"):format(prepend, data:sub(1, chunkSize)), channel, name, "BULK", "XRP-GROUP", messageFields and GroupSent, messageFields)
+			AddOn_Chomp.SendAddonMessage("GMSP", ("%s\001%s"):format(prepend, data:sub(1, chunkSize)), channel, name, "LOW", "XRP-GROUP", messageFields and GroupSent, messageFields)
 
 			local position, messageNum = chunkSize + 1, 2
 			while position + chunkSize <= #data do
 				messageFields = fields and fields[messageNum]
-				AddOn_Chomp.SendAddonMessage("GMSP", ("%s\002%s"):format(prepend, data:sub(position, position + chunkSize - 1)), channel, name, "BULK", "XRP-GROUP", messageFields and GroupSent, messageFields)
+				AddOn_Chomp.SendAddonMessage("GMSP", ("%s\002%s"):format(prepend, data:sub(position, position + chunkSize - 1)), channel, name, "LOW", "XRP-GROUP", messageFields and GroupSent, messageFields)
 				position = position + chunkSize
 				messageNum = messageNum + 1
 			end
 
 			messageFields = fields and fields[messageNum]
-			AddOn_Chomp.SendAddonMessage("GMSP", ("%s\003%s"):format(prepend, data:sub(position)), channel, name, "BULK", "XRP-GROUP", messageFields and GroupSent, messageFields)
+			AddOn_Chomp.SendAddonMessage("GMSP", ("%s\003%s"):format(prepend, data:sub(position)), channel, name, "LOW", "XRP-GROUP", messageFields and GroupSent, messageFields)
 		end
 	end
 end
