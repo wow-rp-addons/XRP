@@ -1,7 +1,7 @@
 ## Interface: 70300
-## Title: XRP
+## Title: XRP Roleplay Profiles
 ## Version: 7.3.0.1
-## Author: Bor Blasthammer
+## Author: Justin Snelgrove
 ## Notes: A pretty good roleplaying profile addon.
 ## X-Category: Roleplay
 ## X-License: GPLv3
