@@ -156,7 +156,7 @@ _xrp.HookGameEvent("ADDON_LOADED", function(event, addon)
 	_xrp.SavedVariableSetup()
 
 	local addonString = "%s/%s"
-	local VA = { addonString:format(GetAddOnMetadata(FOLDER, "Title"), _xrp.version) }
+	local VA = { addonString:format(FOLDER, _xrp.version) }
 	for i, addon in ipairs({ "GHI", "Tongues" }) do
 		if IsAddOnLoaded(addon) then
 			VA[#VA + 1] = addonString:format(addon, GetAddOnMetadata(addon, "Version"))

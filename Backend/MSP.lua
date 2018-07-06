@@ -19,7 +19,7 @@ local FOLDER, _xrp = ...
 
 local disabled = false
 if not msp_RPAddOn then
-	msp_RPAddOn = GetAddOnMetadata(FOLDER, "Title")
+	msp_RPAddOn = FOLDER
 else
 	StaticPopupDialogs["XRP_MSP_DISABLE"] = {
 		text = _xrp.L.MSP_DISABLED,

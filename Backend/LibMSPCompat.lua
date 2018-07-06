@@ -17,7 +17,7 @@
 
 local FOLDER, _xrp = ...
 
-if msp_RPAddOn ~= GetAddOnMetadata(FOLDER, "Title") then return end
+if msp_RPAddOn ~= FOLDER then return end
 
 -- This file provides emulation of reference LibMSP for XRP. This is used by
 -- some addons (such as GHI) to interact with a RP profile. For the most part,

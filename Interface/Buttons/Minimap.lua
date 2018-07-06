@@ -236,7 +236,7 @@ local function CreateLDBObject()
 	LDBObject = {
 		type = "data source",
 		text = UNKNOWN,
-		label = GetAddOnMetadata(FOLDER, "Title"),
+		label = FOLDER,
 		icon = "Interface\\Icons\\INV_Misc_QuestionMark",
 		OnClick = XRPButton_OnClick,
 		OnTooltipShow = RenderTooltip,
