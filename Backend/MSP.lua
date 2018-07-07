@@ -632,7 +632,7 @@ end
 
 if not disabled then
 	for prefix, handler in pairs(handlers) do
-		RegisterAddonMessagePrefix(prefix)
+		C_ChatInfo.RegisterAddonMessagePrefix(prefix)
 	end
 	_xrp.HookGameEvent("CHAT_MSG_ADDON", gameEvents.CHAT_MSG_ADDON)
 	_xrp.HookGameEvent("BN_CHAT_MSG_ADDON", gameEvents.BN_CHAT_MSG_ADDON)

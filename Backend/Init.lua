@@ -163,7 +163,7 @@ _xrp.HookGameEvent("ADDON_LOADED", function(event, addon)
 		end
 	end
 	local newFields = {
-		GC = select(2, UnitClassBase("player")),
+		GC = select(2, UnitClass("player")),
 		GF = UnitFactionGroup("player"),
 		GR = select(2, UnitRace("player")),
 		GS = tostring(UnitSex("player")),
@@ -225,7 +225,7 @@ _xrp.HookGameEvent("PLAYER_LOGIN", function(event)
 	end
 	-- GetAutoCompleteResults() also doesn't work.
 	_xrp.own[_xrp.playerWithRealm] = true
-	for i, character in ipairs(GetAutoCompleteResults("", 0x00000080, 0, 0)) do
+	for i, character in ipairs(GetAutoCompleteResults("", 0, 1, AUTO_COMPLETE_ACCOUNT_CHARACTER, 0)) do
 		local name = xrp.FullName(character.name)
 		_xrp.own[name] = true
 		if xrpCache[name] and not xrpCache[name].own then
