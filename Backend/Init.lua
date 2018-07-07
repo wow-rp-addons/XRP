@@ -178,7 +178,7 @@ _xrp.HookGameEvent("ADDON_LOADED", function(event, addon)
 			_xrp.FireEvent("UPDATE", field)
 		end
 	end
-	fields.VP = tostring(_xrp.msp)
+	fields.VP = tostring(msp.protocolversion)
 	versions.VP = _xrp.msp
 
 	if not xrpSaved.overrides.logout or xrpSaved.overrides.logout + 900 < time() then
@@ -237,6 +237,7 @@ _xrp.HookGameEvent("PLAYER_LOGIN", function(event)
 			data.own = nil
 		end
 	end
+	_xrp.FireEvent("UPDATE")
 end)
 _xrp.HookGameEvent("PLAYER_LOGOUT", function(event)
 	-- Note: This code must be thoroughly tested if any changes are

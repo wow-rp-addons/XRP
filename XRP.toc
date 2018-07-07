@@ -34,5 +34,4 @@ Interface\Archive\Archive.xml
 Interface\Editor\Editor.xml
 Interface\Options\Options.xml
 Interface\ThirdPartyFixes.lua
-Backend\LibMSPCompat.lua
 Backend\Import.lua
