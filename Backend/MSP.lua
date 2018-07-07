@@ -82,6 +82,11 @@ xrp.HookEvent("UPDATE", function(event, field)
 		if fields.AH then
 			fields.AH = xrp.Height(fields.AH, "msp")
 		end
+		for field, contents in pairs(msp.my) do
+			if not fields[field] then
+				msp.my[field] = nil
+			end
+		end
 		for field, contents in pairs(fields) do
 			msp.my[field] = contents
 		end
@@ -121,12 +126,11 @@ local function UpdatedHandler(name, field, contents, version)
 		_xrp.AddonUpdate(contents:match("^XRP/([^;]+)"))
 	end
 	xrpCache[name].fields[field] = contents
-	xrpCache[name].versions[field] = msp.char[name].ver[field]
+	xrpCache[name].versions[field] = version
 	_xrp.FireEvent("FIELD", name, field)
 end
 msp.callback.updated[#msp.callback.updated + 1] = UpdatedHandler
 
-local TT_REQ = { "?TT" }
 local function ReceivedHandler(name)
 	_xrp.FireEvent("RECEIVE", name)
 	--_xrp.FireEvent("NOCHANGE", name)
@@ -195,6 +199,8 @@ end
 function _xrp.QueueRequest(name, field)
 	if disabled or name == _xrp.playerWithRealm or friends and not (friends[name] or guildies and guildies[name]) or xrp.ShortName(name) == UNKNOWN then
 		return
+	elseif _xrp.unitCache[name] and _xrp.unitCache[name][field] then
+		return
 	elseif not request[name] then
 		request[name] = {}
 	end
@@ -211,83 +217,44 @@ function _xrp.Request(name, fields)
 	if disabled or name == _xrp.playerWithRealm or friends and not (friends[name] or guildies and guildies[name]) or xrp.ShortName(name) == UNKNOWN then
 		return false
 	end
-	-- TODO: Only one autorequest per session.
 	if not _xrp.unitCache[name] then
 		for i, field in ipairs(UNIT_REQUEST) do
-			fields[#fields + 1] = field
+			if not msp.char[name].time[field] then
+				fields[#fields + 1] = field
+			end
 		end
-	elseif not _xrp.unitCache[name].GF then
+	elseif not _xrp.unitCache[name].GF and not msp.char[name].time.GF then
 		fields[#fields + 1] = "GF"
 	end
 	return msp:Request(name, fields)
-				end
+end
 
+-- TODO: Remove, replace with status line in Viewer if cannot refresh after
+-- trying to do so.
 function _xrp.CanRefresh(name)
 	return true
---[[	local now = GetTime()
-	if cache[name].nextCheck and now < cache[name].nextCheck then
-		return false
-	elseif (cache[name].time.TT or 0) < now or (cache[name].time.DE or 0) < now then
-		return true
-	end
-	return false]]
 end
 
 function _xrp.ResetCacheTimers(name)
---[[	if rawget(cache, name) then
-		local now = GetTime()
-		if cache[name].nextCheck and now < cache[name].nextCheck then
-			cache[name].nextCheck = now + 5
-		end
-		for field, nextReq in pairs(cache[name].time) do
-			if nextReq > now + 5 then
-				cache[name].time[field] = now + 5
-			end
-		end
-	end]]
+	msp.char[name].time = nil
+	msp.char[name].scantime = nil
+	msp.char[name].supported = nil
 end
 
 function _xrp.DropCache(name)
---[[	if xrpAccountSaved.bookmarks[name] or xrpAccountSaved.notes[name] then return end
-	_xrp.ResetCacheTimers(name)
+	if xrpAccountSaved.bookmarks[name] or xrpAccountSaved.notes[name] then return end
+	msp.char[name] = nil
 	xrpCache[name] = nil
-	_xrp.FireEvent("DROP", name)]]
+	_xrp.FireEvent("DROP", name)
 end
 
-function _xrp.ForceRefresh(name, skipTT)
---[[	local fields = {}
-	for field, lastReq in pairs(cache[name].time) do
-		fields[field] = true
-	end
-	for field, contents in pairs(xrpCache[name].fields) do
-		fields[field] = true
-	end
-	for field, version in pairs(xrpCache[name].versions) do
-		fields[field] = true
-	end
+function _xrp.ForceRefresh(name)
+	_xrp.ResetCacheTimers(name)
+	msp.char[name].ver = nil
 
-	local now = GetTime()
-	local requestNow, requestLater = {}, {}
-	for field, isKnown in pairs(fields) do
-		if not skipTT or not TT_FIELDS[field] then
-			if (cache[name].time[field] or 0) < now then
-				requestNow[#requestNow + 1] = field
-			else
-				cache[name].time[field] = now + 5
-				requestLater[#requestLater + 1] = field
-			end
-			xrpCache[name].versions[field] = nil
-		end
+	for field, contents in pairs(msp.char[name]) do
+		_xrp.QueueRequest(name, field)
 	end
-
-	if #requestNow > 0 then
-		_xrp.Request(name, requestNow)
-	end
-	if #requestLater > 0 then
-		-- Not a fan of using a closure like this, but this won't be run often
-		-- enough to matter.
-		C_Timer.After(5.5, function() _xrp.Request(name, requestLater) end)
-	end]]
 end
 
 _xrp.settingsToggles.display.friendsOnly = function(setting)
