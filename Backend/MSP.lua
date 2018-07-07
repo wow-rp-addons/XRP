@@ -598,30 +598,6 @@ function gameEvents.BN_DISCONNECTED(event)
 	bnet = nil
 end
 
-local inGroup = {}
-local raidUnits, partyUnits = {}, {}
-for i = 1, MAX_RAID_MEMBERS do
-	raidUnits[i] = ("raid%d"):format(i)
-end
-for i = 1, MAX_PARTY_MEMBERS do
-	partyUnits[i] = ("party%d"):format(i)
-end
-function gameEvents.GROUP_ROSTER_UPDATE(event)
-	local units = IsInRaid() and raidUnits or partyUnits
-	local newInGroup = {}
-	for i, unit in ipairs(units) do
-		local name = xrp.UnitFullName(unit)
-		if not name then break end
-		if name ~= _xrp.playerWithRealm then
-			if not inGroup[name] and cache[name].nextCheck then
-				cache[name].nextCheck = 0
-			end
-			newInGroup[name] = true
-		end
-	end
-	inGroup = newInGroup
-end
-
 function gameEvents.FRIENDLIST_UPDATE(event)
 	if not friends then return end
 	table.wipe(friends)
