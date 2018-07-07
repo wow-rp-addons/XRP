@@ -245,49 +245,11 @@ _xrp.HookGameEvent("PLAYER_LOGOUT", function(event)
 	-- any manner in-game.
 	local now = time()
 	local fields, versions = {}, {}
-	local profiles, inherit = { xrpSaved.profiles[xrpSaved.selected] }, xrpSaved.profiles[xrpSaved.selected].parent
-	for i = 1, _xrp.PROFILE_MAX_DEPTH do
-		if not xrpSaved.profiles[inherit] then
-			break
-		end
-		profiles[#profiles + 1] = xrpSaved.profiles[inherit]
-		inherit = xrpSaved.profiles[inherit].parent
-	end
-	for i = #profiles, 1, -1 do
-		local profile = profiles[i]
-		for field, doInherit in pairs(profile.inherits) do
-			if doInherit == false then
-				fields[field] = nil
-				versions[field] = nil
-			end
-		end
-		for field, contents in pairs(profile.fields) do
-			if not fields[field] then
-				fields[field] = contents
-				versions[field] = profile.versions[field]
-			end
-		end
-	end
-	for field, contents in pairs(xrpSaved.meta.fields) do
-		if not fields[field] then
+	for field, contents in pairs(msp.my) do
+		if field ~= "TT" then
 			fields[field] = contents
-			versions[field] = xrpSaved.meta.versions[field]
 		end
-	end
-	for field, contents in pairs(xrpSaved.overrides.fields) do
-		if contents == "" then
-			fields[field] = nil
-			versions[field] = nil
-		else
-			fields[field] = contents
-			versions[field] = xrpSaved.overrides.versions[field]
-		end
-	end
-	if fields.AW then
-		fields.AW = xrp.Weight(fields.AW, "msp")
-	end
-	if fields.AH then
-		fields.AH = xrp.Height(fields.AH, "msp")
+		versions[field] = msp.myver[field]
 	end
 	xrpCache[_xrp.playerWithRealm] = {
 		fields = fields,
