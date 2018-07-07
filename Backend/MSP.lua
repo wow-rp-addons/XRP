@@ -98,16 +98,16 @@ local function StatusHandler(name, reason, msgID, msgTotal)
 		_xrp.FireEvent("CHUNK", name, msgID, msgTotal)
 	end
 end
-
 msp.callback.status[#msp.callback.status + 1] = StatusHandler
 
 msp:AddFieldsToTooltip("RC")
 
-local function UpdatedHandler(name, field, contents)
+local function UpdatedHandler(name, field, contents, version)
 	if not xrpCache[name] and (contents ~= "" or version ~= 0) then
 		-- This is the only place a cache table is created by XRP.
 		xrpCache[name] = {
 			fields = {},
+			versions = {},
 			lastReceive = time(),
 			own = _xrp.own[name],
 		}
@@ -121,9 +121,9 @@ local function UpdatedHandler(name, field, contents)
 		_xrp.AddonUpdate(contents:match("^XRP/([^;]+)"))
 	end
 	xrpCache[name].fields[field] = contents
+	xrpCache[name].versions[field] = msp.char[name].ver[field]
 	_xrp.FireEvent("FIELD", name, field)
 end
-
 msp.callback.updated[#msp.callback.updated + 1] = UpdatedHandler
 
 local TT_REQ = { "?TT" }
@@ -135,6 +135,18 @@ local function ReceivedHandler(name)
 		xrpCache[name].lastReceive = time()
 	end
 end
+msp.callback.received[#msp.callback.received + 1] = ReceivedHandler
+
+local function DataLoadHandler(name, char)
+	if xrpCache[name] then
+		for field, contents in pairs(xrpCache[name].fields) do
+			char.field[field] = contents
+			char.ver[field] = xrpCache[name].versions[field]
+		end
+		char.ver.TT = xrpCache[name].versions.TT
+	end
+end
+msp.callback.dataload[#msp.callback.dataload + 1] = DataLoadHandler
 
 local gameEvents = {}
 

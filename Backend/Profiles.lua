@@ -23,17 +23,6 @@ local NO_PROFILE = { TT = true, VP = true, VA = true, GC = true, GF = true, GR =
 
 _xrp.PROFILE_MAX_DEPTH = MAX_DEPTH
 
-function _xrp.NewVersion(field, contents)
-	if field == "FC" or field == "FR" then
-		local number = tonumber(contents)
-		if number then
-			return number
-		end
-	end
-	xrpSaved.versions[field] = (xrpSaved.versions[field] or 0) + 1
-	return xrpSaved.versions[field]
-end
-
 xrp.current = setmetatable({}, {
 	__index = function(self, field)
 		local contents = xrpSaved.overrides.fields[field] or xrp.profiles.SELECTED.fullFields[field] or xrpSaved.meta.fields[field]
@@ -50,32 +39,9 @@ xrp.current = setmetatable({}, {
 		if xrpSaved.overrides.fields[field] == contents or NO_PROFILE[field] or not field:find("^%u%u$") then return end
 		contents = type(contents) == "string" and contents or nil
 		xrpSaved.overrides.fields[field] = contents
-		xrpSaved.overrides.versions[field] = contents and contents ~= "" and _xrp.NewVersion(field, contents) or nil
 		_xrp.FireEvent("UPDATE", field)
 	end,
 	__metatable = false,
-})
-
-_xrp.versions = setmetatable({}, {
-	__index = function(self, field)
-		if xrpSaved.overrides.fields[field] == "" then
-			return nil
-		elseif xrpSaved.overrides.versions[field] then
-			return xrpSaved.overrides.versions[field]
-		end
-		local profile = xrpSaved.profiles[xrpSaved.selected]
-		for i = 0, MAX_DEPTH do
-			if profile.versions[field] then
-				return profile.versions[field]
-			elseif profile.inherits[field] == false or not xrpSaved.profiles[profile.parent] then
-				break
-			else
-				profile = xrpSaved.profiles[profile.parent]
-			end
-		end
-		return xrpSaved.meta.versions[field]
-	end,
-	__newindex = _xrp.DoNothing,
 })
 
 local function IsUsed(name, field)
@@ -160,7 +126,6 @@ local profileFunctions = {
 		xrpSaved.profiles[newName] = {
 			fields = {},
 			inherits = {},
-			versions = {},
 			parent = profile.parent,
 		}
 		for field, contents in pairs(profile.fields) do
@@ -168,9 +133,6 @@ local profileFunctions = {
 		end
 		for field, setting in pairs(profile.inherits) do
 			xrpSaved.profiles[newName].inherits[field] = setting
-		end
-		for field, version in pairs(profile.versions) do
-			xrpSaved.profiles[newName].versions[field] = version
 		end
 		return true
 	end,
@@ -182,7 +144,6 @@ local profileFunctions = {
 		xrpSaved.selected = name
 		if not keepOverrides then
 			xrpSaved.overrides.fields = {}
-			xrpSaved.overrides.versions = {}
 		end
 		_xrp.FireEvent("UPDATE")
 		return true
@@ -220,7 +181,6 @@ local fieldsMeta = {
 		local profile = xrpSaved.profiles[name]
 		if profile and profile.fields[field] ~= contents then
 			profile.fields[field] = contents
-			profile.versions[field] = contents and _xrp.NewVersion(field, contents)
 			if IsUsed(name, field) then
 				_xrp.FireEvent("UPDATE", field)
 			end
@@ -353,7 +313,6 @@ xrp.profiles = setmetatable({
 		xrpSaved.profiles[name] = {
 			fields = {},
 			inherits = {},
-			versions = {},
 		}
 		return self[name]
 	end,

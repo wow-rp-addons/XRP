@@ -170,20 +170,17 @@ _xrp.HookGameEvent("ADDON_LOADED", function(event, addon)
 		NA = _xrp.player, -- Fallback NA field.
 		VA = table.concat(VA, ";"),
 	}
-	local fields, versions = xrpSaved.meta.fields, xrpSaved.meta.versions
+	local fields = xrpSaved.meta.fields
 	for field, contents in pairs(newFields) do
 		if contents ~= fields[field] then
 			fields[field] = contents
-			versions[field] = _xrp.NewVersion(field, contents)
 			_xrp.FireEvent("UPDATE", field)
 		end
 	end
 	fields.VP = tostring(msp.protocolversion)
-	versions.VP = _xrp.msp
 
 	if not xrpSaved.overrides.logout or xrpSaved.overrides.logout + 900 < time() then
 		xrpSaved.overrides.fields = {}
-		xrpSaved.overrides.versions = {}
 	end
 	xrpSaved.overrides.logout = nil
 
@@ -210,7 +207,6 @@ _xrp.HookGameEvent("ADDON_LOADED", function(event, addon)
 	if fields.GF == "Neutral" then
 		_xrp.HookGameEvent("NEUTRAL_FACTION_SELECT_RESULT", function(event)
 			xrpSaved.meta.fields.GF = UnitFactionGroup("player")
-			xrpSaved.meta.versions.GF = _xrp.NewVersion("GF", xrpSaved.meta.fields.GF)
 			_xrp.FireEvent("UPDATE", "GF")
 		end)
 	end
@@ -220,7 +216,6 @@ _xrp.HookGameEvent("PLAYER_LOGIN", function(event)
 	local GU = UnitGUID("player")
 	if xrpSaved.meta.fields.GU ~= GU then
 		xrpSaved.meta.fields.GU = GU
-		xrpSaved.meta.versions.GU = _xrp.NewVersion("GU", GU)
 		_xrp.FireEvent("UPDATE", "GU")
 	end
 	-- GetAutoCompleteResults() also doesn't work.

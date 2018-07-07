@@ -163,11 +163,9 @@ local function AltToggleForce(setting, settingName)
 	local raceAlt = _xrp.L[("VALUE_GR_%s_ALT"):format(raceName:upper())]
 	if setting and xrpSaved.meta.fields.GR == raceName and xrpSaved.meta.fields.RA ~= raceAlt then
 		xrpSaved.meta.fields.RA = raceAlt
-		xrpSaved.meta.versions.RA = _xrp.NewVersion("RA", raceAlt)
 		_xrp.FireEvent("UPDATE", "RA")
 	elseif (not setting or xrpSaved.meta.fields.GR ~= raceName) and xrpSaved.meta.fields.RA == raceAlt then
 		xrpSaved.meta.fields.RA = nil
-		xrpSaved.meta.versions.RA = nil
 		_xrp.FireEvent("UPDATE", "RA")
 	end
 end
