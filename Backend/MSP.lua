@@ -38,16 +38,6 @@ end
 -- These fields are (or should) be generated from UnitSomething() functions.
 local UNIT_FIELDS = { "GC", "GF", "GR", "GS", "GU" }
 
--- 15 seconds for tooltip, 30 seconds for other fields.
-local FIELD_TIMES = setmetatable({ TT = 15 }, {
-	__index = function(self, field)
-		if TT_FIELDS[field] then
-			return self.TT
-		end
-		return 30
-	end,
-})
-
 xrp.HookEvent("UPDATE", function(event, field)
 	if field then
 		msp.my[field] = xrp.current[field]
