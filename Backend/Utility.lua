@@ -21,18 +21,14 @@ function xrp.UnitFullName(unit)
 	if type(unit) ~= "string" or unit ~= "player" and not UnitIsPlayer(unit) then
 		return nil
 	end
-	return xrp.FullName(UnitFullName(unit))
+	return AddOn_Chomp.NameMergedRealm(UnitFullName(unit))
 end
 
 function xrp.FullName(name, realm)
 	if type(name) ~= "string" or name == "" then
 		return nil
-	elseif name:find("-", nil, true) then
-		return name
-	elseif realm and realm ~= "" then
-		return FULL_PLAYER_NAME:format(name, (realm:gsub("%s*%-*", "")))
 	end
-	return FULL_PLAYER_NAME:format(name, (GetRealmName():gsub("%s*%-*", "")))
+	return AddOn_Chomp.NameMergedRealm(name, realm)
 end
 
 function xrp.ShortName(name)
@@ -95,13 +91,31 @@ function xrp.Strip(text, allowIndent)
 	if type(text) ~= "string" then
 		return nil
 	end
-	-- Swap non-break spaces for breakable spaces, tabs for eight spaces,
-	-- remove control characters, and unquestionably invalid UTF-8 sequences.
-	text = text:gsub("\192\160", "\032"):gsub("\009", "\032\032\032\032\032\032\032\032"):gsub("[%z\001-\008\011\012\014-\031\127\192\193\245-\255]", ""):gsub("([\010\013\032-\126])[\128-\191]*", "%1"):gsub("[\194-\244]+([\194-\244])", "%1"):gsub("[\194-\244]([\010\013\032-\126])", "%1")
+	if type(text) ~= "string" or text == "" then
+		return nil
+	end
+	local gsub = string.gsub
+	text = gsub(text, "\192\160", "\032") -- Non-break space.
+	text = gsub(text, "\009", "\032\032\032\032\032\032\032\032") -- Tabs.
+	text = gsub(text, "\013\010?", "\010") -- CR/CRLF to LF
+	-- The rest of these deal with non-printable ASCII and invalid UTF-8.
+	text = gsub(text, "[%z\001-\009\011-\031\127\192\193\245-\255]", "")
+	text = gsub(text, "([\010\032-\126])[\128-\191]*", "%1")
+	text = gsub(text, "[\194-\244]+([\194-\244])", "%1")
+	text = gsub(text, "[\194-\244]([\010\032-\126])", "%1")
+
 	-- This fully removes all color escapes, texture escapes, and most types of
 	-- link and chat link escapes. Other UI escape sequences are escaped
 	-- themselves to not render on display (|| instead of |).
-	text = text:gsub("||", "\001"):gsub("%f[|]|c%x%x%x%x%x%x%x%x", ""):gsub("%f[|]|r", ""):gsub("%f[|]|H.-|h(.-)|h", "%1"):gsub("%f[|]|T.-|t", ""):gsub("%f[|]|K.-|k.-|k", ""):gsub("\001", "||"):gsub("%f[|]|%f[^|]", "||")
+	text = gsub(text, "||", "\001") -- Avoid an issue with triple pipes and %f.
+	text = gsub(text, "%f[|]|c%x%x%x%x%x%x%x%x", "")
+	text = gsub(text, "%f[|]|r", "")
+	text = gsub(text, "%f[|]|H.-|h(.-)|h", "%1")
+	text = gsub(text, "%f[|]|T.-|t", "")
+	text = gsub(text, "%f[|]|K.-|k.-|k", "")
+	text = gsub(text, "\001", "||") -- Part two of above issue-avoiding.
+	text = gsub(text, "%f[|]|%f[^|]", "||")
+
 	if allowIndent then
 		text = text:trim("\r\n"):match("^(.-)%s*$")
 	else
