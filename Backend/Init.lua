@@ -113,34 +113,23 @@ frame:SetScript("OnEvent", function(self, event, ...)
 	end
 end)
 
+local VERSION_MATCH = "(%d+)%.(%d+)%.(%d+)[%-]?(%l*)(%d*)"
 local function CompareVersion(newVersion, oldVersion)
-	local newMajor, newMinor, newPatch, newAddOn, newRelType, newRelRev = newVersion:match("(%d+)%.(%d+)%.(%d+)%.?(%d*)[%_%-]?(%l*)(%d*)")
-	local oldMajor, oldMinor, oldPatch, oldAddOn, oldRelType, oldRelRev = oldVersion:match("(%d+)%.(%d+)%.(%d+)%.?(%d*)[%_%-]?(%l*)(%d*)")
+	local newMajor, newMinor, newPatch, newType, newRevision = newVersion:match(VERSION_MATCH)
+	local oldMajor, oldMinor, oldPatch, oldType, oldRevision = oldVersion:match(VERSION_MATCH)
 
-	newRelType = (newRelType == "alpha" or newRelType == "a") and 1 or (newRelType == "beta" or oldRelType == "b") and 2 or newRelType == "rc" and 3 or 4
-	oldRelType = (oldRelType == "alpha" or oldRelType == "a") and 1 or (oldRelType == "beta" or oldRelType == "b") and 2 or oldRelType == "rc" and 3 or 4
+	newType = newType == "alpha" and 1 or newType == "beta" and 2 or newType == "rc" and 3 or 4
+	oldType = oldType == "alpha" and 1 or oldType == "beta" and 2 or oldType == "rc" and 3 or 4
 
-	local newWoW = (tonumber(newMajor) * 1000000) + (tonumber(newMinor) * 10000) + (tonumber(newPatch) * 100)
-	local oldWoW = (tonumber(oldMajor) * 1000000) + (tonumber(oldMinor) * 10000) + (tonumber(oldPatch) * 100)
+	local new = (tonumber(newMajor) * 1000000) + (tonumber(newMinor) * 10000) + (tonumber(newPatch) * 100) + (tonumber(newRevision) or 0)
+	local old = (tonumber(oldMajor) * 1000000) + (tonumber(oldMinor) * 10000) + (tonumber(oldPatch) * 100) + (tonumber(oldRevision) or 0)
 
-	if newWoW < oldWoW then
+	if new <= old then
 		return -1
-	elseif newRelType < oldRelType and newWoW > oldWoW then
+	elseif newType < oldType then
 		return 0
-	elseif newWoW > oldWoW then
-		return 1
 	end
-
-	local newXRP = (tonumber(newAddOn) * 10000) + (newRelType * 100) + (tonumber(newRelRev) or 0)
-	local oldXRP = (tonumber(oldAddOn) * 10000) + (oldRelType * 100) + (tonumber(oldRelRev) or 0)
-
-	if newXRP <= oldXRP then
-		return -1
-	elseif newRelType < oldRelType and newXRP > oldXRP then
-		return 0
-	else
-		return 1
-	end
+	return 1
 end
 
 function _xrp.AddonUpdate(version)
