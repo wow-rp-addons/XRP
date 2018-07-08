@@ -25,35 +25,20 @@ XRP_PROFILES_NOTFOUND = _xrp.L.NO_PROFILES_FOUND
 
 local request, results
 
--- Unlike CLASS_ICON_TCOORDS these aren't in a global.
-local RACE_ICON_TCOORDS = {
-	["HUMAN_MALE"] = { 0, 0.125, 0, 0.25 },
-	["HUMAN_FEMALE"] = { 0, 0.125, 0.5, 0.75 },
-	["DWARF_MALE"] = { 0.125, 0.25, 0, 0.25 },
-	["DWARF_FEMALE"] = { 0.125, 0.25, 0.5, 0.75 },
-	["NIGHTELF_MALE"] = { 0.375, 0.5, 0, 0.25 },
-	["NIGHTELF_FEMALE"] = { 0.375, 0.5, 0.5, 0.75 },
-	["GNOME_MALE"] = { 0.25, 0.375, 0, 0.25 },
-	["GNOME_FEMALE"] = { 0.25, 0.375, 0.5, 0.75 },
-	["DRAENEI_MALE"] = { 0.5, 0.625, 0, 0.25 },
-	["DRAENEI_FEMALE"] = { 0.5, 0.625, 0.5, 0.75 },
-	["WORGEN_MALE"] = { 0.625, 0.750, 0, 0.25 },
-	["WORGEN_FEMALE"] = { 0.625, 0.750, 0.5, 0.75 },
-	["ORC_MALE"] = { 0.375, 0.5, 0.25, 0.5 },
-	["ORC_FEMALE"] = { 0.375, 0.5, 0.75, 1.0 },
-	["SCOURGE_MALE"] = { 0.125, 0.25, 0.25, 0.5 },
-	["SCOURGE_FEMALE"] = { 0.125, 0.25, 0.75, 1.0 },
-	["TAUREN_MALE"] = { 0, 0.125, 0.25, 0.5 },
-	["TAUREN_FEMALE"] = { 0, 0.125, 0.75, 1.0 },
-	["TROLL_MALE"] = { 0.25, 0.375, 0.25, 0.5 },
-	["TROLL_FEMALE"] = { 0.25, 0.375, 0.75, 1.0 },
-	["BLOODELF_MALE"] = { 0.5, 0.625, 0.25, 0.5 },
-	["BLOODELF_FEMALE"] = { 0.5, 0.625, 0.75, 1.0 },
-	["GOBLIN_MALE"] = { 0.625, 0.750, 0.25, 0.5 },
-	["GOBLIN_FEMALE"] = { 0.625, 0.750, 0.75, 1.0 },
-	["PANDAREN_MALE"] = { 0.750, 0.875, 0, 0.25 },
-	["PANDAREN_FEMALE"] = { 0.750, 0.875, 0.5, 0.75 },
+-- Long races names, plus Undead, use alternate atlas names.
+local atlasGR = {
+	["HighmountainTauren"] = "Highmountain",
+	["LightforgedDraenei"] = "Lightforged",
+	["Scourge"] = "Undead",
+	["ZandalariTroll"] = "Zandalari", -- This is a guess.
 }
+
+local function GetRaceAtlas(GR, GS)
+	if (atlasGR[GR]) then
+		race = atlasGR[GR]
+	end
+	return ("raceicon-%s-%s"):format(GR:lower(), GS == "2" and "male" or "female")
+end
 
 function XRPBookmarksList_update(self, force)
 	if not self.buttons then return end
@@ -86,8 +71,7 @@ function XRPBookmarksList_update(self, force)
 						if not GS then
 							GS = tostring(fastrandom(2, 3))
 						end
-						local gender = GS == "2" and "_MALE" or "_FEMALE"
-						button.RaceIcon:SetTexCoord(unpack(RACE_ICON_TCOORDS[GR:upper() .. gender]))
+						button.RaceIcon:SetAtlas(GetRaceAtlas(GR, GS))
 						button.RaceIcon:Show()
 					else
 						button.RaceIcon:Hide()
@@ -308,10 +292,10 @@ local function Filter_Click(self, arg1, arg2, checked)
 end
 if UnitFactionGroup("player") == "Horde" then
 	lists.faction = { "Horde", "Alliance", "Neutral" }
-	lists.race = { "Orc", "Scourge", "Tauren", "Troll", "BloodElf", "Goblin", "Pandaren", "Human", "Dwarf", "NightElf", "Gnome", "Draenei", "Worgen" }
+	lists.race = { "Orc", "Scourge", "Tauren", "Troll", "BloodElf", "Goblin", "Nightborne", "HighmountainTauren", "MagharOrc", "ZandalariTroll", "Pandaren", "Human", "Dwarf", "NightElf", "Gnome", "Draenei", "Worgen", "VoidElf", "LightforgedDraenei", "DarkIronDwarf", "KulTiran", }
 else
 	lists.faction = { "Alliance", "Horde", "Neutral" }
-	lists.race = { "Human", "Dwarf", "NightElf", "Gnome", "Draenei", "Worgen", "Pandaren", "Orc", "Scourge", "Tauren", "Troll", "BloodElf", "Goblin" }
+	lists.race = { "Human", "Dwarf", "NightElf", "Gnome", "Draenei", "Worgen", "VoidElf", "LightforgedDraenei", "DarkIronDwarf", "KulTiran", "Pandaren", "Orc", "Scourge", "Tauren", "Troll", "BloodElf", "Goblin", "Nightborne", "HighmountainTauren", "MagharOrc", "ZandalariTroll", }
 end
 local factionMenu = {
 	{ text = CHECK_ALL, notCheckable = true, keepShownOnClick = true, arg1 = "faction", arg2 = "ALL", func = Filter_Click, },

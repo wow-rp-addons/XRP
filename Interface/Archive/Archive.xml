@@ -82,7 +82,7 @@
 						<Anchor point="LEFT" relativeKey="$parent.ClassIcon" relativePoint="RIGHT" x="4"/>
 					</Anchors>
 				</FontString>
-				<Texture parentKey="RaceIcon" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-Races">
+				<Texture parentKey="RaceIcon">
 					<Size x="18" y="18"/>
 					<Anchors>
 						<Anchor point="BOTTOM" relativeKey="$parent.ClassIcon" relativePoint="TOP" y="1"/>
