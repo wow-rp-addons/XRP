@@ -115,7 +115,7 @@ XRPButton_baseMenuList = {
 	{ text = _xrp.L.PROFILES, notCheckable = true, hasArrow = true, menuList = Profiles_menuList, },
 	{ text = xrp.L.MENU_FIELDS.FC, notCheckable = true, hasArrow = true, menuList = Status_menuList, },
 	{ text = xrp.L.MENU_FIELDS.CU .. CONTINUED, notCheckable = true, func = function() StaticPopup_Show("XRP_CURRENTLY") end, },
-	{ text = _xrp.L.BOOKMARKS, notCheckable = true, func = function() XRPBookmarks:Toggle(1) end, },
+	{ text = _xrp.L.ARCHIVE, notCheckable = true, func = function() XRPArchive:Toggle(1) end, },
 	{ text = _xrp.L.VIEWER, notCheckable = true, func = function() XRPViewer:View() end, },
 	{ text = _xrp.L.EDITOR, notCheckable = true, func = function() XRPEditor:Edit() end, },
 	{ text = _xrp.L.OPTIONS, notCheckable = true, func = function() _xrp.Options() end, },

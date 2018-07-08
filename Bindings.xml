@@ -18,8 +18,8 @@
 	<Binding name="XRP_STATUS" header="XRP" category="ADDONS">
 		xrp.Status()
 	</Binding>
-	<Binding name="XRP_BOOKMARKS" category="ADDONS">
-		XRPBookmarks:Toggle()
+	<Binding name="XRP_ARCHIVE" category="ADDONS">
+		XRPArchive:Toggle()
 	</Binding>
 	<Binding name="XRP_VIEWER" category="ADDONS">
 		if xrp.characters.byUnit.target then

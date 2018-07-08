@@ -35,8 +35,8 @@ xrpCmds.about = function(args)
 	end
 end
 
-xrpCmds.bookmarks = function(args)
-	XRPBookmarks:Toggle(1)
+xrpCmds.archive = function(args)
+	XRPArchive:Toggle(1)
 end
 
 xrpCmds.currently = function(args)
@@ -76,9 +76,9 @@ xrpCmds.help = function(args)
 	if args == "about" or args and args == _xrp.L.CMD_ABOUT then
 		print(USAGE:format(NO_ARGS:format(_xrp.L.CMD_ABOUT)))
 		print(_xrp.L.ABOUT_HELP)
-	elseif args == "bookmarks" or args and args == _xrp.L.CMD_BOOKMARKS then
-		print(USAGE:format(NO_ARGS:format(_xrp.L.CMD_BOOKMARKS)))
-		print(_xrp.L.BOOKMARKS_HELP)
+	elseif args == "archive" or args and args == _xrp.L.CMD_ARCHIVE then
+		print(USAGE:format(NO_ARGS:format(_xrp.L.CMD_ARCHIVE)))
+		print(_xrp.L.ARCHIVE_HELP)
 	elseif args == "currently" or args and args == _xrp.L.CMD_CURRENTLY then
 		print(USAGE:format(HAS_ARGS:format(_xrp.L.CMD_CURRENTLY, _xrp.L.CURRENTLY_ARGS)))
 		print(ARG:format(_xrp.L.CURRENTLY_ARG1, _xrp.L.CURRENTLY_ARG1_HELP))
@@ -114,7 +114,7 @@ xrpCmds.help = function(args)
 		print(USAGE:format(HAS_ARGS:format(_xrp.L.COMMANDS, _xrp.L.ARGUMENTS)))
 		print(_xrp.L.COMMANDS_HELP)
 		print(ARG:format(_xrp.L.CMD_ABOUT, _xrp.L.ABOUT_HELP))
-		print(ARG:format(_xrp.L.CMD_BOOKMARKS, _xrp.L.BOOKMARKS_HELP))
+		print(ARG:format(_xrp.L.CMD_ARCHIVE, _xrp.L.ARCHIVE_HELP))
 		print(ARG:format(_xrp.L.CMD_CURRENTLY, _xrp.L.CURRENTLY_HELP))
 		print(ARG:format(_xrp.L.CMD_EDIT, _xrp.L.EDIT_HELP))
 		print(ARG:format(_xrp.L.CMD_EXPORT, _xrp.L.EXPORT_HELP))
@@ -199,8 +199,8 @@ xrpCmds.show = xrpCmds.view
 if _xrp.L.CMD_ABOUT ~= "about" then
 	xrpCmds[_xrp.L.CMD_ABOUT] = xrpCmds.about
 end
-if _xrp.L.CMD_BOOKMARKS ~= "bookmarks" then
-	xrpCmds[_xrp.L.CMD_BOOKMARKS] = xrpCmds.bookmarks
+if _xrp.L.CMD_ARCHIVE ~= "archive" then
+	xrpCmds[_xrp.L.CMD_ARCHIVE] = xrpCmds.archive
 end
 if _xrp.L.CMD_CURRENTLY ~= "currently" then
 	xrpCmds[_xrp.L.CMD_CURRENTLY] = xrpCmds.currently

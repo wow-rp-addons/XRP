@@ -40,7 +40,7 @@ local function GetRaceAtlas(GR, GS)
 	return ("raceicon-%s-%s"):format(GR:lower(), GS == "2" and "male" or "female")
 end
 
-function XRPBookmarksList_update(self, force)
+function XRPArchiveList_update(self, force)
 	if not self.buttons then return end
 	local offset = HybridScrollFrame_GetOffset(self)
 	local matches = #results
@@ -125,24 +125,24 @@ function XRPBookmarksList_update(self, force)
 		end
 	end
 
-	XRPBookmarks.Count:SetFormattedText(_xrp.L.TOTAL_LIST, matches, results.totalCount)
+	XRPArchive.Count:SetFormattedText(_xrp.L.TOTAL_LIST, matches, results.totalCount)
 
 	HybridScrollFrame_Update(self, 72 * matches, 72)
 end
 
 local function Refresh()
 	results = xrp.characters:List(request)
-	XRPBookmarks.List.range = #results * 72
-	XRPBookmarks.List:update()
-	XRPBookmarks.List.scrollBar:SetValue(request.offset)
+	XRPArchive.List.range = #results * 72
+	XRPArchive.List:update()
+	XRPArchive.List.scrollBar:SetValue(request.offset)
 	if request.fullText then
-		XRPBookmarks.FilterText.Instructions:SetText(SEARCH)
-		XRPBookmarks.FilterText.FullTextWarning:Show()
+		XRPArchive.FilterText.Instructions:SetText(SEARCH)
+		XRPArchive.FilterText.FullTextWarning:Show()
 	else
-		XRPBookmarks.FilterText.Instructions:SetText(NAME)
-		XRPBookmarks.FilterText.FullTextWarning:Hide()
+		XRPArchive.FilterText.Instructions:SetText(NAME)
+		XRPArchive.FilterText.FullTextWarning:Hide()
 	end
-	XRPBookmarks.FilterText:SetText(request.text or "")
+	XRPArchive.FilterText:SetText(request.text or "")
 end
 
 local function DROP(event, name)
@@ -151,9 +151,9 @@ local function DROP(event, name)
 		Refresh()
 		return
 	end
-	for i, button in ipairs(XRPBookmarks.List.buttons) do
+	for i, button in ipairs(XRPArchive.List.buttons) do
 		if tostring(button.character) == name then
-			request.offset = XRPBookmarks.List.scrollBar:GetValue()
+			request.offset = XRPArchive.List.scrollBar:GetValue()
 			Refresh()
 			return
 		end
@@ -176,8 +176,8 @@ local function Menu_Click(self, arg1, arg2, checked)
 	elseif arg1 == "XRP_VIEW_LIVE" then
 		XRPViewer:View(tostring(UIDROPDOWNMENU_INIT_MENU.character))
 	elseif arg1 == "XRP_NOTES" then
-		XRPBookmarks.Notes:SetAttribute("character", UIDROPDOWNMENU_INIT_MENU.character)
-		XRPBookmarks.Notes:Show()
+		XRPArchive.Notes:SetAttribute("character", UIDROPDOWNMENU_INIT_MENU.character)
+		XRPArchive.Notes:Show()
 	elseif arg1 == "XRP_FRIEND" then
 		local character = UIDROPDOWNMENU_INIT_MENU.character
 		local name = tostring(character)
@@ -185,13 +185,13 @@ local function Menu_Click(self, arg1, arg2, checked)
 	elseif arg1 == "XRP_BOOKMARK" then
 		UIDROPDOWNMENU_INIT_MENU.character.bookmark = not checked
 		if request.bookmark then
-			request.offset = XRPBookmarks.List.scrollBar:GetValue()
+			request.offset = XRPArchive.List.scrollBar:GetValue()
 			Refresh()
 		end
 	elseif arg1 == "XRP_HIDE" then
 		UIDROPDOWNMENU_INIT_MENU.character.hide = not checked
 		if not request.showHidden then
-			request.offset = XRPBookmarks.List.scrollBar:GetValue()
+			request.offset = XRPArchive.List.scrollBar:GetValue()
 			Refresh()
 		end
 	elseif arg1 == "XRP_EXPORT" then
@@ -209,7 +209,7 @@ local Advanced_menuList = {
 	{ text = _xrp.L.EXPORT, arg1 = "XRP_EXPORT", notCheckable = true, func = Menu_Click, },
 	{ text = _xrp.L.DROP_CACHE .. CONTINUED, arg1 = "XRP_CACHE_DROP", notCheckable = true, func = Menu_Click, },
 }
-XRPBookmarksEntry_Mixin = {
+XRPArchiveEntry_Mixin = {
 	baseMenuList = {
 		{ text = _xrp.L.VIEW_CACHED, arg1 = "XRP_VIEW_CACHED", notCheckable = true, func = Menu_Click, },
 		{ text = _xrp.L.VIEW_LIVE, arg1 = "XRP_VIEW_LIVE", notCheckable = true, func = Menu_Click, },
@@ -227,7 +227,7 @@ XRPBookmarksEntry_Mixin = {
 	end,
 }
 
-function XRPBookmarksEntry_OnClick(self, button, down)
+function XRPArchiveEntry_OnClick(self, button, down)
 	if not self.character then return end
 	if button == "RightButton" then
 		self.Selected:Show()
@@ -277,13 +277,13 @@ local function Filter_Click(self, arg1, arg2, checked)
 			request[arg1][value] = nil
 		end
 		request[arg1].UNKNOWN = nil
-		UIDropDownMenu_Refresh(XRPBookmarks.FilterButton.Menu, nil, UIDROPDOWNMENU_MENU_LEVEL)
+		UIDropDownMenu_Refresh(XRPArchive.FilterButton.Menu, nil, UIDROPDOWNMENU_MENU_LEVEL)
 	elseif arg2 == "NONE" then
 		for i, value in pairs(lists[arg1]) do
 			request[arg1][value] = true
 		end
 		request[arg1].UNKNOWN = true
-		UIDropDownMenu_Refresh(XRPBookmarks.FilterButton.Menu, nil, UIDROPDOWNMENU_MENU_LEVEL)
+		UIDropDownMenu_Refresh(XRPArchive.FilterButton.Menu, nil, UIDROPDOWNMENU_MENU_LEVEL)
 	else
 		request[arg1][arg2] = not checked
 	end
@@ -336,7 +336,7 @@ local function Filter_Radio_Click(self, arg1, arg2, checked)
 	request[arg1] = arg2
 	request.offset = 0
 	Refresh()
-	UIDropDownMenu_Refresh(XRPBookmarks.FilterButton.Menu, nil, UIDROPDOWNMENU_MENU_LEVEL)
+	UIDropDownMenu_Refresh(XRPArchive.FilterButton.Menu, nil, UIDROPDOWNMENU_MENU_LEVEL)
 end
 local sortMenu = {
 	{ text = NAME, keepShownOnClick = true, arg1 = "sortType", arg2 = nil, checked = Filter_Radio_Checked, func = Filter_Radio_Click, },
@@ -372,7 +372,7 @@ local function Filter_Reset(self, arg1, arg2, checked)
 	request.offset = 0
 	Refresh()
 end
-XRPBookmarksFilterButton_baseMenuList = {
+XRPArchiveFilterButton_baseMenuList = {
 	{ text = FACTION, notCheckable = true, hasArrow = true, menuList = factionMenu, },
 	{ text = RACE, notCheckable = true, hasArrow = true, menuList = raceMenu, },
 	{ text = CLASS, notCheckable = true, hasArrow = true, menuList = classMenu, },
@@ -384,7 +384,7 @@ XRPBookmarksFilterButton_baseMenuList = {
 	{ text = _xrp.L.RESET_FILTERS, notCheckable = true, func = Filter_Reset, },
 }
 
-function XRPBookmarksFilterText_OnTextChanged(self, userInput)
+function XRPArchiveFilterText_OnTextChanged(self, userInput)
 	if userInput and request.fullText or userInput == nil and not request.fullText then return end
 	local text = self:GetText()
 	if text == "" then
@@ -394,19 +394,19 @@ function XRPBookmarksFilterText_OnTextChanged(self, userInput)
 	Refresh()
 end
 
-function XRPBookmarksHelpButton_PreClick(self, button, down)
+function XRPArchiveHelpButton_PreClick(self, button, down)
 	if not results or #results == 0 then
-		XRPBookmarks.Tab4:Click()
+		XRPArchive.Tab4:Click()
 	end
 end
 
-function XRPBookmarksRefreshButton_OnClick(self, button, down)
+function XRPArchiveRefreshButton_OnClick(self, button, down)
 	request.offset = 0
 	Refresh()
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
 end
 
-local BOOKMARKS_TAB = {
+local ARCHIVE_TAB = {
 	[1] = _xrp.L.BOOKMARKS,
 	[2] = _xrp.L.OWN_CHARACTERS,
 	[3] = _xrp.L.RECENT_3HOURS,
@@ -420,9 +420,9 @@ local requests = {
 }
 request = requests[1]
 
-function XRPBookmarksTab_OnClick(self, button, down)
+function XRPArchiveTab_OnClick(self, button, down)
 	CloseDropDownMenus()
-	request.offset = XRPBookmarks.List.scrollBar:GetValue()
+	request.offset = XRPArchive.List.scrollBar:GetValue()
 	local now = GetTime()
 	request.lastRefresh = now
 	local tabID = self:GetID()
@@ -431,28 +431,28 @@ function XRPBookmarksTab_OnClick(self, button, down)
 		request.offset = 0
 	end
 	Refresh()
-	PanelTemplates_SetTab(XRPBookmarks, tabID)
-	XRPBookmarks.TitleText:SetText(BOOKMARKS_TAB[tabID])
+	PanelTemplates_SetTab(XRPArchive, tabID)
+	XRPArchive.TitleText:SetText(ARCHIVE_TAB[tabID])
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB)
 end
 
-function XRPBookmarksNotes_OnHide(self)
-	XRPBookmarks.List:update(true)
+function XRPArchiveNotes_OnHide(self)
+	XRPArchive.List:update(true)
 end
 
-function XRPBookmarksNotes_OnAttributeChanged(self, name, value)
+function XRPArchiveNotes_OnAttributeChanged(self, name, value)
 	if name == "character" then
 		self.Title:SetText(xrp.ShortName(tostring(value)))
 	end
 end
 
-function XRPBookmarks_OnUpdate(self, elapsed)
+function XRPArchive_OnUpdate(self, elapsed)
 	self:SetScript("OnUpdate", nil)
-	HybridScrollFrame_CreateButtons(self.List, "XRPBookmarksEntryTemplate")
+	HybridScrollFrame_CreateButtons(self.List, "XRPArchiveEntryTemplate")
 	Refresh()
 end
 
-XRPBookmarks_Mixin = {
+XRPArchive_Mixin = {
 	Toggle = function(self, tabID)
 		if tabID and tabID ~= self.selectedTab then
 			local tab = self[("Tab%d"):format(tabID)]
@@ -467,5 +467,5 @@ XRPBookmarks_Mixin = {
 		end
 		ShowUIPanel(self)
 	end,
-	helpPlates = _xrp.help.bookmarks,
+	helpPlates = _xrp.help.archive,
 }

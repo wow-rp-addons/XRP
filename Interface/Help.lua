@@ -23,32 +23,32 @@ _xrp.help = {}
 
 local FRAME_POS = { x = 0, y = -22 }
 
-_xrp.help.bookmarks = {
+_xrp.help.archive = {
 	FramePos = FRAME_POS,
 	FrameSize = { width = 338, height = 499 },
 	{
 		ButtonPos = { x = 291, y = 1 },
 		HighLightBox = { x = 58, y = -7, width = 238, height = 30 },
 		ToolTipDir = "RIGHT",
-		ToolTipText = _xrp.L.HELP_BOOKMARKS_FILTER,
+		ToolTipText = _xrp.L.HELP_ARCHIVE_FILTER,
 	},
 	{
 		ButtonPos = { x = 141, y = -105 },
 		HighLightBox = { x = 5, y = -40, width = 326, height = 400 },
 		ToolTipDir = "DOWN",
-		ToolTipText = _xrp.L.HELP_BOOKMARKS_ENTRIES,
+		ToolTipText = _xrp.L.HELP_ARCHIVE_ENTRIES,
 	},
 	{
 		ButtonPos = { x = 170, y = -430 },
 		HighLightBox = { x = 5, y = -443, width = 180, height = 20 },
 		ToolTipDir = "UP",
-		ToolTipText = _xrp.L.HELP_BOOKMARKS_NUMBER,
+		ToolTipText = _xrp.L.HELP_ARCHIVE_NUMBER,
 	},
 	{
 		ButtonPos = { x = 265, y = -460 },
 		HighLightBox = { x = 10, y = -466, width = 263, height = 35 },
 		ToolTipDir = "UP",
-		ToolTipText = _xrp.L.HELP_BOOKMARKS_TABS,
+		ToolTipText = _xrp.L.HELP_ARCHIVE_TABS,
 	},
 }
 

@@ -16,7 +16,7 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 	<Script file="Archive.lua"/>
-	<Button name="XRPBookmarksEntryTemplate" useParentLevel="true" mixin="XRPTemplatesMenu_Mixin,XRPBookmarksEntry_Mixin" virtual="true">
+	<Button name="XRPArchiveEntryTemplate" useParentLevel="true" mixin="XRPTemplatesMenu_Mixin,XRPArchiveEntry_Mixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="registerClicks" value="LeftButtonUp,RightButtonUp"/>
 			<KeyValue key="displayMode" value="MENU"/>
@@ -116,16 +116,16 @@
 			</Anchors>
 		</HighlightTexture>
 		<Scripts>
-			<OnClick function="XRPBookmarksEntry_OnClick"/>
+			<OnClick function="XRPArchiveEntry_OnClick"/>
 			<OnLoad function="XRPTemplates_RegisterMouse"/>
 		</Scripts>
 	</Button>
-	<Button name="XRPBookmarksTabTemplate" inherits="XRPTabButtonTemplate" virtual="true">
+	<Button name="XRPArchiveTabTemplate" inherits="XRPTabButtonTemplate" virtual="true">
 		<Scripts>
-			<OnClick function="XRPBookmarksTab_OnClick"/>
+			<OnClick function="XRPArchiveTab_OnClick"/>
 		</Scripts>
 	</Button>
-	<Frame name="XRPBookmarks" parent="UIParent" inherits="XRPButtonFrameTemplate" mixin="XRPBookmarks_Mixin">
+	<Frame name="XRPArchive" parent="UIParent" inherits="XRPButtonFrameTemplate" mixin="XRPArchive_Mixin">
 		<Size x="338" y="489"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -140,12 +140,12 @@
 		<Frames>
 			<Button inherits="XRPHelpButtonTemplate">
 				<Scripts>
-					<PreClick function="XRPBookmarksHelpButton_PreClick"/>
+					<PreClick function="XRPArchiveHelpButton_PreClick"/>
 				</Scripts>
 			</Button>
 			<ScrollFrame parentKey="List" enableMouse="true" useParentLevel="true" inherits="HybridScrollFrameTemplate">
 				<KeyValues>
-					<KeyValue key="update" value="XRPBookmarksList_update" type="global"/>
+					<KeyValue key="update" value="XRPArchiveList_update" type="global"/>
 				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.Inset" x="4" y="-2"/>
@@ -193,12 +193,12 @@
 				<Scripts>
 					<OnMouseDown function="XRPTemplatesRefresh_OnMouseDown"/>
 					<OnMouseUp function="XRPTemplatesRefresh_OnMouseUp"/>
-					<OnClick function="XRPBookmarksRefreshButton_OnClick"/>
+					<OnClick function="XRPArchiveRefreshButton_OnClick"/>
 				</Scripts>
 			</Button>
 			<Button name="$parentFilterButton" parentKey="FilterButton" inherits="UIMenuButtonStretchTemplate" text="FILTER">
 				<KeyValues>
-					<KeyValue key="baseMenuList" value="XRPBookmarksFilterButton_baseMenuList" type="global"/>
+					<KeyValue key="baseMenuList" value="XRPArchiveFilterButton_baseMenuList" type="global"/>
 				</KeyValues>
 				<Size x="93" y="28"/>
 				<Anchors>
@@ -257,22 +257,22 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnEnterPressed inherit="prepend" function="XRPBookmarksFilterText_OnTextChanged"/>
-					<OnTextChanged inherit="prepend" function="XRPBookmarksFilterText_OnTextChanged"/>
+					<OnEnterPressed inherit="prepend" function="XRPArchiveFilterText_OnTextChanged"/>
+					<OnTextChanged inherit="prepend" function="XRPArchiveFilterText_OnTextChanged"/>
 				</Scripts>
 				<FontString inherits="GameFontHighlight"/>
 			</EditBox>
-			<Button name="$parentTab1" parentKey="Tab1" inherits="XRPBookmarksTabTemplate" id="1" text="XRP_BOOKMARKS">
+			<Button name="$parentTab1" parentKey="Tab1" inherits="XRPArchiveTabTemplate" id="1" text="XRP_BOOKMARKS">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" y="1"/>
 				</Anchors>
 			</Button>
-			<Button name="$parentTab2" parentKey="Tab2" inherits="XRPBookmarksTabTemplate" id="2" text="XRP_OWN">
+			<Button name="$parentTab2" parentKey="Tab2" inherits="XRPArchiveTabTemplate" id="2" text="XRP_OWN">
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.Tab1" relativePoint="RIGHT" x="-16"/>
 				</Anchors>
 			</Button>
-			<Button name="$parentTab3" parentKey="Tab3" inherits="XRPBookmarksTabTemplate" id="3" text="XRP_RECENT">
+			<Button name="$parentTab3" parentKey="Tab3" inherits="XRPArchiveTabTemplate" id="3" text="XRP_RECENT">
 				<KeyValues>
 					<KeyValue key="resetOffset" value="true" type="boolean"/>
 				</KeyValues>
@@ -280,7 +280,7 @@
 					<Anchor point="LEFT" relativeKey="$parent.Tab2" relativePoint="RIGHT" x="-16"/>
 				</Anchors>
 			</Button>
-			<Button name="$parentTab4" parentKey="Tab4" inherits="XRPBookmarksTabTemplate" id="4" text="ALL">
+			<Button name="$parentTab4" parentKey="Tab4" inherits="XRPArchiveTabTemplate" id="4" text="ALL">
 				<KeyValues>
 					<KeyValue key="resetOffset" value="true" type="boolean"/>
 				</KeyValues>
@@ -290,8 +290,8 @@
 			</Button>
 			<Frame inherits="XRPNotesTemplate">
 				<Scripts>
-					<OnHide inherit="prepend" function="XRPBookmarksNotes_OnHide"/>
-					<OnAttributeChanged inherit="prepend" function="XRPBookmarksNotes_OnAttributeChanged"/>
+					<OnHide inherit="prepend" function="XRPArchiveNotes_OnHide"/>
+					<OnAttributeChanged inherit="prepend" function="XRPArchiveNotes_OnAttributeChanged"/>
 				</Scripts>
 			</Frame>
 		</Frames>
@@ -300,12 +300,12 @@
 			<Attribute name="UIPanelLayout-extraHeight" type="number" value="20"/>
 		</Attributes>
 		<KeyValues>
-			<KeyValue key="titleKey" value="BOOKMARKS"/>
+			<KeyValue key="titleKey" value="ARCHIVE"/>
 			<KeyValue key="portraitTexture" value="Interface\Icons\INV_Misc_Book_05"/>
 			<KeyValue key="numTabs" value="4" type="number"/>
 		</KeyValues>
 		<Scripts>
-			<OnUpdate function="XRPBookmarks_OnUpdate"/>
+			<OnUpdate function="XRPArchive_OnUpdate"/>
 		</Scripts>
 	</Frame>
 </Ui>
