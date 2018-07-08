@@ -21,76 +21,14 @@ local currentUnit = {
 	lines = {},
 }
 
+local maxLinesAdjusted = {}
+
 local Tooltip, replace, rendering
 
 local GTTL, GTTR = "GameTooltipTextLeft%d", "GameTooltipTextRight%d"
 
-local SINGLE, DOUBLE = "%s", "%s\n%s"
-local SINGLE_TRUNC, DOUBLE_TRUNC = SINGLE .. CONTINUED, DOUBLE .. CONTINUED
-local function TruncateLine(text, length, offset, double)
-	if not text then return end
-	if not offset then offset = 0 end
-	text = text:gsub("%s+", " ")
-	local textLen = strlenutf8(text)
-	local line1, line2 = text
-	local isTruncated = false
-	if textLen > length - offset then
-		local nextText = text:match("(.-) ")
-		if nextText and strlenutf8(nextText) <= length - offset then
-			local position = #nextText
-			local nextPos = text:find(" ", position + 1, true)
-			while nextPos and strlenutf8(nextText) <= length - offset do
-				position = nextPos
-				nextPos = text:find(" ", nextPos + 1, true)
-				nextText = nextPos and text:sub(1, nextPos - 1)
-			end
-			line1 = text:sub(1, position - 1)
-			if double ~= false then
-				local lineLen, linePos = strlenutf8(line1), position + 1
-				if textLen - lineLen > lineLen + offset then
-					nextPos = text:find(" ", linePos, true)
-					nextText = nextPos and text:sub(linePos, nextPos - 1)
-					while nextPos and strlenutf8(nextText) <= lineLen + offset - 3 do
-						position = nextPos
-						nextPos = text:find(" ", nextPos + 1, true)
-						nextText = nextPos and text:sub(linePos, nextPos - 1)
-					end
-					if position > linePos then
-						line2 = text:sub(linePos, position - 1)
-					end
-					isTruncated = true
-				else
-					line2 = text:sub(linePos)
-				end
-			else
-				isTruncated = true
-			end
-		else
-			local chars = {}
-			for char in text:gmatch("[\032-\126\194-\244][\128-\191]*") do
-				chars[#chars + 1] = char
-			end
-			local line1t = {}
-			for i = 1, length - offset do
-				line1t[i] = chars[i]
-			end
-			line1 = table.concat(line1t)
-			if double ~= false then
-				local line2t = {}
-				for i = #line1t + 1, #line1t * 2 + offset - 3 do
-					line2t[#line2t + 1] = chars[i]
-				end
-				line2 = table.concat(line2t)
-				if #chars > #line1t + #line2t then
-					isTruncated = true
-				end
-			else
-				isTruncated = true
-			end
-		end
-	end
-	return (line2 and (isTruncated and DOUBLE_TRUNC or DOUBLE) or isTruncated and SINGLE_TRUNC or SINGLE):format(line1, line2)
-end
+local TOOLTIP_WIDTH = 500
+local INLINE_LENGTH = 26
 
 local PROFILE_ADDONS = {
 	["XRP"] = "XRP",
@@ -124,19 +62,20 @@ local function ParseVersion(VA)
 end
 
 local oldLines, lineNum = 0, 0
-local function RenderLine(left, right, lR, lG, lB, rR, rG, rB)
+local function RenderLine(multiLine, left, right, lR, lG, lB, rR, rG, rB)
 	if not left and not right then
 		return
 	elseif left == true then
 		left = nil
 	end
+	local maxWidth = TOOLTIP_WIDTH / (left and right and 2 or 1)
 	rendering = true
 	lineNum = lineNum + 1
+	local LeftLine = _G[GTTL:format(lineNum)]
+	local RightLine = _G[GTTR:format(lineNum)]
 	-- First case: If there's already a line to replace. This only happens if
 	-- using the GameTooltip, as XRPTooltip is cleared before rendering starts.
 	if lineNum <= oldLines then
-		local LeftLine = _G[GTTL:format(lineNum)]
-		local RightLine = _G[GTTR:format(lineNum)]
 		-- Can't have an empty left text line ever -- if a line exists, it
 		-- needs to have a space at minimum to not muck up line spacing.
 		LeftLine:SetText(left or " ")
@@ -156,6 +95,24 @@ local function RenderLine(left, right, lR, lG, lB, rR, rG, rB)
 			Tooltip:AddLine(left or " ", lR or 1, lG or 0.82, lB or 0)
 		end
 	end
+	if LeftLine:GetWidth() > maxWidth then
+		LeftLine:SetWidth(maxWidth)
+		if multiLine then
+			LeftLine:SetMaxLines(3)
+		else
+			LeftLine:SetMaxLines(1)
+		end
+		maxLinesAdjusted[#maxLinesAdjusted + 1] = LeftLine
+	end
+	if RightLine:GetWidth() > maxWidth then
+		RightLine:SetWidth(maxWidth)
+		if multiLine then
+			RightLine:SetMaxLines(3)
+		else
+			RightLine:SetMaxLines(1)
+		end
+		maxLinesAdjusted[#maxLinesAdjusted + 1] = RightLine
+	end
 	rendering = nil
 end
 
@@ -169,8 +126,6 @@ local COLORS = {
 local NI_FORMAT = ("|cff6070a0%s|r %s"):format(STAT_FORMAT:format(xrp.L.FIELDS.NI), _xrp.L.NICKNAME)
 local NI_FORMAT_NOQUOTE = ("|cff6070a0%s|r %s"):format(STAT_FORMAT:format(xrp.L.FIELDS.NI), "%s")
 local CU_FORMAT = ("|cffa08050%s|r %%s"):format(STAT_FORMAT:format(xrp.L.FIELDS.CU))
-local NI_LENGTH = strlenutf8(NI_FORMAT) - 14
-local CU_LENGTH = strlenutf8(CU_FORMAT) - 14
 local function RenderTooltip()
 	oldLines = Tooltip:NumLines()
 	lineNum = 0
@@ -182,7 +137,7 @@ local function RenderTooltip()
 			XRPTooltip:ClearLines()
 			XRPTooltip:SetOwner(GameTooltip, "ANCHOR_TOPRIGHT")
 			if currentUnit.character.hide then
-				RenderLine(_xrp.L.HIDDEN, nil, 0.5, 0.5, 0.5)
+				RenderLine(false, _xrp.L.HIDDEN, nil, 0.5, 0.5, 0.5)
 				XRPTooltip:Show()
 				return
 			elseif (not showProfile or not fields.VA) then
@@ -190,61 +145,73 @@ local function RenderTooltip()
 				return
 			end
 		end
-		RenderLine(currentUnit.nameFormat:format(showProfile and TruncateLine(xrp.Strip(fields.NA), 65, 0, false) or xrp.ShortName(tostring(currentUnit.character))), currentUnit.icons)
+		RenderLine(false, currentUnit.nameFormat:format(showProfile and xrp.Strip(fields.NA) or xrp.ShortName(tostring(currentUnit.character))), currentUnit.icons)
 		if replace and currentUnit.reaction then
-			RenderLine(currentUnit.reaction, nil, 1, 1, 1)
+			RenderLine(false, currentUnit.reaction, nil, 1, 1, 1)
 		end
 		if showProfile then
 			local NI = xrp.Strip(fields.NI)
-			RenderLine(NI and (not NI:find(_xrp.L.QUOTE_MATCH) and NI_FORMAT or NI_FORMAT_NOQUOTE):format(TruncateLine(NI, 70, NI_LENGTH, false)), nil, 0.6, 0.7, 0.9)
-			RenderLine(TruncateLine(xrp.Strip(fields.NT), 70), nil, 0.8, 0.8, 0.8)
+			RenderLine(false, NI and (not NI:find(_xrp.L.QUOTE_MATCH) and NI_FORMAT or NI_FORMAT_NOQUOTE):format(NI), nil, 0.6, 0.7, 0.9)
+			RenderLine(true, xrp.Strip(fields.NT), nil, 0.8, 0.8, 0.8)
 			if _xrp.settings.tooltip.showHouse then
-				RenderLine(TruncateLine(xrp.Strip(fields.NH), 70), nil, 0.4, 0.6, 0.7)
+				RenderLine(true, xrp.Strip(fields.NH), nil, 0.4, 0.6, 0.7)
 			end
 		end
 		if _xrp.settings.tooltip.extraSpace then
-			RenderLine(true)
+			RenderLine(false, true)
 		end
 		if replace then
-			RenderLine(currentUnit.guild, nil, 1, 1, 1)
+			RenderLine(false, currentUnit.guild, nil, 1, 1, 1)
 			local color = COLORS[currentUnit.faction]
-			RenderLine(currentUnit.titleRealm, currentUnit.character.hide and _xrp.L.HIDDEN or showProfile and ParseVersion(fields.VA), color.r, color.g, color.b, 0.5, 0.5, 0.5)
+			RenderLine(false, currentUnit.titleRealm, currentUnit.character.hide and _xrp.L.HIDDEN or showProfile and ParseVersion(fields.VA), color.r, color.g, color.b, 0.5, 0.5, 0.5)
 			if _xrp.settings.tooltip.extraSpace then
-				RenderLine(true)
+				RenderLine(false, true)
 			end
 		end
 		if showProfile then
 			local CU, CO = xrp.Strip(fields.CU), xrp.Strip(fields.CO)
-			RenderLine((CU or CO) and CU_FORMAT:format(xrp.Link(TruncateLine(xrp.MergeCurrently(xrp.Link(CU, "prelink"), xrp.Link(CO, "prelink")), 70, CU_LENGTH), "fakelink")), nil, 0.9, 0.7, 0.6)
+			RenderLine(true, (CU or CO) and CU_FORMAT:format(xrp.MergeCurrently(xrp.Link(CU), xrp.Link(CO))), nil, 0.9, 0.7, 0.6)
 		end
-		RenderLine(currentUnit.info:format(showProfile and not _xrp.settings.tooltip.noRace and TruncateLine(xrp.Strip(fields.RA), 40, 0, false) or xrp.L.VALUES.GR[fields.GR] or UNKNOWN, showProfile and not _xrp.settings.tooltip.noClass and TruncateLine(xrp.Strip(fields.RC), 40, 0, false) or xrp.L.VALUES.GC[fields.GS][fields.GC] or UNKNOWN), not replace and ParseVersion(fields.VA), 1, 1, 1, 0.5, 0.5, 0.5)
+		local RA = showProfile and not _xrp.settings.tooltip.noRace and xrp.Strip(fields.RA) or xrp.L.VALUES.GR[fields.GR] or UNKNOWN
+		local RAlen = #RA
+		RA = AddOn_Chomp.SafeSubString(RA, 1, INLINE_LENGTH)
+		if #RA < RAlen then
+			RA = RA .. CONTINUED
+		end
+		local RC = showProfile and not _xrp.settings.tooltip.noClass and xrp.Strip(fields.RC) or xrp.L.VALUES.GC[fields.GS][fields.GC] or UNKNOWN
+		local RClen = #RC
+		RC = AddOn_Chomp.SafeSubString(RC, 1, INLINE_LENGTH)
+		if #RC < RClen then
+			RC = RC .. CONTINUED
+		end
+		RenderLine(false, currentUnit.info:format(RA, RC), not replace and ParseVersion(fields.VA), 1, 1, 1, 0.5, 0.5, 0.5)
 		if showProfile then
 			local FR, FC = xrp.Strip(fields.FR), xrp.Strip(fields.FC)
 			local color = COLORS[FC == "1" and "OOC" or "IC"]
-			RenderLine(xrp.L.VALUES.FR[FR] or FR ~= "0" and TruncateLine(FR, 35, 0, false), xrp.L.VALUES.FC[FC] or FC ~= "0" and TruncateLine(FC, 35, 0, false), color.r, color.g, color.b, color.r, color.g, color.b)
+			RenderLine(false, xrp.L.VALUES.FR[FR] or FR ~= "0" and FR, xrp.L.VALUES.FC[FC] or FC ~= "0" and FC, color.r, color.g, color.b, color.r, color.g, color.b)
 		end
 		if replace then
-			RenderLine(currentUnit.location, nil, 1, 1, 1)
+			RenderLine(false, currentUnit.location, nil, 1, 1, 1)
 		end
 	elseif currentUnit.type == "pet" then
-		RenderLine(currentUnit.nameFormat, currentUnit.icons)
+		RenderLine(false, currentUnit.nameFormat, currentUnit.icons)
 		if currentUnit.reaction then
-			RenderLine(currentUnit.reaction, nil, 1, 1, 1)
+			RenderLine(false, currentUnit.reaction, nil, 1, 1, 1)
 			if _xrp.settings.tooltip.extraSpace then
-				RenderLine(true)
+				RenderLine(false, true)
 			end
 		end
 		local color = COLORS[currentUnit.faction]
-		RenderLine(currentUnit.titleRealm:format(showProfile and TruncateLine(xrp.Strip(fields.NA), 60, 0, false) or xrp.ShortName(tostring(currentUnit.character))), nil, color.r, color.g, color.b)
-		RenderLine(currentUnit.info, nil, 1, 1, 1)
+		RenderLine(false, currentUnit.titleRealm:format(showProfile and xrp.Strip(fields.NA) or xrp.ShortName(tostring(currentUnit.character))), nil, color.r, color.g, color.b)
+		RenderLine(false, currentUnit.info, nil, 1, 1, 1)
 	end
 
 	if replace then
 		for i, line in ipairs(currentUnit.lines) do
 			if line.double then
-				RenderLine(unpack(line))
+				RenderLine(false, unpack(line))
 			else
-				RenderLine(line[1], nil, unpack(line, 2))
+				RenderLine(false, line[1], nil, unpack(line, 2))
 			end
 		end
 		-- In rare cases (test case: target without RP addon, is PvP flagged)
@@ -516,6 +483,10 @@ end
 
 local function GameTooltip_OnTooltipCleared_Hook(self)
 	active = nil
+	for i, line in ipairs(maxLinesAdjusted) do
+		line:SetMaxLines(0)
+	end
+	table.wipe(maxLinesAdjusted)
 	if not replace then
 		Tooltip:Hide()
 	end
