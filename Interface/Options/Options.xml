@@ -16,6 +16,8 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 	<Script file="Options.lua"/>
+	<Include file="Templates.xml"/>
+
 	<Frame parentKey="XRP" parent="InterfaceOptionsFramePanelContainer" hidden="true">
 		<KeyValues>
 			<KeyValue key="name" value="XRP"/>
@@ -49,70 +51,6 @@
 				</FontString>
 			</Layer>
 		</Layers>
-	</Frame>
-	<CheckButton name="XRPOptionsCheckboxTemplate" parentArray="controls" inherits="XRPCheckBoxTemplate" mixin="XRPOptionsControl_Mixin" virtual="true">
-		<KeyValues>
-			<KeyValue key="type" value="CONTROLTYPE_CHECKBOX" type="global"/>
-		</KeyValues>
-		<Size x="26" y="26"/>
-		<HitRectInsets left="0" right="-500" top="0" bottom="0"/>
-		<Layers>
-			<Layer level="ARTWORK">
-				<FontString parentKey="Text" inherits="GameFontHighlightLeft">
-					<Anchors>
-						<Anchor point="LEFT" relativePoint="RIGHT" x="2" y="1"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnClick function="XRPOptionsCheckButton_OnClick"/>
-			<OnEnable function="XRPOptionsCheckButton_OnEnable"/>
-			<OnDisable function="XRPOptionsCheckButton_OnDisable"/>
-			<OnLoad function="XRPOptionsControls_OnLoad"/>
-		</Scripts>
-	</CheckButton>
-	<Frame name="XRPOptionsDropDownTemplate" parentArray="controls" inherits="XRPDropDownTemplate" mixin="XRPOptionsControl_Mixin" virtual="true">
-		<KeyValues>
-			<KeyValue key="type" value="CONTROLTYPE_DROPDOWN" type="global"/>
-		</KeyValues>
-		<Layers>
-			<Layer level="ARTWORK">
-				<FontString parentKey="Label" inherits="GameFontHighlightLeft">
-					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentRight" relativePoint="RIGHT" x="-10" y="1"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnLoad inherit="prepend" function="XRPOptionsControls_OnLoad"/>
-		</Scripts>
-	</Frame>
-	<Frame name="XRPOptionsTemplate" hidden="true" mixin="XRPOptions_Mixin" virtual="true">
-		<KeyValues>
-			<KeyValue key="parent" value="XRP"/>
-		</KeyValues>
-		<Layers>
-			<Layer level="ARTWORK">
-				<FontString parentKey="Title" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="TOP">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="16" y="-16"/>
-					</Anchors>
-				</FontString>
-				<FontString parentKey="SubText" inherits="GameFontHighlightSmall" nonspacewrap="true" maxLines="3" justifyH="LEFT" justifyV="TOP">
-					<Size x="32" y="0"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" y="-8"/>
-						<Anchor point="RIGHT" x="-32"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnLoad function="XRPOptions_OnLoad"/>
-			<OnShow function="XRPOptions_OnShow"/>
-		</Scripts>
 	</Frame>
 	<Frame parentKey="XRPGeneral" parent="InterfaceOptionsFramePanelContainer" inherits="XRPOptionsTemplate">
 		<KeyValues>

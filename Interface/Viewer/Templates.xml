@@ -1,0 +1,113 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+<!--
+	© Justin Snelgrove
+
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+	<Frame name="XRPViewerTextLineTemplate" enableMouse="true" virtual="true">
+		<Size y="13"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Text" inherits="GameFontNormalSmall" maxLines="1" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad function="XRPViewerControls_OnLoad"/>
+			<OnEnter function="XRPTemplates_TooltipTruncated"/>
+			<OnLeave function="GameTooltip_Hide"/>
+		</Scripts>
+	</Frame>
+	<Frame name="XRPViewerSingleLineTemplate" virtual="true">
+		<Size y="20"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Left" file="Interface\Common\Common-Input-Border">
+					<Size x="8" y="20"/>
+					<Anchors>
+						<Anchor point="LEFT" x="-5" y="0"/>
+					</Anchors>
+					<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
+				</Texture>
+				<Texture parentKey="Right" file="Interface\Common\Common-Input-Border">
+					<Size x="8" y="20"/>
+					<Anchors>
+						<Anchor point="RIGHT" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0.9375" right="1" top="0" bottom="0.625"/>
+				</Texture>
+				<Texture parentKey="Middle" file="Interface\Common\Common-Input-Border">
+					<Size x="10" y="20"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Left" relativePoint="RIGHT"/>
+						<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="LEFT"/>
+					</Anchors>
+					<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Label" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="-2" y="-1"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Text" inherits="GameFontWhite" maxLines="1" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" x="-5"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad function="XRPViewerControls_OnLoad"/>
+			<OnEnter function="XRPTemplates_TooltipTruncated"/>
+			<OnLeave function="GameTooltip_Hide"/>
+		</Scripts>
+	</Frame>
+	<ScrollFrame name="XRPViewerMultiLineTemplate" inherits="XRPScrollFrameTemplate" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Label" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="-2" y="5"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad inherit="prepend" function="XRPViewerControls_OnLoad"/>
+		</Scripts>
+		<ScrollChild>
+			<EditBox parentKey="EditBox" multiLine="true" autoFocus="false">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+				<Scripts>
+					<OnTextChanged function="XRPViewerScrollFrameEditBox_OnTextChanged"/>
+					<OnLoad function="XRPViewerScrollFrameEditBox_OnLoad"/>
+					<OnHyperlinkClick function="XRPViewerScrollFrameEditBox_OnHyperlinkClicked"/>
+				</Scripts>
+				<FontString inherits="GameFontWhite"/>
+			</EditBox>
+		</ScrollChild>
+		<Frames>
+			<Frame parentKey="Menu" hidden="true" mixin="XRPTemplatesMenu_Mixin">
+				<KeyValues>
+					<KeyValue key="displayMode" value="MENU"/>
+					<KeyValue key="baseMenuList" value="XRPViewerMultiline_baseMenuList" type="global"/>
+				</KeyValues>
+			</Frame>
+		</Frames>
+	</ScrollFrame>
+</Ui>
