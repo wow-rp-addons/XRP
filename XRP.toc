@@ -19,6 +19,7 @@ Backend\Profiles.lua
 Backend\MSP.lua
 Backend\Characters.lua
 Backend\Automation.lua
+Interface\AltRaces.lua
 Interface\Help.lua
 Interface\Popups.lua
 Interface\Integration\Commands.lua
