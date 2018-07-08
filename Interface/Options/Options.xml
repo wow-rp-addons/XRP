@@ -630,16 +630,6 @@
 					<KeyValue key="xrpSetting" value="noRace"/>
 				</KeyValues>
 			</CheckButton>
-			<CheckButton parentKey="TooltipOldColors" inherits="XRPOptionsCheckboxTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.TooltipNoRPRace" relativePoint="BOTTOMLEFT" y="-8"/>
-				</Anchors>
-				<KeyValues>
-					<KeyValue key="dependsOn" value="TooltipEnabled"/>
-					<KeyValue key="xrpTable" value="tooltip"/>
-					<KeyValue key="xrpSetting" value="oldColors"/>
-				</KeyValues>
-			</CheckButton>
 		</Frames>
 	</Frame>
 	<Frame parentKey="XRPAdvanced" parent="InterfaceOptionsFramePanelContainer" inherits="XRPOptionsTemplate">

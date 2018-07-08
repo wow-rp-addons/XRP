@@ -263,7 +263,6 @@ local OPTIONS_TEXT = {
 		noCombatInstance = _xrp.L.NO_INSTANCE_COMBAT,
 		noClass = _xrp.L.NO_RP_CLASS,
 		noRace = _xrp.L.NO_RP_RACE,
-		oldColors = _xrp.L.OLD_TOOLTIP_COLORS,
 	},
 }
 

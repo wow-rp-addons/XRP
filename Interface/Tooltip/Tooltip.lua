@@ -166,13 +166,6 @@ local COLORS = {
 	Horde = { r = 1.00, g = 0.38, b = 0.42},
 	Neutral = FACTION_BAR_COLORS[4],
 }
-local OLD_COLORS = {
-	OOC = COLORS.OOC,
-	IC = COLORS.IC,
-	Alliance = { r = 0.53, g = 0.56, b = 1 },
-	Horde = { r = 1, g = 0.39, b = 0.41 },
-	Neutral = { r = 1, g = 0.86, b = 0.36 },
-}
 local NI_FORMAT = ("|cff6070a0%s|r %s"):format(STAT_FORMAT:format(xrp.L.FIELDS.NI), _xrp.L.NICKNAME)
 local NI_FORMAT_NOQUOTE = ("|cff6070a0%s|r %s"):format(STAT_FORMAT:format(xrp.L.FIELDS.NI), "%s")
 local CU_FORMAT = ("|cffa08050%s|r %%s"):format(STAT_FORMAT:format(xrp.L.FIELDS.CU))
@@ -183,7 +176,6 @@ local function RenderTooltip()
 	lineNum = 0
 	local showProfile = not (currentUnit.noProfile or currentUnit.character.hide)
 	local fields = currentUnit.character.fields
-	local COLORS = not _xrp.settings.tooltip.oldColors and COLORS or OLD_COLORS
 
 	if currentUnit.type == "player" then
 		if not replace then

@@ -461,7 +461,6 @@ NO_OP_FACTION = "Disable roleplay information display on all opposite faction ch
 NO_INSTANCE_COMBAT = "Disable roleplay information display while in instanced combat"
 NO_RP_CLASS = "Hide roleplay class information on tooltip"
 NO_RP_RACE = "Hide roleplay race information on tooltip"
-OLD_TOOLTIP_COLORS = "Use old (pre-7.2) tooltip colors"
 
 -- ui/options.xml
 LICENSE_COPYRIGHT = "License/Copyright"
