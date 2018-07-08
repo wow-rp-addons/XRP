@@ -35,7 +35,7 @@ local atlasGR = {
 
 local function GetRaceAtlas(GR, GS)
 	if (atlasGR[GR]) then
-		race = atlasGR[GR]
+		GR = atlasGR[GR]
 	end
 	return ("raceicon-%s-%s"):format(GR:lower(), GS == "2" and "male" or "female")
 end
