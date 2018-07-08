@@ -302,67 +302,38 @@
 					<KeyValue key="xrpSetting" value="altScourgeForce"/>
 				</KeyValues>
 			</CheckButton>
-			<CheckButton parentKey="AltBloodElf" inherits="XRPOptionsCheckboxTemplate">
+			<CheckButton parentKey="AltElven" inherits="XRPOptionsCheckboxTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.AltScourgeForce" relativePoint="BOTTOMLEFT" x="-24" y="-8"/>
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="xrpTable" value="display"/>
-					<KeyValue key="xrpSetting" value="altBloodElf"/>
+					<KeyValue key="xrpSetting" value="altElven"/>
 				</KeyValues>
 			</CheckButton>
-			<CheckButton parentKey="AltBloodElfLimit" inherits="XRPOptionsCheckboxTemplate">
+			<CheckButton parentKey="AltElvenLimit" inherits="XRPOptionsCheckboxTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.AltBloodElf" relativePoint="BOTTOMLEFT" x="24" y="-8"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.AltElven" relativePoint="BOTTOMLEFT" x="24" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="dependsOn" value="AltBloodElf"/>
+					<KeyValue key="dependsOn" value="AltElven"/>
 					<KeyValue key="xrpTable" value="display"/>
-					<KeyValue key="xrpSetting" value="altBloodElfLimit"/>
+					<KeyValue key="xrpSetting" value="altElvenLimit"/>
 				</KeyValues>
 			</CheckButton>
-			<CheckButton parentKey="AltBloodElfForce" inherits="XRPOptionsCheckboxTemplate">
+			<CheckButton parentKey="AltElvenForce" inherits="XRPOptionsCheckboxTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.AltBloodElfLimit" relativePoint="BOTTOMLEFT" y="-8"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.AltElvenLimit" relativePoint="BOTTOMLEFT" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="dependsOn" value="AltBloodElf"/>
+					<KeyValue key="dependsOn" value="AltElven"/>
 					<KeyValue key="xrpTable" value="display"/>
-					<KeyValue key="xrpSetting" value="altBloodElfForce"/>
-				</KeyValues>
-			</CheckButton>
-			<CheckButton parentKey="AltNightElf" inherits="XRPOptionsCheckboxTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.AltBloodElfForce" relativePoint="BOTTOMLEFT" x="-24" y="-8"/>
-				</Anchors>
-				<KeyValues>
-					<KeyValue key="xrpTable" value="display"/>
-					<KeyValue key="xrpSetting" value="altNightElf"/>
-				</KeyValues>
-			</CheckButton>
-			<CheckButton parentKey="AltNightElfLimit" inherits="XRPOptionsCheckboxTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.AltNightElf" relativePoint="BOTTOMLEFT" x="24" y="-8"/>
-				</Anchors>
-				<KeyValues>
-					<KeyValue key="dependsOn" value="AltNightElf"/>
-					<KeyValue key="xrpTable" value="display"/>
-					<KeyValue key="xrpSetting" value="altNightElfLimit"/>
-				</KeyValues>
-			</CheckButton>
-			<CheckButton parentKey="AltNightElfForce" inherits="XRPOptionsCheckboxTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.AltNightElfLimit" relativePoint="BOTTOMLEFT" y="-8"/>
-				</Anchors>
-				<KeyValues>
-					<KeyValue key="dependsOn" value="AltNightElf"/>
-					<KeyValue key="xrpTable" value="display"/>
-					<KeyValue key="xrpSetting" value="altNightElfForce"/>
+					<KeyValue key="xrpSetting" value="altElvenForce"/>
 				</KeyValues>
 			</CheckButton>
 			<CheckButton parentKey="AltTauren" inherits="XRPOptionsCheckboxTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.AltNightElfForce" relativePoint="BOTTOMLEFT" x="-24" y="-8"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.AltElvenForce" relativePoint="BOTTOMLEFT" x="-24" y="-8"/>
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="xrpTable" value="display"/>
