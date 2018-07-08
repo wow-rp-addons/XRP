@@ -34,21 +34,13 @@ _xrp.weakKeyMeta = { __mode = "k" }
 
 _xrp.own = {}
 
-local function SafeCall(func, ...)
-	local success, message = pcall(func, ...)
-	if not success then
-		geterrorhandler()(message)
-	end
-end
-_xrp.SafeCall = SafeCall
-
 local events = {}
 function _xrp.FireEvent(event, ...)
 	if not events[event] then
 		return false
 	end
 	for func, isFunc in pairs(events[event]) do
-		SafeCall(func, event, ...)
+		xpcall(func, geterrorhandler(), event, ...)
 	end
 	return true
 end
@@ -105,7 +97,7 @@ end
 frame:SetScript("OnEvent", function(self, event, ...)
 	if event == "ADDON_LOADED" and ... ~= FOLDER then return end
 	for func, isFunc in pairs(gameEvents[event]) do
-		SafeCall(func, event, ...)
+		xpcall(func, geterrorhandler(), event, ...)
 	end
 	if event == "ADDON_LOADED" or event == "PLAYER_LOGIN" then
 		gameEvents[event] = nil

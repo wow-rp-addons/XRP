@@ -23,8 +23,6 @@ XRP_LICENSE = _xrp.L.GPL_HEADER
 XRP_CLEAR_CACHE = _xrp.L.CLEAR_CACHE .. CONTINUED
 XRP_TIDY_CACHE = _xrp.L.TIDY_CACHE
 
-local SafeCall = _xrp.SafeCall
-
 XRPOptionsControl_Mixin = {
 	Get = function(self)
 		return _xrp.settings[self.xrpTable][self.xrpSetting]
@@ -32,7 +30,7 @@ XRPOptionsControl_Mixin = {
 	Set = function(self, value)
 		_xrp.settings[self.xrpTable][self.xrpSetting] = value
 		if _xrp.settingsToggles[self.xrpTable] and _xrp.settingsToggles[self.xrpTable][self.xrpSetting] then
-			SafeCall(_xrp.settingsToggles[self.xrpTable][self.xrpSetting], value, self.xrpSetting)
+			xpcall(_xrp.settingsToggles[self.xrpTable][self.xrpSetting], geterrorhandler(), value, self.xrpSetting)
 		end
 	end,
 }
@@ -42,7 +40,7 @@ XRPOptions_Mixin = {
 		if not self.controls then return end
 		for i, control in ipairs(self.controls) do
 			if control.CustomOkay then
-				SafeCall(control.CustomOkay, control)
+				xpcall(control.CustomOkay, geterrorhandler(), control)
 			else
 				control.oldValue = control.value
 			end
@@ -52,7 +50,7 @@ XRPOptions_Mixin = {
 		if not self.controls then return end
 		for i, control in ipairs(self.controls) do
 			if control.CustomRefresh then
-				SafeCall(control.CustomRefresh, control)
+				xpcall(control.CustomRefresh, geterrorhandler(), control)
 			else
 				local setting = control:Get()
 				control.value = setting
@@ -88,7 +86,7 @@ XRPOptions_Mixin = {
 		if not self.controls then return end
 		for i, control in ipairs(self.controls) do
 			if control.CustomCancel then
-				SafeCall(control.CustomCancel, control)
+				xpcall(control.CustomCancel, geterrorhandler(), control)
 			else
 				control:Set(control.oldValue)
 				control.value = control.oldValue
@@ -121,7 +119,7 @@ XRPOptions_Mixin = {
 		if not self.controls then return end
 		for i, control in ipairs(self.controls) do
 			if control.CustomDefault then
-				SafeCall(control.CustomDefault, control)
+				xpcall(control.CustomDefault, geterrorhandler(), control)
 			else
 				local defaultValue = _xrp.DEFAULT_SETTINGS[control.xrpTable][control.xrpSetting]
 				control:Set(defaultValue)
