@@ -26,35 +26,25 @@
 		</Scripts>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Title" inherits="GameFontNormalLarge" text="XRP" justifyH="LEFT" justifyV="TOP">
+				<FontString parentKey="Title" inherits="GameFontNormalLarge" text="XRP_TITLE" justifyH="LEFT" justifyV="TOP">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="16" y="-16"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="Author" inherits="GameFontWhite" text="XRP_AUTHOR">
+				<FontString parentKey="Version" inherits="GameFontWhite" text="XRP_VERSION">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" y="-5"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="Version" inherits="GameFontWhite" text="XRP_VERSION">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Author" relativePoint="BOTTOMLEFT" y="-5"/>
-					</Anchors>
-				</FontString>
-				<FontString parentKey="CopyHeader" inherits="GameFontNormalLarge" text="XRP_LICENSE_HEADER">
+				<FontString parentKey="LicenseHeader" inherits="GameFontNormalLarge" text="XRP_LICENSE_HEADER">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Version" relativePoint="BOTTOMLEFT" y="-15"/>
-					</Anchors>
-				</FontString>
-				<FontString parentKey="Copyright" inherits="GameFontWhite" text="© Justin Snelgrove">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.CopyHeader" relativePoint="BOTTOMLEFT" y="-10"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="License" inherits="GameFontWhite" justifyH="LEFT" text="XRP_LICENSE">
 					<Size x="440"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Copyright" relativePoint="BOTTOMLEFT" y="-10"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.LicenseHeader" relativePoint="BOTTOMLEFT" y="-10"/>
 					</Anchors>
 				</FontString>
 			</Layer>

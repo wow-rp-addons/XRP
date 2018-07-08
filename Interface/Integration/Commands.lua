@@ -20,7 +20,6 @@ local FOLDER, _xrp = ...
 local SLASH_XRP = _xrp.L.SLASH_XRP or "/xrp"
 local INFO = STAT_FORMAT:format("|cff99b3e6%s") .. "|r %s"
 -- Also used in ui/options.xml.
-XRP_AUTHOR = INFO:format(_xrp.L.AUTHOR, GetAddOnMetadata(FOLDER, "Author"))
 XRP_VERSION = INFO:format(GAME_VERSION_LABEL, _xrp.version)
 local XRP_HEADER = ("|cffffd100<|r|cffabd473%s|r|cffffd100>:|r %%s"):format(GetAddOnMetadata(FOLDER, "Title"))
 
@@ -28,7 +27,6 @@ local xrpCmds = {}
 
 xrpCmds.about = function(args)
 	print(XRP_HEADER:format(""))
-	print(XRP_AUTHOR)
 	print(XRP_VERSION)
 	for line in _xrp.L.GPL_SHORT:gmatch("[^\n]+") do
 		print(line)
