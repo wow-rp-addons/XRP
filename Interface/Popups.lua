@@ -75,7 +75,7 @@ StaticPopupDialogs["XRP_RELOAD"] = {
 	button1 = RELOADUI,
 	button2 = CANCEL,
 	showAlert = true,
-	OnAccept = ReloadUI,
+	OnAccept = C_UI.Reload,
 	whileDead = true,
 	hideOnEscape = true,
 }

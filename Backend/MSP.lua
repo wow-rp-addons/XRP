@@ -100,7 +100,9 @@ local function StatusHandler(name, reason, msgID, msgTotal)
 		local GF = _xrp.unitCache[name] and _xrp.unitCache[name].GF or xrpCache[name] and xrpCache[name].fields.GF
 		_xrp.FireEvent("FAIL", name, (not GF or GF == xrp.current.GF) and "offline" or "faction")
 	elseif reason == "MESSAGE" then
-		_xrp.FireEvent("CHUNK", name, msgID, msgTotal)
+		if msgID ~= msgTotal then
+			_xrp.FireEvent("CHUNK", name, msgID, msgTotal)
+		end
 	end
 end
 msp.callback.status[#msp.callback.status + 1] = StatusHandler
