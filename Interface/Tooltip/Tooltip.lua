@@ -288,7 +288,7 @@ local function SetUnit(unit)
 	if not currentUnit.type then return end
 
 	local defaultLines = 3
-	local playerFaction = xrp.current.GF
+	local playerFaction = UnitFactionGroup("player")
 	if UnitIsMercenary("player") then
 		playerFaction = MERCENARY[playerFaction]
 	end

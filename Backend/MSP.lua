@@ -98,7 +98,7 @@ local function StatusHandler(name, reason, msgID, msgTotal)
 	if reason == "ERROR" then
 		-- Same error message from offline and from opposite faction.
 		local GF = _xrp.unitCache[name] and _xrp.unitCache[name].GF or xrpCache[name] and xrpCache[name].fields.GF
-		_xrp.FireEvent("FAIL", name, (not GF or GF == xrp.current.GF) and "offline" or "faction")
+		_xrp.FireEvent("FAIL", name, (not GF or GF == UnitFactionGroup("player")) and "offline" or "faction")
 	elseif reason == "MESSAGE" then
 		if msgID ~= msgTotal then
 			_xrp.FireEvent("CHUNK", name, msgID, msgTotal)

@@ -245,7 +245,7 @@ function XRPArchiveEntry_OnClick(self, button, down)
 		else
 			self.baseMenuList[1].disabled = nil
 			local GF = self.character.fields.GF
-			if GF and GF ~= xrp.current.GF then
+			if GF and GF ~= UnitFactionGroup("player") then
 				self.baseMenuList[4].disabled = true
 			else
 				local name = Ambiguate(tostring(self.character), "none")

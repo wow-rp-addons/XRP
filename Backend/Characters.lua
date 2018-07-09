@@ -59,9 +59,7 @@ local fieldsMeta = {
 			return nil
 		end
 		local name = nameMap[self]
-		if name == _xrp.playerWithRealm then
-			return xrp.current[field]
-		elseif unitCache[name] and unitCache[name][field] then
+		if unitCache[name] and unitCache[name][field] then
 			return unitCache[name][field]
 		elseif requestMap[self] then
 			_xrp.QueueRequest(name, field)
@@ -77,7 +75,7 @@ local fieldsMeta = {
 		if not xrpCache[name] then return "" end
 		local shortName, realm = name:match("^([^%-]+)%-([^%-]+)$")
 		realm = xrp.RealmDisplayName(realm)
-		return _xrp.ExportText(_xrp.L.NAME_REALM:format(shortName, realm), name == _xrp.playerWithRealm and xrp.current or xrpCache[name].fields)
+		return _xrp.ExportText(_xrp.L.NAME_REALM:format(shortName, realm), xrpCache[name].fields)
 	end,
 	__metatable = false,
 }

@@ -36,7 +36,7 @@ local AltNames = {
 local function AltToggle(setting, settingName)
 	local categoryName = settingName:match("^alt(.+)$")
 	local forceSetting = settingName .. "Force"
-	local needsSetting = setting and (not _xrp.settings.display[settingName .. "Limit"] or AltNames[categoryName][xrpSaved.meta.fields.GR])
+	local needsSetting = setting and (not _xrp.settings.display[settingName .. "Limit"] or AltNames[categoryName][(select(2, UnitRace("player")))])
 	for raceName in pairs(AltNames[categoryName]) do
 		local raceUpperValue = "VALUE_GR_" .. raceName:upper()
 		local raceUpperAltValue = raceUpperValue .. "_ALT"
@@ -57,7 +57,7 @@ end
 
 local function AltToggleForce(setting, settingName)
 	local categoryName = settingName:match("^alt(.+)Force$")
-	local raceName = xrpSaved.meta.fields.GR
+	local raceName = select(2, UnitRace("player"))
 	local raceAlt = _xrp.L[("VALUE_GR_%s_ALT"):format(raceName:upper())]
 	if setting and AltNames[categoryName][raceName] and xrpSaved.meta.fields.RA ~= raceAlt then
 		xrpSaved.meta.fields.RA = raceAlt

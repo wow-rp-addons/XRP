@@ -286,7 +286,7 @@ end
 function XRPViewerMenu_PreClick(self, button, down)
 	local name, isOwn = tostring(current), current.own
 	local GF = xrp.characters.noRequest.byName[name].fields.GF
-	if GF and GF ~= xrp.current.GF then
+	if GF and GF ~= UnitFactionGroup("player") then
 		self.baseMenuList[2].disabled = true
 	else
 		local name = Ambiguate(name, "none")
