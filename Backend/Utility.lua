@@ -128,18 +128,16 @@ function xrp.Link(text, linkType)
 	if type(text) ~= "string" then
 		return nil
 	end
-	if not linkType or linkType == "prelink" then
-		text = text:gsub("%f[%@%w]([%w%-%.]+%.com%f[^%w%/])", "http://%1"):gsub("%f[%@%w]([%w%-%.]+%.net%f[^%w%/])", "http://%1"):gsub("%f[%@%w]([%w%-%.]+%.org%f[^%w%/])", "http://%1"):gsub("([%w%-%.]+%.[%w%-]+%/)", "http://%1"):gsub("(https?://)http://", "%1")
-	end
-	if linkType == "prelink" then
-		return (text:gsub("https?://[Tt]witter.com/([%w%_]+)%f[^%w%_%/]", "@%1"):gsub("<?(https?://[%w%%%-%.%_%~%:%/%?#%[%]%@%!%$%&%'%(%)%*%+%,%;%=]+)>?", "<%1>"))
-	elseif linkType == "postlink" then
-		return (text:gsub("<(https?://[^>]-)>", "|H%1|h|cffc845fa<%1>|r|h"):gsub("%f[%w%@]%@([%w%_]+)%f[^%w%_%.]", "|H@%1|h|cff00aced@%1|r|h"))
-	elseif linkType == "fakelink" then
-		return (text:gsub("<(https?://[^>]-)>", "|cffc845fa<%1>|r"):gsub("%f[%w%@]%@([%w%_]+)%f[^%w%_%.]", "|cff00aced@%1|r"))
-	else
-		return (text:gsub("%f[%w%@]%@([%w%_]+)%f[^%w%_%.]", "https://twitter.com/%1"):gsub("https?://[Tt]witter.com/([%w%_]+)%f[^%w%_%/]", "|H@%1|h|cff00aced@%1|r|h"):gsub("<?(https?://[%w%%%-%.%_%~%:%/%?#%[%]%@%!%$%&%'%(%)%*%+%,%;%=]+)>?", "|H%1|h|cffc845fa<%1>|r|h"))
-	end
+	local gsub = string.gsub
+	text = gsub(text, "%f[%@%w]([%w%-%.]+%.com%f[^%w%/])", "http://%1")
+	text = gsub(text, "%f[%@%w]([%w%-%.]+%.net%f[^%w%/])", "http://%1")
+	text = gsub(text, "%f[%@%w]([%w%-%.]+%.org%f[^%w%/])", "http://%1")
+	text = gsub(text, "([%w%-%.]+%.[%w%-]+%/)", "http://%1")
+	text = gsub(text, "(https?://)http://", "%1")
+	text = gsub(text, "%f[%w%@]%@([%w%_]+)%f[^%w%_%.]", "https://twitter.com/%1")
+	text = gsub(text, "https?://[Tt]witter.com/([%w%_]+)%f[^%w%_%/]", "|H@%1|h|cff00aced@%1|r|h")
+	text = gsub(text, "<?(https?://[%w%%%-%.%_%~%:%/%?#%[%]%@%!%$%&%'%(%)%*%+%,%;%=]+)>?", "|H%1|h|cffc845fa<%1>|r|h")
+	return text
 end
 
 local BASIC = "^%%s*%s%%s*$"
