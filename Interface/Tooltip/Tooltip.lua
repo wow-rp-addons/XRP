@@ -385,8 +385,8 @@ local function SetUnit(unit)
 
 		currentUnit.character = xrp.characters.byName[owner]
 
-		local isOwnPet = UnitIsUnit(unit, "playerpet")
-		currentUnit.faction = UnitFactionGroup(unit) or (isOwnPet or owner == _xrp.player) and playerFaction or currentUnit.character.fields.GF or "Neutral"
+		local isOwnPet = UnitIsUnit(unit, "playerpet") or owner == _xrp.player
+		currentUnit.faction = UnitFactionGroup(unit) or isOwnPet and playerFaction or currentUnit.character.fields.GF or "Neutral"
 
 		local name = UnitName(unit)
 		local color
