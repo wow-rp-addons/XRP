@@ -109,9 +109,21 @@ local VERSION_MATCH = "(%d+)%.(%d+)%.(%d+)[%-]?(%l*)(%d*)"
 local function CompareVersion(newVersion, oldVersion)
 	local newMajor, newMinor, newPatch, newType, newRevision = newVersion:match(VERSION_MATCH)
 	local oldMajor, oldMinor, oldPatch, oldType, oldRevision = oldVersion:match(VERSION_MATCH)
+	if newType == "dev" then
+		-- Never issue updates for git -dev versions.
+		return -1
+	end
 
 	newType = newType == "alpha" and 1 or newType == "beta" and 2 or newType == "rc" and 3 or 4
 	oldType = oldType == "alpha" and 1 or oldType == "beta" and 2 or oldType == "rc" and 3 or 4
+
+	-- Account for pre-8.0 version scheme. Remove this sometime before hitting
+	-- a 'real' 5.0 release.
+	if newMajor > 4 then
+		newPatch = newMinor
+		newMinor = newMajor
+		newMajor = 1
+	end
 
 	local new = (tonumber(newMajor) * 1000000) + (tonumber(newMinor) * 10000) + (tonumber(newPatch) * 100) + (tonumber(newRevision) or 0)
 	local old = (tonumber(oldMajor) * 1000000) + (tonumber(oldMinor) * 10000) + (tonumber(oldPatch) * 100) + (tonumber(oldRevision) or 0)
