@@ -10,7 +10,9 @@
 
 Libraries\Libraries.xml
 Backend\Init.lua
-Backend\Settings.lua
+Backend\Settings\Defaults.lua
+Backend\Settings\Upgrade.lua
+Backend\Settings\Settings.lua
 Locale\enUS.lua
 Locale\Setup.lua
 Backend\Utility.lua
