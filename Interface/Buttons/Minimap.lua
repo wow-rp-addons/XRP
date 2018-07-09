@@ -223,7 +223,6 @@ function XRPButtonDetached_OnDragStop(self)
 end
 
 local function HookEvents()
-	xrp.HookEvent("UPDATE", XRPButton_UpdateIcon)
 	xrp.HookEvent("RECEIVE", XRPButton_UpdateIcon)
 	_xrp.HookGameEvent("PLAYER_TARGET_CHANGED", XRPButton_UpdateIcon)
 	_xrp.HookGameEvent("PLAYER_ENTERING_WORLD", XRPButton_UpdateIcon)
@@ -290,7 +289,6 @@ _xrp.settingsToggles.minimap = {
 			Button:Show()
 		elseif Button ~= nil then
 			if not LDBObject then
-				xrp.UnhookEvent("UPDATE", XRPButton_UpdateIcon)
 				xrp.UnhookEvent("RECEIVE", XRPButton_UpdateIcon)
 				_xrp.UnhookGameEvent("PLAYER_TARGET_CHANGED", XRPButton_UpdateIcon)
 				_xrp.UnhookGameEvent("PLAYER_ENTERING_WORLD", XRPButton_UpdateIcon)

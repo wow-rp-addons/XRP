@@ -144,10 +144,6 @@ _xrp.HookGameEvent("ADDON_LOADED", function(event, addon)
 		end
 	end
 	local newFields = {
-		GC = select(2, UnitClass("player")),
-		GF = UnitFactionGroup("player"),
-		GR = select(2, UnitRace("player")),
-		GS = tostring(UnitSex("player")),
 		NA = _xrp.player, -- Fallback NA field.
 		VA = table.concat(VA, ";"),
 	}
@@ -158,7 +154,6 @@ _xrp.HookGameEvent("ADDON_LOADED", function(event, addon)
 			_xrp.FireEvent("UPDATE", field)
 		end
 	end
-	fields.VP = tostring(msp.protocolversion)
 
 	if not xrpSaved.overrides.logout or xrpSaved.overrides.logout + 900 < time() then
 		xrpSaved.overrides.fields = {}
@@ -184,21 +179,8 @@ _xrp.HookGameEvent("ADDON_LOADED", function(event, addon)
 			_xrp.settings.versionwarning = nil
 		end
 	end
-
-	if fields.GF == "Neutral" then
-		_xrp.HookGameEvent("NEUTRAL_FACTION_SELECT_RESULT", function(event)
-			xrpSaved.meta.fields.GF = UnitFactionGroup("player")
-			_xrp.FireEvent("UPDATE", "GF")
-		end)
-	end
 end)
 _xrp.HookGameEvent("PLAYER_LOGIN", function(event)
-	-- UnitGUID() does not work prior to first PLAYER_LOGIN.
-	local GU = UnitGUID("player")
-	if xrpSaved.meta.fields.GU ~= GU then
-		xrpSaved.meta.fields.GU = GU
-		_xrp.FireEvent("UPDATE", "GU")
-	end
 	-- GetAutoCompleteResults() also doesn't work.
 	_xrp.own[_xrp.playerWithRealm] = true
 	for i, character in ipairs(GetAutoCompleteResults("", 0, 1, AUTO_COMPLETE_ACCOUNT_CHARACTER, 0)) do
