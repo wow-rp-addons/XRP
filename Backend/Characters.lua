@@ -26,13 +26,21 @@ local RACE_FACTION = {
 	NightElf = "Alliance",
 	Draenei = "Alliance",
 	Worgen = "Alliance",
+	VoidElf = "Alliance",
+	LightforgedDraenei = "Alliance",
+	DarkIronDwarf = "Alliance",
+	KulTiran = "Alliance",
 	Orc = "Horde",
 	Tauren = "Horde",
 	Troll = "Horde",
 	Scourge = "Horde",
 	BloodElf = "Horde",
 	Goblin = "Horde",
-	Pandaren = nil, -- Can't tell faction.
+	Nightborne = "Horde",
+	HighmountainTauren = "Horde",
+	MagharOrc = "Horde",
+	ZandalariTroll = "Horde",
+	Pandaren = false, -- Can't tell faction.
 }
 
 local MERCENARY = {
@@ -181,9 +189,15 @@ xrp.characters = {
 			elseif not unitCache[name] then
 				local GU = UnitGUID(unit)
 				local class, GC, race, GR, GS = GetPlayerInfoByGUID(GU)
+				if RACE_FACTION[GR] == nil then
+					if not xrp.L.VALUES.GR[GR] then
+						xrp.L.VALUES.GR[GR] = race
+					end
+					RACE_FACTION[GR] = UnitFactionGroup(unit)
+				end
 				unitCache[name] = {
 					GC = GC,
-					GF = RACE_FACTION[GR] or UnitIsMercenary(unit) and MERCENARY[UnitFactionGroup(unit)] or UnitFactionGroup(unit),
+					GF = RACE_FACTION[GR] or UnitIsMercenary(unit) and MERCENARY[UnitFactionGroup(unit)] or UnitFactionGroup(unit) or nil,
 					GR = GR,
 					GS = tostring(GS),
 					GU = GU,
@@ -222,9 +236,14 @@ xrp.characters = {
 			if not success or not name then
 				return nil
 			elseif not unitCache[name] then
+				if RACE_FACTION[GR] == nil then
+					if not xrp.L.VALUES.GR[GR] then
+						xrp.L.VALUES.GR[GR] = race
+					end
+				end
 				unitCache[name] = {
 					GC = GC,
-					GF = RACE_FACTION[GR],
+					GF = RACE_FACTION[GR] or nil,
 					GR = GR,
 					GS = tostring(GS),
 					GU = GU,
