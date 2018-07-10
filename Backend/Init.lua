@@ -109,7 +109,7 @@ local VERSION_MATCH = "(%d+)%.(%d+)%.(%d+)[%-]?(%l*)(%d*)"
 local function CompareVersion(newVersion, oldVersion)
 	local newMajor, newMinor, newPatch, newType, newRevision = newVersion:match(VERSION_MATCH)
 	local oldMajor, oldMinor, oldPatch, oldType, oldRevision = oldVersion:match(VERSION_MATCH)
-	if newType == "dev" then
+	if newType:find("^dev") then
 		-- Never issue updates for git -dev versions.
 		return -1
 	end
