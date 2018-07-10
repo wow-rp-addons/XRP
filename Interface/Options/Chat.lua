@@ -45,38 +45,42 @@ local function AddChannel(channel, menuList)
 	menuList[#menuList + 1] = { text = channel:match("^CHANNEL_(.+)"):lower():gsub("^%l", string.upper), arg1 = channel, isNotRadio = true, checked = Channels_Checked, func = Channels_OnClick, keepShownOnClick = true, }
 end
 
-XRPOptionsChatChannels_Mixin = {
-	CustomRefresh = function(self)
-		table.wipe(self.baseMenuList)
-		local seenChannels = {}
-		for i, name in ipairs(ChannelsTable(GetChannelList())) do
-			local channel = "CHANNEL_" .. name:upper()
+XRPOptionsChatChannels_Mixin = {}
+
+function XRPOptionsChatChannels_Mixin:CustomRefresh()
+	table.wipe(self.baseMenuList)
+	local seenChannels = {}
+	for i, name in ipairs(ChannelsTable(GetChannelList())) do
+		local channel = "CHANNEL_" .. name:upper()
+		AddChannel(channel, self.baseMenuList, channelsList)
+		seenChannels[channel] = true
+	end
+	for channel, setting in pairs(_xrp.settings.chatType) do
+		if not seenChannels[channel] and channel:find("^CHANNEL_") then
 			AddChannel(channel, self.baseMenuList, channelsList)
 			seenChannels[channel] = true
 		end
-		for channel, setting in pairs(_xrp.settings.chatType) do
-			if not seenChannels[channel] and channel:find("^CHANNEL_") then
-				AddChannel(channel, self.baseMenuList, channelsList)
-				seenChannels[channel] = true
-			end
-		end
-	end,
-	CustomOkay = function(self)
-		for channel, control in pairs(channelsList) do
-			control.oldValue = control.value
-		end
-	end,
-	CustomDefault = function(self)
-		for channel, control in pairs(channelsList) do
-			_xrp.settings.chatType[channel] = nil
-			control.value = nil
-		end
-	end,
-	CustomCancel = function(self)
-		for channel, control in pairs(channelsList) do
-			_xrp.settings.chatType[channel] = control.oldValue
-			control.value = control.oldValue
-		end
-	end,
-	baseMenuList = {},
-}
+	end
+end
+
+function XRPOptionsChatChannels_Mixin:CustomOkay()
+	for channel, control in pairs(channelsList) do
+		control.oldValue = control.value
+	end
+end
+
+function XRPOptionsChatChannels_Mixin:CustomDefault()
+	for channel, control in pairs(channelsList) do
+		_xrp.settings.chatType[channel] = nil
+		control.value = nil
+	end
+end
+
+function XRPOptionsChatChannels_Mixin:CustomCancel()
+	for channel, control in pairs(channelsList) do
+		_xrp.settings.chatType[channel] = control.oldValue
+		control.value = control.oldValue
+	end
+end
+
+XRPOptionsChatChannels_Mixin.baseMenuList = {}

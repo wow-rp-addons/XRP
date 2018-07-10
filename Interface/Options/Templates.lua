@@ -17,150 +17,154 @@
 
 local FOLDER, _xrp = ...
 
-XRPOptionsControl_Mixin = {
-	Get = function(self)
-		local settingsTable = _xrp.settings
-		if self.xrpTable then
-			settingsTable = _xrp.settings[self.xrpTable]
-		end
-		return settingsTable[self.xrpSetting]
-	end,
-	Set = function(self, value)
-		local settingsTable = _xrp.settings
-		if self.xrpTable then
-			settingsTable = _xrp.settings[self.xrpTable]
-		end
-		settingsTable[self.xrpSetting] = value
-		local settingsToggleTable = _xrp.settingsToggles
-		if self.xrpTable then
-			settingsToggleTable = _xrp.settingsToggles[self.xrpTable]
-		end
-		if settingsToggleTable[self.xrpSetting] then
-			xpcall(settingsToggleTable[self.xrpSetting], geterrorhandler(), value, self.xrpSetting)
-		end
-	end,
-}
+XRPOptionsControl_Mixin = {}
 
-XRPOptions_Mixin = {
-	okay = function(self)
-		if not self.controls then return end
-		for i, control in ipairs(self.controls) do
-			if control.CustomOkay then
-				xpcall(control.CustomOkay, geterrorhandler(), control)
-			else
-				control.oldValue = control.value
-			end
+function XRPOptionsControl_Mixin:Get()
+	local settingsTable = _xrp.settings
+	if self.xrpTable then
+		settingsTable = _xrp.settings[self.xrpTable]
+	end
+	return settingsTable[self.xrpSetting]
+end
+
+function XRPOptionsControl_Mixin:Set(value)
+	local settingsTable = _xrp.settings
+	if self.xrpTable then
+		settingsTable = _xrp.settings[self.xrpTable]
+	end
+	settingsTable[self.xrpSetting] = value
+	local settingsToggleTable = _xrp.settingsToggles
+	if self.xrpTable then
+		settingsToggleTable = _xrp.settingsToggles[self.xrpTable]
+	end
+	if settingsToggleTable and settingsToggleTable[self.xrpSetting] then
+		xpcall(settingsToggleTable[self.xrpSetting], geterrorhandler(), value, self.xrpSetting)
+	end
+end
+
+XRPOptions_Mixin = {}
+
+function XRPOptions_Mixin:okay()
+	if not self.controls then return end
+	for i, control in ipairs(self.controls) do
+		if control.CustomOkay then
+			xpcall(control.CustomOkay, geterrorhandler(), control)
+		else
+			control.oldValue = control.value
 		end
-	end,
-	refresh = function(self)
-		if not self.controls then return end
-		for i, control in ipairs(self.controls) do
-			if control.CustomRefresh then
-				xpcall(control.CustomRefresh, geterrorhandler(), control)
-			else
-				local setting = control:Get()
-				control.value = setting
-				if control.oldValue == nil then
-					control.oldValue = setting
-				end
-				if control.type == CONTROLTYPE_CHECKBOX then
-					control:SetChecked(setting)
-				elseif control.type == CONTROLTYPE_DROPDOWN then
-					for i, entry in ipairs(control.baseMenuList) do
-						if entry.arg1 == control.value then
-							control.Text:SetText(entry.text)
-							break
-						end
-					end
-				end
+	end
+end
+
+function XRPOptions_Mixin:refresh()
+	if not self.controls then return end
+	for i, control in ipairs(self.controls) do
+		if control.CustomRefresh then
+			xpcall(control.CustomRefresh, geterrorhandler(), control)
+		else
+			local setting = control:Get()
+			control.value = setting
+			if control.oldValue == nil then
+				control.oldValue = setting
 			end
-			if control.dependsOn then
-				if control.type == CONTROLTYPE_CHECKBOX then
-					control:SetEnabled(self[control.dependsOn]:GetChecked())
-				elseif control.type == CONTROLTYPE_DROPDOWN then
-					local setting = self[control.dependsOn]:GetChecked()
-					if setting then
-						UIDropDownMenu_EnableDropDown(control)
-					else
-						UIDropDownMenu_DisableDropDown(control)
-					end
-				end
-			end
-		end
-	end,
-	cancel = function(self)
-		if not self.controls then return end
-		for i, control in ipairs(self.controls) do
-			if control.CustomCancel then
-				xpcall(control.CustomCancel, geterrorhandler(), control)
-			else
-				control:Set(control.oldValue)
-				control.value = control.oldValue
-				if control.type == CONTROLTYPE_CHECKBOX then
-					control:SetChecked(control.value)
-				elseif control.type == CONTROLTYPE_DROPDOWN then
-					for i, entry in ipairs(control.baseMenuList) do
-						if entry.arg1 == control.value then
-							control.Text:SetText(entry.text)
-							break
-						end
-					end
-				end
-			end
-			if control.dependsOn then
-				if control.type == CONTROLTYPE_CHECKBOX then
-					control:SetEnabled(self[control.dependsOn]:GetChecked())
-				elseif control.type == CONTROLTYPE_DROPDOWN then
-					local setting = self[control.dependsOn]:GetChecked()
-					if setting then
-						UIDropDownMenu_EnableDropDown(control)
-					else
-						UIDropDownMenu_DisableDropDown(control)
+			if control.type == CONTROLTYPE_CHECKBOX then
+				control:SetChecked(setting)
+			elseif control.type == CONTROLTYPE_DROPDOWN then
+				for i, entry in ipairs(control.baseMenuList) do
+					if entry.arg1 == control.value then
+						control.Text:SetText(entry.text)
+						break
 					end
 				end
 			end
 		end
-	end,
-	default = function(self)
-		if not self.controls then return end
-		for i, control in ipairs(self.controls) do
-			if control.CustomDefault then
-				xpcall(control.CustomDefault, geterrorhandler(), control)
-			else
-				local defaultValue
-				if control.xrpTable then
-					defaultValue = _xrp.DEFAULT_SETTINGS[control.xrpTable][control.xrpSetting]
+		if control.dependsOn then
+			if control.type == CONTROLTYPE_CHECKBOX then
+				control:SetEnabled(self[control.dependsOn]:GetChecked())
+			elseif control.type == CONTROLTYPE_DROPDOWN then
+				local setting = self[control.dependsOn]:GetChecked()
+				if setting then
+					UIDropDownMenu_EnableDropDown(control)
 				else
-					defaultValue = _xrp.DEFAULT_SETTINGS[control.xrpSetting]
-				end
-				control:Set(defaultValue)
-				control.value = defaultValue
-				if control.type == CONTROLTYPE_CHECKBOX then
-					control:SetChecked(control.value)
-				elseif control.type == CONTROLTYPE_DROPDOWN then
-					for i, entry in ipairs(control.baseMenuList) do
-						if entry.arg1 == control.value then
-							control.Text:SetText(entry.text)
-							break
-						end
-					end
+					UIDropDownMenu_DisableDropDown(control)
 				end
 			end
-			if control.dependsOn then
-				if control.type == CONTROLTYPE_CHECKBOX then
-					control:SetEnabled(self[control.dependsOn]:GetChecked())
-				elseif control.type == CONTROLTYPE_DROPDOWN then
-					local setting = self[control.dependsOn]:GetChecked()
-					if setting then
-						UIDropDownMenu_EnableDropDown(control)
-					else
-						UIDropDownMenu_DisableDropDown(control)
+		end
+	end
+end
+
+function XRPOptions_Mixin:cancel()
+	if not self.controls then return end
+	for i, control in ipairs(self.controls) do
+		if control.CustomCancel then
+			xpcall(control.CustomCancel, geterrorhandler(), control)
+		else
+			control:Set(control.oldValue)
+			control.value = control.oldValue
+			if control.type == CONTROLTYPE_CHECKBOX then
+				control:SetChecked(control.value)
+			elseif control.type == CONTROLTYPE_DROPDOWN then
+				for i, entry in ipairs(control.baseMenuList) do
+					if entry.arg1 == control.value then
+						control.Text:SetText(entry.text)
+						break
 					end
 				end
 			end
 		end
-	end,
-}
+		if control.dependsOn then
+			if control.type == CONTROLTYPE_CHECKBOX then
+				control:SetEnabled(self[control.dependsOn]:GetChecked())
+			elseif control.type == CONTROLTYPE_DROPDOWN then
+				local setting = self[control.dependsOn]:GetChecked()
+				if setting then
+					UIDropDownMenu_EnableDropDown(control)
+				else
+					UIDropDownMenu_DisableDropDown(control)
+				end
+			end
+		end
+	end
+end
+
+function XRPOptions_Mixin:default()
+	if not self.controls then return end
+	for i, control in ipairs(self.controls) do
+		if control.CustomDefault then
+			xpcall(control.CustomDefault, geterrorhandler(), control)
+		else
+			local defaultValue
+			if control.xrpTable then
+				defaultValue = _xrp.DEFAULT_SETTINGS[control.xrpTable][control.xrpSetting]
+			else
+				defaultValue = _xrp.DEFAULT_SETTINGS[control.xrpSetting]
+			end
+			control:Set(defaultValue)
+			control.value = defaultValue
+			if control.type == CONTROLTYPE_CHECKBOX then
+				control:SetChecked(control.value)
+			elseif control.type == CONTROLTYPE_DROPDOWN then
+				for i, entry in ipairs(control.baseMenuList) do
+					if entry.arg1 == control.value then
+						control.Text:SetText(entry.text)
+						break
+					end
+				end
+			end
+		end
+		if control.dependsOn then
+			if control.type == CONTROLTYPE_CHECKBOX then
+				control:SetEnabled(self[control.dependsOn]:GetChecked())
+			elseif control.type == CONTROLTYPE_DROPDOWN then
+				local setting = self[control.dependsOn]:GetChecked()
+				if setting then
+					UIDropDownMenu_EnableDropDown(control)
+				else
+					UIDropDownMenu_DisableDropDown(control)
+				end
+			end
+		end
+	end
+end
 
 local OPTIONS_NAME = {
 	GENERAL = GENERAL,
