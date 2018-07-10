@@ -114,17 +114,30 @@ local function DataLoadHandler(name, char)
 end
 msp.callback.dataload[#msp.callback.dataload + 1] = DataLoadHandler
 
-local gameEvents = {}
-
---TODO: Add Battlenet friends updating.
-function gameEvents.FRIENDLIST_UPDATE(event)
-	if not friends then return end
-	table.wipe(friends)
+local gameFriends
+local function FRIENDLIST_UPDATE(event)
+	if not gameFriends then return end
+	table.wipe(gameFriends)
 	for i = 1, select(2, GetNumFriends()) do
-		friends[xrp.FullName((GetFriendInfo(i)))] = true
+		gameFriends[xrp.FullName((GetFriendInfo(i)))] = true
 	end
 end
 
+local bnetFriends
+local function BN_FRIEND_INFO_CHANGED(event)
+	if not bnetFriends then return end
+	table.wipe(bnetFriends)
+	for i = 1, select(2, BNGetNumFriends()) do
+		for j = 1, BNGetNumFriendGameAccounts(i) do
+			local active, characterName, client, realmName, realmID, faction, race, class, blank, zoneName, level, gameText, broadcastText, broadcastTime, isConnected, bnetIDGameAccount = BNGetFriendGameAccountInfo(i, j)
+			if isConnected and client == BNET_CLIENT_WOW and realmName and realmName ~= "" then
+				bnetFriends[xrp.FullName(characterName, realm)] = true
+			end
+		end
+	end
+end
+
+local guildies
 local function UpdateGuildRoster()
 	local showOffline = GetGuildRosterShowOffline()
 	table.wipe(guildies)
@@ -142,7 +155,7 @@ local function UpdateGuildRoster()
 	end
 end
 
-function gameEvents.GUILD_ROSTER_UPDATE(event)
+local function GUILD_ROSTER_UPDATE(event)
 	if not guildies then return end
 	-- Workaround for ugly issue with the show offline tickbox on the guild
 	-- roster UI.
@@ -159,7 +172,7 @@ local function RunRequestQueue()
 end
 
 function _xrp.QueueRequest(name, field)
-	if disabled or name == _xrp.playerWithRealm or friends and not (friends[name] or guildies and guildies[name]) or xrp.ShortName(name) == UNKNOWN then
+	if disabled or name == _xrp.playerWithRealm or gameFriends and not (gameFriends[name] or bnetFriends[name] or guildies and guildies[name]) or xrp.ShortName(name) == UNKNOWN then
 		return
 	elseif _xrp.unitCache[name] and _xrp.unitCache[name][field] then
 		return
@@ -176,7 +189,7 @@ end
 -- Using GU+GF alone would be great, but it's not reliable.
 local UNIT_REQUEST = { "GC", "GF", "GR", "GS", "GU" }
 function _xrp.Request(name, fields)
-	if disabled or name == _xrp.playerWithRealm or friends and not (friends[name] or guildies and guildies[name]) or xrp.ShortName(name) == UNKNOWN then
+	if disabled or name == _xrp.playerWithRealm or gameFriends and not (gameFriends[name] or bnetFriends[name] or guildies and guildies[name]) or xrp.ShortName(name) == UNKNOWN then
 		return false
 	end
 	if not _xrp.unitCache[name] then
@@ -221,23 +234,28 @@ end
 
 _xrp.settingsToggles.friendsOnly = function(setting)
 	if setting then
-		friends = {}
-		gameEvents.FRIENDLIST_UPDATE()
-		_xrp.HookGameEvent("FRIENDLIST_UPDATE", gameEvents.FRIENDLIST_UPDATE)
+		gameFriends = {}
+		FRIENDLIST_UPDATE()
+		_xrp.HookGameEvent("FRIENDLIST_UPDATE", FRIENDLIST_UPDATE)
+		bnetFriends = {}
+		BN_FRIEND_INFO_CHANGED()
+		_xrp.HookGameEvent("BN_FRIEND_INFO_CHANGED", BN_FRIEND_INFO_CHANGED)
 		_xrp.settingsToggles.friendsIncludeGuild(_xrp.settings.friendsIncludeGuild)
-	elseif friends then
+	elseif gameFriends then
 		_xrp.settingsToggles.friendsIncludeGuild(false)
-		_xrp.UnhookGameEvent("FRIENDLIST_UPDATE", gameEvents.FRIENDLIST_UPDATE)
-		friends = nil
+		_xrp.UnhookGameEvent("FRIENDLIST_UPDATE", FRIENDLIST_UPDATE)
+		gameFriends = nil
+		_xrp.UnhookGameEvent("BN_FRIEND_INFO_CHANGED", BN_FRIEND_INFO_CHANGED)
+		bnetFriends = nil
 	end
 end
 _xrp.settingsToggles.friendsIncludeGuild = function(setting)
-	if setting and friends then
+	if setting and gameFriends then
 		guildies = {}
-		gameEvents.GUILD_ROSTER_UPDATE()
-		_xrp.HookGameEvent("GUILD_ROSTER_UPDATE", gameEvents.GUILD_ROSTER_UPDATE)
-	elseif guildies and friends then
-		_xrp.UnhookGameEvent("GUILD_ROSTER_UPDATE", gameEvents.GUILD_ROSTER_UPDATE)
+		GUILD_ROSTER_UPDATE()
+		_xrp.HookGameEvent("GUILD_ROSTER_UPDATE", GUILD_ROSTER_UPDATE)
+	elseif guildies and gameFriends then
+		_xrp.UnhookGameEvent("GUILD_ROSTER_UPDATE", GUILD_ROSTER_UPDATE)
 		guildies = nil
 	end
 end
