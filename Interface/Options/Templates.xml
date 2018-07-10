@@ -17,7 +17,7 @@
 -->
 	<Script file="Templates.lua"/>
 
-	<CheckButton name="XRPOptionsCheckboxTemplate" parentArray="controls" inherits="XRPCheckBoxTemplate" mixin="XRPOptionsControl_Mixin" virtual="true">
+	<CheckButton name="XRPOptionsCheckboxTemplate" parentArray="controls" inherits="XRPCheckBoxTemplate" mixin="XRPOptionsControl_Mixin,XRPOptionsCheckButton_Mixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="type" value="CONTROLTYPE_CHECKBOX" type="global"/>
 		</KeyValues>
@@ -33,10 +33,10 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnClick function="XRPOptionsCheckButton_OnClick"/>
-			<OnEnable function="XRPOptionsCheckButton_OnEnable"/>
-			<OnDisable function="XRPOptionsCheckButton_OnDisable"/>
-			<OnLoad function="XRPOptionsControls_OnLoad"/>
+			<OnClick method="OnClick"/>
+			<OnEnable method="OnEnable"/>
+			<OnDisable method="OnDisable"/>
+			<OnLoad method="OnLoad"/>
 		</Scripts>
 	</CheckButton>
 	<Frame name="XRPOptionsDropDownTemplate" parentArray="controls" inherits="XRPDropDownTemplate" mixin="XRPOptionsControl_Mixin" virtual="true">
@@ -53,7 +53,7 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad inherit="prepend" function="XRPOptionsControls_OnLoad"/>
+			<OnLoad inherit="prepend" method="OnLoad"/>
 		</Scripts>
 	</Frame>
 	<Frame name="XRPOptionsTemplate" hidden="true" mixin="XRPOptions_Mixin" virtual="true">
@@ -77,8 +77,8 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad function="XRPOptions_OnLoad"/>
-			<OnShow function="XRPOptions_OnShow"/>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
 		</Scripts>
 	</Frame>
 </Ui>

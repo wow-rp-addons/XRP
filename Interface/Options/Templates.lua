@@ -180,7 +180,7 @@ local OPTIONS_DESCRIPTION = {
 	TOOLTIP = _xrp.L.TOOLTIP_OPTIONS,
 	ADVANCED = _xrp.L.ADVANCED_OPTIONS,
 }
-function XRPOptions_OnLoad(self)
+function XRPOptions_Mixin:OnLoad()
 	self.name = OPTIONS_NAME[self.paneID]
 	self.Title:SetFormattedText(SUBTITLE_FORMAT, "XRP", self.name)
 	self.SubText:SetText(OPTIONS_DESCRIPTION[self.paneID])
@@ -188,7 +188,7 @@ function XRPOptions_OnLoad(self)
 	InterfaceOptions_AddCategory(self)
 end
 
-function XRPOptions_OnShow(self)
+function XRPOptions_Mixin:OnShow()
 	if not self.wasShown then
 		self.wasShown = true
 		self:refresh()
@@ -253,7 +253,7 @@ local OPTIONS_TEXT = {
 	tooltipHideRace = _xrp.L.NO_RP_RACE,
 }
 
-function XRPOptionsControls_OnLoad(self)
+function XRPOptionsControl_Mixin:OnLoad()
 	if self.type == CONTROLTYPE_CHECKBOX then
 		self.dependentControls = {}
 	end
@@ -272,7 +272,9 @@ function XRPOptionsControls_OnLoad(self)
 	end
 end
 
-function XRPOptionsCheckButton_OnClick(self, button, down)
+XRPOptionsCheckButton_Mixin = {}
+
+function XRPOptionsCheckButton_Mixin:OnClick(button, down)
 	local setting = self:GetChecked()
 	PlaySound(setting and SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON or SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF)
 	self.value = setting
@@ -297,7 +299,7 @@ function XRPOptionsCheckButton_OnClick(self, button, down)
 	self:Set(setting)
 end
 
-function XRPOptionsCheckButton_OnEnable(self)
+function XRPOptionsCheckButton_Mixin:OnEnable()
 	self.Text:SetTextColor(self.Text:GetFontObject():GetTextColor())
 	if self.dependentControls then
 		for i, control in ipairs(self.dependentControls) do
@@ -314,7 +316,7 @@ function XRPOptionsCheckButton_OnEnable(self)
 	end
 end
 
-function XRPOptionsCheckButton_OnDisable(self)
+function XRPOptionsCheckButton_Mixin:OnDisable()
 	self.Text:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b)
 	if self.dependentControls then
 		for i, control in ipairs(self.dependentControls) do
