@@ -36,22 +36,22 @@ local AltNames = {
 local function AltToggle(setting, settingName)
 	local categoryName = settingName:match("^alt(.+)$")
 	local forceSetting = settingName .. "Force"
-	local needsSetting = setting and (not _xrp.settings.display[settingName .. "Limit"] or AltNames[categoryName][(select(2, UnitRace("player")))])
+	local needsSetting = setting and (not _xrp.settings[settingName .. "Limit"] or AltNames[categoryName][(select(2, UnitRace("player")))])
 	for raceName in pairs(AltNames[categoryName]) do
 		local raceUpperValue = "VALUE_GR_" .. raceName:upper()
 		local raceUpperAltValue = raceUpperValue .. "_ALT"
 		if needsSetting then
 			xrp.L.VALUES.GR[raceName] = _xrp.L[raceUpperAltValue]
-			_xrp.settingsToggles.display[forceSetting](_xrp.settings.display[forceSetting], forceSetting)
+			_xrp.settingsToggles[forceSetting](_xrp.settings[forceSetting], forceSetting)
 		else
 			xrp.L.VALUES.GR[raceName] = _xrp.L[raceUpperValue]
-			_xrp.settingsToggles.display[forceSetting](false, forceSetting)
+			_xrp.settingsToggles[forceSetting](false, forceSetting)
 		end
 	end
 	if needsSetting then
-		_xrp.settingsToggles.display[forceSetting](_xrp.settings.display[forceSetting], forceSetting)
+		_xrp.settingsToggles[forceSetting](_xrp.settings[forceSetting], forceSetting)
 	else
-		_xrp.settingsToggles.display[forceSetting](false, forceSetting)
+		_xrp.settingsToggles[forceSetting](false, forceSetting)
 	end
 end
 
@@ -70,17 +70,17 @@ end
 
 local function AltToggleLimit(setting, settingName)
 	local raceSettingName = settingName:match("^(.+)Limit$")
-	if _xrp.settings.display[raceSettingName] then
-		_xrp.settingsToggles.display[raceSettingName](true, raceSettingName)
+	if _xrp.settings[raceSettingName] then
+		_xrp.settingsToggles[raceSettingName](true, raceSettingName)
 	end
 end
 
-_xrp.settingsToggles.display.altScourge = AltToggle
-_xrp.settingsToggles.display.altScourgeForce = AltToggleForce
-_xrp.settingsToggles.display.altScourgeLimit = AltToggleLimit
-_xrp.settingsToggles.display.altElven = AltToggle
-_xrp.settingsToggles.display.altElvenForce = AltToggleForce
-_xrp.settingsToggles.display.altElvenLimit = AltToggleLimit
-_xrp.settingsToggles.display.altTauren = AltToggle
-_xrp.settingsToggles.display.altTaurenForce = AltToggleForce
-_xrp.settingsToggles.display.altTaurenLimit = AltToggleLimit
+_xrp.settingsToggles.altScourge = AltToggle
+_xrp.settingsToggles.altScourgeForce = AltToggleForce
+_xrp.settingsToggles.altScourgeLimit = AltToggleLimit
+_xrp.settingsToggles.altElven = AltToggle
+_xrp.settingsToggles.altElvenForce = AltToggleForce
+_xrp.settingsToggles.altElvenLimit = AltToggleLimit
+_xrp.settingsToggles.altTauren = AltToggle
+_xrp.settingsToggles.altTaurenForce = AltToggleForce
+_xrp.settingsToggles.altTaurenLimit = AltToggleLimit

@@ -176,7 +176,7 @@ local MINIMAP_SHAPES = {
 	["TRICORNER-BOTTOMRIGHT"] = { true, true, true, false },
 }
 local function UpdatePositionAttached(self)
-	local angle = math.rad(_xrp.settings.minimap.angle)
+	local angle = math.rad(_xrp.settings.mainButtonMinimapAngle)
 	local x, y, q = math.cos(angle), math.sin(angle), 1
 	if x < 0 then q = q + 1 end
 	if y > 0 then q = q + 2 end
@@ -195,7 +195,7 @@ local function Minimap_OnUpdate(self, elapsed)
 	local px, py = GetCursorPosition()
 	local scale = Minimap:GetEffectiveScale()
 	px, py = px / scale, py / scale
-	_xrp.settings.minimap.angle = math.deg(math.atan2(py - my, px - mx)) % 360
+	_xrp.settings.mainButtonMinimapAngle = math.deg(math.atan2(py - my, px - mx)) % 360
 	UpdatePositionAttached(self)
 end
 
@@ -218,7 +218,7 @@ end
 
 function XRPButtonDetached_OnDragStop(self)
 	self:StopMovingOrSizing()
-	_xrp.settings.minimap.point, _xrp.settings.minimap.x, _xrp.settings.minimap.y = select(3, self:GetPoint())
+	_xrp.settings.mainButtonDetachedPoint, _xrp.settings.mainButtonDetachedX, _xrp.settings.mainButtonDetachedY = select(3, self:GetPoint())
 	self:UnlockHighlight()
 end
 
@@ -258,55 +258,55 @@ _xrp.HookGameEvent("PLAYER_LOGIN", function(event)
 	end
 end)
 
-_xrp.settingsToggles.minimap = {
-	enabled = function(setting)
-		if setting then
-			if _xrp.settings.minimap.detached then
-				if Button and Button == LibDBIcon10_XRP then
-					Button:UnregisterAllEvents()
-					Button:Hide()
-				end
-				if not XRPButton then
-					CreateFrame("Button", "XRPButton", UIParent, "XRPButtonTemplate")
-					XRPButton:SetPoint(_xrp.settings.minimap.point, UIParent, _xrp.settings.minimap.point, _xrp.settings.minimap.x, _xrp.settings.minimap.y)
-				end
-				Button = XRPButton
-			else
-				if Button and Button == XRPButton then
-					Button:UnregisterAllEvents()
-					Button:Hide()
-				end
-				if not LibDBIcon10_XRP then
-					CreateFrame("Button", "LibDBIcon10_XRP", Minimap, "XRPMinimapTemplate")
-					UpdatePositionAttached(LibDBIcon10_XRP)
-				end
-				Button = LibDBIcon10_XRP
+_xrp.settingsToggles.mainButtonEnabled = function(setting)
+	if setting then
+		if _xrp.settings.mainButtonDetached then
+			if Button and Button == LibDBIcon10_XRP then
+				Button:UnregisterAllEvents()
+				Button:Hide()
 			end
-			if not LDBObject then
-				HookEvents()
+			if not XRPButton then
+				CreateFrame("Button", "XRPButton", UIParent, "XRPButtonTemplate")
+				XRPButton:SetPoint(_xrp.settings.mainButtonDetachedPoint, UIParent, _xrp.settings.mainButtonDetachedPoint, _xrp.settings.mainButtonDetachedX, _xrp.settings.mainButtonDetachedY)
 			end
-			XRPButton_UpdateIcon()
-			Button:Show()
-		elseif Button ~= nil then
-			if not LDBObject then
-				xrp.UnhookEvent("RECEIVE", XRPButton_UpdateIcon)
-				_xrp.UnhookGameEvent("PLAYER_TARGET_CHANGED", XRPButton_UpdateIcon)
-				_xrp.UnhookGameEvent("PLAYER_ENTERING_WORLD", XRPButton_UpdateIcon)
+			Button = XRPButton
+		else
+			if Button and Button == XRPButton then
+				Button:UnregisterAllEvents()
+				Button:Hide()
 			end
-			Button:Hide()
-			Button = nil
+			if not LibDBIcon10_XRP then
+				CreateFrame("Button", "LibDBIcon10_XRP", Minimap, "XRPMinimapTemplate")
+				UpdatePositionAttached(LibDBIcon10_XRP)
+			end
+			Button = LibDBIcon10_XRP
 		end
-	end,
-	detached = function(setting)
-		if not _xrp.settings.minimap.enabled or not Button or setting and Button == XRPButton or not setting and Button == LibDBIcon10_XRP then return end
-		_xrp.settingsToggles.minimap.enabled(_xrp.settings.minimap.enabled)
-	end,
-	ldbObject = function(setting)
-		if setting then
-			CreateLDBObject()
-			if not LDBObject then
-				LDBObject = false
-			end
+		if not LDBObject then
+			HookEvents()
 		end
-	end,
-}
+		XRPButton_UpdateIcon()
+		Button:Show()
+	elseif Button ~= nil then
+		if not LDBObject then
+			xrp.UnhookEvent("RECEIVE", XRPButton_UpdateIcon)
+			_xrp.UnhookGameEvent("PLAYER_TARGET_CHANGED", XRPButton_UpdateIcon)
+			_xrp.UnhookGameEvent("PLAYER_ENTERING_WORLD", XRPButton_UpdateIcon)
+		end
+		Button:Hide()
+		Button = nil
+	end
+end
+
+_xrp.settingsToggles.mainButtonDetached = function(setting)
+	if not _xrp.settings.mainButtonEnabled or not Button or setting and Button == XRPButton or not setting and Button == LibDBIcon10_XRP then return end
+	_xrp.settingsToggles.mainButtonEnabled(_xrp.settings.mainButtonEnabled)
+end
+
+_xrp.settingsToggles.ldbObject = function(setting)
+	if setting then
+		CreateLDBObject()
+		if not LDBObject then
+			LDBObject = false
+		end
+	end
+end

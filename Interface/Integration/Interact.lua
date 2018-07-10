@@ -70,42 +70,42 @@ local function InteractUnit_Hook(unit)
 	XRPViewer:View(unit)
 end
 
-_xrp.settingsToggles.interact = {
-	cursor = function(setting)
-		if setting then
-			if not XRPCursorBook then
-				IsItemInRange(88589, "player")
-				CreateFrame("Frame", "XRPCursorBook", UIParent, "XRPCursorBookTemplate")
-			end
-			xrp.HookEvent("RECEIVE", Cursor_RECEIVE)
-			XRPCursorBook:RegisterEvent("UPDATE_MOUSEOVER_UNIT")
-			cursor = true
-		elseif cursor ~= nil then
-			XRPCursorBook:UnregisterAllEvents()
-			XRPCursorBook:Hide()
-			xrp.UnhookEvent("RECEIVE", Cursor_RECEIVE)
-			cursor = false
+_xrp.settingsToggles.cursorEnabled = function(setting)
+	if setting then
+		if not XRPCursorBook then
+			IsItemInRange(88589, "player")
+			CreateFrame("Frame", "XRPCursorBook", UIParent, "XRPCursorBookTemplate")
 		end
-	end,
-	rightClick = function(setting)
-		if setting then
-			if rightClick == nil then
-				hooksecurefunc("TurnOrActionStart", Cursor_TurnOrActionStart)
-				hooksecurefunc("TurnOrActionStop", Cursor_TurnOrActionStop)
-			end
-			rightClick = true
-		elseif rightClick ~= nil then
-			rightClick = false
+		xrp.HookEvent("RECEIVE", Cursor_RECEIVE)
+		XRPCursorBook:RegisterEvent("UPDATE_MOUSEOVER_UNIT")
+		cursor = true
+	elseif cursor ~= nil then
+		XRPCursorBook:UnregisterAllEvents()
+		XRPCursorBook:Hide()
+		xrp.UnhookEvent("RECEIVE", Cursor_RECEIVE)
+		cursor = false
+	end
+end
+
+_xrp.settingsToggles.cursorRightClick = function(setting)
+	if setting then
+		if rightClick == nil then
+			hooksecurefunc("TurnOrActionStart", Cursor_TurnOrActionStart)
+			hooksecurefunc("TurnOrActionStop", Cursor_TurnOrActionStop)
 		end
-	end,
-	keybind = function(setting)
-		if setting then
-			if keybind == nil then
-				hooksecurefunc("InteractUnit", InteractUnit_Hook)
-			end
-			keybind = true
-		elseif keybind ~= nil then
-			keybind = false
+		rightClick = true
+	elseif rightClick ~= nil then
+		rightClick = false
+	end
+end
+
+_xrp.settingsToggles.viewOnInteract = function(setting)
+	if setting then
+		if keybind == nil then
+			hooksecurefunc("InteractUnit", InteractUnit_Hook)
 		end
-	end,
-}
+		keybind = true
+	elseif keybind ~= nil then
+		keybind = false
+	end
+end

@@ -153,18 +153,18 @@ local function RenderTooltip()
 			local NI = xrp.Strip(fields.NI)
 			RenderLine(false, NI and (not NI:find(_xrp.L.QUOTE_MATCH) and NI_FORMAT or NI_FORMAT_NOQUOTE):format(NI), nil, 0.6, 0.7, 0.9)
 			RenderLine(true, xrp.Strip(fields.NT), nil, 0.8, 0.8, 0.8)
-			if _xrp.settings.tooltip.showHouse then
+			if _xrp.settings.tooltipShowHouse then
 				RenderLine(true, xrp.Strip(fields.NH), nil, 0.4, 0.6, 0.7)
 			end
 		end
-		if _xrp.settings.tooltip.extraSpace then
+		if _xrp.settings.tooltipShowExtraSpace then
 			RenderLine(false, true)
 		end
 		if replace then
 			RenderLine(false, currentUnit.guild, nil, 1, 1, 1)
 			local color = COLORS[currentUnit.faction]
 			RenderLine(false, currentUnit.titleRealm, currentUnit.character.hide and _xrp.L.HIDDEN or showProfile and ParseVersion(fields.VA), color.r, color.g, color.b, 0.5, 0.5, 0.5)
-			if _xrp.settings.tooltip.extraSpace then
+			if _xrp.settings.tooltipShowExtraSpace then
 				RenderLine(false, true)
 			end
 		end
@@ -172,13 +172,13 @@ local function RenderTooltip()
 			local CU, CO = xrp.Strip(fields.CU), xrp.Strip(fields.CO)
 			RenderLine(true, (CU or CO) and CU_FORMAT:format(xrp.MergeCurrently(xrp.Link(CU), xrp.Link(CO))), nil, 0.9, 0.7, 0.6)
 		end
-		local RA = showProfile and not _xrp.settings.tooltip.noRace and xrp.Strip(fields.RA) or xrp.L.VALUES.GR[fields.GR] or UNKNOWN
+		local RA = showProfile and not _xrp.settings.tooltipHideRace and xrp.Strip(fields.RA) or xrp.L.VALUES.GR[fields.GR] or UNKNOWN
 		local RAlen = #RA
 		RA = AddOn_Chomp.SafeSubString(RA, 1, INLINE_LENGTH)
 		if #RA < RAlen then
 			RA = RA .. CONTINUED
 		end
-		local RC = showProfile and not _xrp.settings.tooltip.noClass and xrp.Strip(fields.RC) or xrp.L.VALUES.GC[fields.GS][fields.GC] or UNKNOWN
+		local RC = showProfile and not _xrp.settings.tooltipHideClass and xrp.Strip(fields.RC) or xrp.L.VALUES.GC[fields.GS][fields.GC] or UNKNOWN
 		local RClen = #RC
 		RC = AddOn_Chomp.SafeSubString(RC, 1, INLINE_LENGTH)
 		if #RC < RClen then
@@ -197,7 +197,7 @@ local function RenderTooltip()
 		RenderLine(false, currentUnit.nameFormat, currentUnit.icons)
 		if currentUnit.reaction then
 			RenderLine(false, currentUnit.reaction, nil, 1, 1, 1)
-			if _xrp.settings.tooltip.extraSpace then
+			if _xrp.settings.tooltipShowExtraSpace then
 				RenderLine(false, true)
 			end
 		end
@@ -302,16 +302,11 @@ local function SetUnit(unit)
 		currentUnit.faction = (inRaid or UnitIsUnit("player", unit)) and playerFaction or currentUnit.character.fields.GF or "Neutral"
 
 		local connected = UnitIsConnected(unit)
-		local color
-		if not _xrp.settings.tooltip.oldColors then
-			local r, g, b = UnitSelectionColor(unit)
-			color = SELECTION_COLORS[("%02x%02x%02x"):format(math.ceil(r * 255), math.ceil(g * 255), math.ceil(b * 255))]
-		else
-			color = REACTION_COLORS[(not inRaid and UnitIsEnemy("player", unit) or attackMe and meAttack) and "hostile" or (meAttack or attackMe) and "neutral" or "friendly"]
-		end
+		local r, g, b = UnitSelectionColor(unit)
+		local color = SELECTION_COLORS[("%02x%02x%02x"):format(math.ceil(r * 255), math.ceil(g * 255), math.ceil(b * 255))]
 
-		local watchIcon = _xrp.settings.tooltip.watching and unit ~= "player" and UnitIsUnit("player", unit .. "target") and "|TInterface\\LFGFrame\\BattlenetWorking0:28:28:8:1|t"
-		local bookmarkIcon = _xrp.settings.tooltip.bookmark and currentUnit.character.bookmark and "|TInterface\\MINIMAP\\POIICONS:18:18:4:0:256:512:54:72:54:72|t"
+		local watchIcon = _xrp.settings.tooltipShowWatchEye and unit ~= "player" and UnitIsUnit("player", unit .. "target") and "|TInterface\\LFGFrame\\BattlenetWorking0:28:28:8:1|t"
+		local bookmarkIcon = _xrp.settings.tooltipShowBookmarkFlag and currentUnit.character.bookmark and "|TInterface\\MINIMAP\\POIICONS:18:18:4:0:256:512:54:72:54:72|t"
 		local GC = currentUnit.character.fields.GC
 
 		if replace then
@@ -330,7 +325,7 @@ local function SetUnit(unit)
 			end
 
 			local guildName, guildRank, guildIndex = GetGuildInfo(unit)
-			currentUnit.guild = guildName and (_xrp.settings.tooltip.guildRank and (_xrp.settings.tooltip.guildIndex and _xrp.L.GUILD_RANK_INDEX or _xrp.L.GUILD_RANK) or _xrp.L.GUILD):format(_xrp.settings.tooltip.guildRank and guildRank or guildName, _xrp.settings.tooltip.guildIndex and guildIndex + 1 or guildName, guildName)
+			currentUnit.guild = guildName and (_xrp.settings.tooltipShowGuildRank and (_xrp.settings.tooltipShowGuildIndex and _xrp.L.GUILD_RANK_INDEX or _xrp.L.GUILD_RANK) or _xrp.L.GUILD):format(_xrp.settings.tooltipShowGuildRank and guildRank or guildName, _xrp.settings.tooltipShowGuildIndex and guildIndex + 1 or guildName, guildName)
 
 			local realm = tostring(currentUnit.character):match("%-([^%-]+)$")
 			if realm == _xrp.realm then
@@ -389,13 +384,8 @@ local function SetUnit(unit)
 		currentUnit.faction = UnitFactionGroup(unit) or isOwnPet and playerFaction or currentUnit.character.fields.GF or "Neutral"
 
 		local name = UnitName(unit)
-		local color
-		if not _xrp.settings.tooltip.oldColors then
-			local r, g, b = UnitSelectionColor(unit)
-			color = SELECTION_COLORS[("%02x%02x%02x"):format(math.ceil(r * 255), math.ceil(g * 255), math.ceil(b * 255))]
-		else
-			color = REACTION_COLORS[(UnitIsEnemy("player", unit) or attackMe and meAttack) and "hostile" or (meAttack or attackMe) and "neutral" or "friendly"]
-		end
+		local r, g, b = UnitSelectionColor(unit)
+		local color = SELECTION_COLORS[("%02x%02x%02x"):format(math.ceil(r * 255), math.ceil(g * 255), math.ceil(b * 255))]
 		currentUnit.nameFormat = ("%s%s|r"):format(color, name)
 
 		local ffa = UnitIsPVPFreeForAll(unit)
@@ -432,7 +422,7 @@ local function SetUnit(unit)
 			defaultLines = defaultLines + 1
 		end
 	end
-	currentUnit.noProfile = _xrp.settings.tooltip.noCombatInstance and InCombatLockdown() and (IsInInstance() or IsInActiveWorldPVP()) or _xrp.settings.tooltip.noOpFaction and currentUnit.faction ~= playerFaction and currentUnit.faction ~= "Neutral" or _xrp.settings.tooltip.noHostile and attackMe and meAttack
+	currentUnit.noProfile = _xrp.settings.tooltipHideInstanceCombat and InCombatLockdown() and (IsInInstance() or IsInActiveWorldPVP()) or _xrp.settings.tooltipHideOppositeFaction and currentUnit.faction ~= playerFaction and currentUnit.faction ~= "Neutral" or _xrp.settings.tooltipHideHostile and attackMe and meAttack
 
 	if replace then
 		table.wipe(currentUnit.lines)
@@ -517,41 +507,40 @@ local function DoHooks()
 	GameTooltip:HookScript("OnTooltipCleared", GameTooltip_OnTooltipCleared_Hook)
 end
 
-_xrp.settingsToggles.tooltip = {
-	enabled = function(setting)
-		if setting then
-			if enabled == nil then
-				if not IsLoggedIn() then
-					_xrp.HookGameEvent("PLAYER_LOGIN", DoHooks)
-				else
-					DoHooks()
-				end
-			end
-			xrp.HookEvent("RECEIVE", Tooltip_RECEIVE)
-			enabled = true
-			_xrp.settingsToggles.tooltip.replace(_xrp.settings.tooltip.replace)
-		elseif enabled ~= nil then
-			enabled = false
-			xrp.UnhookEvent("RECEIVE", Tooltip_RECEIVE)
-		end
-	end,
-	replace = function(setting)
-		if not enabled then return end
-		if setting then
-			if replace == nil then
-				hooksecurefunc(GameTooltip, "AddLine", GameTooltip_AddLine_Hook)
-				hooksecurefunc(GameTooltip, "AddDoubleLine", GameTooltip_AddDoubleLine_Hook)
-			end
-			Tooltip = GameTooltip
-			replace = true
-		else
-			if not XRPTooltip then
-				CreateFrame("GameTooltip", "XRPTooltip", GameTooltip, "GameTooltipTemplate")
-			end
-			Tooltip = XRPTooltip
-			if replace ~= nil then
-				replace = false
+_xrp.settingsToggles.tooltipEnabled = function(setting)
+	if setting then
+		if enabled == nil then
+			if not IsLoggedIn() then
+				_xrp.HookGameEvent("PLAYER_LOGIN", DoHooks)
+			else
+				DoHooks()
 			end
 		end
-	end,
-}
+		xrp.HookEvent("RECEIVE", Tooltip_RECEIVE)
+		enabled = true
+		_xrp.settingsToggles.tooltipReplace(_xrp.settings.tooltipReplace)
+	elseif enabled ~= nil then
+		enabled = false
+		xrp.UnhookEvent("RECEIVE", Tooltip_RECEIVE)
+	end
+end
+
+_xrp.settingsToggles.tooltipReplace = function(setting)
+	if not enabled then return end
+	if setting then
+		if replace == nil then
+			hooksecurefunc(GameTooltip, "AddLine", GameTooltip_AddLine_Hook)
+			hooksecurefunc(GameTooltip, "AddDoubleLine", GameTooltip_AddDoubleLine_Hook)
+		end
+		Tooltip = GameTooltip
+		replace = true
+	else
+		if not XRPTooltip then
+			CreateFrame("GameTooltip", "XRPTooltip", GameTooltip, "GameTooltipTemplate")
+		end
+		Tooltip = XRPTooltip
+		if replace ~= nil then
+			replace = false
+		end
+	end
+end

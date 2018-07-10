@@ -157,7 +157,7 @@ function xrp.Weight(weight, units)
 		number = number and number / 2.20462
 	end
 	if not units then
-		units = _xrp.settings.display.weight
+		units = _xrp.settings.weightUnits
 	end
 	if not number then
 		return weight
@@ -205,7 +205,7 @@ function xrp.Height(height, units)
 		number = feet and (((tonumber(feet) * 12) + (tonumber(inches) or 0)) * 2.54)
 	end
 	if not units then
-		units = _xrp.settings.display.height
+		units = _xrp.settings.heightUnits
 	end
 	if not number then
 		return height

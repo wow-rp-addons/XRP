@@ -18,7 +18,7 @@
 local FOLDER, _xrp = ...
 
 _xrp.UpgradeAccountVars = {
-	[2] = function() -- 6.0.3.0
+	[2] = function() -- 1.6.0.3.0
 		local settings = xrpAccountSaved.settings
 		local newSettings = {}
 
@@ -63,7 +63,7 @@ _xrp.UpgradeAccountVars = {
 
 		xrpAccountSaved.settings = newSettings
 	end,
-	[5] = function() -- 6.0.3.0
+	[5] = function() -- 1.6.0.3.0
 		local settings = xrpAccountSaved.settings
 		settings.minimap.hidett = nil
 		settings.tooltip.faction = nil
@@ -95,7 +95,7 @@ _xrp.UpgradeAccountVars = {
 			end
 		end
 	end,
-	[6] = function() -- 6.0.3.2
+	[6] = function() -- 1.6.0.3.2
 		local settings = xrpAccountSaved.settings
 		if settings.cache.autoclean ~= nil then
 			settings.cache.autoclean = nil
@@ -145,7 +145,7 @@ _xrp.UpgradeAccountVars = {
 			settings.tooltip.norprace = nil
 		end
 	end,
-	[7] = function() -- 6.0.3.3
+	[7] = function() -- 1.6.0.3.3
 		if xrpAccountSaved.settings.display.preloadViewer == true and xrpAccountSaved.settings.display.movableViewer == true then
 			-- Preserve current behaviour for users with viewer made movable.
 			xrpAccountSaved.settings.display.closeOnEscapeViewer = false
@@ -157,7 +157,7 @@ _xrp.UpgradeAccountVars = {
 		end
 		xrpAccountSaved.settings.display.preloadViewer = nil
 	end,
-	[9] = function() -- 6.1.0.0
+	[9] = function() -- 1.6.1.0.0
 		if not xrpAccountSaved.bookmarks then
 			xrpAccountSaved.bookmarks = {}
 		end
@@ -180,17 +180,17 @@ _xrp.UpgradeAccountVars = {
 		xrpAccountSaved.settings.display.preloadBookmarks = nil
 		xrpAccountSaved.settings.display.preloadEditor = nil
 	end,
-	[12] = function() -- 6.1.2.0
+	[12] = function() -- 1.6.1.2.0
 		if not xrpAccountSaved.notes then
 			xrpAccountSaved.notes = {}
 		end
 	end,
-	[13] = function() -- 6.2.2.2
+	[13] = function() -- 1.6.2.2.2
 		for name, cache in pairs(xrpCache) do
 			cache.fields.reliable = nil
 		end
 	end,
-	[14] = function() -- 6.2.3.1
+	[14] = function() -- 1.6.2.3.1
 		local newSettings = {}
 		for setting, value in pairs(xrpAccountSaved.settings.chat) do
 			if setting:find("^CHAT_MSG_") then
@@ -202,25 +202,97 @@ _xrp.UpgradeAccountVars = {
 			xrpAccountSaved.settings.chat[setting] = value
 		end
 	end,
-	[16] = function() -- 7.0.3.0
+	[16] = function() -- 1.7.0.3.0
 		xrpAccountSaved.settings.chat["OFFICER"] = xrpAccountSaved.settings.chat["GUILD"]
 	end,
-	[18] = function() -- 7.0.3.3
+	[18] = function() -- 1.7.0.3.3
 		for channel, isEnabled in pairs(xrpAccountSaved.settings.chat) do
 			if not isEnabled and channel:find("^CHANNEL_") then
 				xrpAccountSaved.settings.chat[channel] = nil
 			end
 		end
 	end,
+	[19] = function() -- 1.8.0
+		xrpAccountSaved.settings.versionwarning = nil
+		xrpAccountSaved.settings.newversion = nil
+		if xrpAccountSaved.settings.display.altBloodElf or xrpAccountSaved.settings.display.altNightElf then
+			xrpAccountSaved.settings.display.altElven = true
+		end
+		if xrpAccountSaved.settings.display.altBloodElfForce or xrpAccountSaved.settings.display.altNightElfForce then
+			xrpAccountSaved.settings.display.altElvenForce = true
+		end
+		if xrpAccountSaved.settings.display.altBloodElfLimit or xrpAccountSaved.settings.display.altNightElfLimit then
+			xrpAccountSaved.settings.display.altElvenLimit = true
+		end
+		xrpAccountSaved.settings.tooltip.oldColors = nil
+		xrpAccountSaved.settings.cacheAutoClean = xrpAccountSaved.settings.cache.autoClean
+		xrpAccountSaved.settings.cacheRetainTime = xrpAccountSaved.settings.cache.time
+		xrpAccountSaved.settings.chatNames = xrpAccountSaved.settings.chat.names
+		xrpAccountSaved.settings.chatEmoteBraced = xrpAccountSaved.settings.chat.emoteBraced
+		xrpAccountSaved.settings.chatReplacements = xrpAccountSaved.settings.chat.replacements
+		xrpAccountSaved.settings.altScourge = xrpAccountSaved.settings.display.altScourge
+		xrpAccountSaved.settings.altScourgeLimit = xrpAccountSaved.settings.display.altScourgeLimit
+		xrpAccountSaved.settings.altScourgeForce = xrpAccountSaved.settings.display.altScourgeForce
+		xrpAccountSaved.settings.altElven = xrpAccountSaved.settings.display.altElven
+		xrpAccountSaved.settings.altElvenLimit = xrpAccountSaved.settings.display.altElvenLimit
+		xrpAccountSaved.settings.altElvenForce = xrpAccountSaved.settings.display.altElvenForce
+		xrpAccountSaved.settings.altTauren = xrpAccountSaved.settings.display.altTauren
+		xrpAccountSaved.settings.altTaurenLimit = xrpAccountSaved.settings.display.altTaurenLimit
+		xrpAccountSaved.settings.altTaurenForce = xrpAccountSaved.settings.display.altTaurenForce
+		xrpAccountSaved.settings.viewerCloseOnEscape = xrpAccountSaved.settings.display.closeOnEscapeViewer
+		xrpAccountSaved.settings.friendsOnly = xrpAccountSaved.settings.display.friendsOnly
+		xrpAccountSaved.settings.friendsIncludeGuild = xrpAccountSaved.settings.display.guildIsFriends
+		xrpAccountSaved.settings.heightUnits = xrpAccountSaved.settings.display.height
+		xrpAccountSaved.settings.weightUnits = xrpAccountSaved.settings.display.weight
+		xrpAccountSaved.settings.viewerMovable = xrpAccountSaved.settings.display.movableViewer
+		xrpAccountSaved.settings.cursorEnabled = xrpAccountSaved.settings.interact.cursor
+		xrpAccountSaved.settings.cursorRightClick = xrpAccountSaved.settings.interact.rightClick
+		xrpAccountSaved.settings.cursorDisableInstance = xrpAccountSaved.settings.interact.disableInstance
+		xrpAccountSaved.settings.cursorDisablePvP = xrpAccountSaved.settings.interact.disablePvP
+		xrpAccountSaved.settings.viewOnInteract = xrpAccountSaved.settings.interact.keybind
+		xrpAccountSaved.settings.menusChat = xrpAccountSaved.settings.menus.standard
+		xrpAccountSaved.settings.menusUnits = xrpAccountSaved.settings.menus.units
+		xrpAccountSaved.settings.ldbObject = xrpAccountSaved.settings.minimap.ldbObject
+		xrpAccountSaved.settings.mainButtonEnabled = xrpAccountSaved.settings.minimap.enabled
+		xrpAccountSaved.settings.mainButtonDetached = xrpAccountSaved.settings.minimap.detached
+		xrpAccountSaved.settings.mainButtonMinimapAngle = xrpAccountSaved.settings.minimap.angle
+		xrpAccountSaved.settings.mainButtonDetachedX = xrpAccountSaved.settings.minimap.x
+		xrpAccountSaved.settings.mainButtonDetachedY = xrpAccountSaved.settings.minimap.y
+		xrpAccountSaved.settings.mainButtonDetachedPoint = xrpAccountSaved.settings.minimap.point
+		xrpAccountSaved.settings.tooltipEnabled = xrpAccountSaved.settings.tooltip.enabled
+		xrpAccountSaved.settings.tooltipReplace = xrpAccountSaved.settings.tooltip.replace
+		xrpAccountSaved.settings.tooltipShowWatchEye = xrpAccountSaved.settings.tooltip.watching
+		xrpAccountSaved.settings.tooltipShowBookmarkFlag = xrpAccountSaved.settings.tooltip.bookmark
+		xrpAccountSaved.settings.tooltipShowExtraSpace = xrpAccountSaved.settings.tooltip.extraSpace
+		xrpAccountSaved.settings.tooltipShowHouse = xrpAccountSaved.settings.tooltip.showHouse
+		xrpAccountSaved.settings.tooltipShowGuildRank = xrpAccountSaved.settings.tooltip.guildRank
+		xrpAccountSaved.settings.tooltipShowGuildIndex = xrpAccountSaved.settings.tooltip.guildIndex
+		xrpAccountSaved.settings.tooltipHideHostile = xrpAccountSaved.settings.tooltip.noHostile
+		xrpAccountSaved.settings.tooltipHideOppositeFaction = xrpAccountSaved.settings.tooltip.noOpFaction
+		xrpAccountSaved.settings.tooltipHideInstanceCombat = xrpAccountSaved.settings.tooltip.noCombatInstance
+		xrpAccountSaved.settings.tooltipHideClass = xrpAccountSaved.settings.tooltip.noClass
+		xrpAccountSaved.settings.tooltipHideRace = xrpAccountSaved.settings.tooltip.noRace
+		xrpAccountSaved.settings.tooltip = nil
+		xrpAccountSaved.settings.minimap = nil
+		xrpAccountSaved.settings.menus = nil
+		xrpAccountSaved.settings.interact = nil
+		xrpAccountSaved.settings.display = nil
+		xrpAccountSaved.settings.cache = nil
+		xrpAccountSaved.settings.chat.names = nil
+		xrpAccountSaved.settings.chat.emoteBraced = nil
+		xrpAccountSaved.settings.chat.replacements = nil
+		xrpAccountSaved.settings.chatType = xrpAccountSaved.settings.chat
+		xrpAccountSaved.settings.chat = nil
+	end,
 }
 
 _xrp.UpgradeVars = {
-	[3] = function() -- 6.0.3.0
+	[3] = function() -- 1.6.0.3.0
 		if type(xrpSaved.auto) ~= "table" then
 			xrpSaved.auto = {}
 		end
 	end,
-	[6] = function() -- 6.1.2.0
+	[6] = function() -- 1.6.1.2.0
 		for name, profile in pairs(xrpSaved.profiles) do
 			if name == "SELECTED" then
 				local newName = _xrp.L.RENAMED_FORMAT:format("SELECTED")
@@ -245,5 +317,20 @@ _xrp.UpgradeVars = {
 			end
 		end
 		_xrp.FireEvent("UPDATE", "FC")
+	end,
+	[7] = function() -- 1.8.0
+		xrpSaved.meta.versions = nil
+		xrpSaved.meta.fields.VP = nil
+		xrpSaved.meta.fields.GR = nil
+		xrpSaved.meta.fields.GS = nil
+		xrpSaved.meta.fields.GU = nil
+		xrpSaved.meta.fields.GF = nil
+		xrpSaved.meta.fields.GC = nil
+		xrpSaved.versions = nil
+		for name, profile in pairs(xrpSaved.profiles) do
+			profile.versions = nil
+		end
+		xrpSaved.overrides.versions = nil
+		xrpSaved.oldtt = nil
 	end,
 }

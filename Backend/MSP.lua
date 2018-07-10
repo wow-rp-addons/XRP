@@ -219,19 +219,19 @@ function _xrp.ForceRefresh(name)
 	end
 end
 
-_xrp.settingsToggles.display.friendsOnly = function(setting)
+_xrp.settingsToggles.friendsOnly = function(setting)
 	if setting then
 		friends = {}
 		gameEvents.FRIENDLIST_UPDATE()
 		_xrp.HookGameEvent("FRIENDLIST_UPDATE", gameEvents.FRIENDLIST_UPDATE)
-		_xrp.settingsToggles.display.guildIsFriends(_xrp.settings.display.guildIsFriends)
+		_xrp.settingsToggles.friendsIncludeGuild(_xrp.settings.friendsIncludeGuild)
 	elseif friends then
-		_xrp.settingsToggles.display.guildIsFriends(false)
+		_xrp.settingsToggles.friendsIncludeGuild(false)
 		_xrp.UnhookGameEvent("FRIENDLIST_UPDATE", gameEvents.FRIENDLIST_UPDATE)
 		friends = nil
 	end
 end
-_xrp.settingsToggles.display.guildIsFriends = function(setting)
+_xrp.settingsToggles.friendsIncludeGuild = function(setting)
 	if setting and friends then
 		guildies = {}
 		gameEvents.GUILD_ROSTER_UPDATE()

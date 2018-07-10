@@ -57,119 +57,107 @@
 			<KeyValue key="paneID" value="GENERAL"/>
 		</KeyValues>
 		<Frames>
-			<CheckButton parentKey="MovableViewer" inherits="XRPOptionsCheckboxTemplate">
+			<CheckButton parentKey="ViewerMovable" inherits="XRPOptionsCheckboxTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.SubText" relativePoint="BOTTOMLEFT" x="-2" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="xrpTable" value="display"/>
-					<KeyValue key="xrpSetting" value="movableViewer"/>
+					<KeyValue key="xrpSetting" value="viewerMovable"/>
 				</KeyValues>
 			</CheckButton>
-			<CheckButton parentKey="CloseOnEscapeViewer" inherits="XRPOptionsCheckboxTemplate">
+			<CheckButton parentKey="ViewerCloseOnEscape" inherits="XRPOptionsCheckboxTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.MovableViewer" relativePoint="BOTTOMLEFT" x="24" y="-8"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ViewerMovable" relativePoint="BOTTOMLEFT" x="24" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="dependsOn" value="MovableViewer"/>
-					<KeyValue key="xrpTable" value="display"/>
-					<KeyValue key="xrpSetting" value="closeOnEscapeViewer"/>
+					<KeyValue key="dependsOn" value="ViewerMovable"/>
+					<KeyValue key="xrpSetting" value="viewerCloseOnEscape"/>
 				</KeyValues>
 			</CheckButton>
-			<CheckButton parentKey="Cursor" inherits="XRPOptionsCheckboxTemplate">
+			<CheckButton parentKey="CursorEnabled" inherits="XRPOptionsCheckboxTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.CloseOnEscapeViewer" relativePoint="BOTTOMLEFT" x="-24" y="-8"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ViewerCloseOnEscape" relativePoint="BOTTOMLEFT" x="-24" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="xrpTable" value="interact"/>
-					<KeyValue key="xrpSetting" value="cursor"/>
+					<KeyValue key="xrpSetting" value="cursorEnabled"/>
 				</KeyValues>
 			</CheckButton>
-			<CheckButton parentKey="RightClick" inherits="XRPOptionsCheckboxTemplate">
+			<CheckButton parentKey="CursorRightClick" inherits="XRPOptionsCheckboxTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.Cursor" relativePoint="BOTTOMLEFT" x="24" y="-8"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.CursorEnabled" relativePoint="BOTTOMLEFT" x="24" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="dependsOn" value="Cursor"/>
-					<KeyValue key="xrpTable" value="interact"/>
-					<KeyValue key="xrpSetting" value="rightClick"/>
+					<KeyValue key="dependsOn" value="CursorEnabled"/>
+					<KeyValue key="xrpSetting" value="cursorRightClick"/>
 				</KeyValues>
 			</CheckButton>
-			<CheckButton parentKey="DisableInstance" inherits="XRPOptionsCheckboxTemplate">
+			<CheckButton parentKey="CursorDisableInstance" inherits="XRPOptionsCheckboxTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.RightClick" relativePoint="BOTTOMLEFT" y="-8"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.CursorRightClick" relativePoint="BOTTOMLEFT" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="dependsOn" value="Cursor"/>
-					<KeyValue key="xrpTable" value="interact"/>
-					<KeyValue key="xrpSetting" value="disableInstance"/>
+					<KeyValue key="dependsOn" value="CursorEnabled"/>
+					<KeyValue key="xrpSetting" value="cursorDisableInstance"/>
 				</KeyValues>
 			</CheckButton>
-			<CheckButton parentKey="DisablePvP" inherits="XRPOptionsCheckboxTemplate">
+			<CheckButton parentKey="CursorDisablePvP" inherits="XRPOptionsCheckboxTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.DisableInstance" relativePoint="BOTTOMLEFT" y="-8"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.CursorDisableInstance" relativePoint="BOTTOMLEFT" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="dependsOn" value="Cursor"/>
-					<KeyValue key="xrpTable" value="interact"/>
-					<KeyValue key="xrpSetting" value="disablePvP"/>
+					<KeyValue key="dependsOn" value="CursorEnabled"/>
+					<KeyValue key="xrpSetting" value="cursorDisablePvP"/>
 				</KeyValues>
 			</CheckButton>
-			<CheckButton parentKey="Keybind" inherits="XRPOptionsCheckboxTemplate">
+			<CheckButton parentKey="ViewOnInteract" inherits="XRPOptionsCheckboxTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.DisablePvP" relativePoint="BOTTOMLEFT" x="-24" y="-8"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.CursorDisablePvP" relativePoint="BOTTOMLEFT" x="-24" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="xrpTable" value="interact"/>
-					<KeyValue key="xrpSetting" value="keybind"/>
+					<KeyValue key="xrpSetting" value="viewOnInteract"/>
 					<KeyValue key="disableWarn" value="DISABLE_REQUIRES_RELOAD"/>
 				</KeyValues>
 			</CheckButton>
-			<CheckButton parentKey="MenusStandard" inherits="XRPOptionsCheckboxTemplate">
+			<CheckButton parentKey="MenusChat" inherits="XRPOptionsCheckboxTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.Keybind" relativePoint="BOTTOMLEFT" y="-8"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ViewOnInteract" relativePoint="BOTTOMLEFT" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="xrpTable" value="menus"/>
-					<KeyValue key="xrpSetting" value="standard"/>
+					<KeyValue key="xrpSetting" value="menusChat"/>
 					<KeyValue key="disableWarn" value="DISABLE_REQUIRES_RELOAD"/>
 				</KeyValues>
 			</CheckButton>
 			<CheckButton parentKey="MenusUnits" inherits="XRPOptionsCheckboxTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.MenusStandard" relativePoint="BOTTOMLEFT" y="-8"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.MenusChat" relativePoint="BOTTOMLEFT" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="xrpTable" value="menus"/>
-					<KeyValue key="xrpSetting" value="units"/>
+					<KeyValue key="xrpSetting" value="menusUnits"/>
 					<KeyValue key="disableWarn" value="DISABLE_REQUIRES_RELOAD"/>
 				</KeyValues>
 			</CheckButton>
-			<CheckButton parentKey="MinimapEnabled" inherits="XRPOptionsCheckboxTemplate">
+			<CheckButton parentKey="MainButtonEnabled" inherits="XRPOptionsCheckboxTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.MenusUnits" relativePoint="BOTTOMLEFT" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="xrpTable" value="minimap"/>
-					<KeyValue key="xrpSetting" value="enabled"/>
+					<KeyValue key="xrpSetting" value="mainButtonEnabled"/>
 				</KeyValues>
 			</CheckButton>
-			<CheckButton parentKey="MinimapDetached" inherits="XRPOptionsCheckboxTemplate">
+			<CheckButton parentKey="MainButtonDetached" inherits="XRPOptionsCheckboxTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.MinimapEnabled" relativePoint="BOTTOMLEFT" x="24" y="-8"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.MainButtonEnabled" relativePoint="BOTTOMLEFT" x="24" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="dependsOn" value="MinimapEnabled"/>
-					<KeyValue key="xrpTable" value="minimap"/>
-					<KeyValue key="xrpSetting" value="detached"/>
+					<KeyValue key="dependsOn" value="MainButtonEnabled"/>
+					<KeyValue key="xrpSetting" value="mainButtonDetached"/>
 				</KeyValues>
 			</CheckButton>
 			<CheckButton parentKey="LDBObject" inherits="XRPOptionsCheckboxTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.MinimapDetached" relativePoint="BOTTOMLEFT" x="-24" y="-8"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.MainButtonDetached" relativePoint="BOTTOMLEFT" x="-24" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="xrpTable" value="minimap"/>
 					<KeyValue key="xrpSetting" value="ldbObject"/>
 					<KeyValue key="disableWarn" value="DISABLE_REQUIRES_RELOAD"/>
 				</KeyValues>
@@ -181,32 +169,29 @@
 			<KeyValue key="paneID" value="DISPLAY"/>
 		</KeyValues>
 		<Frames>
-			<Frame name="XRPOptionsGeneralHeight" parentKey="Height" inherits="XRPOptionsDropDownTemplate">
+			<Frame name="XRPOptionsGeneralHeight" parentKey="HeightUnits" inherits="XRPOptionsDropDownTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.SubText" relativePoint="BOTTOMLEFT" x="-17" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="xrpTable" value="display"/>
-					<KeyValue key="xrpSetting" value="height"/>
+					<KeyValue key="xrpSetting" value="heightUnits"/>
 					<KeyValue key="baseMenuList" value="XRPOptionsGeneralHeight_baseMenuList" type="global"/>
 				</KeyValues>
 			</Frame>
-			<Frame name="XRPOptionsGeneralWeight" parentKey="Weight" inherits="XRPOptionsDropDownTemplate">
+			<Frame name="XRPOptionsGeneralWeight" parentKey="WeightUnits" inherits="XRPOptionsDropDownTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.Height" relativePoint="BOTTOMLEFT" y="-8"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.HeightUnits" relativePoint="BOTTOMLEFT" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="xrpTable" value="display"/>
-					<KeyValue key="xrpSetting" value="weight"/>
+					<KeyValue key="xrpSetting" value="weightUnits"/>
 					<KeyValue key="baseMenuList" value="XRPOptionsGeneralWeight_baseMenuList" type="global"/>
 				</KeyValues>
 			</Frame>
 			<CheckButton parentKey="AltScourge" inherits="XRPOptionsCheckboxTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.Weight" relativePoint="BOTTOMLEFT" x="15" y="-8"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.WeightUnits" relativePoint="BOTTOMLEFT" x="15" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="xrpTable" value="display"/>
 					<KeyValue key="xrpSetting" value="altScourge"/>
 				</KeyValues>
 			</CheckButton>
@@ -216,7 +201,6 @@
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="dependsOn" value="AltScourge"/>
-					<KeyValue key="xrpTable" value="display"/>
 					<KeyValue key="xrpSetting" value="altScourgeLimit"/>
 				</KeyValues>
 			</CheckButton>
@@ -226,7 +210,6 @@
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="dependsOn" value="AltScourge"/>
-					<KeyValue key="xrpTable" value="display"/>
 					<KeyValue key="xrpSetting" value="altScourgeForce"/>
 				</KeyValues>
 			</CheckButton>
@@ -235,7 +218,6 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.AltScourgeForce" relativePoint="BOTTOMLEFT" x="-24" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="xrpTable" value="display"/>
 					<KeyValue key="xrpSetting" value="altElven"/>
 				</KeyValues>
 			</CheckButton>
@@ -245,7 +227,6 @@
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="dependsOn" value="AltElven"/>
-					<KeyValue key="xrpTable" value="display"/>
 					<KeyValue key="xrpSetting" value="altElvenLimit"/>
 				</KeyValues>
 			</CheckButton>
@@ -255,7 +236,6 @@
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="dependsOn" value="AltElven"/>
-					<KeyValue key="xrpTable" value="display"/>
 					<KeyValue key="xrpSetting" value="altElvenForce"/>
 				</KeyValues>
 			</CheckButton>
@@ -264,7 +244,6 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.AltElvenForce" relativePoint="BOTTOMLEFT" x="-24" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="xrpTable" value="display"/>
 					<KeyValue key="xrpSetting" value="altTauren"/>
 				</KeyValues>
 			</CheckButton>
@@ -274,7 +253,6 @@
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="dependsOn" value="AltTauren"/>
-					<KeyValue key="xrpTable" value="display"/>
 					<KeyValue key="xrpSetting" value="altTaurenLimit"/>
 				</KeyValues>
 			</CheckButton>
@@ -284,7 +262,6 @@
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="dependsOn" value="AltTauren"/>
-					<KeyValue key="xrpTable" value="display"/>
 					<KeyValue key="xrpSetting" value="altTaurenForce"/>
 				</KeyValues>
 			</CheckButton>
@@ -295,22 +272,21 @@
 			<KeyValue key="paneID" value="CHAT"/>
 		</KeyValues>
 		<Frames>
-			<CheckButton parentKey="RPNames" inherits="XRPOptionsCheckboxTemplate">
+			<CheckButton parentKey="ChatNames" inherits="XRPOptionsCheckboxTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.SubText" relativePoint="BOTTOMLEFT" x="-2" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="xrpTable" value="chat"/>
-					<KeyValue key="xrpSetting" value="names"/>
+					<KeyValue key="xrpSetting" value="chatNames"/>
 				</KeyValues>
 			</CheckButton>
 			<CheckButton parentKey="SAY" inherits="XRPOptionsCheckboxTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.RPNames" relativePoint="BOTTOMLEFT" x="24" y="-8"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ChatNames" relativePoint="BOTTOMLEFT" x="24" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="dependsOn" value="RPNames"/>
-					<KeyValue key="xrpTable" value="chat"/>
+					<KeyValue key="dependsOn" value="ChatNames"/>
+					<KeyValue key="xrpTable" value="chatType"/>
 					<KeyValue key="xrpSetting" value="SAY"/>
 				</KeyValues>
 			</CheckButton>
@@ -319,8 +295,8 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.SAY" relativePoint="BOTTOMLEFT" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="dependsOn" value="RPNames"/>
-					<KeyValue key="xrpTable" value="chat"/>
+					<KeyValue key="dependsOn" value="ChatNames"/>
+					<KeyValue key="xrpTable" value="chatType"/>
 					<KeyValue key="xrpSetting" value="EMOTE"/>
 				</KeyValues>
 			</CheckButton>
@@ -329,8 +305,8 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.EMOTE" relativePoint="BOTTOMLEFT" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="dependsOn" value="RPNames"/>
-					<KeyValue key="xrpTable" value="chat"/>
+					<KeyValue key="dependsOn" value="ChatNames"/>
+					<KeyValue key="xrpTable" value="chatType"/>
 					<KeyValue key="xrpSetting" value="YELL"/>
 				</KeyValues>
 			</CheckButton>
@@ -339,8 +315,8 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.YELL" relativePoint="BOTTOMLEFT" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="dependsOn" value="RPNames"/>
-					<KeyValue key="xrpTable" value="chat"/>
+					<KeyValue key="dependsOn" value="ChatNames"/>
+					<KeyValue key="xrpTable" value="chatType"/>
 					<KeyValue key="xrpSetting" value="WHISPER"/>
 				</KeyValues>
 			</CheckButton>
@@ -349,8 +325,8 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.WHISPER" relativePoint="BOTTOMLEFT" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="dependsOn" value="RPNames"/>
-					<KeyValue key="xrpTable" value="chat"/>
+					<KeyValue key="dependsOn" value="ChatNames"/>
+					<KeyValue key="xrpTable" value="chatType"/>
 					<KeyValue key="xrpSetting" value="GUILD"/>
 				</KeyValues>
 			</CheckButton>
@@ -359,8 +335,8 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.GUILD" relativePoint="BOTTOMLEFT" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="dependsOn" value="RPNames"/>
-					<KeyValue key="xrpTable" value="chat"/>
+					<KeyValue key="dependsOn" value="ChatNames"/>
+					<KeyValue key="xrpTable" value="chatType"/>
 					<KeyValue key="xrpSetting" value="OFFICER"/>
 				</KeyValues>
 			</CheckButton>
@@ -369,8 +345,8 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.OFFICER" relativePoint="BOTTOMLEFT" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="dependsOn" value="RPNames"/>
-					<KeyValue key="xrpTable" value="chat"/>
+					<KeyValue key="dependsOn" value="ChatNames"/>
+					<KeyValue key="xrpTable" value="chatType"/>
 					<KeyValue key="xrpSetting" value="PARTY"/>
 				</KeyValues>
 			</CheckButton>
@@ -379,8 +355,8 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.PARTY" relativePoint="BOTTOMLEFT" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="dependsOn" value="RPNames"/>
-					<KeyValue key="xrpTable" value="chat"/>
+					<KeyValue key="dependsOn" value="ChatNames"/>
+					<KeyValue key="xrpTable" value="chatType"/>
 					<KeyValue key="xrpSetting" value="RAID"/>
 				</KeyValues>
 			</CheckButton>
@@ -389,8 +365,8 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.RAID" relativePoint="BOTTOMLEFT" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="dependsOn" value="RPNames"/>
-					<KeyValue key="xrpTable" value="chat"/>
+					<KeyValue key="dependsOn" value="ChatNames"/>
+					<KeyValue key="xrpTable" value="chatType"/>
 					<KeyValue key="xrpSetting" value="INSTANCE_CHAT"/>
 				</KeyValues>
 			</CheckButton>
@@ -400,26 +376,24 @@
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="textString" value="CHANNELS" type="global"/>
-					<KeyValue key="dependsOn" value="RPNames"/>
+					<KeyValue key="dependsOn" value="ChatNames"/>
 				</KeyValues>
 			</Frame>
-			<CheckButton parentKey="EmoteBraced" inherits="XRPOptionsCheckboxTemplate">
+			<CheckButton parentKey="ChatEmoteBraced" inherits="XRPOptionsCheckboxTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.Channels" relativePoint="BOTTOMLEFT" x="15" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="dependsOn" value="RPNames"/>
-					<KeyValue key="xrpTable" value="chat"/>
-					<KeyValue key="xrpSetting" value="emoteBraced"/>
+					<KeyValue key="dependsOn" value="ChatNames"/>
+					<KeyValue key="xrpSetting" value="chatEmoteBraced"/>
 				</KeyValues>
 			</CheckButton>
-			<CheckButton parentKey="Replacements" inherits="XRPOptionsCheckboxTemplate">
+			<CheckButton parentKey="ChatReplacements" inherits="XRPOptionsCheckboxTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.EmoteBraced" relativePoint="BOTTOMLEFT" x="-24" y="-8"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ChatEmoteBraced" relativePoint="BOTTOMLEFT" x="-24" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="xrpTable" value="chat"/>
-					<KeyValue key="xrpSetting" value="replacements"/>
+					<KeyValue key="xrpSetting" value="chatReplacements"/>
 				</KeyValues>
 			</CheckButton>
 		</Frames>
@@ -434,8 +408,7 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.SubText" relativePoint="BOTTOMLEFT" x="-2" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="xrpTable" value="tooltip"/>
-					<KeyValue key="xrpSetting" value="enabled"/>
+					<KeyValue key="xrpSetting" value="tooltipEnabled"/>
 				</KeyValues>
 			</CheckButton>
 			<CheckButton parentKey="TooltipReplace" inherits="XRPOptionsCheckboxTemplate">
@@ -444,118 +417,106 @@
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="dependsOn" value="TooltipEnabled"/>
-					<KeyValue key="xrpTable" value="tooltip"/>
-					<KeyValue key="xrpSetting" value="replace"/>
+					<KeyValue key="xrpSetting" value="tooltipReplace"/>
 				</KeyValues>
 			</CheckButton>
-			<CheckButton parentKey="TooltipWatching" inherits="XRPOptionsCheckboxTemplate">
+			<CheckButton parentKey="TooltipShowWatchEye" inherits="XRPOptionsCheckboxTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.TooltipReplace" relativePoint="BOTTOMLEFT" y="-8"/>
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="dependsOn" value="TooltipEnabled"/>
-					<KeyValue key="xrpTable" value="tooltip"/>
-					<KeyValue key="xrpSetting" value="watching"/>
+					<KeyValue key="xrpSetting" value="tooltipShowWatchEye"/>
 				</KeyValues>
 			</CheckButton>
-			<CheckButton parentKey="TooltipBookmark" inherits="XRPOptionsCheckboxTemplate">
+			<CheckButton parentKey="TooltipShowBookmarkFlag" inherits="XRPOptionsCheckboxTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.TooltipWatching" relativePoint="BOTTOMLEFT" y="-8"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.TooltipShowWatchEye" relativePoint="BOTTOMLEFT" y="-8"/>
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="dependsOn" value="TooltipEnabled"/>
-					<KeyValue key="xrpTable" value="tooltip"/>
-					<KeyValue key="xrpSetting" value="bookmark"/>
+					<KeyValue key="xrpSetting" value="tooltipShowBookmarkFlag"/>
 				</KeyValues>
 			</CheckButton>
-			<CheckButton parentKey="TooltipExtraSpace" inherits="XRPOptionsCheckboxTemplate">
+			<CheckButton parentKey="TooltipShowExtraSpace" inherits="XRPOptionsCheckboxTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.TooltipBookmark" relativePoint="BOTTOMLEFT" y="-8"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.TooltipShowBookmarkFlag" relativePoint="BOTTOMLEFT" y="-8"/>
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="dependsOn" value="TooltipEnabled"/>
-					<KeyValue key="xrpTable" value="tooltip"/>
-					<KeyValue key="xrpSetting" value="extraSpace"/>
+					<KeyValue key="xrpSetting" value="tooltipShowExtraSpace"/>
 				</KeyValues>
 			</CheckButton>
 			<CheckButton parentKey="TooltipShowHouse" inherits="XRPOptionsCheckboxTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.TooltipExtraSpace" relativePoint="BOTTOMLEFT" y="-8"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.TooltipShowExtraSpace" relativePoint="BOTTOMLEFT" y="-8"/>
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="dependsOn" value="TooltipEnabled"/>
-					<KeyValue key="xrpTable" value="tooltip"/>
-					<KeyValue key="xrpSetting" value="showHouse"/>
+					<KeyValue key="xrpSetting" value="tooltipShowHouse"/>
 				</KeyValues>
 			</CheckButton>
-			<CheckButton parentKey="TooltipGuildRank" inherits="XRPOptionsCheckboxTemplate">
+			<CheckButton parentKey="TooltipShowGuildRank" inherits="XRPOptionsCheckboxTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.TooltipShowHouse" relativePoint="BOTTOMLEFT" y="-8"/>
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="dependsOn" value="TooltipReplace"/>
-					<KeyValue key="xrpTable" value="tooltip"/>
-					<KeyValue key="xrpSetting" value="guildRank"/>
+					<KeyValue key="xrpSetting" value="tooltipShowGuildRank"/>
 				</KeyValues>
 			</CheckButton>
-			<CheckButton parentKey="TooltipGuildRankIndex" inherits="XRPOptionsCheckboxTemplate">
+			<CheckButton parentKey="TooltipShowGuildRankIndex" inherits="XRPOptionsCheckboxTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.TooltipGuildRank" relativePoint="BOTTOMLEFT" x="24" y="-8"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.TooltipShowGuildRank" relativePoint="BOTTOMLEFT" x="24" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="dependsOn" value="TooltipGuildRank"/>
-					<KeyValue key="xrpTable" value="tooltip"/>
-					<KeyValue key="xrpSetting" value="guildIndex"/>
+					<KeyValue key="dependsOn" value="TooltipShowGuildRank"/>
+					<KeyValue key="xrpSetting" value="tooltipShowGuildIndex"/>
 				</KeyValues>
 			</CheckButton>
-			<CheckButton parentKey="TooltipNoHostile" inherits="XRPOptionsCheckboxTemplate">
+			<CheckButton parentKey="TooltipHideHostile" inherits="XRPOptionsCheckboxTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.TooltipGuildRankIndex" relativePoint="BOTTOMLEFT" x="-24" y="-8"/>
-				</Anchors>
-				<KeyValues>
-					<KeyValue key="dependsOn" value="TooltipEnabled"/>
-					<KeyValue key="xrpTable" value="tooltip"/>
-					<KeyValue key="xrpSetting" value="noHostile"/>
-				</KeyValues>
-			</CheckButton>
-			<CheckButton parentKey="TooltipNoOpFaction" inherits="XRPOptionsCheckboxTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.TooltipNoHostile" relativePoint="BOTTOMLEFT" y="-8"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.TooltipShowGuildRankIndex" relativePoint="BOTTOMLEFT" x="-24" y="-8"/>
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="dependsOn" value="TooltipEnabled"/>
-					<KeyValue key="xrpTable" value="tooltip"/>
-					<KeyValue key="xrpSetting" value="noOpFaction"/>
+					<KeyValue key="xrpSetting" value="tooltipHideHostile"/>
 				</KeyValues>
 			</CheckButton>
-			<CheckButton parentKey="TooltipNoCombatInstance" inherits="XRPOptionsCheckboxTemplate">
+			<CheckButton parentKey="TooltipHideOppositeFaction" inherits="XRPOptionsCheckboxTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.TooltipNoOpFaction" relativePoint="BOTTOMLEFT" y="-8"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.TooltipHideHostile" relativePoint="BOTTOMLEFT" y="-8"/>
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="dependsOn" value="TooltipEnabled"/>
-					<KeyValue key="xrpTable" value="tooltip"/>
-					<KeyValue key="xrpSetting" value="noCombatInstance"/>
+					<KeyValue key="xrpSetting" value="tooltipHideOppositeFaction"/>
 				</KeyValues>
 			</CheckButton>
-			<CheckButton parentKey="TooltipNoRPClass" inherits="XRPOptionsCheckboxTemplate">
+			<CheckButton parentKey="TooltipHideCombatInstance" inherits="XRPOptionsCheckboxTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.TooltipNoCombatInstance" relativePoint="BOTTOMLEFT" y="-8"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.TooltipHideOppositeFaction" relativePoint="BOTTOMLEFT" y="-8"/>
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="dependsOn" value="TooltipEnabled"/>
-					<KeyValue key="xrpTable" value="tooltip"/>
-					<KeyValue key="xrpSetting" value="noClass"/>
+					<KeyValue key="xrpSetting" value="tooltipHideInstanceCombat"/>
 				</KeyValues>
 			</CheckButton>
-			<CheckButton parentKey="TooltipNoRPRace" inherits="XRPOptionsCheckboxTemplate">
+			<CheckButton parentKey="TooltipHideClass" inherits="XRPOptionsCheckboxTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.TooltipNoRPClass" relativePoint="BOTTOMLEFT" y="-8"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.TooltipHideCombatInstance" relativePoint="BOTTOMLEFT" y="-8"/>
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="dependsOn" value="TooltipEnabled"/>
-					<KeyValue key="xrpTable" value="tooltip"/>
-					<KeyValue key="xrpSetting" value="noRace"/>
+					<KeyValue key="xrpSetting" value="tooltipHideClass"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="TooltipHideRace" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.TooltipHideClass" relativePoint="BOTTOMLEFT" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="dependsOn" value="TooltipEnabled"/>
+					<KeyValue key="xrpSetting" value="tooltipHideRace"/>
 				</KeyValues>
 			</CheckButton>
 		</Frames>
@@ -565,23 +526,21 @@
 			<KeyValue key="paneID" value="ADVANCED"/>
 		</KeyValues>
 		<Frames>
-			<Frame name="XRPOptionsAdvancedTime" parentKey="Time" inherits="XRPOptionsDropDownTemplate">
+			<Frame name="XRPOptionsAdvancedTime" parentKey="CacheRetainTime" inherits="XRPOptionsDropDownTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.SubText" relativePoint="BOTTOMLEFT" x="-17" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="xrpTable" value="cache"/>
-					<KeyValue key="xrpSetting" value="time"/>
+					<KeyValue key="xrpSetting" value="cacheRetainTime"/>
 					<KeyValue key="baseMenuList" value="XRPOptionsAdvancedTime_baseMenuList" type="global"/>
 				</KeyValues>
 			</Frame>
-			<CheckButton parentKey="AutoClean" inherits="XRPOptionsCheckboxTemplate">
+			<CheckButton parentKey="CacheAutoClean" inherits="XRPOptionsCheckboxTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.Time" relativePoint="BOTTOMLEFT" x="15" y="-8"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.CacheRetainTime" relativePoint="BOTTOMLEFT" x="15" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="xrpTable" value="cache"/>
-					<KeyValue key="xrpSetting" value="autoClean"/>
+					<KeyValue key="xrpSetting" value="cacheAutoClean"/>
 				</KeyValues>
 				<Scripts>
 					<OnClick inherit="prepend" function="XRPOptionsAdvancedAutoClean_OnClick"/>
@@ -590,22 +549,20 @@
 			</CheckButton>
 			<CheckButton parentKey="FriendsOnly" inherits="XRPOptionsCheckboxTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.AutoClean" relativePoint="BOTTOMLEFT" y="-8"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.CacheAutoClean" relativePoint="BOTTOMLEFT" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="xrpTable" value="display"/>
 					<KeyValue key="xrpSetting" value="friendsOnly"/>
 					<KeyValue key="enableWarn" value="FRIENDS_ONLY_ENABLE_WARNING"/>
 				</KeyValues>
 			</CheckButton>
-			<CheckButton parentKey="GuildIsFriends" inherits="XRPOptionsCheckboxTemplate">
+			<CheckButton parentKey="FriendsIncludeGuild" inherits="XRPOptionsCheckboxTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.FriendsOnly" relativePoint="BOTTOMLEFT" x="24" y="-8"/>
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="dependsOn" value="FriendsOnly"/>
-					<KeyValue key="xrpTable" value="display"/>
-					<KeyValue key="xrpSetting" value="guildIsFriends"/>
+					<KeyValue key="xrpSetting" value="friendsIncludeGuild"/>
 					<KeyValue key="disableWarn" value="GUILD_IS_FRIENDS_DISABLE_WARNING"/>
 				</KeyValues>
 			</CheckButton>

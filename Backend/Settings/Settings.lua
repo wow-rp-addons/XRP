@@ -17,12 +17,10 @@
 
 local FOLDER, _xrp = ...
 
-_xrp.settingsToggles = {
-	display = {},
-}
+_xrp.settingsToggles = {}
 
-local DATA_VERSION = 6
-local DATA_VERSION_ACCOUNT = 18
+local DATA_VERSION = 7
+local DATA_VERSION_ACCOUNT = 19
 
 local function InitializeSavedVariables()
 	if not xrpCache then
@@ -36,12 +34,14 @@ local function InitializeSavedVariables()
 			settings = {},
 			dataVersion = DATA_VERSION_ACCOUNT,
 		}
-		for section, defaults in pairs(_xrp.DEFAULT_SETTINGS) do
-			if not xrpAccountSaved.settings[section] then
-				xrpAccountSaved.settings[section] = {}
-			end
-			for option, setting in pairs(defaults) do
-				xrpAccountSaved.settings[section][option] = setting
+		for optionName, setting in pairs(_xrp.DEFAULT_SETTINGS) do
+			if type(setting) == "table" then
+				xrpAccountSaved.settings[optionName] = {}
+				for subOptionName, subSetting in pairs(setting) do
+					xrpAccountSaved.settings[optionName][subOptionName] = subSetting
+				end
+			else
+				xrpAccountSaved.settings[optionName] = setting
 			end
 		end
 	end
@@ -105,30 +105,32 @@ function _xrp.SavedVariableSetup()
 	_xrp.UpgradeAccountVars = nil
 	_xrp.UpgradeVars = nil
 
-	for section, defaults in pairs(_xrp.DEFAULT_SETTINGS) do
-		if not xrpAccountSaved.settings[section] then
-			xrpAccountSaved.settings[section] = {}
-		end
-		for option, setting in pairs(defaults) do
-			if xrpAccountSaved.settings[section][option] == nil then
-				xrpAccountSaved.settings[section][option] = setting
+	for optionName, setting in pairs(_xrp.DEFAULT_SETTINGS) do
+		if type(setting) == "table" then
+			if not xrpAccountSaved.settings[optionName] then
+				xrpAccountSaved.settings[optionName] = {}
 			end
+			for subOptionName, subSetting in pairs(setting) do
+				if xrpAccountSaved.settings[optionName][subOptionName] == nil then
+					xrpAccountSaved.settings[optionName][subOptionName] = subSetting
+				end
+			end
+		elseif xrpAccountSaved.settings[optionName] == nil then
+			xrpAccountSaved.settings[optionName] = setting
 		end
 	end
 	_xrp.settings = xrpAccountSaved.settings
 end
 
 function _xrp.LoadSettings()
-	for xrpTable, category in pairs(_xrp.settingsToggles) do
-		for xrpSetting, func in pairs(category) do
-			xpcall(func, geterrorhandler(), _xrp.settings[xrpTable][xrpSetting], xrpSetting)
-		end
+	for xrpSetting, func in pairs(_xrp.settingsToggles) do
+		xpcall(func, geterrorhandler(), _xrp.settings[xrpSetting], xrpSetting)
 	end
 end
 
 function _xrp.CacheTidy(timer, isInit)
 	if type(timer) ~= "number" or timer < 30 then
-		timer = _xrp.settings.cache.time
+		timer = _xrp.settings.cacheRetainTime
 		if type(timer) ~= "number" or timer < 30 then
 			return false
 		end

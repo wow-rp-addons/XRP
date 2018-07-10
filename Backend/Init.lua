@@ -172,7 +172,7 @@ _xrp.HookGameEvent("ADDON_LOADED", function(event, addon)
 	end
 	xrpSaved.overrides.logout = nil
 
-	if _xrp.settings.cache.autoClean then
+	if _xrp.settings.cacheAutoClean then
 		_xrp.CacheTidy(nil, true)
 	end
 

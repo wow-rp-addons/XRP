@@ -18,12 +18,17 @@
 local FOLDER, _xrp = ...
 
 _xrp.DEFAULT_SETTINGS = {
-	cache = {
-		autoClean = true,
-		time = 864000,
-	},
-	chat = {
-		names = true,
+	-- Cache
+	cacheAutoClean = true,
+	cacheRetainTime = 864000,
+
+	-- Chat
+	chatNames = true,
+	chatEmoteBraced = false,
+	chatReplacements = false,
+
+	-- Chat channels
+	chatType = {
 		["SAY"] = true,
 		["YELL"] = true,
 		["EMOTE"] = true,
@@ -33,63 +38,67 @@ _xrp.DEFAULT_SETTINGS = {
 		["PARTY"] = false,
 		["RAID"] = false,
 		["INSTANCE_CHAT"] = false,
-		emoteBraced = false,
-		replacements = false,
 	},
-	display = {
-		altScourge = true,
-		altScourgeLimit = false,
-		altScourgeForce = false,
-		altBloodElf = false,
-		altBloodElfLimit = true,
-		altBloodElfForce = false,
-		altNightElf = false,
-		altNightElfLimit = true,
-		altNightElfForce = false,
-		altTauren = false,
-		altTaurenLimit = true,
-		altTaurenForce = false,
-		closeOnEscapeViewer = true,
-		friendsOnly = false,
-		guildIsFriends = true,
-		height = "ft",
-		movableViewer = false,
-		weight = "lb",
-	},
-	interact = {
-		cursor = true,
-		rightClick = true,
-		disableInstance = false,
-		disablePvP = false,
-		keybind = true,
-	},
-	menus = {
-		standard = true,
-		units = false,
-	},
-	minimap = {
-		enabled = true,
-		angle = 193,
-		detached = false,
-		point = "CENTER",
-		x = 0,
-		y = 0,
-		ldbObject = false,
-	},
-	tooltip = {
-		enabled = true,
-		replace = true,
-		watching = true,
-		bookmark = true,
-		extraSpace = false,
-		showHouse = false,
-		guildRank = false,
-		guildIndex = false,
-		noHostile = true,
-		noOpFaction = false,
-		noCombatInstance = false,
-		noClass = false,
-		noRace = false,
-		oldColors = false,
-	},
+
+	-- Alternate race names
+	altScourge = true,
+	altScourgeLimit = false,
+	altScourgeForce = false,
+	altElven = false,
+	altElvenLimit = true,
+	altElvenForce = false,
+	altTauren = false,
+	altTaurenLimit = true,
+	altTaurenForce = false,
+
+	-- Viewer
+	viewerCloseOnEscape = true,
+	viewerMovable = false,
+
+	-- Restricted mode
+	friendsOnly = false,
+	friendsIncludeGuild = true,
+
+	-- Units
+	heightUnits = "ft",
+	weightUnits = "lb",
+
+	-- Interaction cursor
+	cursorEnabled = true,
+	cursorRightClick = true,
+	cursorDisableInstance = false,
+	cursorDisablePvP = false,
+
+	-- Keybind hook
+	viewOnInteract = true,
+
+	-- UnitPopup menus
+	menusChat = true,
+	menusUnit = false,
+
+	-- LDB
+	ldbObject = false,
+
+	-- Buttons
+	mainButtonEnabled = true,
+	mainButtonDetached = false,
+	mainButtonMinimapAngle = 193,
+	mainButtonDetachedX = 0,
+	mainButtonDetachedY = 0,
+	mainButtonDetachedPoint = "CENTER",
+
+	-- Tooltip
+	tooltipEnabled = true,
+	tooltipReplace = true,
+	tooltipShowWatchEye = true,
+	tooltipShowBookmarkFlag = true,
+	tooltipShowExtraSpace = false,
+	tooltipShowHouse = false,
+	tooltipShowGuildRank = false,
+	tooltipShowGuildIndex = false,
+	tooltipHideHostile = true,
+	tooltipHideOppositeFaction = false,
+	tooltipHideInstanceCombat = false,
+	tooltipHideClass = false,
+	tooltipHideRace = false,
 }

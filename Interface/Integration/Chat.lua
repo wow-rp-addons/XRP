@@ -52,8 +52,8 @@ local function XRPGetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7
 		name = arg2:match("^[\032-\126\194-\244][\128-\191]*") or Ambiguate(arg2, "guild")
 		nameFormat = "[%s]"
 	else
-		name = _xrp.settings.chat[chatCategory] and character and not character.hide and xrp.Strip(character.fields.NA) or Ambiguate(arg2, "guild")
-		nameFormat = chatCategory == "EMOTE" and (_xrp.settings.chat.emoteBraced and "[%s]" or "%s") .. (arg9 or "") or "%s"
+		name = _xrp.settings.chatType[chatCategory] and character and not character.hide and xrp.Strip(character.fields.NA) or Ambiguate(arg2, "guild")
+		nameFormat = chatCategory == "EMOTE" and (_xrp.settings.chatEmoteBraced and "[%s]" or "%s") .. (arg9 or "") or "%s"
 	end
 
 	if character and Chat_ShouldColorChatByClass(ChatTypeInfo[chatType]) then
@@ -163,7 +163,7 @@ _xrp.HookGameEvent("PLAYER_LOGIN", function(event)
 			if chatCategory == "CHANNEL" and type(message.ORG.CHANNEL) == "string" then
 				chatCategory = "CHANNEL_" .. message.ORG.CHANNEL:upper()
 			end
-			local rpName = _xrp.settings.chat[chatCategory] and not character.hide and xrp.Strip(character.fields.NA)
+			local rpName = _xrp.settings.chatType[chatCategory] and not character.hide and xrp.Strip(character.fields.NA)
 			if not rpName then
 				return
 			end
@@ -179,41 +179,40 @@ _xrp.HookGameEvent("PLAYER_LOGIN", function(event)
 end)
 
 local OldGetColoredName
-_xrp.settingsToggles.chat = {
-	names = function(setting)
-		if setting then
-			if names == nil then
-				hooksecurefunc("ChatFrame_AddMessageEventFilter", ChatFrame_AddMessageEventFilter_Hook)
-			end
-			ChatFrame_AddMessageEventFilter("CHAT_MSG_EMOTE", MessageEventFilter_EMOTE)
-			ChatFrame_AddMessageEventFilter("CHAT_MSG_TEXT_EMOTE", MessageEventFilter_TEXT_EMOTE)
-			if GetColoredName ~= XRPGetColoredName then
-				OldGetColoredName = GetColoredName
-			end
-			GetColoredName = XRPGetColoredName
-			if pratModule then
-				Prat.RegisterChatEvent(pratModule, "Prat_PreAddMessage")
-			end
-			names = true
-		elseif names ~= nil then
-			ChatFrame_RemoveMessageEventFilter("CHAT_MSG_EMOTE", MessageEventFilter_EMOTE)
-			ChatFrame_RemoveMessageEventFilter("CHAT_MSG_TEXT_EMOTE", MessageEventFilter_TEXT_EMOTE)
-			GetColoredName = OldGetColoredName
-			if pratModule then
-				Prat.UnregisterAllChatEvents(pratModule)
-			end
-			names = false
+_xrp.settingsToggles.chatNames = function(setting)
+	if setting then
+		if names == nil then
+			hooksecurefunc("ChatFrame_AddMessageEventFilter", ChatFrame_AddMessageEventFilter_Hook)
 		end
-	end,
-	replacements = function(setting)
-		if setting then
-			if replacements == nil then
-				hooksecurefunc("ChatEdit_ParseText", ChatEdit_ParseText_Hook)
-				hooksecurefunc("SubstituteChatMessageBeforeSend", SubstituteChatMessageBeforeSend_Hook)
-			end
-			replacements = true
-		elseif replacements ~= nil then
-			replacements = false
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_EMOTE", MessageEventFilter_EMOTE)
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_TEXT_EMOTE", MessageEventFilter_TEXT_EMOTE)
+		if GetColoredName ~= XRPGetColoredName then
+			OldGetColoredName = GetColoredName
 		end
-	end,
-}
+		GetColoredName = XRPGetColoredName
+		if pratModule then
+			Prat.RegisterChatEvent(pratModule, "Prat_PreAddMessage")
+		end
+		names = true
+	elseif names ~= nil then
+		ChatFrame_RemoveMessageEventFilter("CHAT_MSG_EMOTE", MessageEventFilter_EMOTE)
+		ChatFrame_RemoveMessageEventFilter("CHAT_MSG_TEXT_EMOTE", MessageEventFilter_TEXT_EMOTE)
+		GetColoredName = OldGetColoredName
+		if pratModule then
+			Prat.UnregisterAllChatEvents(pratModule)
+		end
+		names = false
+	end
+end
+
+_xrp.settingsToggles.chatReplacements = function(setting)
+	if setting then
+		if replacements == nil then
+			hooksecurefunc("ChatEdit_ParseText", ChatEdit_ParseText_Hook)
+			hooksecurefunc("SubstituteChatMessageBeforeSend", SubstituteChatMessageBeforeSend_Hook)
+		end
+		replacements = true
+	elseif replacements ~= nil then
+		replacements = false
+	end
+end

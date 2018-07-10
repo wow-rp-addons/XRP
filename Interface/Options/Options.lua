@@ -25,12 +25,24 @@ XRP_TIDY_CACHE = _xrp.L.TIDY_CACHE
 
 XRPOptionsControl_Mixin = {
 	Get = function(self)
-		return _xrp.settings[self.xrpTable][self.xrpSetting]
+		local settingsTable = _xrp.settings
+		if self.xrpTable then
+			settingsTable = _xrp.settings[self.xrpTable]
+		end
+		return settingsTable[self.xrpSetting]
 	end,
 	Set = function(self, value)
-		_xrp.settings[self.xrpTable][self.xrpSetting] = value
-		if _xrp.settingsToggles[self.xrpTable] and _xrp.settingsToggles[self.xrpTable][self.xrpSetting] then
-			xpcall(_xrp.settingsToggles[self.xrpTable][self.xrpSetting], geterrorhandler(), value, self.xrpSetting)
+		local settingsTable = _xrp.settings
+		if self.xrpTable then
+			settingsTable = _xrp.settings[self.xrpTable]
+		end
+		settingsTable[self.xrpSetting] = value
+		local settingsToggleTable = _xrp.settingsToggles
+		if self.xrpTable then
+			settingsToggleTable = _xrp.settingsToggles[self.xrpTable]
+		end
+		if settingsToggleTable[self.xrpSetting] then
+			xpcall(settingsToggleTable[self.xrpSetting], geterrorhandler(), value, self.xrpSetting)
 		end
 	end,
 }
@@ -121,7 +133,12 @@ XRPOptions_Mixin = {
 			if control.CustomDefault then
 				xpcall(control.CustomDefault, geterrorhandler(), control)
 			else
-				local defaultValue = _xrp.DEFAULT_SETTINGS[control.xrpTable][control.xrpSetting]
+				local defaultValue
+				if control.xrpTable then
+					defaultValue = _xrp.DEFAULT_SETTINGS[control.xrpTable][control.xrpSetting]
+				else
+					defaultValue = _xrp.DEFAULT_SETTINGS[control.xrpSetting]
+				end
 				control:Set(defaultValue)
 				control.value = defaultValue
 				if control.type == CONTROLTYPE_CHECKBOX then
@@ -197,14 +214,7 @@ function XRPOptions_OnShow(self)
 end
 
 local OPTIONS_TEXT = {
-	cache = {
-		time = _xrp.L.CACHE_EXPIRY_TIME,
-		autoClean = _xrp.L.CACHE_AUTOCLEAN,
-	},
-	chat = {
-		names = _xrp.L.ENABLE_ROLEPLAY_NAMES,
-		emoteBraced = _xrp.L.EMOTE_SQUARE_BRACES,
-		replacements = _xrp.L.XT_XF_REPLACE,
+	chatType = {
 		SAY = SAY,
 		EMOTE = EMOTE,
 		YELL = YELL,
@@ -215,54 +225,49 @@ local OPTIONS_TEXT = {
 		RAID = RAID,
 		INSTANCE_CHAT = INSTANCE_CHAT,
 	},
-	display = {
-		altScourge = _xrp.L.ALT_RACE_SINGLE:format(_xrp.L.VALUE_GR_SCOURGE_ALT, _xrp.L.VALUE_GR_SCOURGE),
-		altScourgeLimit = _xrp.L.ALT_RACE_SINGLE_LIMIT,
-		altScourgeForce = _xrp.L.ALT_RACE_FORCE,
-		altElven = _xrp.L.ALT_RACE_CATEGORY:format(_xrp.L.ALT_RACE_ELVEN),
-		altElvenLimit = _xrp.L.ALT_RACE_CATEGORY_LIMIT,
-		altElvenForce = _xrp.L.ALT_RACE_FORCE,
-		altTauren = _xrp.L.ALT_RACE_CATEGORY:format(_xrp.L.ALT_RACE_TAUREN),
-		altTaurenLimit = _xrp.L.ALT_RACE_CATEGORY_LIMIT,
-		altTaurenForce = _xrp.L.ALT_RACE_FORCE,
-		movableViewer = _xrp.L.MOVABLE_VIEWER,
-		closeOnEscapeViewer = _xrp.L.CLOSE_ESCAPE_VIEWER,
-		friendsOnly = _xrp.L.SHOW_FRIENDS_ONLY,
-		guildIsFriends = _xrp.L.GUILD_IS_FRIENDS,
-		height = _xrp.L.HEIGHT_DISPLAY,
-		weight = _xrp.L.WEIGHT_DISPLAY,
-	},
-	interact = {
-		cursor = _xrp.L.DISPLAY_BOOK_CURSOR,
-		rightClick = _xrp.L.VIEW_PROFILE_RTCLICK,
-		disableInstance = _xrp.L.DISABLE_INSTANCES,
-		disablePvP = _xrp.L.DISABLE_PVPFLAG,
-		keybind = _xrp.L.VIEW_PROFILE_KEYBIND,
-	},
-	menus = {
-		standard = _xrp.L.RTCLICK_MENU_STANDARD,
-		units = _xrp.L.RTCLICK_MENU_UNIT,
-	},
-	minimap = {
-		enabled = _xrp.L.MINIMAP_ENABLE,
-		detached = _xrp.L.DETACH_MINIMAP,
-		ldbObject = _xrp.L.LDB_OBJECT,
-	},
-	tooltip = {
-		enabled = _xrp.L.TOOLTIP_ENABLE,
-		replace = _xrp.L.REPLACE_DEFAULT_TOOLTIP,
-		watching = _xrp.L.EYE_ICON_TARGET,
-		bookmark = _xrp.L.BOOKMARK_INDICATOR,
-		extraSpace = _xrp.L.EXTRA_SPACE_TOOLTIP,
-		showHouse = _xrp.L.SHOW_HOUSE_TOOLTIP,
-		guildRank = _xrp.L.DISPLAY_GUILD_RANK,
-		guildIndex = _xrp.L.DISPLAY_GUILD_RANK_INDEX,
-		noHostile = _xrp.L.NO_HOSTILE,
-		noOpFaction = _xrp.L.NO_OP_FACTION,
-		noCombatInstance = _xrp.L.NO_INSTANCE_COMBAT,
-		noClass = _xrp.L.NO_RP_CLASS,
-		noRace = _xrp.L.NO_RP_RACE,
-	},
+	cacheRetainTime = _xrp.L.CACHE_EXPIRY_TIME,
+	cacheAutoClean = _xrp.L.CACHE_AUTOCLEAN,
+	chatNames = _xrp.L.ENABLE_ROLEPLAY_NAMES,
+	chatEmoteBraced = _xrp.L.EMOTE_SQUARE_BRACES,
+	chatReplacements = _xrp.L.XT_XF_REPLACE,
+	altScourge = _xrp.L.ALT_RACE_SINGLE:format(_xrp.L.VALUE_GR_SCOURGE_ALT, _xrp.L.VALUE_GR_SCOURGE),
+	altScourgeLimit = _xrp.L.ALT_RACE_SINGLE_LIMIT,
+	altScourgeForce = _xrp.L.ALT_RACE_FORCE,
+	altElven = _xrp.L.ALT_RACE_CATEGORY:format(_xrp.L.ALT_RACE_ELVEN),
+	altElvenLimit = _xrp.L.ALT_RACE_CATEGORY_LIMIT,
+	altElvenForce = _xrp.L.ALT_RACE_FORCE,
+	altTauren = _xrp.L.ALT_RACE_CATEGORY:format(_xrp.L.ALT_RACE_TAUREN),
+	altTaurenLimit = _xrp.L.ALT_RACE_CATEGORY_LIMIT,
+	altTaurenForce = _xrp.L.ALT_RACE_FORCE,
+	viewerMovable = _xrp.L.MOVABLE_VIEWER,
+	viewerCloseOnEscape = _xrp.L.CLOSE_ESCAPE_VIEWER,
+	friendsOnly = _xrp.L.SHOW_FRIENDS_ONLY,
+	friendsIncludeGuild = _xrp.L.GUILD_IS_FRIENDS,
+	heightUnits = _xrp.L.HEIGHT_DISPLAY,
+	weightUnits = _xrp.L.WEIGHT_DISPLAY,
+	cursorEnabled = _xrp.L.DISPLAY_BOOK_CURSOR,
+	cursorRightClick = _xrp.L.VIEW_PROFILE_RTCLICK,
+	cursorDisableInstance = _xrp.L.DISABLE_INSTANCES,
+	cursorDisablePvP = _xrp.L.DISABLE_PVPFLAG,
+	viewOnInteract = _xrp.L.VIEW_PROFILE_KEYBIND,
+	menusChat = _xrp.L.RTCLICK_MENU_STANDARD,
+	menusUnits = _xrp.L.RTCLICK_MENU_UNIT,
+	mainButtonEnabled = _xrp.L.MINIMAP_ENABLE,
+	mainButtonDetached = _xrp.L.DETACH_MINIMAP,
+	ldbObject = _xrp.L.LDB_OBJECT,
+	tooltipEnabled = _xrp.L.TOOLTIP_ENABLE,
+	tooltipReplace = _xrp.L.REPLACE_DEFAULT_TOOLTIP,
+	tooltipShowWatchEye = _xrp.L.EYE_ICON_TARGET,
+	tooltipShowBookmarkFlag = _xrp.L.BOOKMARK_INDICATOR,
+	tooltipShowExtraSpace = _xrp.L.EXTRA_SPACE_TOOLTIP,
+	tooltipShowHouse = _xrp.L.SHOW_HOUSE_TOOLTIP,
+	tooltipShowGuildRank = _xrp.L.DISPLAY_GUILD_RANK,
+	tooltipShowGuildIndex = _xrp.L.DISPLAY_GUILD_RANK_INDEX,
+	tooltipHideHostile = _xrp.L.NO_HOSTILE,
+	tooltipHideOppositeFaction = _xrp.L.NO_OP_FACTION,
+	tooltipHideInstanceCombat = _xrp.L.NO_INSTANCE_COMBAT,
+	tooltipHideClass = _xrp.L.NO_RP_CLASS,
+	tooltipHideRace = _xrp.L.NO_RP_RACE,
 }
 
 function XRPOptionsControls_OnLoad(self)
@@ -273,10 +278,11 @@ function XRPOptionsControls_OnLoad(self)
 		local depends = self:GetParent()[self.dependsOn].dependentControls
 		depends[#depends + 1] = self
 	end
+	local optionsText = self.xrpSetting and (self.xrpTable and OPTIONS_TEXT[self.xrpTable][self.xrpSetting] or OPTIONS_TEXT[self.xrpSetting])
 	if self.type == CONTROLTYPE_CHECKBOX and self.xrpSetting then
-		self.Text:SetText(OPTIONS_TEXT[self.xrpTable][self.xrpSetting])
+		self.Text:SetText(optionsText)
 	elseif self.type == CONTROLTYPE_DROPDOWN and self.xrpSetting then
-		self.Label:SetText(OPTIONS_TEXT[self.xrpTable][self.xrpSetting])
+		self.Label:SetText(optionsText)
 	end
 	if self.textString then
 		self.Text:SetText(self.textString)
@@ -345,7 +351,7 @@ local function Channels_Checked(self)
 end
 local function Channels_OnClick(self, channel, arg2, checked)
 	channelsList[channel].value = checked
-	_xrp.settings.chat[channel] = checked or nil
+	_xrp.settings.chatType[channel] = checked or nil
 end
 
 local function ChannelsTable(...)
@@ -358,7 +364,7 @@ local function ChannelsTable(...)
 end
 
 local function AddChannel(channel, menuList)
-	local setting = _xrp.settings.chat[channel] or false
+	local setting = _xrp.settings.chatType[channel] or false
 	local oldSetting = setting
 	if not channelsList[channel] then
 		channelsList[channel] = { value = setting, oldValue = oldSetting }
@@ -375,7 +381,7 @@ XRPOptionsChatChannels_Mixin = {
 			AddChannel(channel, self.baseMenuList, channelsList)
 			seenChannels[channel] = true
 		end
-		for channel, setting in pairs(_xrp.settings.chat) do
+		for channel, setting in pairs(_xrp.settings.chatType) do
 			if not seenChannels[channel] and channel:find("^CHANNEL_") then
 				AddChannel(channel, self.baseMenuList, channelsList)
 				seenChannels[channel] = true
@@ -389,13 +395,13 @@ XRPOptionsChatChannels_Mixin = {
 	end,
 	CustomDefault = function(self)
 		for channel, control in pairs(channelsList) do
-			_xrp.settings.chat[channel] = nil
+			_xrp.settings.chatType[channel] = nil
 			control.value = nil
 		end
 	end,
 	CustomCancel = function(self)
 		for channel, control in pairs(channelsList) do
-			_xrp.settings.chat[channel] = control.oldValue
+			_xrp.settings.chatType[channel] = control.oldValue
 			control.value = control.oldValue
 		end
 	end,

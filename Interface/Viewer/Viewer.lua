@@ -413,7 +413,7 @@ XRPViewer_Mixin = {
 	helpPlates = _xrp.help.viewer,
 }
 
-_xrp.settingsToggles.display.movableViewer = function(setting)
+_xrp.settingsToggles.viewerMovable = function(setting)
 	local wasShown = XRPViewer:IsShown()
 	if wasShown then
 		HideUIPanel(XRPViewer)
@@ -439,21 +439,21 @@ _xrp.settingsToggles.display.movableViewer = function(setting)
 			XRPViewer:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 50, -125)
 		end
 		XRPViewer.TitleRegion:Show()
-		_xrp.settingsToggles.display.closeOnEscapeViewer(_xrp.settings.display.closeOnEscapeViewer)
+		_xrp.settingsToggles.viewerCloseOnEscape(_xrp.settings.viewerCloseOnEscape)
 	elseif XRPViewer.TitleRegion then
 		XRPViewer:SetAttribute("UIPanelLayout-defined", true)
 		XRPViewer:SetAttribute("UIPanelLayout-enabled", true)
 		XRPViewer:SetMovable(false)
 		XRPViewer:SetFrameStrata("MEDIUM")
 		XRPViewer.TitleRegion:Hide()
-		_xrp.settingsToggles.display.closeOnEscapeViewer(false)
+		_xrp.settingsToggles.viewerCloseOnEscape(false)
 	end
 	if wasShown then
 		ShowUIPanel(XRPViewer)
 	end
 end
 local closeOnEscape
-_xrp.settingsToggles.display.closeOnEscapeViewer = function(setting)
+_xrp.settingsToggles.viewerCloseOnEscape = function(setting)
 	if setting and XRPViewer.TitleRegion then
 		if not closeOnEscape then
 			UISpecialFrames[#UISpecialFrames + 1] = "XRPViewer"
