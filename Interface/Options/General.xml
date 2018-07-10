@@ -1,0 +1,130 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+<!--
+	© Justin Snelgrove
+
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+	<Frame parentKey="XRPGeneral" parent="InterfaceOptionsFramePanelContainer" inherits="XRPOptionsTemplate">
+		<KeyValues>
+			<KeyValue key="paneID" value="GENERAL"/>
+		</KeyValues>
+		<Frames>
+			<CheckButton parentKey="ViewerMovable" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.SubText" relativePoint="BOTTOMLEFT" x="-2" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="xrpSetting" value="viewerMovable"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="ViewerCloseOnEscape" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ViewerMovable" relativePoint="BOTTOMLEFT" x="24" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="dependsOn" value="ViewerMovable"/>
+					<KeyValue key="xrpSetting" value="viewerCloseOnEscape"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="CursorEnabled" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ViewerCloseOnEscape" relativePoint="BOTTOMLEFT" x="-24" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="xrpSetting" value="cursorEnabled"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="CursorRightClick" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.CursorEnabled" relativePoint="BOTTOMLEFT" x="24" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="dependsOn" value="CursorEnabled"/>
+					<KeyValue key="xrpSetting" value="cursorRightClick"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="CursorDisableInstance" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.CursorRightClick" relativePoint="BOTTOMLEFT" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="dependsOn" value="CursorEnabled"/>
+					<KeyValue key="xrpSetting" value="cursorDisableInstance"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="CursorDisablePvP" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.CursorDisableInstance" relativePoint="BOTTOMLEFT" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="dependsOn" value="CursorEnabled"/>
+					<KeyValue key="xrpSetting" value="cursorDisablePvP"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="ViewOnInteract" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.CursorDisablePvP" relativePoint="BOTTOMLEFT" x="-24" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="xrpSetting" value="viewOnInteract"/>
+					<KeyValue key="disableWarn" value="DISABLE_REQUIRES_RELOAD"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="MenusChat" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ViewOnInteract" relativePoint="BOTTOMLEFT" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="xrpSetting" value="menusChat"/>
+					<KeyValue key="disableWarn" value="DISABLE_REQUIRES_RELOAD"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="MenusUnits" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.MenusChat" relativePoint="BOTTOMLEFT" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="xrpSetting" value="menusUnits"/>
+					<KeyValue key="disableWarn" value="DISABLE_REQUIRES_RELOAD"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="MainButtonEnabled" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.MenusUnits" relativePoint="BOTTOMLEFT" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="xrpSetting" value="mainButtonEnabled"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="MainButtonDetached" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.MainButtonEnabled" relativePoint="BOTTOMLEFT" x="24" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="dependsOn" value="MainButtonEnabled"/>
+					<KeyValue key="xrpSetting" value="mainButtonDetached"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="LDBObject" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.MainButtonDetached" relativePoint="BOTTOMLEFT" x="-24" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="xrpSetting" value="ldbObject"/>
+					<KeyValue key="disableWarn" value="DISABLE_REQUIRES_RELOAD"/>
+				</KeyValues>
+			</CheckButton>
+		</Frames>
+	</Frame>
+</Ui>

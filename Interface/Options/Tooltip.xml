@@ -1,0 +1,141 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+<!--
+	© Justin Snelgrove
+
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+	<Frame parentKey="XRPTooltip" parent="InterfaceOptionsFramePanelContainer" inherits="XRPOptionsTemplate">
+		<KeyValues>
+			<KeyValue key="paneID" value="TOOLTIP"/>
+		</KeyValues>
+		<Frames>
+			<CheckButton parentKey="TooltipEnabled" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.SubText" relativePoint="BOTTOMLEFT" x="-2" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="xrpSetting" value="tooltipEnabled"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="TooltipReplace" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.TooltipEnabled" relativePoint="BOTTOMLEFT" x="24" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="dependsOn" value="TooltipEnabled"/>
+					<KeyValue key="xrpSetting" value="tooltipReplace"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="TooltipShowWatchEye" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.TooltipReplace" relativePoint="BOTTOMLEFT" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="dependsOn" value="TooltipEnabled"/>
+					<KeyValue key="xrpSetting" value="tooltipShowWatchEye"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="TooltipShowBookmarkFlag" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.TooltipShowWatchEye" relativePoint="BOTTOMLEFT" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="dependsOn" value="TooltipEnabled"/>
+					<KeyValue key="xrpSetting" value="tooltipShowBookmarkFlag"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="TooltipShowExtraSpace" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.TooltipShowBookmarkFlag" relativePoint="BOTTOMLEFT" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="dependsOn" value="TooltipEnabled"/>
+					<KeyValue key="xrpSetting" value="tooltipShowExtraSpace"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="TooltipShowHouse" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.TooltipShowExtraSpace" relativePoint="BOTTOMLEFT" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="dependsOn" value="TooltipEnabled"/>
+					<KeyValue key="xrpSetting" value="tooltipShowHouse"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="TooltipShowGuildRank" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.TooltipShowHouse" relativePoint="BOTTOMLEFT" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="dependsOn" value="TooltipReplace"/>
+					<KeyValue key="xrpSetting" value="tooltipShowGuildRank"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="TooltipShowGuildRankIndex" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.TooltipShowGuildRank" relativePoint="BOTTOMLEFT" x="24" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="dependsOn" value="TooltipShowGuildRank"/>
+					<KeyValue key="xrpSetting" value="tooltipShowGuildIndex"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="TooltipHideHostile" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.TooltipShowGuildRankIndex" relativePoint="BOTTOMLEFT" x="-24" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="dependsOn" value="TooltipEnabled"/>
+					<KeyValue key="xrpSetting" value="tooltipHideHostile"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="TooltipHideOppositeFaction" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.TooltipHideHostile" relativePoint="BOTTOMLEFT" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="dependsOn" value="TooltipEnabled"/>
+					<KeyValue key="xrpSetting" value="tooltipHideOppositeFaction"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="TooltipHideCombatInstance" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.TooltipHideOppositeFaction" relativePoint="BOTTOMLEFT" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="dependsOn" value="TooltipEnabled"/>
+					<KeyValue key="xrpSetting" value="tooltipHideInstanceCombat"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="TooltipHideClass" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.TooltipHideCombatInstance" relativePoint="BOTTOMLEFT" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="dependsOn" value="TooltipEnabled"/>
+					<KeyValue key="xrpSetting" value="tooltipHideClass"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="TooltipHideRace" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.TooltipHideClass" relativePoint="BOTTOMLEFT" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="dependsOn" value="TooltipEnabled"/>
+					<KeyValue key="xrpSetting" value="tooltipHideRace"/>
+				</KeyValues>
+			</CheckButton>
+		</Frames>
+	</Frame>
+</Ui>

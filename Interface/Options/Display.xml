@@ -1,0 +1,121 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+<!--
+	© Justin Snelgrove
+
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+	<Frame parentKey="XRPDisplay" parent="InterfaceOptionsFramePanelContainer" inherits="XRPOptionsTemplate">
+		<KeyValues>
+			<KeyValue key="paneID" value="DISPLAY"/>
+		</KeyValues>
+		<Frames>
+			<Frame name="XRPOptionsGeneralHeight" parentKey="HeightUnits" inherits="XRPOptionsDropDownTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.SubText" relativePoint="BOTTOMLEFT" x="-17" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="xrpSetting" value="heightUnits"/>
+					<KeyValue key="baseMenuList" value="XRPOptionsGeneralHeight_baseMenuList" type="global"/>
+				</KeyValues>
+			</Frame>
+			<Frame name="XRPOptionsGeneralWeight" parentKey="WeightUnits" inherits="XRPOptionsDropDownTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.HeightUnits" relativePoint="BOTTOMLEFT" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="xrpSetting" value="weightUnits"/>
+					<KeyValue key="baseMenuList" value="XRPOptionsGeneralWeight_baseMenuList" type="global"/>
+				</KeyValues>
+			</Frame>
+			<CheckButton parentKey="AltScourge" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.WeightUnits" relativePoint="BOTTOMLEFT" x="15" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="xrpSetting" value="altScourge"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="AltScourgeLimit" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.AltScourge" relativePoint="BOTTOMLEFT" x="24" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="dependsOn" value="AltScourge"/>
+					<KeyValue key="xrpSetting" value="altScourgeLimit"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="AltScourgeForce" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.AltScourgeLimit" relativePoint="BOTTOMLEFT" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="dependsOn" value="AltScourge"/>
+					<KeyValue key="xrpSetting" value="altScourgeForce"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="AltElven" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.AltScourgeForce" relativePoint="BOTTOMLEFT" x="-24" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="xrpSetting" value="altElven"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="AltElvenLimit" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.AltElven" relativePoint="BOTTOMLEFT" x="24" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="dependsOn" value="AltElven"/>
+					<KeyValue key="xrpSetting" value="altElvenLimit"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="AltElvenForce" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.AltElvenLimit" relativePoint="BOTTOMLEFT" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="dependsOn" value="AltElven"/>
+					<KeyValue key="xrpSetting" value="altElvenForce"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="AltTauren" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.AltElvenForce" relativePoint="BOTTOMLEFT" x="-24" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="xrpSetting" value="altTauren"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="AltTaurenLimit" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.AltTauren" relativePoint="BOTTOMLEFT" x="24" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="dependsOn" value="AltTauren"/>
+					<KeyValue key="xrpSetting" value="altTaurenLimit"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="AltTaurenForce" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.AltTaurenLimit" relativePoint="BOTTOMLEFT" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="dependsOn" value="AltTauren"/>
+					<KeyValue key="xrpSetting" value="altTaurenForce"/>
+				</KeyValues>
+			</CheckButton>
+		</Frames>
+	</Frame>
+</Ui>
