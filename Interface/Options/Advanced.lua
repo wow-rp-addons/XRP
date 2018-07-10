@@ -17,22 +17,13 @@
 
 local FOLDER, _xrp = ...
 
-XRP_TITLE = GetAddOnMetadata(FOLDER, "Title")
-XRP_LICENSE_HEADER = _xrp.L.LICENSE
-XRP_LICENSE = _xrp.L.GPL_HEADER
+XRP_CLEAR_CACHE = _xrp.L.CLEAR_CACHE .. CONTINUED
+XRP_TIDY_CACHE = _xrp.L.TIDY_CACHE
 
-function XRPOptionsAbout_OnShow(self)
-	if not self.wasShown then
-		self.wasShown = true
-		InterfaceOptionsFrame_OpenToCategory(self.GENERAL)
+function XRPOptionsAdvancedAutoClean_OnClick(self, button, down)
+	if self:Get() then
+		self:GetParent().CacheTidy:Hide()
+	else
+		self:GetParent().CacheTidy:Show()
 	end
-end
-
-function _xrp.Options(pane)
-	local XRPOptions = InterfaceOptionsFramePanelContainer.XRP
-	if not XRPOptions.wasShown then
-		XRPOptions.wasShown = true
-		InterfaceOptionsFrame_OpenToCategory(XRPOptions)
-	end
-	InterfaceOptionsFrame_OpenToCategory(XRPOptions[pane] or XRPOptions[XRPOptions.lastShown] or XRPOptions.GENERAL)
 end

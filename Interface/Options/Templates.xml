@@ -15,6 +15,8 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
+	<Script file="Templates.lua"/>
+
 	<CheckButton name="XRPOptionsCheckboxTemplate" parentArray="controls" inherits="XRPCheckBoxTemplate" mixin="XRPOptionsControl_Mixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="type" value="CONTROLTYPE_CHECKBOX" type="global"/>
