@@ -60,7 +60,7 @@ local function UnitPopup_HideButtons_Hook()
 	end
 end
 
-local Buttons_Profile = { text = _xrp.L.ROLEPLAY_PROFILE, dist = 0 }
+local Buttons_Profile = { text = _xrp.L.ROLEPLAY_PROFILE }
 
 local isHooked
 _xrp.settingsToggles.menusChat = function(setting)
@@ -72,26 +72,8 @@ _xrp.settingsToggles.menusChat = function(setting)
 		if standard == nil then
 			hooksecurefunc("UnitPopup_HideButtons", UnitPopup_HideButtons_Hook)
 			for i, button in ipairs(UnitPopupMenus["FRIEND"]) do
-				if button == "TARGET" or button == "PVP_REPORT_AFK" then
+				if button == "PVP_REPORT_AFK" then
 					table.remove(UnitPopupMenus["FRIEND"], i)
-				end
-			end
-			for i, button in ipairs(UnitPopupMenus["GUILD"]) do
-				if button == "TARGET" then
-					table.remove(UnitPopupMenus["GUILD"], i)
-					break
-				end
-			end
-			for i, button in ipairs(UnitPopupMenus["CHAT_ROSTER"]) do
-				if button == "TARGET" then
-					table.remove(UnitPopupMenus["CHAT_ROSTER"], i)
-					break
-				end
-			end
-			for i, button in ipairs(UnitPopupMenus["BN_FRIEND"]) do
-				if button == "BN_TARGET" then
-					table.remove(UnitPopupMenus["BN_FRIEND"], i)
-					break
 				end
 			end
 		end
