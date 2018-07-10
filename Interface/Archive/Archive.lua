@@ -30,7 +30,6 @@ local atlasGR = {
 	["HighmountainTauren"] = "Highmountain",
 	["LightforgedDraenei"] = "Lightforged",
 	["Scourge"] = "Undead",
-	["ZandalariTroll"] = "Zandalari", -- This is a guess.
 }
 
 local function GetRaceAtlas(GR, GS)
