@@ -236,10 +236,8 @@ xrp.characters = {
 			if not success or not name then
 				return nil
 			elseif not unitCache[name] then
-				if RACE_FACTION[GR] == nil then
-					if not xrp.L.VALUES.GR[GR] then
-						xrp.L.VALUES.GR[GR] = race
-					end
+				if RACE_FACTION[GR] == nil and not xrp.L.VALUES.GR[GR] then
+					xrp.L.VALUES.GR[GR] = race
 				end
 				unitCache[name] = {
 					GC = GC,
