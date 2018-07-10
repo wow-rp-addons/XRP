@@ -41,7 +41,7 @@ local function XRPGetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7
 	end
 
 	-- RP name in channels is from case-insensitive NAME, not the number.
-	if chatCategory == "CHANNEL" and type(arg9) == "string" then
+	if (chatCategory == "CHANNEL" or chatCategory == "COMMUNITIES_CHANNEL") and type(arg9) == "string" then
 		-- The match() strips trims names like "General - Stormwind City"
 		-- down to just "General".
 		chatCategory = "CHANNEL_" .. arg9:match("^([^%s]*)"):upper()

@@ -42,7 +42,13 @@ local function AddChannel(channel, menuList)
 	if not channelsList[channel] then
 		channelsList[channel] = { value = setting, oldValue = oldSetting }
 	end
-	menuList[#menuList + 1] = { text = channel:match("^CHANNEL_(.+)"):lower():gsub("^%l", string.upper), arg1 = channel, isNotRadio = true, checked = Channels_Checked, func = Channels_OnClick, keepShownOnClick = true, }
+	local displayName
+	if channel:find("^CHANNEL_COMMUNITY") then
+		displayName = ChatFrame_ResolveChannelName(channel:match("^CHANNEL_COMMUNITY%:(.*)"))
+	else
+		displayName = channel:match("^CHANNEL_(.+)"):lower():gsub("^%l", string.upper)
+	end
+	menuList[#menuList + 1] = { text = displayName, arg1 = channel, isNotRadio = true, checked = Channels_Checked, func = Channels_OnClick, keepShownOnClick = true, }
 end
 
 XRPOptionsChatChannels_Mixin = {}
