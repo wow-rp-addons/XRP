@@ -80,6 +80,14 @@ StaticPopupDialogs["XRP_RELOAD"] = {
 	hideOnEscape = true,
 }
 
+StaticPopupDialogs["XRP_REPORT"] = {
+	text = _xrp.L.REPORT_POPUP,
+	button1 = OKAY,
+	enterClicksFirstButton = true,
+	whileDead = true,
+	hideOnEscape = true,
+}
+
 StaticPopupDialogs["XRP_CURRENTLY"] = {
 	text = _xrp.L.POPUP_CURRENTLY,
 	button1 = ACCEPT,

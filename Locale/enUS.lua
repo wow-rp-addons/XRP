@@ -517,5 +517,9 @@ ERR_ADDON = "No RP addon appears to be active."
 SEND_TWEET = "Send Tweet"
 COPY_URL = "Copy URL"
 
+REPORT_PROFILE = "Report Profile"
+REPORT_POPUP = "The profile for \"%s\" has been reported.\n\nIf you are experiencing ongoing harassment, you should also submit a ticket."
+ERR_FULL_NAME_UNAVAILABLE = "(Name not found)"
+
 -- ui/viewer.xml
 PROFILE_VIEWER = "Profile Viewer"
