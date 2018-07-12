@@ -105,7 +105,7 @@ frame:SetScript("OnEvent", function(self, event, ...)
 	end
 end)
 
-local VERSION_MATCH = "(%d+)%.(%d+)%.(%d+)[%-]?(%l*)(%d*)"
+local VERSION_MATCH = "^(%d+)%.(%d+)%.(%d+)[%-]?(%l*)(%d*)"
 local function CompareVersion(newVersion, oldVersion)
 	local newMajor, newMinor, newPatch, newType, newRevision = newVersion:match(VERSION_MATCH)
 	local oldMajor, oldMinor, oldPatch, oldType, oldRevision = oldVersion:match(VERSION_MATCH)
@@ -119,10 +119,10 @@ local function CompareVersion(newVersion, oldVersion)
 
 	-- Account for pre-8.0 version scheme. Remove this sometime before hitting
 	-- a 'real' 5.0 release.
-	if newMajor > 4 then
+	if tonumber(newMajor) > 4 then
 		newPatch = newMinor
 		newMinor = newMajor
-		newMajor = 1
+		newMajor = "1"
 	end
 
 	local new = (tonumber(newMajor) * 1000000) + (tonumber(newMinor) * 10000) + (tonumber(newPatch) * 100) + (tonumber(newRevision) or 0)

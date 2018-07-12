@@ -84,12 +84,12 @@ local function UpdatedHandler(name, field, contents, version)
 			end
 		end
 	end
-	if field == "VA" then
-		_xrp.AddonUpdate(contents:match("^XRP/([^;]+)"))
-	end
 	xrpCache[name].fields[field] = contents
 	xrpCache[name].versions[field] = version
 	_xrp.FireEvent("FIELD", name, field)
+	if field == "VA" and contents then
+		_xrp.AddonUpdate(contents:match("^XRP/([^;]+)"))
+	end
 end
 msp.callback.updated[#msp.callback.updated + 1] = UpdatedHandler
 
