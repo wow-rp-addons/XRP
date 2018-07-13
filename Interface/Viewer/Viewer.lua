@@ -17,7 +17,7 @@
 
 local FOLDER, _xrp = ...
 
-local current, status, failed
+local current, status, failed, lastUpdate
 
 -- This will request fields in the order listed.
 local DISPLAY = {
@@ -72,6 +72,7 @@ local function Load(character)
 		return false
 	end
 	current = character
+	lastUpdate = 0
 	return true
 end
 
@@ -93,6 +94,7 @@ local function FIELD(event, name, field)
 		local fields = current.fields
 		local contents = fields[field]
 		SetField(field, contents, field == "CU" and fields.CO or not contents and (field == "NA" and tostring(character) or field == "RA" and fields.GR or field == "RC" and fields.GC), not contents and field == "RC" and fields.GS)
+		lastUpdate = GetTime()
 	end
 end
 
@@ -105,7 +107,7 @@ local function RECEIVE(event, name)
 			Load(current)
 		end
 		if status ~= "received" then
-			if event == "NOCHANGE" then
+			if lastUpdate < GetTime() - 10 then
 				XRPViewer.XC:SetText(_xrp.L.NO_CHANGES)
 				status = "nochange"
 			elseif status ~= "nochange" then
@@ -375,7 +377,6 @@ end
 
 xrp.HookEvent("FIELD", FIELD)
 xrp.HookEvent("RECEIVE", RECEIVE)
-xrp.HookEvent("NOCHANGE", RECEIVE)
 xrp.HookEvent("CHUNK", CHUNK)
 xrp.HookEvent("FAIL", FAIL)
 xrp.HookEvent("DROP", DROP)

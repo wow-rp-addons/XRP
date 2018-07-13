@@ -130,7 +130,6 @@ end
 
 local function ReceivedHandler(name)
 	_xrp.FireEvent("RECEIVE", name)
-	--_xrp.FireEvent("NOCHANGE", name)
 	if xrpCache[name] then
 		-- Cache timer. Last receive marked for clearing old entries.
 		xrpCache[name].lastReceive = time()
@@ -213,10 +212,8 @@ function _xrp.QueueRequest(name, field)
 	return msp:QueueRequest(name, field)
 end
 
--- TODO: Remove, replace with status line in Viewer if cannot refresh after
--- trying to do so.
 function _xrp.CanRefresh(name)
-	return true
+	return (msp.char[name].time.DE or 0) < GetTime() - 30
 end
 
 function _xrp.ResetCacheTimers(name)
@@ -236,7 +233,7 @@ function _xrp.ForceRefresh(name)
 	_xrp.ResetCacheTimers(name)
 	msp.char[name].ver = nil
 
-	for field, contents in pairs(msp.char[name]) do
+	for field, contents in pairs(msp.char[name].field) do
 		_xrp.QueueRequest(name, field)
 	end
 end
