@@ -35,11 +35,6 @@ else
 	StaticPopup_Show("XRP_MSP_DISABLE", msp_RPAddOn)
 end
 
-local SUPPORTED_FIELDS = {
-	"NA", "NI", "NT", "NH", "AH", "AW", "AE", "RA", "RC", "CU", "DE",
-	"AG", "HH", "HB", "MO", "HI", "FR", "FC", "CO", "IC", "VA",
-}
-
 -- These fields are (or should) be generated from UnitSomething() functions.
 local UNIT_FIELDS = { "GC", "GF", "GR", "GS", "GU" }
 
@@ -47,8 +42,53 @@ xrp.HookEvent("UPDATE", function(event, field)
 	if field then
 		msp.my[field] = xrp.current[field]
 	else
-		for i, field in ipairs(SUPPORTED_FIELDS) do
-			msp.my[field] = xrp.current[field]
+		local fields = {}
+		local profiles, inherit = { xrpSaved.profiles[xrpSaved.selected] }, xrpSaved.profiles[xrpSaved.selected].parent
+		for i = 1, _xrp.PROFILE_MAX_DEPTH do
+			if not xrpSaved.profiles[inherit] then
+				break
+			end
+			profiles[#profiles + 1] = xrpSaved.profiles[inherit]
+			inherit = xrpSaved.profiles[inherit].parent
+		end
+		for i = #profiles, 1, -1 do
+			local profile = profiles[i]
+			for field, doInherit in pairs(profile.inherits) do
+				if doInherit == false then
+					fields[field] = nil
+				end
+			end
+			for field, contents in pairs(profile.fields) do
+				if not fields[field] then
+					fields[field] = contents
+				end
+			end
+		end
+		for field, contents in pairs(xrpSaved.meta.fields) do
+			if not fields[field] then
+				fields[field] = contents
+			end
+		end
+		for field, contents in pairs(xrpSaved.overrides.fields) do
+			if contents == "" then
+				fields[field] = nil
+			else
+				fields[field] = contents
+			end
+		end
+		if fields.AW then
+			fields.AW = xrp.Weight(fields.AW, "msp")
+		end
+		if fields.AH then
+			fields.AH = xrp.Height(fields.AH, "msp")
+		end
+		for field, contents in pairs(msp.my) do
+			if not fields[field] then
+				msp.my[field] = nil
+			end
+		end
+		for field, contents in pairs(fields) do
+			msp.my[field] = contents
 		end
 	end
 	msp:Update()
