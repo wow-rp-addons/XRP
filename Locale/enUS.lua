@@ -518,7 +518,9 @@ SEND_TWEET = "Send Tweet"
 COPY_URL = "Copy URL"
 
 REPORT_PROFILE = "Report Profile"
-REPORT_POPUP = "The profile for \"%s\" has been reported.\n\nIf you are experiencing ongoing harassment, you should also submit a ticket."
+REPORT_POPUP = "Do you wish to report \"%s\" for the contents of their roleplay profile?\n\nAbuse of the reporting system may results in actions against your account; please only report abusive, dangerous, or extremely offensive profiles."
+REPORT_SUBMITTED_POPUP = "The profile for \"%s\" has been reported.\n\nIf you are experiencing ongoing harassment, you should also submit a ticket to Blizzard."
+REPORT_FAILED_POPUP = "The report for \"%s\" has |cffdd380fFAILED|r.\n\nYou should submit a ticket to Blizzard to report this profile."
 ERR_FULL_NAME_UNAVAILABLE = "(Name not found)"
 
 -- ui/viewer.xml

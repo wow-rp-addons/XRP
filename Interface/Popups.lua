@@ -82,6 +82,31 @@ StaticPopupDialogs["XRP_RELOAD"] = {
 
 StaticPopupDialogs["XRP_REPORT"] = {
 	text = _xrp.L.REPORT_POPUP,
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function(self, character)
+		local success = AddOn_Chomp.ReportGUID("MSP", character.fields.GU)
+		if success then
+			StaticPopup_Show("XRP_REPORT_SUBMITTED", Ambiguate(tostring(character), "none"))
+		else
+			StaticPopup_Show("XRP_REPORT_FAILED", Ambiguate(tostring(character), "none"))
+		end
+	end,
+	enterClicksFirstButton = true,
+	whileDead = true,
+	hideOnEscape = true,
+}
+
+StaticPopupDialogs["XRP_REPORT_SUBMITTED"] = {
+	text = _xrp.L.REPORT_SUBMITTED_POPUP,
+	button1 = OKAY,
+	enterClicksFirstButton = true,
+	whileDead = true,
+	hideOnEscape = true,
+}
+
+StaticPopupDialogs["XRP_REPORT_FAILED"] = {
+	text = _xrp.L.REPORT_FAILED_POPUP,
 	button1 = OKAY,
 	enterClicksFirstButton = true,
 	whileDead = true,

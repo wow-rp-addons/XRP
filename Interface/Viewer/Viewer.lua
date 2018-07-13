@@ -179,10 +179,7 @@ local function Menu_Click(self, arg1, arg2, checked)
 	elseif arg1 == "XRP_EXPORT" then
 		XRPExport:Export(xrp.ShortName(tostring(current)), tostring(current.fields))
 	elseif arg1 == "XRP_REPORT" then
-		local success = AddOn_Chomp.ReportGUID("MSP", current.fields.GU)
-		if success then
-			StaticPopup_Show("XRP_REPORT", Ambiguate(tostring(current), "none"))
-		end
+		StaticPopup_Show("XRP_REPORT", Ambiguate(tostring(current), "none"), nil, current)
 	elseif arg1 == "XRP_REFRESH_FORCE" then
 		local name, realm = tostring(current):match("^([^%-]+)%-([^%-]+)")
 		StaticPopup_Show("XRP_FORCE_REFRESH", _xrp.L.NAME_REALM:format(name, xrp.RealmDisplayName(realm)), nil, current)
@@ -204,7 +201,7 @@ XRPViewerMenu_baseMenuList = {
 	{ text = _xrp.L.BOOKMARK, arg1 = "XRP_BOOKMARK", isNotRadio = true, checked = Menu_Checked, func = Menu_Click, },
 	{ text = _xrp.L.HIDE_PROFILE, arg1 = "XRP_HIDE", isNotRadio = true, checked = Menu_Checked, func = Menu_Click, },
 	{ text = _xrp.L.EXPORT, arg1 = "XRP_EXPORT", notCheckable = true, func = Menu_Click, },
-	{ text=  _xrp.L.REPORT_PROFILE, arg1 = "XRP_REPORT", notCheckable = true, func = Menu_Click, },
+	{ text=  _xrp.L.REPORT_PROFILE .. CONTINUED, arg1 = "XRP_REPORT", notCheckable = true, func = Menu_Click, },
 	{ text = ADVANCED_LABEL, notCheckable = true, hasArrow = true, menuList = Advanced_menuList, },
 	{ text = CANCEL, notCheckable = true, func = _xrp.DoNothing, },
 }
