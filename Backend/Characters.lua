@@ -183,17 +183,18 @@ xrp.characters = {
 	}),
 	byUnit = setmetatable({}, {
 		__index = function(self, unit)
-			local name = xrp.UnitFullName(unit)
-			if not name then
+			local GU = UnitGUID(unit)
+			local success, class, GC, race, GR, GS, shortName, realm = pcall(GetPlayerInfoByGUID, GU)
+			if not success or not shortName or shortName == UNKNOWN then
 				return nil
-			elseif not unitCache[name] then
-				local GU = UnitGUID(unit)
-				local class, GC, race, GR, GS = GetPlayerInfoByGUID(GU)
+			end
+			local name = xrp.FullName(shortName, realm)
+			if not unitCache[name] then
 				if RACE_FACTION[GR] == nil then
 					if not xrp.L.VALUES.GR[GR] then
 						xrp.L.VALUES.GR[GR] = race
 					end
-					RACE_FACTION[GR] = UnitFactionGroup(unit)
+					RACE_FACTION[GR] = UnitIsMercenary(unit) and MERCENARY[UnitFactionGroup(unit)] or UnitFactionGroup(unit)
 				end
 				unitCache[name] = {
 					GC = GC,
@@ -231,11 +232,12 @@ xrp.characters = {
 		__index = function(self, GU)
 			-- This will return nil if the GUID hasn't been seen by the client
 			-- yet in the session.
-			local success, class, GC, race, GR, GS, name, realm = pcall(GetPlayerInfoByGUID, GU)
-			name = xrp.FullName(name, realm)
-			if not success or not name then
+			local success, class, GC, race, GR, GS, shortName, realm = pcall(GetPlayerInfoByGUID, GU)
+			if not success or not shortName or shortName == UNKNOWN then
 				return nil
-			elseif not unitCache[name] then
+			end
+			local name = xrp.FullName(shortName, realm)
+			if not unitCache[name] then
 				if RACE_FACTION[GR] == nil and not xrp.L.VALUES.GR[GR] then
 					xrp.L.VALUES.GR[GR] = race
 				end
