@@ -39,9 +39,13 @@ BUILDTMP=$(mktemp -p "${REPODIR}" -d)
 git archive --prefix=${PREFIX} ${TARGET_TAG} | tar -xC "${BUILDTMP}"
 submodule-archive "${PREFIX}" "${TARGET_TAG}" "${BUILDTMP}"
 
-cd "${BUILDTMP}"
+
+TIMESTAMP=$(stat -c "%Y" "${BUILDTMP}/${PREFIX}XRP.toc")
 sed -i -e "s/^## Version: .*/## Version: ${TARGET_TAG/v/}/" "${BUILDTMP}/${PREFIX}XRP.toc"
+touch -d @${TIMESTAMP} "${BUILDTMP}/${PREFIX}XRP.toc"
+pushd "${BUILDTMP}" >/dev/null
 zip -q -D -X -l -9 -r out.zip ${PREFIX}
+popd >/dev/null
 
 mv "${BUILDTMP}/out.zip" "${REPODIR}/XRP-${TARGET_TAG/v/}.zip"
 
