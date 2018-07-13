@@ -38,8 +38,9 @@ end
 -- These fields are (or should) be generated from UnitSomething() functions.
 local UNIT_FIELDS = { "GC", "GF", "GR", "GS", "GU" }
 
-xrp.HookEvent("UPDATE", function(event, field)
+local function ProfileUpdate(event, field)
 	if field then
+		if msp.INTERNAL_FIELDS[field] then return end
 		msp.my[field] = xrp.current[field]
 	else
 		local fields = {}
@@ -83,7 +84,7 @@ xrp.HookEvent("UPDATE", function(event, field)
 			fields.AH = xrp.Height(fields.AH, "msp")
 		end
 		for field, contents in pairs(msp.my) do
-			if not fields[field] then
+			if not msp.INTERNAL_FIELDS[field] and not fields[field] then
 				msp.my[field] = nil
 			end
 		end
@@ -92,22 +93,17 @@ xrp.HookEvent("UPDATE", function(event, field)
 		end
 	end
 	msp:Update()
-end)
+end
 
 local function StatusHandler(name, reason, msgID, msgTotal)
 	if reason == "ERROR" then
 		-- Same error message from offline and from opposite faction.
 		local GF = _xrp.unitCache[name] and _xrp.unitCache[name].GF or xrpCache[name] and xrpCache[name].fields.GF
 		_xrp.FireEvent("FAIL", name, (not GF or GF == UnitFactionGroup("player")) and "offline" or "faction")
-	elseif reason == "MESSAGE" then
-		if msgID ~= msgTotal then
-			_xrp.FireEvent("CHUNK", name, msgID, msgTotal)
-		end
+	elseif reason == "MESSAGE" and msgTotal ~= 1 then
+		_xrp.FireEvent("CHUNK", name, msgID, msgTotal)
 	end
 end
-msp.callback.status[#msp.callback.status + 1] = StatusHandler
-
-msp:AddFieldsToTooltip("RC")
 
 local function UpdatedHandler(name, field, contents, version)
 	if not xrpCache[name] and (contents ~= "" or version ~= 0) then
@@ -131,7 +127,6 @@ local function UpdatedHandler(name, field, contents, version)
 		_xrp.AddonUpdate(contents:match("^XRP/([^;]+)"))
 	end
 end
-msp.callback.updated[#msp.callback.updated + 1] = UpdatedHandler
 
 local function ReceivedHandler(name)
 	_xrp.FireEvent("RECEIVE", name)
@@ -141,7 +136,6 @@ local function ReceivedHandler(name)
 		xrpCache[name].lastReceive = time()
 	end
 end
-msp.callback.received[#msp.callback.received + 1] = ReceivedHandler
 
 local function DataLoadHandler(name, char)
 	if xrpCache[name] then
@@ -152,7 +146,15 @@ local function DataLoadHandler(name, char)
 		char.ver.TT = xrpCache[name].versions.TT
 	end
 end
-msp.callback.dataload[#msp.callback.dataload + 1] = DataLoadHandler
+
+if not disabled then
+	msp:AddFieldsToTooltip("RC")
+	msp.callback.status[#msp.callback.status + 1] = StatusHandler
+	msp.callback.updated[#msp.callback.updated + 1] = UpdatedHandler
+	msp.callback.received[#msp.callback.received + 1] = ReceivedHandler
+	msp.callback.dataload[#msp.callback.dataload + 1] = DataLoadHandler
+	xrp.HookEvent("UPDATE", ProfileUpdate)
+end
 
 local gameFriends
 local function FRIENDLIST_UPDATE(event)
@@ -202,46 +204,13 @@ local function GUILD_ROSTER_UPDATE(event)
 	C_Timer.After(0, UpdateGuildRoster)
 end
 
-local request, requestQueued = {}
-local function RunRequestQueue()
-	for name, fields in pairs(request) do
-		_xrp.Request(name, fields)
-		request[name] = nil
-	end
-	requestQueued = nil
-end
-
 function _xrp.QueueRequest(name, field)
-	if disabled or name == _xrp.playerWithRealm or gameFriends and not (gameFriends[name] or bnetFriends[name] or guildies and guildies[name]) or xrp.ShortName(name) == UNKNOWN then
+	if disabled or gameFriends and not (gameFriends[name] or bnetFriends[name] or guildies and guildies[name]) then
 		return
 	elseif _xrp.unitCache[name] and _xrp.unitCache[name][field] then
 		return
-	elseif not request[name] then
-		request[name] = {}
 	end
-	request[name][#request[name] + 1] = field
-	if not requestQueued then
-		C_Timer.After(0, RunRequestQueue)
-		requestQueued = true
-	end
-end
-
--- Using GU+GF alone would be great, but it's not reliable.
-local UNIT_REQUEST = { "GC", "GF", "GR", "GS", "GU" }
-function _xrp.Request(name, fields)
-	if disabled or name == _xrp.playerWithRealm or gameFriends and not (gameFriends[name] or bnetFriends[name] or guildies and guildies[name]) or xrp.ShortName(name) == UNKNOWN then
-		return false
-	end
-	if not _xrp.unitCache[name] then
-		for i, field in ipairs(UNIT_REQUEST) do
-			if not msp.char[name].time[field] then
-				fields[#fields + 1] = field
-			end
-		end
-	elseif not _xrp.unitCache[name].GF and not msp.char[name].time.GF then
-		fields[#fields + 1] = "GF"
-	end
-	return msp:Request(name, fields)
+	return msp:QueueRequest(name, field)
 end
 
 -- TODO: Remove, replace with status line in Viewer if cannot refresh after
