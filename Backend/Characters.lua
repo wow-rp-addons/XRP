@@ -186,6 +186,18 @@ xrp.characters = {
 			local GU = UnitGUID(unit)
 			local success, class, GC, race, GR, GS, shortName, realm = pcall(GetPlayerInfoByGUID, GU)
 			if not success or not shortName or shortName == UNKNOWN then
+				if UnitIsPlayer(unit) then
+					-- TODO: Handle this better.
+					return setmetatable({
+						fields = {
+							GC = select(2, UnitClass(unit)),
+							GF = UnitFactionGroup(unit),
+							GR = select(2, UnitRace(unit)),
+							GS = tostring(UnitSex(unit)),
+							GU = GU,
+						}
+					}, { __tostring = function(self) return FULL_PLAYER_NAME:format(UNKNOWN, UNKNOWN) end, })
+				end
 				return nil
 			end
 			local name = xrp.FullName(shortName, realm)
