@@ -124,7 +124,7 @@ function xrp.Strip(text, allowIndent)
 	return text ~= "" and text or nil
 end
 
-function xrp.Link(text, linkType)
+function xrp.Link(text)
 	if type(text) ~= "string" then
 		return nil
 	end

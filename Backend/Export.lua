@@ -59,7 +59,7 @@ function _xrp.ExportText(title, fields)
 			fieldText = xrp.MergeCurrently(fieldText, xrp.Strip(fields.CO))
 		end
 		if ALLOW_INDENT[field] then
-			fieldText = xrp.Link(fieldText, "prelink")
+			fieldText = xrp.Link(fieldText)
 		end
 		if fieldText then
 			if field == "AH" then
