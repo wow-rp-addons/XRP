@@ -193,7 +193,7 @@ _xrp.HookGameEvent("ADDON_LOADED", function(event, addon)
 	end
 end)
 _xrp.HookGameEvent("PLAYER_LOGIN", function(event)
-	-- GetAutoCompleteResults() also doesn't work.
+	-- GetAutoCompleteResults() doesn't work before PLAYER_LOGIN.
 	_xrp.own[_xrp.playerWithRealm] = true
 	for i, character in ipairs(GetAutoCompleteResults("", 0, 1, AUTO_COMPLETE_ACCOUNT_CHARACTER, 0)) do
 		local name = xrp.FullName(character.name)
@@ -213,20 +213,6 @@ _xrp.HookGameEvent("PLAYER_LOGOUT", function(event)
 	-- Note: This code must be thoroughly tested if any changes are
 	-- made. If there are any errors in here, they are not visible in
 	-- any manner in-game.
-	local now = time()
-	local fields, versions = {}, {}
-	for field, contents in pairs(msp.my) do
-		if field ~= "TT" then
-			fields[field] = contents
-		end
-		versions[field] = msp.myver[field]
-	end
-	xrpCache[_xrp.playerWithRealm] = {
-		fields = fields,
-		versions = versions,
-		own = true,
-		lastReceive = now,
-	}
 	if next(xrpSaved.overrides.fields) then
 		xrpSaved.overrides.logout = now
 	end
