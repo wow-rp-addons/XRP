@@ -4,4 +4,3 @@
 [submodule "Libraries/LibMSP"]
 	path = Libraries/LibMSP
 	url = https://github.com/Ellypse/LibMSP.git
-	branch = development
