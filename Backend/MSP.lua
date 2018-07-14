@@ -95,8 +95,11 @@ local function ProfileUpdate(event, field)
 	msp:Update()
 end
 
-local function StatusHandler(name, reason, msgID, msgTotal)
-	if reason == "ERROR" then
+local function StatusHandler(statusName, reason, msgID, msgTotal)
+	local name = xrp.FullName(statusName)
+	if not name or reason == "MESSAGE" and (type(msgID) ~= "number" or type(msgTotal) ~= "number") then
+		error("XRP: LibMSP status callback receieved invalid arguments.")
+	elseif reason == "ERROR" then
 		-- Same error message from offline and from opposite faction.
 		local GF = _xrp.unitCache[name] and _xrp.unitCache[name].GF or xrpCache[name] and xrpCache[name].fields.GF
 		_xrp.FireEvent("FAIL", name, (not GF or GF == UnitFactionGroup("player")) and "offline" or "faction")
@@ -105,8 +108,11 @@ local function StatusHandler(name, reason, msgID, msgTotal)
 	end
 end
 
-local function UpdatedHandler(name, field, contents, version)
-	if not xrpCache[name] and (contents ~= "" or version ~= 0) then
+local function UpdatedHandler(updatedName, field, contents, version)
+	local name = xrp.FullName(updatedName)
+	if not name or type(field) ~= "string" or not field:find("^%u%u$") or contents and type(contents) ~= "string" or version and type(version) ~= "number" then
+		error("XRP: LibMSP updated callback receieved invalid arguments.")
+	elseif not xrpCache[name] and (contents ~= "" or version ~= 0) then
 		-- This is the only place a cache table is created by XRP.
 		xrpCache[name] = {
 			fields = {},
@@ -128,7 +134,11 @@ local function UpdatedHandler(name, field, contents, version)
 	end
 end
 
-local function ReceivedHandler(name)
+local function ReceivedHandler(receivedName)
+	local name = xrp.FullName(receivedName)
+	if not name then
+		error("XRP: LibMSP received callback receieved invalid arguments.")
+	end
 	_xrp.FireEvent("RECEIVE", name)
 	if xrpCache[name] then
 		-- Cache timer. Last receive marked for clearing old entries.
@@ -136,7 +146,11 @@ local function ReceivedHandler(name)
 	end
 end
 
-local function DataLoadHandler(name, char)
+local function DataLoadHandler(dataLoadName, char)
+	local name = xrp.FullName(dataLoadName)
+	if not name or type(char) ~= "table" then
+		error("XRP: LibMSP dataload callback receieved invalid arguments.")
+	end
 	if xrpCache[name] then
 		for field, contents in pairs(xrpCache[name].fields) do
 			char.field[field] = contents
