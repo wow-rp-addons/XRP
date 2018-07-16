@@ -17,6 +17,10 @@
 
 local FOLDER, _xrp = ...
 
+if tonumber(GetAddOnMetadata(FOLDER, "X-Interface-Required")) > tonumber(select(4, GetBuildInfo())) then
+	error("XRP: Required interface version not met, refusing to load saved variables updates.")
+end
+
 _xrp.UpgradeAccountVars = {
 	[2] = function() -- 1.6.0.3.0
 		local settings = xrpAccountSaved.settings

@@ -1,4 +1,9 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
+	<Script>
+		if tonumber(GetAddOnMetadata(FOLDER, "X-Interface-Required")) &gt; tonumber(select(4, GetBuildInfo())) then
+			error("XRP: Required interface version not met!")
+		end
+	</Script>
 	<Include file="LibMSP\LibMSP.xml"/>
 	<Include file="BlueBugs\BlueBugs.xml"/>
 </Ui>
