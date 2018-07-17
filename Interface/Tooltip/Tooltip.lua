@@ -232,11 +232,6 @@ local MERCENARY = {
 	Alliance = "Horde",
 	Horde = "Alliance",
 }
-local REACTION_COLORS = {
-	friendly = "|cff00991a",
-	neutral = "|cffe6b300",
-	hostile = "|cffcc4d38",
-}
 local SELECTION_COLORS = setmetatable({
 	["0000ff"] = RGBToColorCode(LIGHTBLUE_FONT_COLOR:GetRGB()), -- Blue
 	["00ff00"] = RGBTableToColorCode(FACTION_BAR_COLORS[5]), -- Green
@@ -303,7 +298,7 @@ local function SetUnit(unit)
 
 		local connected = UnitIsConnected(unit)
 		local r, g, b = UnitSelectionColor(unit)
-		local color = SELECTION_COLORS[("%02x%02x%02x"):format(math.ceil(r * 255), math.ceil(g * 255), math.ceil(b * 255))]
+		local color = SELECTION_COLORS[("%02x%02x%02x"):format(math.ceil(math.floor((r * 10) + 0.5) * 25.5), math.ceil(math.floor((g * 10) + 0.5) * 25.5), math.ceil(math.floor((b * 10) + 0.5) * 25.5))]
 
 		local watchIcon = _xrp.settings.tooltipShowWatchEye and unit ~= "player" and UnitIsUnit("player", unit .. "target") and "|TInterface\\LFGFrame\\BattlenetWorking0:28:28:8:1|t"
 		local bookmarkIcon = _xrp.settings.tooltipShowBookmarkFlag and currentUnit.character.bookmark and "|TInterface\\MINIMAP\\POIICONS:18:18:4:0:256:512:54:72:54:72|t"
