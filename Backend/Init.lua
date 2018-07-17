@@ -193,8 +193,12 @@ _xrp.HookGameEvent("ADDON_LOADED", function(event, addon)
 	end
 end)
 _xrp.HookGameEvent("PLAYER_LOGIN", function(event)
+	_xrp.FireEvent("UPDATE")
 	-- GetAutoCompleteResults() doesn't work before PLAYER_LOGIN.
 	_xrp.own[_xrp.playerWithRealm] = true
+	if xrpCache[_xrp.playerWithRealm] and not xrpCache[_xrp.playerWithRealm].own then
+		xrpCache[_xrp.playerWithRealm].own = true
+	end
 	for i, character in ipairs(GetAutoCompleteResults("", 0, 1, AUTO_COMPLETE_ACCOUNT_CHARACTER, 0)) do
 		local name = xrp.FullName(character.name)
 		_xrp.own[name] = true
@@ -207,7 +211,6 @@ _xrp.HookGameEvent("PLAYER_LOGIN", function(event)
 			data.own = nil
 		end
 	end
-	_xrp.FireEvent("UPDATE")
 end)
 _xrp.HookGameEvent("PLAYER_LOGOUT", function(event)
 	-- Note: This code must be thoroughly tested if any changes are
