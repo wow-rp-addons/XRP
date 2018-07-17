@@ -326,7 +326,7 @@ function XRPViewerMenu_PreClick(self, button, down)
 	else
 		self.baseMenuList[3].disabled = nil
 		self.baseMenuList[4].disabled = nil
-		if AddOn_Chomp.CheckReportGUID("MSP", current.fields.GU) then
+		if current.fields.GU and AddOn_Chomp.CheckReportGUID("MSP", current.fields.GU) then
 			self.baseMenuList[6].disabled = nil
 		else
 			self.baseMenuList[6].disabled = true
