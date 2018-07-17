@@ -44,7 +44,7 @@ TIMESTAMP=$(stat -c "%Y" "${BUILDTMP}/${PREFIX}XRP.toc")
 sed -i -e "s/^## Version: .*/## Version: ${TARGET_TAG/v/}/" "${BUILDTMP}/${PREFIX}XRP.toc"
 touch -d @${TIMESTAMP} "${BUILDTMP}/${PREFIX}XRP.toc"
 pushd "${BUILDTMP}" >/dev/null
-zip -q -D -X -l -9 -r out.zip ${PREFIX}
+zip -q -D -X -9 -r out.zip ${PREFIX}
 popd >/dev/null
 
 mv "${BUILDTMP}/out.zip" "${REPODIR}/XRP-${TARGET_TAG/v/}.zip"
