@@ -1,0 +1,151 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+<!--
+	© Justin Snelgrove
+
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+	<Script file="Chat.lua"/>
+
+	<Frame parentKey="XRPChat" parent="InterfaceOptionsFramePanelContainer" inherits="XRPOptionsTemplate">
+		<KeyValues>
+			<KeyValue key="paneID" value="CHAT"/>
+		</KeyValues>
+		<Frames>
+			<CheckButton parentKey="ChatNames" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.SubText" relativePoint="BOTTOMLEFT" x="-2" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="xrpSetting" value="chatNames"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="SAY" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ChatNames" relativePoint="BOTTOMLEFT" x="24" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="dependsOn" value="ChatNames"/>
+					<KeyValue key="xrpTable" value="chatType"/>
+					<KeyValue key="xrpSetting" value="SAY"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="EMOTE" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.SAY" relativePoint="BOTTOMLEFT" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="dependsOn" value="ChatNames"/>
+					<KeyValue key="xrpTable" value="chatType"/>
+					<KeyValue key="xrpSetting" value="EMOTE"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="YELL" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.EMOTE" relativePoint="BOTTOMLEFT" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="dependsOn" value="ChatNames"/>
+					<KeyValue key="xrpTable" value="chatType"/>
+					<KeyValue key="xrpSetting" value="YELL"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="WHISPER" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.YELL" relativePoint="BOTTOMLEFT" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="dependsOn" value="ChatNames"/>
+					<KeyValue key="xrpTable" value="chatType"/>
+					<KeyValue key="xrpSetting" value="WHISPER"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="GUILD" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.WHISPER" relativePoint="BOTTOMLEFT" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="dependsOn" value="ChatNames"/>
+					<KeyValue key="xrpTable" value="chatType"/>
+					<KeyValue key="xrpSetting" value="GUILD"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="OFFICER" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.GUILD" relativePoint="BOTTOMLEFT" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="dependsOn" value="ChatNames"/>
+					<KeyValue key="xrpTable" value="chatType"/>
+					<KeyValue key="xrpSetting" value="OFFICER"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="PARTY" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.OFFICER" relativePoint="BOTTOMLEFT" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="dependsOn" value="ChatNames"/>
+					<KeyValue key="xrpTable" value="chatType"/>
+					<KeyValue key="xrpSetting" value="PARTY"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="RAID" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.PARTY" relativePoint="BOTTOMLEFT" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="dependsOn" value="ChatNames"/>
+					<KeyValue key="xrpTable" value="chatType"/>
+					<KeyValue key="xrpSetting" value="RAID"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="INSTANCE_CHAT" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.RAID" relativePoint="BOTTOMLEFT" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="dependsOn" value="ChatNames"/>
+					<KeyValue key="xrpTable" value="chatType"/>
+					<KeyValue key="xrpSetting" value="INSTANCE_CHAT"/>
+				</KeyValues>
+			</CheckButton>
+			<Frame name="XRPOptionsChatChannels" parentKey="Channels" inherits="XRPOptionsDropDownTemplate" mixin="XRPOptionsChatChannels_Mixin">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.INSTANCE_CHAT" relativePoint="BOTTOMLEFT" x="-15" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="textString" value="CHANNELS" type="global"/>
+					<KeyValue key="dependsOn" value="ChatNames"/>
+				</KeyValues>
+			</Frame>
+			<CheckButton parentKey="ChatEmoteBraced" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Channels" relativePoint="BOTTOMLEFT" x="15" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="dependsOn" value="ChatNames"/>
+					<KeyValue key="xrpSetting" value="chatEmoteBraced"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="ChatReplacements" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ChatEmoteBraced" relativePoint="BOTTOMLEFT" x="-24" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="xrpSetting" value="chatReplacements"/>
+				</KeyValues>
+			</CheckButton>
+		</Frames>
+	</Frame>
+</Ui>

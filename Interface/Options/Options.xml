@@ -1,0 +1,60 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+<!--
+	© Justin Snelgrove
+
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+	<Script file="Options.lua"/>
+	<Include file="Templates.xml"/>
+
+	<Frame parentKey="XRP" parent="InterfaceOptionsFramePanelContainer" hidden="true">
+		<KeyValues>
+			<KeyValue key="name" value="XRP"/>
+		</KeyValues>
+		<Scripts>
+			<OnShow function="XRPOptionsAbout_OnShow"/>
+			<OnLoad function="InterfaceOptions_AddCategory"/>
+		</Scripts>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Title" inherits="GameFontNormalLarge" text="XRP_TITLE" justifyH="LEFT" justifyV="TOP">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="16" y="-16"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Version" inherits="GameFontWhite" text="XRP_VERSION">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" y="-5"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="LicenseHeader" inherits="GameFontNormalLarge" text="XRP_LICENSE_HEADER">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Version" relativePoint="BOTTOMLEFT" y="-15"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="License" inherits="GameFontWhite" justifyH="LEFT" text="XRP_LICENSE">
+					<Size x="440"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.LicenseHeader" relativePoint="BOTTOMLEFT" y="-10"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+	<Include file="General.xml"/>
+	<Include file="Display.xml"/>
+	<Include file="Chat.xml"/>
+	<Include file="Tooltip.xml"/>
+	<Include file="Advanced.xml"/>
+</Ui>

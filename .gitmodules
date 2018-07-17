@@ -1,0 +1,6 @@
+[submodule "Libraries/BlueBugs"]
+	path = Libraries/BlueBugs
+	url = https://github.com/Itarater/BlueBugs.git
+[submodule "Libraries/LibMSP"]
+	path = Libraries/LibMSP
+	url = https://github.com/Ellypse/LibMSP.git

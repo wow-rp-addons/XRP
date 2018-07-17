@@ -1,0 +1,460 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+<!--
+	© Justin Snelgrove
+
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+	<Script file="Editor.lua"/>
+	<Script file="Automation.lua"/>
+	<Include file="Templates.xml"/>
+
+	<Frame name="XRPEditor" parent="UIParent" inherits="XRPButtonFrameTemplate">
+		<Size x="439" y="525"/>
+		<Frames>
+			<Button inherits="XRPHelpButtonTemplate">
+				<Scripts>
+					<PreClick function="XRPEditorHelpButton_PreClick"/>
+				</Scripts>
+			</Button>
+			<Frame parentKey="Appearance" parentArray="panes" useParentLevel="true" hidden="false">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Inset" relativePoint="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset" relativePoint="BOTTOMRIGHT"/>
+				</Anchors>
+				<Frames>
+					<EditBox parentKey="NA" inherits="XRPEditorSingleLineTemplate">
+						<KeyValues>
+							<KeyValue key="field" value="NA"/>
+							<KeyValue key="nextField" value="NI"/>
+							<KeyValue key="safeLength" value="65" type="number"/>
+						</KeyValues>
+						<Size x="186" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="14" y="-18"/>
+						</Anchors>
+					</EditBox>
+					<EditBox parentKey="NI" inherits="XRPEditorSingleLineTemplate">
+						<KeyValues>
+							<KeyValue key="field" value="NI"/>
+							<KeyValue key="nextField" value="AH"/>
+							<KeyValue key="safeLength" value="58" type="number"/>
+						</KeyValues>
+						<Size x="136" y="20"/>
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.NA" relativePoint="RIGHT" x="10"/>
+						</Anchors>
+					</EditBox>
+					<EditBox parentKey="AH" inherits="XRPEditorSingleLineTemplate">
+						<KeyValues>
+							<KeyValue key="field" value="AH"/>
+							<KeyValue key="nextField" value="NT"/>
+						</KeyValues>
+						<Size x="65" y="20"/>
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.NI" relativePoint="RIGHT" x="10"/>
+						</Anchors>
+					</EditBox>
+					<EditBox parentKey="NT" inherits="XRPEditorSingleLineTemplate">
+						<KeyValues>
+							<KeyValue key="field" value="NT"/>
+							<KeyValue key="nextField" value="NH"/>
+							<KeyValue key="safeLength" value="130" type="number"/>
+						</KeyValues>
+						<Size x="186" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.NA" relativePoint="BOTTOMLEFT" y="-15"/>
+						</Anchors>
+					</EditBox>
+					<EditBox parentKey="NH" inherits="XRPEditorSingleLineTemplate">
+						<KeyValues>
+							<KeyValue key="field" value="NH"/>
+							<KeyValue key="nextField" value="AW"/>
+						</KeyValues>
+						<Size x="136" y="20"/>
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.NT" relativePoint="RIGHT" x="10"/>
+						</Anchors>
+					</EditBox>
+					<EditBox parentKey="AW" inherits="XRPEditorSingleLineTemplate">
+						<KeyValues>
+							<KeyValue key="field" value="AW"/>
+							<KeyValue key="nextField" value="AE"/>
+						</KeyValues>
+						<Size x="65" y="20"/>
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.NH" relativePoint="RIGHT" x="10"/>
+						</Anchors>
+					</EditBox>
+					<EditBox parentKey="AE" inherits="XRPEditorSingleLineTemplate">
+						<KeyValues>
+							<KeyValue key="field" value="AE"/>
+							<KeyValue key="nextField" value="RA"/>
+						</KeyValues>
+						<Size x="125" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.NT" relativePoint="BOTTOMLEFT" y="-15"/>
+						</Anchors>
+					</EditBox>
+					<EditBox parentKey="RA" inherits="XRPEditorSingleLineTemplate">
+						<KeyValues>
+							<KeyValue key="field" value="RA"/>
+							<KeyValue key="nextField" value="RC"/>
+							<KeyValue key="safeLength" value="40" type="number"/>
+						</KeyValues>
+						<Size x="131" y="20"/>
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.AE" relativePoint="RIGHT" x="10"/>
+						</Anchors>
+					</EditBox>
+					<EditBox parentKey="RC" inherits="XRPEditorSingleLineTemplate">
+						<KeyValues>
+							<KeyValue key="field" value="RC"/>
+							<KeyValue key="nextField" value="CU"/>
+							<KeyValue key="safeLength" value="40" type="number"/>
+						</KeyValues>
+						<Size x="131" y="20"/>
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.RA" relativePoint="RIGHT" x="10"/>
+						</Anchors>
+					</EditBox>
+					<EditBox parentKey="CU" inherits="XRPEditorSingleLineTemplate">
+						<KeyValues>
+							<KeyValue key="field" value="CU"/>
+							<KeyValue key="nextField" value="DE"/>
+							<KeyValue key="safeLength" value="120" type="number"/>
+						</KeyValues>
+						<Size x="407" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.AE" relativePoint="BOTTOMLEFT" y="-15"/>
+						</Anchors>
+					</EditBox>
+					<ScrollFrame parentKey="DE" inherits="XRPEditorMultiLineTemplate">
+						<KeyValues>
+							<KeyValue key="field" value="DE"/>
+							<KeyValue key="nextField" value="NA"/>
+						</KeyValues>
+						<Size x="402" y="264"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.CU" relativePoint="BOTTOMLEFT" y="-20"/>
+						</Anchors>
+					</ScrollFrame>
+				</Frames>
+			</Frame>
+			<Frame parentKey="Biography" parentArray="panes" useParentLevel="true" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Inset" relativePoint="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset" relativePoint="BOTTOMRIGHT"/>
+				</Anchors>
+				<Frames>
+					<EditBox parentKey="AG" inherits="XRPEditorSingleLineTemplate">
+						<KeyValues>
+							<KeyValue key="field" value="AG"/>
+							<KeyValue key="nextField" value="HH"/>
+						</KeyValues>
+						<Size x="65" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="14" y="-18"/>
+						</Anchors>
+					</EditBox>
+					<EditBox parentKey="HH" inherits="XRPEditorSingleLineTemplate">
+						<KeyValues>
+							<KeyValue key="field" value="HH"/>
+							<KeyValue key="nextField" value="HB"/>
+						</KeyValues>
+						<Size x="161" y="20"/>
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.AG" relativePoint="RIGHT" x="10"/>
+						</Anchors>
+					</EditBox>
+					<EditBox parentKey="HB" inherits="XRPEditorSingleLineTemplate">
+						<KeyValues>
+							<KeyValue key="field" value="HB"/>
+							<KeyValue key="nextField" value="MO"/>
+						</KeyValues>
+						<Size x="161" y="20"/>
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.HH" relativePoint="RIGHT" x="10"/>
+						</Anchors>
+					</EditBox>
+					<EditBox parentKey="MO" inherits="XRPEditorSingleLineTemplate">
+						<KeyValues>
+							<KeyValue key="field" value="MO"/>
+							<KeyValue key="nextField" value="HI"/>
+							<KeyValue key="safeLength" value="250" type="number"/>
+						</KeyValues>
+						<Size x="407" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.AG" relativePoint="BOTTOMLEFT" y="-15"/>
+						</Anchors>
+					</EditBox>
+					<ScrollFrame parentKey="HI" inherits="XRPEditorMultiLineTemplate">
+						<KeyValues>
+							<KeyValue key="field" value="HI"/>
+							<KeyValue key="nextField" value="FR"/>
+						</KeyValues>
+						<Size x="402" y="294"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.MO" relativePoint="BOTTOMLEFT" y="-20"/>
+						</Anchors>
+					</ScrollFrame>
+					<EditBox parentKey="FR" inherits="XRPEditorSingleLineTemplate">
+						<KeyValues>
+							<KeyValue key="field" value="FR"/>
+							<KeyValue key="nextField" value="AG"/>
+							<KeyValue key="safeLength" value="35" type="number"/>
+						</KeyValues>
+						<Size x="199" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.HI" relativePoint="BOTTOMLEFT" y="-19"/>
+						</Anchors>
+					</EditBox>
+					<Frame name="$parentMenuFC" parentKey="FC" inherits="XRPEditorDropDownTemplate">
+						<KeyValues>
+							<KeyValue key="field" value="FC"/>
+							<KeyValue key="inherited" value="false" type="boolean"/>
+							<KeyValue key="baseMenuList" value="XRPEditorFC_baseMenuList" type="global"/>
+							<KeyValue key="width" value="188" type="number"/>
+						</KeyValues>
+						<Frames>
+							<CheckButton parentKey="Inherit" inherits="XRPEditorInheritCheckTemplate">
+								<Anchors>
+									<Anchor point="LEFT" relativeKey="$parent.Label" relativePoint="RIGHT"/>
+								</Anchors>
+							</CheckButton>
+						</Frames>
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.FR" relativePoint="RIGHT" x="-13" y="-5"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+			</Frame>
+			<Button name="$parentProfiles" parentKey="Profiles" inherits="XRPDropDownTemplate">
+				<KeyValues>
+					<KeyValue key="preClick" value="XRPEditorProfiles_PreClick" type="global"/>
+					<KeyValue key="width" value="100" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-242" y="-30"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="Plus" inherits="XRPEditorProfileControlTemplate" text=" + ">
+				<KeyValues>
+					<KeyValue key="popup" value="XRP_EDITOR_ADD"/>
+					<KeyValue key="tooltipKey" value="ADD"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Profiles" relativePoint="RIGHT" x="34" y="2"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="Minus" inherits="XRPEditorProfileControlTemplate" text=" - ">
+				<KeyValues>
+					<KeyValue key="popup" value="XRP_EDITOR_DELETE"/>
+					<KeyValue key="tooltipKey" value="DELETE"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Plus" relativePoint="RIGHT"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="R" inherits="XRPEditorProfileControlTemplate" text=" R ">
+				<KeyValues>
+					<KeyValue key="popup" value="XRP_EDITOR_RENAME"/>
+					<KeyValue key="tooltipKey" value="RENAME"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Minus" relativePoint="RIGHT"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="C" inherits="XRPEditorProfileControlTemplate" text=" C ">
+				<KeyValues>
+					<KeyValue key="popup" value="XRP_EDITOR_COPY"/>
+					<KeyValue key="tooltipKey" value="COPY"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.R" relativePoint="RIGHT"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="E" inherits="XRPEditorProfileControlTemplate" text=" E ">
+				<KeyValues>
+					<KeyValue key="tooltipKey" value="EXPORT"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.C" relativePoint="RIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="XRPEditorEButton_OnClick"/>
+				</Scripts>
+			</Button>
+			<Button parentKey="Parent" inherits="MagicButtonTemplate" mixin="XRPTemplatesMenu_Mixin">
+				<Size x="192" y="22"/>
+				<KeyValues>
+					<KeyValue key="xOffset" value="0" type="number"/>
+					<KeyValue key="yOffset" value="0" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<Scripts>
+					<PreClick function="XRPEditorParent_PreClick"/>
+					<OnClick function="XRPTemplatesMenu_OnClick"/>
+					<OnHide function="XRPTemplates_CloseDropDownMenus"/>
+				</Scripts>
+			</Button>
+			<Button parentKey="Save" inherits="MagicButtonTemplate" text="SAVE">
+				<Size x="96" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="XRPEditorSave_OnClick"/>
+				</Scripts>
+			</Button>
+			<Button parentKey="Revert" inherits="MagicButtonTemplate" text="REVERT">
+				<Size x="96" y="22"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.Save" relativePoint="TOPLEFT"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="XRPEditorRevert_OnClick"/>
+				</Scripts>
+			</Button>
+			<Button name="$parentTab1" parentKey="Tab1" inherits="XRPTabButtonTemplate" id="1" text="XRP_APPEARANCE">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" y="1"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentTab2" parentKey="Tab2" inherits="XRPTabButtonTemplate" id="2" text="XRP_BIOGRAPHY">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Tab1" relativePoint="RIGHT" x="-16"/>
+				</Anchors>
+			</Button>
+			<Frame parentKey="Automation" inherits="XRPPopoutTemplate">
+				<Size x="209" y="175"/>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="HeaderTop" file="Interface\RaidFrame\UI-RaidInfo-Header">
+							<Size x="189" y="47"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="10" y="-9"/>
+							</Anchors>
+							<TexCoords left="0.18164" right="0.81640" top="0.578125" bottom="0.94531"/>
+						</Texture>
+						<Texture parentKey="HeaderBottom" file="Interface\RaidFrame\UI-RaidInfo-Header">
+							<Size x="190" y="29"/>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" x="9" y="9"/>
+							</Anchors>
+							<TexCoords left="0.18164" right="0.81640" top="0.08593" bottom="0.3125"/>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString parentKey="Title" inherits="GameFontNormal" text="XRP_AUTOMATION">
+							<Size x="185" y="12"/>
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.Header" y="-14"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="Warning" inherits="GameFontRedSmall" maxLines="2" hidden="true">
+							<Size x="185" y="36"/>
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.Header" relativePoint="TOP" y="-36"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame name="$parentForm" parentKey="Form" inherits="XRPEditorDropDownTemplate" mixin="XRPEditorAutomationForm_Mixin">
+						<KeyValues>
+							<KeyValue key="labelKey" value="FORM_SET"/>
+							<KeyValue key="width" value="159" type="number"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" y="-68"/>
+						</Anchors>
+					</Frame>
+					<Frame name="$parentProfile" parentKey="Profile" inherits="XRPEditorDropDownTemplate">
+						<KeyValues>
+							<KeyValue key="labelKey" value="PROFILE_FOR_FORM"/>
+							<KeyValue key="preClick" value="XRPEditorAutomationProfile_PreClick" type="global"/>
+							<KeyValue key="width" value="159" type="number"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Form" relativePoint="BOTTOMLEFT" y="-8"/>
+						</Anchors>
+					</Frame>
+					<Button parentKey="Save" inherits="UIPanelButtonTemplate" text="SAVE">
+						<Size x="90" y="20"/>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" x="-14" y="13"/>
+						</Anchors>
+						<NormalFont style="GameFontNormalSmall"/>
+						<HighlightFont style="GameFontHighlightSmall"/>
+						<DisabledFont style="GameFontDisableSmall"/>
+						<Scripts>
+							<OnClick function="XRPEditorAutomationSave_OnClick"/>
+						</Scripts>
+					</Button>
+					<Button parentKey="Revert" inherits="UIPanelButtonTemplate" text="REVERT">
+						<Size x="90" y="20"/>
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeKey="$parent.Save" relativePoint="TOPLEFT"/>
+						</Anchors>
+						<NormalFont style="GameFontNormalSmall"/>
+						<HighlightFont style="GameFontHighlightSmall"/>
+						<DisabledFont style="GameFontDisableSmall"/>
+						<Scripts>
+							<OnClick function="XRPEditorAutomationRevert_OnClick"/>
+						</Scripts>
+					</Button>
+				</Frames>
+				<Scripts>
+					<OnShow inherit="prepend" function="XRPEditorAutomation_OnShow"/>
+				</Scripts>
+			</Frame>
+			<Frame inherits="XRPNotesTemplate">
+				<Scripts>
+					<OnShow inherit="append" function="XRPEditorNotes_OnShow"/>
+				</Scripts>
+			</Frame>
+			<Button inherits="XRPNotesButtonTemplate"/>
+			<Button parentKey="AutomationButton" inherits="XRPPopoutButtonTemplate" virtual="true">
+				<KeyValues>
+					<KeyValue key="popout" value="Automation"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="BOTTOM" relativeKey="$parent.NotesButton" relativePoint="TOP" y="-2"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="MainIcon" file="Interface/ChatFrame/UI-ChatConversationIcon">
+							<Size x="12" y="13"/>
+							<Anchors>
+								<Anchor point="CENTER" x="-2"/>
+							</Anchors>
+							<Color r="1.0" g="0.80" b="0.20"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Button>
+		</Frames>
+		<Attributes>
+			<Attribute name="UIPanelLayout-pushable" type="number" value="4"/>
+			<Attribute name="UIPanelLayout-extraHeight" type="number" value="20"/>
+		</Attributes>
+		<KeyValues>
+			<KeyValue key="titleKey" value="PROFILE_EDITOR"/>
+			<KeyValue key="portraitUnit" value="player"/>
+			<KeyValue key="Edit" value="XRPEditor_Edit" type="global"/>
+		</KeyValues>
+	</Frame>
+</Ui>

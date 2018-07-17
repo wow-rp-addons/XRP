@@ -1,0 +1,204 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+<!--
+	© Justin Snelgrove
+
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+	<Script file="Archive.lua"/>
+	<Include file="Templates.xml"/>
+
+	<Frame name="XRPArchive" parent="UIParent" inherits="XRPButtonFrameTemplate" mixin="XRPArchive_Mixin">
+		<Size x="338" y="489"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Count" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" x="8" y="10"/>
+					</Anchors>
+					<Color r="0.5" g="0.5" b="0.5"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button inherits="XRPHelpButtonTemplate">
+				<Scripts>
+					<PreClick function="XRPArchiveHelpButton_PreClick"/>
+				</Scripts>
+			</Button>
+			<ScrollFrame parentKey="List" enableMouse="true" useParentLevel="true" inherits="HybridScrollFrameTemplate">
+				<KeyValues>
+					<KeyValue key="update" value="XRPArchiveList_update" type="global"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Inset" x="4" y="-2"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset" x="-22" y="2"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="NoResults" inherits="GameFontNormalLarge" maxLines="1" text="XRP_PROFILES_NOTFOUND">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Slider parentKey="scrollBar" inherits="HybridScrollBarTemplate">
+						<KeyValues>
+							<KeyValue key="doNotHide" value="true" type="boolean"/>
+						</KeyValues>
+						<Scripts>
+							<OnValueChanged inherit="append" function="XRPTemplates_CloseDropDownMenus"/>
+						</Scripts>
+					</Slider>
+				</Frames>
+			</ScrollFrame>
+			<Button parentKey="RefreshButton">
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-8" y="-27"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK" textureSubLevel="5">
+						<Texture parentKey="Icon" file="Interface\Buttons\UI-RefreshButton">
+							<Size x="16" y="16"/>
+							<Anchors>
+								<Anchor point="CENTER" x="-1"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<NormalTexture file="Interface\Buttons\UI-SquareButton-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-SquareButton-Down"/>
+				<DisabledTexture file="Interface\Buttons\UI-SquareButton-Disabled"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+				<Scripts>
+					<OnMouseDown function="XRPTemplatesRefresh_OnMouseDown"/>
+					<OnMouseUp function="XRPTemplatesRefresh_OnMouseUp"/>
+					<OnClick function="XRPArchiveRefreshButton_OnClick"/>
+				</Scripts>
+			</Button>
+			<Button name="$parentFilterButton" parentKey="FilterButton" inherits="UIMenuButtonStretchTemplate" text="FILTER">
+				<KeyValues>
+					<KeyValue key="baseMenuList" value="XRPArchiveFilterButton_baseMenuList" type="global"/>
+				</KeyValues>
+				<Size x="93" y="28"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.RefreshButton" relativePoint="LEFT" x="-5" y="-1"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon" file="Interface\ChatFrame\ChatFrameExpandArrow">
+							<Size x="10" y="12"/>
+							<Anchors>
+								<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="RIGHT" x="-5"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame name="$parentMenu" parentKey="Menu" useParentLevel="true" mixin="XRPTemplatesMenu_Mixin" hidden="true">
+						<KeyValues>
+							<KeyValue key="displayMode" value="MENU"/>
+							<KeyValue key="point" value="TOPLEFT"/>
+							<KeyValue key="relativePoint" value="BOTTOMLEFT"/>
+							<KeyValue key="xOffset" value="74" type="number"/>
+							<KeyValue key="yOffset" value="15" type="number"/>
+						</KeyValues>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString name="$parentText" parentKey="Text" inherits="GameFontNormal"/>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Frame name="$parentIcon" parentKey="Icon" useParentLevel="true"/>
+						</Frames>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnClick function="XRPTemplatesMenu_OnClick"/>
+					<OnHide function="XRPTemplates_CloseDropDownMenus"/>
+				</Scripts>
+			</Button>
+			<EditBox parentKey="FilterText" inherits="SearchBoxTemplate">
+				<Size x="130" y="22"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.FilterButton" relativePoint="LEFT" x="-5" y="1"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="FullTextWarning" inherits="GameFontWhiteSmall" maxLines="1" text="XRP_SEARCH_ENTER">
+							<Size x="120" y="0"/>
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="TOP" y="-1"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="Instructions" justifyH="LEFT" justivyV="TOP" inherits="GameFontDisable" setAllPoints="true">
+							<Color r="0.35" g="0.35" b="0.35"/>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnterPressed inherit="prepend" function="XRPArchiveFilterText_OnTextChanged"/>
+					<OnTextChanged inherit="prepend" function="XRPArchiveFilterText_OnTextChanged"/>
+				</Scripts>
+				<FontString inherits="GameFontHighlight"/>
+			</EditBox>
+			<Button name="$parentTab1" parentKey="Tab1" inherits="XRPArchiveTabTemplate" id="1" text="XRP_BOOKMARKS">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" y="1"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentTab2" parentKey="Tab2" inherits="XRPArchiveTabTemplate" id="2" text="XRP_OWN">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Tab1" relativePoint="RIGHT" x="-16"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentTab3" parentKey="Tab3" inherits="XRPArchiveTabTemplate" id="3" text="XRP_RECENT">
+				<KeyValues>
+					<KeyValue key="resetOffset" value="true" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Tab2" relativePoint="RIGHT" x="-16"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentTab4" parentKey="Tab4" inherits="XRPArchiveTabTemplate" id="4" text="ALL">
+				<KeyValues>
+					<KeyValue key="resetOffset" value="true" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Tab3" relativePoint="RIGHT" x="-16"/>
+				</Anchors>
+			</Button>
+			<Frame inherits="XRPNotesTemplate">
+				<Scripts>
+					<OnHide inherit="prepend" function="XRPArchiveNotes_OnHide"/>
+					<OnAttributeChanged inherit="prepend" function="XRPArchiveNotes_OnAttributeChanged"/>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Attributes>
+			<Attribute name="UIPanelLayout-pushable" type="number" value="1"/>
+			<Attribute name="UIPanelLayout-extraHeight" type="number" value="20"/>
+		</Attributes>
+		<KeyValues>
+			<KeyValue key="titleKey" value="ARCHIVE"/>
+			<KeyValue key="portraitTexture" value="Interface\Icons\INV_Misc_Book_05"/>
+			<KeyValue key="numTabs" value="4" type="number"/>
+		</KeyValues>
+		<Scripts>
+			<OnUpdate function="XRPArchive_OnUpdate"/>
+		</Scripts>
+	</Frame>
+</Ui>

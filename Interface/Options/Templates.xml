@@ -1,0 +1,84 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+<!--
+	© Justin Snelgrove
+
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+	<Script file="Templates.lua"/>
+
+	<CheckButton name="XRPOptionsCheckboxTemplate" parentArray="controls" inherits="XRPCheckBoxTemplate" mixin="XRPOptionsControl_Mixin,XRPOptionsCheckButton_Mixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="type" value="CONTROLTYPE_CHECKBOX" type="global"/>
+		</KeyValues>
+		<Size x="26" y="26"/>
+		<HitRectInsets left="0" right="-500" top="0" bottom="0"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Text" inherits="GameFontHighlightLeft">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" x="2" y="1"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick method="OnClick"/>
+			<OnEnable method="OnEnable"/>
+			<OnDisable method="OnDisable"/>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</CheckButton>
+	<Frame name="XRPOptionsDropDownTemplate" parentArray="controls" inherits="XRPDropDownTemplate" mixin="XRPOptionsControl_Mixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="type" value="CONTROLTYPE_DROPDOWN" type="global"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Label" inherits="GameFontHighlightLeft">
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentRight" relativePoint="RIGHT" x="-10" y="1"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad inherit="prepend" method="OnLoad"/>
+		</Scripts>
+	</Frame>
+	<Frame name="XRPOptionsTemplate" hidden="true" mixin="XRPOptions_Mixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="parent" value="XRP"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Title" inherits="GameFontNormalLarge" justifyH="LEFT" justifyV="TOP">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="16" y="-16"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="SubText" inherits="GameFontHighlightSmall" nonspacewrap="true" maxLines="3" justifyH="LEFT" justifyV="TOP">
+					<Size x="32" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" y="-8"/>
+						<Anchor point="RIGHT" x="-32"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+		</Scripts>
+	</Frame>
+</Ui>
