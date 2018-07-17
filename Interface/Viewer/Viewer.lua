@@ -179,7 +179,11 @@ local function Menu_Click(self, arg1, arg2, checked)
 	elseif arg1 == "XRP_EXPORT" then
 		XRPExport:Export(xrp.ShortName(tostring(current)), tostring(current.fields))
 	elseif arg1 == "XRP_REPORT" then
-		StaticPopup_Show("XRP_REPORT", Ambiguate(tostring(current), "none"), nil, current)
+		local fullName = tostring(current)
+		local name, realm = fullName:match("^([^%-]+)%-([^%-]+)$")
+		local prettyRealm = xrp.RealmDisplayName(realm)
+		local approxTime = ("%02d:%02d"):format(GetGameTime())
+		StaticPopup_Show("XRP_REPORT", Ambiguate(tostring(current), "none"), nil, _xrp.L.REPORT_INFO_TEMPLATE:format(name, prettyRealm, approxTime))
 	elseif arg1 == "XRP_REFRESH_FORCE" then
 		local name, realm = tostring(current):match("^([^%-]+)%-([^%-]+)")
 		StaticPopup_Show("XRP_FORCE_REFRESH", _xrp.L.NAME_REALM:format(name, xrp.RealmDisplayName(realm)), nil, current)

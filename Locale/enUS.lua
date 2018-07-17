@@ -517,11 +517,9 @@ ERR_ADDON = "No RP addon appears to be active."
 SEND_TWEET = "Send Tweet"
 COPY_URL = "Copy URL"
 
-REPORT_PROFILE = "Report Profile"
-REPORT_POPUP = "Do you wish to report \"%s\" for the contents of their roleplay profile?\n\nAbuse of the reporting system may results in actions against your account; please only report abusive, dangerous, or extremely offensive profiles."
-REPORT_SUBMITTED_POPUP = "The profile for \"%s\" has been reported.\n\nIf you are experiencing ongoing harassment, you should also submit a ticket to Blizzard."
-REPORT_FAILED_POPUP = "The report for \"%s\" has |cffdd380fFAILED|r.\n\nYou should submit a ticket to Blizzard to report this profile."
-ERR_FULL_NAME_UNAVAILABLE = "(Name not found)"
+REPORT_PROFILE = "Reporting Info"
+REPORT_POPUP = "|cffdd380fYou must submit a ticket to Blizzard to report a profile.|r\n\nYou should copy the information from the text box below (%s) to add to your ticket."
+REPORT_INFO_TEMPLATE = "Logged addon message prefix: MSP; Player name: %s; Realm name: %s; Approximate game time: %s"
 
 -- ui/viewer.xml
 PROFILE_VIEWER = "Profile Viewer"

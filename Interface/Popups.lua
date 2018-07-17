@@ -79,35 +79,23 @@ StaticPopupDialogs["XRP_RELOAD"] = {
 	whileDead = true,
 	hideOnEscape = true,
 }
-
 StaticPopupDialogs["XRP_REPORT"] = {
-	text = _xrp.L.REPORT_POPUP,
-	button1 = YES,
-	button2 = NO,
-	OnAccept = function(self, character)
-		local success = AddOn_Chomp.ReportGUID("MSP", character.fields.GU)
-		if success then
-			StaticPopup_Show("XRP_REPORT_SUBMITTED", Ambiguate(tostring(character), "none"))
-		else
-			StaticPopup_Show("XRP_REPORT_FAILED", Ambiguate(tostring(character), "none"))
-		end
+	text = _xrp.L.REPORT_POPUP:format(not IsMacClient() and "Ctrl+C" or "Cmd+C"),
+	button1 = OKAY,
+	hasEditBox = true,
+	editBoxWidth = 250,
+	OnShow = function(self, info)
+		self.editBox:SetText(info or "")
+		self.editBox:HighlightText()
+		self.editBox:SetCursorPosition(0)
 	end,
-	enterClicksFirstButton = true,
-	whileDead = true,
-	hideOnEscape = true,
-}
-
-StaticPopupDialogs["XRP_REPORT_SUBMITTED"] = {
-	text = _xrp.L.REPORT_SUBMITTED_POPUP,
-	button1 = OKAY,
-	enterClicksFirstButton = true,
-	whileDead = true,
-	hideOnEscape = true,
-}
-
-StaticPopupDialogs["XRP_REPORT_FAILED"] = {
-	text = _xrp.L.REPORT_FAILED_POPUP,
-	button1 = OKAY,
+	EditBoxOnTextChanged = function(self, info)
+		self:SetText(info or "")
+		self:HighlightText()
+		self:SetCursorPosition(0)
+	end,
+	EditBoxOnEnterPressed = HideParentPanel,
+	EditBoxOnEscapePressed = HideParentPanel,
 	enterClicksFirstButton = true,
 	whileDead = true,
 	hideOnEscape = true,
