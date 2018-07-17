@@ -21,9 +21,9 @@ local function FallbackFieldContents(field)
 	if xrpSaved.meta.fields[field] then
 		return xrpSaved.meta.fields[field]
 	elseif field == "RA" then
-		return xrp.L.VALUES.GR[xrpSaved.meta.fields.GR]
+		return xrp.L.VALUES.GR[select(2, UnitRace("player"))]
 	elseif field == "RC" then
-		return xrp.L.VALUES.GC["1"][xrpSaved.meta.fields.GC]
+		return xrp.L.VALUES.GC["1"][select(2, UnitClass("player"))]
 	end
 	return nil
 end
