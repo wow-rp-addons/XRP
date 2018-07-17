@@ -68,6 +68,12 @@ local function RenderLine(multiLine, left, right, lR, lG, lB, rR, rG, rB)
 	elseif left == true then
 		left = nil
 	end
+	if left then
+		left = left:gsub("\n+", " ")
+	end
+	if right then
+		right = right:gsub("\n+", " ")
+	end
 	local maxWidth = TOOLTIP_WIDTH / (left and right and 2 or 1)
 	rendering = true
 	lineNum = lineNum + 1
