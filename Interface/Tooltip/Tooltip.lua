@@ -386,7 +386,7 @@ local function SetUnit(unit)
 
 		local name = UnitName(unit)
 		local r, g, b = UnitSelectionColor(unit)
-		local color = SELECTION_COLORS[("%02x%02x%02x"):format(math.ceil(r * 255), math.ceil(g * 255), math.ceil(b * 255))]
+		local color = SELECTION_COLORS[("%02x%02x%02x"):format(math.ceil(math.floor((r * 10) + 0.5) * 25.5), math.ceil(math.floor((g * 10) + 0.5) * 25.5), math.ceil(math.floor((b * 10) + 0.5) * 25.5))]
 		currentUnit.nameFormat = ("%s%s|r"):format(color, name)
 
 		local ffa = UnitIsPVPFreeForAll(unit)
