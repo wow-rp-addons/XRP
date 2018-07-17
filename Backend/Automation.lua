@@ -18,7 +18,7 @@
 local FOLDER, _xrp = ...
 
 local isWorgen = select(2, UnitRace("player")) == "Worgen"
-local playerClass = select(2, UnitClassBase("player"))
+local playerClass = select(2, UnitClass("player"))
 if not (playerClass == "DRUID" or playerClass == "PRIEST" or playerClass == "SHAMAN") then
 	playerClass = nil
 end
