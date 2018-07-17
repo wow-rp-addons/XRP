@@ -217,6 +217,6 @@ _xrp.HookGameEvent("PLAYER_LOGOUT", function(event)
 	-- made. If there are any errors in here, they are not visible in
 	-- any manner in-game.
 	if next(xrpSaved.overrides.fields) then
-		xrpSaved.overrides.logout = now
+		xrpSaved.overrides.logout = time()
 	end
 end)
