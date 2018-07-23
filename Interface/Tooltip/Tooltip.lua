@@ -105,7 +105,7 @@ local function RenderLine(multiLine, left, right, lR, lG, lB, rR, rG, rB)
 	if LeftLine:GetWidth() > maxWidth then
 		LeftLine:SetWidth(maxWidth)
 		if multiLine then
-			LeftLine:SetMaxLines(3)
+			LeftLine:SetMaxLines(2)
 		else
 			LeftLine:SetMaxLines(1)
 		end
@@ -114,7 +114,7 @@ local function RenderLine(multiLine, left, right, lR, lG, lB, rR, rG, rB)
 	if RightLine:GetWidth() > maxWidth then
 		RightLine:SetWidth(maxWidth)
 		if multiLine then
-			RightLine:SetMaxLines(3)
+			RightLine:SetMaxLines(2)
 		else
 			RightLine:SetMaxLines(1)
 		end
