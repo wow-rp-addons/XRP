@@ -13,12 +13,13 @@
 ## SavedVariables: xrpAccountSaved, xrpCache
 
 Libraries\Libraries.xml
+Locale\GetText.lua
+Locale\enUS.lua
 Backend\Init.lua
+Locale\Setup.lua
 Backend\Settings\Defaults.lua
 Backend\Settings\Upgrade.lua
 Backend\Settings\Settings.lua
-Locale\enUS.lua
-Locale\Setup.lua
 Backend\Utility.lua
 Backend\Export.lua
 Backend\Profiles.lua

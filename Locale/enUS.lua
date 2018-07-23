@@ -15,13 +15,15 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local LANGUAGE = "en"
-
 local FOLDER_NAME, AddOn = ...
-if AddOn.language ~= LANGUAGE then return end
-setfenv(1, AddOn.GetText)
 
-local UNTRANSLATED = " (Needs translation.)"
+local LOCALE = "enUS"
+
+local AddLocale, _G = AddOn.AddLocale, _G
+local ConstantTable = {}
+--local LookupTable = {}
+
+_G.setfenv(1, ConstantTable)
 
 -- Standard field names suited for most display.
 FIELD_NA = "Name"
@@ -523,3 +525,5 @@ REPORT_INFO_TEMPLATE = "Logged addon message prefix: MSP; Player name: %s; Realm
 
 -- ui/viewer.xml
 PROFILE_VIEWER = "Profile Viewer"
+
+AddLocale(LOCALE, ConstantTable, LookupTable)

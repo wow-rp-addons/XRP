@@ -16,11 +16,9 @@
 ]]
 
 local FOLDER_NAME, AddOn = ...
+local L = AddOn.GetText
 
 xrp = {}
-
-AddOn.GetText = {}
-local L = AddOn.GetText
 
 local SUPPORTED_LANGUAGES = {
 	enUS = "en",
