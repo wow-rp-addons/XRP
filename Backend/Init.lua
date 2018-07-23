@@ -107,12 +107,12 @@ end)
 
 local VERSION_MATCH = "^(%d+)%.(%d+)%.(%d+)[%-]?(%l*)(%d*)"
 local function CompareVersion(newVersion, oldVersion)
-	local newMajor, newMinor, newPatch, newType, newRevision = newVersion:match(VERSION_MATCH)
-	local oldMajor, oldMinor, oldPatch, oldType, oldRevision = oldVersion:match(VERSION_MATCH)
-	if newType:find("^dev") then
+	if newVersion:find("dev", nil, true) then
 		-- Never issue updates for git -dev versions.
 		return -1
 	end
+	local newMajor, newMinor, newPatch, newType, newRevision = newVersion:match(VERSION_MATCH)
+	local oldMajor, oldMinor, oldPatch, oldType, oldRevision = oldVersion:match(VERSION_MATCH)
 
 	newType = newType == "alpha" and 1 or newType == "beta" and 2 or newType == "rc" and 3 or 4
 	oldType = oldType == "alpha" and 1 or oldType == "beta" and 2 or oldType == "rc" and 3 or 4
