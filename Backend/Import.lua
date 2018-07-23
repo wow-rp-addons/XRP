@@ -15,15 +15,16 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local FOLDER, _xrp = ...
+local FOLDER_NAME, AddOn = ...
+local L = AddOn.GetText
 
-local hasMRP, hasTRP3 = (GetAddOnEnableState(_xrp.player, "MyRolePlay") == 2), (GetAddOnEnableState(_xrp.player, "totalRP3") == 2)
+local hasMRP, hasTRP3 = (GetAddOnEnableState(AddOn.player, "MyRolePlay") == 2), (GetAddOnEnableState(AddOn.player, "totalRP3") == 2)
 if not (hasMRP or hasTRP3) then return end
 
 local MRP_NO_IMPORT = { TT = true, VA = true, VP = true, GC = true, GF = true, GR = true, GS = true, GU = true }
 
 StaticPopupDialogs["XRP_IMPORT_RELOAD"] = {
-	text = _xrp.L.IMPORT_RELOAD,
+	text = L.IMPORT_RELOAD,
 	button1 = RELOADUI,
 	button2 = CANCEL,
 	OnAccept = ReloadUI,
@@ -76,7 +77,7 @@ local function ImportTotalRP3()
 	if not TRP3_Profiles or not TRP3_Characters then
 		return 0
 	end
-	local oldProfile = TRP3_Profiles[TRP3_Characters[_xrp.playerWithRealm].profileID]
+	local oldProfile = TRP3_Profiles[TRP3_Characters[AddOn.playerWithRealm].profileID]
 	if not oldProfile then
 		return 0
 	end
@@ -87,7 +88,7 @@ local function ImportTotalRP3()
 
 	local NA = {}
 	NA[#NA + 1] = oldProfile.player.characteristics.TI
-	NA[#NA + 1] = oldProfile.player.characteristics.FN or _xrp.player
+	NA[#NA + 1] = oldProfile.player.characteristics.FN or AddOn.player
 	NA[#NA + 1] = oldProfile.player.characteristics.LN
 	profile.fields.NA = table.concat(NA, " ")
 	profile.fields.NT = oldProfile.player.characteristics.FT
@@ -102,11 +103,11 @@ local function ImportTotalRP3()
 	if oldProfile.player.characteristics.MI then
 		local NI, NH, MO = {}, {}, {}
 		for i, custom in ipairs(oldProfile.player.characteristics.MI) do
-			if custom.NA == _xrp.L.TRP3_NICKNAME then
+			if custom.NA == L.TRP3_NICKNAME then
 				NI[#NI + 1] = custom.VA
-			elseif custom.NA == _xrp.L.TRP3_HOUSE_NAME then
+			elseif custom.NA == L.TRP3_HOUSE_NAME then
 				NH[#NH + 1] = custom.VA
-			elseif custom.NA == _xrp.L.TRP3_MOTTO then
+			elseif custom.NA == L.TRP3_MOTTO then
 				MO[#MO + 1] = custom.VA
 			end
 		end
@@ -117,7 +118,7 @@ local function ImportTotalRP3()
 	local CU = {}
 	CU[#CU + 1] = oldProfile.player.character.CU
 	if oldProfile.player.character.CO then
-		CU[#CU + 1] = _xrp.L.OOC_TEXT:format(oldProfile.player.character.CO)
+		CU[#CU + 1] = L.OOC_TEXT:format(oldProfile.player.character.CO)
 	end
 	profile.fields.CU = table.concat(CU, " ")
 	profile.fields.FC = tostring(oldProfile.player.character.RP)
@@ -139,19 +140,19 @@ local function ImportTotalRP3()
 	return 1
 end
 
-_xrp.HookGameEvent("PLAYER_LOGIN", function(event)
+AddOn.HookGameEvent("PLAYER_LOGIN", function(event)
 	local imported = false
 	if hasMRP and select(2, IsAddOnLoaded("MyRolePlay")) then
 		local count = ImportMyRolePlay()
 		if count > 0 then
-			DisableAddOn("MyRolePlay", _xrp.player)
+			DisableAddOn("MyRolePlay", AddOn.player)
 			imported = true
 		end
 	end
 	if hasTRP3 and select(2, IsAddOnLoaded("totalRP3")) then
 		local count = ImportTotalRP3()
 		if count > 0 then
-			DisableAddOn("totalRP3", _xrp.player)
+			DisableAddOn("totalRP3", AddOn.player)
 			imported = true
 		end
 	end

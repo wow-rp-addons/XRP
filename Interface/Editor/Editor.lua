@@ -15,7 +15,8 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local FOLDER, _xrp = ...
+local FOLDER_NAME, AddOn = ...
+local L = AddOn.GetText
 
 local function FallbackFieldContents(field)
 	if xrpSaved.meta.fields[field] then
@@ -117,9 +118,9 @@ function XRPEditor_Edit(self, name)
 
 	local value = xrp.profiles[name].parent
 	self.Parent.contents = value
-	self.Parent:SetFormattedText(SUBTITLE_FORMAT, _xrp.L.PARENT, value or NONE)
+	self.Parent:SetFormattedText(SUBTITLE_FORMAT, L.PARENT, value or NONE)
 
-	self.TitleText:SetFormattedText(SUBTITLE_FORMAT, _xrp.L.PROFILE_EDITOR, name)
+	self.TitleText:SetFormattedText(SUBTITLE_FORMAT, L.PROFILE_EDITOR, name)
 
 	CheckFields()
 end
@@ -161,7 +162,7 @@ end
 local function Parent_Click(self, arg1, arg2, checked)
 	if not checked then
 		UIDROPDOWNMENU_INIT_MENU.contents = arg1
-		UIDROPDOWNMENU_INIT_MENU:SetFormattedText(SUBTITLE_FORMAT, _xrp.L.PARENT, arg1 or NONE)
+		UIDROPDOWNMENU_INIT_MENU:SetFormattedText(SUBTITLE_FORMAT, L.PARENT, arg1 or NONE)
 		CheckFields()
 	end
 end
@@ -229,7 +230,7 @@ function XRPEditorDropDown_OnAttributeChanged(self, name, value)
 end
 
 function XRPEditorControls_OnLoad(self)
-	local fieldName = xrp.L.FIELDS[self.field] or _xrp.L[self.labelKey]
+	local fieldName = xrp.L.FIELDS[self.field] or L[self.labelKey]
 	self.Label:SetText(fieldName)
 	if self.EditBox then
 		self.EditBox.field = self.field
@@ -238,7 +239,7 @@ function XRPEditorControls_OnLoad(self)
 		self.EditBox.Warning = self.Warning
 	end
 	if self.safeLength then
-		self.Warning.tooltipText = ("|cffcc0000%s|r %s"):format(STAT_FORMAT:format(_xrp.L.WARNING), _xrp.L.WARNING_LENGTH:format(fieldName, self.safeLength))
+		self.Warning.tooltipText = ("|cffcc0000%s|r %s"):format(STAT_FORMAT:format(L.WARNING), L.WARNING_LENGTH:format(fieldName, self.safeLength))
 	end
 	if self.field then
 		if not XRPEditor.fields then

@@ -15,7 +15,8 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local FOLDER, _xrp = ...
+local FOLDER_NAME, AddOn = ...
+local L = AddOn.GetText
 
 local isWorgen = select(2, UnitRace("player")) == "Worgen"
 local playerClass = select(2, UnitClass("player"))
@@ -57,7 +58,7 @@ local FORM_NO_EQUIPMENT = {
 	["TREANT"] = true,
 	["MERCENARY"] = true,
 }
-_xrp.FORM_NO_EQUIPMENT = FORM_NO_EQUIPMENT
+AddOn.FORM_NO_EQUIPMENT = FORM_NO_EQUIPMENT
 local lastEquipSet
 local function GetCurrentForm()
 	local mercenaryForm = UnitIsMercenary("player")
@@ -125,42 +126,42 @@ local function DoSwap()
 	if mercenary then
 		form = "MERCENARY"
 	end
-	if not _xrp.auto[form] and race then
+	if not AddOn.auto[form] and race then
 		-- RACE-CLASS-Equipment (Worgen only)
 		if class and equip then
 			form = ("%s\030%s\029%s"):format(race, class, equip)
 		end
 		-- RACE-CLASS (Worgen only)
-		if not _xrp.auto[form] and class then
+		if not AddOn.auto[form] and class then
 			form = ("%s\030%s"):format(race, class)
 		end
 	end
 	-- RACE-Equipment (Worgen only)/CLASS-Equipment
-	if not _xrp.auto[form] and (race or class) and equip then
+	if not AddOn.auto[form] and (race or class) and equip then
 		form = ("%s\029%s"):format(race or class, equip)
 	end
 	-- RACE (Worgen only)/CLASS
-	if not _xrp.auto[form] and (race or class) then
+	if not AddOn.auto[form] and (race or class) then
 		form = race or class
 	end
 	-- DEFAULT-CLASS-Equipment (Worgen only)
-	if not _xrp.auto[form] and race and race ~= "DEFAULT" and class and equip then
+	if not AddOn.auto[form] and race and race ~= "DEFAULT" and class and equip then
 		form = ("DEFAULT\030%s\029%s"):format(class, equip)
 	end
 	-- DEFAULT-Equipment
-	if not _xrp.auto[form] and equip then
+	if not AddOn.auto[form] and equip then
 		form = ("DEFAULT\029%s"):format(equip)
 	end
 	-- DEFAULT
-	if not _xrp.auto[form] then
+	if not AddOn.auto[form] then
 		form = "DEFAULT"
 	end
 
 	--print(form and (form:gsub("\030", "-"):gsub("\029", "-")) or "NONE")
-	if not _xrp.auto[form] then
+	if not AddOn.auto[form] then
 		return
 	end
-	xrp.profiles[_xrp.auto[form]]:Activate(true)
+	xrp.profiles[AddOn.auto[form]]:Activate(true)
 end
 
 local function TestForm(event, unit)
@@ -191,13 +192,13 @@ local function RecheckForm()
 end
 
 -- Portrait update catches worgen, equipment sets. Shapeshift catches others.
-_xrp.HookGameEvent("UNIT_PORTRAIT_UPDATE", TestForm, "player")
-_xrp.HookGameEvent("UPDATE_SHAPESHIFT_FORM", TestForm)
+AddOn.HookGameEvent("UNIT_PORTRAIT_UPDATE", TestForm, "player")
+AddOn.HookGameEvent("UPDATE_SHAPESHIFT_FORM", TestForm)
 -- Catch combat, for delaying changes.
-_xrp.HookGameEvent("PLAYER_REGEN_ENABLED", TestForm)
-_xrp.HookGameEvent("PLAYER_REGEN_DISABLED", CancelTimer)
+AddOn.HookGameEvent("PLAYER_REGEN_ENABLED", TestForm)
+AddOn.HookGameEvent("PLAYER_REGEN_DISABLED", CancelTimer)
 
-_xrp.HookGameEvent("PLAYER_LOGIN", function(event)
+AddOn.HookGameEvent("PLAYER_LOGIN", function(event)
 	local now = time()
 	if xrpSaved.lastCleanUp and xrpSaved.lastCleanUp > now - 72000 then return end
 	C_Timer.After(10, function()
@@ -245,7 +246,7 @@ _xrp.HookGameEvent("PLAYER_LOGIN", function(event)
 		xrpSaved.lastCleanUp = now
 
 		if importantRemove then
-			StaticPopup_Show("XRP_ERROR", _xrp.L.REMOVED_AUTO_FORMS)
+			StaticPopup_Show("XRP_ERROR", L.REMOVED_AUTO_FORMS)
 		end
 
 		if not next(toRemove) then
@@ -276,7 +277,7 @@ _xrp.HookGameEvent("PLAYER_LOGIN", function(event)
 	end)
 end)
 
-_xrp.auto = setmetatable({}, {
+AddOn.auto = setmetatable({}, {
 	__index = function(self, form)
 		local profile = xrpSaved.auto[form]
 		if not xrpSaved.profiles[profile] then

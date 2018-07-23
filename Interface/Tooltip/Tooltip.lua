@@ -15,7 +15,8 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local FOLDER, _xrp = ...
+local FOLDER_NAME, AddOn = ...
+local L = AddOn.GetText
 
 local currentUnit = {
 	lines = {},
@@ -129,7 +130,7 @@ local COLORS = {
 	Horde = { r = 1.00, g = 0.38, b = 0.42},
 	Neutral = FACTION_BAR_COLORS[4],
 }
-local NI_FORMAT = ("|cff6070a0%s|r %s"):format(STAT_FORMAT:format(xrp.L.FIELDS.NI), _xrp.L.NICKNAME)
+local NI_FORMAT = ("|cff6070a0%s|r %s"):format(STAT_FORMAT:format(xrp.L.FIELDS.NI), L.NICKNAME)
 local NI_FORMAT_NOQUOTE = ("|cff6070a0%s|r %s"):format(STAT_FORMAT:format(xrp.L.FIELDS.NI), "%s")
 local CU_FORMAT = ("|cffa08050%s|r %%s"):format(STAT_FORMAT:format(xrp.L.FIELDS.CU))
 local function RenderTooltip()
@@ -143,7 +144,7 @@ local function RenderTooltip()
 			XRPTooltip:ClearLines()
 			XRPTooltip:SetOwner(GameTooltip, "ANCHOR_TOPRIGHT")
 			if currentUnit.character.hide then
-				RenderLine(false, _xrp.L.HIDDEN, nil, 0.5, 0.5, 0.5)
+				RenderLine(false, L.HIDDEN, nil, 0.5, 0.5, 0.5)
 				XRPTooltip:Show()
 				return
 			elseif (not showProfile or not fields.VA) then
@@ -157,20 +158,20 @@ local function RenderTooltip()
 		end
 		if showProfile then
 			local NI = xrp.Strip(fields.NI)
-			RenderLine(false, NI and (not NI:find(_xrp.L.QUOTE_MATCH) and NI_FORMAT or NI_FORMAT_NOQUOTE):format(NI), nil, 0.6, 0.7, 0.9)
+			RenderLine(false, NI and (not NI:find(L.QUOTE_MATCH) and NI_FORMAT or NI_FORMAT_NOQUOTE):format(NI), nil, 0.6, 0.7, 0.9)
 			RenderLine(true, xrp.Strip(fields.NT), nil, 0.8, 0.8, 0.8)
-			if _xrp.settings.tooltipShowHouse then
+			if AddOn.settings.tooltipShowHouse then
 				RenderLine(true, xrp.Strip(fields.NH), nil, 0.4, 0.6, 0.7)
 			end
 		end
-		if _xrp.settings.tooltipShowExtraSpace then
+		if AddOn.settings.tooltipShowExtraSpace then
 			RenderLine(false, true)
 		end
 		if replace then
 			RenderLine(false, currentUnit.guild, nil, 1, 1, 1)
 			local color = COLORS[currentUnit.faction]
-			RenderLine(false, currentUnit.titleRealm, currentUnit.character.hide and _xrp.L.HIDDEN or showProfile and ParseVersion(fields.VA), color.r, color.g, color.b, 0.5, 0.5, 0.5)
-			if _xrp.settings.tooltipShowExtraSpace then
+			RenderLine(false, currentUnit.titleRealm, currentUnit.character.hide and L.HIDDEN or showProfile and ParseVersion(fields.VA), color.r, color.g, color.b, 0.5, 0.5, 0.5)
+			if AddOn.settings.tooltipShowExtraSpace then
 				RenderLine(false, true)
 			end
 		end
@@ -178,13 +179,13 @@ local function RenderTooltip()
 			local CU, CO = xrp.Strip(fields.CU), xrp.Strip(fields.CO)
 			RenderLine(true, (CU or CO) and CU_FORMAT:format(xrp.MergeCurrently(xrp.Link(CU), xrp.Link(CO))), nil, 0.9, 0.7, 0.6)
 		end
-		local RA = showProfile and not _xrp.settings.tooltipHideRace and xrp.Strip(fields.RA) or xrp.L.VALUES.GR[fields.GR] or UNKNOWN
+		local RA = showProfile and not AddOn.settings.tooltipHideRace and xrp.Strip(fields.RA) or xrp.L.VALUES.GR[fields.GR] or UNKNOWN
 		local RAlen = #RA
 		RA = AddOn_Chomp.SafeSubString(RA, 1, INLINE_LENGTH)
 		if #RA < RAlen then
 			RA = RA .. CONTINUED
 		end
-		local RC = showProfile and not _xrp.settings.tooltipHideClass and xrp.Strip(fields.RC) or xrp.L.VALUES.GC[fields.GS][fields.GC] or UNKNOWN
+		local RC = showProfile and not AddOn.settings.tooltipHideClass and xrp.Strip(fields.RC) or xrp.L.VALUES.GC[fields.GS][fields.GC] or UNKNOWN
 		local RClen = #RC
 		RC = AddOn_Chomp.SafeSubString(RC, 1, INLINE_LENGTH)
 		if #RC < RClen then
@@ -203,7 +204,7 @@ local function RenderTooltip()
 		RenderLine(false, currentUnit.nameFormat, currentUnit.icons)
 		if currentUnit.reaction then
 			RenderLine(false, currentUnit.reaction, nil, 1, 1, 1)
-			if _xrp.settings.tooltipShowExtraSpace then
+			if AddOn.settings.tooltipShowExtraSpace then
 				RenderLine(false, true)
 			end
 		end
@@ -278,11 +279,11 @@ local PET_TITLE_CLASS = {
 	[UNITNAME_SUMMON_TITLE16] = "MONK",
 }
 local PET_TYPE_CLASS = {
-	[_xrp.L.PET_BEAST] = "HUNTER",
-	[_xrp.L.PET_MECHANICAL] = "HUNTER",
-	[_xrp.L.PET_UNDEAD] = "DEATHKNIGHT",
-	[_xrp.L.PET_ELEMENTAL] = "MAGE",
-	[_xrp.L.PET_DEMON] = "WARLOCK",
+	[L.PET_BEAST] = "HUNTER",
+	[L.PET_MECHANICAL] = "HUNTER",
+	[L.PET_UNDEAD] = "DEATHKNIGHT",
+	[L.PET_ELEMENTAL] = "MAGE",
+	[L.PET_DEMON] = "WARLOCK",
 }
 local function SetUnit(unit)
 	currentUnit.type = UnitIsPlayer(unit) and "player" or replace and UnitPlayerControlled(unit) and not UnitIsBattlePet(unit) and "pet"
@@ -306,8 +307,8 @@ local function SetUnit(unit)
 		local r, g, b = UnitSelectionColor(unit)
 		local color = SELECTION_COLORS[("%02x%02x%02x"):format(math.ceil(math.floor((r * 10) + 0.5) * 25.5), math.ceil(math.floor((g * 10) + 0.5) * 25.5), math.ceil(math.floor((b * 10) + 0.5) * 25.5))]
 
-		local watchIcon = _xrp.settings.tooltipShowWatchEye and unit ~= "player" and UnitIsUnit("player", unit .. "target") and "|TInterface\\LFGFrame\\BattlenetWorking0:28:28:8:1|t"
-		local bookmarkIcon = _xrp.settings.tooltipShowBookmarkFlag and currentUnit.character.bookmark and "|TInterface\\MINIMAP\\POIICONS:18:18:4:0:256:512:54:72:54:72|t"
+		local watchIcon = AddOn.settings.tooltipShowWatchEye and unit ~= "player" and UnitIsUnit("player", unit .. "target") and "|TInterface\\LFGFrame\\BattlenetWorking0:28:28:8:1|t"
+		local bookmarkIcon = AddOn.settings.tooltipShowBookmarkFlag and currentUnit.character.bookmark and "|TInterface\\MINIMAP\\POIICONS:18:18:4:0:256:512:54:72:54:72|t"
 		local GC = currentUnit.character.fields.GC
 
 		if replace then
@@ -326,21 +327,21 @@ local function SetUnit(unit)
 			end
 
 			local guildName, guildRank, guildIndex = GetGuildInfo(unit)
-			currentUnit.guild = guildName and (_xrp.settings.tooltipShowGuildRank and (_xrp.settings.tooltipShowGuildIndex and _xrp.L.GUILD_RANK_INDEX or _xrp.L.GUILD_RANK) or _xrp.L.GUILD):format(_xrp.settings.tooltipShowGuildRank and guildRank or guildName, _xrp.settings.tooltipShowGuildIndex and guildIndex + 1 or guildName, guildName)
+			currentUnit.guild = guildName and (AddOn.settings.tooltipShowGuildRank and (AddOn.settings.tooltipShowGuildIndex and L.GUILD_RANK_INDEX or L.GUILD_RANK) or L.GUILD):format(AddOn.settings.tooltipShowGuildRank and guildRank or guildName, AddOn.settings.tooltipShowGuildIndex and guildIndex + 1 or guildName, guildName)
 
 			local realm = tostring(currentUnit.character):match("%-([^%-]+)$")
-			if realm == _xrp.realm then
+			if realm == AddOn.realm then
 				realm = nil
 			end
 			local name = UnitPVPName(unit) or xrp.ShortName(tostring(currentUnit.character))
-			currentUnit.titleRealm = (colorblind and _xrp.L.ASIDE or "%s"):format(realm and _xrp.L.NAME_REALM:format(name, xrp.RealmDisplayName(realm)) or name, colorblind and xrp.L.VALUES.GF[currentUnit.faction])
+			currentUnit.titleRealm = (colorblind and L.ASIDE or "%s"):format(realm and L.NAME_REALM:format(name, xrp.RealmDisplayName(realm)) or name, colorblind and xrp.L.VALUES.GF[currentUnit.faction])
 
 			local GS = colorblind and currentUnit.character.fields.GS
 			currentUnit.reaction = colorblind and GetText(REACTION:format(UnitReaction("player", unit)), tonumber(GS))
 
 			local level = UnitLevel(unit)
 			local effectiveLevel = UnitEffectiveLevel(unit)
-			level = effectiveLevel == level and (level < 1 and _xrp.L.LETHAL_LEVEL or tostring(level)) or effectiveLevel < 1 and tostring(level) or EFFECTIVE_LEVEL_FORMAT:format(tostring(effectiveLevel), tostring(level))
+			level = effectiveLevel == level and (level < 1 and L.LETHAL_LEVEL or tostring(level)) or effectiveLevel < 1 and tostring(level) or EFFECTIVE_LEVEL_FORMAT:format(tostring(effectiveLevel), tostring(level))
 			currentUnit.info = (TOOLTIP_UNIT_LEVEL_RACE_CLASS_TYPE):format(level, "%s", ("|c%s%%s|r"):format(RAID_CLASS_COLORS[GC] and RAID_CLASS_COLORS[GC].colorStr or "ffffffff"), colorblind and xrp.L.VALUES.GC[GS][GC] or PLAYER)
 
 			local location = connected and not UnitIsVisible(unit) and GameTooltipTextLeft3:GetText()
@@ -381,7 +382,7 @@ local function SetUnit(unit)
 
 		currentUnit.character = xrp.characters.byName[owner]
 
-		local isOwnPet = UnitIsUnit(unit, "playerpet") or owner == _xrp.player
+		local isOwnPet = UnitIsUnit(unit, "playerpet") or owner == AddOn.player
 		currentUnit.faction = UnitFactionGroup(unit) or isOwnPet and playerFaction or currentUnit.character.fields.GF or "Neutral"
 
 		local name = UnitName(unit)
@@ -396,24 +397,24 @@ local function SetUnit(unit)
 		local creatureType = UnitCreatureType(unit)
 		local GC = (isOwnPet or UnitIsOtherPlayersPet(unit)) and PET_TITLE_CLASS[petLabel] == true and PET_TYPE_CLASS[creatureType] or PET_TITLE_CLASS[petLabel]
 
-		if race == _xrp.L.PET_GHOUL then
+		if race == L.PET_GHOUL then
 			race = creatureType
-		elseif name == _xrp.L.PET_NAME_RISEN_SKULKER then
+		elseif name == L.PET_NAME_RISEN_SKULKER then
 			GC = "DEATHKNIGHT"
-		elseif name == _xrp.L.PET_NAME_HATI then
+		elseif name == L.PET_NAME_HATI then
 			GC = "HUNTER"
-		elseif GC == "HUNTER" and not race or GC == "MAGE" and race ~= _xrp.L.PET_WATER_ELEMENTAL or UnitIsCharmed(unit) then
+		elseif GC == "HUNTER" and not race or GC == "MAGE" and race ~= L.PET_WATER_ELEMENTAL or UnitIsCharmed(unit) then
 			GC = nil
 		end
 
 		local realm = owner:match("%-([^%-]+)$")
-		currentUnit.titleRealm = (colorblind and _xrp.L.ASIDE or "%s"):format(realm and _xrp.L.NAME_REALM:format(petLabel, xrp.RealmDisplayName(realm)) or petLabel, colorblind and xrp.L.VALUES.GF[currentUnit.faction])
+		currentUnit.titleRealm = (colorblind and L.ASIDE or "%s"):format(realm and L.NAME_REALM:format(petLabel, xrp.RealmDisplayName(realm)) or petLabel, colorblind and xrp.L.VALUES.GF[currentUnit.faction])
 
 		currentUnit.reaction = colorblind and GetText(REACTION:format(UnitReaction("player", unit)), UnitSex(unit))
 
 		local level = UnitLevel(unit)
 		local effectiveLevel = UnitEffectiveLevel(unit)
-		level = effectiveLevel == level and (level < 1 and _xrp.L.LETHAL_LEVEL or tostring(level)) or effectiveLevel < 1 and tostring(level) or EFFECTIVE_LEVEL_FORMAT:format(tostring(effectiveLevel), tostring(level))
+		level = effectiveLevel == level and (level < 1 and L.LETHAL_LEVEL or tostring(level)) or effectiveLevel < 1 and tostring(level) or EFFECTIVE_LEVEL_FORMAT:format(tostring(effectiveLevel), tostring(level))
 		currentUnit.info = TOOLTIP_UNIT_LEVEL_CLASS_TYPE:format(level, GC and ("|c%s%s|r"):format(RAID_CLASS_COLORS[GC] and RAID_CLASS_COLORS[GC].colorStr or "ffffffff", race or creatureType or UNKNOWN) or race or creatureType or UNKNOWN, colorblind and GC and ("%s %s"):format(xrp.L.VALUES.GC[currentUnit.character.fields.GS][GC], PET) or PET)
 
 		if currentUnit.icons then
@@ -423,7 +424,7 @@ local function SetUnit(unit)
 			defaultLines = defaultLines + 1
 		end
 	end
-	currentUnit.noProfile = _xrp.settings.tooltipHideInstanceCombat and InCombatLockdown() and (IsInInstance() or IsInActiveWorldPVP()) or _xrp.settings.tooltipHideOppositeFaction and currentUnit.faction ~= playerFaction and currentUnit.faction ~= "Neutral" or _xrp.settings.tooltipHideHostile and attackMe and meAttack
+	currentUnit.noProfile = AddOn.settings.tooltipHideInstanceCombat and InCombatLockdown() and (IsInInstance() or IsInActiveWorldPVP()) or AddOn.settings.tooltipHideOppositeFaction and currentUnit.faction ~= playerFaction and currentUnit.faction ~= "Neutral" or AddOn.settings.tooltipHideHostile and attackMe and meAttack
 
 	if replace then
 		table.wipe(currentUnit.lines)
@@ -508,25 +509,25 @@ local function DoHooks()
 	GameTooltip:HookScript("OnTooltipCleared", GameTooltip_OnTooltipCleared_Hook)
 end
 
-_xrp.settingsToggles.tooltipEnabled = function(setting)
+AddOn.settingsToggles.tooltipEnabled = function(setting)
 	if setting then
 		if enabled == nil then
 			if not IsLoggedIn() then
-				_xrp.HookGameEvent("PLAYER_LOGIN", DoHooks)
+				AddOn.HookGameEvent("PLAYER_LOGIN", DoHooks)
 			else
 				DoHooks()
 			end
 		end
 		xrp.HookEvent("RECEIVE", Tooltip_RECEIVE)
 		enabled = true
-		_xrp.settingsToggles.tooltipReplace(_xrp.settings.tooltipReplace)
+		AddOn.settingsToggles.tooltipReplace(AddOn.settings.tooltipReplace)
 	elseif enabled ~= nil then
 		enabled = false
 		xrp.UnhookEvent("RECEIVE", Tooltip_RECEIVE)
 	end
 end
 
-_xrp.settingsToggles.tooltipReplace = function(setting)
+AddOn.settingsToggles.tooltipReplace = function(setting)
 	if not enabled then return end
 	if setting then
 		if replace == nil then

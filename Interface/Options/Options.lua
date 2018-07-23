@@ -15,11 +15,12 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local FOLDER, _xrp = ...
+local FOLDER_NAME, AddOn = ...
+local L = AddOn.GetText
 
-XRP_TITLE = GetAddOnMetadata(FOLDER, "Title")
-XRP_LICENSE_HEADER = _xrp.L.LICENSE
-XRP_LICENSE = _xrp.L.GPL_HEADER
+XRP_TITLE = GetAddOnMetadata(FOLDER_NAME, "Title")
+XRP_LICENSE_HEADER = L.LICENSE
+XRP_LICENSE = L.GPL_HEADER
 
 function XRPOptionsAbout_OnShow(self)
 	if not self.wasShown then
@@ -28,7 +29,7 @@ function XRPOptionsAbout_OnShow(self)
 	end
 end
 
-function _xrp.Options(pane)
+function AddOn.Options(pane)
 	local XRPOptions = InterfaceOptionsFramePanelContainer.XRP
 	if not XRPOptions.wasShown then
 		XRPOptions.wasShown = true

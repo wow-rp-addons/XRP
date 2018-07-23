@@ -15,7 +15,8 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local FOLDER, _xrp = ...
+local FOLDER_NAME, AddOn = ...
+local L = AddOn.GetText
 
 local AltNames = {
 	Scourge = {
@@ -36,51 +37,51 @@ local AltNames = {
 local function AltToggle(setting, settingName)
 	local categoryName = settingName:match("^alt(.+)$")
 	local forceSetting = settingName .. "Force"
-	local needsSetting = setting and (not _xrp.settings[settingName .. "Limit"] or AltNames[categoryName][(select(2, UnitRace("player")))])
+	local needsSetting = setting and (not AddOn.settings[settingName .. "Limit"] or AltNames[categoryName][(select(2, UnitRace("player")))])
 	for raceName in pairs(AltNames[categoryName]) do
 		local raceUpperValue = "VALUE_GR_" .. raceName:upper()
 		local raceUpperAltValue = raceUpperValue .. "_ALT"
 		if needsSetting then
-			xrp.L.VALUES.GR[raceName] = _xrp.L[raceUpperAltValue]
-			_xrp.settingsToggles[forceSetting](_xrp.settings[forceSetting], forceSetting)
+			xrp.L.VALUES.GR[raceName] = L[raceUpperAltValue]
+			AddOn.settingsToggles[forceSetting](AddOn.settings[forceSetting], forceSetting)
 		else
-			xrp.L.VALUES.GR[raceName] = _xrp.L[raceUpperValue]
-			_xrp.settingsToggles[forceSetting](false, forceSetting)
+			xrp.L.VALUES.GR[raceName] = L[raceUpperValue]
+			AddOn.settingsToggles[forceSetting](false, forceSetting)
 		end
 	end
 	if needsSetting then
-		_xrp.settingsToggles[forceSetting](_xrp.settings[forceSetting], forceSetting)
+		AddOn.settingsToggles[forceSetting](AddOn.settings[forceSetting], forceSetting)
 	else
-		_xrp.settingsToggles[forceSetting](false, forceSetting)
+		AddOn.settingsToggles[forceSetting](false, forceSetting)
 	end
 end
 
 local function AltToggleForce(setting, settingName)
 	local categoryName = settingName:match("^alt(.+)Force$")
 	local raceName = select(2, UnitRace("player"))
-	local raceAlt = _xrp.L[("VALUE_GR_%s_ALT"):format(raceName:upper())]
+	local raceAlt = L[("VALUE_GR_%s_ALT"):format(raceName:upper())]
 	if setting and AltNames[categoryName][raceName] and xrpSaved.meta.fields.RA ~= raceAlt then
 		xrpSaved.meta.fields.RA = raceAlt
-		_xrp.FireEvent("UPDATE", "RA")
+		AddOn.FireEvent("UPDATE", "RA")
 	elseif (not setting or not AltNames[categoryName][raceName]) and xrpSaved.meta.fields.RA == raceAlt then
 		xrpSaved.meta.fields.RA = nil
-		_xrp.FireEvent("UPDATE", "RA")
+		AddOn.FireEvent("UPDATE", "RA")
 	end
 end
 
 local function AltToggleLimit(setting, settingName)
 	local raceSettingName = settingName:match("^(.+)Limit$")
-	if _xrp.settings[raceSettingName] then
-		_xrp.settingsToggles[raceSettingName](true, raceSettingName)
+	if AddOn.settings[raceSettingName] then
+		AddOn.settingsToggles[raceSettingName](true, raceSettingName)
 	end
 end
 
-_xrp.settingsToggles.altScourge = AltToggle
-_xrp.settingsToggles.altScourgeForce = AltToggleForce
-_xrp.settingsToggles.altScourgeLimit = AltToggleLimit
-_xrp.settingsToggles.altElven = AltToggle
-_xrp.settingsToggles.altElvenForce = AltToggleForce
-_xrp.settingsToggles.altElvenLimit = AltToggleLimit
-_xrp.settingsToggles.altTauren = AltToggle
-_xrp.settingsToggles.altTaurenForce = AltToggleForce
-_xrp.settingsToggles.altTaurenLimit = AltToggleLimit
+AddOn.settingsToggles.altScourge = AltToggle
+AddOn.settingsToggles.altScourgeForce = AltToggleForce
+AddOn.settingsToggles.altScourgeLimit = AltToggleLimit
+AddOn.settingsToggles.altElven = AltToggle
+AddOn.settingsToggles.altElvenForce = AltToggleForce
+AddOn.settingsToggles.altElvenLimit = AltToggleLimit
+AddOn.settingsToggles.altTauren = AltToggle
+AddOn.settingsToggles.altTaurenForce = AltToggleForce
+AddOn.settingsToggles.altTaurenLimit = AltToggleLimit

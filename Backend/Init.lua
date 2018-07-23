@@ -15,27 +15,28 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local FOLDER, _xrp = ...
+local FOLDER_NAME, AddOn = ...
 
 xrp = {}
 
-_xrp.L = {}
+AddOn.GetText = {}
+local L = AddOn.GetText
 
 local SUPPORTED_LANGUAGES = {
 	enUS = "en",
 	enGB = "en",
 }
-_xrp.language = SUPPORTED_LANGUAGES[GetLocale()] or "en"
+AddOn.language = SUPPORTED_LANGUAGES[GetLocale()] or "en"
 
-_xrp.version = GetAddOnMetadata(FOLDER, "Version")
-_xrp.DoNothing = function() end
-_xrp.weakMeta = { __mode = "v" }
-_xrp.weakKeyMeta = { __mode = "k" }
+AddOn.version = GetAddOnMetadata(FOLDER_NAME, "Version")
+AddOn.DoNothing = function() end
+AddOn.weakMeta = { __mode = "v" }
+AddOn.weakKeyMeta = { __mode = "k" }
 
-_xrp.own = {}
+AddOn.own = {}
 
 local events = {}
-function _xrp.FireEvent(event, ...)
+function AddOn.FireEvent(event, ...)
 	if not events[event] then
 		return false
 	end
@@ -67,7 +68,7 @@ local frame = CreateFrame("Frame")
 frame:Hide()
 
 local gameEvents = {}
-function _xrp.HookGameEvent(event, func, unit)
+function AddOn.HookGameEvent(event, func, unit)
 	if type(func) ~= "function" then
 		return false
 	elseif not gameEvents[event] then
@@ -83,7 +84,7 @@ function _xrp.HookGameEvent(event, func, unit)
 	end
 	return true
 end
-function _xrp.UnhookGameEvent(event, func)
+function AddOn.UnhookGameEvent(event, func)
 	if not gameEvents[event] or not gameEvents[event][func] then
 		return false
 	end
@@ -95,7 +96,7 @@ function _xrp.UnhookGameEvent(event, func)
 	return true
 end
 frame:SetScript("OnEvent", function(self, event, ...)
-	if event == "ADDON_LOADED" and ... ~= FOLDER then return end
+	if event == "ADDON_LOADED" and ... ~= FOLDER_NAME then return end
 	for func, isFunc in pairs(gameEvents[event]) do
 		xpcall(func, geterrorhandler(), event, ...)
 	end
@@ -136,34 +137,34 @@ local function CompareVersion(newVersion, oldVersion)
 	return 1
 end
 
-function _xrp.AddonUpdate(version)
-	if not version or version == _xrp.version or version == _xrp.settings.newversion then return end
-	if CompareVersion(version, _xrp.settings.newversion or _xrp.version) >= 0 then
-		_xrp.settings.newversion = version
+function AddOn.AddonUpdate(version)
+	if not version or version == AddOn.version or version == AddOn.settings.newversion then return end
+	if CompareVersion(version, AddOn.settings.newversion or AddOn.version) >= 0 then
+		AddOn.settings.newversion = version
 	end
 end
 
-_xrp.HookGameEvent("ADDON_LOADED", function(event, addon)
-	_xrp.playerWithRealm = xrp.UnitFullName("player")
-	_xrp.player, _xrp.realm = _xrp.playerWithRealm:match("^([^%-]+)%-([^%-]+)$")
-	_xrp.SavedVariableSetup()
+AddOn.HookGameEvent("ADDON_LOADED", function(event, addon)
+	AddOn.playerWithRealm = xrp.UnitFullName("player")
+	AddOn.player, AddOn.realm = AddOn.playerWithRealm:match("^([^%-]+)%-([^%-]+)$")
+	AddOn.SavedVariableSetup()
 
 	local addonString = "%s/%s"
-	local VA = { addonString:format(FOLDER, _xrp.version) }
+	local VA = { addonString:format(FOLDER_NAME, AddOn.version) }
 	for i, addon in ipairs({ "GHI", "Tongues" }) do
 		if IsAddOnLoaded(addon) then
 			VA[#VA + 1] = addonString:format(addon, GetAddOnMetadata(addon, "Version"))
 		end
 	end
 	local newFields = {
-		NA = _xrp.player, -- Fallback NA field.
+		NA = AddOn.player, -- Fallback NA field.
 		VA = table.concat(VA, ";"),
 	}
 	local fields = xrpSaved.meta.fields
 	for field, contents in pairs(newFields) do
 		if contents ~= fields[field] then
 			fields[field] = contents
-			_xrp.FireEvent("UPDATE", field)
+			AddOn.FireEvent("UPDATE", field)
 		end
 	end
 
@@ -172,47 +173,47 @@ _xrp.HookGameEvent("ADDON_LOADED", function(event, addon)
 	end
 	xrpSaved.overrides.logout = nil
 
-	if _xrp.settings.cacheAutoClean then
-		_xrp.CacheTidy(nil, true)
+	if AddOn.settings.cacheAutoClean then
+		AddOn.CacheTidy(nil, true)
 	end
 
-	_xrp.LoadSettings()
+	AddOn.LoadSettings()
 
-	if _xrp.settings.newversion then
-		local update = CompareVersion(_xrp.settings.newversion, _xrp.version)
+	if AddOn.settings.newversion then
+		local update = CompareVersion(AddOn.settings.newversion, AddOn.version)
 		local now = time()
-		if update == 1 and (not _xrp.settings.versionwarning or _xrp.settings.versionwarning < now - 21600) then
+		if update == 1 and (not AddOn.settings.versionwarning or AddOn.settings.versionwarning < now - 21600) then
 			C_Timer.After(8, function()
-				print(_xrp.L.NEW_VERSION:format(_xrp.settings.newversion))
-				_xrp.settings.versionwarning = now
+				print(L.NEW_VERSION:format(AddOn.settings.newversion))
+				AddOn.settings.versionwarning = now
 			end)
 		elseif update == -1 then
-			_xrp.settings.newversion = nil
-			_xrp.settings.versionwarning = nil
+			AddOn.settings.newversion = nil
+			AddOn.settings.versionwarning = nil
 		end
 	end
 end)
-_xrp.HookGameEvent("PLAYER_LOGIN", function(event)
-	_xrp.FireEvent("UPDATE")
+AddOn.HookGameEvent("PLAYER_LOGIN", function(event)
+	AddOn.FireEvent("UPDATE")
 	-- GetAutoCompleteResults() doesn't work before PLAYER_LOGIN.
-	_xrp.own[_xrp.playerWithRealm] = true
-	if xrpCache[_xrp.playerWithRealm] and not xrpCache[_xrp.playerWithRealm].own then
-		xrpCache[_xrp.playerWithRealm].own = true
+	AddOn.own[AddOn.playerWithRealm] = true
+	if xrpCache[AddOn.playerWithRealm] and not xrpCache[AddOn.playerWithRealm].own then
+		xrpCache[AddOn.playerWithRealm].own = true
 	end
 	for i, character in ipairs(GetAutoCompleteResults("", 0, 1, AUTO_COMPLETE_ACCOUNT_CHARACTER, 0)) do
 		local name = xrp.FullName(character.name)
-		_xrp.own[name] = true
+		AddOn.own[name] = true
 		if xrpCache[name] and not xrpCache[name].own then
 			xrpCache[name].own = true
 		end
 	end
 	for name, data in pairs(xrpCache) do
-		if data.own and not _xrp.own[name] and name:match("%-([^%-]+)$") == _xrp.realm then
+		if data.own and not AddOn.own[name] and name:match("%-([^%-]+)$") == AddOn.realm then
 			data.own = nil
 		end
 	end
 end)
-_xrp.HookGameEvent("PLAYER_LOGOUT", function(event)
+AddOn.HookGameEvent("PLAYER_LOGOUT", function(event)
 	-- Note: This code must be thoroughly tested if any changes are
 	-- made. If there are any errors in here, they are not visible in
 	-- any manner in-game.

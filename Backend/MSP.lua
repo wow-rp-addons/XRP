@@ -15,14 +15,15 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local FOLDER, _xrp = ...
+local FOLDER_NAME, AddOn = ...
+local L = AddOn.GetText
 
 local disabled = false
 if not msp_RPAddOn then
-	msp_RPAddOn = FOLDER
+	msp_RPAddOn = FOLDER_NAME
 else
 	StaticPopupDialogs["XRP_MSP_DISABLE"] = {
-		text = _xrp.L.MSP_DISABLED,
+		text = L.MSP_DISABLED,
 		button1 = OKAY,
 		showAlert = true,
 		enterClicksFirstButton = true,
@@ -45,7 +46,7 @@ local function ProfileUpdate(event, field)
 	else
 		local fields = {}
 		local profiles, inherit = { xrpSaved.profiles[xrpSaved.selected] }, xrpSaved.profiles[xrpSaved.selected].parent
-		for i = 1, _xrp.PROFILE_MAX_DEPTH do
+		for i = 1, AddOn.PROFILE_MAX_DEPTH do
 			if not xrpSaved.profiles[inherit] then
 				break
 			end
@@ -101,10 +102,10 @@ local function StatusHandler(statusName, reason, msgID, msgTotal)
 		error("XRP: LibMSP status callback receieved invalid arguments.")
 	elseif reason == "ERROR" then
 		-- Same error message from offline and from opposite faction.
-		local GF = _xrp.unitCache[name] and _xrp.unitCache[name].GF or xrpCache[name] and xrpCache[name].fields.GF
-		_xrp.FireEvent("FAIL", name, (not GF or GF == UnitFactionGroup("player")) and "offline" or "faction")
+		local GF = AddOn.unitCache[name] and AddOn.unitCache[name].GF or xrpCache[name] and xrpCache[name].fields.GF
+		AddOn.FireEvent("FAIL", name, (not GF or GF == UnitFactionGroup("player")) and "offline" or "faction")
 	elseif reason == "MESSAGE" and msgTotal ~= 1 then
-		_xrp.FireEvent("CHUNK", name, msgID, msgTotal)
+		AddOn.FireEvent("CHUNK", name, msgID, msgTotal)
 	end
 end
 
@@ -118,19 +119,19 @@ local function UpdatedHandler(updatedName, field, contents, version)
 			fields = {},
 			versions = {},
 			lastReceive = time(),
-			own = _xrp.own[name],
+			own = AddOn.own[name],
 		}
-		if _xrp.unitCache[name] then
+		if AddOn.unitCache[name] then
 			for i, unitField in pairs(UNIT_FIELDS) do
-				xrpCache[name].fields[unitField] = _xrp.unitCache[name][unitField]
+				xrpCache[name].fields[unitField] = AddOn.unitCache[name][unitField]
 			end
 		end
 	end
 	xrpCache[name].fields[field] = contents
 	xrpCache[name].versions[field] = version
-	_xrp.FireEvent("FIELD", name, field)
+	AddOn.FireEvent("FIELD", name, field)
 	if field == "VA" and contents then
-		_xrp.AddonUpdate(contents:match("^XRP/([^;]+)"))
+		AddOn.AddonUpdate(contents:match("^XRP/([^;]+)"))
 	end
 end
 
@@ -139,7 +140,7 @@ local function ReceivedHandler(receivedName)
 	if not name then
 		error("XRP: LibMSP received callback receieved invalid arguments.")
 	end
-	_xrp.FireEvent("RECEIVE", name)
+	AddOn.FireEvent("RECEIVE", name)
 	if xrpCache[name] then
 		-- Cache timer. Last receive marked for clearing old entries.
 		xrpCache[name].lastReceive = time()
@@ -217,65 +218,65 @@ local function GUILD_ROSTER_UPDATE(event)
 	C_Timer.After(0, UpdateGuildRoster)
 end
 
-function _xrp.QueueRequest(name, field)
+function AddOn.QueueRequest(name, field)
 	if disabled or gameFriends and not (gameFriends[name] or bnetFriends[name] or guildies and guildies[name]) then
 		return
-	elseif _xrp.unitCache[name] and _xrp.unitCache[name][field] then
+	elseif AddOn.unitCache[name] and AddOn.unitCache[name][field] then
 		return
 	end
 	return msp:QueueRequest(name, field)
 end
 
-function _xrp.CanRefresh(name)
+function AddOn.CanRefresh(name)
 	return (msp.char[name].time.DE or 0) < GetTime() - 30
 end
 
-function _xrp.ResetCacheTimers(name)
+function AddOn.ResetCacheTimers(name)
 	msp.char[name].time = nil
 	msp.char[name].scantime = nil
 	msp.char[name].supported = nil
 end
 
-function _xrp.DropCache(name)
+function AddOn.DropCache(name)
 	if xrpAccountSaved.bookmarks[name] or xrpAccountSaved.notes[name] then return end
 	msp.char[name] = nil
 	xrpCache[name] = nil
-	_xrp.FireEvent("DROP", name)
+	AddOn.FireEvent("DROP", name)
 end
 
-function _xrp.ForceRefresh(name)
-	_xrp.ResetCacheTimers(name)
+function AddOn.ForceRefresh(name)
+	AddOn.ResetCacheTimers(name)
 	msp.char[name].ver = nil
 
 	for field, contents in pairs(msp.char[name].field) do
-		_xrp.QueueRequest(name, field)
+		AddOn.QueueRequest(name, field)
 	end
 end
 
-_xrp.settingsToggles.friendsOnly = function(setting)
+AddOn.settingsToggles.friendsOnly = function(setting)
 	if setting then
 		gameFriends = {}
 		FRIENDLIST_UPDATE()
-		_xrp.HookGameEvent("FRIENDLIST_UPDATE", FRIENDLIST_UPDATE)
+		AddOn.HookGameEvent("FRIENDLIST_UPDATE", FRIENDLIST_UPDATE)
 		bnetFriends = {}
 		BN_FRIEND_INFO_CHANGED()
-		_xrp.HookGameEvent("BN_FRIEND_INFO_CHANGED", BN_FRIEND_INFO_CHANGED)
-		_xrp.settingsToggles.friendsIncludeGuild(_xrp.settings.friendsIncludeGuild)
+		AddOn.HookGameEvent("BN_FRIEND_INFO_CHANGED", BN_FRIEND_INFO_CHANGED)
+		AddOn.settingsToggles.friendsIncludeGuild(AddOn.settings.friendsIncludeGuild)
 	elseif gameFriends then
-		_xrp.settingsToggles.friendsIncludeGuild(false)
-		_xrp.UnhookGameEvent("FRIENDLIST_UPDATE", FRIENDLIST_UPDATE)
+		AddOn.settingsToggles.friendsIncludeGuild(false)
+		AddOn.UnhookGameEvent("FRIENDLIST_UPDATE", FRIENDLIST_UPDATE)
 		gameFriends = nil
-		_xrp.UnhookGameEvent("BN_FRIEND_INFO_CHANGED", BN_FRIEND_INFO_CHANGED)
+		AddOn.UnhookGameEvent("BN_FRIEND_INFO_CHANGED", BN_FRIEND_INFO_CHANGED)
 		bnetFriends = nil
 	end
 end
-_xrp.settingsToggles.friendsIncludeGuild = function(setting)
+AddOn.settingsToggles.friendsIncludeGuild = function(setting)
 	if setting and gameFriends then
 		guildies = {}
 		GUILD_ROSTER_UPDATE()
-		_xrp.HookGameEvent("GUILD_ROSTER_UPDATE", GUILD_ROSTER_UPDATE)
+		AddOn.HookGameEvent("GUILD_ROSTER_UPDATE", GUILD_ROSTER_UPDATE)
 	elseif guildies and gameFriends then
-		_xrp.UnhookGameEvent("GUILD_ROSTER_UPDATE", GUILD_ROSTER_UPDATE)
+		AddOn.UnhookGameEvent("GUILD_ROSTER_UPDATE", GUILD_ROSTER_UPDATE)
 		guildies = nil
 	end
 end

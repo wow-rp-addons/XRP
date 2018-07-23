@@ -15,7 +15,8 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local FOLDER, _xrp = ...
+local FOLDER_NAME, AddOn = ...
+local L = AddOn.GetText
 
 -- Fields to export.
 local EXPORT_FIELDS = { "NA", "NI", "NT", "NH", "RA", "RC", "AE", "AH", "AW", "AG", "HH", "HB", "CU", "MO", "DE", "HI" }
@@ -23,7 +24,7 @@ local ALLOW_INDENT = { CU = true, MO = true, DE = true, HI = true }
 local EXPORT_FORMATS = {}
 
 local SIMPLE = SUBTITLE_FORMAT:format("%s", "%%s\n")
-local QUOTED = SUBTITLE_FORMAT:format("%s", _xrp.L.NICKNAME:format("%%s")) .. "\n"
+local QUOTED = SUBTITLE_FORMAT:format("%s", L.NICKNAME:format("%%s")) .. "\n"
 local SPACED = STAT_FORMAT:format("\n%s") .. "\n%%s\n"
 local function UNDERLINED(text)
 	local colon = STAT_FORMAT:format(text)
@@ -47,7 +48,7 @@ for i, field in ipairs(EXPORT_FIELDS) do
 	end
 end
 
-function _xrp.ExportText(title, fields)
+function AddOn.ExportText(title, fields)
 	local export = { title, "\n" }
 	for i = 1, strlenutf8(title) do
 		export[#export + 1] = "="

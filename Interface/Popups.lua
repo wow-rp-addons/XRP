@@ -15,7 +15,8 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local FOLDER, _xrp = ...
+local FOLDER_NAME, AddOn = ...
+local L = AddOn.GetText
 
 local function ClickButton(self)
 	self:GetParent().button1:Click()
@@ -51,7 +52,7 @@ StaticPopupDialogs["XRP_ERROR"] = {
 }
 
 StaticPopupDialogs["XRP_URL"] = {
-	text = _xrp.L.POPUP_URL:format(not IsMacClient() and "Ctrl+C" or "Cmd+C"),
+	text = L.POPUP_URL:format(not IsMacClient() and "Ctrl+C" or "Cmd+C"),
 	button1 = DONE,
 	hasEditBox = true,
 	editBoxWidth = 250,
@@ -80,7 +81,7 @@ StaticPopupDialogs["XRP_RELOAD"] = {
 	hideOnEscape = true,
 }
 StaticPopupDialogs["XRP_REPORT"] = {
-	text = _xrp.L.REPORT_POPUP:format(not IsMacClient() and "Ctrl+C" or "Cmd+C"),
+	text = L.REPORT_POPUP:format(not IsMacClient() and "Ctrl+C" or "Cmd+C"),
 	button1 = OKAY,
 	hasEditBox = true,
 	editBoxWidth = 250,
@@ -102,7 +103,7 @@ StaticPopupDialogs["XRP_REPORT"] = {
 }
 
 StaticPopupDialogs["XRP_CURRENTLY"] = {
-	text = _xrp.L.POPUP_CURRENTLY,
+	text = L.POPUP_CURRENTLY,
 	button1 = ACCEPT,
 	button2 = RESET,
 	button3 = CANCEL,
@@ -137,7 +138,7 @@ StaticPopupDialogs["XRP_CURRENTLY"] = {
 }
 
 StaticPopupDialogs["XRP_CACHE_SINGLE"] = {
-	text = _xrp.L.POPUP_ASK_CACHE_SINGLE,
+	text = L.POPUP_ASK_CACHE_SINGLE,
 	button1 = YES,
 	button2 = NO,
 	showAlert = true,
@@ -149,7 +150,7 @@ StaticPopupDialogs["XRP_CACHE_SINGLE"] = {
 }
 
 StaticPopupDialogs["XRP_FORCE_REFRESH"] = {
-	text = _xrp.L.POPUP_ASK_FORCE_REFRESH,
+	text = L.POPUP_ASK_FORCE_REFRESH,
 	button1 = YES,
 	button2 = NO,
 	showAlert = true,
@@ -161,29 +162,29 @@ StaticPopupDialogs["XRP_FORCE_REFRESH"] = {
 }
 
 StaticPopupDialogs["XRP_CACHE_CLEAR"] = {
-	text = _xrp.L.POPUP_ASK_CACHE,
+	text = L.POPUP_ASK_CACHE,
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = function(self)
-		_xrp.CacheTidy(60)
-		StaticPopup_Show("XRP_NOTIFICATION", _xrp.L.POPUP_CLEAR_CACHE)
+		AddOn.CacheTidy(60)
+		StaticPopup_Show("XRP_NOTIFICATION", L.POPUP_CLEAR_CACHE)
 	end,
 	whileDead = true,
 	hideOnEscape = true,
 }
 
 StaticPopupDialogs["XRP_CACHE_TIDY"] = {
-	text = _xrp.L.POPUP_TIDY_CACHE,
+	text = L.POPUP_TIDY_CACHE,
 	button1 = OKAY,
 	OnShow = function(self)
-		_xrp.CacheTidy()
+		AddOn.CacheTidy()
 	end,
 	whileDead = true,
 	hideOnEscape = true,
 }
 
 StaticPopupDialogs["XRP_EDITOR_UNSAVED"] = {
-	text = _xrp.L.POPUP_EDITOR_UNSAVED,
+	text = L.POPUP_EDITOR_UNSAVED,
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function(self, profile)
@@ -194,7 +195,7 @@ StaticPopupDialogs["XRP_EDITOR_UNSAVED"] = {
 }
 
 StaticPopupDialogs["XRP_EDITOR_ADD"] = {
-	text = _xrp.L.POPUP_EDITOR_ADD,
+	text = L.POPUP_EDITOR_ADD,
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	hasEditBox = true,
@@ -203,7 +204,7 @@ StaticPopupDialogs["XRP_EDITOR_ADD"] = {
 	OnAccept = function(self)
 		local name = self.editBox:GetText()
 		if not xrp.profiles:Add(name) then
-			StaticPopup_Show("XRP_ERROR", _xrp.L.POPUP_EDITOR_UNAVAILABLE:format(name))
+			StaticPopup_Show("XRP_ERROR", L.POPUP_EDITOR_UNAVAILABLE:format(name))
 		else
 			XRPEditor:Edit(name)
 		end
@@ -216,13 +217,13 @@ StaticPopupDialogs["XRP_EDITOR_ADD"] = {
 }
 
 StaticPopupDialogs["XRP_EDITOR_DELETE"] = {
-	text = _xrp.L.POPUP_EDITOR_DELETE,
+	text = L.POPUP_EDITOR_DELETE,
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function(self)
 		local name = XRPEditor.Profiles.contents
 		if not xrp.profiles[name]:Delete() then
-			StaticPopup_Show("XRP_ERROR", _xrp.L.POPUP_EDITOR_INUSE:format(name))
+			StaticPopup_Show("XRP_ERROR", L.POPUP_EDITOR_INUSE:format(name))
 		else
 			XRPEditor:Edit(tostring(xrp.profiles.SELECTED))
 		end
@@ -232,7 +233,7 @@ StaticPopupDialogs["XRP_EDITOR_DELETE"] = {
 }
 
 StaticPopupDialogs["XRP_EDITOR_RENAME"] = {
-	text = _xrp.L.POPUP_EDITOR_RENAME,
+	text = L.POPUP_EDITOR_RENAME,
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	hasEditBox = true,
@@ -241,7 +242,7 @@ StaticPopupDialogs["XRP_EDITOR_RENAME"] = {
 	OnAccept = function(self)
 		local name = self.editBox:GetText()
 		if not xrp.profiles[XRPEditor.Profiles.contents]:Rename(name) then
-			StaticPopup_Show("XRP_ERROR", _xrp.L.POPUP_EDITOR_UNAVAILABLE:format(name))
+			StaticPopup_Show("XRP_ERROR", L.POPUP_EDITOR_UNAVAILABLE:format(name))
 		else
 			XRPEditor:Edit(name)
 		end
@@ -254,7 +255,7 @@ StaticPopupDialogs["XRP_EDITOR_RENAME"] = {
 }
 
 StaticPopupDialogs["XRP_EDITOR_COPY"] = {
-	text = _xrp.L.POPUP_EDITOR_COPY,
+	text = L.POPUP_EDITOR_COPY,
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	hasEditBox = true,
@@ -263,7 +264,7 @@ StaticPopupDialogs["XRP_EDITOR_COPY"] = {
 	OnAccept = function(self)
 		local name = self.editBox:GetText()
 		if not xrp.profiles[XRPEditor.Profiles.contents]:Copy(name) then
-			StaticPopup_Show("XRP_ERROR", _xrp.L.POPUP_EDITOR_UNAVAILABLE:format(name))
+			StaticPopup_Show("XRP_ERROR", L.POPUP_EDITOR_UNAVAILABLE:format(name))
 		else
 			XRPEditor:Edit(name)
 		end

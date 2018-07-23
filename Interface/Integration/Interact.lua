@@ -15,7 +15,7 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local FOLDER, _xrp = ...
+local FOLDER_NAME, AddOn = ...
 
 local cursor, rightClick
 
@@ -70,7 +70,7 @@ local function InteractUnit_Hook(unit)
 	XRPViewer:View(unit)
 end
 
-_xrp.settingsToggles.cursorEnabled = function(setting)
+AddOn.settingsToggles.cursorEnabled = function(setting)
 	if setting then
 		if not XRPCursorBook then
 			IsItemInRange(88589, "player")
@@ -87,7 +87,7 @@ _xrp.settingsToggles.cursorEnabled = function(setting)
 	end
 end
 
-_xrp.settingsToggles.cursorRightClick = function(setting)
+AddOn.settingsToggles.cursorRightClick = function(setting)
 	if setting then
 		if rightClick == nil then
 			hooksecurefunc("TurnOrActionStart", Cursor_TurnOrActionStart)
@@ -99,7 +99,7 @@ _xrp.settingsToggles.cursorRightClick = function(setting)
 	end
 end
 
-_xrp.settingsToggles.viewOnInteract = function(setting)
+AddOn.settingsToggles.viewOnInteract = function(setting)
 	if setting then
 		if keybind == nil then
 			hooksecurefunc("InteractUnit", InteractUnit_Hook)

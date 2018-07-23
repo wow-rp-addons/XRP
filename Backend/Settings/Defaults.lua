@@ -15,9 +15,9 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local FOLDER, _xrp = ...
+local FOLDER_NAME, AddOn = ...
 
-_xrp.DEFAULT_SETTINGS = {
+AddOn.DEFAULT_SETTINGS = {
 	-- Cache
 	cacheAutoClean = true,
 	cacheRetainTime = 864000,

@@ -15,9 +15,10 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local FOLDER, _xrp = ...
+local FOLDER_NAME, AddOn = ...
+local L = AddOn.GetText
 
-_xrp.settingsToggles = {}
+AddOn.settingsToggles = {}
 
 local DATA_VERSION = 7
 local DATA_VERSION_ACCOUNT = 19
@@ -34,7 +35,7 @@ local function InitializeSavedVariables()
 			settings = {},
 			dataVersion = DATA_VERSION_ACCOUNT,
 		}
-		for optionName, setting in pairs(_xrp.DEFAULT_SETTINGS) do
+		for optionName, setting in pairs(AddOn.DEFAULT_SETTINGS) do
 			if type(setting) == "table" then
 				xrpAccountSaved.settings[optionName] = {}
 				for subOptionName, subSetting in pairs(setting) do
@@ -80,32 +81,32 @@ local function InitializeSavedVariables()
 			}
 			xrpSaved.selected = DEFAULT
 		end
-		StaticPopup_Show("XRP_ERROR", _xrp.L.PROFILE_MISSING)
+		StaticPopup_Show("XRP_ERROR", L.PROFILE_MISSING)
 	end
 end
 
-function _xrp.SavedVariableSetup()
+function AddOn.SavedVariableSetup()
 	InitializeSavedVariables()
 	if (xrpAccountSaved.dataVersion or 1) < DATA_VERSION_ACCOUNT then
 		for i = (xrpAccountSaved.dataVersion or 1) + 1, DATA_VERSION_ACCOUNT do
-			if _xrp.UpgradeAccountVars[i] then
-				xpcall(_xrp.UpgradeAccountVars[i], geterrorhandler())
+			if AddOn.UpgradeAccountVars[i] then
+				xpcall(AddOn.UpgradeAccountVars[i], geterrorhandler())
 			end
 		end
 		xrpAccountSaved.dataVersion = DATA_VERSION_ACCOUNT
 	end
 	if (xrpSaved.dataVersion or 1) < DATA_VERSION then
 		for i = (xrpSaved.dataVersion or 1) + 1, DATA_VERSION do
-			if _xrp.UpgradeVars[i] then
-				xpcall(_xrp.UpgradeVars[i], geterrorhandler())
+			if AddOn.UpgradeVars[i] then
+				xpcall(AddOn.UpgradeVars[i], geterrorhandler())
 			end
 		end
 		xrpSaved.dataVersion = DATA_VERSION
 	end
-	_xrp.UpgradeAccountVars = nil
-	_xrp.UpgradeVars = nil
+	AddOn.UpgradeAccountVars = nil
+	AddOn.UpgradeVars = nil
 
-	for optionName, setting in pairs(_xrp.DEFAULT_SETTINGS) do
+	for optionName, setting in pairs(AddOn.DEFAULT_SETTINGS) do
 		if type(setting) == "table" then
 			if not xrpAccountSaved.settings[optionName] then
 				xrpAccountSaved.settings[optionName] = {}
@@ -119,18 +120,18 @@ function _xrp.SavedVariableSetup()
 			xrpAccountSaved.settings[optionName] = setting
 		end
 	end
-	_xrp.settings = xrpAccountSaved.settings
+	AddOn.settings = xrpAccountSaved.settings
 end
 
-function _xrp.LoadSettings()
-	for xrpSetting, func in pairs(_xrp.settingsToggles) do
-		xpcall(func, geterrorhandler(), _xrp.settings[xrpSetting], xrpSetting)
+function AddOn.LoadSettings()
+	for xrpSetting, func in pairs(AddOn.settingsToggles) do
+		xpcall(func, geterrorhandler(), AddOn.settings[xrpSetting], xrpSetting)
 	end
 end
 
-function _xrp.CacheTidy(timer, isInit)
+function AddOn.CacheTidy(timer, isInit)
 	if type(timer) ~= "number" or timer < 30 then
-		timer = _xrp.settings.cacheRetainTime
+		timer = AddOn.settings.cacheRetainTime
 		if type(timer) ~= "number" or timer < 30 then
 			return false
 		end
@@ -145,10 +146,10 @@ function _xrp.CacheTidy(timer, isInit)
 			data.lastReceive = now
 		elseif not bookmarks[name] and not notes[name] and (not data.own and data.lastReceive < before or data.own and data.lastReceive < beforeOwn) then
 			if doDrop then
-				_xrp.DropCache(name)
+				AddOn.DropCache(name)
 			else
 				if not isInit then
-					_xrp.ResetCacheTimers(name)
+					AddOn.ResetCacheTimers(name)
 				end
 				xrpCache[name] = nil
 			end
@@ -156,7 +157,7 @@ function _xrp.CacheTidy(timer, isInit)
 	end
 	if not isInit then
 		collectgarbage()
-		_xrp.FireEvent("DROP", "ALL")
+		AddOn.FireEvent("DROP", "ALL")
 	end
 	return true
 end

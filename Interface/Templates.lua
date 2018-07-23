@@ -15,12 +15,13 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local FOLDER, _xrp = ...
+local FOLDER_NAME, AddOn = ...
+local L = AddOn.GetText
 
-XRP_APPEARANCE = _xrp.L.APPEARANCE
-XRP_BIOGRAPHY = _xrp.L.BIOGRAPHY
-XRP_NOTES = _xrp.L.NOTES
-XRP_NOTES_INSTRUCTIONS = _xrp.L.NOTES_INSTRUCTIONS
+XRP_APPEARANCE = L.APPEARANCE
+XRP_BIOGRAPHY = L.BIOGRAPHY
+XRP_NOTES = L.NOTES
+XRP_NOTES_INSTRUCTIONS = L.NOTES_INSTRUCTIONS
 
 function XRPTemplates_CloseDropDownMenus(self, ...)
 	CloseDropDownMenus()
@@ -47,7 +48,7 @@ end
 function XRPTemplates_TooltipText(self, ...)
 	if not (self.tooltipText or self.tooltipKey) then return end
 	GameTooltip:SetOwner(self, "ANCHOR_CURSOR")
-	GameTooltip:SetText(self.tooltipText or _xrp.L[self.tooltipKey] or _G[self.tooltipKey])
+	GameTooltip:SetText(self.tooltipText or L[self.tooltipKey] or _G[self.tooltipKey])
 	GameTooltip:Show()
 end
 
@@ -109,7 +110,7 @@ XRPTemplatesDropDown_Mixin = {
 
 XRPTemplatesMenu_Mixin = {
 	initialize = Menu_Initialize,
-	SetHeight = _xrp.DoNothing,
+	SetHeight = AddOn.DoNothing,
 }
 
 function XRPTemplatesMenu_OnClick(self, button, down)
@@ -179,7 +180,7 @@ function XRPTemplatesPanel_OnLoad(self)
 	if self.numTabs then
 		PanelTemplates_SetTab(self, 1)
 	end
-	self.TitleText:SetText(self.titleText or _xrp.L[self.titleKey] or _G[self.titleKey])
+	self.TitleText:SetText(self.titleText or L[self.titleKey] or _G[self.titleKey])
 end
 
 function XRPTemplatesPanel_OnShow(self)
@@ -212,7 +213,7 @@ function XRPTemplatesPanel_OnSizeChanged(self, width, height)
 end
 
 function XRPCursorBook_OnEvent(self, event)
-	if InCombatLockdown() or _xrp.settings.cursorDisableInstance and (IsInInstance() or IsInActiveWorldPVP()) or _xrp.settings.cursorDisablePvP and (UnitIsPVP("player") or UnitIsPVPFreeForAll("player")) or UnitIsUnit("player", "mouseover") or GetMouseFocus() ~= WorldFrame then
+	if InCombatLockdown() or AddOn.settings.cursorDisableInstance and (IsInInstance() or IsInActiveWorldPVP()) or AddOn.settings.cursorDisablePvP and (UnitIsPVP("player") or UnitIsPVPFreeForAll("player")) or UnitIsUnit("player", "mouseover") or GetMouseFocus() ~= WorldFrame then
 		self:Hide()
 		return
 	end

@@ -16,7 +16,8 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local FOLDER, _xrp = ...
+local FOLDER_NAME, AddOn = ...
+local L = AddOn.GetText
 
 local Button, LDBObject
 
@@ -35,7 +36,7 @@ local function XRPButton_UpdateIcon()
 		end
 		if LDBObject then
 			LDBObject.icon = "Interface\\MINIMAP\\TRACKING\\Class"
-			LDBObject.text = _xrp.L.VIEW_TARGET_LDB
+			LDBObject.text = L.VIEW_TARGET_LDB
 		end
 		return
 	end
@@ -64,10 +65,10 @@ end
 local function RenderTooltip(Tooltip)
 	Tooltip:AddLine(xrp.current.NA)
 	Tooltip:AddLine(" ")
-	Tooltip:AddLine(SUBTITLE_FORMAT:format(_xrp.L.PROFILE, ("|cffffffff%s|r"):format(tostring(xrp.profiles.SELECTED))))
+	Tooltip:AddLine(SUBTITLE_FORMAT:format(L.PROFILE, ("|cffffffff%s|r"):format(tostring(xrp.profiles.SELECTED))))
 	local FC = xrp.Strip(xrp.current.FC)
 	if FC and FC ~= "0" then
-		Tooltip:AddLine(SUBTITLE_FORMAT:format(_xrp.L.STATUS, ("|cff%s%s|r"):format(FC == "1" and "99664d" or "66b380", xrp.L.VALUES.FC[FC] or FC)))
+		Tooltip:AddLine(SUBTITLE_FORMAT:format(L.STATUS, ("|cff%s%s|r"):format(FC == "1" and "99664d" or "66b380", xrp.L.VALUES.FC[FC] or FC)))
 	end
 	local CU = xrp.Strip(xrp.current.CU)
 	if CU then
@@ -78,13 +79,13 @@ local function RenderTooltip(Tooltip)
 	Tooltip:AddLine(" ")
 	local target = xrp.characters.byUnit.target
 	if target and (target.hide or target.fields.VA) then
-		Tooltip:AddLine(_xrp.L.CLICK_VIEW_TARGET, 1, 0.93, 0.67)
+		Tooltip:AddLine(L.CLICK_VIEW_TARGET, 1, 0.93, 0.67)
 	elseif not FC or FC == "0" or FC == "1" then
-		Tooltip:AddLine(_xrp.L.CLICK_IC, 0.4, 0.7, 0.5)
+		Tooltip:AddLine(L.CLICK_IC, 0.4, 0.7, 0.5)
 	else
-		Tooltip:AddLine(_xrp.L.CLICK_OOC, 0.6, 0.4, 0.3)
+		Tooltip:AddLine(L.CLICK_OOC, 0.6, 0.4, 0.3)
 	end
-	Tooltip:AddLine(_xrp.L.RTCLICK_MENU, 0.6, 0.6, 0.6)
+	Tooltip:AddLine(L.RTCLICK_MENU, 0.6, 0.6, 0.6)
 end
 
 function XRPButton_OnEnter(self, motion)
@@ -112,14 +113,14 @@ end
 
 local Profiles_menuList = {}
 XRPButton_baseMenuList = {
-	{ text = _xrp.L.PROFILES, notCheckable = true, hasArrow = true, menuList = Profiles_menuList, },
+	{ text = L.PROFILES, notCheckable = true, hasArrow = true, menuList = Profiles_menuList, },
 	{ text = xrp.L.MENU_FIELDS.FC, notCheckable = true, hasArrow = true, menuList = Status_menuList, },
 	{ text = xrp.L.MENU_FIELDS.CU .. CONTINUED, notCheckable = true, func = function() StaticPopup_Show("XRP_CURRENTLY") end, },
-	{ text = _xrp.L.ARCHIVE, notCheckable = true, func = function() XRPArchive:Toggle(1) end, },
-	{ text = _xrp.L.VIEWER, notCheckable = true, func = function() XRPViewer:View() end, },
-	{ text = _xrp.L.EDITOR, notCheckable = true, func = function() XRPEditor:Edit() end, },
-	{ text = _xrp.L.OPTIONS, notCheckable = true, func = function() _xrp.Options() end, },
-	{ text = CANCEL, notCheckable = true, func = _xrp.DoNothing, },
+	{ text = L.ARCHIVE, notCheckable = true, func = function() XRPArchive:Toggle(1) end, },
+	{ text = L.VIEWER, notCheckable = true, func = function() XRPViewer:View() end, },
+	{ text = L.EDITOR, notCheckable = true, func = function() XRPEditor:Edit() end, },
+	{ text = L.OPTIONS, notCheckable = true, func = function() AddOn.Options() end, },
+	{ text = CANCEL, notCheckable = true, func = AddOn.DoNothing, },
 }
 
 local function Profiles_Click(self, profileName, arg2, checked)
@@ -176,7 +177,7 @@ local MINIMAP_SHAPES = {
 	["TRICORNER-BOTTOMRIGHT"] = { true, true, true, false },
 }
 local function UpdatePositionAttached(self)
-	local angle = math.rad(_xrp.settings.mainButtonMinimapAngle)
+	local angle = math.rad(AddOn.settings.mainButtonMinimapAngle)
 	local x, y, q = math.cos(angle), math.sin(angle), 1
 	if x < 0 then q = q + 1 end
 	if y > 0 then q = q + 2 end
@@ -195,7 +196,7 @@ local function Minimap_OnUpdate(self, elapsed)
 	local px, py = GetCursorPosition()
 	local scale = Minimap:GetEffectiveScale()
 	px, py = px / scale, py / scale
-	_xrp.settings.mainButtonMinimapAngle = math.deg(math.atan2(py - my, px - mx)) % 360
+	AddOn.settings.mainButtonMinimapAngle = math.deg(math.atan2(py - my, px - mx)) % 360
 	UpdatePositionAttached(self)
 end
 
@@ -218,14 +219,14 @@ end
 
 function XRPButtonDetached_OnDragStop(self)
 	self:StopMovingOrSizing()
-	_xrp.settings.mainButtonDetachedPoint, _xrp.settings.mainButtonDetachedX, _xrp.settings.mainButtonDetachedY = select(3, self:GetPoint())
+	AddOn.settings.mainButtonDetachedPoint, AddOn.settings.mainButtonDetachedX, AddOn.settings.mainButtonDetachedY = select(3, self:GetPoint())
 	self:UnlockHighlight()
 end
 
 local function HookEvents()
 	xrp.HookEvent("RECEIVE", XRPButton_UpdateIcon)
-	_xrp.HookGameEvent("PLAYER_TARGET_CHANGED", XRPButton_UpdateIcon)
-	_xrp.HookGameEvent("PLAYER_ENTERING_WORLD", XRPButton_UpdateIcon)
+	AddOn.HookGameEvent("PLAYER_TARGET_CHANGED", XRPButton_UpdateIcon)
+	AddOn.HookGameEvent("PLAYER_ENTERING_WORLD", XRPButton_UpdateIcon)
 end
 
 local function CreateLDBObject()
@@ -235,7 +236,7 @@ local function CreateLDBObject()
 	LDBObject = {
 		type = "data source",
 		text = UNKNOWN,
-		label = FOLDER,
+		label = FOLDER_NAME,
 		icon = "Interface\\Icons\\INV_Misc_QuestionMark",
 		OnClick = XRPButton_OnClick,
 		OnTooltipShow = RenderTooltip,
@@ -247,7 +248,7 @@ local function CreateLDBObject()
 	XRPButton_UpdateIcon()
 end
 
-_xrp.HookGameEvent("PLAYER_LOGIN", function(event)
+AddOn.HookGameEvent("PLAYER_LOGIN", function(event)
 	if LDBObject == false then
 		LDBObject = nil
 		CreateLDBObject()
@@ -258,16 +259,16 @@ _xrp.HookGameEvent("PLAYER_LOGIN", function(event)
 	end
 end)
 
-_xrp.settingsToggles.mainButtonEnabled = function(setting)
+AddOn.settingsToggles.mainButtonEnabled = function(setting)
 	if setting then
-		if _xrp.settings.mainButtonDetached then
+		if AddOn.settings.mainButtonDetached then
 			if Button and Button == LibDBIcon10_XRP then
 				Button:UnregisterAllEvents()
 				Button:Hide()
 			end
 			if not XRPButton then
 				CreateFrame("Button", "XRPButton", UIParent, "XRPButtonTemplate")
-				XRPButton:SetPoint(_xrp.settings.mainButtonDetachedPoint, UIParent, _xrp.settings.mainButtonDetachedPoint, _xrp.settings.mainButtonDetachedX, _xrp.settings.mainButtonDetachedY)
+				XRPButton:SetPoint(AddOn.settings.mainButtonDetachedPoint, UIParent, AddOn.settings.mainButtonDetachedPoint, AddOn.settings.mainButtonDetachedX, AddOn.settings.mainButtonDetachedY)
 			end
 			Button = XRPButton
 		else
@@ -289,20 +290,20 @@ _xrp.settingsToggles.mainButtonEnabled = function(setting)
 	elseif Button ~= nil then
 		if not LDBObject then
 			xrp.UnhookEvent("RECEIVE", XRPButton_UpdateIcon)
-			_xrp.UnhookGameEvent("PLAYER_TARGET_CHANGED", XRPButton_UpdateIcon)
-			_xrp.UnhookGameEvent("PLAYER_ENTERING_WORLD", XRPButton_UpdateIcon)
+			AddOn.UnhookGameEvent("PLAYER_TARGET_CHANGED", XRPButton_UpdateIcon)
+			AddOn.UnhookGameEvent("PLAYER_ENTERING_WORLD", XRPButton_UpdateIcon)
 		end
 		Button:Hide()
 		Button = nil
 	end
 end
 
-_xrp.settingsToggles.mainButtonDetached = function(setting)
-	if not _xrp.settings.mainButtonEnabled or not Button or setting and Button == XRPButton or not setting and Button == LibDBIcon10_XRP then return end
-	_xrp.settingsToggles.mainButtonEnabled(_xrp.settings.mainButtonEnabled)
+AddOn.settingsToggles.mainButtonDetached = function(setting)
+	if not AddOn.settings.mainButtonEnabled or not Button or setting and Button == XRPButton or not setting and Button == LibDBIcon10_XRP then return end
+	AddOn.settingsToggles.mainButtonEnabled(AddOn.settings.mainButtonEnabled)
 end
 
-_xrp.settingsToggles.ldbObject = function(setting)
+AddOn.settingsToggles.ldbObject = function(setting)
 	if setting then
 		CreateLDBObject()
 		if not LDBObject then

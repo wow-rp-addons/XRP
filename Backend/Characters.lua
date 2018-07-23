@@ -15,7 +15,8 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local FOLDER, _xrp = ...
+local FOLDER_NAME, AddOn = ...
+local L = AddOn.GetText
 
 local FILTER_SEARCH = { NA = true, NI = true, NT = true, NH = true, AH = true, AW = true, AE = true, RA = true, RC = true, CU = true, DE = true, AG = true, HH = true, HB = true, MO = true, HI = true, CO = true }
 
@@ -49,16 +50,16 @@ local MERCENARY = {
 }
 
 local unitCache = {}
-_xrp.unitCache = unitCache
+AddOn.unitCache = unitCache
 
-local nameMap, requestMap = setmetatable({}, _xrp.weakKeyMeta), setmetatable({}, _xrp.weakKeyMeta)
+local nameMap, requestMap = setmetatable({}, AddOn.weakKeyMeta), setmetatable({}, AddOn.weakKeyMeta)
 
 local characterFunctions = {
 	DropCache = function(self)
-		_xrp.DropCache(nameMap[self])
+		AddOn.DropCache(nameMap[self])
 	end,
 	ForceRefresh = function(self)
-		_xrp.ForceRefresh(nameMap[self])
+		AddOn.ForceRefresh(nameMap[self])
 	end,
 }
 local fieldsMeta = {
@@ -70,20 +71,20 @@ local fieldsMeta = {
 		if unitCache[name] and unitCache[name][field] then
 			return unitCache[name][field]
 		elseif requestMap[self] then
-			_xrp.QueueRequest(name, field)
+			AddOn.QueueRequest(name, field)
 		end
 		if xrpCache[name] and xrpCache[name].fields[field] then
 			return xrpCache[name].fields[field]
 		end
 		return nil
 	end,
-	__newindex = _xrp.DoNothing,
+	__newindex = AddOn.DoNothing,
 	__tostring = function(self)
 		local name = nameMap[self]
 		if not xrpCache[name] then return "" end
 		local shortName, realm = name:match("^([^%-]+)%-([^%-]+)$")
 		realm = xrp.RealmDisplayName(realm)
-		return _xrp.ExportText(_xrp.L.NAME_REALM:format(shortName, realm), xrpCache[name].fields)
+		return AddOn.ExportText(L.NAME_REALM:format(shortName, realm), xrpCache[name].fields)
 	end,
 	__metatable = false,
 }
@@ -99,14 +100,14 @@ local characterMeta = {
 			return fields
 		elseif characterFunctions[component] then
 			return characterFunctions[component]
-		elseif component == "own" and name == _xrp.playerWithRealm then
+		elseif component == "own" and name == AddOn.playerWithRealm then
 			return true
-		elseif component == "canRefresh" and name == _xrp.playerWithRealm then
+		elseif component == "canRefresh" and name == AddOn.playerWithRealm then
 			return false
 		elseif component == "noRequest" then
 			return not requestMap[self]
 		elseif component == "canRefresh" then
-			return not requestMap[self] or _xrp.CanRefresh(name)
+			return not requestMap[self] or AddOn.CanRefresh(name)
 		elseif not xrpCache[name] then
 			return nil
 		elseif component == "notes" then
@@ -161,8 +162,8 @@ local function SortAsc(a, b)
 	return a > b
 end
 
-local requestTables = setmetatable({}, _xrp.weakMeta)
-local noRequestTables = setmetatable({}, _xrp.weakMeta)
+local requestTables = setmetatable({}, AddOn.weakMeta)
+local noRequestTables = setmetatable({}, AddOn.weakMeta)
 
 xrp.characters = {
 	byName = setmetatable({}, {
@@ -178,7 +179,7 @@ xrp.characters = {
 			end
 			return requestTables[name]
 		end,
-		__newindex = _xrp.DoNothing,
+		__newindex = AddOn.DoNothing,
 		__metatable = false,
 	}),
 	byUnit = setmetatable({}, {
@@ -215,7 +216,7 @@ xrp.characters = {
 					GS = tostring(GS),
 					GU = GU,
 				}
-				if xrpCache[name] and name ~= _xrp.playerWithRealm then
+				if xrpCache[name] and name ~= AddOn.playerWithRealm then
 					-- We DO want to overwrite these, to account for race,
 					-- faction, or sex changes.
 					for field, contents in pairs(unitCache[name]) do
@@ -225,7 +226,7 @@ xrp.characters = {
 			elseif not unitCache[name].GF then
 				-- GUID won't always get faction.
 				unitCache[name].GF = UnitIsMercenary(unit) and MERCENARY[UnitFactionGroup(unit)] or UnitFactionGroup(unit)
-				if xrpCache[name] and name ~= _xrp.playerWithRealm then
+				if xrpCache[name] and name ~= AddOn.playerWithRealm then
 					xrpCache[name].fields.GF = unitCache[name].GF
 				end
 			end
@@ -237,7 +238,7 @@ xrp.characters = {
 			end
 			return requestTables[name]
 		end,
-		__newindex = _xrp.DoNothing,
+		__newindex = AddOn.DoNothing,
 		__metatable = false,
 	}),
 	byGUID = setmetatable({}, {
@@ -260,7 +261,7 @@ xrp.characters = {
 					GS = tostring(GS),
 					GU = GU,
 				}
-				if xrpCache[name] and name ~= _xrp.playerWithRealm then
+				if xrpCache[name] and name ~= AddOn.playerWithRealm then
 					for field, contents in pairs(unitCache[name]) do
 						-- We DO want to overwrite these, to account for race,
 						-- faction, or sex changes.
@@ -276,7 +277,7 @@ xrp.characters = {
 			end
 			return requestTables[name]
 		end,
-		__newindex = _xrp.DoNothing,
+		__newindex = AddOn.DoNothing,
 		__metatable = false,
 	}),
 	List = function(self, filter)
@@ -356,7 +357,7 @@ xrp.characters = {
 				end
 				return noRequestTables[name]
 			end,
-			__newindex = _xrp.DoNothing,
+			__newindex = AddOn.DoNothing,
 			__metatable = false,
 		}),
 	},

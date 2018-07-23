@@ -15,7 +15,7 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local FOLDER, _xrp = ...
+local FOLDER_NAME, AddOn = ...
 
 -- ElvUI (and some others) disable the entire HelpPlate system rather than
 -- specifically managing it on the frames they modify or handling the automated
@@ -24,7 +24,7 @@ local FOLDER, _xrp = ...
 -- Since XRP makes use of it as the only help system, and very comprehensively,
 -- re-enable it. If those addons want to disable it on default frames, it
 -- should be done just for those frames.
-_xrp.HookGameEvent("PLAYER_LOGIN", function(event)
+AddOn.HookGameEvent("PLAYER_LOGIN", function(event)
 	if HelpPlate:GetParent() ~= UIParent then
 		HelpPlate:SetParent(UIParent)
 		HelpPlate:SetFrameStrata("DIALOG")

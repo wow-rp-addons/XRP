@@ -15,7 +15,8 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local FOLDER, _xrp = ...
+local FOLDER_NAME, AddOn = ...
+local L = AddOn.GetText
 
 local function XRPGetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14)
 	local character = arg12 and xrp.characters.byGUID[arg12]
@@ -25,7 +26,7 @@ local function XRPGetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7
 	-- target's name with our (colored/RP) name. Being sure to return a
 	-- non-colored, non-RP name for our own text emotes fixes the issue.
 	if event == "CHAT_MSG_TEXT_EMOTE" then
-		if arg2 == _xrp.player then
+		if arg2 == AddOn.player then
 			return arg2
 		elseif character then
 			-- TEXT_EMOTE doesn't have realm attached to arg2, because
@@ -52,8 +53,8 @@ local function XRPGetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7
 		name = arg2:match("^[\032-\126\194-\244][\128-\191]*") or Ambiguate(arg2, "guild")
 		nameFormat = "[%s]"
 	else
-		name = _xrp.settings.chatType[chatCategory] and character and not character.hide and xrp.Strip(character.fields.NA) or Ambiguate(arg2, "guild")
-		nameFormat = chatCategory == "EMOTE" and (_xrp.settings.chatEmoteBraced and "[%s]" or "%s") .. (arg9 or "") or "%s"
+		name = AddOn.settings.chatType[chatCategory] and character and not character.hide and xrp.Strip(character.fields.NA) or Ambiguate(arg2, "guild")
+		nameFormat = chatCategory == "EMOTE" and (AddOn.settings.chatEmoteBraced and "[%s]" or "%s") .. (arg9 or "") or "%s"
 	end
 
 	if character and Chat_ShouldColorChatByClass(ChatTypeInfo[chatType]) then
@@ -120,10 +121,10 @@ local function ChatEdit_ParseText_Hook(line, send)
 		local oldText = line:GetText()
 		local text = oldText
 		if text:find("%xt", nil, true) then
-			text = text:gsub("%%xt", xrp.characters.byUnit.target and xrp.Strip(xrp.characters.byUnit.target.fields.NA) or UnitName("target") or _xrp.L.NOBODY)
+			text = text:gsub("%%xt", xrp.characters.byUnit.target and xrp.Strip(xrp.characters.byUnit.target.fields.NA) or UnitName("target") or L.NOBODY)
 		end
 		if text:find("%xf", nil, true) then
-			text = text:gsub("%%xf", xrp.characters.byUnit.focus and xrp.Strip(xrp.characters.byUnit.focus.fields.NA) or UnitName("focus") or _xrp.L.NOBODY)
+			text = text:gsub("%%xf", xrp.characters.byUnit.focus and xrp.Strip(xrp.characters.byUnit.focus.fields.NA) or UnitName("focus") or L.NOBODY)
 		end
 		if text ~= oldText then
 			newText = text
@@ -145,7 +146,7 @@ local function SubstituteChatMessageBeforeSend_Hook(text)
 end
 
 local pratModule
-_xrp.HookGameEvent("PLAYER_LOGIN", function(event)
+AddOn.HookGameEvent("PLAYER_LOGIN", function(event)
 	-- This is done at login to account for any addon load order.
 	if Prat then
 		pratModule = Prat:NewModule("XRPNames")
@@ -163,7 +164,7 @@ _xrp.HookGameEvent("PLAYER_LOGIN", function(event)
 			if chatCategory == "CHANNEL" and type(message.ORG.CHANNEL) == "string" then
 				chatCategory = "CHANNEL_" .. message.ORG.CHANNEL:upper()
 			end
-			local rpName = _xrp.settings.chatType[chatCategory] and not character.hide and xrp.Strip(character.fields.NA)
+			local rpName = AddOn.settings.chatType[chatCategory] and not character.hide and xrp.Strip(character.fields.NA)
 			if not rpName then
 				return
 			end
@@ -179,7 +180,7 @@ _xrp.HookGameEvent("PLAYER_LOGIN", function(event)
 end)
 
 local OldGetColoredName
-_xrp.settingsToggles.chatNames = function(setting)
+AddOn.settingsToggles.chatNames = function(setting)
 	if setting then
 		if names == nil then
 			hooksecurefunc("ChatFrame_AddMessageEventFilter", ChatFrame_AddMessageEventFilter_Hook)
@@ -205,7 +206,7 @@ _xrp.settingsToggles.chatNames = function(setting)
 	end
 end
 
-_xrp.settingsToggles.chatReplacements = function(setting)
+AddOn.settingsToggles.chatReplacements = function(setting)
 	if setting then
 		if replacements == nil then
 			hooksecurefunc("ChatEdit_ParseText", ChatEdit_ParseText_Hook)

@@ -15,10 +15,11 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local FOLDER, _xrp = ...
+local FOLDER_NAME, AddOn = ...
+local L = AddOn.GetText
 
-XRP_CLEAR_CACHE = _xrp.L.CLEAR_CACHE .. CONTINUED
-XRP_TIDY_CACHE = _xrp.L.TIDY_CACHE
+XRP_CLEAR_CACHE = L.CLEAR_CACHE .. CONTINUED
+XRP_TIDY_CACHE = L.TIDY_CACHE
 
 function XRPOptionsAdvancedAutoClean_OnClick(self, button, down)
 	if self:Get() then

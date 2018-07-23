@@ -17,9 +17,9 @@
 
 local LANGUAGE = "en"
 
-local FOLDER, _xrp = ...
-if _xrp.language ~= LANGUAGE then return end
-setfenv(1, _xrp.L)
+local FOLDER_NAME, AddOn = ...
+if AddOn.language ~= LANGUAGE then return end
+setfenv(1, AddOn.GetText)
 
 local UNTRANSLATED = " (Needs translation.)"
 

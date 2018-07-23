@@ -15,9 +15,10 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local FOLDER, _xrp = ...
+local FOLDER_NAME, AddOn = ...
+local L = AddOn.GetText
 
-XRP_AUTOMATION = _xrp.L.AUTOMATION
+XRP_AUTOMATION = L.AUTOMATION
 
 local isWorgen, playerClass = select(2, UnitRace("player")) == "Worgen", select(2, UnitClass("player"))
 if not (playerClass == "DRUID" or playerClass == "PRIEST" or playerClass == "SHAMAN") then
@@ -25,21 +26,21 @@ if not (playerClass == "DRUID" or playerClass == "PRIEST" or playerClass == "SHA
 end
 
 local FORM_NAMES = {
-	["DEFAULT"] = isWorgen and xrp.L.VALUES.GR.Worgen or playerClass and (playerClass == "PRIEST" and _xrp.L.STANDARD or _xrp.L.HUMANOID) or _xrp.L.NOEQUIP,
-	["CAT"] = _xrp.L.CAT,
-	["BEAR"] = _xrp.L.BEAR,
-	["MOONKIN"] = _xrp.L.MOONKIN,
-	["ASTRAL"] = _xrp.L.ASTRAL,
-	["AQUATIC"] = _xrp.L.AQUATIC,
-	["TRAVEL"] = _xrp.L.TRAVEL,
-	["FLIGHT"] = _xrp.L.FLIGHT,
-	["TREANT"] = _xrp.L.TREANT,
-	["SHADOWFORM"] = _xrp.L.SHADOWFORM,
-	["GHOSTWOLF"] = _xrp.L.GHOST_WOLF,
+	["DEFAULT"] = isWorgen and xrp.L.VALUES.GR.Worgen or playerClass and (playerClass == "PRIEST" and L.STANDARD or L.HUMANOID) or L.NOEQUIP,
+	["CAT"] = L.CAT,
+	["BEAR"] = L.BEAR,
+	["MOONKIN"] = L.MOONKIN,
+	["ASTRAL"] = L.ASTRAL,
+	["AQUATIC"] = L.AQUATIC,
+	["TRAVEL"] = L.TRAVEL,
+	["FLIGHT"] = L.FLIGHT,
+	["TREANT"] = L.TREANT,
+	["SHADOWFORM"] = L.SHADOWFORM,
+	["GHOSTWOLF"] = L.GHOST_WOLF,
 	["HUMAN"] = xrp.L.VALUES.GR.Human,
-	["DEFAULT\030SHADOWFORM"] = _xrp.L.WORGEN_SHADOW,
-	["HUMAN\030SHADOWFORM"] = _xrp.L.HUMAN_SHADOW,
-	["MERCENARY"] = _xrp.L.MERCENARY,
+	["DEFAULT\030SHADOWFORM"] = L.WORGEN_SHADOW,
+	["HUMAN\030SHADOWFORM"] = L.HUMAN_SHADOW,
+	["MERCENARY"] = L.MERCENARY,
 }
 
 local function MakeWords(text)
@@ -56,9 +57,9 @@ end
 local unsaved = {}
 local function ToggleButtons(self)
 	local changes = next(unsaved) ~= nil
-	if next(xrpSaved.auto) and not _xrp.auto["DEFAULT"] and not unsaved["DEFAULT"] then
+	if next(xrpSaved.auto) and not AddOn.auto["DEFAULT"] and not unsaved["DEFAULT"] then
 		self.Warning:Show()
-		self.Warning:SetFormattedText(_xrp.L.WARN_FALLBACK, FORM_NAMES["DEFAULT"])
+		self.Warning:SetFormattedText(L.WARN_FALLBACK, FORM_NAMES["DEFAULT"])
 	else
 		self.Warning:Hide()
 	end
@@ -68,7 +69,7 @@ end
 
 function XRPEditorAutomationSave_OnClick(self, button, down)
 	for form, profile in pairs(unsaved) do
-		_xrp.auto[form] = profile or nil
+		AddOn.auto[form] = profile or nil
 	end
 	table.wipe(unsaved)
 	ToggleButtons(self:GetParent())
@@ -76,7 +77,7 @@ end
 
 function XRPEditorAutomationRevert_OnClick(self, button, down)
 	local parent = self:GetParent()
-	local formProfile = _xrp.auto[parent.Form.contents]
+	local formProfile = AddOn.auto[parent.Form.contents]
 	parent.Profile.contents = formProfile
 	parent.Profile.Text:SetText(formProfile or NONE)
 	table.wipe(unsaved)
@@ -117,7 +118,7 @@ local function equipSets_Click(self, arg1, arg2, checked)
 		if unsaved[set] ~= nil then
 			setProfile = unsaved[set] or nil
 		else
-			setProfile = _xrp.auto[set]
+			setProfile = AddOn.auto[set]
 		end
 		parent.Profile.contents = setProfile
 		parent.Profile.Text:SetText(setProfile or NONE)
@@ -139,7 +140,7 @@ local function forms_Click(self, arg1, arg2, checked)
 		if unsaved[self.value] ~= nil then
 			formProfile = unsaved[self.value] or nil
 		else
-			formProfile = _xrp.auto[self.value]
+			formProfile = AddOn.auto[self.value]
 		end
 		parent.Profile.contents = formProfile
 		parent.Profile.Text:SetText(formProfile or NONE)
@@ -175,7 +176,7 @@ XRPEditorAutomationForm_Mixin = {
 			end
 		elseif not noSet then
 			equipSets[#equipSets + 1]  = {
-				text = _xrp.L.NO_SETS,
+				text = L.NO_SETS,
 				disabled = true,
 			}
 		end
@@ -184,7 +185,7 @@ XRPEditorAutomationForm_Mixin = {
 }
 
 local function FormMenuItem(form)
-	local hasEquip = not _xrp.FORM_NO_EQUIPMENT[form]
+	local hasEquip = not AddOn.FORM_NO_EQUIPMENT[form]
 	return {
 		text = FORM_NAMES[form],
 		value = form,
@@ -279,7 +280,7 @@ function XRPEditorAutomation_OnShow(self)
 	end
 	needsUpdate = needsUpdate or not xrp.profiles[self.Profile.contents]
 	if needsUpdate then
-		local newProfile = _xrp.auto[selectedForm]
+		local newProfile = AddOn.auto[selectedForm]
 		self.Profile.contents = newProfile
 		self.Profile.Text:SetText(newProfile or NONE)
 	end

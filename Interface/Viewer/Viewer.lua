@@ -15,7 +15,8 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local FOLDER, _xrp = ...
+local FOLDER_NAME, AddOn = ...
+local L = AddOn.GetText
 
 local current, status, failed, lastUpdate
 
@@ -43,8 +44,8 @@ local function SetField(field, contents, secondary, tertiary)
 	end
 	if not contents then
 		contents = ""
-	elseif field == "NI" and not contents:find(_xrp.L.QUOTE_MATCH) then
-		contents = _xrp.L.NICKNAME:format(contents)
+	elseif field == "NI" and not contents:find(L.QUOTE_MATCH) then
+		contents = L.NICKNAME:format(contents)
 	elseif field == "AH" then
 		contents = xrp.Height(contents)
 	elseif field == "AW" then
@@ -86,7 +87,7 @@ local META_SUPPORTED = {
 	CO = "CU",
 }
 local function FIELD(event, name, field)
-	if tostring(current) ~= name or current.noRequest or name == _xrp.playerWithRealm then return end
+	if tostring(current) ~= name or current.noRequest or name == AddOn.playerWithRealm then return end
 	if META_SUPPORTED[field] then
 		field = META_SUPPORTED[field]
 	end
@@ -100,7 +101,7 @@ end
 
 local function RECEIVE(event, name)
 	if tostring(current) == name and not current.noRequest then
-		if name == _xrp.playerWithRealm then
+		if name == AddOn.playerWithRealm then
 			Load(current)
 			return
 		elseif failed then
@@ -108,10 +109,10 @@ local function RECEIVE(event, name)
 		end
 		if status ~= "received" then
 			if lastUpdate < GetTime() - 10 then
-				XRPViewer.XC:SetText(_xrp.L.NO_CHANGES)
+				XRPViewer.XC:SetText(L.NO_CHANGES)
 				status = "nochange"
 			elseif status ~= "nochange" then
-				XRPViewer.XC:SetText(_xrp.L.RECEIVED)
+				XRPViewer.XC:SetText(L.RECEIVED)
 				status = "received"
 			end
 		end
@@ -121,10 +122,10 @@ end
 local function CHUNK(event, name, chunk, totalChunks)
 	if tostring(current) == name then
 		if chunk ~= totalChunks then
-			XRPViewer.XC:SetFormattedText(totalChunks and _xrp.L.RECEIVING_PARTS or _xrp.L.RECEIVING_UNKNOWN, chunk, totalChunks)
+			XRPViewer.XC:SetFormattedText(totalChunks and L.RECEIVING_PARTS or L.RECEIVING_UNKNOWN, chunk, totalChunks)
 			status = "receiving"
 		elseif status ~= "nochange" then
-			XRPViewer.XC:SetFormattedText(_xrp.L.RECEIVED_PARTS, chunk, totalChunks)
+			XRPViewer.XC:SetFormattedText(L.RECEIVED_PARTS, chunk, totalChunks)
 			status = "received"
 		end
 	end
@@ -135,11 +136,11 @@ local function FAIL(event, name, reason)
 		failed = true
 		if not status then
 			if reason == "offline" then
-				XRPViewer.XC:SetText(_xrp.L.ERR_OFFLINE)
+				XRPViewer.XC:SetText(L.ERR_OFFLINE)
 			elseif reason == "faction" then
-				XRPViewer.XC:SetText(_xrp.L.ERR_FACTION)
+				XRPViewer.XC:SetText(L.ERR_FACTION)
 			elseif reason == "nomsp" then
-				XRPViewer.XC:SetText(_xrp.L.ERR_ADDON)
+				XRPViewer.XC:SetText(L.ERR_ADDON)
 			end
 			status = "failed"
 		end
@@ -183,31 +184,31 @@ local function Menu_Click(self, arg1, arg2, checked)
 		local name, realm = fullName:match("^([^%-]+)%-([^%-]+)$")
 		local prettyRealm = xrp.RealmDisplayName(realm)
 		local approxTime = ("%02d:%02d"):format(GetGameTime())
-		StaticPopup_Show("XRP_REPORT", Ambiguate(tostring(current), "none"), nil, _xrp.L.REPORT_INFO_TEMPLATE:format(name, prettyRealm, approxTime))
+		StaticPopup_Show("XRP_REPORT", Ambiguate(tostring(current), "none"), nil, L.REPORT_INFO_TEMPLATE:format(name, prettyRealm, approxTime))
 	elseif arg1 == "XRP_REFRESH_FORCE" then
 		local name, realm = tostring(current):match("^([^%-]+)%-([^%-]+)")
-		StaticPopup_Show("XRP_FORCE_REFRESH", _xrp.L.NAME_REALM:format(name, xrp.RealmDisplayName(realm)), nil, current)
+		StaticPopup_Show("XRP_FORCE_REFRESH", L.NAME_REALM:format(name, xrp.RealmDisplayName(realm)), nil, current)
 	elseif arg1 == "XRP_CACHE_DROP" then
 		local name, realm = tostring(current):match("^([^%-]+)%-([^%-]+)")
-		StaticPopup_Show("XRP_CACHE_SINGLE", _xrp.L.NAME_REALM:format(name, xrp.RealmDisplayName(realm)), nil, current)
+		StaticPopup_Show("XRP_CACHE_SINGLE", L.NAME_REALM:format(name, xrp.RealmDisplayName(realm)), nil, current)
 	end
 	if arg2 then -- Second-level menu.
 		CloseDropDownMenus()
 	end
 end
 local Advanced_menuList = {
-	{ text = _xrp.L.FORCE_REFRESH .. CONTINUED, arg1 = "XRP_REFRESH_FORCE", arg2 = true, notCheckable = true, func = Menu_Click, },
-	{ text = _xrp.L.DROP_CACHE .. CONTINUED, arg1 = "XRP_CACHE_DROP", arg2 = true, notCheckable = true, func = Menu_Click, },
+	{ text = L.FORCE_REFRESH .. CONTINUED, arg1 = "XRP_REFRESH_FORCE", arg2 = true, notCheckable = true, func = Menu_Click, },
+	{ text = L.DROP_CACHE .. CONTINUED, arg1 = "XRP_CACHE_DROP", arg2 = true, notCheckable = true, func = Menu_Click, },
 }
 XRPViewerMenu_baseMenuList = {
 	{ text = REFRESH, arg1 = "XRP_REFRESH", notCheckable = true, func = Menu_Click, },
 	{ text = ADD_FRIEND, arg1 = "XRP_FRIEND", notCheckable = true, func = Menu_Click, },
-	{ text = _xrp.L.BOOKMARK, arg1 = "XRP_BOOKMARK", isNotRadio = true, checked = Menu_Checked, func = Menu_Click, },
-	{ text = _xrp.L.HIDE_PROFILE, arg1 = "XRP_HIDE", isNotRadio = true, checked = Menu_Checked, func = Menu_Click, },
-	{ text = _xrp.L.EXPORT, arg1 = "XRP_EXPORT", notCheckable = true, func = Menu_Click, },
-	{ text=  _xrp.L.REPORT_PROFILE .. CONTINUED, arg1 = "XRP_REPORT", notCheckable = true, func = Menu_Click, },
+	{ text = L.BOOKMARK, arg1 = "XRP_BOOKMARK", isNotRadio = true, checked = Menu_Checked, func = Menu_Click, },
+	{ text = L.HIDE_PROFILE, arg1 = "XRP_HIDE", isNotRadio = true, checked = Menu_Checked, func = Menu_Click, },
+	{ text = L.EXPORT, arg1 = "XRP_EXPORT", notCheckable = true, func = Menu_Click, },
+	{ text=  L.REPORT_PROFILE .. CONTINUED, arg1 = "XRP_REPORT", notCheckable = true, func = Menu_Click, },
 	{ text = ADVANCED_LABEL, notCheckable = true, hasArrow = true, menuList = Advanced_menuList, },
-	{ text = CANCEL, notCheckable = true, func = _xrp.DoNothing, },
+	{ text = CANCEL, notCheckable = true, func = AddOn.DoNothing, },
 }
 
 function XRPViewerControls_OnLoad(self)
@@ -258,9 +259,9 @@ local function Menu_Click(self, arg1, arg2, checked)
 	end
 end
 XRPViewerMultiline_baseMenuList = {
-	{ text = _xrp.L.SEND_TWEET .. CONTINUED, arg1 = "XRP_TWEET", notCheckable = true, func = Menu_Click, },
-	{ text = _xrp.L.COPY_URL .. CONTINUED, arg1 = "XRP_URL", notCheckable = true, func = Menu_Click, },
-	{ text = CANCEL, notCheckable = true, func = _xrp.DoNothing, },
+	{ text = L.SEND_TWEET .. CONTINUED, arg1 = "XRP_TWEET", notCheckable = true, func = Menu_Click, },
+	{ text = L.COPY_URL .. CONTINUED, arg1 = "XRP_URL", notCheckable = true, func = Menu_Click, },
+	{ text = CANCEL, notCheckable = true, func = AddOn.DoNothing, },
 }
 
 function XRPViewerScrollFrameEditBox_OnHyperlinkClicked(self, linkData, link, button)
@@ -319,7 +320,7 @@ function XRPViewerMenu_PreClick(self, button, down)
 	if isOwn or noProfile then
 		self.baseMenuList[3].disabled = true
 		self.baseMenuList[4].disabled = true
-		if name == _xrp.playerWithRealm or noProfile then
+		if name == AddOn.playerWithRealm or noProfile then
 			self.baseMenuList[7].menuList[1].disabled = true
 			self.baseMenuList[7].menuList[2].disabled = true
 		else
@@ -424,10 +425,10 @@ XRPViewer_Mixin = {
 			self.Tab1:Click()
 		end
 	end,
-	helpPlates = _xrp.help.viewer,
+	helpPlates = AddOn.help.viewer,
 }
 
-_xrp.settingsToggles.viewerMovable = function(setting)
+AddOn.settingsToggles.viewerMovable = function(setting)
 	local wasShown = XRPViewer:IsShown()
 	if wasShown then
 		HideUIPanel(XRPViewer)
@@ -453,21 +454,21 @@ _xrp.settingsToggles.viewerMovable = function(setting)
 			XRPViewer:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 50, -125)
 		end
 		XRPViewer.TitleRegion:Show()
-		_xrp.settingsToggles.viewerCloseOnEscape(_xrp.settings.viewerCloseOnEscape)
+		AddOn.settingsToggles.viewerCloseOnEscape(AddOn.settings.viewerCloseOnEscape)
 	elseif XRPViewer.TitleRegion then
 		XRPViewer:SetAttribute("UIPanelLayout-defined", true)
 		XRPViewer:SetAttribute("UIPanelLayout-enabled", true)
 		XRPViewer:SetMovable(false)
 		XRPViewer:SetFrameStrata("MEDIUM")
 		XRPViewer.TitleRegion:Hide()
-		_xrp.settingsToggles.viewerCloseOnEscape(false)
+		AddOn.settingsToggles.viewerCloseOnEscape(false)
 	end
 	if wasShown then
 		ShowUIPanel(XRPViewer)
 	end
 end
 local closeOnEscape
-_xrp.settingsToggles.viewerCloseOnEscape = function(setting)
+AddOn.settingsToggles.viewerCloseOnEscape = function(setting)
 	if setting and XRPViewer.TitleRegion then
 		if not closeOnEscape then
 			UISpecialFrames[#UISpecialFrames + 1] = "XRPViewer"

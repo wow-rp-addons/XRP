@@ -15,10 +15,11 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local FOLDER, _xrp = ...
+local FOLDER_NAME, AddOn = ...
+local L = AddOn.GetText
 
-XRP_EXPORT_PROFILE = _xrp.L.EXPORT_PROFILE
-XRP_EXPORT_INSTRUCTIONS = _xrp.L.EXPORT_INSTRUCTIONS:format(not IsMacClient() and "Ctrl+C" or "Cmd+C")
+XRP_EXPORT_PROFILE = L.EXPORT_PROFILE
+XRP_EXPORT_INSTRUCTIONS = L.EXPORT_INSTRUCTIONS:format(not IsMacClient() and "Ctrl+C" or "Cmd+C")
 
 function XRPExportText_OnLoad(self)
 	self.ScrollBar:ClearAllPoints()
@@ -44,6 +45,6 @@ function XRPExport_Export(self, title, text)
 	self.Text.EditBox:SetText(text)
 	self.Text.EditBox:SetCursorPosition(0)
 	self.Text:SetVerticalScroll(0)
-	self.HeaderText:SetFormattedText(SUBTITLE_FORMAT, _xrp.L.EXPORT, title)
+	self.HeaderText:SetFormattedText(SUBTITLE_FORMAT, L.EXPORT, title)
 	ShowUIPanel(self)
 end

@@ -15,27 +15,28 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local FOLDER, _xrp = ...
+local FOLDER_NAME, AddOn = ...
+local L = AddOn.GetText
 
 XRPOptionsControl_Mixin = {}
 
 function XRPOptionsControl_Mixin:Get()
-	local settingsTable = _xrp.settings
+	local settingsTable = AddOn.settings
 	if self.xrpTable then
-		settingsTable = _xrp.settings[self.xrpTable]
+		settingsTable = AddOn.settings[self.xrpTable]
 	end
 	return settingsTable[self.xrpSetting]
 end
 
 function XRPOptionsControl_Mixin:Set(value)
-	local settingsTable = _xrp.settings
+	local settingsTable = AddOn.settings
 	if self.xrpTable then
-		settingsTable = _xrp.settings[self.xrpTable]
+		settingsTable = AddOn.settings[self.xrpTable]
 	end
 	settingsTable[self.xrpSetting] = value
-	local settingsToggleTable = _xrp.settingsToggles
+	local settingsToggleTable = AddOn.settingsToggles
 	if self.xrpTable then
-		settingsToggleTable = _xrp.settingsToggles[self.xrpTable]
+		settingsToggleTable = AddOn.settingsToggles[self.xrpTable]
 	end
 	if settingsToggleTable and settingsToggleTable[self.xrpSetting] then
 		xpcall(settingsToggleTable[self.xrpSetting], geterrorhandler(), value, self.xrpSetting)
@@ -134,9 +135,9 @@ function XRPOptions_Mixin:default()
 		else
 			local defaultValue
 			if control.xrpTable then
-				defaultValue = _xrp.DEFAULT_SETTINGS[control.xrpTable][control.xrpSetting]
+				defaultValue = AddOn.DEFAULT_SETTINGS[control.xrpTable][control.xrpSetting]
 			else
-				defaultValue = _xrp.DEFAULT_SETTINGS[control.xrpSetting]
+				defaultValue = AddOn.DEFAULT_SETTINGS[control.xrpSetting]
 			end
 			control:Set(defaultValue)
 			control.value = defaultValue
@@ -170,15 +171,15 @@ local OPTIONS_NAME = {
 	GENERAL = GENERAL,
 	DISPLAY = DISPLAY,
 	CHAT = CHAT,
-	TOOLTIP = _xrp.L.TOOLTIP,
+	TOOLTIP = L.TOOLTIP,
 	ADVANCED = ADVANCED_LABEL,
 }
 local OPTIONS_DESCRIPTION = {
-	GENERAL = _xrp.L.GENERAL_OPTIONS,
-	DISPLAY = _xrp.L.DISPLAY_OPTIONS,
-	CHAT = _xrp.L.CHAT_OPTIONS,
-	TOOLTIP = _xrp.L.TOOLTIP_OPTIONS,
-	ADVANCED = _xrp.L.ADVANCED_OPTIONS,
+	GENERAL = L.GENERAL_OPTIONS,
+	DISPLAY = L.DISPLAY_OPTIONS,
+	CHAT = L.CHAT_OPTIONS,
+	TOOLTIP = L.TOOLTIP_OPTIONS,
+	ADVANCED = L.ADVANCED_OPTIONS,
 }
 function XRPOptions_Mixin:OnLoad()
 	self.name = OPTIONS_NAME[self.paneID]
@@ -208,49 +209,49 @@ local OPTIONS_TEXT = {
 		RAID = RAID,
 		INSTANCE_CHAT = INSTANCE_CHAT,
 	},
-	cacheRetainTime = _xrp.L.CACHE_EXPIRY_TIME,
-	cacheAutoClean = _xrp.L.CACHE_AUTOCLEAN,
-	chatNames = _xrp.L.ENABLE_ROLEPLAY_NAMES,
-	chatEmoteBraced = _xrp.L.EMOTE_SQUARE_BRACES,
-	chatReplacements = _xrp.L.XT_XF_REPLACE,
-	altScourge = _xrp.L.ALT_RACE_SINGLE:format(_xrp.L.VALUE_GR_SCOURGE_ALT, _xrp.L.VALUE_GR_SCOURGE),
-	altScourgeLimit = _xrp.L.ALT_RACE_SINGLE_LIMIT,
-	altScourgeForce = _xrp.L.ALT_RACE_FORCE,
-	altElven = _xrp.L.ALT_RACE_CATEGORY:format(_xrp.L.ALT_RACE_ELVEN),
-	altElvenLimit = _xrp.L.ALT_RACE_CATEGORY_LIMIT,
-	altElvenForce = _xrp.L.ALT_RACE_FORCE,
-	altTauren = _xrp.L.ALT_RACE_CATEGORY:format(_xrp.L.ALT_RACE_TAUREN),
-	altTaurenLimit = _xrp.L.ALT_RACE_CATEGORY_LIMIT,
-	altTaurenForce = _xrp.L.ALT_RACE_FORCE,
-	viewerMovable = _xrp.L.MOVABLE_VIEWER,
-	viewerCloseOnEscape = _xrp.L.CLOSE_ESCAPE_VIEWER,
-	friendsOnly = _xrp.L.SHOW_FRIENDS_ONLY,
-	friendsIncludeGuild = _xrp.L.GUILD_IS_FRIENDS,
-	heightUnits = _xrp.L.HEIGHT_DISPLAY,
-	weightUnits = _xrp.L.WEIGHT_DISPLAY,
-	cursorEnabled = _xrp.L.DISPLAY_BOOK_CURSOR,
-	cursorRightClick = _xrp.L.VIEW_PROFILE_RTCLICK,
-	cursorDisableInstance = _xrp.L.DISABLE_INSTANCES,
-	cursorDisablePvP = _xrp.L.DISABLE_PVPFLAG,
-	viewOnInteract = _xrp.L.VIEW_PROFILE_KEYBIND,
-	menusChat = _xrp.L.RTCLICK_MENU_STANDARD,
-	menusUnits = _xrp.L.RTCLICK_MENU_UNIT,
-	mainButtonEnabled = _xrp.L.MINIMAP_ENABLE,
-	mainButtonDetached = _xrp.L.DETACH_MINIMAP,
-	ldbObject = _xrp.L.LDB_OBJECT,
-	tooltipEnabled = _xrp.L.TOOLTIP_ENABLE,
-	tooltipReplace = _xrp.L.REPLACE_DEFAULT_TOOLTIP,
-	tooltipShowWatchEye = _xrp.L.EYE_ICON_TARGET,
-	tooltipShowBookmarkFlag = _xrp.L.BOOKMARK_INDICATOR,
-	tooltipShowExtraSpace = _xrp.L.EXTRA_SPACE_TOOLTIP,
-	tooltipShowHouse = _xrp.L.SHOW_HOUSE_TOOLTIP,
-	tooltipShowGuildRank = _xrp.L.DISPLAY_GUILD_RANK,
-	tooltipShowGuildIndex = _xrp.L.DISPLAY_GUILD_RANK_INDEX,
-	tooltipHideHostile = _xrp.L.NO_HOSTILE,
-	tooltipHideOppositeFaction = _xrp.L.NO_OP_FACTION,
-	tooltipHideInstanceCombat = _xrp.L.NO_INSTANCE_COMBAT,
-	tooltipHideClass = _xrp.L.NO_RP_CLASS,
-	tooltipHideRace = _xrp.L.NO_RP_RACE,
+	cacheRetainTime = L.CACHE_EXPIRY_TIME,
+	cacheAutoClean = L.CACHE_AUTOCLEAN,
+	chatNames = L.ENABLE_ROLEPLAY_NAMES,
+	chatEmoteBraced = L.EMOTE_SQUARE_BRACES,
+	chatReplacements = L.XT_XF_REPLACE,
+	altScourge = L.ALT_RACE_SINGLE:format(L.VALUE_GR_SCOURGE_ALT, L.VALUE_GR_SCOURGE),
+	altScourgeLimit = L.ALT_RACE_SINGLE_LIMIT,
+	altScourgeForce = L.ALT_RACE_FORCE,
+	altElven = L.ALT_RACE_CATEGORY:format(L.ALT_RACE_ELVEN),
+	altElvenLimit = L.ALT_RACE_CATEGORY_LIMIT,
+	altElvenForce = L.ALT_RACE_FORCE,
+	altTauren = L.ALT_RACE_CATEGORY:format(L.ALT_RACE_TAUREN),
+	altTaurenLimit = L.ALT_RACE_CATEGORY_LIMIT,
+	altTaurenForce = L.ALT_RACE_FORCE,
+	viewerMovable = L.MOVABLE_VIEWER,
+	viewerCloseOnEscape = L.CLOSE_ESCAPE_VIEWER,
+	friendsOnly = L.SHOW_FRIENDS_ONLY,
+	friendsIncludeGuild = L.GUILD_IS_FRIENDS,
+	heightUnits = L.HEIGHT_DISPLAY,
+	weightUnits = L.WEIGHT_DISPLAY,
+	cursorEnabled = L.DISPLAY_BOOK_CURSOR,
+	cursorRightClick = L.VIEW_PROFILE_RTCLICK,
+	cursorDisableInstance = L.DISABLE_INSTANCES,
+	cursorDisablePvP = L.DISABLE_PVPFLAG,
+	viewOnInteract = L.VIEW_PROFILE_KEYBIND,
+	menusChat = L.RTCLICK_MENU_STANDARD,
+	menusUnits = L.RTCLICK_MENU_UNIT,
+	mainButtonEnabled = L.MINIMAP_ENABLE,
+	mainButtonDetached = L.DETACH_MINIMAP,
+	ldbObject = L.LDB_OBJECT,
+	tooltipEnabled = L.TOOLTIP_ENABLE,
+	tooltipReplace = L.REPLACE_DEFAULT_TOOLTIP,
+	tooltipShowWatchEye = L.EYE_ICON_TARGET,
+	tooltipShowBookmarkFlag = L.BOOKMARK_INDICATOR,
+	tooltipShowExtraSpace = L.EXTRA_SPACE_TOOLTIP,
+	tooltipShowHouse = L.SHOW_HOUSE_TOOLTIP,
+	tooltipShowGuildRank = L.DISPLAY_GUILD_RANK,
+	tooltipShowGuildIndex = L.DISPLAY_GUILD_RANK_INDEX,
+	tooltipHideHostile = L.NO_HOSTILE,
+	tooltipHideOppositeFaction = L.NO_OP_FACTION,
+	tooltipHideInstanceCombat = L.NO_INSTANCE_COMBAT,
+	tooltipHideClass = L.NO_RP_CLASS,
+	tooltipHideRace = L.NO_RP_RACE,
 }
 
 function XRPOptionsControl_Mixin:OnLoad()
@@ -292,9 +293,9 @@ function XRPOptionsCheckButton_Mixin:OnClick(button, down)
 		end
 	end
 	if setting and self.enableWarn then
-		StaticPopup_Show("XRP_ERROR", _xrp.L[self.enableWarn])
+		StaticPopup_Show("XRP_ERROR", L[self.enableWarn])
 	elseif not setting and self.disableWarn then
-		StaticPopup_Show("XRP_ERROR", _xrp.L[self.disableWarn])
+		StaticPopup_Show("XRP_ERROR", L[self.disableWarn])
 	end
 	self:Set(setting)
 end
@@ -342,22 +343,22 @@ local function DropDown_Checked(self)
 end
 
 XRPOptionsGeneralHeight_baseMenuList = {
-	{ text = _xrp.L.CENTIMETERS, arg1 = "cm", arg2 = _xrp.L.CENTIMETERS, checked = DropDown_Checked, func = DropDown_OnClick },
-	{ text = _xrp.L.FEET_INCHES, arg1 = "ft", arg2 = _xrp.L.FEET_INCHES, checked = DropDown_Checked, func = DropDown_OnClick },
-	{ text = _xrp.L.METERS, arg1 = "m", arg2 = _xrp.L.METERS, checked = DropDown_Checked, func = DropDown_OnClick },
+	{ text = L.CENTIMETERS, arg1 = "cm", arg2 = L.CENTIMETERS, checked = DropDown_Checked, func = DropDown_OnClick },
+	{ text = L.FEET_INCHES, arg1 = "ft", arg2 = L.FEET_INCHES, checked = DropDown_Checked, func = DropDown_OnClick },
+	{ text = L.METERS, arg1 = "m", arg2 = L.METERS, checked = DropDown_Checked, func = DropDown_OnClick },
 }
 
 XRPOptionsGeneralWeight_baseMenuList = {
-	{ text = _xrp.L.KILOGRAMS, arg1 = "kg", arg2 = _xrp.L.KILOGRAMS, checked = DropDown_Checked, func = DropDown_OnClick },
-	{ text = _xrp.L.POUNDS, arg1 = "lb", arg2 = _xrp.L.POUNDS, checked = DropDown_Checked, func = DropDown_OnClick },
+	{ text = L.KILOGRAMS, arg1 = "kg", arg2 = L.KILOGRAMS, checked = DropDown_Checked, func = DropDown_OnClick },
+	{ text = L.POUNDS, arg1 = "lb", arg2 = L.POUNDS, checked = DropDown_Checked, func = DropDown_OnClick },
 }
 
 XRPOptionsAdvancedTime_baseMenuList = {
-	{ text = _xrp.L.TIME_1DAY, arg1 = 86400, arg2 = _xrp.L.TIME_1DAY, checked = DropDown_Checked, func = DropDown_OnClick },
-	{ text = _xrp.L.TIME_3DAY, arg1 = 259200, arg2 = _xrp.L.TIME_3DAY, checked = DropDown_Checked, func = DropDown_OnClick },
-	{ text = _xrp.L.TIME_7DAY, arg1 = 604800, arg2 = _xrp.L.TIME_7DAY, checked = DropDown_Checked, func = DropDown_OnClick },
-	{ text = _xrp.L.TIME_10DAY, arg1 = 864000, arg2 = _xrp.L.TIME_10DAY, checked = DropDown_Checked, func = DropDown_OnClick },
-	{ text = _xrp.L.TIME_2WEEK, arg1 = 1209600, arg2 = _xrp.L.TIME_2WEEK, checked = DropDown_Checked, func = DropDown_OnClick },
-	{ text = _xrp.L.TIME_1MONTH, arg1 = 2419200, arg2 = _xrp.L.TIME_1MONTH, checked = DropDown_Checked, func = DropDown_OnClick },
-	{ text = _xrp.L.TIME_3MONTH, arg1 = 7257600, arg2 = _xrp.L.TIME_3MONTH, checked = DropDown_Checked, func = DropDown_OnClick },
+	{ text = L.TIME_1DAY, arg1 = 86400, arg2 = L.TIME_1DAY, checked = DropDown_Checked, func = DropDown_OnClick },
+	{ text = L.TIME_3DAY, arg1 = 259200, arg2 = L.TIME_3DAY, checked = DropDown_Checked, func = DropDown_OnClick },
+	{ text = L.TIME_7DAY, arg1 = 604800, arg2 = L.TIME_7DAY, checked = DropDown_Checked, func = DropDown_OnClick },
+	{ text = L.TIME_10DAY, arg1 = 864000, arg2 = L.TIME_10DAY, checked = DropDown_Checked, func = DropDown_OnClick },
+	{ text = L.TIME_2WEEK, arg1 = 1209600, arg2 = L.TIME_2WEEK, checked = DropDown_Checked, func = DropDown_OnClick },
+	{ text = L.TIME_1MONTH, arg1 = 2419200, arg2 = L.TIME_1MONTH, checked = DropDown_Checked, func = DropDown_OnClick },
+	{ text = L.TIME_3MONTH, arg1 = 7257600, arg2 = L.TIME_3MONTH, checked = DropDown_Checked, func = DropDown_OnClick },
 }

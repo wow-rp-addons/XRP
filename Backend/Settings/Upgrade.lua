@@ -15,13 +15,14 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local FOLDER, _xrp = ...
+local FOLDER_NAME, AddOn = ...
+local L = AddOn.GetText
 
-if tonumber(GetAddOnMetadata(FOLDER, "X-Interface-Required")) > tonumber(select(4, GetBuildInfo())) then
+if tonumber(GetAddOnMetadata(FOLDER_NAME, "X-Interface-Required")) > tonumber(select(4, GetBuildInfo())) then
 	error("XRP: Required interface version not met, refusing to load saved variables updates.")
 end
 
-_xrp.UpgradeAccountVars = {
+AddOn.UpgradeAccountVars = {
 	[2] = function() -- 1.6.0.3.0
 		local settings = xrpAccountSaved.settings
 		local newSettings = {}
@@ -53,11 +54,11 @@ _xrp.UpgradeAccountVars = {
 
 		newSettings.minimap = settings.minimap or {}
 		-- Minimap button was getting hidden by garrison button.
-		newSettings.minimap.angle = _xrp.DEFAULT_SETTINGS.minimap.angle
+		newSettings.minimap.angle = AddOn.DEFAULT_SETTINGS.minimap.angle
 
 		newSettings.tooltip = settings.tooltip or {}
 
-		for section, defaults in pairs(_xrp.DEFAULT_SETTINGS) do
+		for section, defaults in pairs(AddOn.DEFAULT_SETTINGS) do
 			for option, setting in pairs(defaults) do
 				if newSettings[section][option] == nil then
 					newSettings[section][option] = setting
@@ -82,7 +83,7 @@ _xrp.UpgradeAccountVars = {
 		end
 		if settings.interact.rightclick ~= nil then
 			settings.interact.cursor = settings.interact.rightclick
-			settings.interact.rightClick = _xrp.DEFAULT_SETTINGS.interact.rightClick
+			settings.interact.rightClick = AddOn.DEFAULT_SETTINGS.interact.rightClick
 			settings.interact.rightclick = nil
 		end
 
@@ -157,7 +158,7 @@ _xrp.UpgradeAccountVars = {
 			-- Make sure movable viewer is disabled if it would be disabled
 			-- for them (i.e., preload disabled or movable disabled).
 			xrpAccountSaved.settings.display.movableViewer = false
-			xrpAccountSaved.settings.display.closeOnEscapeViewer = _xrp.DEFAULT_SETTINGS.display.closeOnEscapeViewer
+			xrpAccountSaved.settings.display.closeOnEscapeViewer = AddOn.DEFAULT_SETTINGS.display.closeOnEscapeViewer
 		end
 		xrpAccountSaved.settings.display.preloadViewer = nil
 	end,
@@ -290,7 +291,7 @@ _xrp.UpgradeAccountVars = {
 	end,
 }
 
-_xrp.UpgradeVars = {
+AddOn.UpgradeVars = {
 	[3] = function() -- 1.6.0.3.0
 		if type(xrpSaved.auto) ~= "table" then
 			xrpSaved.auto = {}
@@ -299,7 +300,7 @@ _xrp.UpgradeVars = {
 	[6] = function() -- 1.6.1.2.0
 		for name, profile in pairs(xrpSaved.profiles) do
 			if name == "SELECTED" then
-				local newName = _xrp.L.RENAMED_FORMAT:format("SELECTED")
+				local newName = L.RENAMED_FORMAT:format("SELECTED")
 				if xrpSaved.selected == name then
 					xrpSaved.selected = newName
 				end
@@ -320,7 +321,7 @@ _xrp.UpgradeVars = {
 				end
 			end
 		end
-		_xrp.FireEvent("UPDATE", "FC")
+		AddOn.FireEvent("UPDATE", "FC")
 	end,
 	[7] = function() -- 1.8.0
 		xrpSaved.meta.versions = nil

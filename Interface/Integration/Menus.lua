@@ -15,7 +15,8 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local FOLDER, _xrp = ...
+local FOLDER_NAME, AddOn = ...
+local L = AddOn.GetText
 
 -- This adds "Roleplay Profile" menu entries to several menus for a more
 -- convenient way to access profiles (including chat names, guild lists, and
@@ -60,10 +61,10 @@ local function UnitPopup_HideButtons_Hook()
 	end
 end
 
-local Buttons_Profile = { text = _xrp.L.ROLEPLAY_PROFILE }
+local Buttons_Profile = { text = L.ROLEPLAY_PROFILE }
 
 local isHooked
-_xrp.settingsToggles.menusChat = function(setting)
+AddOn.settingsToggles.menusChat = function(setting)
 	if setting then
 		if not isHooked then
 			hooksecurefunc("UnitPopup_OnClick", UnitPopup_OnClick_Hook)
@@ -117,7 +118,7 @@ _xrp.settingsToggles.menusChat = function(setting)
 	end
 end
 
-_xrp.settingsToggles.menusUnits = function(setting)
+AddOn.settingsToggles.menusUnits = function(setting)
 	if setting then
 		if not isHooked then
 			hooksecurefunc("UnitPopup_OnClick", UnitPopup_OnClick_Hook)

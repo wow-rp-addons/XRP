@@ -15,13 +15,14 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local FOLDER, _xrp = ...
+local FOLDER_NAME, AddOn = ...
+local L = AddOn.GetText
 
-XRP_BOOKMARKS = _xrp.L.BOOKMARKS
-XRP_OWN = _xrp.L.OWN
-XRP_RECENT = _xrp.L.RECENT
-XRP_SEARCH_ENTER = _xrp.L.PRESS_ENTER_SEARCH
-XRP_PROFILES_NOTFOUND = _xrp.L.NO_PROFILES_FOUND
+XRP_BOOKMARKS = L.BOOKMARKS
+XRP_OWN = L.OWN
+XRP_RECENT = L.RECENT
+XRP_SEARCH_ENTER = L.PRESS_ENTER_SEARCH
+XRP_PROFILES_NOTFOUND = L.NO_PROFILES_FOUND
 
 local request, results
 
@@ -124,7 +125,7 @@ function XRPArchiveList_update(self, force)
 		end
 	end
 
-	XRPArchive.Count:SetFormattedText(_xrp.L.TOTAL_LIST, matches, results.totalCount)
+	XRPArchive.Count:SetFormattedText(L.TOTAL_LIST, matches, results.totalCount)
 
 	HybridScrollFrame_Update(self, 72 * matches, 72)
 end
@@ -198,26 +199,26 @@ local function Menu_Click(self, arg1, arg2, checked)
 		XRPExport:Export(xrp.ShortName(tostring(character)), tostring(character.fields))
 	elseif arg1 == "XRP_CACHE_DROP" then
 		local name, realm = tostring(UIDROPDOWNMENU_INIT_MENU.character):match("^([^%-]+)%-([^%-]+)")
-		StaticPopup_Show("XRP_CACHE_SINGLE", _xrp.L.NAME_REALM:format(name, xrp.RealmDisplayName(realm)), nil, UIDROPDOWNMENU_INIT_MENU.character)
+		StaticPopup_Show("XRP_CACHE_SINGLE", L.NAME_REALM:format(name, xrp.RealmDisplayName(realm)), nil, UIDROPDOWNMENU_INIT_MENU.character)
 	end
 	if UIDROPDOWNMENU_MENU_LEVEL > 1 then
 		CloseDropDownMenus()
 	end
 end
 local Advanced_menuList = {
-	{ text = _xrp.L.EXPORT, arg1 = "XRP_EXPORT", notCheckable = true, func = Menu_Click, },
-	{ text = _xrp.L.DROP_CACHE .. CONTINUED, arg1 = "XRP_CACHE_DROP", notCheckable = true, func = Menu_Click, },
+	{ text = L.EXPORT, arg1 = "XRP_EXPORT", notCheckable = true, func = Menu_Click, },
+	{ text = L.DROP_CACHE .. CONTINUED, arg1 = "XRP_CACHE_DROP", notCheckable = true, func = Menu_Click, },
 }
 XRPArchiveEntry_Mixin = {
 	baseMenuList = {
-		{ text = _xrp.L.VIEW_CACHED, arg1 = "XRP_VIEW_CACHED", notCheckable = true, func = Menu_Click, },
-		{ text = _xrp.L.VIEW_LIVE, arg1 = "XRP_VIEW_LIVE", notCheckable = true, func = Menu_Click, },
-		{ text = _xrp.L.NOTES, arg1 = "XRP_NOTES", notCheckable = true, func = Menu_Click, },
+		{ text = L.VIEW_CACHED, arg1 = "XRP_VIEW_CACHED", notCheckable = true, func = Menu_Click, },
+		{ text = L.VIEW_LIVE, arg1 = "XRP_VIEW_LIVE", notCheckable = true, func = Menu_Click, },
+		{ text = L.NOTES, arg1 = "XRP_NOTES", notCheckable = true, func = Menu_Click, },
 		{ text = ADD_FRIEND, arg1 = "XRP_FRIEND", notCheckable = true, func = Menu_Click, },
-		{ text = _xrp.L.BOOKMARK, arg1 = "XRP_BOOKMARK", isNotRadio = true, checked = Menu_Checked, func = Menu_Click, },
-		{ text = _xrp.L.HIDE_PROFILE, arg1 = "XRP_HIDE", isNotRadio = true, checked = Menu_Checked, func = Menu_Click, },
+		{ text = L.BOOKMARK, arg1 = "XRP_BOOKMARK", isNotRadio = true, checked = Menu_Checked, func = Menu_Click, },
+		{ text = L.HIDE_PROFILE, arg1 = "XRP_HIDE", isNotRadio = true, checked = Menu_Checked, func = Menu_Click, },
 		{ text = ADVANCED_LABEL, notCheckable = true, hasArrow = true, menuList = Advanced_menuList, },
-		{ text = CANCEL, notCheckable = true, func = _xrp.DoNothing, },
+		{ text = CANCEL, notCheckable = true, func = AddOn.DoNothing, },
 	},
 	onHide = function(level)
 		if level < 3 then
@@ -231,7 +232,7 @@ function XRPArchiveEntry_OnClick(self, button, down)
 	if button == "RightButton" then
 		self.Selected:Show()
 		if self.character.own then
-			if tostring(self.character) == _xrp.playerWithRealm then
+			if tostring(self.character) == AddOn.playerWithRealm then
 				self.baseMenuList[1].disabled = true
 				self.baseMenuList[7].menuList[2].disabled = true
 			else
@@ -339,9 +340,9 @@ local function Filter_Radio_Click(self, arg1, arg2, checked)
 end
 local sortMenu = {
 	{ text = NAME, keepShownOnClick = true, arg1 = "sortType", arg2 = nil, checked = Filter_Radio_Checked, func = Filter_Radio_Click, },
-	{ text = _xrp.L.ROLEPLAY_NAME, keepShownOnClick = true, arg1 = "sortType", arg2 = "NA", checked = Filter_Radio_Checked, func = Filter_Radio_Click, },
-	{ text = _xrp.L.REALM, keepShownOnClick = true, arg1 = "sortType", arg2 = "realm", checked = Filter_Radio_Checked, func = Filter_Radio_Click, },
-	{ text = _xrp.L.DATE, keepShownOnClick = true, arg1 = "sortType", arg2 = "date", checked = Filter_Radio_Checked, func = Filter_Radio_Click, },
+	{ text = L.ROLEPLAY_NAME, keepShownOnClick = true, arg1 = "sortType", arg2 = "NA", checked = Filter_Radio_Checked, func = Filter_Radio_Click, },
+	{ text = L.REALM, keepShownOnClick = true, arg1 = "sortType", arg2 = "realm", checked = Filter_Radio_Checked, func = Filter_Radio_Click, },
+	{ text = L.DATE, keepShownOnClick = true, arg1 = "sortType", arg2 = "date", checked = Filter_Radio_Checked, func = Filter_Radio_Click, },
 }
 
 local function Filter_Toggle_Checked(self)
@@ -375,12 +376,12 @@ XRPArchiveFilterButton_baseMenuList = {
 	{ text = FACTION, notCheckable = true, hasArrow = true, menuList = factionMenu, },
 	{ text = RACE, notCheckable = true, hasArrow = true, menuList = raceMenu, },
 	{ text = CLASS, notCheckable = true, hasArrow = true, menuList = classMenu, },
-	{ text = _xrp.L.SORT_BY, notCheckable = true, hasArrow = true, menuList = sortMenu, },
-	{ text = _xrp.L.FULL_SEARCH, isNotRadio = true, keepShownOnClick = true, arg1 = "fullText", checked = Filter_Toggle_Checked, func = Filter_Toggle_Click, },
-	{ text = _xrp.L.REVERSE_SORT, isNotRadio = true, keepShownOnClick = true, arg1 = "sortReverse", checked = Filter_Toggle_Checked, func = Filter_Toggle_Click, },
-	{ text = _xrp.L.HAS_NOTES, isNotRadio = true, keepShownOnClick = true, arg1 = "notes", checked = Filter_Toggle_Checked, func = Filter_Toggle_Click, },
-	{ text = _xrp.L.INCLUDE_HIDDEN, isNotRadio = true, keepShownOnClick = true, arg1 = "showHidden", checked = Filter_Toggle_Checked, func = Filter_Toggle_Click, },
-	{ text = _xrp.L.RESET_FILTERS, notCheckable = true, func = Filter_Reset, },
+	{ text = L.SORT_BY, notCheckable = true, hasArrow = true, menuList = sortMenu, },
+	{ text = L.FULL_SEARCH, isNotRadio = true, keepShownOnClick = true, arg1 = "fullText", checked = Filter_Toggle_Checked, func = Filter_Toggle_Click, },
+	{ text = L.REVERSE_SORT, isNotRadio = true, keepShownOnClick = true, arg1 = "sortReverse", checked = Filter_Toggle_Checked, func = Filter_Toggle_Click, },
+	{ text = L.HAS_NOTES, isNotRadio = true, keepShownOnClick = true, arg1 = "notes", checked = Filter_Toggle_Checked, func = Filter_Toggle_Click, },
+	{ text = L.INCLUDE_HIDDEN, isNotRadio = true, keepShownOnClick = true, arg1 = "showHidden", checked = Filter_Toggle_Checked, func = Filter_Toggle_Click, },
+	{ text = L.RESET_FILTERS, notCheckable = true, func = Filter_Reset, },
 }
 
 function XRPArchiveFilterText_OnTextChanged(self, userInput)
@@ -406,10 +407,10 @@ function XRPArchiveRefreshButton_OnClick(self, button, down)
 end
 
 local ARCHIVE_TAB = {
-	[1] = _xrp.L.BOOKMARKS,
-	[2] = _xrp.L.OWN_CHARACTERS,
-	[3] = _xrp.L.RECENT_3HOURS,
-	[4] = _xrp.L.ALL_PROFILES,
+	[1] = L.BOOKMARKS,
+	[2] = L.OWN_CHARACTERS,
+	[3] = L.RECENT_3HOURS,
+	[4] = L.ALL_PROFILES,
 }
 local requests = {
 	{ bookmark = true, sortType = "NA", defaultSortType = "NA", offset = 0, lastRefresh = 0, faction = {}, race = {}, class = {} }, -- Bookmarks
@@ -466,5 +467,5 @@ XRPArchive_Mixin = {
 		end
 		ShowUIPanel(self)
 	end,
-	helpPlates = _xrp.help.archive,
+	helpPlates = AddOn.help.archive,
 }

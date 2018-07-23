@@ -15,13 +15,14 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
-local FOLDER, _xrp = ...
+local FOLDER_NAME, AddOn = ...
+local L = AddOn.GetText
 
 local MAX_DEPTH = 50
 
 local NO_PROFILE = { TT = true, VP = true, VA = true, GC = true, GF = true, GR = true, GS = true, GU = true }
 
-_xrp.PROFILE_MAX_DEPTH = MAX_DEPTH
+AddOn.PROFILE_MAX_DEPTH = MAX_DEPTH
 
 xrp.current = setmetatable({}, {
 	__index = function(self, field)
@@ -39,7 +40,7 @@ xrp.current = setmetatable({}, {
 		if xrpSaved.overrides.fields[field] == contents or NO_PROFILE[field] or not field:find("^%u%u$") then return end
 		contents = type(contents) == "string" and contents or nil
 		xrpSaved.overrides.fields[field] = contents
-		_xrp.FireEvent("UPDATE", field)
+		AddOn.FireEvent("UPDATE", field)
 	end,
 	__metatable = false,
 })
@@ -61,7 +62,7 @@ local function IsUsed(name, field)
 	return false
 end
 
-local nameMap = setmetatable({}, _xrp.weakKeyMeta)
+local nameMap = setmetatable({}, AddOn.weakKeyMeta)
 
 local FORBIDDEN_NAMES = {
 	Add = true,
@@ -83,7 +84,7 @@ local profileFunctions = {
 		end
 		for form, profileName in pairs(xrpSaved.auto) do
 			if profileName == name then
-				_xrp.auto[form] = nil
+				AddOn.auto[form] = nil
 			end
 		end
 		profiles[name] = nil
@@ -145,7 +146,7 @@ local profileFunctions = {
 		if not keepOverrides then
 			xrpSaved.overrides.fields = {}
 		end
-		_xrp.FireEvent("UPDATE")
+		AddOn.FireEvent("UPDATE")
 		return true
 	end,
 	IsParentValid = function(self, testName)
@@ -182,7 +183,7 @@ local fieldsMeta = {
 		if profile and profile.fields[field] ~= contents then
 			profile.fields[field] = contents
 			if IsUsed(name, field) then
-				_xrp.FireEvent("UPDATE", field)
+				AddOn.FireEvent("UPDATE", field)
 			end
 		end
 	end,
@@ -215,7 +216,7 @@ local fieldsMeta = {
 				fields[field] = contents
 			end
 		end
-		return _xrp.ExportText(("%s - %s"):format(_xrp.L.NAME_REALM:format(_xrp.player, xrp.RealmDisplayName(_xrp.realm)), name), fields)
+		return AddOn.ExportText(("%s - %s"):format(L.NAME_REALM:format(AddOn.player, xrp.RealmDisplayName(AddOn.realm)), name), fields)
 	end,
 	__metatable = false,
 }
@@ -234,7 +235,7 @@ local fullFieldsMeta = {
 		end
 		return nil
 	end,
-	__newindex = _xrp.DoNothing,
+	__newindex = AddOn.DoNothing,
 	__metatable = false,
 }
 
@@ -255,7 +256,7 @@ local inheritMeta = {
 		if state ~= profile.inherits[field] then
 			profile.inherits[field] = state
 			if not profile.fields[field] and IsUsed(name, field) then
-				_xrp.FireEvent("UPDATE", field)
+				AddOn.FireEvent("UPDATE", field)
 			end
 		end
 	end,
@@ -294,7 +295,7 @@ local profileMeta = {
 		if component ~= "parent" or value == profiles[name].parent or not self:IsParentValid(value) then return end
 		profiles[name].parent = value
 		if IsUsed(name) then
-			_xrp.FireEvent("UPDATE")
+			AddOn.FireEvent("UPDATE")
 		end
 	end,
 	__tostring = function(self)
@@ -303,7 +304,7 @@ local profileMeta = {
 	__metatable = false,
 }
 
-local profileTables = setmetatable({}, _xrp.weakMeta)
+local profileTables = setmetatable({}, AddOn.weakMeta)
 
 xrp.profiles = setmetatable({
 	Add = function(self, name)
@@ -338,6 +339,6 @@ xrp.profiles = setmetatable({
 		end
 		return profileTables[name]
 	end,
-	__newindex = _xrp.DoNothing,
+	__newindex = AddOn.DoNothing,
 	__metatable = false,
 })
