@@ -109,10 +109,10 @@ local function RECEIVE(event, name)
 		end
 		if status ~= "received" then
 			if lastUpdate < GetTime() - 10 then
-				XRPViewer.XC:SetText(L.NO_CHANGES)
+				XRPViewer.XC:SetText(L"No changes.")
 				status = "nochange"
 			elseif status ~= "nochange" then
-				XRPViewer.XC:SetText(L.RECEIVED)
+				XRPViewer.XC:SetText(L"Received!")
 				status = "received"
 			end
 		end
@@ -122,10 +122,10 @@ end
 local function CHUNK(event, name, chunk, totalChunks)
 	if tostring(current) == name then
 		if chunk ~= totalChunks then
-			XRPViewer.XC:SetFormattedText(totalChunks and L.RECEIVING_PARTS or L.RECEIVING_UNKNOWN, chunk, totalChunks)
+			XRPViewer.XC:SetFormattedText(totalChunks and L"Receiving... (%d/%d)" or L"Receiving... (%d/??)", chunk, totalChunks)
 			status = "receiving"
 		elseif status ~= "nochange" then
-			XRPViewer.XC:SetFormattedText(L.RECEIVED_PARTS, chunk, totalChunks)
+			XRPViewer.XC:SetFormattedText(L"Received! (%d/%d)", chunk, totalChunks)
 			status = "received"
 		end
 	end
@@ -136,11 +136,11 @@ local function FAIL(event, name, reason)
 		failed = true
 		if not status then
 			if reason == "offline" then
-				XRPViewer.XC:SetText(L.ERR_OFFLINE)
+				XRPViewer.XC:SetText(L"Character is not online.")
 			elseif reason == "faction" then
-				XRPViewer.XC:SetText(L.ERR_FACTION)
+				XRPViewer.XC:SetText(L"Character is opposite faction.")
 			elseif reason == "nomsp" then
-				XRPViewer.XC:SetText(L.ERR_ADDON)
+				XRPViewer.XC:SetText(L"No RP addon appears to be active.")
 			end
 			status = "failed"
 		end
@@ -184,7 +184,7 @@ local function Menu_Click(self, arg1, arg2, checked)
 		local name, realm = fullName:match("^([^%-]+)%-([^%-]+)$")
 		local prettyRealm = xrp.RealmDisplayName(realm)
 		local approxTime = ("%02d:%02d"):format(GetGameTime())
-		StaticPopup_Show("XRP_REPORT", Ambiguate(tostring(current), "none"), nil, L.REPORT_INFO_TEMPLATE:format(name, prettyRealm, approxTime))
+		StaticPopup_Show("XRP_REPORT", Ambiguate(tostring(current), "none"), nil, L"Logged addon message prefix: MSP; Player name: %s; Realm name: %s; Approximate game time: %s":format(name, prettyRealm, approxTime))
 	elseif arg1 == "XRP_REFRESH_FORCE" then
 		local name, realm = tostring(current):match("^([^%-]+)%-([^%-]+)")
 		StaticPopup_Show("XRP_FORCE_REFRESH", L.NAME_REALM:format(name, xrp.RealmDisplayName(realm)), nil, current)

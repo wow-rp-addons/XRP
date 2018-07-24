@@ -239,7 +239,7 @@ function XRPEditorControls_OnLoad(self)
 		self.EditBox.Warning = self.Warning
 	end
 	if self.safeLength then
-		self.Warning.tooltipText = ("|cffcc0000%s|r %s"):format(STAT_FORMAT:format(L.WARNING), L.WARNING_LENGTH:format(fieldName, self.safeLength))
+		self.Warning.tooltipText = ("|cffcc0000%s|r %s"):format(STAT_FORMAT:format(L.WARNING), L"%s is over %d characters.":format(fieldName, self.safeLength))
 	end
 	if self.field then
 		if not XRPEditor.fields then

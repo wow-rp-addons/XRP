@@ -23,7 +23,7 @@ if not msp_RPAddOn then
 	msp_RPAddOn = FOLDER_NAME
 else
 	StaticPopupDialogs["XRP_MSP_DISABLE"] = {
-		text = L.MSP_DISABLED,
+		text = L"You are currently running two roleplay profile addons. XRP's support for sending and receiving profiles is disabled; to fully use XRP, disable \"%s\" and reload your UI.",
 		button1 = OKAY,
 		showAlert = true,
 		enterClicksFirstButton = true,

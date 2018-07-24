@@ -52,7 +52,7 @@ StaticPopupDialogs["XRP_ERROR"] = {
 }
 
 StaticPopupDialogs["XRP_URL"] = {
-	text = L.POPUP_URL:format(not IsMacClient() and "Ctrl+C" or "Cmd+C"),
+	text = L"Copy the URL (%s) and paste into your web browser.":format(not IsMacClient() and "Ctrl+C" or "Cmd+C"),
 	button1 = DONE,
 	hasEditBox = true,
 	editBoxWidth = 250,
@@ -81,7 +81,7 @@ StaticPopupDialogs["XRP_RELOAD"] = {
 	hideOnEscape = true,
 }
 StaticPopupDialogs["XRP_REPORT"] = {
-	text = L.REPORT_POPUP:format(not IsMacClient() and "Ctrl+C" or "Cmd+C"),
+	text = L"|cffdd380fYou must submit a ticket to Blizzard to report a profile.|r\n\nYou should copy the information from the text box below (%s) to add to your ticket.":format(not IsMacClient() and "Ctrl+C" or "Cmd+C"),
 	button1 = OKAY,
 	hasEditBox = true,
 	editBoxWidth = 250,
@@ -103,7 +103,7 @@ StaticPopupDialogs["XRP_REPORT"] = {
 }
 
 StaticPopupDialogs["XRP_CURRENTLY"] = {
-	text = L.POPUP_CURRENTLY,
+	text = L"What are you currently doing?\n(This will reset fifteen minutes after logout; use the editor to set this more permanently.)",
 	button1 = ACCEPT,
 	button2 = RESET,
 	button3 = CANCEL,
@@ -138,7 +138,7 @@ StaticPopupDialogs["XRP_CURRENTLY"] = {
 }
 
 StaticPopupDialogs["XRP_CACHE_SINGLE"] = {
-	text = L.POPUP_ASK_CACHE_SINGLE,
+	text = L"It is typically unnecessary to indiviudally drop cached profiles.\n\nAre you sure you wish to drop %s from the cache anyway?",
 	button1 = YES,
 	button2 = NO,
 	showAlert = true,
@@ -150,7 +150,7 @@ StaticPopupDialogs["XRP_CACHE_SINGLE"] = {
 }
 
 StaticPopupDialogs["XRP_FORCE_REFRESH"] = {
-	text = L.POPUP_ASK_FORCE_REFRESH,
+	text = L"Force refreshing is rarely necessary and should be done sparingly.\n\nDo you wish to forcibly refresh all fields for %s as soon as possible anyway?",
 	button1 = YES,
 	button2 = NO,
 	showAlert = true,
@@ -162,19 +162,19 @@ StaticPopupDialogs["XRP_FORCE_REFRESH"] = {
 }
 
 StaticPopupDialogs["XRP_CACHE_CLEAR"] = {
-	text = L.POPUP_ASK_CACHE,
+	text = L"Are you sure you wish to fully clear the cache?",
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = function(self)
 		AddOn.CacheTidy(60)
-		StaticPopup_Show("XRP_NOTIFICATION", L.POPUP_CLEAR_CACHE)
+		StaticPopup_Show("XRP_NOTIFICATION", L"The cache has been cleared.")
 	end,
 	whileDead = true,
 	hideOnEscape = true,
 }
 
 StaticPopupDialogs["XRP_CACHE_TIDY"] = {
-	text = L.POPUP_TIDY_CACHE,
+	text = L"Old entries have been pruned from the cache.",
 	button1 = OKAY,
 	OnShow = function(self)
 		AddOn.CacheTidy()
@@ -184,7 +184,7 @@ StaticPopupDialogs["XRP_CACHE_TIDY"] = {
 }
 
 StaticPopupDialogs["XRP_EDITOR_UNSAVED"] = {
-	text = L.POPUP_EDITOR_UNSAVED,
+	text = L"You have unsaved changes to \"%s\". Discard them?",
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function(self, profile)
@@ -195,7 +195,7 @@ StaticPopupDialogs["XRP_EDITOR_UNSAVED"] = {
 }
 
 StaticPopupDialogs["XRP_EDITOR_ADD"] = {
-	text = L.POPUP_EDITOR_ADD,
+	text = L"Enter a name for the new profile:",
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	hasEditBox = true,
@@ -204,7 +204,7 @@ StaticPopupDialogs["XRP_EDITOR_ADD"] = {
 	OnAccept = function(self)
 		local name = self.editBox:GetText()
 		if not xrp.profiles:Add(name) then
-			StaticPopup_Show("XRP_ERROR", L.POPUP_EDITOR_UNAVAILABLE:format(name))
+			StaticPopup_Show("XRP_ERROR", L"The name \"%s\" is unavailable or already in use.":format(name))
 		else
 			XRPEditor:Edit(name)
 		end
@@ -217,13 +217,13 @@ StaticPopupDialogs["XRP_EDITOR_ADD"] = {
 }
 
 StaticPopupDialogs["XRP_EDITOR_DELETE"] = {
-	text = L.POPUP_EDITOR_DELETE,
+	text = L"Are you sure you want to remove \"%s\"?",
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function(self)
 		local name = XRPEditor.Profiles.contents
 		if not xrp.profiles[name]:Delete() then
-			StaticPopup_Show("XRP_ERROR", L.POPUP_EDITOR_INUSE:format(name))
+			StaticPopup_Show("XRP_ERROR", L"The profile \"%s\" is currently in-use directly or as a parent profile. In-use profiles cannot be removed.":format(name))
 		else
 			XRPEditor:Edit(tostring(xrp.profiles.SELECTED))
 		end
@@ -233,7 +233,7 @@ StaticPopupDialogs["XRP_EDITOR_DELETE"] = {
 }
 
 StaticPopupDialogs["XRP_EDITOR_RENAME"] = {
-	text = L.POPUP_EDITOR_RENAME,
+	text = L"Enter a new name for \"%s\":",
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	hasEditBox = true,
@@ -242,7 +242,7 @@ StaticPopupDialogs["XRP_EDITOR_RENAME"] = {
 	OnAccept = function(self)
 		local name = self.editBox:GetText()
 		if not xrp.profiles[XRPEditor.Profiles.contents]:Rename(name) then
-			StaticPopup_Show("XRP_ERROR", L.POPUP_EDITOR_UNAVAILABLE:format(name))
+			StaticPopup_Show("XRP_ERROR", L"The name \"%s\" is unavailable or already in use.":format(name))
 		else
 			XRPEditor:Edit(name)
 		end
@@ -255,7 +255,7 @@ StaticPopupDialogs["XRP_EDITOR_RENAME"] = {
 }
 
 StaticPopupDialogs["XRP_EDITOR_COPY"] = {
-	text = L.POPUP_EDITOR_COPY,
+	text = L"Enter a name for the copy of \"%s\":",
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	hasEditBox = true,
@@ -264,7 +264,7 @@ StaticPopupDialogs["XRP_EDITOR_COPY"] = {
 	OnAccept = function(self)
 		local name = self.editBox:GetText()
 		if not xrp.profiles[XRPEditor.Profiles.contents]:Copy(name) then
-			StaticPopup_Show("XRP_ERROR", L.POPUP_EDITOR_UNAVAILABLE:format(name))
+			StaticPopup_Show("XRP_ERROR", L"The name \"%s\" is unavailable or already in use.":format(name))
 		else
 			XRPEditor:Edit(name)
 		end

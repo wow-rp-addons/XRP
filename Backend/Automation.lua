@@ -246,7 +246,7 @@ AddOn.HookGameEvent("PLAYER_LOGIN", function(event)
 		xrpSaved.lastCleanUp = now
 
 		if importantRemove then
-			StaticPopup_Show("XRP_ERROR", L.REMOVED_AUTO_FORMS)
+			StaticPopup_Show("XRP_ERROR", L"Some of your settings for automated profile swaps based on class or race forms are no longer are valid, likely due to a race or name change.\n\nYou should re-check your automated profile swap settings in the editor, to be sure they are to your liking.")
 		end
 
 		if not next(toRemove) then

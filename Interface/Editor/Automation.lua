@@ -26,21 +26,21 @@ if not (playerClass == "DRUID" or playerClass == "PRIEST" or playerClass == "SHA
 end
 
 local FORM_NAMES = {
-	["DEFAULT"] = isWorgen and xrp.L.VALUES.GR.Worgen or playerClass and (playerClass == "PRIEST" and L.STANDARD or L.HUMANOID) or L.NOEQUIP,
-	["CAT"] = L.CAT,
-	["BEAR"] = L.BEAR,
-	["MOONKIN"] = L.MOONKIN,
-	["ASTRAL"] = L.ASTRAL,
-	["AQUATIC"] = L.AQUATIC,
-	["TRAVEL"] = L.TRAVEL,
-	["FLIGHT"] = L.FLIGHT,
-	["TREANT"] = L.TREANT,
-	["SHADOWFORM"] = L.SHADOWFORM,
-	["GHOSTWOLF"] = L.GHOST_WOLF,
+	["DEFAULT"] = isWorgen and xrp.L.VALUES.GR.Worgen or playerClass and (playerClass == "PRIEST" and L"Standard Form" or L"Humanoid Form") or L"No Equipment Set",
+	["CAT"] = L"Cat Form",
+	["BEAR"] = L"Bear Form",
+	["MOONKIN"] = L"Moonkin Form",
+	["ASTRAL"] = L"Astral Form",
+	["AQUATIC"] = L"Travel Form (Aquatic)",
+	["TRAVEL"] = L"Travel Form (Land)",
+	["FLIGHT"] = L"Travel Form (Flight)",
+	["TREANT"] = L"Treant Form",
+	["SHADOWFORM"] = L"Shadowform",
+	["GHOSTWOLF"] = L"Ghost Wolf",
 	["HUMAN"] = xrp.L.VALUES.GR.Human,
-	["DEFAULT\030SHADOWFORM"] = L.WORGEN_SHADOW,
-	["HUMAN\030SHADOWFORM"] = L.HUMAN_SHADOW,
-	["MERCENARY"] = L.MERCENARY,
+	["DEFAULT\030SHADOWFORM"] = L"Shadowform (Worgen)",
+	["HUMAN\030SHADOWFORM"] = L"Shadowform (Human)",
+	["MERCENARY"] = L"Mercenary Mode",
 }
 
 local function MakeWords(text)
@@ -59,7 +59,7 @@ local function ToggleButtons(self)
 	local changes = next(unsaved) ~= nil
 	if next(xrpSaved.auto) and not AddOn.auto["DEFAULT"] and not unsaved["DEFAULT"] then
 		self.Warning:Show()
-		self.Warning:SetFormattedText(L.WARN_FALLBACK, FORM_NAMES["DEFAULT"])
+		self.Warning:SetFormattedText(L"You should set a fallback profile for \"%s\".", FORM_NAMES["DEFAULT"])
 	else
 		self.Warning:Hide()
 	end
@@ -176,7 +176,7 @@ XRPEditorAutomationForm_Mixin = {
 			end
 		elseif not noSet then
 			equipSets[#equipSets + 1]  = {
-				text = L.NO_SETS,
+				text = L"No Equipment Sets",
 				disabled = true,
 			}
 		end

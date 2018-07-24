@@ -21,8 +21,8 @@ local L = AddOn.GetText
 XRP_BOOKMARKS = L.BOOKMARKS
 XRP_OWN = L.OWN
 XRP_RECENT = L.RECENT
-XRP_SEARCH_ENTER = L.PRESS_ENTER_SEARCH
-XRP_PROFILES_NOTFOUND = L.NO_PROFILES_FOUND
+XRP_SEARCH_ENTER = L"Press enter to search."
+XRP_PROFILES_NOTFOUND = L"No profiles found."
 
 local request, results
 
@@ -125,7 +125,7 @@ function XRPArchiveList_update(self, force)
 		end
 	end
 
-	XRPArchive.Count:SetFormattedText(L.TOTAL_LIST, matches, results.totalCount)
+	XRPArchive.Count:SetFormattedText(L"Listing %d of %d profiles.", matches, results.totalCount)
 
 	HybridScrollFrame_Update(self, 72 * matches, 72)
 end

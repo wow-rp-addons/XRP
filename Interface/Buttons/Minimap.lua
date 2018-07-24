@@ -79,13 +79,13 @@ local function RenderTooltip(Tooltip)
 	Tooltip:AddLine(" ")
 	local target = xrp.characters.byUnit.target
 	if target and (target.hide or target.fields.VA) then
-		Tooltip:AddLine(L.CLICK_VIEW_TARGET, 1, 0.93, 0.67)
+		Tooltip:AddLine(L"Click to view your target's profile.", 1, 0.93, 0.67)
 	elseif not FC or FC == "0" or FC == "1" then
-		Tooltip:AddLine(L.CLICK_IC, 0.4, 0.7, 0.5)
+		Tooltip:AddLine(L"Click for in character.", 0.4, 0.7, 0.5)
 	else
-		Tooltip:AddLine(L.CLICK_OOC, 0.6, 0.4, 0.3)
+		Tooltip:AddLine(L"Click for out of character.", 0.6, 0.4, 0.3)
 	end
-	Tooltip:AddLine(L.RTCLICK_MENU, 0.6, 0.6, 0.6)
+	Tooltip:AddLine(L"Right click for the menu.", 0.6, 0.6, 0.6)
 end
 
 function XRPButton_OnEnter(self, motion)

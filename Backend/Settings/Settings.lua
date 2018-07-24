@@ -81,7 +81,7 @@ local function InitializeSavedVariables()
 			}
 			xrpSaved.selected = DEFAULT
 		end
-		StaticPopup_Show("XRP_ERROR", L.PROFILE_MISSING)
+		StaticPopup_Show("XRP_ERROR", L"Your active profile was not available to be used and XRP has tried to select an alternate profile.\n\nThis should not have happened and may indicate data corruption -- you should check your profiles for any problems.")
 	end
 end
 

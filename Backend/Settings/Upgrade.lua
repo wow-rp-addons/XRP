@@ -300,7 +300,7 @@ AddOn.UpgradeVars = {
 	[6] = function() -- 1.6.1.2.0
 		for name, profile in pairs(xrpSaved.profiles) do
 			if name == "SELECTED" then
-				local newName = L.RENAMED_FORMAT:format("SELECTED")
+				local newName = L"%s Renamed":format("SELECTED")
 				if xrpSaved.selected == name then
 					xrpSaved.selected = newName
 				end

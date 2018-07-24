@@ -19,7 +19,7 @@ local FOLDER_NAME, AddOn = ...
 local L = AddOn.GetText
 
 XRP_EXPORT_PROFILE = L.EXPORT_PROFILE
-XRP_EXPORT_INSTRUCTIONS = L.EXPORT_INSTRUCTIONS:format(not IsMacClient() and "Ctrl+C" or "Cmd+C")
+XRP_EXPORT_INSTRUCTIONS = L"Press %s to copy or Escape to close.":format(not IsMacClient() and "Ctrl+C" or "Cmd+C")
 
 function XRPExportText_OnLoad(self)
 	self.ScrollBar:ClearAllPoints()

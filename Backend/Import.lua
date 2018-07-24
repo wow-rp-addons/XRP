@@ -24,7 +24,7 @@ if not (hasMRP or hasTRP3) then return end
 local MRP_NO_IMPORT = { TT = true, VA = true, VP = true, GC = true, GF = true, GR = true, GS = true, GU = true }
 
 StaticPopupDialogs["XRP_IMPORT_RELOAD"] = {
-	text = L.IMPORT_RELOAD,
+	text = L"Available profiles have been imported and may be found in the editor's profile list. You should reload your UI now.",
 	button1 = RELOADUI,
 	button2 = CANCEL,
 	OnAccept = ReloadUI,

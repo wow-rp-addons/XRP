@@ -182,7 +182,7 @@ AddOn.HookGameEvent("ADDON_LOADED", function(event, addon)
 		local now = time()
 		if update == 1 and (not AddOn.settings.versionwarning or AddOn.settings.versionwarning < now - 21600) then
 			C_Timer.After(8, function()
-				print(L.NEW_VERSION:format(AddOn.settings.newversion))
+				print(L"There is a new version of |cffabd473XRP|r available. You should update to %s as soon as possible.":format(AddOn.settings.newversion))
 				AddOn.settings.versionwarning = now
 			end)
 		elseif update == -1 then

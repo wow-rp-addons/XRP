@@ -18,7 +18,7 @@
 local FOLDER_NAME, AddOn = ...
 local L = AddOn.GetText
 
-local SLASH_XRP = L.SLASH_XRP or "/xrp"
+local SLASH_XRP = L"/xrp"
 local INFO = STAT_FORMAT:format("|cff99b3e6%s") .. "|r %s"
 -- Also used in ui/options.xml.
 XRP_VERSION = INFO:format(GAME_VERSION_LABEL, AddOn.version)
@@ -29,9 +29,9 @@ local xrpCmds = {}
 xrpCmds.about = function(args)
 	print(XRP_HEADER:format(""))
 	print(XRP_VERSION)
-	for line in L.GPL_SHORT:gmatch("[^\n]+") do
-		print(line)
-	end
+	print(L"License: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>")
+	print(L"This is free software: you are free to change and redistribute it.")
+	print(L"There is NO WARRANTY, to the extent permitted by law.")
 end
 
 xrpCmds.archive = function(args)
@@ -43,16 +43,16 @@ xrpCmds.currently = function(args)
 		xrp.current.CU = nil
 		local CU = xrp.current.CU
 		if CU then
-			print(XRP_HEADER:format(L.SET_CURRENTLY_PROFILE:format(CU)))
+			print(XRP_HEADER:format(L"Currently set to: \"%s\" (from active profile).":format(CU)))
 		else
-			print(XRP_HEADER:format(L.SET_CURRENTLY_BLANK_PROFILE))
+			print(XRP_HEADER:format(L"Currently set to empty (from active profile)."))
 		end
 	elseif type(args) == "string" then
 		xrp.current.CU = args
-		print(XRP_HEADER:format(L.SET_CURRENTLY:format(args)))
+		print(XRP_HEADER:format(L"Currently set to: \"%s\".":format(args)))
 	else
 		xrp.current.CU = ""
-		print(XRP_HEADER:format(L.SET_CURRENTLY_BLANK))
+		print(XRP_HEADER:format(L"Currently set to empty."))
 	end
 end
 
@@ -74,54 +74,54 @@ local HAS_ARGS = SLASH_XRP .. " %s %s"
 xrpCmds.help = function(args)
 	if args == "about" or args and args == L.CMD_ABOUT then
 		print(USAGE:format(NO_ARGS:format(L.CMD_ABOUT)))
-		print(L.ABOUT_HELP)
+		print(L"Show basic information about XRP.")
 	elseif args == "archive" or args and args == L.CMD_ARCHIVE then
 		print(USAGE:format(NO_ARGS:format(L.CMD_ARCHIVE)))
-		print(L.ARCHIVE_HELP)
+		print(L"Toggle the archive frame open/closed.")
 	elseif args == "currently" or args and args == L.CMD_CURRENTLY then
-		print(USAGE:format(HAS_ARGS:format(L.CMD_CURRENTLY, L.CURRENTLY_ARGS)))
-		print(ARG:format(L.CURRENTLY_ARG1, L.CURRENTLY_ARG1_HELP))
-		print(ARG:format(L.CURRENTLY_ARG2, L.CURRENTLY_ARG2_HELP))
-		print(ARG:format(L.ARG_CURRENTLY_NIL, L.CURRENTLY_ARG3_HELP))
+		print(USAGE:format(HAS_ARGS:format(L.CMD_CURRENTLY, L"[<Currently>|<none>|nil]")))
+		print(ARG:format(L"<Currently>", L"Use the specified text for your currently."))
+		print(ARG:format(L"<none>", L"Use a blank currently."))
+		print(ARG:format(L.ARG_CURRENTLY_NIL, L"Reset to selected profile's default."))
 	elseif args == "edit" or args and args == L.CMD_EDIT then
-		print(USAGE:format(HAS_ARGS:format(L.CMD_EDIT, L.EDIT_ARGS)))
-		print(ARG:format(L.EDIT_ARG1, L.EDIT_ARG1_HELP))
-		print(ARG:format(L.EDIT_ARG2, L.EDIT_ARG2_HELP))
+		print(USAGE:format(HAS_ARGS:format(L.CMD_EDIT, L"[<Profile>]")))
+		print(ARG:format(L"<none>", L"Toggle the editor open/closed."))
+		print(ARG:format(L"<Profile>", L"Open a profile for editing."))
 	elseif args == "export" or args and args == L.CMD_EXPORT then
-		print(USAGE:format(HAS_ARGS:format(L.CMD_EXPORT, L.EXPORT_ARG1)))
-		print(ARG:format(L.EXPORT_ARG1, L.EXPORT_ARG1_HELP))
+		print(USAGE:format(HAS_ARGS:format(L.CMD_EXPORT, L"<Character>")))
+		print(ARG:format(L"<Character>", L"Export the cached profile of the named character."))
 	elseif args == "profile" or args and args == L.CMD_PROFILE then
-		print(USAGE:format(HAS_ARGS:format(L.CMD_PROFILE, L.PROFILE_ARGS)))
-		print(ARG:format(L.ARG_PROFILE_LIST, L.PROFILE_ARG1_HELP))
-		print(ARG:format(L.PROFILE_ARG2, L.PROFILE_ARG2_HELP))
+		print(USAGE:format(HAS_ARGS:format(L.CMD_PROFILE, L"[list|<Profile>]")))
+		print(ARG:format(L.ARG_PROFILE_LIST, L"List all profiles."))
+		print(ARG:format(L"<Profile>", L"Set current profile to the named profile."))
 	elseif args == "status" or args and args == L.CMD_STATUS then
-		print(USAGE:format(HAS_ARGS:format(L.CMD_STATUS, L.STATUS_ARGS)))
-		print(ARG:format(L.ARG_STATUS_NIL, L.STATUS_ARG1_HELP))
-		print(ARG:format(L.ARG_STATUS_IC, L.STATUS_ARG2_HELP))
-		print(ARG:format(L.ARG_STATUS_OOC, L.STATUS_ARG3_HELP))
-		print(ARG:format(L.ARG_STATUS_LFC, L.STATUS_ARG4_HELP))
-		print(ARG:format(L.ARG_STATUS_ST, L.STATUS_ARG5_HELP))
+		print(USAGE:format(HAS_ARGS:format(L.CMD_STATUS, L"[nil|ooc|ic|lfc|st]")))
+		print(ARG:format(L.ARG_STATUS_NIL, L"Reset to profile default."))
+		print(ARG:format(L.ARG_STATUS_IC, L"Set to in character."))
+		print(ARG:format(L.ARG_STATUS_OOC, L"Set to out of character."))
+		print(ARG:format(L.ARG_STATUS_LFC, L"Set to looking for contact."))
+		print(ARG:format(L.ARG_STATUS_ST, L"Set to storyteller."))
 	elseif args == "toggle" or args and args == L.CMD_TOGGLE then
 		print(USAGE:format(NO_ARGS:format(L.CMD_TOGGLE)))
-		print(L.TOGGLE_HELP)
+		print(L"Toggle IC/OOC status.")
 	elseif args == "view" or args and args == L.CMD_VIEW then
-		print(USAGE:format(HAS_ARGS:format(L.CMD_VIEW, L.VIEW_ARGS)))
-		print(ARG:format(L.VIEW_ARG1, L.VIEW_ARG1_HELP))
-		print(ARG:format(L.VIEW_ARG2, L.VIEW_ARG2_HELP))
-		print(ARG:format(L.VIEW_ARG3, L.VIEW_ARG3_HELP))
+		print(USAGE:format(HAS_ARGS:format(L.CMD_VIEW, L"[<Unit>|<Character>]")))
+		print(ARG:format(L"<none>", L"View your target or mouseover's profile, as available."))
+		print(ARG:format(L"<Unit>", L"View a unit's profile, such as \"target\" or \"mouseover\"."))
+		print(ARG:format(L"<Character>", L"View the profile of the named character."))
 	else
-		print(USAGE:format(HAS_ARGS:format(L.COMMANDS, L.ARGUMENTS)))
-		print(L.COMMANDS_HELP)
-		print(ARG:format(L.CMD_ABOUT, L.ABOUT_HELP))
-		print(ARG:format(L.CMD_ARCHIVE, L.ARCHIVE_HELP))
-		print(ARG:format(L.CMD_CURRENTLY, L.CURRENTLY_HELP))
-		print(ARG:format(L.CMD_EDIT, L.EDIT_HELP))
-		print(ARG:format(L.CMD_EXPORT, L.EXPORT_HELP))
-		print(ARG:format(L.CMD_HELP, L.HELP_HELP))
-		print(ARG:format(L.CMD_PROFILE, L.PROFILE_HELP))
-		print(ARG:format(L.CMD_STATUS, L.STATUS_HELP))
-		print(ARG:format(L.CMD_TOGGLE, L.TOGGLE_HELP))
-		print(ARG:format(L.CMD_VIEW, L.VIEW_HELP))
+		print(USAGE:format(HAS_ARGS:format(L"<command>", L"[argument]")))
+		print(L"Use /xrp help [command] for more usage information.")
+		print(ARG:format(L.CMD_ABOUT, L"Show basic information about XRP."))
+		print(ARG:format(L.CMD_ARCHIVE, L"Toggle the archive frame open/closed."))
+		print(ARG:format(L.CMD_CURRENTLY, L"Set, reset, or clear your currently."))
+		print(ARG:format(L.CMD_EDIT, L"Access the editor."))
+		print(ARG:format(L.CMD_EXPORT, L"Export a character's profile to plain text."))
+		print(ARG:format(L.CMD_HELP, L"Display /xrp command help."))
+		print(ARG:format(L.CMD_PROFILE, L"Set your current profile."))
+		print(ARG:format(L.CMD_STATUS, L"Set your character status."))
+		print(ARG:format(L.CMD_TOGGLE, L"Toggle IC/OOC status."))
+		print(ARG:format(L.CMD_VIEW, L"View a character's profile."))
 	end
 end
 
@@ -133,9 +133,9 @@ xrpCmds.profile = function(args)
 		end
 	elseif type(args) == "string" then
 		if xrp.profiles[args] and xrp.profiles[args]:Activate() then
-			print(XRP_HEADER:format(L.SET_PROFILE:format(args)))
+			print(XRP_HEADER:format(L"Set profile to \"%s\".":format(args)))
 		else
-			print(XRP_HEADER:format(L.SET_PROFILE_FAIL:format(args)))
+			print(XRP_HEADER:format(L"Failed to set profile to \"%s\" (does it exist?).":format(args)))
 		end
 	else
 		xrpCmds.help("profile")
@@ -146,19 +146,19 @@ xrpCmds.status = function(args)
 	if args == "nil" or args == L.ARG_STATUS_NIL then
 		xrp.current.FC = nil
 		local FC = xrp.current.FC
-		print(XRP_HEADER:format(L.SET_STATUS_PROFILE:format(xrp.L.VALUES.FC[FC] or FC or NONE)))
+		print(XRP_HEADER:format(L"Status set to: %s (from active profile).":format(xrp.L.VALUES.FC[FC] or FC or NONE)))
 	elseif args == "ooc" or args == L.ARG_STATUS_OOC then
 		xrp.current.FC = "1"
-		print(XRP_HEADER:format(L.SET_STATUS:format(xrp.L.VALUES.FC["1"])))
+		print(XRP_HEADER:format(L"Status set to: %s.":format(xrp.L.VALUES.FC["1"])))
 	elseif args == "ic" or args == L.ARG_STATUS_IC then
 		xrp.current.FC = "2"
-		print(XRP_HEADER:format(L.SET_STATUS:format(xrp.L.VALUES.FC["2"])))
+		print(XRP_HEADER:format(L"Status set to: %s.":format(xrp.L.VALUES.FC["2"])))
 	elseif args == "lfc" or args == L.ARG_STATUS_LFC then
 		xrp.current.FC = "3"
-		print(XRP_HEADER:format(L.SET_STATUS:format(xrp.L.VALUES.FC["3"])))
+		print(XRP_HEADER:format(L"Status set to: %s.":format(xrp.L.VALUES.FC["3"])))
 	elseif args == "st" or args == L.ARG_STATUS_ST then
 		xrp.current.FC = "4"
-		print(XRP_HEADER:format(L.SET_STATUS:format(xrp.L.VALUES.FC["4"])))
+		print(XRP_HEADER:format(L"Status set to: %s.":format(xrp.L.VALUES.FC["4"])))
 	else
 		xrpCmds.help("status")
 	end
@@ -167,7 +167,7 @@ end
 xrpCmds.toggle = function(args)
 	xrp.Status()
 	local FC = xrp.current.FC
-	print(XRP_HEADER:format(L.SET_STATUS:format(xrp.L.VALUES.FC[FC] or FC or NONE)))
+	print(XRP_HEADER:format(L"Status set to: %s.":format(xrp.L.VALUES.FC[FC] or FC or NONE)))
 end
 
 xrpCmds.view = function(args)
