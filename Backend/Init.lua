@@ -157,12 +157,12 @@ AddOn.HookGameEvent("ADDON_LOADED", function(event, addon)
 	local newFields = {
 		NA = AddOn.player, -- Fallback NA field.
 		VA = table.concat(VA, ";"),
+		FC = "1",
 	}
 	local fields = xrpSaved.meta.fields
 	for field, contents in pairs(newFields) do
 		if contents ~= fields[field] then
 			fields[field] = contents
-			AddOn.FireEvent("UPDATE", field)
 		end
 	end
 
