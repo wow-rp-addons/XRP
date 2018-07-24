@@ -1,12 +1,13 @@
 XRP Roleplay Profiles
 =====================
-To use this repo, you need to clone the repo into your Beta/PTR addons folder,
-check out the test branch, and recursively init/update all submodules.
+In general, you should install a release zip, rather than clone this repo. If
+you do want to use the git version directly, you need to clone into your addons
+folder and recursively init/update all submodules.
 
 Quick and dirty:
 ```
 cd ${WARCRAFT_DIR}/Interface/AddOns/
-git clone -b test https://github.com/Itarater/XRP.git
+git clone https://github.com/Itarater/XRP.git
 cd XRP/
 git submodule update --init --recursive
 ```
