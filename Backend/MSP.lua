@@ -253,7 +253,7 @@ function AddOn.ForceRefresh(name)
 	end
 end
 
-AddOn.settingsToggles.friendsOnly = function(setting)
+AddOn.SettingsToggles.friendsOnly = function(setting)
 	if setting then
 		gameFriends = {}
 		FRIENDLIST_UPDATE()
@@ -261,16 +261,16 @@ AddOn.settingsToggles.friendsOnly = function(setting)
 		bnetFriends = {}
 		BN_FRIEND_INFO_CHANGED()
 		AddOn.HookGameEvent("BN_FRIEND_INFO_CHANGED", BN_FRIEND_INFO_CHANGED)
-		AddOn.settingsToggles.friendsIncludeGuild(AddOn.settings.friendsIncludeGuild)
+		AddOn.SettingsToggles.friendsIncludeGuild(AddOn.Settings.friendsIncludeGuild)
 	elseif gameFriends then
-		AddOn.settingsToggles.friendsIncludeGuild(false)
+		AddOn.SettingsToggles.friendsIncludeGuild(false)
 		AddOn.UnhookGameEvent("FRIENDLIST_UPDATE", FRIENDLIST_UPDATE)
 		gameFriends = nil
 		AddOn.UnhookGameEvent("BN_FRIEND_INFO_CHANGED", BN_FRIEND_INFO_CHANGED)
 		bnetFriends = nil
 	end
 end
-AddOn.settingsToggles.friendsIncludeGuild = function(setting)
+AddOn.SettingsToggles.friendsIncludeGuild = function(setting)
 	if setting and gameFriends then
 		guildies = {}
 		GUILD_ROSTER_UPDATE()

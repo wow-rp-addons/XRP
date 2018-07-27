@@ -136,9 +136,9 @@ local function CompareVersion(newVersion, oldVersion)
 end
 
 function AddOn.AddonUpdate(version)
-	if not version or version == AddOn.version or version == AddOn.settings.newversion then return end
-	if CompareVersion(version, AddOn.settings.newversion or AddOn.version) >= 0 then
-		AddOn.settings.newversion = version
+	if not version or version == AddOn.version or version == AddOn.Settings.newversion then return end
+	if CompareVersion(version, AddOn.Settings.newversion or AddOn.version) >= 0 then
+		AddOn.Settings.newversion = version
 	end
 end
 
@@ -171,23 +171,23 @@ AddOn.HookGameEvent("ADDON_LOADED", function(event, addon)
 	end
 	xrpSaved.overrides.logout = nil
 
-	if AddOn.settings.cacheAutoClean then
+	if AddOn.Settings.cacheAutoClean then
 		AddOn.CacheTidy(nil, true)
 	end
 
 	AddOn.LoadSettings()
 
-	if AddOn.settings.newversion then
-		local update = CompareVersion(AddOn.settings.newversion, AddOn.version)
+	if AddOn.Settings.newversion then
+		local update = CompareVersion(AddOn.Settings.newversion, AddOn.version)
 		local now = time()
-		if update == 1 and (not AddOn.settings.versionwarning or AddOn.settings.versionwarning < now - 21600) then
+		if update == 1 and (not AddOn.Settings.versionwarning or AddOn.Settings.versionwarning < now - 21600) then
 			C_Timer.After(8, function()
-				print(L"There is a new version of |cffabd473XRP|r available. You should update to %s as soon as possible.":format(AddOn.settings.newversion))
-				AddOn.settings.versionwarning = now
+				print(L"There is a new version of |cffabd473XRP|r available. You should update to %s as soon as possible.":format(AddOn.Settings.newversion))
+				AddOn.Settings.versionwarning = now
 			end)
 		elseif update == -1 then
-			AddOn.settings.newversion = nil
-			AddOn.settings.versionwarning = nil
+			AddOn.Settings.newversion = nil
+			AddOn.Settings.versionwarning = nil
 		end
 	end
 end)

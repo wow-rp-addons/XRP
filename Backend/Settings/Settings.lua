@@ -18,7 +18,7 @@
 local FOLDER_NAME, AddOn = ...
 local L = AddOn.GetText
 
-AddOn.settingsToggles = {}
+AddOn.SettingsToggles = {}
 
 local DATA_VERSION = 7
 local DATA_VERSION_ACCOUNT = 19
@@ -120,18 +120,18 @@ function AddOn.SavedVariableSetup()
 			xrpAccountSaved.settings[optionName] = setting
 		end
 	end
-	AddOn.settings = xrpAccountSaved.settings
+	AddOn.Settings = xrpAccountSaved.settings
 end
 
 function AddOn.LoadSettings()
-	for xrpSetting, func in pairs(AddOn.settingsToggles) do
-		xpcall(func, geterrorhandler(), AddOn.settings[xrpSetting], xrpSetting)
+	for xrpSetting, func in pairs(AddOn.SettingsToggles) do
+		xpcall(func, geterrorhandler(), AddOn.Settings[xrpSetting], xrpSetting)
 	end
 end
 
 function AddOn.CacheTidy(timer, isInit)
 	if type(timer) ~= "number" or timer < 30 then
-		timer = AddOn.settings.cacheRetainTime
+		timer = AddOn.Settings.cacheRetainTime
 		if type(timer) ~= "number" or timer < 30 then
 			return false
 		end

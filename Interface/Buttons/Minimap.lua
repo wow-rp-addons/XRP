@@ -177,7 +177,7 @@ local MINIMAP_SHAPES = {
 	["TRICORNER-BOTTOMRIGHT"] = { true, true, true, false },
 }
 local function UpdatePositionAttached(self)
-	local angle = math.rad(AddOn.settings.mainButtonMinimapAngle)
+	local angle = math.rad(AddOn.Settings.mainButtonMinimapAngle)
 	local x, y, q = math.cos(angle), math.sin(angle), 1
 	if x < 0 then q = q + 1 end
 	if y > 0 then q = q + 2 end
@@ -196,7 +196,7 @@ local function Minimap_OnUpdate(self, elapsed)
 	local px, py = GetCursorPosition()
 	local scale = Minimap:GetEffectiveScale()
 	px, py = px / scale, py / scale
-	AddOn.settings.mainButtonMinimapAngle = math.deg(math.atan2(py - my, px - mx)) % 360
+	AddOn.Settings.mainButtonMinimapAngle = math.deg(math.atan2(py - my, px - mx)) % 360
 	UpdatePositionAttached(self)
 end
 
@@ -219,7 +219,7 @@ end
 
 function XRPButtonDetached_OnDragStop(self)
 	self:StopMovingOrSizing()
-	AddOn.settings.mainButtonDetachedPoint, AddOn.settings.mainButtonDetachedX, AddOn.settings.mainButtonDetachedY = select(3, self:GetPoint())
+	AddOn.Settings.mainButtonDetachedPoint, AddOn.Settings.mainButtonDetachedX, AddOn.Settings.mainButtonDetachedY = select(3, self:GetPoint())
 	self:UnlockHighlight()
 end
 
@@ -259,16 +259,16 @@ AddOn.HookGameEvent("PLAYER_LOGIN", function(event)
 	end
 end)
 
-AddOn.settingsToggles.mainButtonEnabled = function(setting)
+AddOn.SettingsToggles.mainButtonEnabled = function(setting)
 	if setting then
-		if AddOn.settings.mainButtonDetached then
+		if AddOn.Settings.mainButtonDetached then
 			if Button and Button == LibDBIcon10_XRP then
 				Button:UnregisterAllEvents()
 				Button:Hide()
 			end
 			if not XRPButton then
 				CreateFrame("Button", "XRPButton", UIParent, "XRPButtonTemplate")
-				XRPButton:SetPoint(AddOn.settings.mainButtonDetachedPoint, UIParent, AddOn.settings.mainButtonDetachedPoint, AddOn.settings.mainButtonDetachedX, AddOn.settings.mainButtonDetachedY)
+				XRPButton:SetPoint(AddOn.Settings.mainButtonDetachedPoint, UIParent, AddOn.Settings.mainButtonDetachedPoint, AddOn.Settings.mainButtonDetachedX, AddOn.Settings.mainButtonDetachedY)
 			end
 			Button = XRPButton
 		else
@@ -298,12 +298,12 @@ AddOn.settingsToggles.mainButtonEnabled = function(setting)
 	end
 end
 
-AddOn.settingsToggles.mainButtonDetached = function(setting)
-	if not AddOn.settings.mainButtonEnabled or not Button or setting and Button == XRPButton or not setting and Button == LibDBIcon10_XRP then return end
-	AddOn.settingsToggles.mainButtonEnabled(AddOn.settings.mainButtonEnabled)
+AddOn.SettingsToggles.mainButtonDetached = function(setting)
+	if not AddOn.Settings.mainButtonEnabled or not Button or setting and Button == XRPButton or not setting and Button == LibDBIcon10_XRP then return end
+	AddOn.SettingsToggles.mainButtonEnabled(AddOn.Settings.mainButtonEnabled)
 end
 
-AddOn.settingsToggles.ldbObject = function(setting)
+AddOn.SettingsToggles.ldbObject = function(setting)
 	if setting then
 		CreateLDBObject()
 		if not LDBObject then

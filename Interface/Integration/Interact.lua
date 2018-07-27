@@ -70,7 +70,7 @@ local function InteractUnit_Hook(unit)
 	XRPViewer:View(unit)
 end
 
-AddOn.settingsToggles.cursorEnabled = function(setting)
+AddOn.SettingsToggles.cursorEnabled = function(setting)
 	if setting then
 		if not XRPCursorBook then
 			IsItemInRange(88589, "player")
@@ -87,7 +87,7 @@ AddOn.settingsToggles.cursorEnabled = function(setting)
 	end
 end
 
-AddOn.settingsToggles.cursorRightClick = function(setting)
+AddOn.SettingsToggles.cursorRightClick = function(setting)
 	if setting then
 		if rightClick == nil then
 			hooksecurefunc("TurnOrActionStart", Cursor_TurnOrActionStart)
@@ -99,7 +99,7 @@ AddOn.settingsToggles.cursorRightClick = function(setting)
 	end
 end
 
-AddOn.settingsToggles.viewOnInteract = function(setting)
+AddOn.SettingsToggles.viewOnInteract = function(setting)
 	if setting then
 		if keybind == nil then
 			hooksecurefunc("InteractUnit", InteractUnit_Hook)

@@ -37,22 +37,22 @@ local AltNames = {
 local function AltToggle(setting, settingName)
 	local categoryName = settingName:match("^alt(.+)$")
 	local forceSetting = settingName .. "Force"
-	local needsSetting = setting and (not AddOn.settings[settingName .. "Limit"] or AltNames[categoryName][(select(2, UnitRace("player")))])
+	local needsSetting = setting and (not AddOn.Settings[settingName .. "Limit"] or AltNames[categoryName][(select(2, UnitRace("player")))])
 	for raceName in pairs(AltNames[categoryName]) do
 		local raceUpperValue = "VALUE_GR_" .. raceName:upper()
 		local raceUpperAltValue = raceUpperValue .. "_ALT"
 		if needsSetting then
 			xrp.L.VALUES.GR[raceName] = L[raceUpperAltValue]
-			AddOn.settingsToggles[forceSetting](AddOn.settings[forceSetting], forceSetting)
+			AddOn.SettingsToggles[forceSetting](AddOn.Settings[forceSetting], forceSetting)
 		else
 			xrp.L.VALUES.GR[raceName] = L[raceUpperValue]
-			AddOn.settingsToggles[forceSetting](false, forceSetting)
+			AddOn.SettingsToggles[forceSetting](false, forceSetting)
 		end
 	end
 	if needsSetting then
-		AddOn.settingsToggles[forceSetting](AddOn.settings[forceSetting], forceSetting)
+		AddOn.SettingsToggles[forceSetting](AddOn.Settings[forceSetting], forceSetting)
 	else
-		AddOn.settingsToggles[forceSetting](false, forceSetting)
+		AddOn.SettingsToggles[forceSetting](false, forceSetting)
 	end
 end
 
@@ -71,17 +71,17 @@ end
 
 local function AltToggleLimit(setting, settingName)
 	local raceSettingName = settingName:match("^(.+)Limit$")
-	if AddOn.settings[raceSettingName] then
-		AddOn.settingsToggles[raceSettingName](true, raceSettingName)
+	if AddOn.Settings[raceSettingName] then
+		AddOn.SettingsToggles[raceSettingName](true, raceSettingName)
 	end
 end
 
-AddOn.settingsToggles.altScourge = AltToggle
-AddOn.settingsToggles.altScourgeForce = AltToggleForce
-AddOn.settingsToggles.altScourgeLimit = AltToggleLimit
-AddOn.settingsToggles.altElven = AltToggle
-AddOn.settingsToggles.altElvenForce = AltToggleForce
-AddOn.settingsToggles.altElvenLimit = AltToggleLimit
-AddOn.settingsToggles.altTauren = AltToggle
-AddOn.settingsToggles.altTaurenForce = AltToggleForce
-AddOn.settingsToggles.altTaurenLimit = AltToggleLimit
+AddOn.SettingsToggles.altScourge = AltToggle
+AddOn.SettingsToggles.altScourgeForce = AltToggleForce
+AddOn.SettingsToggles.altScourgeLimit = AltToggleLimit
+AddOn.SettingsToggles.altElven = AltToggle
+AddOn.SettingsToggles.altElvenForce = AltToggleForce
+AddOn.SettingsToggles.altElvenLimit = AltToggleLimit
+AddOn.SettingsToggles.altTauren = AltToggle
+AddOn.SettingsToggles.altTaurenForce = AltToggleForce
+AddOn.SettingsToggles.altTaurenLimit = AltToggleLimit

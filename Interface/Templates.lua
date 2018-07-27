@@ -213,7 +213,7 @@ function XRPTemplatesPanel_OnSizeChanged(self, width, height)
 end
 
 function XRPCursorBook_OnEvent(self, event)
-	if InCombatLockdown() or AddOn.settings.cursorDisableInstance and (IsInInstance() or IsInActiveWorldPVP()) or AddOn.settings.cursorDisablePvP and (UnitIsPVP("player") or UnitIsPVPFreeForAll("player")) or UnitIsUnit("player", "mouseover") or GetMouseFocus() ~= WorldFrame then
+	if InCombatLockdown() or AddOn.Settings.cursorDisableInstance and (IsInInstance() or IsInActiveWorldPVP()) or AddOn.Settings.cursorDisablePvP and (UnitIsPVP("player") or UnitIsPVPFreeForAll("player")) or UnitIsUnit("player", "mouseover") or GetMouseFocus() ~= WorldFrame then
 		self:Hide()
 		return
 	end

@@ -53,8 +53,8 @@ local function XRPGetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7
 		name = arg2:match("^[\032-\126\194-\244][\128-\191]*") or Ambiguate(arg2, "guild")
 		nameFormat = "[%s]"
 	else
-		name = AddOn.settings.chatType[chatCategory] and character and not character.hide and xrp.Strip(character.fields.NA) or Ambiguate(arg2, "guild")
-		nameFormat = chatCategory == "EMOTE" and (AddOn.settings.chatEmoteBraced and "[%s]" or "%s") .. (arg9 or "") or "%s"
+		name = AddOn.Settings.chatType[chatCategory] and character and not character.hide and xrp.Strip(character.fields.NA) or Ambiguate(arg2, "guild")
+		nameFormat = chatCategory == "EMOTE" and (AddOn.Settings.chatEmoteBraced and "[%s]" or "%s") .. (arg9 or "") or "%s"
 	end
 
 	if character and Chat_ShouldColorChatByClass(ChatTypeInfo[chatType]) then
@@ -164,7 +164,7 @@ AddOn.HookGameEvent("PLAYER_LOGIN", function(event)
 			if chatCategory == "CHANNEL" and type(message.ORG.CHANNEL) == "string" then
 				chatCategory = "CHANNEL_" .. message.ORG.CHANNEL:upper()
 			end
-			local rpName = AddOn.settings.chatType[chatCategory] and not character.hide and xrp.Strip(character.fields.NA)
+			local rpName = AddOn.Settings.chatType[chatCategory] and not character.hide and xrp.Strip(character.fields.NA)
 			if not rpName then
 				return
 			end
@@ -180,7 +180,7 @@ AddOn.HookGameEvent("PLAYER_LOGIN", function(event)
 end)
 
 local OldGetColoredName
-AddOn.settingsToggles.chatNames = function(setting)
+AddOn.SettingsToggles.chatNames = function(setting)
 	if setting then
 		if names == nil then
 			hooksecurefunc("ChatFrame_AddMessageEventFilter", ChatFrame_AddMessageEventFilter_Hook)
@@ -206,7 +206,7 @@ AddOn.settingsToggles.chatNames = function(setting)
 	end
 end
 
-AddOn.settingsToggles.chatReplacements = function(setting)
+AddOn.SettingsToggles.chatReplacements = function(setting)
 	if setting then
 		if replacements == nil then
 			hooksecurefunc("ChatEdit_ParseText", ChatEdit_ParseText_Hook)

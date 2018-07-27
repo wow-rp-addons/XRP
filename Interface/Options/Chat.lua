@@ -24,7 +24,7 @@ local function Channels_Checked(self)
 end
 local function Channels_OnClick(self, channel, arg2, checked)
 	channelsList[channel].value = checked
-	AddOn.settings.chatType[channel] = checked or nil
+	AddOn.Settings.chatType[channel] = checked or nil
 end
 
 local function ChannelsTable(...)
@@ -37,7 +37,7 @@ local function ChannelsTable(...)
 end
 
 local function AddChannel(channel, menuList)
-	local setting = AddOn.settings.chatType[channel] or false
+	local setting = AddOn.Settings.chatType[channel] or false
 	local oldSetting = setting
 	if not channelsList[channel] then
 		channelsList[channel] = { value = setting, oldValue = oldSetting }
@@ -61,7 +61,7 @@ function XRPOptionsChatChannels_Mixin:CustomRefresh()
 		AddChannel(channel, self.baseMenuList, channelsList)
 		seenChannels[channel] = true
 	end
-	for channel, setting in pairs(AddOn.settings.chatType) do
+	for channel, setting in pairs(AddOn.Settings.chatType) do
 		if not seenChannels[channel] and channel:find("^CHANNEL_") then
 			AddChannel(channel, self.baseMenuList, channelsList)
 			seenChannels[channel] = true
@@ -77,14 +77,14 @@ end
 
 function XRPOptionsChatChannels_Mixin:CustomDefault()
 	for channel, control in pairs(channelsList) do
-		AddOn.settings.chatType[channel] = nil
+		AddOn.Settings.chatType[channel] = nil
 		control.value = nil
 	end
 end
 
 function XRPOptionsChatChannels_Mixin:CustomCancel()
 	for channel, control in pairs(channelsList) do
-		AddOn.settings.chatType[channel] = control.oldValue
+		AddOn.Settings.chatType[channel] = control.oldValue
 		control.value = control.oldValue
 	end
 end

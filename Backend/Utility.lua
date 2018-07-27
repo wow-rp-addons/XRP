@@ -158,7 +158,7 @@ function xrp.Weight(weight, units)
 		number = number and number / 2.20462
 	end
 	if not units then
-		units = AddOn.settings.weightUnits
+		units = AddOn.Settings.weightUnits
 	end
 	if not number then
 		return weight
@@ -206,7 +206,7 @@ function xrp.Height(height, units)
 		number = feet and (((tonumber(feet) * 12) + (tonumber(inches) or 0)) * 2.54)
 	end
 	if not units then
-		units = AddOn.settings.heightUnits
+		units = AddOn.Settings.heightUnits
 	end
 	if not number then
 		return height

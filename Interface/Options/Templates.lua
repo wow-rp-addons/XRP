@@ -21,22 +21,22 @@ local L = AddOn.GetText
 XRPOptionsControl_Mixin = {}
 
 function XRPOptionsControl_Mixin:Get()
-	local settingsTable = AddOn.settings
+	local settingsTable = AddOn.Settings
 	if self.xrpTable then
-		settingsTable = AddOn.settings[self.xrpTable]
+		settingsTable = AddOn.Settings[self.xrpTable]
 	end
 	return settingsTable[self.xrpSetting]
 end
 
 function XRPOptionsControl_Mixin:Set(value)
-	local settingsTable = AddOn.settings
+	local settingsTable = AddOn.Settings
 	if self.xrpTable then
-		settingsTable = AddOn.settings[self.xrpTable]
+		settingsTable = AddOn.Settings[self.xrpTable]
 	end
 	settingsTable[self.xrpSetting] = value
-	local settingsToggleTable = AddOn.settingsToggles
+	local settingsToggleTable = AddOn.SettingsToggles
 	if self.xrpTable then
-		settingsToggleTable = AddOn.settingsToggles[self.xrpTable]
+		settingsToggleTable = AddOn.SettingsToggles[self.xrpTable]
 	end
 	if settingsToggleTable and settingsToggleTable[self.xrpSetting] then
 		xpcall(settingsToggleTable[self.xrpSetting], geterrorhandler(), value, self.xrpSetting)

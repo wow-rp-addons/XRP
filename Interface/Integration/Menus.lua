@@ -64,7 +64,7 @@ end
 local Buttons_Profile = { text = L.ROLEPLAY_PROFILE }
 
 local isHooked
-AddOn.settingsToggles.menusChat = function(setting)
+AddOn.SettingsToggles.menusChat = function(setting)
 	if setting then
 		if not isHooked then
 			hooksecurefunc("UnitPopup_OnClick", UnitPopup_OnClick_Hook)
@@ -118,7 +118,7 @@ AddOn.settingsToggles.menusChat = function(setting)
 	end
 end
 
-AddOn.settingsToggles.menusUnits = function(setting)
+AddOn.SettingsToggles.menusUnits = function(setting)
 	if setting then
 		if not isHooked then
 			hooksecurefunc("UnitPopup_OnClick", UnitPopup_OnClick_Hook)
