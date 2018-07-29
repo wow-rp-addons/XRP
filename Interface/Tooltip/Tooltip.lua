@@ -27,6 +27,7 @@ local maxLinesAdjusted = {}
 local Tooltip, replace, rendering
 
 local GTTL, GTTR = "GameTooltipTextLeft%d", "GameTooltipTextRight%d"
+local XTTL, XTTR = "XRPTooltipTextLeft%d", "XRPTooltipTextRight%d"
 
 local TOOLTIP_WIDTH = 500
 local INLINE_LENGTH = 26
@@ -78,8 +79,8 @@ local function RenderLine(multiLine, left, right, lR, lG, lB, rR, rG, rB)
 	local maxWidth = TOOLTIP_WIDTH / (left and right and 2 or 1)
 	rendering = true
 	lineNum = lineNum + 1
-	local LeftLine = _G[GTTL:format(lineNum)]
-	local RightLine = _G[GTTR:format(lineNum)]
+	local LeftLine = replace and _G[GTTL:format(lineNum)] or _G[XTTL:format(lineNum)]
+	local RightLine = replace and _G[GTTR:format(lineNum)] or _G[XTTR:format(lineNum)]
 	-- First case: If there's already a line to replace. This only happens if
 	-- using the GameTooltip, as XRPTooltip is cleared before rendering starts.
 	if lineNum <= oldLines then
