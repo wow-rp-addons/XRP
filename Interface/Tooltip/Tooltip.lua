@@ -529,6 +529,7 @@ end
 
 AddOn.SettingsToggles.tooltipReplace = function(setting)
 	if not enabled then return end
+	GameTooltip:Hide()
 	if setting then
 		if replace == nil then
 			hooksecurefunc(GameTooltip, "AddLine", GameTooltip_AddLine_Hook)
