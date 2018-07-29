@@ -49,8 +49,9 @@ local function UnitPopup_HideButtons_Hook()
 			if not UIDROPDOWNMENU_INIT_MENU.bnetIDAccount then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][i] = 0
 			else
-				local active, characterName, client, realmName = BNGetGameAccountInfo(select(6, BNGetFriendInfoByID(UIDROPDOWNMENU_INIT_MENU.bnetIDAccount)))
-				if client ~= BNET_CLIENT_WOW or realmName == "" then
+				local bnetIDGameAccount = select(6, BNGetFriendInfoByID(UIDROPDOWNMENU_INIT_MENU.bnetIDAccount))
+				local active, characterName, client, realmName = bnetIDGameAccount and BNGetGameAccountInfo(bnetIDGameAccount)
+				if not bnetIDGameAccount or client ~= BNET_CLIENT_WOW or not realmName or realmName == "" then
 					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][i] = 0
 				else
 					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][i] = 1
