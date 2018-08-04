@@ -171,6 +171,8 @@ AddOn.HookGameEvent("ADDON_LOADED", function(event, addon)
 	end
 	xrpSaved.overrides.logout = nil
 
+	AddOn.FireEvent("UPDATE")
+
 	if AddOn.Settings.cacheAutoClean then
 		AddOn.CacheTidy(nil, true)
 	end
@@ -192,7 +194,6 @@ AddOn.HookGameEvent("ADDON_LOADED", function(event, addon)
 	end
 end)
 AddOn.HookGameEvent("PLAYER_LOGIN", function(event)
-	AddOn.FireEvent("UPDATE")
 	-- GetAutoCompleteResults() doesn't work before PLAYER_LOGIN.
 	AddOn.own[AddOn.playerWithRealm] = true
 	if xrpCache[AddOn.playerWithRealm] and not xrpCache[AddOn.playerWithRealm].own then
