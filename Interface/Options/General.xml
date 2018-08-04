@@ -33,7 +33,7 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.ViewerMovable" relativePoint="BOTTOMLEFT" x="24" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="dependsOn" value="ViewerMovable"/>
+					<KeyValue key="dependsOn" value="viewerMovable"/>
 					<KeyValue key="xrpSetting" value="viewerCloseOnEscape"/>
 				</KeyValues>
 			</CheckButton>
@@ -50,7 +50,7 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.CursorEnabled" relativePoint="BOTTOMLEFT" x="24" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="dependsOn" value="CursorEnabled"/>
+					<KeyValue key="dependsOn" value="cursorEnabled"/>
 					<KeyValue key="xrpSetting" value="cursorRightClick"/>
 				</KeyValues>
 			</CheckButton>
@@ -59,7 +59,7 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.CursorRightClick" relativePoint="BOTTOMLEFT" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="dependsOn" value="CursorEnabled"/>
+					<KeyValue key="dependsOn" value="cursorEnabled"/>
 					<KeyValue key="xrpSetting" value="cursorDisableInstance"/>
 				</KeyValues>
 			</CheckButton>
@@ -68,7 +68,7 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.CursorDisableInstance" relativePoint="BOTTOMLEFT" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="dependsOn" value="CursorEnabled"/>
+					<KeyValue key="dependsOn" value="cursorEnabled"/>
 					<KeyValue key="xrpSetting" value="cursorDisablePvP"/>
 				</KeyValues>
 			</CheckButton>
@@ -112,7 +112,7 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.MainButtonEnabled" relativePoint="BOTTOMLEFT" x="24" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="dependsOn" value="MainButtonEnabled"/>
+					<KeyValue key="dependsOn" value="mainButtonEnabled"/>
 					<KeyValue key="xrpSetting" value="mainButtonDetached"/>
 				</KeyValues>
 			</CheckButton>

@@ -51,7 +51,7 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.AltScourge" relativePoint="BOTTOMLEFT" x="24" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="dependsOn" value="AltScourge"/>
+					<KeyValue key="dependsOn" value="altScourge"/>
 					<KeyValue key="xrpSetting" value="altScourgeLimit"/>
 				</KeyValues>
 			</CheckButton>
@@ -60,7 +60,7 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.AltScourgeLimit" relativePoint="BOTTOMLEFT" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="dependsOn" value="AltScourge"/>
+					<KeyValue key="dependsOn" value="altScourge"/>
 					<KeyValue key="xrpSetting" value="altScourgeForce"/>
 				</KeyValues>
 			</CheckButton>
@@ -77,7 +77,7 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.AltElven" relativePoint="BOTTOMLEFT" x="24" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="dependsOn" value="AltElven"/>
+					<KeyValue key="dependsOn" value="altElven"/>
 					<KeyValue key="xrpSetting" value="altElvenLimit"/>
 				</KeyValues>
 			</CheckButton>
@@ -86,7 +86,7 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.AltElvenLimit" relativePoint="BOTTOMLEFT" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="dependsOn" value="AltElven"/>
+					<KeyValue key="dependsOn" value="altElven"/>
 					<KeyValue key="xrpSetting" value="altElvenForce"/>
 				</KeyValues>
 			</CheckButton>
@@ -103,7 +103,7 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.AltTauren" relativePoint="BOTTOMLEFT" x="24" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="dependsOn" value="AltTauren"/>
+					<KeyValue key="dependsOn" value="altTauren"/>
 					<KeyValue key="xrpSetting" value="altTaurenLimit"/>
 				</KeyValues>
 			</CheckButton>
@@ -112,7 +112,7 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.AltTaurenLimit" relativePoint="BOTTOMLEFT" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="dependsOn" value="AltTauren"/>
+					<KeyValue key="dependsOn" value="altTauren"/>
 					<KeyValue key="xrpSetting" value="altTaurenForce"/>
 				</KeyValues>
 			</CheckButton>

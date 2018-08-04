@@ -78,18 +78,6 @@ function XRPOptions_Mixin:refresh()
 				end
 			end
 		end
-		if control.dependsOn then
-			if control.type == CONTROLTYPE_CHECKBOX then
-				control:SetEnabled(self[control.dependsOn]:GetChecked())
-			elseif control.type == CONTROLTYPE_DROPDOWN then
-				local setting = self[control.dependsOn]:GetChecked()
-				if setting then
-					UIDropDownMenu_EnableDropDown(control)
-				else
-					UIDropDownMenu_DisableDropDown(control)
-				end
-			end
-		end
 	end
 end
 
@@ -109,18 +97,6 @@ function XRPOptions_Mixin:cancel()
 						control.Text:SetText(entry.text)
 						break
 					end
-				end
-			end
-		end
-		if control.dependsOn then
-			if control.type == CONTROLTYPE_CHECKBOX then
-				control:SetEnabled(self[control.dependsOn]:GetChecked())
-			elseif control.type == CONTROLTYPE_DROPDOWN then
-				local setting = self[control.dependsOn]:GetChecked()
-				if setting then
-					UIDropDownMenu_EnableDropDown(control)
-				else
-					UIDropDownMenu_DisableDropDown(control)
 				end
 			end
 		end
@@ -149,18 +125,6 @@ function XRPOptions_Mixin:default()
 						control.Text:SetText(entry.text)
 						break
 					end
-				end
-			end
-		end
-		if control.dependsOn then
-			if control.type == CONTROLTYPE_CHECKBOX then
-				control:SetEnabled(self[control.dependsOn]:GetChecked())
-			elseif control.type == CONTROLTYPE_DROPDOWN then
-				local setting = self[control.dependsOn]:GetChecked()
-				if setting then
-					UIDropDownMenu_EnableDropDown(control)
-				else
-					UIDropDownMenu_DisableDropDown(control)
 				end
 			end
 		end
@@ -254,12 +218,14 @@ local OPTIONS_TEXT = {
 	tooltipHideRace = L"Hide roleplay race information on tooltip",
 }
 
+local SettingDeps = {}
+
 function XRPOptionsControl_Mixin:OnLoad()
-	if self.type == CONTROLTYPE_CHECKBOX then
-		self.dependentControls = {}
-	end
 	if self.dependsOn then
-		local depends = self:GetParent()[self.dependsOn].dependentControls
+		if not SettingDeps[self.dependsOn] then
+			SettingDeps[self.dependsOn] = {}
+		end
+		local depends = SettingDeps[self.dependsOn]
 		depends[#depends + 1] = self
 	end
 	local optionsText = self.xrpSetting and (self.xrpTable and OPTIONS_TEXT[self.xrpTable][self.xrpSetting] or OPTIONS_TEXT[self.xrpSetting])
@@ -279,8 +245,8 @@ function XRPOptionsCheckButton_Mixin:OnClick(button, down)
 	local setting = self:GetChecked()
 	PlaySound(setting and SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON or SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF)
 	self.value = setting
-	if self.dependentControls then
-		for i, control in ipairs(self.dependentControls) do
+	if SettingDeps[self.xrpSetting] then
+		for i, control in ipairs(SettingDeps[self.xrpSetting]) do
 			if control.type == CONTROLTYPE_CHECKBOX then
 				control:SetEnabled(setting)
 			elseif control.type == CONTROLTYPE_DROPDOWN then
@@ -302,8 +268,8 @@ end
 
 function XRPOptionsCheckButton_Mixin:OnEnable()
 	self.Text:SetTextColor(self.Text:GetFontObject():GetTextColor())
-	if self.dependentControls then
-		for i, control in ipairs(self.dependentControls) do
+	if SettingDeps[self.xrpSetting] then
+		for i, control in ipairs(SettingDeps[self.xrpSetting]) do
 			if control.type == CONTROLTYPE_CHECKBOX then
 				control:SetEnabled(self:GetChecked())
 			elseif control.type == CONTROLTYPE_DROPDOWN then
@@ -319,8 +285,8 @@ end
 
 function XRPOptionsCheckButton_Mixin:OnDisable()
 	self.Text:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b)
-	if self.dependentControls then
-		for i, control in ipairs(self.dependentControls) do
+	if SettingDeps[self.xrpSetting] then
+		for i, control in ipairs(SettingDeps[self.xrpSetting]) do
 			if control.type == CONTROLTYPE_CHECKBOX then
 				control:SetEnabled(false)
 			elseif control.type == CONTROLTYPE_DROPDOWN then

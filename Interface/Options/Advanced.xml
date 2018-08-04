@@ -57,7 +57,7 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.FriendsOnly" relativePoint="BOTTOMLEFT" x="24" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="dependsOn" value="FriendsOnly"/>
+					<KeyValue key="dependsOn" value="friendsOnly"/>
 					<KeyValue key="xrpSetting" value="friendsIncludeGuild"/>
 					<KeyValue key="disableWarn" value="GUILD_IS_FRIENDS_DISABLE_WARNING"/>
 				</KeyValues>

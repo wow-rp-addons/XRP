@@ -33,7 +33,7 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.TooltipEnabled" relativePoint="BOTTOMLEFT" x="24" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="dependsOn" value="TooltipEnabled"/>
+					<KeyValue key="dependsOn" value="tooltipEnabled"/>
 					<KeyValue key="xrpSetting" value="tooltipReplace"/>
 				</KeyValues>
 			</CheckButton>
@@ -42,7 +42,7 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.TooltipReplace" relativePoint="BOTTOMLEFT" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="dependsOn" value="TooltipEnabled"/>
+					<KeyValue key="dependsOn" value="tooltipEnabled"/>
 					<KeyValue key="xrpSetting" value="tooltipShowWatchEye"/>
 				</KeyValues>
 			</CheckButton>
@@ -51,7 +51,7 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.TooltipShowWatchEye" relativePoint="BOTTOMLEFT" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="dependsOn" value="TooltipEnabled"/>
+					<KeyValue key="dependsOn" value="tooltipEnabled"/>
 					<KeyValue key="xrpSetting" value="tooltipShowBookmarkFlag"/>
 				</KeyValues>
 			</CheckButton>
@@ -60,7 +60,7 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.TooltipShowBookmarkFlag" relativePoint="BOTTOMLEFT" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="dependsOn" value="TooltipEnabled"/>
+					<KeyValue key="dependsOn" value="tooltipEnabled"/>
 					<KeyValue key="xrpSetting" value="tooltipShowExtraSpace"/>
 				</KeyValues>
 			</CheckButton>
@@ -69,7 +69,7 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.TooltipShowExtraSpace" relativePoint="BOTTOMLEFT" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="dependsOn" value="TooltipEnabled"/>
+					<KeyValue key="dependsOn" value="tooltipEnabled"/>
 					<KeyValue key="xrpSetting" value="tooltipShowHouse"/>
 				</KeyValues>
 			</CheckButton>
@@ -78,7 +78,7 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.TooltipShowHouse" relativePoint="BOTTOMLEFT" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="dependsOn" value="TooltipReplace"/>
+					<KeyValue key="dependsOn" value="tooltipReplace"/>
 					<KeyValue key="xrpSetting" value="tooltipShowGuildRank"/>
 				</KeyValues>
 			</CheckButton>
@@ -87,7 +87,7 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.TooltipShowGuildRank" relativePoint="BOTTOMLEFT" x="24" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="dependsOn" value="TooltipShowGuildRank"/>
+					<KeyValue key="dependsOn" value="tooltipShowGuildRank"/>
 					<KeyValue key="xrpSetting" value="tooltipShowGuildIndex"/>
 				</KeyValues>
 			</CheckButton>
@@ -96,7 +96,7 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.TooltipShowGuildRankIndex" relativePoint="BOTTOMLEFT" x="-24" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="dependsOn" value="TooltipEnabled"/>
+					<KeyValue key="dependsOn" value="tooltipEnabled"/>
 					<KeyValue key="xrpSetting" value="tooltipHideHostile"/>
 				</KeyValues>
 			</CheckButton>
@@ -105,7 +105,7 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.TooltipHideHostile" relativePoint="BOTTOMLEFT" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="dependsOn" value="TooltipEnabled"/>
+					<KeyValue key="dependsOn" value="tooltipEnabled"/>
 					<KeyValue key="xrpSetting" value="tooltipHideOppositeFaction"/>
 				</KeyValues>
 			</CheckButton>
@@ -114,7 +114,7 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.TooltipHideOppositeFaction" relativePoint="BOTTOMLEFT" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="dependsOn" value="TooltipEnabled"/>
+					<KeyValue key="dependsOn" value="tooltipEnabled"/>
 					<KeyValue key="xrpSetting" value="tooltipHideInstanceCombat"/>
 				</KeyValues>
 			</CheckButton>
@@ -123,7 +123,7 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.TooltipHideCombatInstance" relativePoint="BOTTOMLEFT" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="dependsOn" value="TooltipEnabled"/>
+					<KeyValue key="dependsOn" value="tooltipEnabled"/>
 					<KeyValue key="xrpSetting" value="tooltipHideClass"/>
 				</KeyValues>
 			</CheckButton>
@@ -132,7 +132,7 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.TooltipHideClass" relativePoint="BOTTOMLEFT" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="dependsOn" value="TooltipEnabled"/>
+					<KeyValue key="dependsOn" value="tooltipEnabled"/>
 					<KeyValue key="xrpSetting" value="tooltipHideRace"/>
 				</KeyValues>
 			</CheckButton>

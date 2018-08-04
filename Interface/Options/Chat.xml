@@ -35,7 +35,7 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.ChatNames" relativePoint="BOTTOMLEFT" x="24" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="dependsOn" value="ChatNames"/>
+					<KeyValue key="dependsOn" value="chatNames"/>
 					<KeyValue key="xrpTable" value="chatType"/>
 					<KeyValue key="xrpSetting" value="SAY"/>
 				</KeyValues>
@@ -45,7 +45,7 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.SAY" relativePoint="BOTTOMLEFT" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="dependsOn" value="ChatNames"/>
+					<KeyValue key="dependsOn" value="chatNames"/>
 					<KeyValue key="xrpTable" value="chatType"/>
 					<KeyValue key="xrpSetting" value="EMOTE"/>
 				</KeyValues>
@@ -55,7 +55,7 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.EMOTE" relativePoint="BOTTOMLEFT" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="dependsOn" value="ChatNames"/>
+					<KeyValue key="dependsOn" value="chatNames"/>
 					<KeyValue key="xrpTable" value="chatType"/>
 					<KeyValue key="xrpSetting" value="YELL"/>
 				</KeyValues>
@@ -65,7 +65,7 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.YELL" relativePoint="BOTTOMLEFT" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="dependsOn" value="ChatNames"/>
+					<KeyValue key="dependsOn" value="chatNames"/>
 					<KeyValue key="xrpTable" value="chatType"/>
 					<KeyValue key="xrpSetting" value="WHISPER"/>
 				</KeyValues>
@@ -75,7 +75,7 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.WHISPER" relativePoint="BOTTOMLEFT" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="dependsOn" value="ChatNames"/>
+					<KeyValue key="dependsOn" value="chatNames"/>
 					<KeyValue key="xrpTable" value="chatType"/>
 					<KeyValue key="xrpSetting" value="GUILD"/>
 				</KeyValues>
@@ -85,7 +85,7 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.GUILD" relativePoint="BOTTOMLEFT" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="dependsOn" value="ChatNames"/>
+					<KeyValue key="dependsOn" value="chatNames"/>
 					<KeyValue key="xrpTable" value="chatType"/>
 					<KeyValue key="xrpSetting" value="OFFICER"/>
 				</KeyValues>
@@ -95,7 +95,7 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.OFFICER" relativePoint="BOTTOMLEFT" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="dependsOn" value="ChatNames"/>
+					<KeyValue key="dependsOn" value="chatNames"/>
 					<KeyValue key="xrpTable" value="chatType"/>
 					<KeyValue key="xrpSetting" value="PARTY"/>
 				</KeyValues>
@@ -105,7 +105,7 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.PARTY" relativePoint="BOTTOMLEFT" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="dependsOn" value="ChatNames"/>
+					<KeyValue key="dependsOn" value="chatNames"/>
 					<KeyValue key="xrpTable" value="chatType"/>
 					<KeyValue key="xrpSetting" value="RAID"/>
 				</KeyValues>
@@ -115,7 +115,7 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.RAID" relativePoint="BOTTOMLEFT" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="dependsOn" value="ChatNames"/>
+					<KeyValue key="dependsOn" value="chatNames"/>
 					<KeyValue key="xrpTable" value="chatType"/>
 					<KeyValue key="xrpSetting" value="INSTANCE_CHAT"/>
 				</KeyValues>
@@ -126,7 +126,7 @@
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="textString" value="CHANNELS" type="global"/>
-					<KeyValue key="dependsOn" value="ChatNames"/>
+					<KeyValue key="dependsOn" value="chatNames"/>
 				</KeyValues>
 			</Frame>
 			<CheckButton parentKey="ChatEmoteBraced" inherits="XRPOptionsCheckboxTemplate">
@@ -134,7 +134,7 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.Channels" relativePoint="BOTTOMLEFT" x="15" y="-8"/>
 				</Anchors>
 				<KeyValues>
-					<KeyValue key="dependsOn" value="ChatNames"/>
+					<KeyValue key="dependsOn" value="chatNames"/>
 					<KeyValue key="xrpSetting" value="chatEmoteBraced"/>
 				</KeyValues>
 			</CheckButton>
