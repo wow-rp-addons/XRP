@@ -124,21 +124,21 @@ xrp.L.MENU_FIELDS = setmetatable({
 }, { __index = xrp.L.FIELDS })
 
 xrp.L.MENU_VALUES = setmetatable({
-	FC = setmetatable({
+	FC = {
 		["0"] = PARENS_TEMPLATE:format(NONE),
 		["1"] = L.VALUE_FC_1_MENU,
 		["2"] = L.VALUE_FC_2_MENU,
 		["3"] = L.VALUE_FC_3_MENU,
 		["4"] = L.VALUE_FC_4_MENU,
-	}, { __index = xrp.L.VALUES.FC }),
-	FR = setmetatable({
+	},
+	FR = {
 		["0"] = PARENS_TEMPLATE:format(NONE),
 		["1"] = L.VALUE_FR_1_MENU,
 		["2"] = L.VALUE_FR_2_MENU,
 		["3"] = L.VALUE_FR_3_MENU,
 		["4"] = L.VALUE_FR_4_MENU,
 		["5"] = L.VALUE_FR_5_MENU,
-	}, { __index = xrp.L.VALUES.FR }),
+	},
 }, { __index = xrp.L.VALUES })
 
 BINDING_HEADER_XRP = GetAddOnMetadata(FOLDER_NAME, "Title")
