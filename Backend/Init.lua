@@ -106,7 +106,7 @@ end)
 
 local VERSION_MATCH = "^(%d+)%.(%d+)%.(%d+)[%-]?(%l*)(%d*)"
 local function CompareVersion(newVersion, oldVersion)
-	if newVersion:find("dev", nil, true) then
+	if newVersion:find("dev", nil, true) or oldVersion:find("dev", nil, true) then
 		-- Never issue updates for git -dev versions.
 		return -1
 	end
