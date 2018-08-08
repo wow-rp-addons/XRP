@@ -24,15 +24,12 @@ if not (hasMRP or hasTRP3) then return end
 local MRP_NO_IMPORT = { TT = true, VA = true, VP = true, GC = true, GF = true, GR = true, GS = true, GU = true }
 
 StaticPopupDialogs["XRP_IMPORT_RELOAD"] = {
-	text = L"Available profiles have been imported and may be found in the editor's profile list. You should reload your UI now.",
-	button1 = RELOADUI,
-	button2 = CANCEL,
-	OnAccept = ReloadUI,
+	text = L"Available profiles have been imported and may be found in the XRP editor's profile list.\n\n|cffdd380fYou should disable any RP addons you don't wish to use and then reload your UI.|r",
+	button1 = OKAY,
 	enterClicksFirstButton = false,
 	timeout = 0,
 	whileDead = true,
 	hideOnEscape = true,
-	preferredIndex = 3,
 	cancels = "XRP_MSP_DISABLE",
 }
 
@@ -145,14 +142,12 @@ AddOn.HookGameEvent("PLAYER_LOGIN", function(event)
 	if hasMRP and select(2, IsAddOnLoaded("MyRolePlay")) then
 		local count = ImportMyRolePlay()
 		if count > 0 then
-			DisableAddOn("MyRolePlay", AddOn.characterName)
 			imported = true
 		end
 	end
 	if hasTRP3 and select(2, IsAddOnLoaded("totalRP3")) then
 		local count = ImportTotalRP3()
 		if count > 0 then
-			DisableAddOn("totalRP3", AddOn.characterName)
 			imported = true
 		end
 	end
