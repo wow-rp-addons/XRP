@@ -153,7 +153,7 @@ local function RenderTooltip()
 				return
 			end
 		end
-		RenderLine(false, currentUnit.nameFormat:format(showProfile and xrp.Strip(fields.NA) or xrp.ShortName(tostring(currentUnit.character))), currentUnit.icons)
+		RenderLine(false, currentUnit.nameFormat:format(showProfile and xrp.Strip(fields.NA) or xrp.CharacterIDToName(tostring(currentUnit.character))), currentUnit.icons)
 		if replace and currentUnit.reaction then
 			RenderLine(false, currentUnit.reaction, nil, 1, 1, 1)
 		end
@@ -210,7 +210,7 @@ local function RenderTooltip()
 			end
 		end
 		local color = COLORS[currentUnit.faction]
-		RenderLine(false, currentUnit.titleRealm:format(showProfile and xrp.Strip(fields.NA) or xrp.ShortName(tostring(currentUnit.character))), nil, color.r, color.g, color.b)
+		RenderLine(false, currentUnit.titleRealm:format(showProfile and xrp.Strip(fields.NA) or xrp.CharacterIDToName(tostring(currentUnit.character))), nil, color.r, color.g, color.b)
 		RenderLine(false, currentUnit.info, nil, 1, 1, 1)
 	end
 
@@ -334,7 +334,7 @@ local function SetUnit(unit)
 			if realm == AddOn.characterRealm then
 				realm = nil
 			end
-			local name = UnitPVPName(unit) or xrp.ShortName(tostring(currentUnit.character))
+			local name = UnitPVPName(unit) or xrp.CharacterIDToName(tostring(currentUnit.character))
 			currentUnit.titleRealm = (colorblind and L.ASIDE or "%s"):format(realm and L.NAME_REALM:format(name, xrp.RealmDisplayName(realm)) or name, colorblind and xrp.L.VALUES.GF[currentUnit.faction])
 
 			local GS = colorblind and currentUnit.character.fields.GS

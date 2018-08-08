@@ -23,25 +23,25 @@ AddOn.WeakKeyMetatable = { __mode = "k" }
 
 function AddOn.DoNothing() end
 
-function xrp.UnitFullName(unit)
+function xrp.UnitCharacterID(unit)
 	if type(unit) ~= "string" or unit ~= "player" and not UnitIsPlayer(unit) then
 		return nil
 	end
 	return AddOn_Chomp.NameMergedRealm(UnitFullName(unit))
 end
 
-function xrp.FullName(name, realm)
+function xrp.BuildCharacterID(name, realm)
 	if type(name) ~= "string" or name == "" then
 		return nil
 	end
 	return AddOn_Chomp.NameMergedRealm(name, realm)
 end
 
-function xrp.ShortName(name)
-	if type(name) ~= "string" then
+function xrp.CharacterIDToName(characterID)
+	if type(characterID) ~= "string" then
 		return UNKNOWN
 	end
-	return name:match("^([^%-]+)")
+	return characterID:match("^([^%-]+)")
 end
 
 -- Realms just needing title case spacing are handled via gsub. These are more

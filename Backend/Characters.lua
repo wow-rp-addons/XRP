@@ -174,7 +174,7 @@ local noRequestTables = setmetatable({}, AddOn.WeakValueMetatable)
 xrp.characters = {
 	byName = setmetatable({}, {
 		__index = function(self, name)
-			name = xrp.FullName(name)
+			name = xrp.BuildCharacterID(name)
 			if not name then
 				return nil
 			elseif not requestTables[name] then
@@ -207,7 +207,7 @@ xrp.characters = {
 				end
 				return nil
 			end
-			local name = xrp.FullName(shortName, realm)
+			local name = xrp.BuildCharacterID(shortName, realm)
 			if not unitCache[name] then
 				if RACE_FACTION[GR] == nil then
 					if not xrp.L.VALUES.GR[GR] then
@@ -255,7 +255,7 @@ xrp.characters = {
 			if not success or not shortName or shortName == UNKNOWN then
 				return nil
 			end
-			local name = xrp.FullName(shortName, realm)
+			local name = xrp.BuildCharacterID(shortName, realm)
 			if not unitCache[name] then
 				if RACE_FACTION[GR] == nil and not xrp.L.VALUES.GR[GR] then
 					xrp.L.VALUES.GR[GR] = race
@@ -353,7 +353,7 @@ xrp.characters = {
 	noRequest = {
 		byName = setmetatable({}, {
 			__index = function(self, name)
-				name = xrp.FullName(name)
+				name = xrp.BuildCharacterID(name)
 				if not name then
 					return nil
 				elseif not noRequestTables[name] then

@@ -37,7 +37,7 @@ local function Cursor_TurnOrActionStop()
 	if not mouseover then return end
 	-- 0.75s interaction time is guessed as Blizzard number from in-game
 	-- testing. Used for consistency.
-	if GetTime() - now < 0.75 and mouseover == xrp.UnitFullName("target") then
+	if GetTime() - now < 0.75 and mouseover == xrp.UnitCharacterID("target") then
 		if XRPCursorBook.mountable then
 			UIErrorsFrame:Clear() -- Hides errors on inteactable mount players.
 		end

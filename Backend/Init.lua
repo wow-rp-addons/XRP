@@ -92,7 +92,7 @@ frame:SetScript("OnEvent", function(self, event, ...)
 end)
 
 AddOn.HookGameEvent("ADDON_LOADED", function(event, addon)
-	AddOn.characterID = xrp.UnitFullName("player")
+	AddOn.characterID = xrp.UnitCharacterID("player")
 	AddOn.characterName, AddOn.characterRealm = AddOn.characterID:match("^([^%-]+)%-([^%-]+)$")
 
 	AddOn.SavedVariableSetup()

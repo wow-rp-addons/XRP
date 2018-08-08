@@ -175,7 +175,7 @@ local function Menu_Click(self, arg1, arg2, checked)
 	elseif arg1 == "XRP_FRIEND" then
 		local character = UIDROPDOWNMENU_INIT_MENU.character
 		local name = tostring(character)
-		AddOrRemoveFriend(Ambiguate(name, "none"), xrp.Strip(character.fields.NA) or xrp.ShortName(name))
+		AddOrRemoveFriend(Ambiguate(name, "none"), xrp.Strip(character.fields.NA) or xrp.CharacterIDToName(name))
 	elseif arg1 == "XRP_BOOKMARK" then
 		UIDROPDOWNMENU_INIT_MENU.character.bookmark = not checked
 		if request.bookmark then
@@ -190,7 +190,7 @@ local function Menu_Click(self, arg1, arg2, checked)
 		end
 	elseif arg1 == "XRP_EXPORT" then
 		local character = UIDROPDOWNMENU_INIT_MENU.character
-		XRPExport:Export(xrp.ShortName(tostring(character)), tostring(character.fields))
+		XRPExport:Export(xrp.CharacterIDToName(tostring(character)), tostring(character.fields))
 	elseif arg1 == "XRP_CACHE_DROP" then
 		local name, realm = tostring(UIDROPDOWNMENU_INIT_MENU.character):match("^([^%-]+)%-([^%-]+)")
 		StaticPopup_Show("XRP_CACHE_SINGLE", L.NAME_REALM:format(name, xrp.RealmDisplayName(realm)), nil, UIDROPDOWNMENU_INIT_MENU.character)
@@ -436,7 +436,7 @@ end
 
 function XRPArchiveNotes_OnAttributeChanged(self, name, value)
 	if name == "character" then
-		self.Title:SetText(xrp.ShortName(tostring(value)))
+		self.Title:SetText(xrp.CharacterIDToName(tostring(value)))
 	end
 end
 

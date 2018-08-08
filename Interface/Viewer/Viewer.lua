@@ -35,7 +35,7 @@ local function SetField(field, contents, secondary, tertiary)
 		contents = xrp.MergeCurrently(xrp.Link(contents), xrp.Link(xrp.Strip(secondary, true)))
 	elseif secondary then
 		if field == "NA" then
-			contents = xrp.ShortName(secondary)
+			contents = xrp.CharacterIDToName(secondary)
 		elseif field =="RA" then
 			contents = xrp.L.VALUES.GR[secondary]
 		elseif field =="RC" then
@@ -168,13 +168,13 @@ local function Menu_Click(self, arg1, arg2, checked)
 		end
 	elseif arg1 == "XRP_FRIEND" then
 		local name = tostring(current)
-		AddOrRemoveFriend(Ambiguate(name, "none"), xrp.Strip(current.fields.NA) or xrp.ShortName(name))
+		AddOrRemoveFriend(Ambiguate(name, "none"), xrp.Strip(current.fields.NA) or xrp.CharacterIDToName(name))
 	elseif arg1 == "XRP_BOOKMARK" then
 		current.bookmark = not checked
 	elseif arg1 == "XRP_HIDE" then
 		current.hide = not checked
 	elseif arg1 == "XRP_EXPORT" then
-		XRPExport:Export(xrp.ShortName(tostring(current)), tostring(current.fields))
+		XRPExport:Export(xrp.CharacterIDToName(tostring(current)), tostring(current.fields))
 	elseif arg1 == "XRP_REPORT" then
 		local fullName = tostring(current)
 		local name, realm = fullName:match("^([^%-]+)%-([^%-]+)$")
@@ -404,7 +404,7 @@ XRPViewer_Mixin = {
 			if not isUnit then
 				local unit = Ambiguate(player, "none")
 				isUnit = UnitExists(unit)
-				player = isUnit and unit or xrp.FullName(player):gsub("^%l", string.upper)
+				player = isUnit and unit or xrp.BuildCharacterID(player):gsub("^%l", string.upper)
 			end
 			character = isUnit and xrp.characters.byUnit[player] or xrp.characters.byName[player]
 		end
