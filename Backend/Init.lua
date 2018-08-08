@@ -16,17 +16,11 @@
 ]]
 
 local FOLDER_NAME, AddOn = ...
+local VERSION = GetAddOnMetadata(FOLDER_NAME, "Version")
 local L = AddOn.GetText
 
 xrp = {}
 
-local SUPPORTED_LANGUAGES = {
-	enUS = "en",
-	enGB = "en",
-}
-AddOn.language = SUPPORTED_LANGUAGES[GetLocale()] or "en"
-
-AddOn.version = GetAddOnMetadata(FOLDER_NAME, "Version")
 AddOn.DoNothing = function() end
 AddOn.weakMeta = { __mode = "v" }
 AddOn.weakKeyMeta = { __mode = "k" }
@@ -136,8 +130,8 @@ local function CompareVersion(newVersion, oldVersion)
 end
 
 function AddOn.AddonUpdate(version)
-	if not version or version == AddOn.version or version == AddOn.Settings.newversion then return end
-	if CompareVersion(version, AddOn.Settings.newversion or AddOn.version) >= 0 then
+	if not version or version == VERSION or version == AddOn.Settings.newversion then return end
+	if CompareVersion(version, AddOn.Settings.newversion or VERSION) >= 0 then
 		AddOn.Settings.newversion = version
 	end
 end
@@ -148,7 +142,7 @@ AddOn.HookGameEvent("ADDON_LOADED", function(event, addon)
 	AddOn.SavedVariableSetup()
 
 	local addonString = "%s/%s"
-	local VA = { addonString:format(FOLDER_NAME, AddOn.version) }
+	local VA = { addonString:format(FOLDER_NAME, VERSION) }
 	for i, addon in ipairs({ "GHI", "Tongues" }) do
 		if IsAddOnLoaded(addon) then
 			VA[#VA + 1] = addonString:format(addon, GetAddOnMetadata(addon, "Version"))
@@ -180,7 +174,7 @@ AddOn.HookGameEvent("ADDON_LOADED", function(event, addon)
 	AddOn.LoadSettings()
 
 	if AddOn.Settings.newversion then
-		local update = CompareVersion(AddOn.Settings.newversion, AddOn.version)
+		local update = CompareVersion(AddOn.Settings.newversion, VERSION)
 		local now = time()
 		if update == 1 and (not AddOn.Settings.versionwarning or AddOn.Settings.versionwarning < now - 21600) then
 			C_Timer.After(8, function()
