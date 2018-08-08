@@ -106,9 +106,9 @@ local characterMeta = {
 			return fields
 		elseif characterFunctions[component] then
 			return characterFunctions[component]
-		elseif component == "own" and name == AddOn.playerWithRealm then
+		elseif component == "own" and name == AddOn.characterID then
 			return true
-		elseif component == "canRefresh" and name == AddOn.playerWithRealm then
+		elseif component == "canRefresh" and name == AddOn.characterID then
 			return false
 		elseif component == "noRequest" then
 			return not requestMap[self]
@@ -222,7 +222,7 @@ xrp.characters = {
 					GS = tostring(GS),
 					GU = GU,
 				}
-				if xrpCache[name] and name ~= AddOn.playerWithRealm then
+				if xrpCache[name] and name ~= AddOn.characterID then
 					-- We DO want to overwrite these, to account for race,
 					-- faction, or sex changes.
 					for field, contents in pairs(unitCache[name]) do
@@ -232,7 +232,7 @@ xrp.characters = {
 			elseif not unitCache[name].GF then
 				-- GUID won't always get faction.
 				unitCache[name].GF = UnitIsMercenary(unit) and MERCENARY[UnitFactionGroup(unit)] or UnitFactionGroup(unit)
-				if xrpCache[name] and name ~= AddOn.playerWithRealm then
+				if xrpCache[name] and name ~= AddOn.characterID then
 					xrpCache[name].fields.GF = unitCache[name].GF
 				end
 			end
@@ -267,7 +267,7 @@ xrp.characters = {
 					GS = tostring(GS),
 					GU = GU,
 				}
-				if xrpCache[name] and name ~= AddOn.playerWithRealm then
+				if xrpCache[name] and name ~= AddOn.characterID then
 					for field, contents in pairs(unitCache[name]) do
 						-- We DO want to overwrite these, to account for race,
 						-- faction, or sex changes.

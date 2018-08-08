@@ -331,7 +331,7 @@ local function SetUnit(unit)
 			currentUnit.guild = guildName and (AddOn.Settings.tooltipShowGuildRank and (AddOn.Settings.tooltipShowGuildIndex and L.GUILD_RANK_INDEX or L.GUILD_RANK) or L.GUILD):format(AddOn.Settings.tooltipShowGuildRank and guildRank or guildName, AddOn.Settings.tooltipShowGuildIndex and guildIndex + 1 or guildName, guildName)
 
 			local realm = tostring(currentUnit.character):match("%-([^%-]+)$")
-			if realm == AddOn.realm then
+			if realm == AddOn.characterRealm then
 				realm = nil
 			end
 			local name = UnitPVPName(unit) or xrp.ShortName(tostring(currentUnit.character))
@@ -383,7 +383,7 @@ local function SetUnit(unit)
 
 		currentUnit.character = xrp.characters.byName[owner]
 
-		local isOwnPet = UnitIsUnit(unit, "playerpet") or owner == AddOn.player
+		local isOwnPet = UnitIsUnit(unit, "playerpet") or owner == AddOn.characterName
 		currentUnit.faction = UnitFactionGroup(unit) or isOwnPet and playerFaction or currentUnit.character.fields.GF or "Neutral"
 
 		local name = UnitName(unit)

@@ -226,7 +226,7 @@ function XRPArchiveEntry_OnClick(self, button, down)
 	if button == "RightButton" then
 		self.Selected:Show()
 		if self.character.own then
-			if tostring(self.character) == AddOn.playerWithRealm then
+			if tostring(self.character) == AddOn.characterID then
 				self.baseMenuList[1].disabled = true
 				self.baseMenuList[7].menuList[2].disabled = true
 			else

@@ -96,8 +96,9 @@ frame:SetScript("OnEvent", function(self, event, ...)
 end)
 
 AddOn.HookGameEvent("ADDON_LOADED", function(event, addon)
-	AddOn.playerWithRealm = xrp.UnitFullName("player")
-	AddOn.player, AddOn.realm = AddOn.playerWithRealm:match("^([^%-]+)%-([^%-]+)$")
+	AddOn.characterID = xrp.UnitFullName("player")
+	AddOn.characterName, AddOn.characterRealm = AddOn.characterID:match("^([^%-]+)%-([^%-]+)$")
+
 	AddOn.SavedVariableSetup()
 
 	local addonString = "%s/%s"
@@ -108,7 +109,7 @@ AddOn.HookGameEvent("ADDON_LOADED", function(event, addon)
 		end
 	end
 	local newFields = {
-		NA = AddOn.player, -- Fallback NA field.
+		NA = AddOn.characterName, -- Fallback NA field.
 		VA = table.concat(VA, ";"),
 		FC = "1",
 	}

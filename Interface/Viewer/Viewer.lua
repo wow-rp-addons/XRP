@@ -83,7 +83,7 @@ local META_SUPPORTED = {
 	CO = "CU",
 }
 local function FIELD(event, name, field)
-	if tostring(current) ~= name or current.noRequest or name == AddOn.playerWithRealm then return end
+	if tostring(current) ~= name or current.noRequest or name == AddOn.characterID then return end
 	if META_SUPPORTED[field] then
 		field = META_SUPPORTED[field]
 	end
@@ -97,7 +97,7 @@ end
 
 local function RECEIVE(event, name)
 	if tostring(current) == name and not current.noRequest then
-		if name == AddOn.playerWithRealm then
+		if name == AddOn.characterID then
 			Load(current)
 			return
 		elseif failed then
@@ -316,7 +316,7 @@ function XRPViewerMenu_PreClick(self, button, down)
 	if isOwn or noProfile then
 		self.baseMenuList[3].disabled = true
 		self.baseMenuList[4].disabled = true
-		if name == AddOn.playerWithRealm or noProfile then
+		if name == AddOn.characterID or noProfile then
 			self.baseMenuList[7].menuList[1].disabled = true
 			self.baseMenuList[7].menuList[2].disabled = true
 		else

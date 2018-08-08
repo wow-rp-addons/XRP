@@ -26,7 +26,7 @@ local function XRPGetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7
 	-- target's name with our (colored/RP) name. Being sure to return a
 	-- non-colored, non-RP name for our own text emotes fixes the issue.
 	if event == "CHAT_MSG_TEXT_EMOTE" then
-		if arg2 == AddOn.player then
+		if arg2 == AddOn.characterName then
 			return arg2
 		elseif character then
 			-- TEXT_EMOTE doesn't have realm attached to arg2, because

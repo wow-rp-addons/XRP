@@ -44,9 +44,9 @@ local OwnCharacters = {}
 
 AddOn.HookGameEvent("PLAYER_LOGIN", function(event)
 	-- GetAutoCompleteResults() doesn't work before PLAYER_LOGIN.
-	OwnCharacters[AddOn.playerWithRealm] = true
-	if xrpCache[AddOn.playerWithRealm] and not xrpCache[AddOn.playerWithRealm].own then
-		xrpCache[AddOn.playerWithRealm].own = true
+	OwnCharacters[AddOn.characterID] = true
+	if xrpCache[AddOn.characterID] and not xrpCache[AddOn.characterID].own then
+		xrpCache[AddOn.characterID].own = true
 	end
 	for i, character in ipairs(GetAutoCompleteResults("", 0, 1, AUTO_COMPLETE_ACCOUNT_CHARACTER, 0)) do
 		local name = xrp.FullName(character.name)
@@ -56,7 +56,7 @@ AddOn.HookGameEvent("PLAYER_LOGIN", function(event)
 		end
 	end
 	for name, data in pairs(xrpCache) do
-		if data.own and not OwnCharacters[name] and name:match("%-([^%-]+)$") == AddOn.realm then
+		if data.own and not OwnCharacters[name] and name:match("%-([^%-]+)$") == AddOn.characterRealm then
 			data.own = nil
 		end
 	end

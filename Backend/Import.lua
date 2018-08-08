@@ -18,7 +18,7 @@
 local FOLDER_NAME, AddOn = ...
 local L = AddOn.GetText
 
-local hasMRP, hasTRP3 = (GetAddOnEnableState(AddOn.player, "MyRolePlay") == 2), (GetAddOnEnableState(AddOn.player, "totalRP3") == 2)
+local hasMRP, hasTRP3 = (GetAddOnEnableState(AddOn.characterName, "MyRolePlay") == 2), (GetAddOnEnableState(AddOn.characterName, "totalRP3") == 2)
 if not (hasMRP or hasTRP3) then return end
 
 local MRP_NO_IMPORT = { TT = true, VA = true, VP = true, GC = true, GF = true, GR = true, GS = true, GU = true }
@@ -77,7 +77,7 @@ local function ImportTotalRP3()
 	if not TRP3_Profiles or not TRP3_Characters then
 		return 0
 	end
-	local oldProfile = TRP3_Profiles[TRP3_Characters[AddOn.playerWithRealm].profileID]
+	local oldProfile = TRP3_Profiles[TRP3_Characters[AddOn.characterID].profileID]
 	if not oldProfile then
 		return 0
 	end
@@ -88,7 +88,7 @@ local function ImportTotalRP3()
 
 	local NA = {}
 	NA[#NA + 1] = oldProfile.player.characteristics.TI
-	NA[#NA + 1] = oldProfile.player.characteristics.FN or AddOn.player
+	NA[#NA + 1] = oldProfile.player.characteristics.FN or AddOn.characterName
 	NA[#NA + 1] = oldProfile.player.characteristics.LN
 	profile.fields.NA = table.concat(NA, " ")
 	profile.fields.NT = oldProfile.player.characteristics.FT
@@ -145,14 +145,14 @@ AddOn.HookGameEvent("PLAYER_LOGIN", function(event)
 	if hasMRP and select(2, IsAddOnLoaded("MyRolePlay")) then
 		local count = ImportMyRolePlay()
 		if count > 0 then
-			DisableAddOn("MyRolePlay", AddOn.player)
+			DisableAddOn("MyRolePlay", AddOn.characterName)
 			imported = true
 		end
 	end
 	if hasTRP3 and select(2, IsAddOnLoaded("totalRP3")) then
 		local count = ImportTotalRP3()
 		if count > 0 then
-			DisableAddOn("totalRP3", AddOn.player)
+			DisableAddOn("totalRP3", AddOn.characterName)
 			imported = true
 		end
 	end
