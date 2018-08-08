@@ -131,7 +131,7 @@ local function UpdatedHandler(updatedName, field, contents, version)
 	xrpCache[name].versions[field] = version
 	AddOn.FireEvent("FIELD", name, field)
 	if field == "VA" and contents then
-		AddOn.AddonUpdate(contents:match("^XRP/([^;]+)"))
+		AddOn.CheckVersionUpdate(contents:match("^XRP/([^;]+)"))
 	end
 end
 

@@ -26,6 +26,7 @@ Backend\Profiles.lua
 Backend\MSP.lua
 Backend\Characters.lua
 Backend\Automation.lua
+Backend\VersionCheck.lua
 Backend\Import.lua
 Interface\GlobalStrings.lua
 Interface\AltRaces.lua
