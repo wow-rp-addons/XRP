@@ -18,12 +18,6 @@
 local FOLDER_NAME, AddOn = ...
 local L = AddOn.GetText
 
-XRP_BOOKMARKS = L.BOOKMARKS
-XRP_OWN = L.OWN
-XRP_RECENT = L.RECENT
-XRP_SEARCH_ENTER = L"Press enter to search."
-XRP_PROFILES_NOTFOUND = L"No profiles found."
-
 local request, results
 
 -- Long races names, plus Undead, use alternate atlas names.

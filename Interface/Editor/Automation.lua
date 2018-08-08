@@ -18,8 +18,6 @@
 local FOLDER_NAME, AddOn = ...
 local L = AddOn.GetText
 
-XRP_AUTOMATION = L.AUTOMATION
-
 local isWorgen, playerClass = select(2, UnitRace("player")) == "Worgen", select(2, UnitClass("player"))
 if not (playerClass == "DRUID" or playerClass == "PRIEST" or playerClass == "SHAMAN") then
 	playerClass = nil

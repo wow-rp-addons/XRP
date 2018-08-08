@@ -140,11 +140,3 @@ xrp.L.MENU_VALUES = setmetatable({
 		["5"] = L.VALUE_FR_5_MENU,
 	},
 }, { __index = xrp.L.VALUES })
-
-BINDING_HEADER_XRP = GetAddOnMetadata(FOLDER_NAME, "Title")
-BINDING_NAME_XRP_ARCHIVE = L"Toggle RP Profile Archive"
-BINDING_NAME_XRP_EDITOR = L"Toggle RP Profile Editor"
-BINDING_NAME_XRP_STATUS = L"Toggle IC/OOC Status"
-BINDING_NAME_XRP_VIEWER = L"View RP Profile of Mouseover"
-BINDING_NAME_XRP_VIEWER_TARGET = L"View RP Profile of Target"
-BINDING_NAME_XRP_VIEWER_MOUSEOVER = L"View RP Profile of Target/Mouseover"

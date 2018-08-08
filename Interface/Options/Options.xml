@@ -38,12 +38,12 @@
 						<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" y="-5"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="LicenseHeader" inherits="GameFontNormalLarge" text="XRP_LICENSE_HEADER">
+				<FontString parentKey="LicenseHeader" inherits="GameFontNormalLarge" text="XRP_LICENSE">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Version" relativePoint="BOTTOMLEFT" y="-15"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="License" inherits="GameFontWhite" justifyH="LEFT" text="XRP_LICENSE">
+				<FontString parentKey="License" inherits="GameFontWhite" justifyH="LEFT" text="XRP_LICENSE_TEXT">
 					<Size x="440"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.LicenseHeader" relativePoint="BOTTOMLEFT" y="-10"/>

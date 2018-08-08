@@ -27,6 +27,7 @@ Backend\MSP.lua
 Backend\Characters.lua
 Backend\Automation.lua
 Backend\Import.lua
+Interface\GlobalStrings.lua
 Interface\AltRaces.lua
 Interface\Help.lua
 Interface\Popups.lua

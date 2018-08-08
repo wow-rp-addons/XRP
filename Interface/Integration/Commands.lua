@@ -20,9 +20,8 @@ local L = AddOn.GetText
 
 local SLASH_XRP = L"/xrp"
 local INFO = STAT_FORMAT:format("|cff99b3e6%s") .. "|r %s"
--- Also used in ui/options.xml.
-XRP_VERSION = INFO:format(GAME_VERSION_LABEL, AddOn.version)
 local XRP_HEADER = ("|cffffd100<|r|cffabd473%s|r|cffffd100>:|r %%s"):format(GetAddOnMetadata(FOLDER_NAME, "Title"))
+local XRP_VERSION = INFO:format(GAME_VERSION_LABEL, GetAddOnMetadata(FOLDER_NAME, "Version") or UNKNOWN)
 
 local xrpCmds = {}
 

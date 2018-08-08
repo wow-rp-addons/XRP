@@ -18,9 +18,6 @@
 local FOLDER_NAME, AddOn = ...
 local L = AddOn.GetText
 
-XRP_CLEAR_CACHE = L"Clear Cache" .. CONTINUED
-XRP_TIDY_CACHE = L"Tidy Cache"
-
 function XRPOptionsAdvancedAutoClean_OnClick(self, button, down)
 	if self:Get() then
 		self:GetParent().CacheTidy:Hide()

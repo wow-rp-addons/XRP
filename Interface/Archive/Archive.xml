@@ -46,7 +46,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<FontString parentKey="NoResults" inherits="GameFontNormalLarge" maxLines="1" text="XRP_PROFILES_NOTFOUND">
+						<FontString parentKey="NoResults" inherits="GameFontNormalLarge" maxLines="1" text="XRP_ARCHIVE_PROFILES_NOTFOUND">
 							<Anchors>
 								<Anchor point="CENTER"/>
 							</Anchors>
@@ -138,7 +138,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<FontString parentKey="FullTextWarning" inherits="GameFontWhiteSmall" maxLines="1" text="XRP_SEARCH_ENTER">
+						<FontString parentKey="FullTextWarning" inherits="GameFontWhiteSmall" maxLines="1" text="XRP_ARCHIVE_SEARCH_ENTER">
 							<Size x="120" y="0"/>
 							<Anchors>
 								<Anchor point="BOTTOM" relativePoint="TOP" y="-1"/>
@@ -155,17 +155,17 @@
 				</Scripts>
 				<FontString inherits="GameFontHighlight"/>
 			</EditBox>
-			<Button name="$parentTab1" parentKey="Tab1" inherits="XRPArchiveTabTemplate" id="1" text="XRP_BOOKMARKS">
+			<Button name="$parentTab1" parentKey="Tab1" inherits="XRPArchiveTabTemplate" id="1" text="XRP_ARCHIVE_BOOKMARKS">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" y="1"/>
 				</Anchors>
 			</Button>
-			<Button name="$parentTab2" parentKey="Tab2" inherits="XRPArchiveTabTemplate" id="2" text="XRP_OWN">
+			<Button name="$parentTab2" parentKey="Tab2" inherits="XRPArchiveTabTemplate" id="2" text="XRP_ARCHIVE_OWN">
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.Tab1" relativePoint="RIGHT" x="-16"/>
 				</Anchors>
 			</Button>
-			<Button name="$parentTab3" parentKey="Tab3" inherits="XRPArchiveTabTemplate" id="3" text="XRP_RECENT">
+			<Button name="$parentTab3" parentKey="Tab3" inherits="XRPArchiveTabTemplate" id="3" text="XRP_ARCHIVE_RECENT">
 				<KeyValues>
 					<KeyValue key="resetOffset" value="true" type="boolean"/>
 				</KeyValues>
