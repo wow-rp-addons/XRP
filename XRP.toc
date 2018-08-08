@@ -16,7 +16,7 @@ Libraries\Libraries.xml
 Locale\GetText.lua
 Locale\enUS.lua
 Backend\Init.lua
-Locale\Setup.lua
+Backend\PublicStrings.lua
 Backend\Settings\Defaults.lua
 Backend\Settings\Upgrade.lua
 Backend\Settings\Settings.lua
