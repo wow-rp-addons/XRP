@@ -39,6 +39,29 @@ end
 -- These fields are (or should) be generated from UnitSomething() functions.
 local UNIT_FIELDS = { "GC", "GF", "GR", "GS", "GU" }
 
+
+local OwnCharacters = {}
+
+AddOn.HookGameEvent("PLAYER_LOGIN", function(event)
+	-- GetAutoCompleteResults() doesn't work before PLAYER_LOGIN.
+	OwnCharacters[AddOn.playerWithRealm] = true
+	if xrpCache[AddOn.playerWithRealm] and not xrpCache[AddOn.playerWithRealm].own then
+		xrpCache[AddOn.playerWithRealm].own = true
+	end
+	for i, character in ipairs(GetAutoCompleteResults("", 0, 1, AUTO_COMPLETE_ACCOUNT_CHARACTER, 0)) do
+		local name = xrp.FullName(character.name)
+		OwnCharacters[name] = true
+		if xrpCache[name] and not xrpCache[name].own then
+			xrpCache[name].own = true
+		end
+	end
+	for name, data in pairs(xrpCache) do
+		if data.own and not OwnCharacters[name] and name:match("%-([^%-]+)$") == AddOn.realm then
+			data.own = nil
+		end
+	end
+end)
+
 local function ProfileUpdate(event, field)
 	if field then
 		if msp.INTERNAL_FIELDS[field] then return end
@@ -119,7 +142,7 @@ local function UpdatedHandler(updatedName, field, contents, version)
 			fields = {},
 			versions = {},
 			lastReceive = time(),
-			own = AddOn.own[name],
+			own = OwnCharacters[name],
 		}
 		if AddOn.unitCache[name] then
 			for i, unitField in pairs(UNIT_FIELDS) do

@@ -24,8 +24,6 @@ AddOn.DoNothing = function() end
 AddOn.weakMeta = { __mode = "v" }
 AddOn.weakKeyMeta = { __mode = "k" }
 
-AddOn.own = {}
-
 local events = {}
 function AddOn.FireEvent(event, ...)
 	if not events[event] then
@@ -133,25 +131,6 @@ AddOn.HookGameEvent("ADDON_LOADED", function(event, addon)
 	end
 
 	AddOn.LoadSettings()
-end)
-AddOn.HookGameEvent("PLAYER_LOGIN", function(event)
-	-- GetAutoCompleteResults() doesn't work before PLAYER_LOGIN.
-	AddOn.own[AddOn.playerWithRealm] = true
-	if xrpCache[AddOn.playerWithRealm] and not xrpCache[AddOn.playerWithRealm].own then
-		xrpCache[AddOn.playerWithRealm].own = true
-	end
-	for i, character in ipairs(GetAutoCompleteResults("", 0, 1, AUTO_COMPLETE_ACCOUNT_CHARACTER, 0)) do
-		local name = xrp.FullName(character.name)
-		AddOn.own[name] = true
-		if xrpCache[name] and not xrpCache[name].own then
-			xrpCache[name].own = true
-		end
-	end
-	for name, data in pairs(xrpCache) do
-		if data.own and not AddOn.own[name] and name:match("%-([^%-]+)$") == AddOn.realm then
-			data.own = nil
-		end
-	end
 end)
 AddOn.HookGameEvent("PLAYER_LOGOUT", function(event)
 	-- Note: This code must be thoroughly tested if any changes are
