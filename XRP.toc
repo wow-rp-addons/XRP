@@ -16,6 +16,8 @@ Libraries\Libraries.xml
 Locale\GetText.lua
 Locale\enUS.lua
 Backend\Init.lua
+Backend\Events.lua
+Backend\GameEvents.lua
 Backend\PublicStrings.lua
 Backend\Settings\Defaults.lua
 Backend\Settings\Upgrade.lua
