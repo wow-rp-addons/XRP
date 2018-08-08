@@ -18,6 +18,11 @@
 local FOLDER_NAME, AddOn = ...
 local L = AddOn.GetText
 
+AddOn.WeakValueMetatable = { __mode = "v" }
+AddOn.WeakKeyMetatable = { __mode = "k" }
+
+function AddOn.DoNothing() end
+
 function xrp.UnitFullName(unit)
 	if type(unit) ~= "string" or unit ~= "player" and not UnitIsPlayer(unit) then
 		return nil

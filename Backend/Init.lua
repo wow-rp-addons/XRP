@@ -20,10 +20,6 @@ local L = AddOn.GetText
 
 xrp = {}
 
-AddOn.DoNothing = function() end
-AddOn.weakMeta = { __mode = "v" }
-AddOn.weakKeyMeta = { __mode = "k" }
-
 local events = {}
 function AddOn.FireEvent(event, ...)
 	if not events[event] then

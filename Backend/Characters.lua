@@ -52,7 +52,7 @@ local MERCENARY = {
 local unitCache = {}
 AddOn.unitCache = unitCache
 
-local nameMap, requestMap = setmetatable({}, AddOn.weakKeyMeta), setmetatable({}, AddOn.weakKeyMeta)
+local nameMap, requestMap = setmetatable({}, AddOn.WeakKeyMetatable), setmetatable({}, AddOn.WeakKeyMetatable)
 
 local characterFunctions = {
 	DropCache = function(self)
@@ -168,8 +168,8 @@ local function SortAsc(a, b)
 	return a > b
 end
 
-local requestTables = setmetatable({}, AddOn.weakMeta)
-local noRequestTables = setmetatable({}, AddOn.weakMeta)
+local requestTables = setmetatable({}, AddOn.WeakValueMetatable)
+local noRequestTables = setmetatable({}, AddOn.WeakValueMetatable)
 
 xrp.characters = {
 	byName = setmetatable({}, {

@@ -62,7 +62,7 @@ local function IsUsed(name, field)
 	return false
 end
 
-local nameMap = setmetatable({}, AddOn.weakKeyMeta)
+local nameMap = setmetatable({}, AddOn.WeakKeyMetatable)
 
 local FORBIDDEN_NAMES = {
 	Add = true,
@@ -304,7 +304,7 @@ local profileMeta = {
 	__metatable = false,
 }
 
-local profileTables = setmetatable({}, AddOn.weakMeta)
+local profileTables = setmetatable({}, AddOn.WeakValueMetatable)
 
 xrp.profiles = setmetatable({
 	Add = function(self, name)
