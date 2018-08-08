@@ -144,7 +144,7 @@ end
 local BASIC = "^%%s*%s%%s*$"
 local KG1, KG2 = BASIC:format(L.KG1), BASIC:format(L.KG2)
 local LBS1, LBS2 = BASIC:format(L.LBS1), BASIC:format(L.LBS2)
-function xrp.Weight(weight, units)
+function AddOn.ConvertWeight(weight, units)
 	local number = tonumber(weight)
 	if not number and type(weight) ~= "string" then
 		return nil
@@ -177,7 +177,7 @@ end
 local CM1, CM2 = BASIC:format(L.CM1), BASIC:format(L.CM2)
 local M1, M2 = BASIC:format(L.M1), BASIC:format(L.M2)
 local FT1, FT2, FT3 = BASIC:format(L.FT1), BASIC:format(L.FT2), BASIC:format(L.FT3)
-function xrp.Height(height, units)
+function AddOn.ConvertHeight(height, units)
 	local number = tonumber(height)
 	if not number and type(height) ~= "string" then
 		return nil

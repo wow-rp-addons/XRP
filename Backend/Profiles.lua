@@ -30,9 +30,9 @@ xrp.current = setmetatable({}, {
 		if not contents or contents == "" then
 			return nil
 		elseif field == "AH" then
-			contents = xrp.Height(contents, "msp")
+			contents = AddOn.ConvertHeight(contents, "msp")
 		elseif field == "AW" then
-			contents = xrp.Weight(contents, "msp")
+			contents = AddOn.ConvertWeight(contents, "msp")
 		end
 		return contents
 	end,

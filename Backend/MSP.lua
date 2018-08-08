@@ -79,10 +79,10 @@ local function ProfileUpdate(event, field)
 			end
 		end
 		if fields.AW then
-			fields.AW = xrp.Weight(fields.AW, "msp")
+			fields.AW = AddOn.ConvertWeight(fields.AW, "msp")
 		end
 		if fields.AH then
-			fields.AH = xrp.Height(fields.AH, "msp")
+			fields.AH = AddOn.ConvertHeight(fields.AH, "msp")
 		end
 		for field, contents in pairs(msp.my) do
 			if not msp.INTERNAL_FIELDS[field] and not fields[field] then

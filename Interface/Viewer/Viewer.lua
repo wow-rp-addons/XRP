@@ -46,10 +46,6 @@ local function SetField(field, contents, secondary, tertiary)
 		contents = ""
 	elseif field == "NI" and not contents:find(L.QUOTE_MATCH) then
 		contents = L.NICKNAME:format(contents)
-	elseif field == "AH" then
-		contents = xrp.Height(contents)
-	elseif field == "AW" then
-		contents = xrp.Weight(contents)
 	elseif field == "DE" or field == "MO" or field == "HI" then
 		-- Link URLs in scrolling fields.
 		contents = xrp.Link(contents)

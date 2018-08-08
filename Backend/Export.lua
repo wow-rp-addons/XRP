@@ -64,9 +64,9 @@ function AddOn.ExportText(title, fields)
 		end
 		if fieldText then
 			if field == "AH" then
-				fieldText = xrp.Height(fieldText)
+				fieldText = AddOn.ConvertHeight(fieldText)
 			elseif field == "AW" then
-				fieldText = xrp.Weight(fieldText)
+				fieldText = AddOn.ConvertWeight(fieldText)
 			end
 			export[#export + 1] = EXPORT_FORMATS[field]:format(fieldText)
 		end

@@ -74,7 +74,13 @@ local fieldsMeta = {
 			AddOn.QueueRequest(name, field)
 		end
 		if xrpCache[name] and xrpCache[name].fields[field] then
-			return xrpCache[name].fields[field]
+			local contents = xrpCache[name].fields[field]
+			if field == "AH" then
+				contents = AddOn.ConvertHeight(contents)
+			elseif field == "AW" then
+				contents = AddOn.ConvertWeight(contents)
+			end
+			return contents
 		end
 		return nil
 	end,
