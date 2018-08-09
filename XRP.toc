@@ -13,8 +13,7 @@
 ## SavedVariables: xrpAccountSaved, xrpCache
 
 Libraries\Libraries.xml
-Locale\GetText.lua
-Locale\enUS.lua
+Locale\Locale.xml
 Backend\Backend.xml
 Interface\GlobalStrings.lua
 Interface\AltRaces.lua
