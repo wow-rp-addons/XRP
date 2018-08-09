@@ -30,8 +30,8 @@ end
 local function ChannelsTable(...)
 	local list, i = {}, 2
 	while select(i, ...) do
-		list[i * 0.5] = select(i, ...)
-		i = i + 2
+		list[#list + 1] = select(i, ...)
+		i = i + 3
 	end
 	return list
 end
