@@ -229,36 +229,6 @@ local function HookEvents()
 	AddOn.RegisterGameEventCallback("PLAYER_ENTERING_WORLD", XRPButton_UpdateIcon)
 end
 
-local function CreateLDBObject()
-	if LDBObject then return end
-	local ldb = LibStub and LibStub:GetLibrary("LibDataBroker-1.1", true)
-	if not ldb then return end
-	LDBObject = {
-		type = "data source",
-		text = UNKNOWN,
-		label = FOLDER_NAME,
-		icon = "Interface\\Icons\\INV_Misc_QuestionMark",
-		OnClick = XRPButton_OnClick,
-		OnTooltipShow = RenderTooltip,
-	}
-	ldb:NewDataObject(LDBObject.label, LDBObject)
-	if not Button then
-		HookEvents()
-	end
-	XRPButton_UpdateIcon()
-end
-
-AddOn.RegisterGameEventCallback("PLAYER_LOGIN", function(event)
-	if LDBObject == false then
-		LDBObject = nil
-		CreateLDBObject()
-	end
-	if not LDBObject and not (LibStub and LibStub:GetLibrary("LibDataBroker-1.1", true)) then
-		-- No LDB library, meaning no chance of a viewer.
-		InterfaceOptionsFramePanelContainer.XRPGeneral.LDBObject:SetEnabled(false)
-	end
-end)
-
 AddOn.SettingsToggles.mainButtonEnabled = function(setting)
 	if setting then
 		if AddOn.Settings.mainButtonDetached then
@@ -305,9 +275,25 @@ end
 
 AddOn.SettingsToggles.ldbObject = function(setting)
 	if setting then
-		CreateLDBObject()
-		if not LDBObject then
-			LDBObject = false
+		if LDBObject then return end
+		local ldb = LibStub and LibStub:GetLibrary("LibDataBroker-1.1", true)
+		if not ldb then return end
+		LDBObject = {
+			type = "data source",
+			text = UNKNOWN,
+			label = FOLDER_NAME,
+			icon = "Interface\\Icons\\INV_Misc_QuestionMark",
+			OnClick = XRPButton_OnClick,
+			OnTooltipShow = RenderTooltip,
+		}
+		ldb:NewDataObject(LDBObject.label, LDBObject)
+		if not Button then
+			HookEvents()
+		end
+		XRPButton_UpdateIcon()
+		if not LDBObject and not (LibStub and LibStub:GetLibrary("LibDataBroker-1.1", true)) then
+			-- No LDB library, meaning no chance of a viewer.
+			InterfaceOptionsFramePanelContainer.XRPGeneral.LDBObject:SetEnabled(false)
 		end
 	end
 end
