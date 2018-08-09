@@ -1,2 +1,0 @@
-AddOn_XRP = {}
-xrp = {}

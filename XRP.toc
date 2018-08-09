@@ -2,7 +2,7 @@
 ## X-Interface: 80000
 ## X-Interface-Required: 80000
 ## X-WoW-Version: 8.0.1
-## X-WoW-Build: 27219
+## X-WoW-Build: 27291
 ## Title: XRP Roleplay Profiles
 ## Version: 2.0.0-dev
 ## Author: Justin Snelgrove
@@ -15,21 +15,7 @@
 Libraries\Libraries.xml
 Locale\GetText.lua
 Locale\enUS.lua
-Backend\APINamespace.lua
-Backend\Events.lua
-Backend\GameEvents.lua
-Backend\PublicStrings.lua
-Backend\Settings\Defaults.lua
-Backend\Settings\Upgrade.lua
-Backend\Settings\Settings.lua
-Backend\Utility.lua
-Backend\Export.lua
-Backend\Profiles.lua
-Backend\MSP.lua
-Backend\Characters.lua
-Backend\Automation.lua
-Backend\VersionCheck.lua
-Backend\Import.lua
+Backend\Backend.xml
 Interface\GlobalStrings.lua
 Interface\AltRaces.lua
 Interface\Help.lua

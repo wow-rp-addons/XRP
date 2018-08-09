@@ -1,0 +1,20 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+	<Script>
+		AddOn_XRP = {}
+		xrp = {}
+	</Script>
+	<Script file="PublicStrings.lua"/>
+	<Script file="Events.lua"/>
+	<Script file="GameEvents.lua"/>
+	<Script file="Settings\Defaults.lua"/>
+	<Script file="Settings\Upgrade.lua"/>
+	<Script file="Settings\Settings.lua"/>
+	<Script file="Utility.lua"/>
+	<Script file="Export.lua"/>
+	<Script file="Profiles.lua"/>
+	<Script file="MSP.lua"/>
+	<Script file="Characters.lua"/>
+	<Script file="Automation.lua"/>
+	<Script file="VersionCheck.lua"/>
+	<Script file="Import.lua"/>
+</Ui>
