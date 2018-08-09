@@ -48,7 +48,7 @@ end
 function XRPTemplates_TooltipText(self, ...)
 	if not (self.tooltipText or self.tooltipKey) then return end
 	GameTooltip:SetOwner(self, "ANCHOR_CURSOR")
-	GameTooltip:SetText(self.tooltipText or L[self.tooltipKey] or _G[self.tooltipKey])
+	GameTooltip:SetText(self.tooltipText or _G[self.tooltipKey] or L[self.tooltipKey])
 	GameTooltip:Show()
 end
 
