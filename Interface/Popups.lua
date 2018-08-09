@@ -80,6 +80,7 @@ StaticPopupDialogs["XRP_RELOAD"] = {
 	whileDead = true,
 	hideOnEscape = true,
 }
+
 StaticPopupDialogs["XRP_REPORT"] = {
 	text = L"|cffdd380fYou must submit a ticket to Blizzard to report a profile.|r\n\nYou should copy the information from the text box below (%s) to add to your ticket.":format(not IsMacClient() and "Ctrl+C" or "Cmd+C"),
 	button1 = OKAY,

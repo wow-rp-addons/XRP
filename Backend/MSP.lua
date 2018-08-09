@@ -39,7 +39,6 @@ end
 -- These fields are (or should) be generated from UnitSomething() functions.
 local UNIT_FIELDS = { "GC", "GF", "GR", "GS", "GU" }
 
-
 local OwnCharacters = {}
 
 AddOn.RegisterGameEventCallback("PLAYER_LOGIN", function(event)
