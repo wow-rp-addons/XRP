@@ -86,17 +86,14 @@ local SPECIAL_REALMS = {
 }
 
 function xrp.RealmDisplayName(realm)
-	if type(realm) ~= "string" then
+	if type(realm) ~= "string" or realm == "" then
 		return UNKNOWN
 	end
 	-- gsub: spaces lower followed by upper/number (i.e., Wyrmrest Accord).
 	return SPECIAL_REALMS[realm] or (realm:gsub("(%l)([%u%d])", "%1 %2"))
 end
 
-function xrp.Strip(text, allowIndent)
-	if type(text) ~= "string" then
-		return nil
-	end
+function AddOn.SanitizeText(text)
 	if type(text) ~= "string" or text == "" then
 		return nil
 	end
@@ -110,6 +107,18 @@ function xrp.Strip(text, allowIndent)
 	text = gsub(text, "[\194-\244]+([\194-\244])", "%1")
 	text = gsub(text, "[\194-\244]([\010\032-\126])", "%1")
 
+	if text:trim() == "" then
+		return nil
+	end
+	return text
+end
+
+function xrp.Strip(text, allowIndent)
+	text = AddOn.SanitizeText(text)
+	if type(text) ~= "string" or text == "" then
+		return nil
+	end
+	local gsub = string.gsub
 	-- This fully removes all color escapes, texture escapes, and most types of
 	-- link and chat link escapes. Other UI escape sequences are escaped
 	-- themselves to not render on display (|| instead of |).
@@ -122,12 +131,13 @@ function xrp.Strip(text, allowIndent)
 	text = gsub(text, "\001", "||") -- Part two of above issue-avoiding.
 	text = gsub(text, "%f[|]|%f[^|]", "||")
 
-	if allowIndent then
-		text = text:trim("\r\n"):match("^(.-)%s*$")
-	else
-		text = text:trim()
+	local trimmedText = text:trim()
+	if trimmedText == "" then
+		return nil
+	elseif allowIndent then
+		return text:trim("\r\n"):match("^(.-)%s*$")
 	end
-	return text ~= "" and text or nil
+	return trimmedText
 end
 
 function xrp.Link(text)
