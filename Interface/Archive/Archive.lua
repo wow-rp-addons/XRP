@@ -153,7 +153,7 @@ local function DROP(event, name)
 		end
 	end
 end
-xrp.HookEvent("DROP", DROP)
+AddOn_XRP.RegisterEventCallback("DROP", DROP)
 
 local function Menu_Checked(self)
 	if self.disabled or not UIDROPDOWNMENU_INIT_MENU.character then

@@ -57,7 +57,7 @@ function AddOn.CheckVersionUpdate(version)
 	end
 end
 
-AddOn.HookGameEvent("PLAYER_LOGIN", function(event)
+AddOn.RegisterGameEventCallback("PLAYER_LOGIN", function(event)
 	if AddOn.Settings.newversion then
 		local update = CompareVersion(AddOn.Settings.newversion, VERSION)
 		local now = time()

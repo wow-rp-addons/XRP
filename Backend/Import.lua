@@ -137,7 +137,7 @@ local function ImportTotalRP3()
 	return 1
 end
 
-AddOn.HookGameEvent("PLAYER_LOGIN", function(event)
+AddOn.RegisterGameEventCallback("PLAYER_LOGIN", function(event)
 	local imported = false
 	if hasMRP and select(2, IsAddOnLoaded("MyRolePlay")) then
 		local count = ImportMyRolePlay()

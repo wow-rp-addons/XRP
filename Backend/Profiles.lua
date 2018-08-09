@@ -40,7 +40,7 @@ xrp.current = setmetatable({}, {
 		if xrpSaved.overrides[field] == contents or NO_PROFILE[field] or not field:find("^%u%u$") then return end
 		contents = type(contents) == "string" and contents or nil
 		xrpSaved.overrides[field] = contents
-		AddOn.FireEvent("UPDATE", field)
+		AddOn.RunEvent("UPDATE", field)
 	end,
 	__metatable = false,
 })
@@ -146,7 +146,7 @@ local profileFunctions = {
 		if not keepOverrides then
 			xrpSaved.overrides = {}
 		end
-		AddOn.FireEvent("UPDATE")
+		AddOn.RunEvent("UPDATE")
 		return true
 	end,
 	IsParentValid = function(self, testName)
@@ -183,7 +183,7 @@ local fieldsMeta = {
 		if profile and profile.fields[field] ~= contents then
 			profile.fields[field] = contents
 			if IsUsed(name, field) then
-				AddOn.FireEvent("UPDATE", field)
+				AddOn.RunEvent("UPDATE", field)
 			end
 		end
 	end,
@@ -256,7 +256,7 @@ local inheritMeta = {
 		if state ~= profile.inherits[field] then
 			profile.inherits[field] = state
 			if not profile.fields[field] and IsUsed(name, field) then
-				AddOn.FireEvent("UPDATE", field)
+				AddOn.RunEvent("UPDATE", field)
 			end
 		end
 	end,
@@ -295,7 +295,7 @@ local profileMeta = {
 		if component ~= "parent" or value == profiles[name].parent or not self:IsParentValid(value) then return end
 		profiles[name].parent = value
 		if IsUsed(name) then
-			AddOn.FireEvent("UPDATE")
+			AddOn.RunEvent("UPDATE")
 		end
 	end,
 	__tostring = function(self)

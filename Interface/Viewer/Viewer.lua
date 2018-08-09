@@ -373,11 +373,11 @@ function XRPViewer_OnLoad(self)
 	self.fields.NA = self.TitleText
 end
 
-xrp.HookEvent("FIELD", FIELD)
-xrp.HookEvent("RECEIVE", RECEIVE)
-xrp.HookEvent("CHUNK", CHUNK)
-xrp.HookEvent("FAIL", FAIL)
-xrp.HookEvent("DROP", DROP)
+AddOn_XRP.RegisterEventCallback("FIELD", FIELD)
+AddOn_XRP.RegisterEventCallback("RECEIVE", RECEIVE)
+AddOn_XRP.RegisterEventCallback("CHUNK", CHUNK)
+AddOn_XRP.RegisterEventCallback("FAIL", FAIL)
+AddOn_XRP.RegisterEventCallback("DROP", DROP)
 
 XRPViewer_Mixin = {
 	View = function(self, player)

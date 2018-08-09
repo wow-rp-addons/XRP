@@ -192,13 +192,13 @@ local function RecheckForm()
 end
 
 -- Portrait update catches worgen, equipment sets. Shapeshift catches others.
-AddOn.HookGameEvent("UNIT_PORTRAIT_UPDATE", TestForm, "player")
-AddOn.HookGameEvent("UPDATE_SHAPESHIFT_FORM", TestForm)
+AddOn.RegisterGameEventCallback("UNIT_PORTRAIT_UPDATE", TestForm, "player")
+AddOn.RegisterGameEventCallback("UPDATE_SHAPESHIFT_FORM", TestForm)
 -- Catch combat, for delaying changes.
-AddOn.HookGameEvent("PLAYER_REGEN_ENABLED", TestForm)
-AddOn.HookGameEvent("PLAYER_REGEN_DISABLED", CancelTimer)
+AddOn.RegisterGameEventCallback("PLAYER_REGEN_ENABLED", TestForm)
+AddOn.RegisterGameEventCallback("PLAYER_REGEN_DISABLED", CancelTimer)
 
-AddOn.HookGameEvent("PLAYER_LOGIN", function(event)
+AddOn.RegisterGameEventCallback("PLAYER_LOGIN", function(event)
 	local now = time()
 	if xrpSaved.lastCleanUp and xrpSaved.lastCleanUp > now - 72000 then return end
 	C_Timer.After(10, function()

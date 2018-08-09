@@ -321,7 +321,7 @@ AddOn.UpgradeVars = {
 				end
 			end
 		end
-		AddOn.FireEvent("UPDATE", "FC")
+		AddOn.RunEvent("UPDATE", "FC")
 	end,
 	[7] = function() -- 1.8.0
 		xrpSaved.meta.versions = nil

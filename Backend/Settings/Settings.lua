@@ -154,7 +154,7 @@ function AddOn.CacheTidy(timer, isInit)
 	end
 	if not isInit then
 		collectgarbage()
-		AddOn.FireEvent("DROP", "ALL")
+		AddOn.RunEvent("DROP", "ALL")
 	end
 	return true
 end

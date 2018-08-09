@@ -76,13 +76,13 @@ AddOn.SettingsToggles.cursorEnabled = function(setting)
 			IsItemInRange(88589, "player")
 			CreateFrame("Frame", "XRPCursorBook", UIParent, "XRPCursorBookTemplate")
 		end
-		xrp.HookEvent("RECEIVE", Cursor_RECEIVE)
+		AddOn_XRP.RegisterEventCallback("RECEIVE", Cursor_RECEIVE)
 		XRPCursorBook:RegisterEvent("UPDATE_MOUSEOVER_UNIT")
 		cursor = true
 	elseif cursor ~= nil then
 		XRPCursorBook:UnregisterAllEvents()
 		XRPCursorBook:Hide()
-		xrp.UnhookEvent("RECEIVE", Cursor_RECEIVE)
+		AddOn_XRP.UnregisterEventCallback("RECEIVE", Cursor_RECEIVE)
 		cursor = false
 	end
 end

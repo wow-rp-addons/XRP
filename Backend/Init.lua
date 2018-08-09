@@ -18,9 +18,10 @@
 local FOLDER_NAME, AddOn = ...
 local L = AddOn.GetText
 
+AddOn_XRP = {}
 xrp = {}
 
-AddOn.HookGameEvent("ADDON_LOADED", function(event, addon)
+AddOn.RegisterGameEventCallback("ADDON_LOADED", function(event, addon)
 	AddOn.characterID = xrp.UnitCharacterID("player")
 	AddOn.characterName, AddOn.characterRealm = AddOn.characterID:match("^([^%-]+)%-([^%-]+)$")
 
@@ -45,7 +46,7 @@ AddOn.HookGameEvent("ADDON_LOADED", function(event, addon)
 		xrpSaved.overrides.logout = nil
 	end
 
-	AddOn.FireEvent("UPDATE")
+	AddOn.RunEvent("UPDATE")
 
 	if AddOn.Settings.cacheAutoClean then
 		AddOn.CacheTidy(nil, true)
@@ -53,7 +54,7 @@ AddOn.HookGameEvent("ADDON_LOADED", function(event, addon)
 
 	AddOn.LoadSettings()
 end)
-AddOn.HookGameEvent("PLAYER_LOGOUT", function(event)
+AddOn.RegisterGameEventCallback("PLAYER_LOGOUT", function(event)
 	-- Note: This code must be thoroughly tested if any changes are
 	-- made. If there are any errors in here, they are not visible in
 	-- any manner in-game.

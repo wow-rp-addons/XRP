@@ -18,31 +18,54 @@
 local FOLDER_NAME, AddOn = ...
 local L = AddOn.GetText
 
-local events = {}
-function AddOn.FireEvent(event, ...)
-	if not events[event] then
-		return false
+local EventCallbacks = {
+	CHUNK = {},
+	DROP = {},
+	FAIL = {},
+	FIELD = {},
+	RECEIVE = {},
+	UPDATE = {},
+}
+
+function AddOn.RunEvent(event, ...)
+	if not EventCallbacks[event] then
+		error("XRP: AddOn.RunEvent(): event: invalid event " .. event, 2)
 	end
-	for func, isFunc in pairs(events[event]) do
-		xpcall(func, geterrorhandler(), event, ...)
+	for i, callback in ipairs(EventCallbacks[event]) do
+		xpcall(callback, geterrorhandler(), event, ...)
 	end
-	return true
 end
-function xrp.HookEvent(event, func)
-	if type(func) ~= "function" then
-		return false
-	elseif type(events[event]) ~= "table" then
-		events[event] = {}
-	elseif events[event][func] then
-		return false
+
+function AddOn_XRP.RegisterEventCallback(event, callback)
+	if type(event) ~= "string" then
+		error("AddOn_XRP.RegisterEventCallback(): event: expected string, got " .. type(event), 2)
+	elseif not EventCallbacks[event] then
+		error("AddOn_XRP.RegisterEventCallback(): event: invalid event " .. event, 2)
+	elseif type(callback) ~= "function" then
+		error("AddOn_XRP.RegisterEventCallback(): callback: expected function, got " .. type(callback), 2)
 	end
-	events[event][func] = true
-	return true
+	for i, regCallback in ipairs(EventCallbacks[event]) do
+		if callback == regCallback then
+			error("AddOn_XRP.RegisterEventCallback(): callback: already registered for event " .. event, 2)
+		end
+	end
+	local i = #EventCallbacks[event] + 1
+	EventCallbacks[event][i] = callback
 end
-function xrp.UnhookEvent(event, func)
-	if not events[event] or not events[event][func] then
-		return false
+
+function AddOn_XRP.UnregisterEventCallback(event, callback)
+	if type(event) ~= "string" then
+		error("AddOn_XRP.UnregisterEventCallback(): event: expected string, got " .. type(event), 2)
+	elseif not EventCallbacks[event] then
+		error("AddOn_XRP.UnregisterEventCallback(): event: invalid event: " .. event, 2)
+	elseif type(callback) ~= "function" then
+		error("AddOn_XRP.UnregisterEventCallback(): callback: expected function, got " .. type(callback), 2)
 	end
-	events[event][func] = nil
-	return true
+	for i, regCallback in ipairs(EventCallbacks[event]) do
+		if callback == regCallback then
+			table.remove(EventCallbacks, i)
+			return
+		end
+	end
+	error("AddOn_XRP.UnregisterEventCallback(): callback: not registered for event " .. event, 2)
 end

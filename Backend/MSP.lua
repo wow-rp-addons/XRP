@@ -42,7 +42,7 @@ local UNIT_FIELDS = { "GC", "GF", "GR", "GS", "GU" }
 
 local OwnCharacters = {}
 
-AddOn.HookGameEvent("PLAYER_LOGIN", function(event)
+AddOn.RegisterGameEventCallback("PLAYER_LOGIN", function(event)
 	-- GetAutoCompleteResults() doesn't work before PLAYER_LOGIN.
 	OwnCharacters[AddOn.characterID] = true
 	if xrpCache[AddOn.characterID] and not xrpCache[AddOn.characterID].own then
@@ -126,9 +126,9 @@ local function StatusHandler(statusName, reason, msgID, msgTotal)
 	elseif reason == "ERROR" then
 		-- Same error message from offline and from opposite faction.
 		local GF = AddOn.unitCache[name] and AddOn.unitCache[name].GF or xrpCache[name] and xrpCache[name].fields.GF
-		AddOn.FireEvent("FAIL", name, (not GF or GF == UnitFactionGroup("player")) and "offline" or "faction")
+		AddOn.RunEvent("FAIL", name, (not GF or GF == UnitFactionGroup("player")) and "offline" or "faction")
 	elseif reason == "MESSAGE" and msgTotal ~= 1 then
-		AddOn.FireEvent("CHUNK", name, msgID, msgTotal)
+		AddOn.RunEvent("CHUNK", name, msgID, msgTotal)
 	end
 end
 
@@ -152,7 +152,7 @@ local function UpdatedHandler(updatedName, field, contents, version)
 	end
 	xrpCache[name].fields[field] = contents
 	xrpCache[name].versions[field] = version
-	AddOn.FireEvent("FIELD", name, field)
+	AddOn.RunEvent("FIELD", name, field)
 	if field == "VA" and contents then
 		AddOn.CheckVersionUpdate(contents:match("^XRP/([^;]+)"))
 	end
@@ -163,7 +163,7 @@ local function ReceivedHandler(receivedName)
 	if not name then
 		error("XRP: LibMSP received callback receieved invalid arguments.")
 	end
-	AddOn.FireEvent("RECEIVE", name)
+	AddOn.RunEvent("RECEIVE", name)
 	if xrpCache[name] then
 		-- Cache timer. Last receive marked for clearing old entries.
 		xrpCache[name].lastReceive = time()
@@ -190,7 +190,7 @@ if not disabled then
 	msp.callback.updated[#msp.callback.updated + 1] = UpdatedHandler
 	msp.callback.received[#msp.callback.received + 1] = ReceivedHandler
 	msp.callback.dataload[#msp.callback.dataload + 1] = DataLoadHandler
-	xrp.HookEvent("UPDATE", ProfileUpdate)
+	AddOn_XRP.RegisterEventCallback("UPDATE", ProfileUpdate)
 end
 
 local gameFriends
@@ -264,7 +264,7 @@ function AddOn.DropCache(name)
 	if xrpAccountSaved.bookmarks[name] or xrpAccountSaved.notes[name] then return end
 	msp.char[name] = nil
 	xrpCache[name] = nil
-	AddOn.FireEvent("DROP", name)
+	AddOn.RunEvent("DROP", name)
 end
 
 function AddOn.ForceRefresh(name)
@@ -280,16 +280,16 @@ AddOn.SettingsToggles.friendsOnly = function(setting)
 	if setting then
 		gameFriends = {}
 		FRIENDLIST_UPDATE()
-		AddOn.HookGameEvent("FRIENDLIST_UPDATE", FRIENDLIST_UPDATE)
+		AddOn.RegisterGameEventCallback("FRIENDLIST_UPDATE", FRIENDLIST_UPDATE)
 		bnetFriends = {}
 		BN_FRIEND_INFO_CHANGED()
-		AddOn.HookGameEvent("BN_FRIEND_INFO_CHANGED", BN_FRIEND_INFO_CHANGED)
+		AddOn.RegisterGameEventCallback("BN_FRIEND_INFO_CHANGED", BN_FRIEND_INFO_CHANGED)
 		AddOn.SettingsToggles.friendsIncludeGuild(AddOn.Settings.friendsIncludeGuild)
 	elseif gameFriends then
 		AddOn.SettingsToggles.friendsIncludeGuild(false)
-		AddOn.UnhookGameEvent("FRIENDLIST_UPDATE", FRIENDLIST_UPDATE)
+		AddOn.UnregisterGameEventCallback("FRIENDLIST_UPDATE", FRIENDLIST_UPDATE)
 		gameFriends = nil
-		AddOn.UnhookGameEvent("BN_FRIEND_INFO_CHANGED", BN_FRIEND_INFO_CHANGED)
+		AddOn.UnregisterGameEventCallback("BN_FRIEND_INFO_CHANGED", BN_FRIEND_INFO_CHANGED)
 		bnetFriends = nil
 	end
 end
@@ -297,9 +297,9 @@ AddOn.SettingsToggles.friendsIncludeGuild = function(setting)
 	if setting and gameFriends then
 		guildies = {}
 		GUILD_ROSTER_UPDATE()
-		AddOn.HookGameEvent("GUILD_ROSTER_UPDATE", GUILD_ROSTER_UPDATE)
+		AddOn.RegisterGameEventCallback("GUILD_ROSTER_UPDATE", GUILD_ROSTER_UPDATE)
 	elseif guildies and gameFriends then
-		AddOn.UnhookGameEvent("GUILD_ROSTER_UPDATE", GUILD_ROSTER_UPDATE)
+		AddOn.UnregisterGameEventCallback("GUILD_ROSTER_UPDATE", GUILD_ROSTER_UPDATE)
 		guildies = nil
 	end
 end

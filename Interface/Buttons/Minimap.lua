@@ -224,9 +224,9 @@ function XRPButtonDetached_OnDragStop(self)
 end
 
 local function HookEvents()
-	xrp.HookEvent("RECEIVE", XRPButton_UpdateIcon)
-	AddOn.HookGameEvent("PLAYER_TARGET_CHANGED", XRPButton_UpdateIcon)
-	AddOn.HookGameEvent("PLAYER_ENTERING_WORLD", XRPButton_UpdateIcon)
+	AddOn_XRP.RegisterEventCallback("RECEIVE", XRPButton_UpdateIcon)
+	AddOn.RegisterGameEventCallback("PLAYER_TARGET_CHANGED", XRPButton_UpdateIcon)
+	AddOn.RegisterGameEventCallback("PLAYER_ENTERING_WORLD", XRPButton_UpdateIcon)
 end
 
 local function CreateLDBObject()
@@ -248,7 +248,7 @@ local function CreateLDBObject()
 	XRPButton_UpdateIcon()
 end
 
-AddOn.HookGameEvent("PLAYER_LOGIN", function(event)
+AddOn.RegisterGameEventCallback("PLAYER_LOGIN", function(event)
 	if LDBObject == false then
 		LDBObject = nil
 		CreateLDBObject()
@@ -289,9 +289,9 @@ AddOn.SettingsToggles.mainButtonEnabled = function(setting)
 		Button:Show()
 	elseif Button ~= nil then
 		if not LDBObject then
-			xrp.UnhookEvent("RECEIVE", XRPButton_UpdateIcon)
-			AddOn.UnhookGameEvent("PLAYER_TARGET_CHANGED", XRPButton_UpdateIcon)
-			AddOn.UnhookGameEvent("PLAYER_ENTERING_WORLD", XRPButton_UpdateIcon)
+			AddOn_XRP.UnregisterEventCallback("RECEIVE", XRPButton_UpdateIcon)
+			AddOn.UnregisterGameEventCallback("PLAYER_TARGET_CHANGED", XRPButton_UpdateIcon)
+			AddOn.UnregisterGameEventCallback("PLAYER_ENTERING_WORLD", XRPButton_UpdateIcon)
 		end
 		Button:Hide()
 		Button = nil

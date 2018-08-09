@@ -146,7 +146,7 @@ local function SubstituteChatMessageBeforeSend_Hook(text)
 end
 
 local pratModule
-AddOn.HookGameEvent("PLAYER_LOGIN", function(event)
+AddOn.RegisterGameEventCallback("PLAYER_LOGIN", function(event)
 	-- This is done at login to account for any addon load order.
 	if Prat then
 		pratModule = Prat:NewModule("XRPNames")

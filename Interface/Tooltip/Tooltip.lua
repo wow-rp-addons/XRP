@@ -514,17 +514,17 @@ AddOn.SettingsToggles.tooltipEnabled = function(setting)
 	if setting then
 		if enabled == nil then
 			if not IsLoggedIn() then
-				AddOn.HookGameEvent("PLAYER_LOGIN", DoHooks)
+				AddOn.RegisterGameEventCallback("PLAYER_LOGIN", DoHooks)
 			else
 				DoHooks()
 			end
 		end
-		xrp.HookEvent("RECEIVE", Tooltip_RECEIVE)
+		AddOn_XRP.RegisterEventCallback("RECEIVE", Tooltip_RECEIVE)
 		enabled = true
 		AddOn.SettingsToggles.tooltipReplace(AddOn.Settings.tooltipReplace)
 	elseif enabled ~= nil then
 		enabled = false
-		xrp.UnhookEvent("RECEIVE", Tooltip_RECEIVE)
+		AddOn_XRP.UnregisterEventCallback("RECEIVE", Tooltip_RECEIVE)
 	end
 end
 

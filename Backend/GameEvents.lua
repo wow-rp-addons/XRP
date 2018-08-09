@@ -18,44 +18,56 @@
 local FOLDER_NAME, AddOn = ...
 local L = AddOn.GetText
 
+local GameEventCallbacks = {}
+
 local frame = CreateFrame("Frame")
 frame:Hide()
 
-local gameEvents = {}
-function AddOn.HookGameEvent(event, func, unit)
-	if type(func) ~= "function" then
-		return false
-	elseif not gameEvents[event] then
-		gameEvents[event] = {}
-	elseif gameEvents[event][func] then
-		return false
-	end
-	gameEvents[event][func] = true
-	if not unit then
-		frame:RegisterEvent(event)
+function AddOn.RegisterGameEventCallback(event, callback, unit)
+	if type(callback) ~= "function" then
+		error("XRP: AddOn.RegisterGameEventCallback(): callback: expected function, got " .. type(callback), 2)
+	elseif not GameEventCallbacks[event] then
+		if not unit then
+			frame:RegisterEvent(event)
+		else
+			frame:RegisterUnitEvent(event, unit)
+		end
+		GameEventCallbacks[event] = {}
 	else
-		frame:RegisterUnitEvent(event, unit)
+		for i, regCallback in ipairs(GameEventCallbacks[event]) do
+			if callback == regCallback then
+				error("XRP: AddOn.RegisterGameEventCallback(): callback: already registered for event " .. event, 2)
+			end
+		end
 	end
-	return true
+	local i = #GameEventCallbacks[event] + 1
+	GameEventCallbacks[event][i] = callback
 end
-function AddOn.UnhookGameEvent(event, func)
-	if not gameEvents[event] or not gameEvents[event][func] then
-		return false
+
+function AddOn.UnregisterGameEventCallback(event, callback)
+	if not GameEventCallbacks[event] then
+		error("XRP: AddOn.UnregisterGameEventCallback(): no callbacks registered for " .. event, 2)
 	end
-	gameEvents[event][func] = nil
-	if not next(gameEvents[event]) then
-		gameEvents[event] = nil
-		frame:UnregisterEvent(event)
+	for i, regCallback in ipairs(GameEventCallbacks[event]) do
+		if callback == regCallback then
+			if #GameEventCallbacks[event] == 1 then
+				GameEventCallbacks[event] = nil
+				frame:UnregisterEvent(event)
+			end
+			table.remove(GameEventCallbacks, i)
+			return
+		end
 	end
-	return true
+	error("XRP: AddOn.UnregisterGameEventCallback(): callback: not registered for " .. event, 2)
 end
+
 frame:SetScript("OnEvent", function(self, event, ...)
 	if event == "ADDON_LOADED" and ... ~= FOLDER_NAME then return end
-	for func, isFunc in pairs(gameEvents[event]) do
-		xpcall(func, geterrorhandler(), event, ...)
+	for i, callback in ipairs(GameEventCallbacks[event]) do
+		xpcall(callback, geterrorhandler(), event, ...)
 	end
 	if event == "ADDON_LOADED" or event == "PLAYER_LOGIN" then
-		gameEvents[event] = nil
+		GameEventCallbacks[event] = nil
 		self:UnregisterEvent(event)
 	end
 end)

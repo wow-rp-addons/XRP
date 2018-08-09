@@ -62,10 +62,10 @@ local function AltToggleForce(setting, settingName)
 	local raceAlt = L[("VALUE_GR_%s_ALT"):format(raceName:upper())]
 	if setting and AltNames[categoryName][raceName] and AddOn.FallbackFields.RA ~= raceAlt then
 		AddOn.FallbackFields.RA = raceAlt
-		AddOn.FireEvent("UPDATE", "RA")
+		AddOn.RunEvent("UPDATE", "RA")
 	elseif (not setting or not AltNames[categoryName][raceName]) and AddOn.FallbackFields.RA == raceAlt then
 		AddOn.FallbackFields.RA = nil
-		AddOn.FireEvent("UPDATE", "RA")
+		AddOn.RunEvent("UPDATE", "RA")
 	end
 end
 

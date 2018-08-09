@@ -24,7 +24,7 @@ local FOLDER_NAME, AddOn = ...
 -- Since XRP makes use of it as the only help system, and very comprehensively,
 -- re-enable it. If those addons want to disable it on default frames, it
 -- should be done just for those frames.
-AddOn.HookGameEvent("PLAYER_LOGIN", function(event)
+AddOn.RegisterGameEventCallback("PLAYER_LOGIN", function(event)
 	if HelpPlate:GetParent() ~= UIParent then
 		HelpPlate:SetParent(UIParent)
 		HelpPlate:SetFrameStrata("DIALOG")
