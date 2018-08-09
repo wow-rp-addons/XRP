@@ -16,28 +16,27 @@
 ]]
 
 local FOLDER_NAME, AddOn = ...
-local VERSION = GetAddOnMetadata(FOLDER_NAME, "Version")
 local L = AddOn.GetText
 
-local VERSION_MATCH = "^(%d+)%.(%d+)%.(%d+)[%-]?(%l*)(%d*)"
+local VERSION = GetAddOnMetadata(FOLDER_NAME, "Version")
+
+local VERSION_MATCH = "^(%d+)%.(%d+)%.(%d+)%-?(%l*)(%d*)"
 local function CompareVersion(newVersion, oldVersion)
-	if newVersion:find("dev", nil, true) or oldVersion:find("dev", nil, true) then
+	if newVersion:find("-dev", nil, true) or oldVersion:find("-dev", nil, true) then
 		-- Never issue updates for git -dev versions.
 		return -1
 	end
+
 	local newMajor, newMinor, newPatch, newType, newRevision = newVersion:match(VERSION_MATCH)
+
+	if not newMajor or not newMinor or not newPatch then
+		return -1
+	end
+
 	local oldMajor, oldMinor, oldPatch, oldType, oldRevision = oldVersion:match(VERSION_MATCH)
 
 	newType = newType == "alpha" and 1 or newType == "beta" and 2 or newType == "rc" and 3 or 4
 	oldType = oldType == "alpha" and 1 or oldType == "beta" and 2 or oldType == "rc" and 3 or 4
-
-	-- Account for pre-8.0 version scheme. Remove this sometime before hitting
-	-- a 'real' 5.0 release.
-	if tonumber(newMajor) > 4 then
-		newPatch = newMinor
-		newMinor = newMajor
-		newMajor = "1"
-	end
 
 	local new = (tonumber(newMajor) * 1000000) + (tonumber(newMinor) * 10000) + (tonumber(newPatch) * 100) + (tonumber(newRevision) or 0)
 	local old = (tonumber(oldMajor) * 1000000) + (tonumber(oldMinor) * 10000) + (tonumber(oldPatch) * 100) + (tonumber(oldRevision) or 0)
@@ -50,25 +49,68 @@ local function CompareVersion(newVersion, oldVersion)
 	return 1
 end
 
-function AddOn.CheckVersionUpdate(version)
-	if not version or version == VERSION or version == AddOn.Settings.newversion then return end
-	if CompareVersion(version, AddOn.Settings.newversion or VERSION) >= 0 then
-		AddOn.Settings.newversion = version
+function AddOn.CheckVersionUpdate(characterID, version)
+	if not version or version == VERSION or version == xrpAccountSaved.update.xrpVersionUpdate then return end
+	if CompareVersion(version, xrpAccountSaved.update.xrpVersionUpdate or VERSION) >= 0 then
+		xrpAccountSaved.update.xrpVersionUpdate = version
+		AddOn.QueueRequest(characterID, "VW")
+	end
+end
+
+function AddOn.UpdateWoWVersion(remoteVersion, remoteBuild, remoteInterface)
+	if not remoteVersion or not remoteVersion:find("^%d+.%d+.%d+") or not remoteBuild or not remoteBuild:find("^%d+$") or not remoteInterface or not remoteInterface:find("^%d+$") then
+		return
+	end
+	remoteBuild = tonumber(remoteBuild)
+	remoteInterface = tonumber(remoteInterface)
+	local activeVersion, activeBuild, activeDate, activeInterface = GetBuildInfo()
+	activeBuild = tonumber(activeBuild)
+	local localVersion = GetAddOnMetadata(FOLDER_NAME, "X-WoW-Version")
+	local localBuild = tonumber(GetAddOnMetadata(FOLDER_NAME, "X-WoW-Build"))
+	local localInterface = tonumber(GetAddOnMetadata(FOLDER_NAME, "X-Interface"))
+	if CompareVersion(activeVersion, localVersion) > 0 and activeVersion == remoteVersion then
+		xrpAccountSaved.update.wowVersionUpdate = remoteVersion
+	end
+	if localBuild < activeBuild and activeBuild == remoteBuild then
+		xrpAccountSaved.update.wowBuildUpdate = remoteBuild
+	end
+	if localInterface < activeInterface and activeInterface == remoteInterface then
+		xrpAccountSaved.update.wowInterfaceUpdate = remoteInterface
 	end
 end
 
 AddOn.RegisterGameEventCallback("PLAYER_LOGIN", function(event)
-	if AddOn.Settings.newversion then
-		local update = CompareVersion(AddOn.Settings.newversion, VERSION)
-		local now = time()
-		if update == 1 and (not AddOn.Settings.versionwarning or AddOn.Settings.versionwarning < now - 21600) then
-			C_Timer.After(8, function()
-				print(L"There is a new version of |cffabd473XRP|r available. You should update to %s as soon as possible.":format(AddOn.Settings.newversion))
-				AddOn.Settings.versionwarning = now
-			end)
+	if xrpAccountSaved.update.xrpVersionUpdate then
+		local update = CompareVersion(xrpAccountSaved.update.xrpVersionUpdate, VERSION)
+		if update == 1 then
+			local now = time()
+			local warningFunction
+			if not xrpAccountSaved.update.lastNotice or xrpAccountSaved.update.lastNotice < now - 21600 then
+				if xrpAccountSaved.update.wowInterfaceUpdate then
+					-- Biggest warning, interface is outdated.
+					warningFunction = function()
+						StaticPopup_Show("XRP_ERROR", L"|cffdd380fXRP Version Update:|r There is a new version of XRP (%s) available.\n\nIt is |cffdd380fSTRONGLY RECOMMENDED|r that you update as soon as possible, as it is likely to contain fixes for the latest World of Warcraft client release.":format(xrpAccountSaved.update.xrpVersionUpdate))
+					end
+				elseif xrpAccountSaved.update.wowVersionUpdate then
+					-- Medium warning, client version is oudated.
+					warningFunction = function()
+						StaticPopup_Show("XRP_NOTIFICATION", L"|cffdd380fXRP Version Update:|r There is a new version of XRP (%s) available.\n\nThis version may fix compatibility issues with the latest World of Warcraft client release.":format(xrpAccountSaved.update.xrpVersionUpdate))
+					end
+				else
+					-- Small warning, only XRP (and maybe WoW build) is oudated.
+					warningFunction = function()
+						print(L"|cffdd380fXRP Version Update:|r There is a new version of XRP (%s) available.":format(xrpAccountSaved.update.xrpVersionUpdate))
+						xrpAccountSaved.update.lastNotice = now
+					end
+				end
+			end
+			C_Timer.After(5, warningFunction)
 		elseif update == -1 then
-			AddOn.Settings.newversion = nil
-			AddOn.Settings.versionwarning = nil
+			xrpAccountSaved.update.xrpVersionUpdate = nil
+			xrpAccountSaved.update.lastNotice = nil
+			xrpAccountSaved.update.wowVersionUpdate = nil
+			xrpAccountSaved.update.wowBuildUpdate = nil
+			xrpAccountSaved.update.wowInterfaceUpdate = nil
 		end
 	end
 end)

@@ -136,6 +136,11 @@ local function UpdatedHandler(updatedName, field, contents, version)
 	local name = xrp.BuildCharacterID(updatedName)
 	if not name or type(field) ~= "string" or not field:find("^%u%u$") or contents and type(contents) ~= "string" or version and type(version) ~= "number" then
 		error("XRP: LibMSP updated callback receieved invalid arguments.")
+	elseif field == "VW" then
+		if contents then
+			AddOn.UpdateWoWVersion((";"):split(contents))
+		end
+		return
 	elseif not xrpCache[name] then
 		-- This is the only place a cache table is created by XRP.
 		xrpCache[name] = {
@@ -154,7 +159,7 @@ local function UpdatedHandler(updatedName, field, contents, version)
 	xrpCache[name].versions[field] = version
 	AddOn.RunEvent("FIELD", name, field)
 	if field == "VA" and contents then
-		AddOn.CheckVersionUpdate(contents:match("^XRP/([^;]+)"))
+		AddOn.CheckVersionUpdate(name, contents:match("^XRP/([^;]+)"))
 	end
 end
 

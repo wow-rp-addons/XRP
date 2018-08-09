@@ -289,6 +289,11 @@ AddOn.UpgradeAccountVars = {
 		xrpAccountSaved.settings.chatType = xrpAccountSaved.settings.chat
 		xrpAccountSaved.settings.chat = nil
 	end,
+	[20] = function() -- 2.0.0
+		xrpAccountSaved.update = {}
+		xrpAccountSaved.settings.newversion = nil
+		xrpAccountSaved.settings.versionwarning = nil
+	end,
 }
 
 AddOn.UpgradeVars = {

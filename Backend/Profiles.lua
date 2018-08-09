@@ -20,7 +20,10 @@ local L = AddOn.GetText
 
 local MAX_DEPTH = 50
 
-local NO_PROFILE = { TT = true, VP = true, VA = true, GC = true, GF = true, GR = true, GS = true, GU = true }
+local NO_PROFILE = {
+	TT = true, VP = true, VA = true, VW = true, GC = true, GF = true,
+	GR = true, GS = true, GU = true,
+}
 
 AddOn.PROFILE_MAX_DEPTH = MAX_DEPTH
 
@@ -32,10 +35,12 @@ AddOn.RegisterGameEventCallback("ADDON_LOADED", function(event, addon)
 			VA[#VA + 1] = addonString:format(addon, GetAddOnMetadata(addon, "Version"))
 		end
 	end
+	local VW = { GetAddOnMetadata(FOLDER_NAME, "X-WoW-Version"), GetAddOnMetadata(FOLDER_NAME, "X-WoW-Build"), GetAddOnMetadata(FOLDER_NAME, "X-Interface") }
 	AddOn.FallbackFields = {
+		FC = "1",
 		NA = AddOn.characterName,
 		VA = table.concat(VA, ";"),
-		FC = "1",
+		VW = table.concat(VW, ";"),
 	}
 
 	if not xrpSaved.overrides.logout or xrpSaved.overrides.logout + 900 < time() then
@@ -46,6 +51,7 @@ AddOn.RegisterGameEventCallback("ADDON_LOADED", function(event, addon)
 
 	AddOn.RunEvent("UPDATE")
 end)
+
 AddOn.RegisterGameEventCallback("PLAYER_LOGOUT", function(event)
 	-- Note: This code must be thoroughly tested if any changes are
 	-- made. If there are any errors in here, they are not visible in
