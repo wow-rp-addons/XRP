@@ -136,7 +136,7 @@ local function UpdatedHandler(updatedName, field, contents, version)
 	local name = xrp.BuildCharacterID(updatedName)
 	if not name or type(field) ~= "string" or not field:find("^%u%u$") or contents and type(contents) ~= "string" or version and type(version) ~= "number" then
 		error("XRP: LibMSP updated callback receieved invalid arguments.")
-	elseif not xrpCache[name] and (contents ~= "" or version ~= 0) then
+	elseif not xrpCache[name] then
 		-- This is the only place a cache table is created by XRP.
 		xrpCache[name] = {
 			fields = {},
