@@ -89,7 +89,7 @@ local function ProfileUpdate(event, field)
 				end
 			end
 		end
-		for field, contents in pairs(xrpSaved.meta.fields) do
+		for field, contents in pairs(AddOn.FallbackFields) do
 			if not fields[field] then
 				fields[field] = contents
 			end

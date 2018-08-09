@@ -19,8 +19,8 @@ local FOLDER_NAME, AddOn = ...
 local L = AddOn.GetText
 
 local function FallbackFieldContents(field)
-	if xrpSaved.meta.fields[field] then
-		return xrpSaved.meta.fields[field]
+	if AddOn.FallbackFields[field] then
+		return AddOn.FallbackFields[field]
 	elseif field == "RA" then
 		return xrp.L.VALUES.GR[select(2, UnitRace("player"))]
 	elseif field == "RC" then

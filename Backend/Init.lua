@@ -33,17 +33,11 @@ AddOn.HookGameEvent("ADDON_LOADED", function(event, addon)
 			VA[#VA + 1] = addonString:format(addon, GetAddOnMetadata(addon, "Version"))
 		end
 	end
-	local newFields = {
-		NA = AddOn.characterName, -- Fallback NA field.
+	AddOn.FallbackFields = {
+		NA = AddOn.characterName,
 		VA = table.concat(VA, ";"),
 		FC = "1",
 	}
-	local fields = xrpSaved.meta.fields
-	for field, contents in pairs(newFields) do
-		if contents ~= fields[field] then
-			fields[field] = contents
-		end
-	end
 
 	if not xrpSaved.overrides.logout or xrpSaved.overrides.logout + 900 < time() then
 		xrpSaved.overrides.fields = {}

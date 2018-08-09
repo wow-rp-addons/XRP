@@ -338,4 +338,7 @@ AddOn.UpgradeVars = {
 		xrpSaved.overrides.versions = nil
 		xrpSaved.oldtt = nil
 	end,
+	[7] = function() -- 2.0.0
+		xrpSaved.meta = nil
+	end,
 }

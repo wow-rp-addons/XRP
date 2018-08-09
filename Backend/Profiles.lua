@@ -26,7 +26,7 @@ AddOn.PROFILE_MAX_DEPTH = MAX_DEPTH
 
 xrp.current = setmetatable({}, {
 	__index = function(self, field)
-		local contents = xrpSaved.overrides.fields[field] or xrp.profiles.SELECTED.fullFields[field] or xrpSaved.meta.fields[field]
+		local contents = xrpSaved.overrides.fields[field] or xrp.profiles.SELECTED.fullFields[field] or AddOn.FallbackFields[field]
 		if not contents or contents == "" then
 			return nil
 		elseif field == "AH" then
@@ -211,7 +211,7 @@ local fieldsMeta = {
 				end
 			end
 		end
-		for field, contents in pairs(xrpSaved.meta.fields) do
+		for field, contents in pairs(AddOn.FallbackFields) do
 			if not fields[field] then
 				fields[field] = contents
 			end

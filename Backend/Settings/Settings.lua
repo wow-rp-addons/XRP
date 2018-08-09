@@ -49,9 +49,6 @@ local function InitializeSavedVariables()
 	if not xrpSaved then
 		xrpSaved = {
 			auto = {},
-			meta = {
-				fields = {},
-			},
 			overrides = {
 				fields = {},
 			},

@@ -60,11 +60,11 @@ local function AltToggleForce(setting, settingName)
 	local categoryName = settingName:match("^alt(.+)Force$")
 	local raceName = select(2, UnitRace("player"))
 	local raceAlt = L[("VALUE_GR_%s_ALT"):format(raceName:upper())]
-	if setting and AltNames[categoryName][raceName] and xrpSaved.meta.fields.RA ~= raceAlt then
-		xrpSaved.meta.fields.RA = raceAlt
+	if setting and AltNames[categoryName][raceName] and AddOn.FallbackFields.RA ~= raceAlt then
+		AddOn.FallbackFields.RA = raceAlt
 		AddOn.FireEvent("UPDATE", "RA")
-	elseif (not setting or not AltNames[categoryName][raceName]) and xrpSaved.meta.fields.RA == raceAlt then
-		xrpSaved.meta.fields.RA = nil
+	elseif (not setting or not AltNames[categoryName][raceName]) and AddOn.FallbackFields.RA == raceAlt then
+		AddOn.FallbackFields.RA = nil
 		AddOn.FireEvent("UPDATE", "RA")
 	end
 end
