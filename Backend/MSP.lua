@@ -251,6 +251,9 @@ function AddOn.QueueRequest(name, field)
 end
 
 function AddOn.CanRefresh(name)
+	if name == AddOn.characterID then
+		return false
+	end
 	return (msp.char[name].time.DE or 0) < GetTime() - 30
 end
 

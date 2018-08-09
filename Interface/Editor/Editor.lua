@@ -292,6 +292,6 @@ end
 
 function XRPEditorNotes_OnShow(self)
 	if not self.character then
-		self.character = xrp.characters.byUnit.player
+		self.character = AddOn_XRP.Characters.byUnit.player
 	end
 end

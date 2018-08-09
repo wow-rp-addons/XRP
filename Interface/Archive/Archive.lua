@@ -47,21 +47,21 @@ function XRPArchiveList_update(self, force)
 
 	for i, button in ipairs(self.buttons) do
 		local index = i + offset
-		local character = xrp.characters.noRequest.byName[results[index]]
+		local character = AddOn_XRP.Characters.byNameOffline[results[index]]
 		if index <= matches then
-			if force or not button.character or tostring(character) ~= tostring(button.character) then
+			if force or button.character ~= character then
 				button.character = character
-				local name, realm = tostring(character):match("^([^%-]+)%-([^%-]+)$")
-				button.NA:SetText(xrp.Strip(character.fields.NA) or name)
+				local name, realm = character.id:match("^([^%-]+)%-([^%-]+)$")
+				button.NA:SetText(xrp.Strip(character.NA) or name)
 				button.Name:SetText(name)
 				button.Realm:SetText(xrp.RealmDisplayName(realm))
-				local GR = character.fields.GR
-				local RA = xrp.Strip(character.fields.RA) or xrp.L.VALUES.GR[GR]
+				local GR = character.GR
+				local RA = xrp.Strip(character.RA) or xrp.L.VALUES.GR[GR]
 				if RA then
 					button.RA:SetText(RA)
 					button.RA:Show()
 					if GR then
-						local GS = character.fields.GS
+						local GS = character.GS
 						if not GS then
 							GS = tostring(fastrandom(2, 3))
 						end
@@ -74,8 +74,8 @@ function XRPArchiveList_update(self, force)
 					button.RA:Hide()
 					button.RaceIcon:Hide()
 				end
-				local GC = character.fields.GC
-				local RC = xrp.Strip(character.fields.RC) or xrp.L.VALUES.GC[character.fields.GS or "1"][GC]
+				local GC = character.GC
+				local RC = xrp.Strip(character.RC) or xrp.L.VALUES.GC[character.GS or "1"][GC]
 				if RC then
 					button.RC:SetText(RC)
 					button.RC:Show()
@@ -93,7 +93,7 @@ function XRPArchiveList_update(self, force)
 					button.ClassIcon:Hide()
 				end
 				button.Date:SetText(date("%Y-%m-%d %H:%M", character.date))
-				local GF = character.fields.GF
+				local GF = character.GF
 				if GF == "Alliance" or GF == "Horde" then
 					button.GF:SetAtlas("MountJournalIcons-" .. GF, true)
 					button.GF:Show()
@@ -125,7 +125,7 @@ function XRPArchiveList_update(self, force)
 end
 
 local function Refresh()
-	results = xrp.characters:List(request)
+	results = AddOn_XRP.SearchCharacters(request)
 	XRPArchive.List.range = #results * 72
 	XRPArchive.List:update()
 	XRPArchive.List.scrollBar:SetValue(request.offset)
@@ -139,14 +139,14 @@ local function Refresh()
 	XRPArchive.FilterText:SetText(request.text or "")
 end
 
-local function DROP(event, name)
-	if name == "ALL" then
+local function DROP(event, characterID)
+	if characterID == "ALL" then
 		request.offset = 0
 		Refresh()
 		return
 	end
 	for i, button in ipairs(XRPArchive.List.buttons) do
-		if tostring(button.character) == name then
+		if button.character.id == characterID then
 			request.offset = XRPArchive.List.scrollBar:GetValue()
 			Refresh()
 			return
@@ -159,9 +159,9 @@ local function Menu_Checked(self)
 	if self.disabled or not UIDROPDOWNMENU_INIT_MENU.character then
 		return false
 	elseif self.arg1 == "XRP_BOOKMARK" then
-		return UIDROPDOWNMENU_INIT_MENU.character.bookmark ~= nil
+		return UIDROPDOWNMENU_INIT_MENU.character.bookmark and true or false
 	elseif self.arg1 == "XRP_HIDE" then
-		return UIDROPDOWNMENU_INIT_MENU.character.hide ~= nil
+		return UIDROPDOWNMENU_INIT_MENU.character.hide and true or false
 	end
 end
 local function Menu_Click(self, arg1, arg2, checked)
@@ -174,8 +174,8 @@ local function Menu_Click(self, arg1, arg2, checked)
 		XRPArchive.Notes:Show()
 	elseif arg1 == "XRP_FRIEND" then
 		local character = UIDROPDOWNMENU_INIT_MENU.character
-		local name = tostring(character)
-		AddOrRemoveFriend(Ambiguate(name, "none"), xrp.Strip(character.fields.NA) or xrp.CharacterIDToName(name))
+		local characterID = character.id
+		AddOrRemoveFriend(Ambiguate(characterID, "none"), xrp.Strip(character.NA) or xrp.CharacterIDToName(characterID))
 	elseif arg1 == "XRP_BOOKMARK" then
 		UIDROPDOWNMENU_INIT_MENU.character.bookmark = not checked
 		if request.bookmark then
@@ -190,9 +190,9 @@ local function Menu_Click(self, arg1, arg2, checked)
 		end
 	elseif arg1 == "XRP_EXPORT" then
 		local character = UIDROPDOWNMENU_INIT_MENU.character
-		XRPExport:Export(xrp.CharacterIDToName(tostring(character)), tostring(character.fields))
+		XRPExport:Export(xrp.CharacterIDToName(character.id), character.exportPlainText)
 	elseif arg1 == "XRP_CACHE_DROP" then
-		local name, realm = tostring(UIDROPDOWNMENU_INIT_MENU.character):match("^([^%-]+)%-([^%-]+)")
+		local name, realm = UIDROPDOWNMENU_INIT_MENU.character.id:match("^([^%-]+)%-([^%-]+)")
 		StaticPopup_Show("XRP_CACHE_SINGLE", L.NAME_REALM:format(name, xrp.RealmDisplayName(realm)), nil, UIDROPDOWNMENU_INIT_MENU.character)
 	end
 	if UIDROPDOWNMENU_MENU_LEVEL > 1 then
@@ -226,7 +226,7 @@ function XRPArchiveEntry_OnClick(self, button, down)
 	if button == "RightButton" then
 		self.Selected:Show()
 		if self.character.own then
-			if tostring(self.character) == AddOn.characterID then
+			if self.character.id == AddOn.characterID then
 				self.baseMenuList[1].disabled = true
 				self.baseMenuList[7].menuList[2].disabled = true
 			else
@@ -238,11 +238,11 @@ function XRPArchiveEntry_OnClick(self, button, down)
 			self.baseMenuList[6].disabled = true
 		else
 			self.baseMenuList[1].disabled = nil
-			local GF = self.character.fields.GF
+			local GF = self.character.GF
 			if GF and GF ~= UnitFactionGroup("player") then
 				self.baseMenuList[4].disabled = true
 			else
-				local name = Ambiguate(tostring(self.character), "none")
+				local name = Ambiguate(self.character.id, "none")
 				local isFriend
 				for i = 1, GetNumFriends() do
 					if GetFriendInfo(i) == name then
@@ -436,7 +436,7 @@ end
 
 function XRPArchiveNotes_OnAttributeChanged(self, name, value)
 	if name == "character" then
-		self.Title:SetText(xrp.CharacterIDToName(tostring(value)))
+		self.Title:SetText(xrp.CharacterIDToName(value.id))
 	end
 end
 

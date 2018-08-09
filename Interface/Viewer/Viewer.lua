@@ -54,18 +54,17 @@ local function SetField(field, contents, secondary, tertiary)
 end
 
 local function Load(character)
-	local fields = character.fields
 	for i, field in ipairs(DISPLAY) do
-		local contents = fields[field]
-		SetField(field, contents, field == "CU" and fields.CO or not contents and (field == "NA" and tostring(character) or field == "RA" and fields.GR or field == "RC" and fields.GC), not contents and field == "RC" and fields.GS)
+		local contents = character[field]
+		SetField(field, contents, field == "CU" and character.CO or not contents and (field == "NA" and character.id or field == "RA" and character.GR or field == "RC" and character.GC), not contents and field == "RC" and character.GS)
 	end
 	XRPViewer.XC:SetText("")
 	failed = nil
 	status = nil
 	if character == current then
-		return false
-	elseif current and tostring(character) == tostring(current) then
-		current = character
+		if character.offline ~= current.offline then
+			current = character
+		end
 		return false
 	end
 	current = character
@@ -83,20 +82,19 @@ local META_SUPPORTED = {
 	CO = "CU",
 }
 local function FIELD(event, name, field)
-	if tostring(current) ~= name or current.noRequest or name == AddOn.characterID then return end
+	if not current or current.id ~= name or current.offline or name == AddOn.characterID then return end
 	if META_SUPPORTED[field] then
 		field = META_SUPPORTED[field]
 	end
 	if SUPPORTED[field] then
-		local fields = current.fields
-		local contents = fields[field]
-		SetField(field, contents, field == "CU" and fields.CO or not contents and (field == "NA" and tostring(character) or field == "RA" and fields.GR or field == "RC" and fields.GC), not contents and field == "RC" and fields.GS)
+		local contents = current[field]
+		SetField(field, contents, field == "CU" and current.CO or not contents and (field == "NA" and character.id or field == "RA" and current.GR or field == "RC" and current.GC), not contents and field == "RC" and current.GS)
 		lastUpdate = GetTime()
 	end
 end
 
 local function RECEIVE(event, name)
-	if tostring(current) == name and not current.noRequest then
+	if current and current.id == name and not current.offline then
 		if name == AddOn.characterID then
 			Load(current)
 			return
@@ -116,7 +114,7 @@ local function RECEIVE(event, name)
 end
 
 local function CHUNK(event, name, chunk, totalChunks)
-	if tostring(current) == name then
+	if current and current.id == name then
 		if chunk ~= totalChunks then
 			XRPViewer.XC:SetFormattedText(totalChunks and L"Receiving... (%d/%d)" or L"Receiving... (%d/??)", chunk, totalChunks)
 			status = "receiving"
@@ -128,7 +126,7 @@ local function CHUNK(event, name, chunk, totalChunks)
 end
 
 local function FAIL(event, name, reason)
-	if tostring(current) == name then
+	if current and current.id == name then
 		failed = true
 		if not status then
 			if reason == "offline" then
@@ -144,7 +142,7 @@ local function FAIL(event, name, reason)
 end
 
 local function DROP(event, name)
-	if name == "ALL" or tostring(current) == name then
+	if name == "ALL" or current and current.id == name then
 		XRPViewer:View("player")
 		HideUIPanel(XRPViewer)
 	end
@@ -154,38 +152,38 @@ local function Menu_Checked(self)
 	if self.disabled then
 		return false
 	elseif self.arg1 == "XRP_BOOKMARK" then
-		return current.bookmark ~= nil
+		return current.bookmark and true or false
 	elseif self.arg1 == "XRP_HIDE" then
-		return current.hide ~= nil
+		return current.hide and true or false
 	end
 end
 local function Menu_Click(self, arg1, arg2, checked)
 	if arg1 == "XRP_REFRESH" then
-		if current.noRequest then
-			Load(xrp.characters.byName[tostring(current)])
+		if current.offline then
+			Load(AddOn_XRP.Characters.byName[current.id])
 		else
 			Load(current)
 		end
 	elseif arg1 == "XRP_FRIEND" then
-		local name = tostring(current)
-		AddOrRemoveFriend(Ambiguate(name, "none"), xrp.Strip(current.fields.NA) or xrp.CharacterIDToName(name))
+		local name = current.id
+		AddOrRemoveFriend(Ambiguate(name, "none"), xrp.Strip(current.NA) or xrp.CharacterIDToName(name))
 	elseif arg1 == "XRP_BOOKMARK" then
 		current.bookmark = not checked
 	elseif arg1 == "XRP_HIDE" then
 		current.hide = not checked
 	elseif arg1 == "XRP_EXPORT" then
-		XRPExport:Export(xrp.CharacterIDToName(tostring(current)), tostring(current.fields))
+		XRPExport:Export(xrp.CharacterIDToName(current.id), current.exportPlainText)
 	elseif arg1 == "XRP_REPORT" then
-		local fullName = tostring(current)
+		local fullName = current.id
 		local name, realm = fullName:match("^([^%-]+)%-([^%-]+)$")
 		local prettyRealm = xrp.RealmDisplayName(realm)
 		local approxTime = ("%02d:%02d"):format(GetGameTime())
-		StaticPopup_Show("XRP_REPORT", Ambiguate(tostring(current), "none"), nil, L"Logged addon message prefix: MSP; Player name: %s; Realm name: %s; Approximate game time: %s":format(name, prettyRealm, approxTime))
+		StaticPopup_Show("XRP_REPORT", Ambiguate(fullName, "none"), nil, L"Logged addon message prefix: MSP; Player name: %s; Realm name: %s; Approximate game time: %s":format(name, prettyRealm, approxTime))
 	elseif arg1 == "XRP_REFRESH_FORCE" then
-		local name, realm = tostring(current):match("^([^%-]+)%-([^%-]+)")
+		local name, realm = current.id:match("^([^%-]+)%-([^%-]+)")
 		StaticPopup_Show("XRP_FORCE_REFRESH", L.NAME_REALM:format(name, xrp.RealmDisplayName(realm)), nil, current)
 	elseif arg1 == "XRP_CACHE_DROP" then
-		local name, realm = tostring(current):match("^([^%-]+)%-([^%-]+)")
+		local name, realm = current.id:match("^([^%-]+)%-([^%-]+)")
 		StaticPopup_Show("XRP_CACHE_SINGLE", L.NAME_REALM:format(name, xrp.RealmDisplayName(realm)), nil, current)
 	end
 	if arg2 then -- Second-level menu.
@@ -290,8 +288,8 @@ function XRPViewerScrollFrameEditBox_OnHyperlinkClicked(self, linkData, link, bu
 end
 
 function XRPViewerMenu_PreClick(self, button, down)
-	local name, isOwn = tostring(current), current.own
-	local GF = xrp.characters.noRequest.byName[name].fields.GF
+	local name, isOwn = current.id, current.own
+	local GF = AddOn_XRP.Characters.byNameOffline[name].GF
 	if GF and GF ~= UnitFactionGroup("player") then
 		self.baseMenuList[2].disabled = true
 	else
@@ -312,7 +310,7 @@ function XRPViewerMenu_PreClick(self, button, down)
 	else
 		self.baseMenuList[1].disabled = nil
 	end
-	local noProfile = not xrp.characters.noRequest.byName[name].fields.VA
+	local noProfile = not AddOn_XRP.Characters.byNameOffline[name].VA
 	if isOwn or noProfile then
 		self.baseMenuList[3].disabled = true
 		self.baseMenuList[4].disabled = true
@@ -327,7 +325,7 @@ function XRPViewerMenu_PreClick(self, button, down)
 	else
 		self.baseMenuList[3].disabled = nil
 		self.baseMenuList[4].disabled = nil
-		if current.fields.GU and AddOn_Chomp.CheckReportGUID("MSP", current.fields.GU) then
+		if current.GU and AddOn_Chomp.CheckReportGUID("MSP", current.GU) then
 			self.baseMenuList[6].disabled = nil
 		else
 			self.baseMenuList[6].disabled = true
@@ -382,11 +380,11 @@ AddOn_XRP.RegisterEventCallback("DROP", DROP)
 XRPViewer_Mixin = {
 	View = function(self, player)
 		local isUnit, character
-		if type(player) == "table" and player.fields then
+		if type(player) == "table" and player.id then
 			character = player
-			local unit = Ambiguate(tostring(character), "none")
+			local unit = Ambiguate(character.id, "none")
 			isUnit = UnitExists(unit)
-			player = isUnit and unit or tostring(character)
+			player = isUnit and unit or character.id
 		else
 			if not player then
 				if self:IsShown() then
@@ -406,13 +404,13 @@ XRPViewer_Mixin = {
 				isUnit = UnitExists(unit)
 				player = isUnit and unit or xrp.BuildCharacterID(player):gsub("^%l", string.upper)
 			end
-			character = isUnit and xrp.characters.byUnit[player] or xrp.characters.byName[player]
+			character = isUnit and AddOn_XRP.Characters.byUnit[player] or AddOn_XRP.Characters.byName[player]
 		end
 		local isNew = Load(character)
 		if isUnit then
 			SetPortraitTexture(self.portrait, player)
 		elseif isNew then
-			local GF = character.fields.GF
+			local GF = character.GF
 			SetPortraitToTexture(self.portrait, GF == "Alliance" and "Interface\\Icons\\INV_BannerPVP_02" or GF == "Horde" and "Interface\\Icons\\INV_BannerPVP_01" or "Interface\\Icons\\INV_Misc_Book_17")
 		end
 		self.Notes:SetAttribute("character", character)

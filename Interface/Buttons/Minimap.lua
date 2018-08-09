@@ -28,8 +28,8 @@ local TEXTURES = {
 }
 
 local function XRPButton_UpdateIcon()
-	local target = xrp.characters.byUnit.target
-	if target and (target.hide or target.fields.VA) then
+	local target = AddOn_XRP.Characters.byUnit.target
+	if target and target.VA then
 		if Button then
 			Button:SetNormalTexture(TEXTURES.target)
 			Button:SetPushedTexture(TEXTURES.target)
@@ -77,8 +77,8 @@ local function RenderTooltip(Tooltip)
 		Tooltip:AddLine(("%s"):format(xrp.Link(CU)), 0.9, 0.7, 0.6, true)
 	end
 	Tooltip:AddLine(" ")
-	local target = xrp.characters.byUnit.target
-	if target and (target.hide or target.fields.VA) then
+	local target = AddOn_XRP.Characters.byUnit.target
+	if target and target.VA then
 		Tooltip:AddLine(L"Click to view your target's profile.", 1, 0.93, 0.67)
 	elseif not FC or FC == "0" or FC == "1" then
 		Tooltip:AddLine(L"Click for in character.", 0.4, 0.7, 0.5)
@@ -133,8 +133,8 @@ end
 local ldbMenu
 function XRPButton_OnClick(self, button, down)
 	if button == "LeftButton" then
-		local target = xrp.characters.byUnit.target
-		if target and (target.hide or target.fields.VA) then
+		local target = AddOn_XRP.Characters.byUnit.target
+		if target and  target.VA then
 			XRPViewer:View("target")
 		else
 			xrp.Status()

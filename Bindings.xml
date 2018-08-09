@@ -22,19 +22,19 @@
 		XRPArchive:Toggle()
 	</Binding>
 	<Binding name="XRP_VIEWER" category="ADDONS">
-		if xrp.characters.byUnit.target then
+		if AddOn_XRP.Characters.byUnit.target then
 			XRPViewer:View("target")
-		elseif xrp.characters.byUnit.mouseover then
+		elseif AddOn_XRP.Characters.byUnit.mouseover then
 			XRPViewer:View("mouseover")
 		end
 	</Binding>
 	<Binding name="XRP_VIEWER_TARGET" category="ADDONS">
-		if xrp.characters.byUnit.target then
+		if AddOn_XRP.Characters.byUnit.target then
 			XRPViewer:View("target")
 		end
 	</Binding>
 	<Binding name="XRP_VIEWER_MOUSEOVER" category="ADDONS">
-		if xrp.characters.byUnit.mouseover then
+		if AddOn_XRP.Characters.byUnit.mouseover then
 			XRPViewer:View("mouseover")
 		end
 	</Binding>

@@ -217,16 +217,16 @@ function XRPCursorBook_OnEvent(self, event)
 		self:Hide()
 		return
 	end
-	local character = xrp.characters.byUnit.mouseover
+	local character = AddOn_XRP.Characters.byUnit.mouseover
 	if not character or character.hide then
 		self:Hide()
 		return
 	end
-	self.current = not UnitCanAttack("player", "mouseover") and tostring(character)
+	self.current = not UnitCanAttack("player", "mouseover") and character.id
 	-- Following two must be separate for UIErrorsFrame:Clear().
 	self.mountable = self.current and UnitVehicleSeatCount("mouseover") > 0
 	self.mountInParty = self.mountable and (UnitInParty("mouseover") or UnitInRaid("mouseover"))
-	if self.current and character.fields.VA and (not self.mountInParty or not IsItemInRange(88589, "mouseover")) then
+	if self.current and character.VA and (not self.mountInParty or not IsItemInRange(88589, "mouseover")) then
 		XRPCursorBook_OnUpdate(self, 0)
 		self:Show()
 	else
@@ -325,7 +325,7 @@ end
 function XRPTemplatesNotes_OnShow(self)
 	self.Text.EditBox:SetText(self.character.notes or "")
 	for i, notes in ipairs(allNotes) do
-		if notes ~= self and notes:IsVisible() and tostring(notes.character) == tostring(self.character) then
+		if notes ~= self and notes:IsVisible() and notes.character == self.character then
 			self.Text.EditBox:SetText(notes.Text.EditBox:GetText())
 			notes.Text.EditBox:SetText(self.character.notes or "")
 			notes:Hide()

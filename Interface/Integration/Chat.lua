@@ -19,7 +19,7 @@ local FOLDER_NAME, AddOn = ...
 local L = AddOn.GetText
 
 local function XRPGetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14)
-	local character = arg12 and xrp.characters.byGUID[arg12]
+	local character = arg12 and AddOn_XRP.Characters.byGUID[arg12]
 
 	-- Emotes from ourselves don't have our name in them, and Blizzard's
 	-- code can erroneously replace substrings of the emotes or of the
@@ -31,7 +31,7 @@ local function XRPGetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7
 		elseif character then
 			-- TEXT_EMOTE doesn't have realm attached to arg2, because
 			-- Blizzard's code is missing an escape for a gsub.
-			arg2 = tostring(character)
+			arg2 = character.id
 		end
 	end
 
@@ -53,12 +53,12 @@ local function XRPGetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7
 		name = arg2:match("^[\032-\126\194-\244][\128-\191]*") or Ambiguate(arg2, "guild")
 		nameFormat = "[%s]"
 	else
-		name = AddOn.Settings.chatType[chatCategory] and character and not character.hide and xrp.Strip(character.fields.NA) or Ambiguate(arg2, "guild")
+		name = AddOn.Settings.chatType[chatCategory] and character and not character.hide and xrp.Strip(character.NA) or Ambiguate(arg2, "guild")
 		nameFormat = chatCategory == "EMOTE" and (AddOn.Settings.chatEmoteBraced and "[%s]" or "%s") .. (arg9 or "") or "%s"
 	end
 
 	if character and Chat_ShouldColorChatByClass(ChatTypeInfo[chatType]) then
-		local color = RAID_CLASS_COLORS[character.fields.GC]
+		local color = RAID_CLASS_COLORS[character.GC]
 		if color and color.colorStr then
 			return nameFormat:format(("|c%s%s|r"):format(color.colorStr, name))
 		end
@@ -67,12 +67,12 @@ local function XRPGetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7
 end
 
 local function MessageEventFilter_TEXT_EMOTE(self, event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, ...)
-	local character = arg12 and xrp.characters.byGUID[arg12]
+	local character = arg12 and AddOn_XRP.Characters.byGUID[arg12]
 	if not character then
 		return false
 	end
 
-	arg1 = arg1:gsub((tostring(character):gsub("%-", "%%%-")), arg2, 1)
+	arg1 = arg1:gsub(character.id:gsub("%-", "%%%-"), arg2, 1)
 
 	return false, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, ...
 end
@@ -121,10 +121,12 @@ local function ChatEdit_ParseText_Hook(line, send)
 		local oldText = line:GetText()
 		local text = oldText
 		if text:find("%xt", nil, true) then
-			text = text:gsub("%%xt", xrp.characters.byUnit.target and xrp.Strip(xrp.characters.byUnit.target.fields.NA) or UnitName("target") or L.NOBODY)
+			local character = AddOn_XRP.Characters.byUnit.target
+			text = text:gsub("%%xt", character and xrp.Strip(character.NA) or UnitName("target") or L.NOBODY)
 		end
 		if text:find("%xf", nil, true) then
-			text = text:gsub("%%xf", xrp.characters.byUnit.focus and xrp.Strip(xrp.characters.byUnit.focus.fields.NA) or UnitName("focus") or L.NOBODY)
+			local character = AddOn_XRP.Characters.byUnit.focus
+			text = text:gsub("%%xf", character and xrp.Strip(character.NA) or UnitName("focus") or L.NOBODY)
 		end
 		if text ~= oldText then
 			newText = text
@@ -156,7 +158,7 @@ AddOn.RegisterGameEventCallback("PLAYER_LOGIN", function(event)
 			},
 		})
 		function pratModule:Prat_PreAddMessage(arg, message, frame, event)
-			local character = message.GUID and xrp.characters.byGUID[message.ORG.GUID]
+			local character = message.GUID and AddOn_XRP.Characters.byGUID[message.ORG.GUID]
 			if not character then
 				return
 			end
@@ -164,7 +166,7 @@ AddOn.RegisterGameEventCallback("PLAYER_LOGIN", function(event)
 			if chatCategory == "CHANNEL" and type(message.ORG.CHANNEL) == "string" then
 				chatCategory = "CHANNEL_" .. message.ORG.CHANNEL:upper()
 			end
-			local rpName = AddOn.Settings.chatType[chatCategory] and not character.hide and xrp.Strip(character.fields.NA)
+			local rpName = AddOn.Settings.chatType[chatCategory] and not character.hide and xrp.Strip(character.NA)
 			if not rpName then
 				return
 			end

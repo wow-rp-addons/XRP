@@ -18,7 +18,13 @@
 local FOLDER_NAME, AddOn = ...
 local L = AddOn.GetText
 
-local FILTER_SEARCH = { NA = true, NI = true, NT = true, NH = true, AH = true, AW = true, AE = true, RA = true, RC = true, CU = true, DE = true, AG = true, HH = true, HB = true, MO = true, HI = true, CO = true }
+AddOn_XRP.Characters = {}
+
+local FILTER_SEARCH = {
+	NA = true, NI = true, NT = true, NH = true, AH = true, AW = true,
+	AE = true, RA = true, RC = true, CU = true, DE = true, AG = true,
+	HH = true, HB = true, MO = true, HI = true, CO = true,
+}
 
 local RACE_FACTION = {
 	Human = "Alliance",
@@ -52,29 +58,35 @@ local MERCENARY = {
 local unitCache = {}
 AddOn.unitCache = unitCache
 
-local nameMap, requestMap = setmetatable({}, AddOn.WeakKeyMetatable), setmetatable({}, AddOn.WeakKeyMetatable)
+local CharacterIDMap = setmetatable({}, AddOn.WeakKeyMetatable)
+local OfflineMap = setmetatable({}, AddOn.WeakKeyMetatable)
 
-local characterFunctions = {
-	DropCache = function(self)
-		AddOn.DropCache(nameMap[self])
-	end,
-	ForceRefresh = function(self)
-		AddOn.ForceRefresh(nameMap[self])
-	end,
-}
-local fieldsMeta = {
-	__index = function(self, field)
-		if not field:find("^%u%u$") then
-			return nil
+local CharacterMethods = {}
+
+function CharacterMethods:DropCache()
+	AddOn.DropCache(CharacterIDMap[self])
+end
+
+function CharacterMethods:ForceRefresh()
+	AddOn.ForceRefresh(CharacterIDMap[self])
+end
+
+local CharacterMetatable = {}
+
+function CharacterMetatable:__index(index)
+	if type(index) ~= "string" then
+		error("AddOn_XRP.Characters: CharacterTable: expected string index, got " .. type(index), 2)
+	end
+	local characterID = CharacterIDMap[self]
+	if index:find("^%u%u$") then
+		local field = index
+		if unitCache[characterID] and unitCache[characterID][field] then
+			return unitCache[characterID][field]
+		elseif not OfflineMap[self] then
+			AddOn.QueueRequest(characterID, field)
 		end
-		local name = nameMap[self]
-		if unitCache[name] and unitCache[name][field] then
-			return unitCache[name][field]
-		elseif requestMap[self] then
-			AddOn.QueueRequest(name, field)
-		end
-		if xrpCache[name] and xrpCache[name].fields[field] then
-			local contents = xrpCache[name].fields[field]
+		if xrpCache[characterID] and xrpCache[characterID].fields[field] then
+			local contents = xrpCache[characterID].fields[field]
 			if field == "AH" then
 				contents = AddOn.ConvertHeight(contents)
 			elseif field == "AW" then
@@ -83,288 +95,275 @@ local fieldsMeta = {
 			return contents
 		end
 		return nil
-	end,
-	__newindex = AddOn.DoNothing,
-	__tostring = function(self)
-		local name = nameMap[self]
-		if not xrpCache[name] then return "" end
-		local shortName, realm = name:match("^([^%-]+)%-([^%-]+)$")
+	elseif CharacterMethods[index] then
+		return CharacterMethods[index]
+	elseif index == "id" then
+		return characterID
+	elseif index == "offline" then
+		return OfflineMap[self] or false
+	elseif index == "canRefresh" then
+		return OfflineMap[self] or AddOn.CanRefresh(characterID)
+	elseif index == "notes" then
+		return xrpAccountSaved.notes[characterID] or nil
+	elseif index == "bookmark" then
+		return xrpAccountSaved.bookmarks[characterID] or false
+	elseif index == "hide" then
+		return xrpAccountSaved.hidden[characterID] or false
+	elseif index == "own" then
+		return characterID == AddOn.characterID or xrpCache[characterID] and xrpCache[characterID].own or false
+	elseif index == "date" then
+		return xrpCache[characterID] and xrpCache[characterID].lastReceive or -1
+	elseif index == "exportPlainText" then
+		if not xrpCache[characterID] then
+			return ""
+		end
+		local name, realm = characterID:match("^([^%-]+)%-([^%-]+)$")
 		realm = xrp.RealmDisplayName(realm)
-		return AddOn.ExportText(L.NAME_REALM:format(shortName, realm), xrpCache[name].fields)
-	end,
-	__metatable = false,
-}
+		return AddOn.ExportText(L.NAME_REALM:format(name, realm), xrpCache[characterID].fields)
+	end
+	error("AddOn_XRP.Characters: CharacterTable: invalid index " .. index, 2)
+end
 
-local characterMeta = {
-	__index = function(self, component)
-		local name = nameMap[self]
-		if component == "fields" then
-			local fields = setmetatable({}, fieldsMeta)
-			nameMap[fields] = name
-			requestMap[fields] = requestMap[self]
-			rawset(self, "fields", fields)
-			return fields
-		elseif characterFunctions[component] then
-			return characterFunctions[component]
-		elseif component == "own" and name == AddOn.characterID then
-			return true
-		elseif component == "canRefresh" and name == AddOn.characterID then
-			return false
-		elseif component == "noRequest" then
-			return not requestMap[self]
-		elseif component == "canRefresh" then
-			return not requestMap[self] or AddOn.CanRefresh(name)
-		elseif not xrpCache[name] then
-			return nil
-		elseif component == "notes" then
-			return xrpAccountSaved.notes[name]
-		elseif component == "bookmark" then
-			return xrpAccountSaved.bookmarks[name]
-		elseif component == "hide" then
-			return xrpAccountSaved.hidden[name]
-		elseif component == "own" then
-			return xrpCache[name].own
-		elseif component == "date" then
-			return xrpCache[name].lastReceive
+function CharacterMetatable:__newindex(index, value)
+	if type(index) ~= "string" then
+		error("AddOn_XRP.Characters: CharacterTable: expected to set string index, got " .. type(index), 2)
+	end
+	local characterID = CharacterIDMap[self]
+	if index == "notes" then
+		if value ~= nil and type(value) ~= "string" then
+			error("AddOn_XRP.Characters: CharacterTable.notes: expected string or nil value, got " .. type(value), 2)
+		elseif value == "" then
+			value = nil
 		end
-	end,
-	__newindex = function(self, component, value)
-		local name = nameMap[self]
-		if not xrpCache[name] then return end
-		if component == "notes" then
-			xrpAccountSaved.notes[name] = value
-		elseif component == "bookmark" then
-			if value and not xrpAccountSaved.bookmarks[name] then
-				xrpAccountSaved.bookmarks[name] = time()
-			elseif not value and xrpAccountSaved.bookmarks[name] then
-				xrpAccountSaved.bookmarks[name] = nil
-			end
-		elseif component == "hide" then
-			if value and not xrpAccountSaved.hidden[name] then
-				xrpAccountSaved.hidden[name] = true
-			elseif not value and xrpAccountSaved.hidden[name] then
-				xrpAccountSaved.hidden[name] = nil
+		xrpAccountSaved.notes[characterID] = value
+	elseif index == "bookmark" then
+		if type(value) ~= "boolean" then
+			error("AddOn_XRP.Characters: CharacterTable.bookmark: expected boolean value, got " .. type(value), 2)
+		elseif value and not xrpAccountSaved.bookmarks[characterID] then
+			xrpAccountSaved.bookmarks[characterID] = time()
+		elseif not value and xrpAccountSaved.bookmarks[characterID] then
+			xrpAccountSaved.bookmarks[characterID] = nil
+		end
+	elseif index == "hide" then
+		if type(value) ~= "boolean" then
+			error("AddOn_XRP.Characters: CharacterTable.hide: expected boolean value, got " .. type(value), 2)
+		elseif value and not xrpAccountSaved.hidden[characterID] then
+			xrpAccountSaved.hidden[characterID] = true
+		elseif not value and xrpAccountSaved.hidden[characterID] then
+			xrpAccountSaved.hidden[characterID] = nil
+		end
+	else
+		error("AddOn_XRP.Characters: CharacterTable: could not set invalid or read-only index: " .. index, 2)
+	end
+end
+
+function CharacterMetatable:__eq(toCompare)
+	return CharacterIDMap[self] == CharacterIDMap[toCompare]
+end
+
+CharacterMetatable.__metatable = false
+
+local Online = setmetatable({}, AddOn.WeakValueMetatable)
+local Offline = setmetatable({}, AddOn.WeakValueMetatable)
+
+local byNameMetatable = {}
+function byNameMetatable:__index(name)
+	if name ~= nil and type(name) ~= "string" then
+		error("AddOn_XRP.Characters.byName: expected string or nil index, got " .. type(name), 2)
+	end
+	local characterID = xrp.BuildCharacterID(name)
+	if not characterID then
+		return nil
+	elseif not Online[characterID] then
+		local character = setmetatable({}, CharacterMetatable)
+		CharacterIDMap[character] = characterID
+		Online[characterID] = character
+	end
+	return Online[characterID]
+end
+byNameMetatable.__newindex = AddOn.DoNothing
+byNameMetatable.__metatable = false
+
+local byNameOfflineMetatable = {}
+function byNameOfflineMetatable:__index(name)
+	if name ~= nil and type(name) ~= "string" then
+		error("AddOn_XRP.Characters.byNameOffline: expected string or nil index, got " .. type(name), 2)
+	end
+	local characterID = xrp.BuildCharacterID(name)
+	if not characterID then
+		return nil
+	elseif not Offline[characterID] then
+		local character = setmetatable({}, CharacterMetatable)
+		CharacterIDMap[character] = characterID
+		Offline[characterID] = character
+		OfflineMap[character] = true
+	end
+	return Offline[characterID]
+end
+byNameOfflineMetatable.__newindex = AddOn.DoNothing
+byNameOfflineMetatable.__metatable = false
+
+local byGUIDMetatable = {}
+function byGUIDMetatable:__index(GU)
+	if GU ~= nil and type(GU) ~= "string" then
+		error("AddOn_XRP.Characters.byGUID: expected string or nil index, got " .. type(GU), 2)
+	end
+	-- GetPlayerInfoByGUID() has been known to varyingly error or return
+	-- garbage values if the GUID is invalid or maybe just not seen by the
+	-- client yet.
+	local success, class, GC, race, GR, GS, name, realm = pcall(GetPlayerInfoByGUID, GU)
+	if not success or not name or name == UNKNOWN then
+		return nil
+	end
+	local characterID = xrp.BuildCharacterID(name, realm)
+	if not unitCache[characterID] then
+		if not xrp.L.VALUES.GR[GR] then
+			xrp.L.VALUES.GR[GR] = race
+		end
+		unitCache[characterID] = {
+			GC = GC,
+			GF = RACE_FACTION[GR] or nil,
+			GR = GR,
+			GS = tostring(GS),
+			GU = GU,
+		}
+		if xrpCache[characterID] and characterID ~= AddOn.characterID then
+			for field, contents in pairs(unitCache[characterID]) do
+				-- We DO want to overwrite these, to account for race,
+				-- faction, or sex changes.
+				xrpCache[characterID].fields[field] = contents
 			end
 		end
-	end,
-	__tostring = function(self)
-		return nameMap[self]
-	end,
-	__metatable = false,
-}
+	end
+	if not Online[characterID] then
+		local character = setmetatable({}, CharacterMetatable)
+		CharacterIDMap[character] = characterID
+		Online[characterID] = character
+	end
+	return Online[characterID]
+end
+byGUIDMetatable.__newindex = AddOn.DoNothing
+byGUIDMetatable.__metatable = false
+
+local byUnitMetatable = {}
+function byUnitMetatable:__index(unit)
+	if unit ~= nil and type(unit) ~= "string" then
+		error("AddOn_XRP.Characters.byUnit: expected string or nil index, got " .. type(unit), 2)
+	end
+	local character = AddOn_XRP.Characters.byGUID[UnitGUID(unit)]
+	if not character then
+		if UnitIsPlayer(unit) then
+			-- Awkward fallback return because Blizzard can't get their
+			-- functions to work reliably too often.
+			return {
+				GC = select(2, UnitClass(unit)),
+				GF = UnitFactionGroup(unit),
+				GR = select(2, UnitRace(unit)),
+				GS = tostring(UnitSex(unit)),
+				GU = GU,
+				id = xrp.UnitCharacterID(unit)
+			}
+		end
+		return nil
+	end
+	local characterID = character.id
+	if not unitCache[characterID].GF then
+		-- GUID won't always get faction.
+		local GF = UnitIsMercenary(unit) and MERCENARY[UnitFactionGroup(unit)] or UnitFactionGroup(unit)
+		if unitCache.GR and RACE_FACTION[unitCache.GR] == nil then
+			RACE_FACTION[unitCache.GR] = GF
+		end
+		unitCache[characterID].GF = GF
+		if xrpCache[characterID] and characterID ~= AddOn.characterID then
+			xrpCache[characterID].fields.GF = GF
+		end
+	end
+	return character
+end
+byUnitMetatable.__newindex = AddOn.DoNothing
+byUnitMetatable.__metatable = false
+
+AddOn_XRP.Characters.byName = setmetatable({}, byNameMetatable)
+AddOn_XRP.Characters.byNameOffline = setmetatable({}, byNameOfflineMetatable)
+AddOn_XRP.Characters.byGUID = setmetatable({}, byGUIDMetatable)
+AddOn_XRP.Characters.byUnit = setmetatable({}, byUnitMetatable)
 
 local function SortString(sortType, name, cache)
 	if sortType == "date" then
-		return ("%d\030%s"):format(cache.lastReceive, name)
+		return ("%d\000%s"):format(cache.lastReceive, name)
 	elseif sortType == "NA" then
-		return ("%s\030%s"):format((xrp.Strip(cache.fields.NA) or name):lower(), name)
+		return ("%s\000%s"):format((xrp.Strip(cache.fields.NA) or name):lower(), name)
 	elseif sortType == "realm" then
-		return ("%s\030%s"):format(name:match("%-([^%-]+)$"), name)
+		return ("%s\000%s"):format(name:match("%-([^%-]+)$"), name)
 	end
-	return ("%s\030%s"):format(name:lower(), name)
+	return ("%s\000%s"):format(name:lower(), name)
 end
 
 local function SortAsc(a, b)
 	return a > b
 end
 
-local requestTables = setmetatable({}, AddOn.WeakValueMetatable)
-local noRequestTables = setmetatable({}, AddOn.WeakValueMetatable)
-
-xrp.characters = {
-	byName = setmetatable({}, {
-		__index = function(self, name)
-			name = xrp.BuildCharacterID(name)
-			if not name then
-				return nil
-			elseif not requestTables[name] then
-				local character = setmetatable({}, characterMeta)
-				nameMap[character] = name
-				requestMap[character] = true
-				requestTables[name] = character
+function AddOn_XRP.SearchCharacters(query)
+	if not query then
+		query = {}
+	end
+	local results, totalCount = {}, 0
+	local before = query.maxAge and (time() - query.maxAge)
+	local bookmarks, notes, hidden = xrpAccountSaved.bookmarks, xrpAccountSaved.notes, xrpAccountSaved.hidden
+	for name, cache in pairs(xrpCache) do
+		totalCount = totalCount + 1
+		local toAdd = true
+		if query.bookmark and not bookmarks[name] then
+			toAdd = false
+		elseif query.notes and not notes[name] then
+			toAdd = false
+		elseif not query.showHidden and hidden[name] then
+			toAdd = false
+		elseif query.own and not cache.own then
+			toAdd = false
+		elseif query.faction and query.faction[cache.fields.GF or "UNKNOWN"] then
+			toAdd = false
+		elseif query.class and query.class[cache.fields.GC or "UNKNOWN"] then
+			toAdd = false
+		elseif query.race and query.race[cache.fields.GR or "UNKNOWN"] then
+			toAdd = false
+		elseif before and cache.lastReceive < before then
+			toAdd = false
+		elseif not query.fullText and query.text then
+			local searchText = query.text:lower()
+			local nameText = name:match(FULL_PLAYER_NAME:format("(.+)", ".+")):lower()
+			if not nameText:find(searchText, nil, true) then
+				toAdd = false
 			end
-			return requestTables[name]
-		end,
-		__newindex = AddOn.DoNothing,
-		__metatable = false,
-	}),
-	byUnit = setmetatable({}, {
-		__index = function(self, unit)
-			local GU = UnitGUID(unit)
-			local success, class, GC, race, GR, GS, shortName, realm = pcall(GetPlayerInfoByGUID, GU)
-			if not success or not shortName or shortName == UNKNOWN then
-				if UnitIsPlayer(unit) then
-					-- TODO: Handle this better.
-					return setmetatable({
-						fields = {
-							GC = select(2, UnitClass(unit)),
-							GF = UnitFactionGroup(unit),
-							GR = select(2, UnitRace(unit)),
-							GS = tostring(UnitSex(unit)),
-							GU = GU,
-						}
-					}, { __tostring = function(self) return FULL_PLAYER_NAME:format(UNKNOWN, UNKNOWN) end, })
-				end
-				return nil
-			end
-			local name = xrp.BuildCharacterID(shortName, realm)
-			if not unitCache[name] then
-				if RACE_FACTION[GR] == nil then
-					if not xrp.L.VALUES.GR[GR] then
-						xrp.L.VALUES.GR[GR] = race
-					end
-					RACE_FACTION[GR] = UnitIsMercenary(unit) and MERCENARY[UnitFactionGroup(unit)] or UnitFactionGroup(unit)
-				end
-				unitCache[name] = {
-					GC = GC,
-					GF = RACE_FACTION[GR] or UnitIsMercenary(unit) and MERCENARY[UnitFactionGroup(unit)] or UnitFactionGroup(unit) or nil,
-					GR = GR,
-					GS = tostring(GS),
-					GU = GU,
-				}
-				if xrpCache[name] and name ~= AddOn.characterID then
-					-- We DO want to overwrite these, to account for race,
-					-- faction, or sex changes.
-					for field, contents in pairs(unitCache[name]) do
-						xrpCache[name].fields[field] = contents
-					end
-				end
-			elseif not unitCache[name].GF then
-				-- GUID won't always get faction.
-				unitCache[name].GF = UnitIsMercenary(unit) and MERCENARY[UnitFactionGroup(unit)] or UnitFactionGroup(unit)
-				if xrpCache[name] and name ~= AddOn.characterID then
-					xrpCache[name].fields.GF = unitCache[name].GF
+		elseif query.text then
+			local found = false
+			local searchText = query.text:lower()
+			for field, contents in pairs(cache.fields) do
+				if FILTER_SEARCH[field] and contents:lower():find(searchText, nil, true) then
+					found = true
+					break
 				end
 			end
-			if not requestTables[name] then
-				local character = setmetatable({}, characterMeta)
-				nameMap[character] = name
-				requestMap[character] = true
-				requestTables[name] = character
-			end
-			return requestTables[name]
-		end,
-		__newindex = AddOn.DoNothing,
-		__metatable = false,
-	}),
-	byGUID = setmetatable({}, {
-		__index = function(self, GU)
-			-- This will return nil if the GUID hasn't been seen by the client
-			-- yet in the session.
-			local success, class, GC, race, GR, GS, shortName, realm = pcall(GetPlayerInfoByGUID, GU)
-			if not success or not shortName or shortName == UNKNOWN then
-				return nil
-			end
-			local name = xrp.BuildCharacterID(shortName, realm)
-			if not unitCache[name] then
-				if RACE_FACTION[GR] == nil and not xrp.L.VALUES.GR[GR] then
-					xrp.L.VALUES.GR[GR] = race
-				end
-				unitCache[name] = {
-					GC = GC,
-					GF = RACE_FACTION[GR] or nil,
-					GR = GR,
-					GS = tostring(GS),
-					GU = GU,
-				}
-				if xrpCache[name] and name ~= AddOn.characterID then
-					for field, contents in pairs(unitCache[name]) do
-						-- We DO want to overwrite these, to account for race,
-						-- faction, or sex changes.
-						xrpCache[name].fields[field] = contents
-					end
-				end
-			end
-			if not requestTables[name] then
-				local character = setmetatable({}, characterMeta)
-				nameMap[character] = name
-				requestMap[character] = true
-				requestTables[name] = character
-			end
-			return requestTables[name]
-		end,
-		__newindex = AddOn.DoNothing,
-		__metatable = false,
-	}),
-	List = function(self, filter)
-		if not filter then
-			filter = {}
-		end
-		local results, totalCount = {}, 0
-		local before = filter.maxAge and (time() - filter.maxAge)
-		local bookmarks, notes, hidden = xrpAccountSaved.bookmarks, xrpAccountSaved.notes, xrpAccountSaved.hidden
-		for name, cache in pairs(xrpCache) do
-			totalCount = totalCount + 1
-			local toAdd = true
-			if filter.bookmark and not bookmarks[name] then
+			if not found then
 				toAdd = false
-			elseif filter.notes and not notes[name] then
-				toAdd = false
-			elseif not filter.showHidden and hidden[name] then
-				toAdd = false
-			elseif filter.own and not cache.own then
-				toAdd = false
-			elseif filter.faction and filter.faction[cache.fields.GF or "UNKNOWN"] then
-				toAdd = false
-			elseif filter.class and filter.class[cache.fields.GC or "UNKNOWN"] then
-				toAdd = false
-			elseif filter.race and filter.race[cache.fields.GR or "UNKNOWN"] then
-				toAdd = false
-			elseif before and cache.lastReceive < before then
-				toAdd = false
-			elseif not filter.fullText and filter.text then
-				local searchText = filter.text:lower()
-				local nameText = name:match(FULL_PLAYER_NAME:format("(.+)", ".+")):lower()
-				if not nameText:find(searchText, nil, true) then
-					toAdd = false
-				end
-			elseif filter.text then
-				local found = false
-				local searchText = filter.text:lower()
-				for field, contents in pairs(cache.fields) do
-					if FILTER_SEARCH[field] and contents:lower():find(searchText, nil, true) then
-						found = true
-						break
-					end
-				end
-				if not found then
-					toAdd = false
-				end
-			end
-			if toAdd then
-				results[#results + 1] = SortString(filter.sortType, name, cache)
 			end
 		end
-		local sortAscending = filter.sortReverse
-		if filter.sortType == "date" then -- Default to newest first for date.
-			sortAscending = not sortAscending
+		if toAdd then
+			results[#results + 1] = SortString(query.sortType, name, cache)
 		end
-		if sortAscending then
-			table.sort(results, SortAsc)
-		else
-			table.sort(results)
-		end
-		for i, result in ipairs(results) do
-			results[i] = result:match("^.-\030(.+)$")
-		end
-		results.totalCount = totalCount
-		return results
-	end,
-	noRequest = {
-		byName = setmetatable({}, {
-			__index = function(self, name)
-				name = xrp.BuildCharacterID(name)
-				if not name then
-					return nil
-				elseif not noRequestTables[name] then
-					local character = setmetatable({}, characterMeta)
-					nameMap[character] = name
-					noRequestTables[name] = character
-				end
-				return noRequestTables[name]
-			end,
-			__newindex = AddOn.DoNothing,
-			__metatable = false,
-		}),
-	},
-}
+	end
+	local sortAscending = query.sortReverse
+	if query.sortType == "date" then -- Default to newest first for date.
+		sortAscending = not sortAscending
+	end
+	if sortAscending then
+		table.sort(results, SortAsc)
+	else
+		table.sort(results)
+	end
+	for i, result in ipairs(results) do
+		results[i] = result:match("^.-%z(.+)$")
+	end
+	results.totalCount = totalCount
+	return results
+end

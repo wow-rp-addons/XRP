@@ -137,32 +137,32 @@ local CU_FORMAT = ("|cffa08050%s|r %%s"):format(STAT_FORMAT:format(xrp.L.FIELDS.
 local function RenderTooltip()
 	oldLines = Tooltip:NumLines()
 	lineNum = 0
-	local showProfile = not (currentUnit.noProfile or currentUnit.character.hide)
-	local fields = currentUnit.character.fields
+	local character = currentUnit.character
+	local showProfile = not (currentUnit.noProfile or character.hide)
 
 	if currentUnit.type == "player" then
 		if not replace then
 			XRPTooltip:ClearLines()
 			XRPTooltip:SetOwner(GameTooltip, "ANCHOR_TOPRIGHT")
-			if currentUnit.character.hide then
+			if character.hide then
 				RenderLine(false, L.HIDDEN, nil, 0.5, 0.5, 0.5)
 				XRPTooltip:Show()
 				return
-			elseif (not showProfile or not fields.VA) then
+			elseif (not showProfile or not character.VA) then
 				XRPTooltip:Hide()
 				return
 			end
 		end
-		RenderLine(false, currentUnit.nameFormat:format(showProfile and xrp.Strip(fields.NA) or xrp.CharacterIDToName(tostring(currentUnit.character))), currentUnit.icons)
+		RenderLine(false, currentUnit.nameFormat:format(showProfile and xrp.Strip(character.NA) or xrp.CharacterIDToName(character.id)), currentUnit.icons)
 		if replace and currentUnit.reaction then
 			RenderLine(false, currentUnit.reaction, nil, 1, 1, 1)
 		end
 		if showProfile then
-			local NI = xrp.Strip(fields.NI)
+			local NI = xrp.Strip(character.NI)
 			RenderLine(false, NI and (not NI:find(L.QUOTE_MATCH) and NI_FORMAT or NI_FORMAT_NOQUOTE):format(NI), nil, 0.6, 0.7, 0.9)
-			RenderLine(true, xrp.Strip(fields.NT), nil, 0.8, 0.8, 0.8)
+			RenderLine(true, xrp.Strip(character.NT), nil, 0.8, 0.8, 0.8)
 			if AddOn.Settings.tooltipShowHouse then
-				RenderLine(true, xrp.Strip(fields.NH), nil, 0.4, 0.6, 0.7)
+				RenderLine(true, xrp.Strip(character.NH), nil, 0.4, 0.6, 0.7)
 			end
 		end
 		if AddOn.Settings.tooltipShowExtraSpace then
@@ -171,30 +171,30 @@ local function RenderTooltip()
 		if replace then
 			RenderLine(false, currentUnit.guild, nil, 1, 1, 1)
 			local color = COLORS[currentUnit.faction]
-			RenderLine(false, currentUnit.titleRealm, currentUnit.character.hide and L.HIDDEN or showProfile and ParseVersion(fields.VA), color.r, color.g, color.b, 0.5, 0.5, 0.5)
+			RenderLine(false, currentUnit.titleRealm, character.hide and L.HIDDEN or showProfile and ParseVersion(character.VA), color.r, color.g, color.b, 0.5, 0.5, 0.5)
 			if AddOn.Settings.tooltipShowExtraSpace then
 				RenderLine(false, true)
 			end
 		end
 		if showProfile then
-			local CU, CO = xrp.Strip(fields.CU), xrp.Strip(fields.CO)
+			local CU, CO = xrp.Strip(character.CU), xrp.Strip(character.CO)
 			RenderLine(true, (CU or CO) and CU_FORMAT:format(xrp.MergeCurrently(xrp.Link(CU), xrp.Link(CO))), nil, 0.9, 0.7, 0.6)
 		end
-		local RA = showProfile and not AddOn.Settings.tooltipHideRace and xrp.Strip(fields.RA) or xrp.L.VALUES.GR[fields.GR] or UNKNOWN
+		local RA = showProfile and not AddOn.Settings.tooltipHideRace and xrp.Strip(character.RA) or xrp.L.VALUES.GR[character.GR] or UNKNOWN
 		local RAlen = #RA
 		RA = AddOn_Chomp.SafeSubString(RA, 1, INLINE_LENGTH)
 		if #RA < RAlen then
 			RA = RA .. CONTINUED
 		end
-		local RC = showProfile and not AddOn.Settings.tooltipHideClass and xrp.Strip(fields.RC) or xrp.L.VALUES.GC[fields.GS][fields.GC] or UNKNOWN
+		local RC = showProfile and not AddOn.Settings.tooltipHideClass and xrp.Strip(character.RC) or xrp.L.VALUES.GC[character.GS][character.GC] or UNKNOWN
 		local RClen = #RC
 		RC = AddOn_Chomp.SafeSubString(RC, 1, INLINE_LENGTH)
 		if #RC < RClen then
 			RC = RC .. CONTINUED
 		end
-		RenderLine(false, currentUnit.info:format(RA, RC), not replace and ParseVersion(fields.VA), 1, 1, 1, 0.5, 0.5, 0.5)
+		RenderLine(false, currentUnit.info:format(RA, RC), not replace and ParseVersion(character.VA), 1, 1, 1, 0.5, 0.5, 0.5)
 		if showProfile then
-			local FR, FC = xrp.Strip(fields.FR), xrp.Strip(fields.FC)
+			local FR, FC = xrp.Strip(character.FR), xrp.Strip(character.FC)
 			local color = COLORS[FC == "1" and "OOC" or "IC"]
 			RenderLine(false, xrp.L.VALUES.FR[FR] or FR ~= "0" and FR, xrp.L.VALUES.FC[FC] or FC ~= "0" and FC, color.r, color.g, color.b, color.r, color.g, color.b)
 		end
@@ -210,7 +210,7 @@ local function RenderTooltip()
 			end
 		end
 		local color = COLORS[currentUnit.faction]
-		RenderLine(false, currentUnit.titleRealm:format(showProfile and xrp.Strip(fields.NA) or xrp.CharacterIDToName(tostring(currentUnit.character))), nil, color.r, color.g, color.b)
+		RenderLine(false, currentUnit.titleRealm:format(showProfile and xrp.Strip(character.NA) or xrp.CharacterIDToName(character.id)), nil, color.r, color.g, color.b)
 		RenderLine(false, currentUnit.info, nil, 1, 1, 1)
 	end
 
@@ -298,19 +298,20 @@ local function SetUnit(unit)
 	local attackMe = UnitCanAttack(unit, "player")
 	local meAttack = UnitCanAttack("player", unit)
 	if currentUnit.type == "player" then
-		currentUnit.character = xrp.characters.byUnit[unit]
+		local character = AddOn_XRP.Characters.byUnit[unit]
+		currentUnit.character = character
 
 		local inRaid = UnitInRaid(unit)
 
-		currentUnit.faction = (inRaid or UnitIsUnit("player", unit)) and playerFaction or currentUnit.character.fields.GF or "Neutral"
+		currentUnit.faction = (inRaid or UnitIsUnit("player", unit)) and playerFaction or character.GF or "Neutral"
 
 		local connected = UnitIsConnected(unit)
 		local r, g, b = UnitSelectionColor(unit)
 		local color = SELECTION_COLORS[("%02x%02x%02x"):format(math.ceil(math.floor((r * 10) + 0.5) * 25.5), math.ceil(math.floor((g * 10) + 0.5) * 25.5), math.ceil(math.floor((b * 10) + 0.5) * 25.5))]
 
 		local watchIcon = AddOn.Settings.tooltipShowWatchEye and unit ~= "player" and UnitIsUnit("player", unit .. "target") and "|TInterface\\LFGFrame\\BattlenetWorking0:28:28:8:1|t"
-		local bookmarkIcon = AddOn.Settings.tooltipShowBookmarkFlag and currentUnit.character.bookmark and "|TInterface\\MINIMAP\\POIICONS:18:18:4:0:256:512:54:72:54:72|t"
-		local GC = currentUnit.character.fields.GC
+		local bookmarkIcon = AddOn.Settings.tooltipShowBookmarkFlag and character.bookmark and "|TInterface\\MINIMAP\\POIICONS:18:18:4:0:256:512:54:72:54:72|t"
+		local GC = character.GC
 
 		if replace then
 			local colorblind = GetCVarBool("colorblindMode")
@@ -330,14 +331,14 @@ local function SetUnit(unit)
 			local guildName, guildRank, guildIndex = GetGuildInfo(unit)
 			currentUnit.guild = guildName and (AddOn.Settings.tooltipShowGuildRank and (AddOn.Settings.tooltipShowGuildIndex and L.GUILD_RANK_INDEX or L.GUILD_RANK) or L.GUILD):format(AddOn.Settings.tooltipShowGuildRank and guildRank or guildName, AddOn.Settings.tooltipShowGuildIndex and guildIndex + 1 or guildName, guildName)
 
-			local realm = tostring(currentUnit.character):match("%-([^%-]+)$")
+			local realm = character.id:match("%-([^%-]+)$")
 			if realm == AddOn.characterRealm then
 				realm = nil
 			end
-			local name = UnitPVPName(unit) or xrp.CharacterIDToName(tostring(currentUnit.character))
+			local name = UnitPVPName(unit) or xrp.CharacterIDToName(character.id)
 			currentUnit.titleRealm = (colorblind and L.ASIDE or "%s"):format(realm and L.NAME_REALM:format(name, xrp.RealmDisplayName(realm)) or name, colorblind and xrp.L.VALUES.GF[currentUnit.faction])
 
-			local GS = colorblind and currentUnit.character.fields.GS
+			local GS = colorblind and character.GS
 			currentUnit.reaction = colorblind and GetText(REACTION:format(UnitReaction("player", unit)), tonumber(GS))
 
 			local level = UnitLevel(unit)
@@ -381,10 +382,11 @@ local function SetUnit(unit)
 
 		if not owner or not petLabel then return end
 
-		currentUnit.character = xrp.characters.byName[owner]
+		local character = AddOn_XRP.Characters.byName[owner]
+		currentUnit.character = character
 
 		local isOwnPet = UnitIsUnit(unit, "playerpet") or owner == AddOn.characterName
-		currentUnit.faction = UnitFactionGroup(unit) or isOwnPet and playerFaction or currentUnit.character.fields.GF or "Neutral"
+		currentUnit.faction = UnitFactionGroup(unit) or isOwnPet and playerFaction or character.GF or "Neutral"
 
 		local name = UnitName(unit)
 		local r, g, b = UnitSelectionColor(unit)
@@ -416,7 +418,7 @@ local function SetUnit(unit)
 		local level = UnitLevel(unit)
 		local effectiveLevel = UnitEffectiveLevel(unit)
 		level = effectiveLevel == level and (level < 1 and L.LETHAL_LEVEL or tostring(level)) or effectiveLevel < 1 and tostring(level) or EFFECTIVE_LEVEL_FORMAT:format(tostring(effectiveLevel), tostring(level))
-		currentUnit.info = TOOLTIP_UNIT_LEVEL_CLASS_TYPE:format(level, GC and ("|c%s%s|r"):format(RAID_CLASS_COLORS[GC] and RAID_CLASS_COLORS[GC].colorStr or "ffffffff", race or creatureType or UNKNOWN) or race or creatureType or UNKNOWN, colorblind and GC and ("%s %s"):format(xrp.L.VALUES.GC[currentUnit.character.fields.GS][GC], PET) or PET)
+		currentUnit.info = TOOLTIP_UNIT_LEVEL_CLASS_TYPE:format(level, GC and ("|c%s%s|r"):format(RAID_CLASS_COLORS[GC] and RAID_CLASS_COLORS[GC].colorStr or "ffffffff", race or creatureType or UNKNOWN) or race or creatureType or UNKNOWN, colorblind and GC and ("%s %s"):format(xrp.L.VALUES.GC[character.GS][GC], PET) or PET)
 
 		if currentUnit.icons then
 			defaultLines = defaultLines + 1
@@ -448,7 +450,7 @@ local function SetUnit(unit)
 end
 
 local function Tooltip_RECEIVE(event, name)
-	if not active or name ~= tostring(currentUnit.character) then return end
+	if not active or name ~= currentUnit.character.id then return end
 	local tooltip, unit = GameTooltip:GetUnit()
 	if tooltip then
 		RenderTooltip()
