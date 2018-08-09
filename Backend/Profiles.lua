@@ -26,7 +26,7 @@ AddOn.PROFILE_MAX_DEPTH = MAX_DEPTH
 
 xrp.current = setmetatable({}, {
 	__index = function(self, field)
-		local contents = xrpSaved.overrides.fields[field] or xrp.profiles.SELECTED.fullFields[field] or AddOn.FallbackFields[field]
+		local contents = xrpSaved.overrides[field] or xrp.profiles.SELECTED.fullFields[field] or AddOn.FallbackFields[field]
 		if not contents or contents == "" then
 			return nil
 		elseif field == "AH" then
@@ -37,9 +37,9 @@ xrp.current = setmetatable({}, {
 		return contents
 	end,
 	__newindex = function(self, field, contents)
-		if xrpSaved.overrides.fields[field] == contents or NO_PROFILE[field] or not field:find("^%u%u$") then return end
+		if xrpSaved.overrides[field] == contents or NO_PROFILE[field] or not field:find("^%u%u$") then return end
 		contents = type(contents) == "string" and contents or nil
-		xrpSaved.overrides.fields[field] = contents
+		xrpSaved.overrides[field] = contents
 		AddOn.FireEvent("UPDATE", field)
 	end,
 	__metatable = false,
@@ -144,7 +144,7 @@ local profileFunctions = {
 		end
 		xrpSaved.selected = name
 		if not keepOverrides then
-			xrpSaved.overrides.fields = {}
+			xrpSaved.overrides = {}
 		end
 		AddOn.FireEvent("UPDATE")
 		return true

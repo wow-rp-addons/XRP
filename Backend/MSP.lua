@@ -94,7 +94,7 @@ local function ProfileUpdate(event, field)
 				fields[field] = contents
 			end
 		end
-		for field, contents in pairs(xrpSaved.overrides.fields) do
+		for field, contents in pairs(xrpSaved.overrides) do
 			if contents == "" then
 				fields[field] = nil
 			else

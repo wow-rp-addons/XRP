@@ -340,5 +340,8 @@ AddOn.UpgradeVars = {
 	end,
 	[7] = function() -- 2.0.0
 		xrpSaved.meta = nil
+		local overrideFields = xrpSaved.overrides.fields
+		overrideFields.logout = xrpSaved.overrides.logout
+		xrpSaved.overrides = overrideFields
 	end,
 }

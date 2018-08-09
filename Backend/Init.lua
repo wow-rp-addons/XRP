@@ -40,9 +40,10 @@ AddOn.HookGameEvent("ADDON_LOADED", function(event, addon)
 	}
 
 	if not xrpSaved.overrides.logout or xrpSaved.overrides.logout + 900 < time() then
-		xrpSaved.overrides.fields = {}
+		xrpSaved.overrides = {}
+	else
+		xrpSaved.overrides.logout = nil
 	end
-	xrpSaved.overrides.logout = nil
 
 	AddOn.FireEvent("UPDATE")
 
@@ -56,7 +57,7 @@ AddOn.HookGameEvent("PLAYER_LOGOUT", function(event)
 	-- Note: This code must be thoroughly tested if any changes are
 	-- made. If there are any errors in here, they are not visible in
 	-- any manner in-game.
-	if next(xrpSaved.overrides.fields) then
+	if next(xrpSaved.overrides) then
 		xrpSaved.overrides.logout = time()
 	end
 end)
