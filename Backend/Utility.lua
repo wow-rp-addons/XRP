@@ -274,3 +274,6 @@ function xrp.Status(desiredStatus)
 		xrp.current.FC = nil
 	end
 end
+
+AddOn.characterID = xrp.UnitCharacterID("player")
+AddOn.characterName, AddOn.characterRealm = AddOn.characterID:match("^([^%-]+)%-([^%-]+)$")

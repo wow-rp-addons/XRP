@@ -24,6 +24,37 @@ local NO_PROFILE = { TT = true, VP = true, VA = true, GC = true, GF = true, GR =
 
 AddOn.PROFILE_MAX_DEPTH = MAX_DEPTH
 
+AddOn.RegisterGameEventCallback("ADDON_LOADED", function(event, addon)
+	local addonString = "%s/%s"
+	local VA = { addonString:format(FOLDER_NAME, GetAddOnMetadata(FOLDER_NAME, "Version")) }
+	for i, addon in ipairs({ "GHI", "Tongues" }) do
+		if IsAddOnLoaded(addon) then
+			VA[#VA + 1] = addonString:format(addon, GetAddOnMetadata(addon, "Version"))
+		end
+	end
+	AddOn.FallbackFields = {
+		NA = AddOn.characterName,
+		VA = table.concat(VA, ";"),
+		FC = "1",
+	}
+
+	if not xrpSaved.overrides.logout or xrpSaved.overrides.logout + 900 < time() then
+		xrpSaved.overrides = {}
+	else
+		xrpSaved.overrides.logout = nil
+	end
+
+	AddOn.RunEvent("UPDATE")
+end)
+AddOn.RegisterGameEventCallback("PLAYER_LOGOUT", function(event)
+	-- Note: This code must be thoroughly tested if any changes are
+	-- made. If there are any errors in here, they are not visible in
+	-- any manner in-game.
+	if next(xrpSaved.overrides) then
+		xrpSaved.overrides.logout = time()
+	end
+end)
+
 xrp.current = setmetatable({}, {
 	__index = function(self, field)
 		local contents = xrpSaved.overrides[field] or xrp.profiles.SELECTED.fullFields[field] or AddOn.FallbackFields[field]

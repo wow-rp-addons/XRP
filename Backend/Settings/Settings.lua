@@ -82,7 +82,7 @@ local function InitializeSavedVariables()
 	end
 end
 
-function AddOn.SavedVariableSetup()
+AddOn.RegisterGameEventCallback("ADDON_LOADED", function()
 	InitializeSavedVariables()
 	if (xrpAccountSaved.dataVersion or 1) < DATA_VERSION_ACCOUNT then
 		for i = (xrpAccountSaved.dataVersion or 1) + 1, DATA_VERSION_ACCOUNT do
@@ -118,13 +118,13 @@ function AddOn.SavedVariableSetup()
 		end
 	end
 	AddOn.Settings = xrpAccountSaved.settings
-end
+end)
 
-function AddOn.LoadSettings()
+AddOn.RegisterGameEventCallback("PLAYER_LOGIN", function()
 	for xrpSetting, func in pairs(AddOn.SettingsToggles) do
 		xpcall(func, geterrorhandler(), AddOn.Settings[xrpSetting], xrpSetting)
 	end
-end
+end)
 
 function AddOn.CacheTidy(timer, isInit)
 	if type(timer) ~= "number" or timer < 30 then

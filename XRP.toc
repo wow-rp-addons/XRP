@@ -15,7 +15,7 @@
 Libraries\Libraries.xml
 Locale\GetText.lua
 Locale\enUS.lua
-Backend\Init.lua
+Backend\APINamespace.lua
 Backend\Events.lua
 Backend\GameEvents.lua
 Backend\PublicStrings.lua
