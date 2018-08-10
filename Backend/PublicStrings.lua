@@ -68,7 +68,6 @@ xrp.L = {
 			["2"] = L.VALUE_FR_2,
 			["3"] = L.VALUE_FR_3,
 			["4"] = L.VALUE_FR_4,
-			["5"] = L.VALUE_FR_5,
 		},
 		GC = setmetatable({
 			["2"] = FillLocalizedClassList({}, false), -- Male forms
@@ -137,6 +136,5 @@ xrp.L.MENU_VALUES = setmetatable({
 		["2"] = L.VALUE_FR_2_MENU,
 		["3"] = L.VALUE_FR_3_MENU,
 		["4"] = L.VALUE_FR_4_MENU,
-		["5"] = L.VALUE_FR_5_MENU,
 	},
 }, { __index = xrp.L.VALUES })
