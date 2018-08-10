@@ -103,7 +103,6 @@ function AddOn.SanitizeText(text)
 end
 
 function xrp.Strip(text, allowIndent)
-	text = AddOn.SanitizeText(text)
 	if type(text) ~= "string" or text == "" then
 		return nil
 	end

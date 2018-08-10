@@ -88,7 +88,7 @@ function CharacterMetatable:__index(index)
 			AddOn.QueueRequest(characterID, field)
 		end
 		if xrpCache[characterID] and xrpCache[characterID].fields[field] then
-			local contents = xrpCache[characterID].fields[field]
+			local contents = AddOn.SanitizeText(xrpCache[characterID].fields[field])
 			if field == "AH" then
 				contents = AddOn.ConvertHeight(contents)
 			elseif field == "AW" then
