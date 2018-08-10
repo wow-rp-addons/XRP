@@ -115,7 +115,7 @@ StaticPopupDialogs["XRP_CURRENTLY"] = {
 		self.editBox:SetText(CU or "")
 		self.editBox:HighlightText()
 		self.button1:Disable()
-		if CU == xrp.profiles.SELECTED.fullFields.CU then
+		if CU == AddOn_XRP.Profiles.SELECTED.Full.CU then
 			self.button2:Disable()
 		end
 	end,
@@ -205,9 +205,10 @@ StaticPopupDialogs["XRP_EDITOR_ADD"] = {
 	EditBoxOnTextChanged = ButtonToggle,
 	OnAccept = function(self)
 		local name = self.editBox:GetText()
-		if not xrp.profiles:Add(name) then
-			StaticPopup_Show("XRP_ERROR", L"The name \"%s\" is unavailable or already in use.":format(name))
+		if AddOn_XRP.Profiles[name] then
+			StaticPopup_Show("XRP_ERROR", L"The profile \"%s\" already exists.":format(name))
 		else
+			AddOn_XRP.AddProfile(name)
 			XRPEditor:Edit(name)
 		end
 	end,
@@ -224,10 +225,12 @@ StaticPopupDialogs["XRP_EDITOR_DELETE"] = {
 	button2 = NO,
 	OnAccept = function(self)
 		local name = XRPEditor.Profiles.contents
-		if not xrp.profiles[name]:Delete() then
+		local profile = AddOn_XRP.Profiles[name]
+		if profile:IsInUse() then
 			StaticPopup_Show("XRP_ERROR", L"The profile \"%s\" is currently in-use directly or as a parent profile. In-use profiles cannot be removed.":format(name))
 		else
-			XRPEditor:Edit(tostring(xrp.profiles.SELECTED))
+			profile:Delete()
+			XRPEditor:Edit(AddOn_XRP.Profiles.SELECTED.name)
 		end
 	end,
 	whileDead = true,
@@ -243,9 +246,10 @@ StaticPopupDialogs["XRP_EDITOR_RENAME"] = {
 	EditBoxOnTextChanged = ButtonToggle,
 	OnAccept = function(self)
 		local name = self.editBox:GetText()
-		if not xrp.profiles[XRPEditor.Profiles.contents]:Rename(name) then
-			StaticPopup_Show("XRP_ERROR", L"The name \"%s\" is unavailable or already in use.":format(name))
+		if AddOn_XRP.Profiles[name] then
+			StaticPopup_Show("XRP_ERROR", L"The profile \"%s\" already exists.":format(name))
 		else
+			AddOn_XRP.Profiles[XRPEditor.Profiles.contents]:Rename(name)
 			XRPEditor:Edit(name)
 		end
 	end,
@@ -265,9 +269,10 @@ StaticPopupDialogs["XRP_EDITOR_COPY"] = {
 	EditBoxOnTextChanged = ButtonToggle,
 	OnAccept = function(self)
 		local name = self.editBox:GetText()
-		if not xrp.profiles[XRPEditor.Profiles.contents]:Copy(name) then
-			StaticPopup_Show("XRP_ERROR", L"The name \"%s\" is unavailable or already in use.":format(name))
+		if AddOn_XRP.Profiles[name] then
+			StaticPopup_Show("XRP_ERROR", L"The profile \"%s\" already exists.":format(name))
 		else
+			AddOn_XRP.Profiles[XRPEditor.Profiles.contents]:Copy(name)
 			XRPEditor:Edit(name)
 		end
 	end,

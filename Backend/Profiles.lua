@@ -18,6 +18,8 @@
 local FOLDER_NAME, AddOn = ...
 local L = AddOn.GetText
 
+AddOn_XRP.Profiles = {}
+
 local MAX_DEPTH = 50
 
 local NO_PROFILE = {
@@ -115,7 +117,51 @@ function AddOn.GetFullCurrentProfile()
 	return fields
 end
 
-local function IsUsed(name, field)
+local FORBIDDEN_NAMES = {
+	SELECTED = true,
+}
+
+function AddOn_XRP.AddProfile(name)
+	if type(name) ~= "string" then
+		error("AddOn_XRP.AddProfile(): name: expected string, got " .. type(name), 2)
+	elseif FORBIDDEN_NAMES[name] then
+		error("AddOn_XRP.AddProfile(): name: name is forbidden: " .. name, 2)
+	elseif xrpSaved.profiles[name] then
+		error("AddOn_XRP.AddProfile(): name: profile already exists: " .. name, 2)
+	end
+	xrpSaved.profiles[name] = {
+		fields = {},
+		inherits = {},
+	}
+end
+
+function AddOn_XRP.GetProfileList()
+	local list = {}
+	for name in pairs(xrpSaved.profiles) do
+		list[#list + 1] = name
+	end
+	table.sort(list)
+	return list
+end
+
+function AddOn_XRP.SetProfile(name, isAutomated)
+	if type(name) ~= "string" then
+		error("AddOn_XRP.SetProfile(): name: expected string, got " .. type(name), 2)
+	elseif FORBIDDEN_NAMES[name] then
+		error("AddOn_XRP.SetProfile(): name: name is forbidden: " .. name, 2)
+	elseif not xrpSaved.profiles[name] then
+		error("AddOn_XRP.SetProfile(): name: profile doesn't exist: " .. name, 2)
+	end
+	if xrpSaved.selected ~= name then
+		xrpSaved.selected = name
+		if not isAutomated then
+			xrpSaved.overrides = {}
+		end
+		AddOn.RunEvent("UPDATE")
+	end
+end
+
+local function IsInUse(name, field)
 	local testName = xrpSaved.selected
 	for i = 0, MAX_DEPTH do
 		local profile = xrpSaved.profiles[testName]
@@ -132,283 +178,285 @@ local function IsUsed(name, field)
 	return false
 end
 
-local nameMap = setmetatable({}, AddOn.WeakKeyMetatable)
+-- TODO: more error checking when indexing ProfileNameMap?
+local ProfileNameMap = setmetatable({}, AddOn.WeakKeyMetatable)
 
-local FORBIDDEN_NAMES = {
-	Add = true,
-	List = true,
-	SELECTED = true,
-}
+local ProfileMethods = {}
 
-local profileFunctions = {
-	Delete = function(self)
-		local name = nameMap[self]
-		if IsUsed(name) then
-			return false
+function ProfileMethods:Delete()
+	local name = ProfileNameMap[self]
+	if IsInUse(name) then
+		error("AddOn_XRP.Profiles: ProfileTable:Delete(): in-use profile cannot be deleted: " .. name, 2)
+	end
+	local profiles = xrpSaved.profiles
+	for otherName, profile in pairs(profiles) do
+		if profile.parent == name then
+			profile.parent = profiles[name].parent
 		end
-		local profiles = xrpSaved.profiles
-		for profileName, profile in pairs(profiles) do
-			if profile.parent == name then
-				profile.parent = profiles[name].parent
-			end
+	end
+	for form, autoProfileName in pairs(xrpSaved.auto) do
+		if autoProfileName == name then
+			AddOn.auto[form] = nil
 		end
-		for form, profileName in pairs(xrpSaved.auto) do
-			if profileName == name then
-				AddOn.auto[form] = nil
-			end
+	end
+	profiles[name] = nil
+end
+
+function ProfileMethods:Rename(name)
+	if type(name) ~= "string" then
+		error("AddOn_XRP.Profiles: ProfileTable:Rename(): name: expected string, got " .. type(name), 2)
+	elseif FORBIDDEN_NAMES[name] then
+		error("AddOn_XRP.Profiles: ProfileTable:Rename(): name is forbidden: " .. name, 2)
+	elseif xrpSaved.profiles[name] then
+		error("AddOn_XRP.Profiles: ProfileTable:Rename(): profile already exists: " .. name, 2)
+	end
+	local oldName = ProfileNameMap[self]
+	xrpSaved.profiles[name] = xrpSaved.profiles[oldName]
+	for profileName, profile in pairs(xrpSaved.profiles) do
+		if profile.parent == oldName then
+			profile.parent = name
 		end
-		profiles[name] = nil
-		return true
-	end,
-	Rename = function(self, newName)
-		local name = nameMap[self]
-		if type(newName) ~= "string" or FORBIDDEN_NAMES[newName] or xrpSaved.profiles[newName] ~= nil or type(xrpSaved.profiles[name]) ~= "table" then
-			return false
-		end
-		xrpSaved.profiles[newName] = xrpSaved.profiles[name]
-		for profileName, profile in pairs(xrpSaved.profiles) do
-			if profile.parent == name then
-				profile.parent = newName
-			end
-		end
-		if xrpSaved.selected == name then
-			xrpSaved.selected = newName
-		end
-		nameMap[self] = newName
-		for key, value in pairs(self) do
-			if nameMap[value] then
-				nameMap[value] = newName
-			end
-		end
-		for form, profileName in pairs(xrpSaved.auto) do
-			if profileName == name then
-				xrpSaved.auto[form] = newName
-			end
-		end
-		xrpSaved.profiles[name] = nil
-		return true
-	end,
-	Copy = function(self, newName)
-		local name = nameMap[self]
-		if type(newName) ~= "string" or FORBIDDEN_NAMES[newName] or xrpSaved.profiles[newName] ~= nil or type(xrpSaved.profiles[name]) ~= "table" then
-			return false
-		end
-		local profile = xrpSaved.profiles[name]
-		xrpSaved.profiles[newName] = {
-			fields = {},
-			inherits = {},
-			parent = profile.parent,
-		}
-		for field, contents in pairs(profile.fields) do
-			xrpSaved.profiles[newName].fields[field] = contents
-		end
-		for field, setting in pairs(profile.inherits) do
-			xrpSaved.profiles[newName].inherits[field] = setting
-		end
-		return true
-	end,
-	Activate = function(self, keepOverrides)
-		local name = nameMap[self]
-		if xrpSaved.selected == name or not xrpSaved.profiles[name] then
-			return false
-		end
+	end
+	if xrpSaved.selected == oldName then
 		xrpSaved.selected = name
-		if not keepOverrides then
-			xrpSaved.overrides = {}
+	end
+	ProfileNameMap[self] = name
+	for key, value in pairs(self) do
+		if ProfileNameMap[value] then
+			ProfileNameMap[value] = name
 		end
-		AddOn.RunEvent("UPDATE")
+	end
+	for form, profileName in pairs(xrpSaved.auto) do
+		if profileName == oldName then
+			xrpSaved.auto[form] = name
+		end
+	end
+	xrpSaved.profiles[oldName] = nil
+end
+
+function ProfileMethods:Copy(name)
+	if type(name) ~= "string" then
+		error("AddOn_XRP.Profiles: ProfileTable:Copy(): name: expected string, got " .. type(name), 2)
+	elseif FORBIDDEN_NAMES[name] then
+		error("AddOn_XRP.Profiles: ProfileTable:Copy(): name is forbidden: " .. name, 2)
+	elseif xrpSaved.profiles[name] then
+		error("AddOn_XRP.Profiles: ProfileTable:Copy(): profile already exists: " .. name, 2)
+	end
+	local oldName = ProfileNameMap[self]
+	local profile = xrpSaved.profiles[oldName]
+	xrpSaved.profiles[name] = {
+		fields = {},
+		inherits = {},
+		parent = profile.parent,
+	}
+	for field, contents in pairs(profile.fields) do
+		xrpSaved.profiles[name].fields[field] = contents
+	end
+	for field, setting in pairs(profile.inherits) do
+		xrpSaved.profiles[name].inherits[field] = setting
+	end
+end
+
+function ProfileMethods:IsParentValid(name)
+	if name == nil then
 		return true
-	end,
-	IsParentValid = function(self, testName)
-		if not testName then
+	elseif type(name) ~= "string" then
+		error("AddOn_XRP.Profiles: ProfileTable:IsParentValid(): name: expected string, got " .. type(name), 2)
+	elseif FORBIDDEN_NAMES[name] then
+		error("AddOn_XRP.Profiles: ProfileTable:IsParentValid(): name is forbidden: " .. name, 2)
+	elseif not xrpSaved.profiles[name] then
+		error("AddOn_XRP.Profiles: ProfileTable:IsParentValid(): profile doesn't exist: " .. name, 2)
+	end
+	local childName = ProfileNameMap[self]
+	local testName = name
+	for i = 1, MAX_DEPTH do
+		local profile = xrpSaved.profiles[testName]
+		if testName == childName then
+			return false
+		elseif xrpSaved.profiles[profile.parent] then
+			testName = profile.parent
+		else
 			return true
 		end
-		local name = nameMap[self]
-		for i = 1, MAX_DEPTH do
-			local profile = xrpSaved.profiles[testName]
-			if testName == name then
-				return false
-			elseif xrpSaved.profiles[profile.parent] then
-				testName = profile.parent
-			else
-				return true
-			end
-		end
-		return true
-	end,
-}
+	end
+	return true
+end
 
-local fieldsMeta = {
-	__index = function(self, field)
-		if NO_PROFILE[field] or not field:find("^%u%u$") then
+function ProfileMethods:IsInUse()
+	local name = ProfileNameMap[self]
+	return IsInUse(name)
+end
+
+local CharacterFieldMetatable = {}
+
+function CharacterFieldMetatable:__index(field)
+	if type(field) ~= "string" then
+		error("AddOn_XRP.Characters: ProfileFieldTable: field: expected string or nil, got " .. type(field), 2)
+	elseif NO_PROFILE[field] or not field:find("^%u%u$") then
+		error("AddOn_XRP.Characters: ProfileFieldTable: field: invalid field:" .. field, 2)
+	end
+	return xrpSaved.profiles[ProfileNameMap[self]].fields[field]
+end
+
+function CharacterFieldMetatable:__newindex(field, contents)
+	if type(field) ~= "string" then
+		error("AddOn_XRP.Characters: ProfileFieldTable: field: expected string or nil, got " .. type(field), 2)
+	elseif NO_PROFILE[field] or not field:find("^%u%u$") then
+		error("AddOn_XRP.Characters: ProfileFieldTable: field: invalid field:" .. field, 2)
+	elseif contents and type(contents) ~= "string" then
+		error("AddOn_XRP.Characters: ProfileFieldTable: contents: expected string or nil, got " .. type(contents), 2)
+	end
+	local name = ProfileNameMap[self]
+	contents = contents ~= "" and contents or nil
+	local profile = xrpSaved.profiles[name]
+	if profile and profile.fields[field] ~= contents then
+		profile.fields[field] = contents
+		if IsInUse(name, field) then
+			AddOn.RunEvent("UPDATE", field)
+		end
+	end
+end
+
+CharacterFieldMetatable.__metatable = false
+
+local CharacterFullMetatable = {}
+
+function CharacterFullMetatable:__index(field)
+	if type(field) ~= "string" then
+		error("AddOn_XRP.Characters: ProfileFullTable: field: expected string or nil, got " .. type(field), 2)
+	elseif NO_PROFILE[field] or not field:find("^%u%u$") then
+		error("AddOn_XRP.Characters: ProfileFullTable: field: invalid field:" .. field, 2)
+	end
+	local profile = xrpSaved.profiles[ProfileNameMap[self]]
+	for i = 0, MAX_DEPTH do
+		if profile.fields[field] then
+			return profile.fields[field]
+		elseif profile.inherits[field] == false or not xrpSaved.profiles[profile.parent] then
 			return nil
+		else
+			profile = xrpSaved.profiles[profile.parent]
 		end
-		return xrpSaved.profiles[nameMap[self]].fields[field]
-	end,
-	__newindex = function(self, field, contents)
-		if NO_PROFILE[field] or not field:find("^%u%u$") then return end
-		local name = nameMap[self]
-		contents = type(contents) == "string" and contents ~= "" and contents or nil
-		local profile = xrpSaved.profiles[name]
-		if profile and profile.fields[field] ~= contents then
-			profile.fields[field] = contents
-			if IsUsed(name, field) then
-				AddOn.RunEvent("UPDATE", field)
-			end
-		end
-	end,
-	__tostring = function(self)
-		local name = nameMap[self]
-		local fields = {}
-		local profiles, inherit = { xrpSaved.profiles[name] }, xrpSaved.profiles[name].parent
-		for i = 1, MAX_DEPTH do
-			if not xrpSaved.profiles[inherit] then
-				break
-			end
-			profiles[#profiles + 1] = xrpSaved.profiles[inherit]
-			inherit = xrpSaved.profiles[inherit].parent
-		end
-		for i = #profiles, 1, -1 do
-			local profile = profiles[i]
-			for field, doInherit in pairs(profile.inherits) do
-				if doInherit == false then
-					fields[field] = nil
-				end
-			end
-			for field, contents in pairs(profile.fields) do
-				if not fields[field] then
-					fields[field] = contents
-				end
-			end
-		end
-		for field, contents in pairs(AddOn.FallbackFields) do
-			if not fields[field] then
-				fields[field] = contents
-			end
-		end
-		return AddOn.ExportText(("%s - %s"):format(L.NAME_REALM:format(AddOn.SplitCharacterID(AddOn.characterID)), name), fields)
-	end,
-	__metatable = false,
-}
+	end
+	return nil
+end
 
-local fullFieldsMeta = {
-	__index = function(self, field)
-		local profile = xrpSaved.profiles[nameMap[self]]
-		for i = 0, MAX_DEPTH do
-			if profile.fields[field] then
-				return profile.fields[field]
-			elseif profile.inherits[field] == false or not xrpSaved.profiles[profile.parent] then
-				return nil
-			else
-				profile = xrpSaved.profiles[profile.parent]
+CharacterFullMetatable.__newindex = AddOn.DoNothing
+
+CharacterFullMetatable.__metatable = false
+
+local CharacterInheritMetatable = {}
+
+function CharacterInheritMetatable:__index(field)
+	if type(field) ~= "string" then
+		error("AddOn_XRP.Characters: ProfileInheritTable: field: expected string or nil, got " .. type(field), 2)
+	elseif NO_PROFILE[field] or not field:find("^%u%u$") then
+		error("AddOn_XRP.Characters: ProfileInheritTable: field: invalid field:" .. field, 2)
+	end
+	if xrpSaved.profiles[ProfileNameMap[self]].inherits[field] == false then
+		return false
+	end
+	return true
+end
+
+function CharacterInheritMetatable:__newindex(field, state)
+	if type(field) ~= "string" then
+		error("AddOn_XRP.Characters: ProfileInheritTable: field: expected string or nil, got " .. type(field), 2)
+	elseif NO_PROFILE[field] or not field:find("^%u%u$") then
+		error("AddOn_XRP.Characters: ProfileInheritTable: field: invalid field:" .. field, 2)
+	elseif type(state) ~= "boolean" then
+		error("AddOn_XRP.Characters: ProfileInheritTable: state: expected boolean, got " .. type(state), 2)
+	end
+	if state == true then
+		-- True is stored as nil to keep saved variables a bit cleaner.
+		state = nil
+	end
+	local name = ProfileNameMap[self]
+	local profile = xrpSaved.profiles[name]
+	if state ~= profile.inherits[field] then
+		profile.inherits[field] = state
+		if not profile.fields[field] and IsInUse(name, field) then
+			AddOn.RunEvent("UPDATE", field)
+		end
+	end
+end
+
+CharacterInheritMetatable.__metatable = false
+
+local ProfileMetatable = {}
+
+function ProfileMetatable:__index(index)
+	local name = ProfileNameMap[self]
+	if index == "name" then
+		return name
+	elseif ProfileMethods[index] then
+		return ProfileMethods[index]
+	elseif index == "Field" then
+		local Field = setmetatable({}, CharacterFieldMetatable)
+		ProfileNameMap[Field] = name
+		rawset(self, index, Field)
+		return Field
+	elseif index == "Full" then
+		local Full = setmetatable({}, CharacterFullMetatable)
+		ProfileNameMap[Full] = name
+		rawset(self, index, Full)
+		return Full
+	elseif index == "Inherit" then
+		local Inherit = setmetatable({}, CharacterInheritMetatable)
+		ProfileNameMap[Inherit] = name
+		rawset(self, index, Inherit)
+		return Inherit
+	elseif index == "parent" then
+		return xrpSaved.profiles[name].parent
+	elseif index == "exportPlainText" then
+		return AddOn.ExportText(("%s - %s"):format(AddOn_XRP.Characters.byUnit.player.fullDisplayName, name), self.Full)
+	end
+	error("AddOn_XRP.Profiles: ProfileTable: invalid index " .. index, 2)
+end
+
+function ProfileMetatable:__newindex(index, value)
+	if type(index) ~= "string" then
+		error("AddOn_XRP.Profiles: ProfileTable: expected to set string index, got " .. type(index), 2)
+	end
+	local name = ProfileNameMap[self]
+	local profiles = xrpSaved.profiles
+	if index == "parent" then
+		if value ~= nil and type(value) ~= "string" then
+			error("AddOn_XRP.Profiles: ProfileTable.parent: expected string or nil value, got " .. type(value), 2)
+		elseif not self:IsParentValid(value) then
+			error("AddOn_XRP.Profiles: ProfileTable.parent: unable to set parent due to loop: " .. value, 2)
+		elseif value ~= profiles[name].parent then
+			profiles[name].parent = value
+			if IsInUse(name) then
+				AddOn.RunEvent("UPDATE")
 			end
 		end
+	else
+		error("AddOn_XRP.Profiles: ProfileTable: could not set invalid or read-only index: " .. index, 2)
+	end
+end
+
+ProfileMetatable.__metatable = false
+
+local Profiles = setmetatable({}, AddOn.WeakValueMetatable)
+
+local ProfileAPIMetatable = {}
+
+function ProfileAPIMetatable:__index(name)
+	if name == "SELECTED" then
+		name = xrpSaved.selected
+	end
+	if not xrpSaved.profiles[name] then
 		return nil
-	end,
-	__newindex = AddOn.DoNothing,
-	__metatable = false,
-}
+	elseif not Profiles[name] then
+		local profile = setmetatable({}, ProfileMetatable)
+		ProfileNameMap[profile] = name
+		Profiles[name] = profile
+	end
+	return Profiles[name]
+end
 
-local inheritMeta = {
-	__index = function(self, field)
-		if NO_PROFILE[field] or not field:find("^%u%u$") or xrpSaved.profiles[nameMap[self]].inherits[field] == false then
-			return false
-		end
-		return true
-	end,
-	__newindex = function(self, field, state)
-		if NO_PROFILE[field] or not field:find("^%u%u$") then return end
-		local name = nameMap[self]
-		local profile = xrpSaved.profiles[name]
-		if state == true then
-			state = nil
-		end
-		if state ~= profile.inherits[field] then
-			profile.inherits[field] = state
-			if not profile.fields[field] and IsUsed(name, field) then
-				AddOn.RunEvent("UPDATE", field)
-			end
-		end
-	end,
-	__metatable = false,
-}
+ProfileAPIMetatable.__newindex = AddOn.DoNothing
 
-local profileMeta = {
-	__index = function(self, component)
-		local name = nameMap[self]
-		if not xrpSaved.profiles[name] then
-			return nil
-		elseif profileFunctions[component] then
-			return profileFunctions[component]
-		elseif component == "fields" then
-			local fields = setmetatable({}, fieldsMeta)
-			nameMap[fields] = name
-			rawset(self, component, fields)
-			return fields
-		elseif component == "fullFields" then
-			local fullFields = setmetatable({}, fullFieldsMeta)
-			nameMap[fullFields] = name
-			rawset(self, component, fullFields)
-			return fullFields
-		elseif component == "inherit" then
-			local inherit = setmetatable({}, inheritMeta)
-			nameMap[inherit] = name
-			rawset(self, component, inherit)
-			return inherit
-		elseif component == "parent" then
-			return xrpSaved.profiles[name].parent
-		end
-		return nil
-	end,
-	__newindex = function(self, component, value)
-		local name, profiles = nameMap[self], xrpSaved.profiles
-		if component ~= "parent" or value == profiles[name].parent or not self:IsParentValid(value) then return end
-		profiles[name].parent = value
-		if IsUsed(name) then
-			AddOn.RunEvent("UPDATE")
-		end
-	end,
-	__tostring = function(self)
-		return nameMap[self]
-	end,
-	__metatable = false,
-}
+ProfileAPIMetatable.__metatable = false
 
-local profileTables = setmetatable({}, AddOn.WeakValueMetatable)
-
-xrp.profiles = setmetatable({
-	Add = function(self, name)
-		if type(name) ~= "string" or xrpSaved.profiles[name] or FORBIDDEN_NAMES[name] then
-			return false
-		end
-		xrpSaved.profiles[name] = {
-			fields = {},
-			inherits = {},
-		}
-		return self[name]
-	end,
-	List = function(self)
-		local list = {}
-		for profileName, profile in pairs(xrpSaved.profiles) do
-			list[#list + 1] = profileName
-		end
-		table.sort(list)
-		return list
-	end,
-}, {
-	__index = function(self, name)
-		if name == "SELECTED" then
-			name = xrpSaved.selected
-		end
-		if not xrpSaved.profiles[name] then
-			return nil
-		elseif not profileTables[name] then
-			local profile = setmetatable({}, profileMeta)
-			nameMap[profile] = name
-			profileTables[name] = profile
-		end
-		return profileTables[name]
-	end,
-	__newindex = AddOn.DoNothing,
-	__metatable = false,
-})
+setmetatable(AddOn_XRP.Profiles, ProfileAPIMetatable)

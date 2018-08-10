@@ -271,7 +271,7 @@ function AddOn_XRP.SetStatus(status)
 	elseif status == "0" then
 		AddOn_XRP.SetField("FC", "")
 	else
-		local profileIC = AddOn.IsStatusIC(xrp.profiles.SELECTED.fullFields.FC)
+		local profileIC = AddOn.IsStatusIC(AddOn_XRP.Profiles.SELECTED.Full.FC)
 		if status == "ic" and profileIC then
 			AddOn_XRP.SetField("FC", nil)
 		elseif status == "ic" then

@@ -68,7 +68,7 @@ end
 local function RenderTooltip(Tooltip)
 	Tooltip:AddLine(AddOn_XRP.Characters.byUnit.player.NA)
 	Tooltip:AddLine(" ")
-	Tooltip:AddLine(SUBTITLE_FORMAT:format(L.PROFILE, ("|cffffffff%s|r"):format(tostring(xrp.profiles.SELECTED))))
+	Tooltip:AddLine(SUBTITLE_FORMAT:format(L.PROFILE, ("|cffffffff%s|r"):format(AddOn_XRP.Profiles.SELECTED.name)))
 	local FC = AddOn_XRP.RemoveTextFormats(AddOn_XRP.Characters.byUnit.player.FC)
 	if FC and FC ~= "0" then
 		Tooltip:AddLine(SUBTITLE_FORMAT:format(L.STATUS, ("|cff%s%s|r"):format(FC == "1" and "99664d" or "66b380", Values.FC[FC] or FC)))
@@ -127,8 +127,8 @@ XRPButton_baseMenuList = {
 }
 
 local function Profiles_Click(self, profileName, arg2, checked)
-	if not checked and xrp.profiles[profileName] then
-		xrp.profiles[profileName]:Activate()
+	if not checked and AddOn_XRP.Profiles[profileName] then
+		AddOn_XRP.SetProfile(profileName)
 	end
 	CloseDropDownMenus()
 end
@@ -155,8 +155,8 @@ function XRPButton_OnClick(self, button, down)
 			ldbMenu.anchor = "cursor"
 		end
 		table.wipe(Profiles_menuList)
-		local selected = tostring(xrp.profiles.SELECTED)
-		for i, profileName in ipairs(xrp.profiles:List()) do
+		local selected = AddOn_XRP.Profiles.SELECTED.name
+		for i, profileName in ipairs(AddOn_XRP.GetProfileList()) do
 			Profiles_menuList[#Profiles_menuList + 1] = { text = profileName, checked = selected == profileName, arg1 = profileName, func = Profiles_Click, }
 		end
 		XRPTemplatesMenu_OnClick(self == Button and self or ldbMenu, button, down)

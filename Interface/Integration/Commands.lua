@@ -128,11 +128,12 @@ end
 xrpCmds.profile = function(args)
 	if args == "list" or args == L.ARG_PROFILE_LIST then
 		print(XRP_HEADER:format(STAT_FORMAT:format(L.PROFILES)))
-		for i, profile in ipairs(xrp.profiles:List()) do
+		for i, profile in ipairs(AddOn_XRP.GetProfileList()) do
 			print(profile)
 		end
 	elseif type(args) == "string" then
-		if xrp.profiles[args] and xrp.profiles[args]:Activate() then
+		if AddOn_XRP.Profiles[args] then
+			AddOn_XRP.SetProfile(args)
 			print(XRP_HEADER:format(L"Set profile to \"%s\".":format(args)))
 		else
 			print(XRP_HEADER:format(L"Failed to set profile to \"%s\" (does it exist?).":format(args)))

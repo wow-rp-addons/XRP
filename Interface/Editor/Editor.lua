@@ -36,7 +36,7 @@ local function CheckField(self, profile, parent)
 	if (not self.HasFocus or not self:HasFocus()) and (not self.contents or self.inherited) then
 		if parent and self.Inherit:GetChecked() then
 			self:SetAttribute("inherited", true)
-			self:SetAttribute("contents", parent.fullFields[self.field] or FallbackFieldContents(self.field))
+			self:SetAttribute("contents", parent.Full[self.field] or FallbackFieldContents(self.field))
 		else
 			local fallback = FallbackFieldContents(self.field)
 			self:SetAttribute("inherited", fallback ~= nil)
@@ -48,12 +48,13 @@ local function CheckField(self, profile, parent)
 	else
 		self.Inherit:Hide()
 	end
-	return self.inherited and profile.fields[self.field] ~= nil or not self.inherited and self.contents ~= profile.fields[self.field] or self.Inherit:GetChecked() ~= profile.inherit[self.field] or nil
+	return self.inherited and profile.Field[self.field] ~= nil or not self.inherited and self.contents ~= profile.Field[self.field] or self.Inherit:GetChecked() ~= profile.Inherit[self.field] or nil
 end
 
 local modified = {}
 local function CheckFields(field)
-	local profile, parent = xrp.profiles[XRPEditor.Profiles.contents], xrp.profiles[XRPEditor.Parent.contents]
+	local profile = AddOn_XRP.Profiles[XRPEditor.Profiles.contents]
+	local parent = AddOn_XRP.Profiles[XRPEditor.Parent.contents]
 	if XRPEditor.fields[field] then
 		modified[field] = CheckField(XRPEditor.fields[field], profile, parent)
 	else
@@ -61,7 +62,7 @@ local function CheckFields(field)
 			modified[field] = CheckField(XRPEditor.fields[field], profile, parent)
 		end
 	end
-	if next(modified) or (parent and tostring(parent)) ~= profile.parent then
+	if next(modified) or (parent and parent.name) ~= profile.parent then
 		XRPEditor.Save:Enable()
 		XRPEditor.Revert:Enable()
 	else
@@ -81,10 +82,11 @@ function XRPEditorSave_OnClick(self, button, down)
 	ClearAllFocus()
 
 	local name = XRPEditor.Profiles.contents
-	local profile = xrp.profiles[name]
+	local profile = AddOn_XRP.Profiles[name]
+	-- TOOD: inform user if the profile was deleted.
 	for field, control in pairs(XRPEditor.fields) do
-		profile.fields[field] = not control.inherited and control.contents or nil
-		profile.inherit[field] = control.Inherit:GetChecked()
+		profile.Field[field] = not control.inherited and control.contents or nil
+		profile.Inherit[field] = control.Inherit:GetChecked()
 	end
 	profile.parent = XRPEditor.Parent.contents
 
@@ -98,14 +100,17 @@ function XRPEditor_Edit(self, name)
 		HideUIPanel(self)
 		return
 	end
-	if not name and (not self.Profiles.contents or self.Revert:GetButtonState() == "DISABLED" and self.Profiles.contents ~= tostring(xrp.profiles.SELECTED)) then
-		name = tostring(xrp.profiles.SELECTED)
+	if not name and (not self.Profiles.contents or self.Revert:GetButtonState() == "DISABLED" and self.Profiles.contents ~= AddOn_XRP.Profiles.SELECTED.name) then
+		name = AddOn_XRP.Profiles.SELECTED.name
 	elseif not name then
 		return
 	end
 	ClearAllFocus()
 
-	local fields, inherit = xrp.profiles[name].fields, xrp.profiles[name].inherit
+	local profile = AddOn_XRP.Profiles[name]
+	-- TOOD: inform user if the profile was deleted.
+
+	local fields, inherit = profile.Field, profile.Inherit
 	for field, control in pairs(self.fields) do
 		control:SetAttribute("inherited", false)
 		control:SetAttribute("contents", fields[field])
@@ -119,7 +124,7 @@ function XRPEditor_Edit(self, name)
 	self.Profiles.contents = name
 	self.Profiles.Text:SetText(name)
 
-	local value = xrp.profiles[name].parent
+	local value = profile.parent
 	self.Parent.contents = value
 	self.Parent:SetFormattedText(SUBTITLE_FORMAT, L.PARENT, value or NONE)
 
@@ -133,7 +138,7 @@ function XRPEditorPopup_OnClick(self, button, down)
 end
 
 function XRPEditorEButton_OnClick(self, button, down)
-	XRPExport:Export(XRPEditor.Profiles.contents, tostring(xrp.profiles[XRPEditor.Profiles.contents].fields))
+	XRPExport:Export(XRPEditor.Profiles.contents, AddOn_XRP.Profiles[XRPEditor.Profiles.contents].exportPlainText)
 end
 
 function XRPEditorRevert_OnClick(self, button, down)
@@ -157,7 +162,7 @@ end
 function XRPEditorProfiles_PreClick(self, button, down)
 	local parent = self:GetParent()
 	parent.baseMenuList = {}
-	for i, profile in ipairs(xrp.profiles:List()) do
+	for i, profile in ipairs(AddOn_XRP.GetProfileList()) do
 		parent.baseMenuList[i] = { text = profile, checked = Checked, arg1 = profile, func = Profiles_Click }
 	end
 end
@@ -174,8 +179,8 @@ local NONE_MENU = { text = NONE, checked = Checked, arg1 = nil, func = Parent_Cl
 function XRPEditorParent_PreClick(self, button, down)
 	self.baseMenuList = { NONE_MENU }
 	local editingProfile = XRPEditor.Profiles.contents
-	for i, profile in ipairs(xrp.profiles:List()) do
-		if profile ~= editingProfile and xrp.profiles[editingProfile]:IsParentValid(profile) then
+	for i, profile in ipairs(AddOn_XRP.GetProfileList()) do
+		if profile ~= editingProfile and AddOn_XRP.Profiles[editingProfile]:IsParentValid(profile) then
 			self.baseMenuList[#self.baseMenuList + 1] = { text = profile, checked = Checked, arg1 = profile, func = Parent_Click }
 		end
 	end

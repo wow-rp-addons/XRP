@@ -161,7 +161,7 @@ local function DoSwap()
 	if not AddOn.auto[form] then
 		return
 	end
-	xrp.profiles[AddOn.auto[form]]:Activate(true)
+	AddOn_XRP.SetProfile(AddOn.auto[form], true)
 end
 
 local function TestForm(event, unit)

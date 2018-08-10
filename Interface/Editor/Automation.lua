@@ -100,7 +100,7 @@ local NONE_MENU = { text = NONE, checked = Profile_Checked, arg1 = nil, func = P
 function XRPEditorAutomationProfile_PreClick(self, button, down)
 	local parent = self:GetParent()
 	parent.baseMenuList = { NONE_MENU }
-	for i, profile in ipairs(xrp.profiles:List()) do
+	for i, profile in ipairs(AddOn_XRP.GetProfileList()) do
 		parent.baseMenuList[i + 1] = { text = profile, checked = Profile_Checked, arg1 = profile, func = Profile_Click }
 	end
 end
@@ -271,12 +271,12 @@ function XRPEditorAutomation_OnShow(self)
 	end
 	for form, profile in pairs(unsaved) do
 		if form:find("\029", nil, true) then
-			if not C_EquipmentSet.GetEquipmentSetID(selectedForm:match("^.*\029(.+)$")) or not xrp.profiles[profile] then
+			if not C_EquipmentSet.GetEquipmentSetID(selectedForm:match("^.*\029(.+)$")) or not AddOn_XRP.Profiles[profile] then
 				unsaved[form] = nil
 			end
 		end
 	end
-	needsUpdate = needsUpdate or not xrp.profiles[self.Profile.contents]
+	needsUpdate = needsUpdate or not AddOn_XRP.Profiles[self.Profile.contents]
 	if needsUpdate then
 		local newProfile = AddOn.auto[selectedForm]
 		self.Profile.contents = newProfile

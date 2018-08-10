@@ -64,7 +64,7 @@ end)
 local function ProfileUpdate(event, field)
 	if field then
 		if msp.INTERNAL_FIELDS[field] then return end
-		local contents = xrpSaved.overrides[field] or xrp.profiles.SELECTED.fullFields[field] or AddOn.FallbackFields[field]
+		local contents = xrpSaved.overrides[field] or AddOn_XRP.Profiles.SELECTED.Full[field] or AddOn.FallbackFields[field]
 		if not contents or contents == "" then
 			contents = nil
 		elseif field == "AH" then
