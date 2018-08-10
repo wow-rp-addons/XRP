@@ -326,7 +326,6 @@ AddOn.UpgradeVars = {
 				end
 			end
 		end
-		AddOn.RunEvent("UPDATE", "FC")
 	end,
 	[7] = function() -- 1.8.0
 		xrpSaved.meta.versions = nil
@@ -343,7 +342,7 @@ AddOn.UpgradeVars = {
 		xrpSaved.overrides.versions = nil
 		xrpSaved.oldtt = nil
 	end,
-	[7] = function() -- 2.0.0
+	[8] = function() -- 2.0.0
 		xrpSaved.meta = nil
 		local overrideFields = xrpSaved.overrides.fields
 		overrideFields.logout = xrpSaved.overrides.logout
