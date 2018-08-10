@@ -74,46 +74,7 @@ local function ProfileUpdate(event, field)
 		end
 		msp.my[field] = contents
 	else
-		local fields = {}
-		local profiles, inherit = { xrpSaved.profiles[xrpSaved.selected] }, xrpSaved.profiles[xrpSaved.selected].parent
-		for i = 1, AddOn.PROFILE_MAX_DEPTH do
-			if not xrpSaved.profiles[inherit] then
-				break
-			end
-			profiles[#profiles + 1] = xrpSaved.profiles[inherit]
-			inherit = xrpSaved.profiles[inherit].parent
-		end
-		for i = #profiles, 1, -1 do
-			local profile = profiles[i]
-			for field, doInherit in pairs(profile.inherits) do
-				if doInherit == false then
-					fields[field] = nil
-				end
-			end
-			for field, contents in pairs(profile.fields) do
-				if not fields[field] then
-					fields[field] = contents
-				end
-			end
-		end
-		for field, contents in pairs(AddOn.FallbackFields) do
-			if not fields[field] then
-				fields[field] = contents
-			end
-		end
-		for field, contents in pairs(xrpSaved.overrides) do
-			if contents == "" then
-				fields[field] = nil
-			else
-				fields[field] = contents
-			end
-		end
-		if fields.AW then
-			fields.AW = AddOn.ConvertWeight(fields.AW, "msp")
-		end
-		if fields.AH then
-			fields.AH = AddOn.ConvertHeight(fields.AH, "msp")
-		end
+		local fields = AddOn.GetFullCurrentProfile()
 		for field, contents in pairs(msp.my) do
 			if not msp.INTERNAL_FIELDS[field] and not fields[field] then
 				msp.my[field] = nil
