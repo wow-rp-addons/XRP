@@ -33,6 +33,10 @@ function XRPOptionsControl_Mixin:Set(value)
 	if self.xrpTable then
 		settingsTable = AddOn.Settings[self.xrpTable]
 	end
+	local oldValue = settingsTable[self.xrpSetting]
+	if oldValue == value then
+		return
+	end
 	settingsTable[self.xrpSetting] = value
 	local settingsToggleTable = AddOn.SettingsToggles
 	if self.xrpTable then

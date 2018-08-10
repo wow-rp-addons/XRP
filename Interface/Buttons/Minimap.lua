@@ -226,10 +226,21 @@ function XRPButtonDetached_OnDragStop(self)
 	self:UnlockHighlight()
 end
 
-local function HookEvents()
+local isRegistered = false
+local function RegisterEvents()
+	if isRegistered then return end
 	AddOn_XRP.RegisterEventCallback("RECEIVE", XRPButton_UpdateIcon)
 	AddOn.RegisterGameEventCallback("PLAYER_TARGET_CHANGED", XRPButton_UpdateIcon)
 	AddOn.RegisterGameEventCallback("PLAYER_ENTERING_WORLD", XRPButton_UpdateIcon)
+	isRegistered = true
+end
+
+local function UnregisterEvents()
+	if not isRegistered then return end
+	AddOn_XRP.UnregisterEventCallback("RECEIVE", XRPButton_UpdateIcon)
+	AddOn.UnregisterGameEventCallback("PLAYER_TARGET_CHANGED", XRPButton_UpdateIcon)
+	AddOn.UnregisterGameEventCallback("PLAYER_ENTERING_WORLD", XRPButton_UpdateIcon)
+	isRegistered = false
 end
 
 AddOn.SettingsToggles.mainButtonEnabled = function(setting)
@@ -255,16 +266,12 @@ AddOn.SettingsToggles.mainButtonEnabled = function(setting)
 			end
 			Button = LibDBIcon10_XRP
 		end
-		if not LDBObject then
-			HookEvents()
-		end
+		RegisterEvents()
 		XRPButton_UpdateIcon()
 		Button:Show()
 	elseif Button ~= nil then
 		if not LDBObject then
-			AddOn_XRP.UnregisterEventCallback("RECEIVE", XRPButton_UpdateIcon)
-			AddOn.UnregisterGameEventCallback("PLAYER_TARGET_CHANGED", XRPButton_UpdateIcon)
-			AddOn.UnregisterGameEventCallback("PLAYER_ENTERING_WORLD", XRPButton_UpdateIcon)
+			UnregisterEvents()
 		end
 		Button:Hide()
 		Button = nil
@@ -290,9 +297,7 @@ AddOn.SettingsToggles.ldbObject = function(setting)
 			OnTooltipShow = RenderTooltip,
 		}
 		ldb:NewDataObject(LDBObject.label, LDBObject)
-		if not Button then
-			HookEvents()
-		end
+		RegisterEvents()
 		XRPButton_UpdateIcon()
 		if not LDBObject and not (LibStub and LibStub:GetLibrary("LibDataBroker-1.1", true)) then
 			-- No LDB library, meaning no chance of a viewer.
