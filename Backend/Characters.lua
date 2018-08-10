@@ -178,7 +178,7 @@ function byNameMetatable:__index(name)
 	if name ~= nil and type(name) ~= "string" then
 		error("AddOn_XRP.Characters.byName: expected string or nil index, got " .. type(name), 2)
 	end
-	local characterID = xrp.BuildCharacterID(name)
+	local characterID = AddOn.BuildCharacterID(name)
 	if not characterID then
 		return nil
 	elseif not Online[characterID] then
@@ -196,7 +196,7 @@ function byNameOfflineMetatable:__index(name)
 	if name ~= nil and type(name) ~= "string" then
 		error("AddOn_XRP.Characters.byNameOffline: expected string or nil index, got " .. type(name), 2)
 	end
-	local characterID = xrp.BuildCharacterID(name)
+	local characterID = AddOn.BuildCharacterID(name)
 	if not characterID then
 		return nil
 	elseif not Offline[characterID] then
@@ -222,7 +222,7 @@ function byGUIDMetatable:__index(GU)
 	if not success or not name or name == UNKNOWN then
 		return nil
 	end
-	local characterID = xrp.BuildCharacterID(name, realm)
+	local characterID = AddOn.BuildCharacterID(name, realm)
 	if not unitCache[characterID] then
 		if not AddOn_XRP.Strings.Values.GR[GR] then
 			AddOn_XRP.Strings.Values.GR[GR] = race

@@ -31,13 +31,13 @@ local standard, units
 local function UnitPopup_OnClick_Hook(self)
 	if not standard and not units then return end
 	if self.value == "XRP_VIEW_CHARACTER" then
-		XRPViewer:View(xrp.BuildCharacterID(UIDROPDOWNMENU_INIT_MENU.name, UIDROPDOWNMENU_INIT_MENU.server))
+		XRPViewer:View(AddOn_Chomp.NameMergedRealm(UIDROPDOWNMENU_INIT_MENU.name, UIDROPDOWNMENU_INIT_MENU.server))
 	elseif self.value == "XRP_VIEW_UNIT" then
 		XRPViewer:View(UIDROPDOWNMENU_INIT_MENU.unit)
 	elseif self.value == "XRP_VIEW_BN" then
 		local active, characterName, client, realmName = BNGetGameAccountInfo(select(6, BNGetFriendInfoByID(UIDROPDOWNMENU_INIT_MENU.bnetIDAccount)))
 		if client == BNET_CLIENT_WOW and realmName ~= "" then
-			XRPViewer:View(xrp.BuildCharacterID(characterName, realmName))
+			XRPViewer:View(AddOn_Chomp.NameMergedRealm(characterName, realmName))
 		end
 	end
 end

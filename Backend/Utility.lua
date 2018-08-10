@@ -23,7 +23,7 @@ AddOn.WeakKeyMetatable = { __mode = "k" }
 
 function AddOn.DoNothing() end
 
-function xrp.BuildCharacterID(name, realm)
+function AddOn.BuildCharacterID(name, realm)
 	if type(name) ~= "string" or name == "" then
 		return nil
 	end

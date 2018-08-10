@@ -48,7 +48,7 @@ AddOn.RegisterGameEventCallback("PLAYER_LOGIN", function(event)
 		xrpCache[AddOn.characterID].own = true
 	end
 	for i, character in ipairs(GetAutoCompleteResults("", 0, 1, AUTO_COMPLETE_ACCOUNT_CHARACTER, 0)) do
-		local name = xrp.BuildCharacterID(character.name)
+		local name = AddOn.BuildCharacterID(character.name)
 		OwnCharacters[name] = true
 		if xrpCache[name] and not xrpCache[name].own then
 			xrpCache[name].own = true
@@ -127,7 +127,7 @@ local function ProfileUpdate(event, field)
 end
 
 local function StatusHandler(statusName, reason, msgID, msgTotal)
-	local name = xrp.BuildCharacterID(statusName)
+	local name = AddOn.BuildCharacterID(statusName)
 	if not name or reason == "MESSAGE" and (type(msgID) ~= "number" or type(msgTotal) ~= "number") then
 		error("XRP: LibMSP status callback receieved invalid arguments.")
 	elseif reason == "ERROR" then
@@ -140,7 +140,7 @@ local function StatusHandler(statusName, reason, msgID, msgTotal)
 end
 
 local function UpdatedHandler(updatedName, field, contents, version)
-	local name = xrp.BuildCharacterID(updatedName)
+	local name = AddOn.BuildCharacterID(updatedName)
 	if not name or type(field) ~= "string" or not field:find("^%u%u$") or contents and type(contents) ~= "string" or version and type(version) ~= "number" then
 		error("XRP: LibMSP updated callback receieved invalid arguments.")
 	elseif field == "VW" then
@@ -171,7 +171,7 @@ local function UpdatedHandler(updatedName, field, contents, version)
 end
 
 local function ReceivedHandler(receivedName)
-	local name = xrp.BuildCharacterID(receivedName)
+	local name = AddOn.BuildCharacterID(receivedName)
 	if not name then
 		error("XRP: LibMSP received callback receieved invalid arguments.")
 	end
@@ -183,7 +183,7 @@ local function ReceivedHandler(receivedName)
 end
 
 local function DataLoadHandler(dataLoadName, char)
-	local name = xrp.BuildCharacterID(dataLoadName)
+	local name = AddOn.BuildCharacterID(dataLoadName)
 	if not name or type(char) ~= "table" then
 		error("XRP: LibMSP dataload callback receieved invalid arguments.")
 	end
@@ -210,7 +210,7 @@ local function FRIENDLIST_UPDATE(event)
 	if not gameFriends then return end
 	table.wipe(gameFriends)
 	for i = 1, select(2, GetNumFriends()) do
-		gameFriends[xrp.BuildCharacterID((GetFriendInfo(i)))] = true
+		gameFriends[AddOn.BuildCharacterID((GetFriendInfo(i)))] = true
 	end
 end
 
@@ -222,7 +222,7 @@ local function BN_FRIEND_INFO_CHANGED(event)
 		for j = 1, BNGetNumFriendGameAccounts(i) do
 			local active, characterName, client, realmName, realmID, faction, race, class, blank, zoneName, level, gameText, broadcastText, broadcastTime, isConnected, bnetIDGameAccount = BNGetFriendGameAccountInfo(i, j)
 			if isConnected and client == BNET_CLIENT_WOW and realmName and realmName ~= "" then
-				bnetFriends[xrp.BuildCharacterID(characterName, realm)] = true
+				bnetFriends[AddOn.BuildCharacterID(characterName, realm)] = true
 			end
 		end
 	end
@@ -236,12 +236,12 @@ local function UpdateGuildRoster()
 		for i = 1, GetNumGuildMembers() do
 			local name, rank, rankIndex, level, class, zone, note, officerNote, online = GetGuildRosterInfo(i)
 			if online then
-				guildies[xrp.BuildCharacterID(name)] = true
+				guildies[AddOn.BuildCharacterID(name)] = true
 			end
 		end
 	else
 		for i = 1, select(2, GetNumGuildMembers()) do
-			guildies[xrp.BuildCharacterID((GetGuildRosterInfo(i)))] = true
+			guildies[AddOn.BuildCharacterID((GetGuildRosterInfo(i)))] = true
 		end
 	end
 end
