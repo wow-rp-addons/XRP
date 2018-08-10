@@ -77,7 +77,7 @@ local function RenderTooltip(Tooltip)
 	if CU then
 		Tooltip:AddLine(" ")
 		Tooltip:AddLine(STAT_FORMAT:format(Names.CU))
-		Tooltip:AddLine(("%s"):format(xrp.Link(CU)), 0.9, 0.7, 0.6, true)
+		Tooltip:AddLine(("%s"):format(AddOn.LinkURLs(CU)), 0.9, 0.7, 0.6, true)
 	end
 	Tooltip:AddLine(" ")
 	local target = AddOn_XRP.Characters.byUnit.target

@@ -134,7 +134,7 @@ function AddOn_XRP.RemoveTextFormats(text, permitIndent)
 	return trimmedText
 end
 
-function xrp.Link(text)
+function AddOn.LinkURLs(text)
 	if type(text) ~= "string" then
 		return nil
 	end
@@ -239,7 +239,7 @@ function AddOn.ConvertHeight(height, units)
 	return height
 end
 
-function xrp.MergeCurrently(CU, CO)
+function AddOn.MergeCurrently(CU, CO)
 	if not CU and not CO then
 		return nil
 	elseif CU and not CO then

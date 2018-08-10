@@ -34,7 +34,7 @@ local function SetField(field, contents, secondary, tertiary)
 	if field == "VA" then
 		contents = contents and contents:gsub(";", PLAYER_LIST_DELIMITER) or NONE
 	elseif field == "CU" then
-		contents = xrp.MergeCurrently(xrp.Link(contents), xrp.Link(AddOn_XRP.RemoveTextFormats(secondary, true)))
+		contents = AddOn.MergeCurrently(AddOn.LinkURLs(contents), AddOn.LinkURLs(AddOn_XRP.RemoveTextFormats(secondary, true)))
 	elseif secondary then
 		if field == "NA" then
 			contents = secondary
@@ -50,7 +50,7 @@ local function SetField(field, contents, secondary, tertiary)
 		contents = L.NICKNAME:format(contents)
 	elseif field == "DE" or field == "MO" or field == "HI" then
 		-- Link URLs in scrolling fields.
-		contents = xrp.Link(contents)
+		contents = AddOn.LinkURLs(contents)
 	end
 	XRPViewer.fields[field]:SetText(contents)
 end

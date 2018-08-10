@@ -180,7 +180,7 @@ local function RenderTooltip()
 		end
 		if showProfile then
 			local CU, CO = AddOn_XRP.RemoveTextFormats(character.CU), AddOn_XRP.RemoveTextFormats(character.CO)
-			RenderLine(true, (CU or CO) and CU_FORMAT:format(xrp.MergeCurrently(xrp.Link(CU), xrp.Link(CO))), nil, 0.9, 0.7, 0.6)
+			RenderLine(true, (CU or CO) and CU_FORMAT:format(AddOn.MergeCurrently(AddOn.LinkURLs(CU), AddOn.LinkURLs(CO))), nil, 0.9, 0.7, 0.6)
 		end
 		local RA = showProfile and not AddOn.Settings.tooltipHideRace and AddOn_XRP.RemoveTextFormats(character.RA) or Values.GR[character.GR] or UNKNOWN
 		local RAlen = #RA
