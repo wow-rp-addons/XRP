@@ -63,7 +63,7 @@ function AddOn_XRP.UnregisterEventCallback(event, callback)
 	end
 	for i, regCallback in ipairs(EventCallbacks[event]) do
 		if callback == regCallback then
-			table.remove(EventCallbacks, i)
+			table.remove(EventCallbacks[event], i)
 			return
 		end
 	end

@@ -53,8 +53,9 @@ function AddOn.UnregisterGameEventCallback(event, callback)
 			if #GameEventCallbacks[event] == 1 then
 				GameEventCallbacks[event] = nil
 				frame:UnregisterEvent(event)
+			else
+				table.remove(GameEventCallbacks[event], i)
 			end
-			table.remove(GameEventCallbacks, i)
 			return
 		end
 	end
