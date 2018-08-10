@@ -259,21 +259,6 @@ function byUnitMetatable:__index(unit)
 	end
 	local character = AddOn_XRP.Characters.byGUID[UnitGUID(unit)]
 	if not character then
-		if UnitIsPlayer(unit) then
-			-- Awkward fallback return because Blizzard can't get their
-			-- functions to work reliably too often.
-			return {
-				GC = select(2, UnitClass(unit)),
-				GF = UnitFactionGroup(unit),
-				GR = select(2, UnitRace(unit)),
-				GS = tostring(UnitSex(unit)),
-				GU = GU,
-				id = xrp.UnitCharacterID(unit), 
-				name = UNKNOWN,
-				realm = UNKNOWN,
-				fullDisplayName = L.NAME_REALM:format(UNKNOWN, UNKNOWN),
-			}
-		end
 		return nil
 	end
 	local characterID = character.id

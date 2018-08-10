@@ -287,7 +287,8 @@ local PET_TYPE_CLASS = {
 	[L.PET_DEMON] = "WARLOCK",
 }
 local function SetUnit(unit)
-	currentUnit.type = UnitIsPlayer(unit) and "player" or replace and UnitPlayerControlled(unit) and not UnitIsBattlePet(unit) and "pet"
+	local character = AddOn_XRP.Characters.byUnit[unit]
+	currentUnit.type = character and "player" or replace and UnitPlayerControlled(unit) and not UnitIsBattlePet(unit) and "pet"
 	if not currentUnit.type then return end
 
 	local defaultLines = 3
@@ -298,7 +299,6 @@ local function SetUnit(unit)
 	local attackMe = UnitCanAttack(unit, "player")
 	local meAttack = UnitCanAttack("player", unit)
 	if currentUnit.type == "player" then
-		local character = AddOn_XRP.Characters.byUnit[unit]
 		currentUnit.character = character
 
 		local inRaid = UnitInRaid(unit)
@@ -382,7 +382,7 @@ local function SetUnit(unit)
 
 		if not owner or not petLabel then return end
 
-		local character = AddOn_XRP.Characters.byName[owner]
+		character = AddOn_XRP.Characters.byName[owner]
 		currentUnit.character = character
 
 		local isOwnPet = UnitIsUnit(unit, "playerpet") or owner == AddOn.characterName
