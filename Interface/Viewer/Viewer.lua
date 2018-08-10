@@ -35,7 +35,7 @@ local function SetField(field, contents, secondary, tertiary)
 		contents = xrp.MergeCurrently(xrp.Link(contents), xrp.Link(xrp.Strip(secondary, true)))
 	elseif secondary then
 		if field == "NA" then
-			contents = xrp.CharacterIDToName(secondary)
+			contents = secondary
 		elseif field =="RA" then
 			contents = xrp.L.VALUES.GR[secondary]
 		elseif field =="RC" then
@@ -56,7 +56,7 @@ end
 local function Load(character)
 	for i, field in ipairs(DISPLAY) do
 		local contents = character[field]
-		SetField(field, contents, field == "CU" and character.CO or not contents and (field == "NA" and character.id or field == "RA" and character.GR or field == "RC" and character.GC), not contents and field == "RC" and character.GS)
+		SetField(field, contents, field == "CU" and character.CO or not contents and (field == "NA" and character.name or field == "RA" and character.GR or field == "RC" and character.GC), not contents and field == "RC" and character.GS)
 	end
 	XRPViewer.XC:SetText("")
 	failed = nil
@@ -88,7 +88,7 @@ local function FIELD(event, name, field)
 	end
 	if SUPPORTED[field] then
 		local contents = current[field]
-		SetField(field, contents, field == "CU" and current.CO or not contents and (field == "NA" and character.id or field == "RA" and current.GR or field == "RC" and current.GC), not contents and field == "RC" and current.GS)
+		SetField(field, contents, field == "CU" and current.CO or not contents and (field == "NA" and character.name or field == "RA" and current.GR or field == "RC" and current.GC), not contents and field == "RC" and current.GS)
 		lastUpdate = GetTime()
 	end
 end
@@ -166,25 +166,20 @@ local function Menu_Click(self, arg1, arg2, checked)
 		end
 	elseif arg1 == "XRP_FRIEND" then
 		local name = current.id
-		AddOrRemoveFriend(Ambiguate(name, "none"), xrp.Strip(current.NA) or xrp.CharacterIDToName(name))
+		AddOrRemoveFriend(Ambiguate(name, "none"), xrp.Strip(current.NA) or current.name)
 	elseif arg1 == "XRP_BOOKMARK" then
 		current.bookmark = not checked
 	elseif arg1 == "XRP_HIDE" then
 		current.hide = not checked
 	elseif arg1 == "XRP_EXPORT" then
-		XRPExport:Export(xrp.CharacterIDToName(current.id), current.exportPlainText)
+		XRPExport:Export(current.name, current.exportPlainText)
 	elseif arg1 == "XRP_REPORT" then
-		local fullName = current.id
-		local name, realm = fullName:match("^([^%-]+)%-([^%-]+)$")
-		local prettyRealm = xrp.RealmDisplayName(realm)
 		local approxTime = ("%02d:%02d"):format(GetGameTime())
-		StaticPopup_Show("XRP_REPORT", Ambiguate(fullName, "none"), nil, L"Logged addon message prefix: MSP; Player name: %s; Realm name: %s; Approximate game time: %s":format(name, prettyRealm, approxTime))
+		StaticPopup_Show("XRP_REPORT", nil, nil, L"Logged addon message prefix: MSP; Player name: %s; Realm name: %s; Approximate game time: %s":format(character.name, character.realm, approxTime))
 	elseif arg1 == "XRP_REFRESH_FORCE" then
-		local name, realm = current.id:match("^([^%-]+)%-([^%-]+)")
-		StaticPopup_Show("XRP_FORCE_REFRESH", L.NAME_REALM:format(name, xrp.RealmDisplayName(realm)), nil, current)
+		StaticPopup_Show("XRP_FORCE_REFRESH", current.fullDisplayName, nil, current)
 	elseif arg1 == "XRP_CACHE_DROP" then
-		local name, realm = current.id:match("^([^%-]+)%-([^%-]+)")
-		StaticPopup_Show("XRP_CACHE_SINGLE", L.NAME_REALM:format(name, xrp.RealmDisplayName(realm)), nil, current)
+		StaticPopup_Show("XRP_CACHE_SINGLE", current.fullDisplayName, nil, current)
 	end
 	if arg2 then -- Second-level menu.
 		CloseDropDownMenus()
@@ -402,7 +397,7 @@ XRPViewer_Mixin = {
 			if not isUnit then
 				local unit = Ambiguate(player, "none")
 				isUnit = UnitExists(unit)
-				player = isUnit and unit or xrp.BuildCharacterID(player):gsub("^%l", string.upper)
+				player = isUnit and unit or player:gsub("^%l", string.upper)
 			end
 			character = isUnit and AddOn_XRP.Characters.byUnit[player] or AddOn_XRP.Characters.byName[player]
 		end

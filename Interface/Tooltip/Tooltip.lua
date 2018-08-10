@@ -153,7 +153,7 @@ local function RenderTooltip()
 				return
 			end
 		end
-		RenderLine(false, currentUnit.nameFormat:format(showProfile and xrp.Strip(character.NA) or xrp.CharacterIDToName(character.id)), currentUnit.icons)
+		RenderLine(false, currentUnit.nameFormat:format(showProfile and xrp.Strip(character.NA) or character.name), currentUnit.icons)
 		if replace and currentUnit.reaction then
 			RenderLine(false, currentUnit.reaction, nil, 1, 1, 1)
 		end
@@ -210,7 +210,7 @@ local function RenderTooltip()
 			end
 		end
 		local color = COLORS[currentUnit.faction]
-		RenderLine(false, currentUnit.titleRealm:format(showProfile and xrp.Strip(character.NA) or xrp.CharacterIDToName(character.id)), nil, color.r, color.g, color.b)
+		RenderLine(false, currentUnit.titleRealm:format(showProfile and xrp.Strip(character.NA) or character.name), nil, color.r, color.g, color.b)
 		RenderLine(false, currentUnit.info, nil, 1, 1, 1)
 	end
 
@@ -335,8 +335,8 @@ local function SetUnit(unit)
 			if realm == AddOn.characterRealm then
 				realm = nil
 			end
-			local name = UnitPVPName(unit) or xrp.CharacterIDToName(character.id)
-			currentUnit.titleRealm = (colorblind and L.ASIDE or "%s"):format(realm and L.NAME_REALM:format(name, xrp.RealmDisplayName(realm)) or name, colorblind and xrp.L.VALUES.GF[currentUnit.faction])
+			local name = UnitPVPName(unit) or character.name
+			currentUnit.titleRealm = (colorblind and L.ASIDE or "%s"):format(realm and character.fullDisplayName or name, colorblind and xrp.L.VALUES.GF[currentUnit.faction])
 
 			local GS = colorblind and character.GS
 			currentUnit.reaction = colorblind and GetText(REACTION:format(UnitReaction("player", unit)), tonumber(GS))
@@ -411,7 +411,7 @@ local function SetUnit(unit)
 		end
 
 		local realm = owner:match("%-([^%-]+)$")
-		currentUnit.titleRealm = (colorblind and L.ASIDE or "%s"):format(realm and L.NAME_REALM:format(petLabel, xrp.RealmDisplayName(realm)) or petLabel, colorblind and xrp.L.VALUES.GF[currentUnit.faction])
+		currentUnit.titleRealm = (colorblind and L.ASIDE or "%s"):format(realm and character.fullDisplayName or petLabel, colorblind and xrp.L.VALUES.GF[currentUnit.faction])
 
 		currentUnit.reaction = colorblind and GetText(REACTION:format(UnitReaction("player", unit)), UnitSex(unit))
 

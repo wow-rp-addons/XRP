@@ -37,13 +37,6 @@ function xrp.BuildCharacterID(name, realm)
 	return AddOn_Chomp.NameMergedRealm(name, realm)
 end
 
-function xrp.CharacterIDToName(characterID)
-	if type(characterID) ~= "string" then
-		return UNKNOWN
-	end
-	return characterID:match("^([^%-]+)")
-end
-
 -- Realms just needing title case spacing are handled via gsub. These are more
 -- complex, such as lower case words or dashes.
 local SPECIAL_REALMS = {
@@ -85,12 +78,15 @@ local SPECIAL_REALMS = {
 	["불타는군단"] = "불타는 군단",
 }
 
-function xrp.RealmDisplayName(realm)
-	if type(realm) ~= "string" or realm == "" then
-		return UNKNOWN
+function AddOn.SplitCharacterID(characterID)
+	if not characterID then
+		return UNKNOWN, UNKNOWN
+	elseif type(characterID) ~= "string" then
+		error("XRP: AddOn.SplitCharacterID(): characterID: expected string, got " .. type(characterID), 2)
 	end
-	-- gsub: spaces lower followed by upper/number (i.e., Wyrmrest Accord).
-	return SPECIAL_REALMS[realm] or (realm:gsub("(%l)([%u%d])", "%1 %2"))
+	local name, realm = characterID:match("^([^%-]+)%-(.+)$")
+	realm = SPECIAL_REALMS[realm] or (realm:gsub("(%l)([%u%d])", "%1 %2"))
+	return name, realm
 end
 
 function AddOn.SanitizeText(text)

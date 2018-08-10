@@ -78,7 +78,9 @@ function CharacterMetatable:__index(index)
 		error("AddOn_XRP.Characters: CharacterTable: expected string index, got " .. type(index), 2)
 	end
 	local characterID = CharacterIDMap[self]
-	if index:find("^%u%u$") then
+	if index == "id" then
+		return characterID
+	elseif index:find("^%u%u$") then
 		local field = index
 		if unitCache[characterID] and unitCache[characterID][field] then
 			return unitCache[characterID][field]
@@ -95,10 +97,17 @@ function CharacterMetatable:__index(index)
 			return contents
 		end
 		return nil
+	elseif index == "name" then
+		local name, realm = AddOn.SplitCharacterID(characterID)
+		return name
+	elseif index == "realm" then
+		local name, realm = AddOn.SplitCharacterID(characterID)
+		return realm
+	elseif index == "fullDisplayName" then
+		local name, realm = AddOn.SplitCharacterID(characterID)
+		return L.NAME_REALM:format(name, realm)
 	elseif CharacterMethods[index] then
 		return CharacterMethods[index]
-	elseif index == "id" then
-		return characterID
 	elseif index == "offline" then
 		return OfflineMap[self] or false
 	elseif index == "canRefresh" then
@@ -117,9 +126,7 @@ function CharacterMetatable:__index(index)
 		if not xrpCache[characterID] then
 			return ""
 		end
-		local name, realm = characterID:match("^([^%-]+)%-([^%-]+)$")
-		realm = xrp.RealmDisplayName(realm)
-		return AddOn.ExportText(L.NAME_REALM:format(name, realm), xrpCache[characterID].fields)
+		return AddOn.ExportText(self.fullDisplayName, xrpCache[characterID].fields)
 	end
 	error("AddOn_XRP.Characters: CharacterTable: invalid index " .. index, 2)
 end
@@ -261,7 +268,10 @@ function byUnitMetatable:__index(unit)
 				GR = select(2, UnitRace(unit)),
 				GS = tostring(UnitSex(unit)),
 				GU = GU,
-				id = xrp.UnitCharacterID(unit)
+				id = xrp.UnitCharacterID(unit), 
+				name = UNKNOWN,
+				realm = UNKNOWN,
+				fullDisplayName = L.NAME_REALM:format(UNKNOWN, UNKNOWN),
 			}
 		end
 		return nil

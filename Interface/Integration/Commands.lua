@@ -60,10 +60,9 @@ xrpCmds.edit = function(args)
 end
 
 xrpCmds.export = function(args)
-	local name = xrp.BuildCharacterID(args:match("^[^%s]+"))
-	if not name then return end
-	name = name:gsub("^%l", string.upper)
-	XRPExport:Export(xrp.CharacterIDToName(name), AddOn_XRP.Characters.byNameOffline.exportPlainText)
+	local character = AddOn_XRP.Characters.byNameOffline[args:gsub("^%l", string.upper)]
+	if not character then return end
+	XRPExport:Export(character.name, character.exportPlainText)
 end
 
 local USAGE = XRP_HEADER:format(("|cff9482c9%s|r %%s"):format(STAT_FORMAT:format(L.USAGE)))

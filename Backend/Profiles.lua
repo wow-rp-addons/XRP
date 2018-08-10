@@ -246,7 +246,7 @@ local fieldsMeta = {
 				fields[field] = contents
 			end
 		end
-		return AddOn.ExportText(("%s - %s"):format(L.NAME_REALM:format(AddOn.characterName, xrp.RealmDisplayName(AddOn.characterRealm)), name), fields)
+		return AddOn.ExportText(("%s - %s"):format(L.NAME_REALM:format(AddOn.SplitCharacterID(AddOn.characterID)), name), fields)
 	end,
 	__metatable = false,
 }

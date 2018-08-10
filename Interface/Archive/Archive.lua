@@ -51,10 +51,10 @@ function XRPArchiveList_update(self, force)
 		if index <= matches then
 			if force or button.character ~= character then
 				button.character = character
-				local name, realm = character.id:match("^([^%-]+)%-([^%-]+)$")
+				local name, realm = character.name, character.realm
 				button.NA:SetText(xrp.Strip(character.NA) or name)
 				button.Name:SetText(name)
-				button.Realm:SetText(xrp.RealmDisplayName(realm))
+				button.Realm:SetText(realm)
 				local GR = character.GR
 				local RA = xrp.Strip(character.RA) or xrp.L.VALUES.GR[GR]
 				if RA then
@@ -175,7 +175,7 @@ local function Menu_Click(self, arg1, arg2, checked)
 	elseif arg1 == "XRP_FRIEND" then
 		local character = UIDROPDOWNMENU_INIT_MENU.character
 		local characterID = character.id
-		AddOrRemoveFriend(Ambiguate(characterID, "none"), xrp.Strip(character.NA) or xrp.CharacterIDToName(characterID))
+		AddOrRemoveFriend(Ambiguate(characterID, "none"), xrp.Strip(character.NA) or character.name)
 	elseif arg1 == "XRP_BOOKMARK" then
 		UIDROPDOWNMENU_INIT_MENU.character.bookmark = not checked
 		if request.bookmark then
@@ -190,10 +190,10 @@ local function Menu_Click(self, arg1, arg2, checked)
 		end
 	elseif arg1 == "XRP_EXPORT" then
 		local character = UIDROPDOWNMENU_INIT_MENU.character
-		XRPExport:Export(xrp.CharacterIDToName(character.id), character.exportPlainText)
+		XRPExport:Export(character.name, character.exportPlainText)
 	elseif arg1 == "XRP_CACHE_DROP" then
 		local name, realm = UIDROPDOWNMENU_INIT_MENU.character.id:match("^([^%-]+)%-([^%-]+)")
-		StaticPopup_Show("XRP_CACHE_SINGLE", L.NAME_REALM:format(name, xrp.RealmDisplayName(realm)), nil, UIDROPDOWNMENU_INIT_MENU.character)
+		StaticPopup_Show("XRP_CACHE_SINGLE", UIDROPDOWNMENU_INIT_MENU.character.fullDisplayName, nil, UIDROPDOWNMENU_INIT_MENU.character)
 	end
 	if UIDROPDOWNMENU_MENU_LEVEL > 1 then
 		CloseDropDownMenus()
@@ -436,7 +436,7 @@ end
 
 function XRPArchiveNotes_OnAttributeChanged(self, name, value)
 	if name == "character" then
-		self.Title:SetText(xrp.CharacterIDToName(value.id))
+		self.Title:SetText(value.name)
 	end
 end
 
