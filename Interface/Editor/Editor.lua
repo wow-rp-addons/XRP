@@ -18,13 +18,16 @@
 local FOLDER_NAME, AddOn = ...
 local L = AddOn.GetText
 
+local Names, Values = AddOn_XRP.Strings.Names, AddOn_XRP.Strings.Values
+local MenuNames, MenuValues = AddOn_XRP.Strings.MenuNames, AddOn_XRP.Strings.MenuValues
+
 local function FallbackFieldContents(field)
 	if AddOn.FallbackFields[field] then
 		return AddOn.FallbackFields[field]
 	elseif field == "RA" then
-		return xrp.L.VALUES.GR[select(2, UnitRace("player"))]
+		return Values.GR[select(2, UnitRace("player"))]
 	elseif field == "RC" then
-		return xrp.L.VALUES.GC["1"][select(2, UnitClass("player"))]
+		return Values.GC["1"][select(2, UnitClass("player"))]
 	end
 	return nil
 end
@@ -189,7 +192,7 @@ end
 local baseMenuList = {}
 for i = 0, 4 do
 	local s = tostring(i)
-	baseMenuList[i + 1] = { text = xrp.L.MENU_VALUES.FC[s], checked = Checked, arg1 = i ~= 0 and s or nil, func = FC_Click }
+	baseMenuList[i + 1] = { text = MenuValues.FC[s], checked = Checked, arg1 = i ~= 0 and s or nil, func = FC_Click }
 end
 XRPEditorFC_baseMenuList = baseMenuList
 
@@ -217,7 +220,7 @@ end
 function XRPEditorDropDown_OnAttributeChanged(self, name, value)
 	if name == "contents" then
 		self.contents = value
-		self.Text:SetText(xrp.L.MENU_VALUES[self.field][value or "0"])
+		self.Text:SetText(MenuValues[self.field][value or "0"])
 	elseif name == "inherited" then
 		if value == true and not self.inherited then
 			self.Text:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b)
@@ -230,7 +233,7 @@ function XRPEditorDropDown_OnAttributeChanged(self, name, value)
 end
 
 function XRPEditorControls_OnLoad(self)
-	local fieldName = xrp.L.FIELDS[self.field] or L[self.labelKey]
+	local fieldName = Names[self.field] or L[self.labelKey]
 	self.Label:SetText(fieldName)
 	if self.EditBox then
 		self.EditBox.field = self.field

@@ -18,6 +18,8 @@
 local FOLDER_NAME, AddOn = ...
 local L = AddOn.GetText
 
+local Names = AddOn_XRP.Strings.Names
+
 -- Fields to export.
 local EXPORT_FIELDS = { "NA", "NI", "NT", "NH", "RA", "RC", "AE", "AH", "AW", "AG", "HH", "HB", "CU", "MO", "DE", "HI" }
 local ALLOW_INDENT = { CU = true, MO = true, DE = true, HI = true }
@@ -38,13 +40,13 @@ end
 
 for i, field in ipairs(EXPORT_FIELDS) do
 	if field == "NI" then
-		EXPORT_FORMATS[field] = QUOTED:format(xrp.L.FIELDS[field])
+		EXPORT_FORMATS[field] = QUOTED:format(Names[field])
 	elseif field == "CU" or field =="MO" then
-		EXPORT_FORMATS[field] = SPACED:format(xrp.L.FIELDS[field])
+		EXPORT_FORMATS[field] = SPACED:format(Names[field])
 	elseif field == "DE" or field == "HI" then
-		EXPORT_FORMATS[field] = UNDERLINED(xrp.L.FIELDS[field])
+		EXPORT_FORMATS[field] = UNDERLINED(Names[field])
 	else
-		EXPORT_FORMATS[field] = SIMPLE:format(xrp.L.FIELDS[field])
+		EXPORT_FORMATS[field] = SIMPLE:format(Names[field])
 	end
 end
 

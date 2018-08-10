@@ -18,6 +18,8 @@
 local FOLDER_NAME, AddOn = ...
 local L = AddOn.GetText
 
+local Names, Values = AddOn_XRP.Strings.Names, AddOn_XRP.Strings.Values
+
 local current, status, failed, lastUpdate
 
 -- This will request fields in the order listed.
@@ -37,9 +39,9 @@ local function SetField(field, contents, secondary, tertiary)
 		if field == "NA" then
 			contents = secondary
 		elseif field =="RA" then
-			contents = xrp.L.VALUES.GR[secondary]
+			contents = Values.GR[secondary]
 		elseif field =="RC" then
-			contents = xrp.L.VALUES.GC[tertiary or "1"][secondary]
+			contents = Values.GC[tertiary or "1"][secondary]
 		end
 	end
 	if not contents then
@@ -202,7 +204,7 @@ XRPViewerMenu_baseMenuList = {
 
 function XRPViewerControls_OnLoad(self)
 	if self.Label then
-		self.Label:SetText(xrp.L.FIELDS[self.field])
+		self.Label:SetText(Names[self.field])
 	end
 	if self.field then
 		if not XRPViewer.fields then

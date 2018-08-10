@@ -18,6 +18,8 @@
 local FOLDER_NAME, AddOn = ...
 local L = AddOn.GetText
 
+local Values = AddOn_XRP.Strings.Values
+
 local SLASH_XRP = L"/xrp"
 local INFO = STAT_FORMAT:format("|cff99b3e6%s") .. "|r %s"
 local XRP_HEADER = ("|cffffd100<|r|cffabd473%s|r|cffffd100>:|r %%s"):format(GetAddOnMetadata(FOLDER_NAME, "Title"))
@@ -144,19 +146,19 @@ xrpCmds.status = function(args)
 	if args == "nil" or args == L.ARG_STATUS_NIL then
 		AddOn_XRP.SetField("FC", nil)
 		local FC = AddOn_XRP.Characters.byUnit.player.FC
-		print(XRP_HEADER:format(L"Status set to: %s (from active profile).":format(xrp.L.VALUES.FC[FC] or FC or NONE)))
+		print(XRP_HEADER:format(L"Status set to: %s (from active profile).":format(Values.FC[FC] or FC or NONE)))
 	elseif args == "ooc" or args == L.ARG_STATUS_OOC then
 		AddOn_XRP.SetField("FC", "1")
-		print(XRP_HEADER:format(L"Status set to: %s.":format(xrp.L.VALUES.FC["1"])))
+		print(XRP_HEADER:format(L"Status set to: %s.":format(Values.FC["1"])))
 	elseif args == "ic" or args == L.ARG_STATUS_IC then
 		AddOn_XRP.SetField("FC", "2")
-		print(XRP_HEADER:format(L"Status set to: %s.":format(xrp.L.VALUES.FC["2"])))
+		print(XRP_HEADER:format(L"Status set to: %s.":format(Values.FC["2"])))
 	elseif args == "lfc" or args == L.ARG_STATUS_LFC then
 		AddOn_XRP.SetField("FC", "3")
-		print(XRP_HEADER:format(L"Status set to: %s.":format(xrp.L.VALUES.FC["3"])))
+		print(XRP_HEADER:format(L"Status set to: %s.":format(Values.FC["3"])))
 	elseif args == "st" or args == L.ARG_STATUS_ST then
 		AddOn_XRP.SetField("FC", "4")
-		print(XRP_HEADER:format(L"Status set to: %s.":format(xrp.L.VALUES.FC["4"])))
+		print(XRP_HEADER:format(L"Status set to: %s.":format(Values.FC["4"])))
 	else
 		xrpCmds.help("status")
 	end
@@ -165,7 +167,7 @@ end
 xrpCmds.toggle = function(args)
 	xrp.Status()
 	local FC = AddOn_XRP.Characters.byUnit.player.FC
-	print(XRP_HEADER:format(L"Status set to: %s.":format(xrp.L.VALUES.FC[FC] or FC or NONE)))
+	print(XRP_HEADER:format(L"Status set to: %s.":format(Values.FC[FC] or FC or NONE)))
 end
 
 xrpCmds.view = function(args)

@@ -42,10 +42,10 @@ local function AltToggle(setting, settingName)
 		local raceUpperValue = "VALUE_GR_" .. raceName:upper()
 		local raceUpperAltValue = raceUpperValue .. "_ALT"
 		if needsSetting then
-			xrp.L.VALUES.GR[raceName] = L[raceUpperAltValue]
+			AddOn_XRP.Strings.Values.GR[raceName] = L[raceUpperAltValue]
 			AddOn.SettingsToggles[forceSetting](AddOn.Settings[forceSetting], forceSetting)
 		else
-			xrp.L.VALUES.GR[raceName] = L[raceUpperValue]
+			AddOn_XRP.Strings.Values.GR[raceName] = L[raceUpperValue]
 			AddOn.SettingsToggles[forceSetting](false, forceSetting)
 		end
 	end

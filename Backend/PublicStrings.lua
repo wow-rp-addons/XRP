@@ -23,118 +23,121 @@
 local FOLDER_NAME, AddOn = ...
 local L = AddOn.GetText
 
-xrp.L = {
-	FIELDS = {
-		NA = L.FIELD_NA,
-		NI = L.FIELD_NI,
-		NT = L.FIELD_NT,
-		NH = L.FIELD_NH,
-		AH = L.FIELD_AH,
-		AW = L.FIELD_AW,
-		AE = L.FIELD_AE,
-		RA = L.FIELD_RA,
-		RC = L.FIELD_RC,
-		CU = L.FIELD_CU,
-		DE = L.FIELD_DE,
-		AG = L.FIELD_AG,
-		HH = L.FIELD_HH,
-		HB = L.FIELD_HB,
-		MO = L.FIELD_MO,
-		HI = L.FIELD_HI,
-		FR = L.FIELD_FR,
-		FC = L.FIELD_FC,
-		VA = L.FIELD_VA,
-		-- Read-only.
-		CO = L.FIELD_CO,
-		-- Metadata fields.
-		VP = L.FIELD_VP,
-		GC = L.FIELD_GC,
-		GF = L.FIELD_GF,
-		GR = L.FIELD_GR,
-		GS = L.FIELD_GS,
-		GU = L.FIELD_GU,
-		-- Unimplemented.
-		IC = L.FIELD_IC,
-	},
-	VALUES = {
-		FC = {
-			["1"] = L.VALUE_FC_1,
-			["2"] = L.VALUE_FC_2,
-			["3"] = L.VALUE_FC_3,
-			["4"] = L.VALUE_FC_4,
-		},
-		FR = {
-			["1"] = L.VALUE_FR_1,
-			["2"] = L.VALUE_FR_2,
-			["3"] = L.VALUE_FR_3,
-			["4"] = L.VALUE_FR_4,
-		},
-		GC = setmetatable({
-			["2"] = FillLocalizedClassList({}, false), -- Male forms
-			["3"] = FillLocalizedClassList({}, true), -- Female forms
-		}, { __index = function(self, key) return rawget(self, "1") end }),
-		GF = {
-			Alliance = FACTION_ALLIANCE,
-			Horde = FACTION_HORDE,
-			Neutral = L.VALUE_GF_NEUTRAL,
-		},
-		GR = {
-			BloodElf = L.VALUE_GR_BLOODELF,
-			Draenei = L.VALUE_GR_DRAENEI,
-			DarkIronDwarf = L.VALUE_GR_DARKIRONDWARF,
-			Dwarf = L.VALUE_GR_DWARF,
-			Gnome = L.VALUE_GR_GNOME,
-			Goblin = L.VALUE_GR_GOBLIN,
-			HighmountainTauren = L.VALUE_GR_HIGHMOUNTAINTAUREN,
-			Human = L.VALUE_GR_HUMAN,
-			KulTiran = L.VALUE_GR_KULTIRAN,
-			LightforgedDraenei = L.VALUE_GR_LIGHTFORGEDDRAENEI,
-			MagharOrc = L.VALUE_GR_MAGHARORC,
-			NightElf = L.VALUE_GR_NIGHTELF,
-			Nightborne = L.VALUE_GR_NIGHTBORNE,
-			Orc = L.VALUE_GR_ORC,
-			Pandaren = L.VALUE_GR_PANDAREN,
-			Scourge = L.VALUE_GR_SCOURGE,
-			Tauren = L.VALUE_GR_TAUREN,
-			Troll = L.VALUE_GR_TROLL,
-			VoidElf = L.VALUE_GR_VOIDELF,
-			Worgen = L.VALUE_GR_WORGEN,
-			ZandalariTroll = L.VALUE_GR_ZANDALARITROLL,
-		},
-		GS = {
-			["1"] = UNKNOWN,
-			["2"] = MALE,
-			["3"] = FEMALE,
-		},
-	},
-}
--- Match unknown class genders to player gender.
-xrp.L.VALUES.GC["1"] = UnitSex("player") == 2 and xrp.L.VALUES.GC["2"] or xrp.L.VALUES.GC["3"]
+AddOn_XRP.Strings = {}
 
-xrp.L.MENU_FIELDS = setmetatable({
-	FR = L.FIELD_FR_MENU,
-	FC = L.FIELD_FC_MENU,
-	-- Metadata fields.
-	VP = L.FIELD_VP_MENU,
-	GC = L.FIELD_GC_MENU,
-	GF = L.FIELD_GF_MENU,
-	GR = L.FIELD_GR_MENU,
-	GS = L.FIELD_GS_MENU,
-}, { __index = xrp.L.FIELDS })
+local Names = {}
+Names.NA = L.FIELD_NA
+Names.NI = L.FIELD_NI
+Names.NT = L.FIELD_NT
+Names.NH = L.FIELD_NH
+Names.AH = L.FIELD_AH
+Names.AW = L.FIELD_AW
+Names.AE = L.FIELD_AE
+Names.RA = L.FIELD_RA
+Names.RC = L.FIELD_RC
+Names.CU = L.FIELD_CU
+Names.DE = L.FIELD_DE
+Names.AG = L.FIELD_AG
+Names.HH = L.FIELD_HH
+Names.HB = L.FIELD_HB
+Names.MO = L.FIELD_MO
+Names.HI = L.FIELD_HI
+Names.FR = L.FIELD_FR
+Names.FC = L.FIELD_FC
+Names.VA = L.FIELD_VA
+Names.CO = L.FIELD_CO
+Names.IC = L.FIELD_IC
+-- Metadata fields.
+Names.VP = L.FIELD_VP
+Names.GC = L.FIELD_GC
+Names.GF = L.FIELD_GF
+Names.GR = L.FIELD_GR
+Names.GS = L.FIELD_GS
+Names.GU = L.FIELD_GU
 
-xrp.L.MENU_VALUES = setmetatable({
-	FC = {
-		["0"] = PARENS_TEMPLATE:format(NONE),
-		["1"] = L.VALUE_FC_1_MENU,
-		["2"] = L.VALUE_FC_2_MENU,
-		["3"] = L.VALUE_FC_3_MENU,
-		["4"] = L.VALUE_FC_4_MENU,
-	},
-	FR = {
-		["0"] = PARENS_TEMPLATE:format(NONE),
-		["1"] = L.VALUE_FR_1_MENU,
-		["2"] = L.VALUE_FR_2_MENU,
-		["3"] = L.VALUE_FR_3_MENU,
-		["4"] = L.VALUE_FR_4_MENU,
-	},
-}, { __index = xrp.L.VALUES })
+local MenuNames = setmetatable({}, { __index = Names })
+MenuNames.FR = L.FIELD_FR_MENU
+MenuNames.FC = L.FIELD_FC_MENU
+-- Metadata fields.
+MenuNames.VP = L.FIELD_VP_MENU
+MenuNames.GC = L.FIELD_GC_MENU
+MenuNames.GF = L.FIELD_GF_MENU
+MenuNames.GR = L.FIELD_GR_MENU
+MenuNames.GS = L.FIELD_GS_MENU
+
+local Values = {}
+
+Values.FC = {}
+Values.FC["1"] = L.VALUE_FC_1
+Values.FC["2"] = L.VALUE_FC_2
+Values.FC["3"] = L.VALUE_FC_3
+Values.FC["4"] = L.VALUE_FC_4
+
+Values.FR = {}
+Values.FR["1"] = L.VALUE_FR_1
+Values.FR["2"] = L.VALUE_FR_2
+Values.FR["3"] = L.VALUE_FR_3
+Values.FR["4"] = L.VALUE_FR_4
+
+Values.GC = setmetatable({}, {
+	__index = function(self, key)
+		-- Randomly select male or female when unknown.
+		return self[tostring(fastrandom(2, 3))]
+	end,
+})
+Values.GC["2"] = FillLocalizedClassList({}, false) -- Male forms
+Values.GC["3"] = FillLocalizedClassList({}, true) -- Female forms
+
+Values.GF = {}
+Values.GF.Alliance = FACTION_ALLIANCE
+Values.GF.Horde = FACTION_HORDE
+Values.GF.Neutral = L.VALUE_GF_NEUTRAL
+
+Values.GR = {}
+Values.GR.BloodElf = L.VALUE_GR_BLOODELF
+Values.GR.Draenei = L.VALUE_GR_DRAENEI
+Values.GR.DarkIronDwarf = L.VALUE_GR_DARKIRONDWARF
+Values.GR.Dwarf = L.VALUE_GR_DWARF
+Values.GR.Gnome = L.VALUE_GR_GNOME
+Values.GR.Goblin = L.VALUE_GR_GOBLIN
+Values.GR.HighmountainTauren = L.VALUE_GR_HIGHMOUNTAINTAUREN
+Values.GR.Human = L.VALUE_GR_HUMAN
+Values.GR.KulTiran = L.VALUE_GR_KULTIRAN
+Values.GR.LightforgedDraenei = L.VALUE_GR_LIGHTFORGEDDRAENEI
+Values.GR.MagharOrc = L.VALUE_GR_MAGHARORC
+Values.GR.NightElf = L.VALUE_GR_NIGHTELF
+Values.GR.Nightborne = L.VALUE_GR_NIGHTBORNE
+Values.GR.Orc = L.VALUE_GR_ORC
+Values.GR.Pandaren = L.VALUE_GR_PANDAREN
+Values.GR.Scourge = L.VALUE_GR_SCOURGE
+Values.GR.Tauren = L.VALUE_GR_TAUREN
+Values.GR.Troll = L.VALUE_GR_TROLL
+Values.GR.VoidElf = L.VALUE_GR_VOIDELF
+Values.GR.Worgen = L.VALUE_GR_WORGEN
+Values.GR.ZandalariTroll = L.VALUE_GR_ZANDALARITROLL
+
+Values.GS = {}
+Values.GS["1"] = UNKNOWN
+Values.GS["2"] = MALE
+Values.GS["3"] = FEMALE
+
+local MenuValues = setmetatable({}, { __index = Values })
+
+MenuValues.FC = setmetatable({}, { __index = Values.FC })
+MenuValues.FC["0"] = PARENS_TEMPLATE:format(NONE)
+MenuValues.FC["1"] = L.VALUE_FC_1_MENU
+MenuValues.FC["2"] = L.VALUE_FC_2_MENU
+MenuValues.FC["3"] = L.VALUE_FC_3_MENU
+MenuValues.FC["4"] = L.VALUE_FC_4_MENU
+
+MenuValues.FR = setmetatable({}, { __index = Values.FR })
+MenuValues.FR["0"] = PARENS_TEMPLATE:format(NONE)
+MenuValues.FR["1"] = L.VALUE_FR_1_MENU
+MenuValues.FR["2"] = L.VALUE_FR_2_MENU
+MenuValues.FR["3"] = L.VALUE_FR_3_MENU
+MenuValues.FR["4"] = L.VALUE_FR_4_MENU
+
+AddOn_XRP.Strings.Names = Names
+AddOn_XRP.Strings.Values = Values
+AddOn_XRP.Strings.MenuNames = MenuNames
+AddOn_XRP.Strings.MenuValues = MenuValues

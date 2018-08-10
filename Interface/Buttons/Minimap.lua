@@ -19,6 +19,9 @@
 local FOLDER_NAME, AddOn = ...
 local L = AddOn.GetText
 
+local Names, Values = AddOn_XRP.Strings.Names, AddOn_XRP.Strings.Values
+local MenuNames, MenuValues = AddOn_XRP.Strings.MenuNames, AddOn_XRP.Strings.MenuValues
+
 local Button, LDBObject
 
 local TEXTURES = {
@@ -48,7 +51,7 @@ local function XRPButton_UpdateIcon()
 		end
 		if LDBObject then
 			LDBObject.icon = "Interface\\FriendsFrame\\StatusIcon-DnD"
-			LDBObject.text = xrp.L.MENU_VALUES.FC["1"]
+			LDBObject.text = MenuValues.FC["1"]
 		end
 	else
 		if Button then
@@ -57,7 +60,7 @@ local function XRPButton_UpdateIcon()
 		end
 		if LDBObject then
 			LDBObject.icon = "Interface\\FriendsFrame\\StatusIcon-Online"
-			LDBObject.text = xrp.L.MENU_VALUES.FC["2"]
+			LDBObject.text = MenuValues.FC["2"]
 		end
 	end
 end
@@ -68,12 +71,12 @@ local function RenderTooltip(Tooltip)
 	Tooltip:AddLine(SUBTITLE_FORMAT:format(L.PROFILE, ("|cffffffff%s|r"):format(tostring(xrp.profiles.SELECTED))))
 	local FC = xrp.Strip(AddOn_XRP.Characters.byUnit.player.FC)
 	if FC and FC ~= "0" then
-		Tooltip:AddLine(SUBTITLE_FORMAT:format(L.STATUS, ("|cff%s%s|r"):format(FC == "1" and "99664d" or "66b380", xrp.L.VALUES.FC[FC] or FC)))
+		Tooltip:AddLine(SUBTITLE_FORMAT:format(L.STATUS, ("|cff%s%s|r"):format(FC == "1" and "99664d" or "66b380", Values.FC[FC] or FC)))
 	end
 	local CU = xrp.Strip(AddOn_XRP.Characters.byUnit.player.CU)
 	if CU then
 		Tooltip:AddLine(" ")
-		Tooltip:AddLine(STAT_FORMAT:format(xrp.L.FIELDS.CU))
+		Tooltip:AddLine(STAT_FORMAT:format(Names.CU))
 		Tooltip:AddLine(("%s"):format(xrp.Link(CU)), 0.9, 0.7, 0.6, true)
 	end
 	Tooltip:AddLine(" ")
@@ -108,14 +111,14 @@ local function Status_Checked(self)
 end
 for i = 0, 4 do
 	local s = tostring(i)
-	Status_menuList[i + 1] = { text = xrp.L.MENU_VALUES.FC[s], checked = Status_Checked, arg1 = i ~= 0 and s or nil, func = Status_Click, }
+	Status_menuList[i + 1] = { text = MenuValues.FC[s], checked = Status_Checked, arg1 = i ~= 0 and s or nil, func = Status_Click, }
 end
 
 local Profiles_menuList = {}
 XRPButton_baseMenuList = {
 	{ text = L.PROFILES, notCheckable = true, hasArrow = true, menuList = Profiles_menuList, },
-	{ text = xrp.L.MENU_FIELDS.FC, notCheckable = true, hasArrow = true, menuList = Status_menuList, },
-	{ text = xrp.L.MENU_FIELDS.CU .. CONTINUED, notCheckable = true, func = function() StaticPopup_Show("XRP_CURRENTLY") end, },
+	{ text = MenuNames.FC, notCheckable = true, hasArrow = true, menuList = Status_menuList, },
+	{ text = MenuNames.CU .. CONTINUED, notCheckable = true, func = function() StaticPopup_Show("XRP_CURRENTLY") end, },
 	{ text = L.ARCHIVE, notCheckable = true, func = function() XRPArchive:Toggle(1) end, },
 	{ text = L.VIEWER, notCheckable = true, func = function() XRPViewer:View() end, },
 	{ text = L.EDITOR, notCheckable = true, func = function() XRPEditor:Edit() end, },
