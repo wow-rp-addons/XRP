@@ -23,13 +23,6 @@ AddOn.WeakKeyMetatable = { __mode = "k" }
 
 function AddOn.DoNothing() end
 
-function xrp.UnitCharacterID(unit)
-	if type(unit) ~= "string" or unit ~= "player" and not UnitIsPlayer(unit) then
-		return nil
-	end
-	return AddOn_Chomp.NameMergedRealm(UnitFullName(unit))
-end
-
 function xrp.BuildCharacterID(name, realm)
 	if type(name) ~= "string" or name == "" then
 		return nil
@@ -271,5 +264,5 @@ function xrp.Status(desiredStatus)
 	end
 end
 
-AddOn.characterID = xrp.UnitCharacterID("player")
+AddOn.characterID = AddOn_Chomp.NameMergedRealm(UnitFullName("player"))
 AddOn.characterName, AddOn.characterRealm = AddOn.characterID:match("^([^%-]+)%-([^%-]+)$")

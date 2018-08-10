@@ -24,7 +24,7 @@ local cursor, rightClick
 local now, mouseover, autoInteract
 local function Cursor_TurnOrActionStart()
 	if not cursor or not rightClick or InCombatLockdown() or not XRPCursorBook:IsVisible() then return end
-	mouseover = XRPCursorBook.current
+	mouseover = XRPCursorBook.characterName
 	now = GetTime()
 	if XRPCursorBook.mountable then
 		autoInteract = GetCVarBool("AutoInteract")
@@ -37,7 +37,7 @@ local function Cursor_TurnOrActionStop()
 	if not mouseover then return end
 	-- 0.75s interaction time is guessed as Blizzard number from in-game
 	-- testing. Used for consistency.
-	if GetTime() - now < 0.75 and mouseover == xrp.UnitCharacterID("target") then
+	if GetTime() - now < 0.75 and mouseover == UnitName("target") then
 		if XRPCursorBook.mountable then
 			UIErrorsFrame:Clear() -- Hides errors on inteactable mount players.
 		end
@@ -51,7 +51,7 @@ local function Cursor_TurnOrActionStop()
 end
 
 local function Cursor_RECEIVE(event, name)
-	if name == XRPCursorBook.current and not InCombatLockdown() and not XRPCursorBook:IsVisible() and (not XRPCursorBook.mountInParty or not IsItemInRange(88589, "mouseover")) then
+	if name == XRPCursorBook.characterID and not InCombatLockdown() and not XRPCursorBook:IsVisible() and (not XRPCursorBook.mountInParty or not IsItemInRange(88589, "mouseover")) then
 		XRPCursorBook:Show()
 	end
 end

@@ -222,11 +222,12 @@ function XRPCursorBook_OnEvent(self, event)
 		self:Hide()
 		return
 	end
-	self.current = not UnitCanAttack("player", "mouseover") and character.id
+	self.characterID = not UnitCanAttack("player", "mouseover") and character.id
+	self.characterName = self.characterID and character.name
 	-- Following two must be separate for UIErrorsFrame:Clear().
-	self.mountable = self.current and UnitVehicleSeatCount("mouseover") > 0
+	self.mountable = self.characterID and UnitVehicleSeatCount("mouseover") > 0
 	self.mountInParty = self.mountable and (UnitInParty("mouseover") or UnitInRaid("mouseover"))
-	if self.current and character.VA and (not self.mountInParty or not IsItemInRange(88589, "mouseover")) then
+	if self.characterID and character.VA and (not self.mountInParty or not IsItemInRange(88589, "mouseover")) then
 		XRPCursorBook_OnUpdate(self, 0)
 		self:Show()
 	else
