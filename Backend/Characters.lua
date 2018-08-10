@@ -108,6 +108,8 @@ function CharacterMetatable:__index(index)
 		return L.NAME_REALM:format(name, realm)
 	elseif CharacterMethods[index] then
 		return CharacterMethods[index]
+	elseif index == "inCharacter" then
+		return AddOn.IsStatusIC(self.FC)
 	elseif index == "offline" then
 		return OfflineMap[self] or false
 	elseif index == "canRefresh" then

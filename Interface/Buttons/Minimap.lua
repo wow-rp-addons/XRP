@@ -102,7 +102,7 @@ end
 local Status_menuList = {}
 local function Status_Click(self, status, arg2, checked)
 	if not checked then
-		xrp.Status(status or "0")
+		AddOn_XRP.SetStatus(status or "0")
 	end
 	CloseDropDownMenus()
 end
@@ -140,7 +140,7 @@ function XRPButton_OnClick(self, button, down)
 		if target and  target.VA then
 			XRPViewer:View("target")
 		else
-			xrp.Status()
+			AddOn_XRP.ToggleStatus()
 		end
 		if self == Button then
 			XRPButton_OnEnter(self, true)

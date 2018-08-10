@@ -165,7 +165,7 @@ xrpCmds.status = function(args)
 end
 
 xrpCmds.toggle = function(args)
-	xrp.Status()
+	AddOn_XRP.ToggleStatus()
 	local FC = AddOn_XRP.Characters.byUnit.player.FC
 	print(XRP_HEADER:format(L"Status set to: %s.":format(Values.FC[FC] or FC or NONE)))
 end

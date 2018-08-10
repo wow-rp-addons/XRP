@@ -18,6 +18,8 @@
 local FOLDER_NAME, AddOn = ...
 local L = AddOn.GetText
 
+local Values = AddOn_XRP.Strings.Values
+
 AddOn.WeakValueMetatable = { __mode = "v" }
 AddOn.WeakKeyMetatable = { __mode = "k" }
 
@@ -250,21 +252,42 @@ function xrp.MergeCurrently(CU, CO)
 	return ("%s %s"):format(CU, L.OOC_TEXT:format(CO:match(L.OOC_STRIP) or CO))
 end
 
-function xrp.Status(desiredStatus)
-	if desiredStatus and type(desiredStatus) ~= "string" then
-		desiredStatus = tostring(desiredStatus)
+local IC_STATUS = {
+	["2"] = true,
+	["3"] = true,
+	["4"] = true,
+}
+function AddOn.IsStatusIC(status)
+	return IC_STATUS[status] or false
+end
+
+function AddOn_XRP.SetStatus(status)
+	local statusType = type(status)
+	if statusType == "number" then
+		status = tostring(status)
 	end
-	local profileStatus = xrp.profiles.SELECTED.fullFields.FC or "0"
-	if not desiredStatus then
-		local currentStatus = AddOn_XRP.Characters.byUnit.player.FC
-		local currentIC, profileIC = currentStatus ~= nil and currentStatus ~= "1" and currentStatus ~= "0", profileStatus ~= nil and profileStatus ~= "1" and profileStatus ~= "0"
-		desiredStatus = currentStatus ~= profileStatus and currentIC ~= profileIC and profileStatus or currentIC and "1" or "2"
-	end
-	if desiredStatus ~= profileStatus then
-		AddOn_XRP.SetField("FC", desiredStatus ~= "0" and desiredStatus or "")
+	if Values.FC[status] then
+		AddOn_XRP.SetField("FC", status)
+	elseif status == "0" then
+		AddOn_XRP.SetField("FC", "")
 	else
-		AddOn_XRP.SetField("FC", nil)
+		local profileIC = AddOn.IsStatusIC(xrp.profiles.SELECTED.fullFields.FC)
+		if status == "ic" and profileIC then
+			AddOn_XRP.SetField("FC", nil)
+		elseif status == "ic" then
+			AddOn_XRP.SetField("FC", "2")
+		elseif status == "ooc" and not profileIC then
+			AddOn_XRP.SetField("FC", nil)
+		elseif status == "ooc" then
+			AddOn_XRP.SetField("FC", "1")
+		else
+			error("AddOn_XRP.SetStatus(): status: expected number in range 0-4 or string with value \"ic\" or \"ooc\"", 2)
+		end
 	end
+end
+
+function AddOn_XRP.ToggleStatus()
+	return AddOn_XRP.SetStatus(AddOn_XRP.Characters.byUnit.player.inCharacter and "ooc" or "ic")
 end
 
 AddOn.characterID = AddOn_Chomp.NameMergedRealm(UnitFullName("player"))
