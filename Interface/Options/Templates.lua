@@ -78,6 +78,7 @@ function XRPOptions_Mixin:refresh()
 				end
 			end
 		end
+		control:CheckDeps()
 	end
 end
 
@@ -100,6 +101,7 @@ function XRPOptions_Mixin:cancel()
 				end
 			end
 		end
+		control:CheckDeps()
 	end
 end
 
@@ -128,6 +130,7 @@ function XRPOptions_Mixin:default()
 				end
 			end
 		end
+		control:CheckDeps()
 	end
 end
 
@@ -239,18 +242,19 @@ function XRPOptionsControl_Mixin:OnLoad()
 	end
 end
 
+function XRPOptionsControl_Mixin:CheckDeps()
+	-- Only CheckButtons have dependencies.
+end
+
 XRPOptionsCheckButton_Mixin = {}
 
-function XRPOptionsCheckButton_Mixin:OnClick(button, down)
-	local setting = self:GetChecked()
-	PlaySound(setting and SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON or SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF)
-	self.value = setting
+function XRPOptionsCheckButton_Mixin:CheckDeps()
 	if SettingDeps[self.xrpSetting] then
 		for i, control in ipairs(SettingDeps[self.xrpSetting]) do
 			if control.type == CONTROLTYPE_CHECKBOX then
-				control:SetEnabled(setting)
+				control:SetEnabled(self.value)
 			elseif control.type == CONTROLTYPE_DROPDOWN then
-				if setting then
+				if self.value then
 					UIDropDownMenu_EnableDropDown(control)
 				else
 					UIDropDownMenu_DisableDropDown(control)
@@ -258,6 +262,13 @@ function XRPOptionsCheckButton_Mixin:OnClick(button, down)
 			end
 		end
 	end
+end
+
+function XRPOptionsCheckButton_Mixin:OnClick(button, down)
+	local setting = self:GetChecked()
+	PlaySound(setting and SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON or SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF)
+	self.value = setting
+	self:CheckDeps()
 	if setting and self.enableWarn then
 		StaticPopup_Show("XRP_ERROR", L[self.enableWarn])
 	elseif not setting and self.disableWarn then
