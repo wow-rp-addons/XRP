@@ -54,11 +54,11 @@ function XRPArchiveList_update(self, force)
 			if force or button.character ~= character then
 				button.character = character
 				local name, realm = character.name, character.realm
-				button.NA:SetText(xrp.Strip(character.NA) or name)
+				button.NA:SetText(AddOn_XRP.RemoveTextFormats(character.NA) or name)
 				button.Name:SetText(name)
 				button.Realm:SetText(realm)
 				local GR = character.GR
-				local RA = xrp.Strip(character.RA) or Values.GR[GR]
+				local RA = AddOn_XRP.RemoveTextFormats(character.RA) or Values.GR[GR]
 				if RA then
 					button.RA:SetText(RA)
 					button.RA:Show()
@@ -77,7 +77,7 @@ function XRPArchiveList_update(self, force)
 					button.RaceIcon:Hide()
 				end
 				local GC = character.GC
-				local RC = xrp.Strip(character.RC) or Values.GC[character.GS or "1"][GC]
+				local RC = AddOn_XRP.RemoveTextFormats(character.RC) or Values.GC[character.GS or "1"][GC]
 				if RC then
 					button.RC:SetText(RC)
 					button.RC:Show()
@@ -177,7 +177,7 @@ local function Menu_Click(self, arg1, arg2, checked)
 	elseif arg1 == "XRP_FRIEND" then
 		local character = UIDROPDOWNMENU_INIT_MENU.character
 		local characterID = character.id
-		AddOrRemoveFriend(Ambiguate(characterID, "none"), xrp.Strip(character.NA) or character.name)
+		AddOrRemoveFriend(Ambiguate(characterID, "none"), AddOn_XRP.RemoveTextFormats(character.NA) or character.name)
 	elseif arg1 == "XRP_BOOKMARK" then
 		UIDROPDOWNMENU_INIT_MENU.character.bookmark = not checked
 		if request.bookmark then

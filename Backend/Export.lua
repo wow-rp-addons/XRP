@@ -57,9 +57,9 @@ function AddOn.ExportText(title, fields)
 	end
 	export[#export + 1] = "\n"
 	for i, field in ipairs(EXPORT_FIELDS) do
-		local fieldText = xrp.Strip(fields[field], ALLOW_INDENT[field])
+		local fieldText = AddOn_XRP.RemoveTextFormats(fields[field], ALLOW_INDENT[field])
 		if field == "CU" then
-			fieldText = xrp.MergeCurrently(fieldText, xrp.Strip(fields.CO))
+			fieldText = xrp.MergeCurrently(fieldText, AddOn_XRP.RemoveTextFormats(fields.CO))
 		end
 		if ALLOW_INDENT[field] then
 			fieldText = xrp.Link(fieldText)

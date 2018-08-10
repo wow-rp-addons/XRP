@@ -53,7 +53,7 @@ local function XRPGetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7
 		name = arg2:match("^[\032-\126\194-\244][\128-\191]*") or Ambiguate(arg2, "guild")
 		nameFormat = "[%s]"
 	else
-		name = AddOn.Settings.chatType[chatCategory] and character and not character.hide and xrp.Strip(character.NA) or Ambiguate(arg2, "guild")
+		name = AddOn.Settings.chatType[chatCategory] and character and not character.hide and AddOn_XRP.RemoveTextFormats(character.NA) or Ambiguate(arg2, "guild")
 		nameFormat = chatCategory == "EMOTE" and (AddOn.Settings.chatEmoteBraced and "[%s]" or "%s") .. (arg9 or "") or "%s"
 	end
 
@@ -122,11 +122,11 @@ local function ChatEdit_ParseText_Hook(line, send)
 		local text = oldText
 		if text:find("%xt", nil, true) then
 			local character = AddOn_XRP.Characters.byUnit.target
-			text = text:gsub("%%xt", character and xrp.Strip(character.NA) or UnitName("target") or L.NOBODY)
+			text = text:gsub("%%xt", character and AddOn_XRP.RemoveTextFormats(character.NA) or UnitName("target") or L.NOBODY)
 		end
 		if text:find("%xf", nil, true) then
 			local character = AddOn_XRP.Characters.byUnit.focus
-			text = text:gsub("%%xf", character and xrp.Strip(character.NA) or UnitName("focus") or L.NOBODY)
+			text = text:gsub("%%xf", character and AddOn_XRP.RemoveTextFormats(character.NA) or UnitName("focus") or L.NOBODY)
 		end
 		if text ~= oldText then
 			newText = text
@@ -166,7 +166,7 @@ AddOn.RegisterGameEventCallback("PLAYER_LOGIN", function(event)
 			if chatCategory == "CHANNEL" and type(message.ORG.CHANNEL) == "string" then
 				chatCategory = "CHANNEL_" .. message.ORG.CHANNEL:upper()
 			end
-			local rpName = AddOn.Settings.chatType[chatCategory] and not character.hide and xrp.Strip(character.NA)
+			local rpName = AddOn.Settings.chatType[chatCategory] and not character.hide and AddOn_XRP.RemoveTextFormats(character.NA)
 			if not rpName then
 				return
 			end

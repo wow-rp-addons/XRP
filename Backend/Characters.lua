@@ -287,7 +287,7 @@ local function SortString(sortType, name, cache)
 	if sortType == "date" then
 		return ("%d\000%s"):format(cache.lastReceive, name)
 	elseif sortType == "NA" then
-		return ("%s\000%s"):format((xrp.Strip(cache.fields.NA) or name):lower(), name)
+		return ("%s\000%s"):format((AddOn_XRP.RemoveTextFormats(cache.fields.NA) or name):lower(), name)
 	elseif sortType == "realm" then
 		return ("%s\000%s"):format(name:match("%-([^%-]+)$"), name)
 	end

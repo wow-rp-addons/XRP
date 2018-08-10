@@ -83,8 +83,10 @@ function AddOn.SplitCharacterID(characterID)
 end
 
 function AddOn.SanitizeText(text)
-	if type(text) ~= "string" or text == "" then
+	if not text or text == "" then
 		return nil
+	elseif type(text) ~= "string" then
+		error("XRP: AddOn.SanitizeText(): text: expected string or nil, got " .. type(text), 2)
 	end
 	local gsub = string.gsub
 	text = gsub(text, "\192\160", "\032") -- Non-break space.
@@ -102,9 +104,11 @@ function AddOn.SanitizeText(text)
 	return text
 end
 
-function xrp.Strip(text, allowIndent)
-	if type(text) ~= "string" or text == "" then
+function AddOn_XRP.RemoveTextFormats(text, permitIndent)
+	if not text or text == "" then
 		return nil
+	elseif type(text) ~= "string" then
+		error("AddOn_XRP.RemoveTextFormats(): text: expected string or nil, got " .. type(text), 2)
 	end
 	local gsub = string.gsub
 	-- This fully removes all color escapes, texture escapes, and most types of
@@ -122,7 +126,7 @@ function xrp.Strip(text, allowIndent)
 	local trimmedText = text:trim()
 	if trimmedText == "" then
 		return nil
-	elseif allowIndent then
+	elseif permitIndent then
 		return text:trim("\r\n"):match("^(.-)%s*$")
 	end
 	return trimmedText

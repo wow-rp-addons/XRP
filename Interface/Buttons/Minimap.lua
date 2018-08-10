@@ -69,11 +69,11 @@ local function RenderTooltip(Tooltip)
 	Tooltip:AddLine(AddOn_XRP.Characters.byUnit.player.NA)
 	Tooltip:AddLine(" ")
 	Tooltip:AddLine(SUBTITLE_FORMAT:format(L.PROFILE, ("|cffffffff%s|r"):format(tostring(xrp.profiles.SELECTED))))
-	local FC = xrp.Strip(AddOn_XRP.Characters.byUnit.player.FC)
+	local FC = AddOn_XRP.RemoveTextFormats(AddOn_XRP.Characters.byUnit.player.FC)
 	if FC and FC ~= "0" then
 		Tooltip:AddLine(SUBTITLE_FORMAT:format(L.STATUS, ("|cff%s%s|r"):format(FC == "1" and "99664d" or "66b380", Values.FC[FC] or FC)))
 	end
-	local CU = xrp.Strip(AddOn_XRP.Characters.byUnit.player.CU)
+	local CU = AddOn_XRP.RemoveTextFormats(AddOn_XRP.Characters.byUnit.player.CU)
 	if CU then
 		Tooltip:AddLine(" ")
 		Tooltip:AddLine(STAT_FORMAT:format(Names.CU))

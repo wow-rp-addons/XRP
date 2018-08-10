@@ -155,16 +155,16 @@ local function RenderTooltip()
 				return
 			end
 		end
-		RenderLine(false, currentUnit.nameFormat:format(showProfile and xrp.Strip(character.NA) or character.name), currentUnit.icons)
+		RenderLine(false, currentUnit.nameFormat:format(showProfile and AddOn_XRP.RemoveTextFormats(character.NA) or character.name), currentUnit.icons)
 		if replace and currentUnit.reaction then
 			RenderLine(false, currentUnit.reaction, nil, 1, 1, 1)
 		end
 		if showProfile then
-			local NI = xrp.Strip(character.NI)
+			local NI = AddOn_XRP.RemoveTextFormats(character.NI)
 			RenderLine(false, NI and (not NI:find(L.QUOTE_MATCH) and NI_FORMAT or NI_FORMAT_NOQUOTE):format(NI), nil, 0.6, 0.7, 0.9)
-			RenderLine(true, xrp.Strip(character.NT), nil, 0.8, 0.8, 0.8)
+			RenderLine(true, AddOn_XRP.RemoveTextFormats(character.NT), nil, 0.8, 0.8, 0.8)
 			if AddOn.Settings.tooltipShowHouse then
-				RenderLine(true, xrp.Strip(character.NH), nil, 0.4, 0.6, 0.7)
+				RenderLine(true, AddOn_XRP.RemoveTextFormats(character.NH), nil, 0.4, 0.6, 0.7)
 			end
 		end
 		if AddOn.Settings.tooltipShowExtraSpace then
@@ -179,16 +179,16 @@ local function RenderTooltip()
 			end
 		end
 		if showProfile then
-			local CU, CO = xrp.Strip(character.CU), xrp.Strip(character.CO)
+			local CU, CO = AddOn_XRP.RemoveTextFormats(character.CU), AddOn_XRP.RemoveTextFormats(character.CO)
 			RenderLine(true, (CU or CO) and CU_FORMAT:format(xrp.MergeCurrently(xrp.Link(CU), xrp.Link(CO))), nil, 0.9, 0.7, 0.6)
 		end
-		local RA = showProfile and not AddOn.Settings.tooltipHideRace and xrp.Strip(character.RA) or Values.GR[character.GR] or UNKNOWN
+		local RA = showProfile and not AddOn.Settings.tooltipHideRace and AddOn_XRP.RemoveTextFormats(character.RA) or Values.GR[character.GR] or UNKNOWN
 		local RAlen = #RA
 		RA = AddOn_Chomp.SafeSubString(RA, 1, INLINE_LENGTH)
 		if #RA < RAlen then
 			RA = RA .. CONTINUED
 		end
-		local RC = showProfile and not AddOn.Settings.tooltipHideClass and xrp.Strip(character.RC) or Values.GC[character.GS][character.GC] or UNKNOWN
+		local RC = showProfile and not AddOn.Settings.tooltipHideClass and AddOn_XRP.RemoveTextFormats(character.RC) or Values.GC[character.GS][character.GC] or UNKNOWN
 		local RClen = #RC
 		RC = AddOn_Chomp.SafeSubString(RC, 1, INLINE_LENGTH)
 		if #RC < RClen then
@@ -196,7 +196,7 @@ local function RenderTooltip()
 		end
 		RenderLine(false, currentUnit.info:format(RA, RC), not replace and ParseVersion(character.VA), 1, 1, 1, 0.5, 0.5, 0.5)
 		if showProfile then
-			local FR, FC = xrp.Strip(character.FR), xrp.Strip(character.FC)
+			local FR, FC = AddOn_XRP.RemoveTextFormats(character.FR), AddOn_XRP.RemoveTextFormats(character.FC)
 			local color = COLORS[FC == "1" and "OOC" or "IC"]
 			RenderLine(false, Values.FR[FR] or FR ~= "0" and FR, Values.FC[FC] or FC ~= "0" and FC, color.r, color.g, color.b, color.r, color.g, color.b)
 		end
@@ -212,7 +212,7 @@ local function RenderTooltip()
 			end
 		end
 		local color = COLORS[currentUnit.faction]
-		RenderLine(false, currentUnit.titleRealm:format(showProfile and xrp.Strip(character.NA) or character.name), nil, color.r, color.g, color.b)
+		RenderLine(false, currentUnit.titleRealm:format(showProfile and AddOn_XRP.RemoveTextFormats(character.NA) or character.name), nil, color.r, color.g, color.b)
 		RenderLine(false, currentUnit.info, nil, 1, 1, 1)
 	end
 

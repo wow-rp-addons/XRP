@@ -30,11 +30,11 @@ local DISPLAY = {
 }
 
 local function SetField(field, contents, secondary, tertiary)
-	contents = xrp.Strip(contents, field == "CU" or field == "DE" or field == "MO" or field == "HI")
+	contents = AddOn_XRP.RemoveTextFormats(contents, field == "CU" or field == "DE" or field == "MO" or field == "HI")
 	if field == "VA" then
 		contents = contents and contents:gsub(";", PLAYER_LIST_DELIMITER) or NONE
 	elseif field == "CU" then
-		contents = xrp.MergeCurrently(xrp.Link(contents), xrp.Link(xrp.Strip(secondary, true)))
+		contents = xrp.MergeCurrently(xrp.Link(contents), xrp.Link(AddOn_XRP.RemoveTextFormats(secondary, true)))
 	elseif secondary then
 		if field == "NA" then
 			contents = secondary
@@ -168,7 +168,7 @@ local function Menu_Click(self, arg1, arg2, checked)
 		end
 	elseif arg1 == "XRP_FRIEND" then
 		local name = current.id
-		AddOrRemoveFriend(Ambiguate(name, "none"), xrp.Strip(current.NA) or current.name)
+		AddOrRemoveFriend(Ambiguate(name, "none"), AddOn_XRP.RemoveTextFormats(current.NA) or current.name)
 	elseif arg1 == "XRP_BOOKMARK" then
 		current.bookmark = not checked
 	elseif arg1 == "XRP_HIDE" then
