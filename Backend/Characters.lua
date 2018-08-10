@@ -224,8 +224,8 @@ function byGUIDMetatable:__index(GU)
 	end
 	local characterID = xrp.BuildCharacterID(name, realm)
 	if not unitCache[characterID] then
-		if not xrp.L.VALUES.GR[GR] then
-			xrp.L.VALUES.GR[GR] = race
+		if not AddOn_XRP.FieldStrings.Values.GR[GR] then
+			AddOn_XRP.FieldStrings.Values.GR[GR] = race
 		end
 		unitCache[characterID] = {
 			GC = GC,

@@ -45,7 +45,7 @@ function GetTextMetatable.__index(self, constantStr)
 	elseif constants[DEFAULT] and constants[DEFAULT][constantStr] then
 		return constants[DEFAULT][constantStr]
 	end
-	return constantStr
+	return nil
 end
 
 local function AddLocale(locale, constantTable, lookupTable)
