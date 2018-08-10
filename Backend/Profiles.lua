@@ -91,9 +91,7 @@ function AddOn.GetFullCurrentProfile()
 			end
 		end
 		for field, contents in pairs(profile.fields) do
-			if not fields[field] then
-				fields[field] = contents
-			end
+			fields[field] = contents
 		end
 	end
 	for field, contents in pairs(AddOn.FallbackFields) do
