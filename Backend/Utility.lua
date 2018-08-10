@@ -264,14 +264,14 @@ function xrp.Status(desiredStatus)
 	end
 	local profileStatus = xrp.profiles.SELECTED.fullFields.FC or "0"
 	if not desiredStatus then
-		local currentStatus = xrp.current.FC
+		local currentStatus = AddOn_XRP.Characters.byUnit.player.FC
 		local currentIC, profileIC = currentStatus ~= nil and currentStatus ~= "1" and currentStatus ~= "0", profileStatus ~= nil and profileStatus ~= "1" and profileStatus ~= "0"
 		desiredStatus = currentStatus ~= profileStatus and currentIC ~= profileIC and profileStatus or currentIC and "1" or "2"
 	end
 	if desiredStatus ~= profileStatus then
-		xrp.current.FC = desiredStatus ~= "0" and desiredStatus or ""
+		AddOn_XRP.SetField("FC", desiredStatus ~= "0" and desiredStatus or "")
 	else
-		xrp.current.FC = nil
+		AddOn_XRP.SetField("FC", nil)
 	end
 end
 

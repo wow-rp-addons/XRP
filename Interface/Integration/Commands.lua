@@ -39,18 +39,18 @@ end
 
 xrpCmds.currently = function(args)
 	if args == L.ARG_CURRENTLY_NIL then
-		xrp.current.CU = nil
-		local CU = xrp.current.CU
+		AddOn_XRP.SetField("CU", nil)
+		local CU = AddOn_XRP.Characters.byUnit.player.CU
 		if CU then
 			print(XRP_HEADER:format(L"Currently set to: \"%s\" (from active profile).":format(CU)))
 		else
 			print(XRP_HEADER:format(L"Currently set to empty (from active profile)."))
 		end
 	elseif type(args) == "string" then
-		xrp.current.CU = args
+		AddOn_XRP.SetField("CU", args)
 		print(XRP_HEADER:format(L"Currently set to: \"%s\".":format(args)))
 	else
-		xrp.current.CU = ""
+		AddOn_XRP.SetField("CU", "")
 		print(XRP_HEADER:format(L"Currently set to empty."))
 	end
 end
@@ -143,20 +143,20 @@ end
 
 xrpCmds.status = function(args)
 	if args == "nil" or args == L.ARG_STATUS_NIL then
-		xrp.current.FC = nil
-		local FC = xrp.current.FC
+		AddOn_XRP.SetField("FC", nil)
+		local FC = AddOn_XRP.Characters.byUnit.player.FC
 		print(XRP_HEADER:format(L"Status set to: %s (from active profile).":format(xrp.L.VALUES.FC[FC] or FC or NONE)))
 	elseif args == "ooc" or args == L.ARG_STATUS_OOC then
-		xrp.current.FC = "1"
+		AddOn_XRP.SetField("FC", "1")
 		print(XRP_HEADER:format(L"Status set to: %s.":format(xrp.L.VALUES.FC["1"])))
 	elseif args == "ic" or args == L.ARG_STATUS_IC then
-		xrp.current.FC = "2"
+		AddOn_XRP.SetField("FC", "2")
 		print(XRP_HEADER:format(L"Status set to: %s.":format(xrp.L.VALUES.FC["2"])))
 	elseif args == "lfc" or args == L.ARG_STATUS_LFC then
-		xrp.current.FC = "3"
+		AddOn_XRP.SetField("FC", "3")
 		print(XRP_HEADER:format(L"Status set to: %s.":format(xrp.L.VALUES.FC["3"])))
 	elseif args == "st" or args == L.ARG_STATUS_ST then
-		xrp.current.FC = "4"
+		AddOn_XRP.SetField("FC", "4")
 		print(XRP_HEADER:format(L"Status set to: %s.":format(xrp.L.VALUES.FC["4"])))
 	else
 		xrpCmds.help("status")
@@ -165,7 +165,7 @@ end
 
 xrpCmds.toggle = function(args)
 	xrp.Status()
-	local FC = xrp.current.FC
+	local FC = AddOn_XRP.Characters.byUnit.player.FC
 	print(XRP_HEADER:format(L"Status set to: %s.":format(xrp.L.VALUES.FC[FC] or FC or NONE)))
 end
 

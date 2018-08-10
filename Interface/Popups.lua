@@ -111,25 +111,26 @@ StaticPopupDialogs["XRP_CURRENTLY"] = {
 	hasEditBox = true,
 	editBoxWidth = 350,
 	OnShow = function(self)
-		self.editBox:SetText(xrp.current.CU or "")
+		local CU = AddOn_XRP.Characters.byUnit.player.CU
+		self.editBox:SetText(CU or "")
 		self.editBox:HighlightText()
 		self.button1:Disable()
-		if xrp.current.CU == xrp.profiles.SELECTED.fullFields.CU then
+		if CU == xrp.profiles.SELECTED.fullFields.CU then
 			self.button2:Disable()
 		end
 	end,
 	EditBoxOnTextChanged = function(self)
-		if self:GetText() ~= (xrp.current.CU or "") then
+		if self:GetText() ~= (AddOn_XRP.Characters.byUnit.player.CU or "") then
 			self:GetParent().button1:Enable()
 		else
 			self:GetParent().button1:Disable()
 		end
 	end,
 	OnAccept = function(self)
-		xrp.current.CU = self.editBox:GetText()
+		AddOn_XRP.SetField("CU", self.editBox:GetText())
 	end,
 	OnCancel = function(self) -- Reset button.
-		xrp.current.CU = nil
+		AddOn_XRP.SetField("CU", nil)
 	end,
 	EditBoxOnEnterPressed = ClickButton,
 	EditBoxOnEscapePressed = HideParentPanel,

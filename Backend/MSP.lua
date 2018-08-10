@@ -64,7 +64,15 @@ end)
 local function ProfileUpdate(event, field)
 	if field then
 		if msp.INTERNAL_FIELDS[field] then return end
-		msp.my[field] = xrp.current[field]
+		local contents = xrpSaved.overrides[field] or xrp.profiles.SELECTED.fullFields[field] or AddOn.FallbackFields[field]
+		if not contents or contents == "" then
+			contents = nil
+		elseif field == "AH" then
+			contents = AddOn.ConvertHeight(contents, "msp")
+		elseif field == "AW" then
+			contents = AddOn.ConvertWeight(contents, "msp")
+		end
+		msp.my[field] = contents
 	else
 		local fields = {}
 		local profiles, inherit = { xrpSaved.profiles[xrpSaved.selected] }, xrpSaved.profiles[xrpSaved.selected].parent

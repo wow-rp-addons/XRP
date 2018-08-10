@@ -61,26 +61,19 @@ AddOn.RegisterGameEventCallback("PLAYER_LOGOUT", function(event)
 	end
 end)
 
-xrp.current = setmetatable({}, {
-	__index = function(self, field)
-		local contents = xrpSaved.overrides[field] or xrp.profiles.SELECTED.fullFields[field] or AddOn.FallbackFields[field]
-		if not contents or contents == "" then
-			return nil
-		elseif field == "AH" then
-			contents = AddOn.ConvertHeight(contents, "msp")
-		elseif field == "AW" then
-			contents = AddOn.ConvertWeight(contents, "msp")
-		end
-		return contents
-	end,
-	__newindex = function(self, field, contents)
-		if xrpSaved.overrides[field] == contents or NO_PROFILE[field] or not field:find("^%u%u$") then return end
-		contents = type(contents) == "string" and contents or nil
-		xrpSaved.overrides[field] = contents
-		AddOn.RunEvent("UPDATE", field)
-	end,
-	__metatable = false,
-})
+function AddOn_XRP.SetField(field, contents)
+	if type(field) ~= "string" then
+		error("AddOn_XRP.SetField(): field: expected string or nil, got " .. type(field), 2)
+	elseif contents and type(contents) ~= "string" then
+		error("AddOn_XRP.SetField(): contents: expected string or nil, got " .. type(contents), 2)
+	elseif NO_PROFILE[field] or not field:find("^%u%u$") then
+		error("AddOn_XRP.SetField(): field: invalid field:" .. field, 2)
+	elseif xrpSaved.overrides[field] == contents then
+		return
+	end
+	xrpSaved.overrides[field] = contents
+	AddOn.RunEvent("UPDATE", field)
+end
 
 local function IsUsed(name, field)
 	local testName = xrpSaved.selected

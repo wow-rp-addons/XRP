@@ -40,7 +40,7 @@ local function XRPButton_UpdateIcon()
 		end
 		return
 	end
-	local FC = xrp.current.FC
+	local FC = AddOn_XRP.Characters.byUnit.player.FC
 	if not FC or FC == "0" or FC == "1" then
 		if Button then
 			Button:SetNormalTexture(TEXTURES.ooc)
@@ -63,14 +63,14 @@ local function XRPButton_UpdateIcon()
 end
 
 local function RenderTooltip(Tooltip)
-	Tooltip:AddLine(xrp.current.NA)
+	Tooltip:AddLine(AddOn_XRP.Characters.byUnit.player.NA)
 	Tooltip:AddLine(" ")
 	Tooltip:AddLine(SUBTITLE_FORMAT:format(L.PROFILE, ("|cffffffff%s|r"):format(tostring(xrp.profiles.SELECTED))))
-	local FC = xrp.Strip(xrp.current.FC)
+	local FC = xrp.Strip(AddOn_XRP.Characters.byUnit.player.FC)
 	if FC and FC ~= "0" then
 		Tooltip:AddLine(SUBTITLE_FORMAT:format(L.STATUS, ("|cff%s%s|r"):format(FC == "1" and "99664d" or "66b380", xrp.L.VALUES.FC[FC] or FC)))
 	end
-	local CU = xrp.Strip(xrp.current.CU)
+	local CU = xrp.Strip(AddOn_XRP.Characters.byUnit.player.CU)
 	if CU then
 		Tooltip:AddLine(" ")
 		Tooltip:AddLine(STAT_FORMAT:format(xrp.L.FIELDS.CU))
@@ -104,7 +104,7 @@ local function Status_Click(self, status, arg2, checked)
 	CloseDropDownMenus()
 end
 local function Status_Checked(self)
-	return self.arg1 == xrp.current.FC
+	return self.arg1 == AddOn_XRP.Characters.byUnit.player.FC
 end
 for i = 0, 4 do
 	local s = tostring(i)
