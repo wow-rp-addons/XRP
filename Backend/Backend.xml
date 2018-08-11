@@ -16,4 +16,5 @@
 	<Script file="Automation.lua"/>
 	<Script file="VersionCheck.lua"/>
 	<Script file="Import.lua"/>
+	<Script file="APIDocumentation.lua"/>
 </Ui>
