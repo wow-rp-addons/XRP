@@ -523,12 +523,12 @@ AddOn.SettingsToggles.tooltipEnabled = function(setting)
 				DoHooks()
 			end
 		end
-		AddOn_XRP.RegisterEventCallback("RECEIVE", Tooltip_RECEIVE)
+		AddOn_XRP.RegisterEventCallback("ADDON_XRP_PROFILE_RECEIVED", Tooltip_RECEIVE)
 		enabled = true
 		AddOn.SettingsToggles.tooltipReplace(AddOn.Settings.tooltipReplace)
 	elseif enabled ~= nil then
 		enabled = false
-		AddOn_XRP.UnregisterEventCallback("RECEIVE", Tooltip_RECEIVE)
+		AddOn_XRP.UnregisterEventCallback("ADDON_XRP_PROFILE_RECEIVED", Tooltip_RECEIVE)
 	end
 end
 

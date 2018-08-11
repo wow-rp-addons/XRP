@@ -368,11 +368,11 @@ function XRPViewer_OnLoad(self)
 	self.fields.NA = self.TitleText
 end
 
-AddOn_XRP.RegisterEventCallback("FIELD", FIELD)
-AddOn_XRP.RegisterEventCallback("RECEIVE", RECEIVE)
-AddOn_XRP.RegisterEventCallback("CHUNK", CHUNK)
-AddOn_XRP.RegisterEventCallback("FAIL", FAIL)
-AddOn_XRP.RegisterEventCallback("DROP", DROP)
+AddOn_XRP.RegisterEventCallback("ADDON_XRP_FIELD_RECEIVED", FIELD)
+AddOn_XRP.RegisterEventCallback("ADDON_XRP_PROFILE_RECEIVED", RECEIVE)
+AddOn_XRP.RegisterEventCallback("ADDON_XRP_PROGRESS_UPDATED", CHUNK)
+AddOn_XRP.RegisterEventCallback("ADDON_XRP_QUERY_FAILED", FAIL)
+AddOn_XRP.RegisterEventCallback("ADDON_XRP_CACHE_DROPPED", DROP)
 
 XRPViewer_Mixin = {
 	View = function(self, player)

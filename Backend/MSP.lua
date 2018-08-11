@@ -61,7 +61,8 @@ AddOn.RegisterGameEventCallback("PLAYER_LOGIN", function(event)
 	end
 end)
 
-local function ProfileUpdate(event, field)
+function AddOn.ProfileUpdate(field)
+	if disabled then return end
 	if field then
 		if msp.INTERNAL_FIELDS[field] then return end
 		local contents = xrpSaved.overrides[field] or AddOn_XRP.Profiles.SELECTED.Full[field] or AddOn.FallbackFields[field]
@@ -94,9 +95,9 @@ local function StatusHandler(statusName, reason, msgID, msgTotal)
 	elseif reason == "ERROR" then
 		-- Same error message from offline and from opposite faction.
 		local GF = AddOn.unitCache[name] and AddOn.unitCache[name].GF or xrpCache[name] and xrpCache[name].fields.GF
-		AddOn.RunEvent("FAIL", name, (not GF or GF == UnitFactionGroup("player")) and "offline" or "faction")
+		AddOn.RunEvent("ADDON_XRP_QUERY_FAILED", name, (not GF or GF == UnitFactionGroup("player")) and "offline" or "faction")
 	elseif reason == "MESSAGE" and msgTotal ~= 1 then
-		AddOn.RunEvent("CHUNK", name, msgID, msgTotal)
+		AddOn.RunEvent("ADDON_XRP_PROGRESS_UPDATED", name, msgID, msgTotal)
 	end
 end
 
@@ -125,7 +126,7 @@ local function UpdatedHandler(updatedName, field, contents, version)
 	end
 	xrpCache[name].fields[field] = contents
 	xrpCache[name].versions[field] = version
-	AddOn.RunEvent("FIELD", name, field)
+	AddOn.RunEvent("ADDON_XRP_FIELD_RECEIVED", name, field)
 	if field == "VA" and contents then
 		AddOn.CheckVersionUpdate(name, contents:match("^XRP/([^;]+)"))
 	end
@@ -136,7 +137,7 @@ local function ReceivedHandler(receivedName)
 	if not name then
 		error("XRP: LibMSP received callback receieved invalid arguments.")
 	end
-	AddOn.RunEvent("RECEIVE", name)
+	AddOn.RunEvent("ADDON_XRP_PROFILE_RECEIVED", name)
 	if xrpCache[name] then
 		-- Cache timer. Last receive marked for clearing old entries.
 		xrpCache[name].lastReceive = time()
@@ -163,7 +164,6 @@ if not disabled then
 	msp.callback.updated[#msp.callback.updated + 1] = UpdatedHandler
 	msp.callback.received[#msp.callback.received + 1] = ReceivedHandler
 	msp.callback.dataload[#msp.callback.dataload + 1] = DataLoadHandler
-	AddOn_XRP.RegisterEventCallback("UPDATE", ProfileUpdate)
 end
 
 local gameFriends
@@ -240,7 +240,7 @@ function AddOn.DropCache(name)
 	if xrpAccountSaved.bookmarks[name] or xrpAccountSaved.notes[name] then return end
 	msp.char[name] = nil
 	xrpCache[name] = nil
-	AddOn.RunEvent("DROP", name)
+	AddOn.RunEvent("ADDON_XRP_CACHE_DROPPED", name)
 end
 
 function AddOn.ForceRefresh(name)

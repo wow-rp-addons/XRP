@@ -49,7 +49,7 @@ AddOn.RegisterGameEventCallback("ADDON_LOADED", function(event, addon)
 		xrpSaved.overrides.logout = nil
 	end
 
-	AddOn.RunEvent("UPDATE")
+	AddOn.ProfileUpdate()
 end)
 
 AddOn.RegisterGameEventCallback("PLAYER_LOGOUT", function(event)
@@ -72,7 +72,7 @@ function AddOn_XRP.SetField(field, contents)
 		return
 	end
 	xrpSaved.overrides[field] = contents
-	AddOn.RunEvent("UPDATE", field)
+	AddOn.ProfileUpdate(field)
 end
 
 function AddOn.GetFullCurrentProfile()
@@ -157,7 +157,7 @@ function AddOn_XRP.SetProfile(name, isAutomated)
 		if not isAutomated then
 			xrpSaved.overrides = {}
 		end
-		AddOn.RunEvent("UPDATE")
+		AddOn.ProfileUpdate()
 	end
 end
 
@@ -312,7 +312,7 @@ function CharacterFieldMetatable:__newindex(field, contents)
 	if profile and profile.fields[field] ~= contents then
 		profile.fields[field] = contents
 		if IsInUse(name, field) then
-			AddOn.RunEvent("UPDATE", field)
+			AddOn.ProfileUpdate(field)
 		end
 	end
 end
@@ -375,7 +375,7 @@ function CharacterInheritMetatable:__newindex(field, state)
 	if state ~= profile.inherits[field] then
 		profile.inherits[field] = state
 		if not profile.fields[field] and IsInUse(name, field) then
-			AddOn.RunEvent("UPDATE", field)
+			AddOn.ProfileUpdate(field)
 		end
 	end
 end
@@ -427,7 +427,7 @@ function ProfileMetatable:__newindex(index, value)
 		elseif value ~= profiles[name].parent then
 			profiles[name].parent = value
 			if IsInUse(name) then
-				AddOn.RunEvent("UPDATE")
+				AddOn.ProfileUpdate()
 			end
 		end
 	else

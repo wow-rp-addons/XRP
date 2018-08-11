@@ -155,7 +155,7 @@ local function DROP(event, characterID)
 		end
 	end
 end
-AddOn_XRP.RegisterEventCallback("DROP", DROP)
+AddOn_XRP.RegisterEventCallback("ADDON_XRP_CACHE_DROPPED", DROP)
 
 local function Menu_Checked(self)
 	if self.disabled or not UIDROPDOWNMENU_INIT_MENU.character then

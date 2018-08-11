@@ -19,12 +19,11 @@ local FOLDER_NAME, AddOn = ...
 local L = AddOn.GetText
 
 local EventCallbacks = {
-	CHUNK = {},
-	DROP = {},
-	FAIL = {},
-	FIELD = {},
-	RECEIVE = {},
-	UPDATE = {},
+	ADDON_XRP_CACHE_DROPPED = {},
+	ADDON_XRP_FIELD_RECEIVED = {},
+	ADDON_XRP_PROFILE_RECEIVED = {},
+	ADDON_XRP_PROGRESS_UPDATED = {},
+	ADDON_XRP_QUERY_FAILED = {},
 }
 
 function AddOn.RunEvent(event, ...)

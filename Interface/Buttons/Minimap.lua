@@ -229,7 +229,7 @@ end
 local isRegistered = false
 local function RegisterEvents()
 	if isRegistered then return end
-	AddOn_XRP.RegisterEventCallback("RECEIVE", XRPButton_UpdateIcon)
+	AddOn_XRP.RegisterEventCallback("ADDON_XRP_PROFILE_RECEIVED", XRPButton_UpdateIcon)
 	AddOn.RegisterGameEventCallback("PLAYER_TARGET_CHANGED", XRPButton_UpdateIcon)
 	AddOn.RegisterGameEventCallback("PLAYER_ENTERING_WORLD", XRPButton_UpdateIcon)
 	isRegistered = true
@@ -237,7 +237,7 @@ end
 
 local function UnregisterEvents()
 	if not isRegistered then return end
-	AddOn_XRP.UnregisterEventCallback("RECEIVE", XRPButton_UpdateIcon)
+	AddOn_XRP.UnregisterEventCallback("ADDON_XRP_PROFILE_RECEIVED", XRPButton_UpdateIcon)
 	AddOn.UnregisterGameEventCallback("PLAYER_TARGET_CHANGED", XRPButton_UpdateIcon)
 	AddOn.UnregisterGameEventCallback("PLAYER_ENTERING_WORLD", XRPButton_UpdateIcon)
 	isRegistered = false
