@@ -142,7 +142,7 @@ local function Refresh()
 end
 
 local function DROP(event, characterID)
-	if characterID == "ALL" then
+	if not characterID then
 		request.offset = 0
 		Refresh()
 		return

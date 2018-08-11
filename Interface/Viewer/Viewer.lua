@@ -144,7 +144,7 @@ local function FAIL(event, name, reason)
 end
 
 local function DROP(event, name)
-	if name == "ALL" or current and current.id == name then
+	if not name or current and current.id == name then
 		XRPViewer:View("player")
 		HideUIPanel(XRPViewer)
 	end

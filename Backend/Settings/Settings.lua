@@ -154,7 +154,7 @@ function AddOn.CacheTidy(timer, isInit)
 	end
 	if not isInit then
 		collectgarbage()
-		AddOn.RunEvent("ADDON_XRP_CACHE_DROPPED", "ALL")
+		AddOn.RunEvent("ADDON_XRP_CACHE_DROPPED")
 	end
 	return true
 end
