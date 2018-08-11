@@ -163,7 +163,7 @@ local function Menu_Checked(self)
 	elseif self.arg1 == "XRP_BOOKMARK" then
 		return UIDROPDOWNMENU_INIT_MENU.character.bookmark and true or false
 	elseif self.arg1 == "XRP_HIDE" then
-		return UIDROPDOWNMENU_INIT_MENU.character.hide and true or false
+		return UIDROPDOWNMENU_INIT_MENU.character.hidden and true or false
 	end
 end
 local function Menu_Click(self, arg1, arg2, checked)
@@ -185,7 +185,7 @@ local function Menu_Click(self, arg1, arg2, checked)
 			Refresh()
 		end
 	elseif arg1 == "XRP_HIDE" then
-		UIDROPDOWNMENU_INIT_MENU.character.hide = not checked
+		UIDROPDOWNMENU_INIT_MENU.character.hidden = not checked
 		if not request.showHidden then
 			request.offset = XRPArchive.List.scrollBar:GetValue()
 			Refresh()

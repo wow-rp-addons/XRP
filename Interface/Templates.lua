@@ -218,7 +218,7 @@ function XRPCursorBook_OnEvent(self, event)
 		return
 	end
 	local character = AddOn_XRP.Characters.byUnit.mouseover
-	if not character or character.hide then
+	if not character or character.hidden then
 		self:Hide()
 		return
 	end

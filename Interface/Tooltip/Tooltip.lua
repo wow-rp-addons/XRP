@@ -140,13 +140,13 @@ local function RenderTooltip()
 	oldLines = Tooltip:NumLines()
 	lineNum = 0
 	local character = currentUnit.character
-	local showProfile = not (currentUnit.noProfile or character.hide)
+	local showProfile = not (currentUnit.noProfile or character.hidden)
 
 	if currentUnit.type == "player" then
 		if not replace then
 			XRPTooltip:ClearLines()
 			XRPTooltip:SetOwner(GameTooltip, "ANCHOR_TOPRIGHT")
-			if character.hide then
+			if character.hidden then
 				RenderLine(false, L.HIDDEN, nil, 0.5, 0.5, 0.5)
 				XRPTooltip:Show()
 				return
@@ -173,7 +173,7 @@ local function RenderTooltip()
 		if replace then
 			RenderLine(false, currentUnit.guild, nil, 1, 1, 1)
 			local color = COLORS[currentUnit.faction]
-			RenderLine(false, currentUnit.titleRealm, character.hide and L.HIDDEN or showProfile and ParseVersion(character.VA), color.r, color.g, color.b, 0.5, 0.5, 0.5)
+			RenderLine(false, currentUnit.titleRealm, character.hidden and L.HIDDEN or showProfile and ParseVersion(character.VA), color.r, color.g, color.b, 0.5, 0.5, 0.5)
 			if AddOn.Settings.tooltipShowExtraSpace then
 				RenderLine(false, true)
 			end

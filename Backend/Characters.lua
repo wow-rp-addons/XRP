@@ -117,8 +117,8 @@ function CharacterMetatable:__index(index)
 	elseif index == "notes" then
 		return xrpAccountSaved.notes[characterID] or nil
 	elseif index == "bookmark" then
-		return xrpAccountSaved.bookmarks[characterID] or false
-	elseif index == "hide" then
+		return xrpAccountSaved.bookmarks[characterID]
+	elseif index == "hidden" then
 		return xrpAccountSaved.hidden[characterID] or false
 	elseif index == "own" then
 		return characterID == AddOn.characterID or xrpCache[characterID] and xrpCache[characterID].own or false
@@ -153,9 +153,9 @@ function CharacterMetatable:__newindex(index, value)
 		elseif not value and xrpAccountSaved.bookmarks[characterID] then
 			xrpAccountSaved.bookmarks[characterID] = nil
 		end
-	elseif index == "hide" then
+	elseif index == "hidden" then
 		if type(value) ~= "boolean" then
-			error("AddOn_XRP.Characters: CharacterTable.hide: expected boolean value, got " .. type(value), 2)
+			error("AddOn_XRP.Characters: CharacterTable.hidden: expected boolean value, got " .. type(value), 2)
 		elseif value and not xrpAccountSaved.hidden[characterID] then
 			xrpAccountSaved.hidden[characterID] = true
 		elseif not value and xrpAccountSaved.hidden[characterID] then

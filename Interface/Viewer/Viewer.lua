@@ -156,7 +156,7 @@ local function Menu_Checked(self)
 	elseif self.arg1 == "XRP_BOOKMARK" then
 		return current.bookmark and true or false
 	elseif self.arg1 == "XRP_HIDE" then
-		return current.hide and true or false
+		return current.hidden and true or false
 	end
 end
 local function Menu_Click(self, arg1, arg2, checked)
@@ -172,7 +172,7 @@ local function Menu_Click(self, arg1, arg2, checked)
 	elseif arg1 == "XRP_BOOKMARK" then
 		current.bookmark = not checked
 	elseif arg1 == "XRP_HIDE" then
-		current.hide = not checked
+		current.hidden = not checked
 	elseif arg1 == "XRP_EXPORT" then
 		XRPExport:Export(current.name, current.exportPlainText)
 	elseif arg1 == "XRP_REPORT" then

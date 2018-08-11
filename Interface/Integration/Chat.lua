@@ -53,7 +53,7 @@ local function XRPGetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7
 		name = arg2:match("^[\032-\126\194-\244][\128-\191]*") or Ambiguate(arg2, "guild")
 		nameFormat = "[%s]"
 	else
-		name = AddOn.Settings.chatType[chatCategory] and character and not character.hide and AddOn_XRP.RemoveTextFormats(character.NA) or Ambiguate(arg2, "guild")
+		name = AddOn.Settings.chatType[chatCategory] and character and not character.hidden and AddOn_XRP.RemoveTextFormats(character.NA) or Ambiguate(arg2, "guild")
 		nameFormat = chatCategory == "EMOTE" and (AddOn.Settings.chatEmoteBraced and "[%s]" or "%s") .. (arg9 or "") or "%s"
 	end
 
@@ -166,7 +166,7 @@ AddOn.RegisterGameEventCallback("PLAYER_LOGIN", function(event)
 			if chatCategory == "CHANNEL" and type(message.ORG.CHANNEL) == "string" then
 				chatCategory = "CHANNEL_" .. message.ORG.CHANNEL:upper()
 			end
-			local rpName = AddOn.Settings.chatType[chatCategory] and not character.hide and AddOn_XRP.RemoveTextFormats(character.NA)
+			local rpName = AddOn.Settings.chatType[chatCategory] and not character.hidden and AddOn_XRP.RemoveTextFormats(character.NA)
 			if not rpName then
 				return
 			end
