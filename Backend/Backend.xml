@@ -1,7 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
 	<Script>
 		AddOn_XRP = {}
-		xrp = {}
 	</Script>
 	<Script file="PublicStrings.lua"/>
 	<Script file="Events.lua"/>
