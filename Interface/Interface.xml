@@ -1,0 +1,20 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+	<Script file="GlobalStrings.lua"/>
+	<Script file="AltRaces.lua"/>
+	<Script file="Help.lua"/>
+	<Script file="Popups.lua"/>
+	<Script file="Integration\Commands.lua"/>
+	<Script file="Integration\Chat.lua"/>
+	<Script file="Integration\Interact.lua"/>
+	<Script file="Integration\Menus.lua"/>
+	<Script file="Tooltip\Tooltip.lua"/>
+	<Include file="Templates.xml"/>
+	<Include file="Glances\Glances.xml"/>
+	<Include file="Buttons\Minimap.xml"/>
+	<Include file="Export\Export.xml"/>
+	<Include file="Viewer\Viewer.xml"/>
+	<Include file="Archive\Archive.xml"/>
+	<Include file="Editor\Editor.xml"/>
+	<Include file="Options\Options.xml"/>
+	<Script file="ThirdPartyFixes.lua"/>
+</Ui>
