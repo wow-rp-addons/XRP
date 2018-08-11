@@ -68,6 +68,8 @@ function AddOn.ProfileUpdate(field)
 		local contents = xrpSaved.overrides[field] or AddOn_XRP.Profiles.SELECTED.Full[field] or AddOn.FallbackFields[field]
 		if not contents or contents == "" then
 			contents = nil
+		elseif field == "PE" and type(contents) == "table" then
+			contents = AddOn.PEToString(contents)
 		elseif field == "AH" then
 			contents = AddOn.ConvertHeight(contents, "msp")
 		elseif field == "AW" then

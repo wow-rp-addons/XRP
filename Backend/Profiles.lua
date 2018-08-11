@@ -63,12 +63,18 @@ end)
 
 function AddOn_XRP.SetField(field, contents)
 	if type(field) ~= "string" then
-		error("AddOn_XRP.SetField(): field: expected string or nil, got " .. type(field), 2)
+		error("AddOn_XRP.SetField(): field: expected string, got " .. type(field), 2)
+	elseif field == "PE" then
+		if contents and type(contents) ~= "table" then
+			error("AddOn_XRP.SetField(): contents (PE): expected table or nil, got " .. type(contents), 2)
+		end
+		contents = AddOn.PEToString(contents)
 	elseif contents and type(contents) ~= "string" then
 		error("AddOn_XRP.SetField(): contents: expected string or nil, got " .. type(contents), 2)
 	elseif NO_PROFILE[field] or not field:find("^%u%u$") then
 		error("AddOn_XRP.SetField(): field: invalid field:" .. field, 2)
-	elseif xrpSaved.overrides[field] == contents then
+	end
+	if xrpSaved.overrides[field] == contents then
 		return
 	end
 	xrpSaved.overrides[field] = contents
@@ -295,12 +301,21 @@ function CharacterFieldMetatable:__index(field)
 	elseif NO_PROFILE[field] or not field:find("^%u%u$") then
 		error("AddOn_XRP.Characters: ProfileFieldTable: field: invalid field:" .. field, 2)
 	end
-	return xrpSaved.profiles[ProfileNameMap[self]].fields[field]
+	local contents = xrpSaved.profiles[ProfileNameMap[self]].fields[field]
+	if field == "PE" then
+		contents = AddOn.StringToPE(contents)
+	end
+	return contents
 end
 
 function CharacterFieldMetatable:__newindex(field, contents)
 	if type(field) ~= "string" then
 		error("AddOn_XRP.Characters: ProfileFieldTable: field: expected string or nil, got " .. type(field), 2)
+	elseif field == "PE" then
+		if contents and type(contents) ~= "table" then
+			error("AddOn_XRP.SetField(): contents (PE): expected table or nil, got " .. type(contents), 2)
+		end
+		contents = AddOn.PEToString(contents)
 	elseif NO_PROFILE[field] or not field:find("^%u%u$") then
 		error("AddOn_XRP.Characters: ProfileFieldTable: field: invalid field:" .. field, 2)
 	elseif contents and type(contents) ~= "string" then
@@ -330,7 +345,11 @@ function CharacterFullMetatable:__index(field)
 	local profile = xrpSaved.profiles[ProfileNameMap[self]]
 	for i = 0, MAX_DEPTH do
 		if profile.fields[field] then
-			return profile.fields[field]
+			local contents = profile.fields[field]
+			if field == "PE" then
+				contents = AddOn.StringToPE(contents)
+			end
+			return contents
 		elseif profile.inherits[field] == false or not xrpSaved.profiles[profile.parent] then
 			return nil
 		else

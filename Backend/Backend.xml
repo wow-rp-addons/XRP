@@ -10,6 +10,7 @@
 	<Script file="Settings\Settings.lua"/>
 	<Script file="Utility.lua"/>
 	<Script file="Export.lua"/>
+	<Script file="Peeks.lua"/>
 	<Script file="Profiles.lua"/>
 	<Script file="MSP.lua"/>
 	<Script file="Characters.lua"/>

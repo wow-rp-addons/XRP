@@ -89,7 +89,9 @@ function CharacterMetatable:__index(index)
 		end
 		if xrpCache[characterID] and xrpCache[characterID].fields[field] then
 			local contents = AddOn.SanitizeText(xrpCache[characterID].fields[field])
-			if field == "AH" then
+			if field == "PE" then
+				contents = AddOn.StringToPE(contents)
+			elseif field == "AH" then
 				contents = AddOn.ConvertHeight(contents)
 			elseif field == "AW" then
 				contents = AddOn.ConvertWeight(contents)

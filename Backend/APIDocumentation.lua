@@ -33,7 +33,8 @@ end
 
 local GUARANEED_FIELDS = {
 	"VP", "VA", "NA", "NH", "NI", "NT", "RA", "CU", "FR", "FC", "RC",-- "CO",
-	"AH", "AW", "HH", "HB", "MO", "DE", "HI", "GC", "GF", "GR", "GS", "GU",
+	"PE", "AH", "AW", "HH", "HB", "MO", "DE", "HI",
+	"GC", "GF", "GR", "GS", "GU",
 	"TT", "VW",
 }
 
@@ -43,7 +44,12 @@ local UNSETTABLE_FIELDS = {
 }
 
 local SPECIAL_TYPES = {
+	PE = "table",
 	TT = "nil", VW = "nil",
+}
+
+local INNER_TYPES = {
+	PE = "XRPPeekTable",
 }
 
 local SPECIAL_DOCUMENTATION = {
@@ -78,7 +84,7 @@ local XRPProfileInheritTable = {
 }
 
 for i, field in ipairs(GUARANEED_FIELDS) do
-	local fieldTable = { Name = field, Type = SPECIAL_TYPES[field] or "string", Nilable = true, Documentation = { ("MSP field with localized name \"%s\"."):format(AddOn_XRP.Strings.Names[field] or UNKNOWN), SPECIAL_DOCUMENTATION[SPECIAL_TYPES[field]] } }
+	local fieldTable = { Name = field, Type = SPECIAL_TYPES[field] or "string", InnerType = INNER_TYPES[field], Nilable = true, Documentation = { ("MSP field with localized name \"%s\"."):format(AddOn_XRP.Strings.Names[field] or UNKNOWN), SPECIAL_DOCUMENTATION[SPECIAL_TYPES[field]] } }
 	XRPCharacterTable.Fields[#XRPCharacterTable.Fields + 1] = fieldTable
 	if not UNSETTABLE_FIELDS[field] and not msp.INTERNAL_FIELDS[field] then
 		XRPProfileFieldTable.Fields[#XRPProfileFieldTable.Fields + 1] = fieldTable
@@ -300,6 +306,16 @@ local XRPAPI = {
 			Documentation = { "Accessed via AddOn_XRP.Profiles." },
 			Fields = {
 				{ Name = "<profileName>", Type = "XRPProfileTable", Nilable = true, Documentation = { "May be nil if the named profile does not exist." } },
+			},
+		},
+		{
+			Name = "XRPPeekTable",
+			Type = "Structure",
+			Documentation = { "Peek tables are always contained in an array-type table. XRP permits unlimited indexes in this array, but other addons typically limit this to five." },
+			Fields = {
+				{ Name = "IC", Type = "string", Nilable = false, Documentation = { "The texture path to the icon for the peek.", "Uses valid placeholder if no data for this value was recieved." } },
+				{ Name = "NA", Type = "string", Nilable = false, Documentation = { "The name/title of the peek.", "Uses valid placeholder if no data for this value was recieved." } },
+				{ Name = "DE", Type = "string", Nilable = true, Documentation = { "The text description of the peek." } },
 			},
 		},
 		{
