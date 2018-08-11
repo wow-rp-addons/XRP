@@ -236,6 +236,35 @@
 					</ScrollFrame>
 				</Frames>
 			</Frame>
+			<CheckButton parentKey="Glance1" inherits="XRPViewerPeekTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" y="-221"/>
+				</Anchors>
+				<Scripts>
+					<OnShow inherit="prepend" method="OnShowFirst"/>
+					<OnHide inherit="prepend" method="OnHideFirst"/>
+				</Scripts>
+			</CheckButton>
+			<CheckButton parentKey="Glance2" inherits="XRPViewerPeekTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Glance1" relativePoint="BOTTOMLEFT" y="-26"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton parentKey="Glance3" inherits="XRPViewerPeekTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Glance2" relativePoint="BOTTOMLEFT" y="-26"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton parentKey="Glance4" inherits="XRPViewerPeekTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Glance3" relativePoint="BOTTOMLEFT" y="-26"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton parentKey="Glance5" inherits="XRPViewerPeekTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Glance4" relativePoint="BOTTOMLEFT" y="-26"/>
+				</Anchors>
+			</CheckButton>
 			<Button parentKey="Menu" inherits="UIPanelButtonTemplate" text="v" mixin="XRPTemplatesMenu_Mixin">
 				<KeyValues>
 					<KeyValue key="displayMode" value="MENU"/>
@@ -274,9 +303,11 @@
 		</Attributes>
 		<KeyValues>
 			<KeyValue key="titleKey" value="PROFILE_VIEWER"/>
+			<KeyValue key="extraWidth" type="number" value="0"/>
 		</KeyValues>
 		<Scripts>
 			<OnLoad inherit="prepend" function="XRPViewer_OnLoad"/>
 		</Scripts>
 	</Frame>
+	<GameTooltip name="XRPPeekTooltip" frameStrata="TOOLTIP" hidden="true" parent="UIParent" inherits="GameTooltipTemplate"/>
 </Ui>

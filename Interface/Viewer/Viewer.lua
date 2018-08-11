@@ -26,10 +26,25 @@ local current, status, failed, lastUpdate
 local DISPLAY = {
 	"VA", "NA", "NH", "NI", "NT", "RA", "RC", "CU", -- In TT.
 	"AE", "AH", "AW", "AG", "HH", "HB", "MO", -- Not in TT.
-	"DE", "HI", -- High-bandwidth.
+	"PE", "DE", "HI", -- High-bandwidth.
 }
 
 local function SetField(field, contents, secondary, tertiary)
+	if field == "PE" then
+		for i = 1, 5 do
+			local peek = contents and contents[i]
+			local PE = XRPViewer.PE[i]
+			if not peek then
+				PE:Hide()
+			else
+				PE:SetNormalTexture(peek.IC)
+				PE.NA = peek.NA
+				PE.DE = peek.DE
+				PE:Show()
+			end
+		end
+		return
+	end
 	contents = AddOn_XRP.RemoveTextFormats(contents, field == "CU" or field == "DE" or field == "MO" or field == "HI")
 	if field == "VA" then
 		contents = contents and contents:gsub(";", PLAYER_LIST_DELIMITER) or NONE

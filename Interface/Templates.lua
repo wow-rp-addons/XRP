@@ -301,7 +301,7 @@ end
 
 function XRPTemplatesPopout_OnHide(self)
 	local parent = self:GetParent()
-	parent:SetAttribute("UIPanelLayout-extraWidth", nil)
+	parent:SetAttribute("UIPanelLayout-extraWidth", parent.extraWidth or nil)
 	if parent:GetAttribute("UIPanelLayout-defined") then
 		UpdateUIPanelPositions(parent)
 	end
