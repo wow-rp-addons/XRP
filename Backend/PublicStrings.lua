@@ -54,6 +54,9 @@ Names.GF = L.FIELD_GF
 Names.GR = L.FIELD_GR
 Names.GS = L.FIELD_GS
 Names.GU = L.FIELD_GU
+-- Internal fields.
+Names.TT = L.FIELD_TT
+Names.VW = L.FIELD_VW
 
 local MenuNames = setmetatable({}, { __index = Names })
 MenuNames.FR = L.FIELD_FR_MENU

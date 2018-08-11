@@ -56,6 +56,9 @@ FIELD_GS = "Toon gender"
 FIELD_GU = "Toon GUID"
 -- Below are not implemented by XRP.
 FIELD_IC = "Icon"
+-- Below are internal-only fields.
+FIELD_TT = "Tooltip metafield"
+FIELD_VW = "Detailed addon build info"
 
 -- These are alternate field names suited for use in menus.
 FIELD_FR_MENU = "Roleplaying Style"
