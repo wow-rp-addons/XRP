@@ -18,11 +18,6 @@
 local FOLDER_NAME, AddOn = ...
 local L = AddOn.GetText
 
-XRP_APPEARANCE = L.APPEARANCE
-XRP_BIOGRAPHY = L.BIOGRAPHY
-XRP_NOTES = L.NOTES
-XRP_NOTES_INSTRUCTIONS = L"You can store private notes here. They will never be visible to other players.\n\nNotes are accessible on all your characters and are automatically saved when you close this panel."
-
 function XRPTemplates_CloseDropDownMenus(self, ...)
 	CloseDropDownMenus()
 end
