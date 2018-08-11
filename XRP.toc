@@ -25,6 +25,7 @@ Interface\Integration\Interact.lua
 Interface\Integration\Menus.lua
 Interface\Tooltip\Tooltip.lua
 Interface\Templates.xml
+Interface\Glances\Glances.xml
 Interface\Buttons\Minimap.xml
 Interface\Export\Export.xml
 Interface\Viewer\Viewer.xml

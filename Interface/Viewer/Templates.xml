@@ -15,8 +15,6 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-	<Script file="Templates.lua"/>
-
 	<Frame name="XRPViewerTextLineTemplate" enableMouse="true" virtual="true">
 		<Size y="13"/>
 		<Layers>
@@ -112,7 +110,11 @@
 			</Frame>
 		</Frames>
 	</ScrollFrame>
-	<CheckButton name="XRPViewerPeekTemplate" virtual="true" frameStrata="LOW" hidden="false" parentArray="PE" mixin="XRPViewerPeek_Mixin">
+	<CheckButton name="XRPViewerPeekTemplate" virtual="true" inherits="XRPPeekTemplate" frameStrata="LOW">
+		<KeyValues>
+			<KeyValue key="tooltipAnchor" value="ANCHOR_BOTTOMRIGHT"/>
+			<KeyValue key="tooltipY" type="number" value="37"/>
+		</KeyValues>
 		<Size x="32" y="32"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -124,13 +126,5 @@
 				</Texture>
 			</Layer>
 		</Layers>
-		<Scripts>
-			<OnEnter method="OnEnter"/>
-			<OnLeave method="OnLeave"/>
-			<OnHide method="OnHide"/>
-		</Scripts>
-		<NormalTexture/>
-		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
-		<CheckedTexture file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD"/>
 	</CheckButton>
 </Ui>

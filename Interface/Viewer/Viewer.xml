@@ -236,7 +236,7 @@
 					</ScrollFrame>
 				</Frames>
 			</Frame>
-			<CheckButton parentKey="Glance1" inherits="XRPViewerPeekTemplate">
+			<CheckButton parentKey="Glance1" inherits="XRPViewerPeekTemplate" mixin="XRPViewerPeek_Mixin">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" y="-221"/>
 				</Anchors>
@@ -309,5 +309,4 @@
 			<OnLoad inherit="prepend" function="XRPViewer_OnLoad"/>
 		</Scripts>
 	</Frame>
-	<GameTooltip name="XRPPeekTooltip" frameStrata="TOOLTIP" hidden="true" parent="UIParent" inherits="GameTooltipTemplate"/>
 </Ui>

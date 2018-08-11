@@ -31,17 +31,8 @@ local DISPLAY = {
 
 local function SetField(field, contents, secondary, tertiary)
 	if field == "PE" then
-		for i = 1, 5 do
-			local peek = contents and contents[i]
-			local PE = XRPViewer.PE[i]
-			if not peek then
-				PE:Hide()
-			else
-				PE:SetNormalTexture(peek.IC)
-				PE.NA = peek.NA
-				PE.DE = peek.DE
-				PE:Show()
-			end
+		for i, display in ipairs(XRPViewer.PE) do
+			display:SetPeek(contents and contents[i])
 		end
 		return
 	end
@@ -154,6 +145,32 @@ local function FAIL(event, name, reason)
 				XRPViewer.XC:SetText(L"No RP addon appears to be active.")
 			end
 			status = "failed"
+		end
+	end
+end
+
+XRPViewerPeek_Mixin = {}
+
+function XRPViewerPeek_Mixin:OnShowFirst()
+	local parent = self:GetParent()
+	parent.extraWidth = 32
+	local extraWidth = parent:GetAttribute("UIPanelLayout-extraWidth") or 0
+	if extraWidth < 32 then
+		parent:SetAttribute("UIPanelLayout-extraWidth", 32)
+		if parent:GetAttribute("UIPanelLayout-defined") then
+			UpdateUIPanelPositions(parent)
+		end
+	end
+end
+
+function XRPViewerPeek_Mixin:OnHideFirst()
+	local parent = self:GetParent()
+	parent.extraWidth = 0
+	local extraWidth = parent:GetAttribute("UIPanelLayout-extraWidth") or 0
+	if extraWidth == 32 then
+		parent:SetAttribute("UIPanelLayout-extraWidth", 0)
+		if parent:GetAttribute("UIPanelLayout-defined") then
+			UpdateUIPanelPositions(parent)
 		end
 	end
 end
