@@ -24,15 +24,26 @@ function AddOn_XRP.GetAPIVersion()
 	return API, FEATURE
 end
 
+function AddOn_XRP.HasAPIFeature(apiVersion, apiFeatureLevel)
+	if type(apiVersion) ~= "number" or type(apiFeatureLevel) ~= "number" then
+		error("AddOn_XRP.HasAPIFeature(): apiVersion, apiFeatureLevel: number type required")
+	end
+	return apiVersion == API and apiFeatureLevel <= FEATURE
+end
+
 local GUARANEED_FIELDS = {
 	"VP", "VA", "NA", "NH", "NI", "NT", "RA", "CU", "FR", "FC", "RC",-- "CO",
 	"AH", "AW", "HH", "HB", "MO", "DE", "HI", "GC", "GF", "GR", "GS", "GU",
 	"TT", "VW",
 }
 
+-- These augment msp.INTENRAL_FIELDS
+local UNSETTABLE_FIELDS = {
+	VA = true, TT = true, VW = true,
+}
+
 local SPECIAL_TYPES = {
-	TT = "nil",
-	VW = "nil",
+	TT = "nil", VW = "nil",
 }
 
 local SPECIAL_DOCUMENTATION = {
@@ -69,11 +80,13 @@ local XRPProfileInheritTable = {
 for i, field in ipairs(GUARANEED_FIELDS) do
 	local fieldTable = { Name = field, Type = SPECIAL_TYPES[field] or "string", Nilable = true, Documentation = { ("MSP field with localized name \"%s\"."):format(AddOn_XRP.Strings.Names[field] or UNKNOWN), SPECIAL_DOCUMENTATION[SPECIAL_TYPES[field]] } }
 	XRPCharacterTable.Fields[#XRPCharacterTable.Fields + 1] = fieldTable
-	XRPProfileFieldTable.Fields[#XRPProfileFieldTable.Fields + 1] = fieldTable
-	XRPProfileInheritTable.Fields[#XRPProfileInheritTable.Fields + 1] = { Name = field, Type = "bool", Nilable = false }
+	if not UNSETTABLE_FIELDS[field] and not msp.INTERNAL_FIELDS[field] then
+		XRPProfileFieldTable.Fields[#XRPProfileFieldTable.Fields + 1] = fieldTable
+		XRPProfileInheritTable.Fields[#XRPProfileInheritTable.Fields + 1] = { Name = field, Type = "bool", Nilable = false }
+	end
 end
 
-local OtherMSP = { Name = "<otherMSPField>", Type = "string", Nilable = true, Documentation = { "MSP fields not documented above are usable, but do not have type guarantees." } }
+local OtherMSP = { Name = "<otherMSPField>", Type = "string", Nilable = true, Documentation = { "MSP fields not documented above are probably usable, but do not have type guarantees." } }
 XRPCharacterTable.Fields[#XRPCharacterTable.Fields + 1] = OtherMSP
 XRPProfileFieldTable.Fields[#XRPProfileFieldTable.Fields + 1] = OtherMSP
 XRPProfileInheritTable.Fields[#XRPProfileInheritTable.Fields + 1] = { Name = "<otherMSPField>", Type = "bool", Nilable = false }
@@ -167,6 +180,17 @@ local XRPAPI = {
 			Returns = {
 				{ Name = "apiVersion", Type = "number", Nilable = false, Documentation = { "Version of active XRP API.", "Different API versions are not guaranteed to be compatible with each other." } },
 				{ Name = "apiFeatureLevel", Type = "number", Nilable = false, Documentation = { "Feature level of active XRP API.", "This can be used to check for the presence of a required feature stabilized at a specific feature level." } },
+			},
+		},
+		{
+			Name = "HasAPIFeature",
+			Type = "Function",
+			Arguments = {
+				{ Name = "apiVersion", Type = "number", Nilable = false, Documentation = { "Version of required XRP API." } },
+				{ Name = "apiFeatureLevel", Type = "number", Nilable = false, Documentation = { "Feature level of required XRP API feature." } },
+			},
+			Returns = {
+				{ Name = "hasAPIFeature", Type = "bool", Nilable = false, Documentation = { "True only if the API version matches, and the API feature level is equal or lower than the current feature level." } }
 			},
 		},
 	},
