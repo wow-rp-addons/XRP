@@ -170,7 +170,7 @@ local function Menu_Click(self, arg1, arg2, checked)
 	if arg1 == "XRP_VIEW_CACHED" then
 		XRPViewer:View(UIDROPDOWNMENU_INIT_MENU.character)
 	elseif arg1 == "XRP_VIEW_LIVE" then
-		XRPViewer:View(tostring(UIDROPDOWNMENU_INIT_MENU.character))
+		XRPViewer:View(UIDROPDOWNMENU_INIT_MENU.character.id)
 	elseif arg1 == "XRP_NOTES" then
 		XRPArchive.Notes:SetAttribute("character", UIDROPDOWNMENU_INIT_MENU.character)
 		XRPArchive.Notes:Show()
