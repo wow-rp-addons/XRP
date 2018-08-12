@@ -317,7 +317,7 @@ function CharacterFieldMetatable:__index(field)
 	end
 	local contents = xrpSaved.profiles[ProfileNameMap[self]].fields[field]
 	if field == "PE" then
-		contents = AddOn.StringToPE(contents) or AddOn.GetEmptyPE()
+		contents = AddOn.StringToPE(contents)
 	end
 	return contents
 end

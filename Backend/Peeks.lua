@@ -52,8 +52,8 @@ local function ClonePE(PE)
 end
 
 local function StringToPeek(str)
-	local icon = str:match("%f[^\n%z]|T([^:|]+)[^|]*|t%f[\n%z]") or "Interface\\Icons\\TEMP"
-	local name = str:match("%f[^\n%z]#+% *(.-)% *%f[\n%z]") or UNKNOWN
+	local icon = str:match("%f[^\n%z]|T([^:|]+)[^|]*|t%f[\n%z]")
+	local name = str:match("%f[^\n%z]#+% *(.-)% *%f[\n%z]")
 	local description = str:match("%f[^\n%z]% *([^|#].-)%s*$")
 	return {
 		IC = icon,
@@ -87,19 +87,23 @@ function AddOn.PEToString(PE)
 	end
 	local peeks = {}
 	for i, peek in ipairs(PE) do
-		if i > 1 then
-			peeks[#peeks + 1] = "\n\n---\n\n"
-		end
-		peeks[#peeks + 1] = "|T"
-		peeks[#peeks + 1] = peek.IC
-		peeks[#peeks + 1] = ":32:32|t\n"
-		if peek.NA then
-			peeks[#peeks + 1] = "#"
-			peeks[#peeks + 1] = peek.NA
-			peeks[#peeks + 1] = "\n\n"
-		end
-		if peek.DE then
-			peeks[#peeks + 1] = peek.DE
+		if peek.IC or peek.NA or peek.DE then
+			if i > 1 then
+				peeks[#peeks + 1] = "\n\n---\n\n"
+			end
+			if peek.IC then
+				peeks[#peeks + 1] = "|T"
+				peeks[#peeks + 1] = peek.IC
+				peeks[#peeks + 1] = ":32:32|t\n"
+			end
+			if peek.NA then
+				peeks[#peeks + 1] = "#"
+				peeks[#peeks + 1] = peek.NA
+				peeks[#peeks + 1] = "\n\n"
+			end
+			if peek.DE then
+				peeks[#peeks + 1] = peek.DE
+			end
 		end
 	end
 	return table.concat(peeks)

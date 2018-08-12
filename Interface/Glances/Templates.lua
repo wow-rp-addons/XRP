@@ -21,14 +21,14 @@ local L = AddOn.GetText
 XRPPeek_Mixin = {}
 
 function XRPPeek_Mixin:SetPeek(peek)
-	if not peek or not peek.IC or not peek.NA then
+	if not peek or not peek.IC and not peek.NA and not peek.DE then
 		self:Hide()
 		return
 	elseif self:IsShown() and peek.IC == self.IC and peek.NA == self.NA and peek.DE == self.DE then
 		return
 	end
 	self.IC = peek.IC
-	self:SetNormalTexture(self.IC)
+	self:SetNormalTexture(self.IC or "Interface\\Icons\\inv_misc_questionmark")
 	self.NA = peek.NA
 	self.DE = peek.DE
 	self:Show()
@@ -38,13 +38,16 @@ function XRPPeek_Mixin:SetPeek(peek)
 end
 
 function XRPPeek_Mixin:OnEnter()
+	if not self.NA and not self.DE then
+		return
+	end
 	local owner = XRPPeekTooltip:GetOwner()
 	if owner and owner ~= self and owner:GetChecked() then
 		self:SetChecked(true)
 		owner:SetChecked(false)
 	end
 	XRPPeekTooltip:SetOwner(self, self.tooltipAnchor or "ANCHOR_RIGHT", self.tooltipX or 0, self.tooltipY or 0)
-	XRPPeekTooltip:AddLine(self.NA)
+	XRPPeekTooltip:AddLine(self.NA or UNKNOWN)
 	if self.DE then
 		XRPPeekTooltip:AddLine(self.DE, 1, 1, 1, true)
 	end
