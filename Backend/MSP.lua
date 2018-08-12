@@ -106,7 +106,7 @@ local function UpdatedHandler(updatedName, field, contents, version)
 	if not name or type(field) ~= "string" or not field:find("^%u%u$") or contents and type(contents) ~= "string" or version and type(version) ~= "number" then
 		error("XRP: LibMSP updated callback receieved invalid arguments.")
 	elseif field == "VW" then
-		if contents then
+		if contents and xrpCache[name] and xrpCache[name].fields.VA and xrpCache[name].fields.VA:match("^XRP/([^;]+)") == xrpAccountSaved.update.xrpVersionUpdate then
 			AddOn.UpdateWoWVersion((";"):split(contents))
 		end
 		return
