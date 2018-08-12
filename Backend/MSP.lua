@@ -65,11 +65,9 @@ function AddOn.ProfileUpdate(field)
 	if disabled then return end
 	if field then
 		if msp.INTERNAL_FIELDS[field] then return end
-		local contents = xrpSaved.overrides[field] or AddOn_XRP.Profiles.SELECTED.Full[field] or AddOn.FallbackFields[field]
+		local contents = xrpSaved.overrides[field] or AddOn.GetProfileField(field) or AddOn.FallbackFields[field]
 		if not contents or contents == "" then
 			contents = nil
-		elseif field == "PE" and type(contents) == "table" then
-			contents = AddOn.PEToString(contents)
 		elseif field == "AH" then
 			contents = AddOn.ConvertHeight(contents, "msp")
 		elseif field == "AW" then

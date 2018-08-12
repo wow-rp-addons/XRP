@@ -20,6 +20,22 @@ local L = AddOn.GetText
 
 local GlancesCache = setmetatable({}, AddOn.WeakValueMetatable)
 
+local PEMetatable = {}
+function PEMetatable:__eq(toCompare)
+	if #self ~= #toCompare then
+		return false
+	end
+	for i, peek in ipairs(self) do
+		local compPeek = toCompare[i]
+		if peek.IC ~= compPeek.IC or peek.NA ~= compPeek.NA or peek.DE ~= compPeek.DE then
+			return false
+		end
+	end
+	return true
+end
+
+PEMetatable.__metatable = false
+
 local function ClonePE(PE)
 	if not PE then
 		return nil
@@ -50,7 +66,7 @@ function AddOn.StringToPE(str)
 	if not str then
 		return nil
 	elseif GlancesCache[str] then
-		return ClonePE(GlancesCache[str])
+		return setmetatable(ClonePE(GlancesCache[str]), PEMetatable)
 	end
 	local PE = {}
 	local index = 1
@@ -62,7 +78,7 @@ function AddOn.StringToPE(str)
 		index = nextIndex
 	end
 	GlancesCache[str] = ClonePE(PE)
-	return PE
+	return setmetatable(PE, PEMetatable)
 end
 
 function AddOn.PEToString(PE)
@@ -87,4 +103,8 @@ function AddOn.PEToString(PE)
 		end
 	end
 	return table.concat(peeks)
+end
+
+function AddOn.GetEmptyPE()
+	return setmetatable({}, PEMetatable)
 end
