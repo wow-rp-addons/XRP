@@ -21,7 +21,7 @@ local L = AddOn.GetText
 AddOn.SettingsToggles = {}
 
 local DATA_VERSION = 7
-local DATA_VERSION_ACCOUNT = 19
+local DATA_VERSION_ACCOUNT = 20
 
 local function InitializeSavedVariables()
 	if not xrpCache then
