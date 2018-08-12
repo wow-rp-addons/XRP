@@ -100,11 +100,13 @@ AddOn.RegisterGameEventCallback("PLAYER_LOGIN", function(event)
 					-- Small warning, only XRP (and maybe WoW build) is oudated.
 					warningFunction = function()
 						print(L"|cffdd380fXRP Version Update:|r There is a new version of XRP (%s) available.":format(xrpAccountSaved.update.xrpVersionUpdate))
-						xrpAccountSaved.update.lastNotice = now
 					end
 				end
+				xrpAccountSaved.update.lastNotice = now
 			end
-			C_Timer.After(5, warningFunction)
+			if warningFunction then
+				C_Timer.After(5, warningFunction)
+			end
 		elseif update == -1 then
 			xrpAccountSaved.update.xrpVersionUpdate = nil
 			xrpAccountSaved.update.lastNotice = nil
