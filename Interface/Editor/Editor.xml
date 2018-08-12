@@ -17,6 +17,7 @@
 -->
 	<Script file="Editor.lua"/>
 	<Script file="Automation.lua"/>
+	<Script file="Glances.lua"/>
 	<Include file="Templates.xml"/>
 
 	<Frame name="XRPEditor" parent="UIParent" inherits="XRPButtonFrameTemplate">
@@ -239,6 +240,57 @@
 					</Frame>
 				</Frames>
 			</Frame>
+			<Frame parentKey="Glances" parentArray="panes" useParentLevel="true" hidden="true" mixin="XRPEditorGlances_Mixin">
+				<KeyValues>
+					<KeyValue key="field" value="PE"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Inset" relativePoint="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset" relativePoint="BOTTOMRIGHT"/>
+				</Anchors>
+				<Frames>
+					<CheckButton parentKey="Inherit" inherits="XRPEditorInheritCheckNoAnchorTemplate">
+						<Size x="16" y="16"/>
+						<Anchors>
+							<Anchor point="TOPRIGHT" x="-8" y="-2"/>
+						</Anchors>
+					</CheckButton>
+					<Frame parentKey="Peek1" id="1" inherits="XRPEditorPeekTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" y="2"/>
+							<Anchor point="TOPRIGHT" y="2"/>
+						</Anchors>
+					</Frame>
+					<Frame parentKey="Peek2" id="2" inherits="XRPEditorPeekTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Peek1" relativePoint="BOTTOMLEFT"/>
+							<Anchor point="TOPRIGHT" relativeKey="$parent.Peek1" relativePoint="BOTTOMRIGHT"/>
+						</Anchors>
+					</Frame>
+					<Frame parentKey="Peek3" id="3" inherits="XRPEditorPeekTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Peek2" relativePoint="BOTTOMLEFT"/>
+							<Anchor point="TOPRIGHT" relativeKey="$parent.Peek2" relativePoint="BOTTOMRIGHT"/>
+						</Anchors>
+					</Frame>
+					<Frame parentKey="Peek4" id="4" inherits="XRPEditorPeekTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Peek3" relativePoint="BOTTOMLEFT"/>
+							<Anchor point="TOPRIGHT" relativeKey="$parent.Peek3" relativePoint="BOTTOMRIGHT"/>
+						</Anchors>
+					</Frame>
+					<Frame parentKey="Peek5" id="5" inherits="XRPEditorPeekTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Peek4" relativePoint="BOTTOMLEFT"/>
+							<Anchor point="TOPRIGHT" relativeKey="$parent.Peek4" relativePoint="BOTTOMRIGHT"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnAttributeChanged method="OnAttributeChanged"/>
+				</Scripts>
+			</Frame>
 			<Button name="$parentProfiles" parentKey="Profiles" inherits="XRPDropDownTemplate">
 				<KeyValues>
 					<KeyValue key="preClick" value="XRPEditorProfiles_PreClick" type="global"/>
@@ -338,6 +390,11 @@
 					<Anchor point="LEFT" relativeKey="$parent.Tab1" relativePoint="RIGHT" x="-16"/>
 				</Anchors>
 			</Button>
+			<Button name="$parentTab3" parentKey="Tab3" inherits="XRPTabButtonTemplate" id="3" text="XRP_GLANCES">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Tab2" relativePoint="RIGHT" x="-16"/>
+				</Anchors>
+			</Button>
 			<Frame parentKey="Automation" inherits="XRPPopoutTemplate">
 				<Size x="209" y="175"/>
 				<Layers>
@@ -424,6 +481,91 @@
 			<Frame inherits="XRPNotesTemplate">
 				<Scripts>
 					<OnShow inherit="append" function="XRPEditorNotes_OnShow"/>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="Icons" inherits="XRPPopoutTemplate" mixin="XRPEditorIcons_Mixin">
+				<Size x="417" y="441"/>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="HeaderTop" file="Interface\RaidFrame\UI-RaidInfo-Header">
+							<Size y="47"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="10" y="-9"/>
+								<Anchor point="TOPRIGHT" x="-10" y="-9"/>
+							</Anchors>
+							<TexCoords left="0.18164" right="0.81640" top="0.578125" bottom="0.94531"/>
+						</Texture>
+						<Texture parentKey="HeaderBottom" file="Interface\RaidFrame\UI-RaidInfo-Header">
+							<Size y="29"/>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" x="9" y="9"/>
+								<Anchor point="BOTTOMRIGHT" x="-9" y="9"/>
+							</Anchors>
+							<TexCoords left="0.18164" right="0.81640" top="0.08593" bottom="0.3125"/>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString parentKey="Title" inherits="GameFontNormal" text="XRP_ICONS">
+							<Size x="185" y="12"/>
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.Header" y="-14"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<EditBox parentKey="FilterIcons" inherits="SearchBoxTemplate" mixin="XRPEditorIconsFilter_Mixin">
+						<KeyValues>
+							<KeyValue key="instructionsText" value="Filter by filename"/>
+						</KeyValues>
+						<Size y="22"/>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" relativeKey="$parent.HeaderTop" relativePoint="BOTTOMLEFT" x="15" y="4"/>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.HeaderTop" relativePoint="BOTTOMRIGHT" x="-35" y="4"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString parentKey="Instructions" justifyH="LEFT" justivyV="TOP" inherits="GameFontDisable" setAllPoints="true">
+									<Color r="0.35" g="0.35" b="0.35"/>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad inherit="prepend" method="OnLoad"/>
+							<OnTextChanged inherit="prepend" method="OnTextChanged"/>
+							<OnEscapePressed function="HideParentPanel"/>
+							<OnEditFocusGained method="OnEditFocusGained"/>
+							<OnEditFocusLost method="OnEditFocusLost"/>
+							<OnTabPressed method="OnTabPressed"/>
+						</Scripts>
+						<FontString inherits="GameFontHighlight"/>
+					</EditBox>
+					<ScrollFrame parentKey="ScrollFrame" inherits="ListScrollFrameTemplate" mixin="XRPEditorIconsScrollFrame_Mixin">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.HeaderTop" relativePoint="BOTTOMLEFT" x="5" y="-2"/>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.HeaderBottom" relativePoint="TOPRIGHT" x="-31" y="-3"/>
+						</Anchors>
+						<Scripts>
+							<OnVerticalScroll method="OnVerticalScroll"/>
+							<OnLoad inherit="prepend" method="OnLoad"/>
+						</Scripts>
+					</ScrollFrame>
+					<Button parentKey="Close" inherits="UIPanelButtonTemplate" text="CLOSE">
+						<Size x="90" y="20"/>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" x="-14" y="13"/>
+						</Anchors>
+						<NormalFont style="GameFontNormalSmall"/>
+						<HighlightFont style="GameFontHighlightSmall"/>
+						<DisabledFont style="GameFontDisableSmall"/>
+						<Scripts>
+							<OnClick function="HideParentPanel"/>
+						</Scripts>
+					</Button>
+				</Frames>
+				<Scripts>
+					<OnShow inherit="prepend" method="OnShow"/>
+					<OnHide inherit="prepend" method="OnHide"/>
 				</Scripts>
 			</Frame>
 			<Button inherits="XRPNotesButtonTemplate"/>

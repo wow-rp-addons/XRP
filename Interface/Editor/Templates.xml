@@ -15,19 +15,21 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-	<CheckButton name="XRPEditorInheritCheckTemplate" inherits="XRPCheckBoxTemplate" virtual="true">
+	<CheckButton name="XRPEditorInheritCheckNoAnchorTemplate" inherits="XRPCheckBoxTemplate" virtual="true">
 		<KeyValues>
 			<KeyValue key="tooltipKey" value="USE_PARENT"/>
 		</KeyValues>
 		<Size x="12" y="12"/>
-		<Anchors>
-			<Anchor point="LEFT" relativeKey="$parent.Label" relativePoint="RIGHT"/>
-		</Anchors>
 		<Scripts>
 			<OnEnter function="XRPTemplates_TooltipText"/>
 			<OnLeave function="GameTooltip_Hide"/>
 			<OnClick function="XRPEditorControls_CheckField"/>
 		</Scripts>
+	</CheckButton>
+	<CheckButton name="XRPEditorInheritCheckTemplate" inherits="XRPEditorInheritCheckNoAnchorTemplate" virtual="true">
+		<Anchors>
+			<Anchor point="LEFT" relativeKey="$parent.Label" relativePoint="RIGHT"/>
+		</Anchors>
 	</CheckButton>
 	<Frame name="XRPEditorWarningTemplate" hidden="true" virtual="true">
 		<Size x="10" y="10"/>
@@ -146,4 +148,116 @@
 			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</Button>
+	<Frame name="XRPEditorPeekTemplate" virtual="true" parentArray="peeks" mixin="XRPEditorPeek_Mixin">
+		<Size y="86"/>
+		<Frames>
+			<CheckButton parentKey="IC" mixin="XRPEditorGlancesTemplates_Mixin">
+				<Size x="84" y="84"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="8" y="-8"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture file="Interface\Buttons\UI-EmptySlot-Disabled">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-3" y="3"/>
+								<Anchor point="BOTTOMRIGHT" x="3" y="-3"/>
+							</Anchors>
+							<TexCoords left="0.140625" right="0.84375" top="0.140625" bottom="0.84375"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnClick method="PeekICOnClick"/>
+				</Scripts>
+				<NormalTexture/>
+				<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
+				<CheckedTexture file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD"/>
+			</CheckButton>
+			<Button parentKey="Clear" inherits="UIPanelCloseButtonNoScripts" mixin="XRPEditorGlancesTemplates_Mixin">
+				<Anchors>
+					<Anchor point="RIGHT" x="-4" y="-16"/>
+				</Anchors>
+				<Scripts>
+					<OnClick method="PeekClearOnClick"/>
+				</Scripts>
+			</Button>
+			<EditBox parentKey="NA" autoFocus="false" inherits="InputBoxTemplate" mixin="XRPEditorPeekText_Mixin">
+				<Size y="20"/>
+				<KeyValues>
+					<KeyValue key="peekField" value="NA"/>
+					<KeyValue key="labelKey" value="NAME_DESCRIPTION"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.IC" relativePoint="TOPRIGHT" x="10" y="-9"/>
+					<Anchor point="RIGHT" relativeKey="$parent.Clear" relativePoint="LEFT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Label" inherits="GameFontNormalSmall">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="-2" y="-1"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnEditFocusGained method="OnEditFocusGained"/>
+					<OnEditFocusLost method="OnEditFocusLost"/>
+					<OnTextChanged method="OnTextChanged"/>
+					<OnTabPressed method="OnTabPressed"/>
+				</Scripts>
+				<FontString inherits="GameFontWhite"/>
+			</EditBox>
+			<ScrollFrame parentKey="DE" inherits="XRPScrollFrameTemplate">
+				<Size y="80"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.NA" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
+					<Anchor point="BOTTOM"/>
+					<Anchor point="RIGHT" relativeKey="$parent.Clear" relativePoint="LEFT" x="-5"/>
+				</Anchors>
+				<Scripts>
+					<OnMouseDown function="XRPTemplatesScrollFrame_OnMouseDown"/>
+				</Scripts>
+				<ScrollChild>
+					<EditBox parentKey="EditBox" multiLine="true" autoFocus="false" mixin="XRPEditorPeekText_Mixin">
+						<KeyValues>
+							<KeyValue key="peekField" value="DE"/>
+							<KeyValue key="cursorOffset" value="0" type="number"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+						</Anchors>
+						<Scripts>
+							<OnCursorChanged function="ScrollingEdit_OnCursorChanged"/>
+							<OnUpdate function="ScrollingEdit_OnUpdate"/>
+							<OnEscapePressed function="EditBox_ClearFocus"/>
+							<OnEditFocusGained method="OnEditFocusGained"/>
+							<OnEditFocusLost method="OnEditFocusLost"/>
+							<OnTextChanged method="OnTextChanged"/>
+							<OnTabPressed method="OnTabPressed"/>
+						</Scripts>
+						<FontString inherits="GameFontWhite"/>
+					</EditBox>
+				</ScrollChild>
+			</ScrollFrame>
+		</Frames>
+		<Scripts>
+			<OnAttributeChanged method="OnAttributeChanged"/>
+		</Scripts>
+	</Frame>
+	<CheckButton name="XRPEditorPopupIconTemplate" inherits="SimplePopupButtonTemplate" parentArray="buttons" virtual="true" mixin="XRPEditorGlancesTemplates_Mixin">
+		<Scripts>
+			<OnClick method="PopupIconOnClick"/>
+		</Scripts>
+		<NormalTexture nonBlocking="true">
+			<Size x="36" y="36"/>
+			<Anchors>
+				<Anchor point="CENTER" x="0" y="-1"/>
+			</Anchors>
+		</NormalTexture>
+		<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
+		<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
+	</CheckButton>
 </Ui>
