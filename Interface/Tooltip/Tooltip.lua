@@ -33,10 +33,6 @@ local Tooltip, replace, rendering
 local GTTL, GTTR = "GameTooltipTextLeft%d", "GameTooltipTextRight%d"
 local XTTL, XTTR = "XRPTooltipTextLeft%d", "XRPTooltipTextRight%d"
 
-local TOOLTIP_WIDTH = 400
-local MULTILINE_MAX = 2
-local INLINE_LENGTH = math.ceil(TOOLTIP_WIDTH / 20)
-
 local PROFILE_ADDONS = {
 	["XRP"] = "XRP",
 	["MYROLEPLAY"] = "MRP",
@@ -84,8 +80,8 @@ local function RenderLine(multiLine, leftRatio, left, right, lR, lG, lB, rR, rG,
 	if not leftRatio then
 		leftRatio = 0.5
 	end
-	local leftMax = TOOLTIP_WIDTH * (left and right and leftRatio or 1)
-	local rightMax = TOOLTIP_WIDTH * (left and right and (1 - leftRatio) or 1)
+	local leftMax = AddOn.Settings.tooltipMaxWidth * (left and right and leftRatio or 1)
+	local rightMax = AddOn.Settings.tooltipMaxWidth * (left and right and (1 - leftRatio) or 1)
 	rendering = true
 	lineNum = lineNum + 1
 	local LeftLine = replace and _G[GTTL:format(lineNum)] or _G[XTTL:format(lineNum)]
@@ -115,7 +111,7 @@ local function RenderLine(multiLine, leftRatio, left, right, lR, lG, lB, rR, rG,
 	if LeftLine:GetWidth() > leftMax then
 		LeftLine:SetWidth(leftMax)
 		if multiLine then
-			LeftLine:SetMaxLines(MULTILINE_MAX)
+			LeftLine:SetMaxLines(AddOn.Settings.tooltipMaxMultiLines)
 		else
 			LeftLine:SetMaxLines(1)
 		end
@@ -124,7 +120,7 @@ local function RenderLine(multiLine, leftRatio, left, right, lR, lG, lB, rR, rG,
 	if RightLine:GetWidth() > rightMax then
 		RightLine:SetWidth(rightMax)
 		if multiLine then
-			RightLine:SetMaxLines(MULTILINE_MAX)
+			RightLine:SetMaxLines(AddOn.Settings.tooltipMaxMultiLines)
 		else
 			RightLine:SetMaxLines(1)
 		end
@@ -189,15 +185,16 @@ local function RenderTooltip()
 			local CU, CO = AddOn_XRP.RemoveTextFormats(character.CU), AddOn_XRP.RemoveTextFormats(character.CO)
 			RenderLine(true, nil, (CU or CO) and CU_FORMAT:format(AddOn.MergeCurrently(AddOn.LinkURLs(CU), AddOn.LinkURLs(CO))), nil, 0.9, 0.7, 0.6)
 		end
+		local inlineLength = math.ceil(AddOn.Settings.tooltipMaxWidth / 20)
 		local RA = showProfile and not AddOn.Settings.tooltipHideRace and AddOn_XRP.RemoveTextFormats(character.RA) or Values.GR[character.GR] or UNKNOWN
 		local RAlen = #RA
-		RA = AddOn_Chomp.SafeSubString(RA, 1, INLINE_LENGTH)
+		RA = AddOn_Chomp.SafeSubString(RA, 1, inlineLength)
 		if #RA < RAlen then
 			RA = RA .. CONTINUED
 		end
 		local RC = showProfile and not AddOn.Settings.tooltipHideClass and AddOn_XRP.RemoveTextFormats(character.RC) or Values.GC[character.GS][character.GC] or UNKNOWN
 		local RClen = #RC
-		RC = AddOn_Chomp.SafeSubString(RC, 1, INLINE_LENGTH)
+		RC = AddOn_Chomp.SafeSubString(RC, 1, inlineLength)
 		if #RC < RClen then
 			RC = RC .. CONTINUED
 		end

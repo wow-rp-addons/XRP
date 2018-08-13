@@ -82,6 +82,8 @@ function XRPOptions_Mixin:refresh()
 						break
 					end
 				end
+			elseif control.type == CONTROLTYPE_SLIDER then
+				control:SetValue(setting)
 			end
 		end
 		control:CheckDeps()
@@ -105,6 +107,8 @@ function XRPOptions_Mixin:cancel()
 						break
 					end
 				end
+			elseif control.type == CONTROLTYPE_SLIDER then
+				control:SetValue(control.value)
 			end
 		end
 		control:CheckDeps()
@@ -134,6 +138,8 @@ function XRPOptions_Mixin:default()
 						break
 					end
 				end
+			elseif control.type == CONTROLTYPE_SLIDER then
+				control:SetValue(control.value)
 			end
 		end
 		control:CheckDeps()
@@ -216,6 +222,8 @@ local OPTIONS_TEXT = {
 	ldbObject = L"Provide a LibDataBroker object (for Titan Panel, Chocolate Bar, etc.)",
 	tooltipEnabled = L"Enable tooltip",
 	tooltipReplace = L"Replace default tooltip for players and pets",
+	tooltipMaxWidth = L"Max tooltip width",
+	tooltipMaxMultiLines = L"Max long field lines",
 	tooltipShowWatchEye = L"Show eye icon if player is targeting you",
 	tooltipShowBookmarkFlag = L"Show flag icon if player's profile is bookmarked",
 	tooltipShowExtraSpace = L"Add extra spacing lines to the tooltip",
@@ -239,8 +247,14 @@ function XRPOptionsControl_Mixin:OnLoad()
 		local depends = SettingDeps[self.dependsOn]
 		depends[#depends + 1] = self
 	end
+	if self.type == CONTROLTYPE_SLIDER then
+		self:SetObeyStepOnDrag(true)
+		local min, max = self:GetMinMaxValues()
+		self.Low:SetFormattedText(AUCTION_MAIL_ITEM_STACK, self.Low:GetText(), min)
+		self.High:SetFormattedText(AUCTION_MAIL_ITEM_STACK, self.High:GetText(), max)
+	end
 	local optionsText = self.xrpSetting and (self.xrpTable and OPTIONS_TEXT[self.xrpTable][self.xrpSetting] or OPTIONS_TEXT[self.xrpSetting])
-	if self.type == CONTROLTYPE_CHECKBOX and self.xrpSetting then
+	if (self.type == CONTROLTYPE_CHECKBOX or self.type == CONTROLTYPE_SLIDER) and self.xrpSetting then
 		self.Text:SetText(optionsText)
 	elseif self.type == CONTROLTYPE_DROPDOWN and self.xrpSetting then
 		self.Label:SetText(optionsText)
@@ -259,7 +273,7 @@ XRPOptionsCheckButton_Mixin = {}
 function XRPOptionsCheckButton_Mixin:CheckDeps()
 	if SettingDeps[self.xrpSetting] then
 		for i, control in ipairs(SettingDeps[self.xrpSetting]) do
-			if control.type == CONTROLTYPE_CHECKBOX then
+			if control.type == CONTROLTYPE_CHECKBOX or control.type == CONTROLTYPE_SLIDER then
 				control:SetEnabled(self.value)
 			elseif control.type == CONTROLTYPE_DROPDOWN then
 				if self.value then
@@ -289,7 +303,7 @@ function XRPOptionsCheckButton_Mixin:OnEnable()
 	self.Text:SetTextColor(self.Text:GetFontObject():GetTextColor())
 	if SettingDeps[self.xrpSetting] then
 		for i, control in ipairs(SettingDeps[self.xrpSetting]) do
-			if control.type == CONTROLTYPE_CHECKBOX then
+			if control.type == CONTROLTYPE_CHECKBOX or control.type == CONTROLTYPE_SLIDER then
 				control:SetEnabled(self:GetChecked())
 			elseif control.type == CONTROLTYPE_DROPDOWN then
 				if self:GetChecked() then
@@ -306,13 +320,34 @@ function XRPOptionsCheckButton_Mixin:OnDisable()
 	self.Text:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b)
 	if SettingDeps[self.xrpSetting] then
 		for i, control in ipairs(SettingDeps[self.xrpSetting]) do
-			if control.type == CONTROLTYPE_CHECKBOX then
+			if control.type == CONTROLTYPE_CHECKBOX or control.type == CONTROLTYPE_SLIDER then
 				control:SetEnabled(false)
 			elseif control.type == CONTROLTYPE_DROPDOWN then
 				UIDropDownMenu_DisableDropDown(control)
 			end
 		end
 	end
+end
+
+XRPOptionsSlider_Mixin = {}
+
+function XRPOptionsSlider_Mixin:OnValueChanged(value, userInput)
+	if userInput then
+		self.value = value
+		self:Set(value)
+	end
+end
+
+function XRPOptionsSlider_Mixin:OnEnable()
+	self.Text:SetTextColor(self.Text:GetFontObject():GetTextColor())
+	self.Low:SetTextColor(self.Low:GetFontObject():GetTextColor())
+	self.High:SetTextColor(self.High:GetFontObject():GetTextColor())
+end
+
+function XRPOptionsSlider_Mixin:OnDisable()
+	self.Text:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b)
+	self.Low:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b)
+	self.High:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b)
 end
 
 local function DropDown_OnClick(self, arg1, arg2, checked)

@@ -97,6 +97,8 @@ AddOn.DEFAULT_SETTINGS = {
 	-- Tooltip
 	tooltipEnabled = true,
 	tooltipReplace = true,
+	tooltipMaxWidth = 400,
+	tooltipMaxMultiLines = 2,
 	tooltipShowWatchEye = true,
 	tooltipShowBookmarkFlag = true,
 	tooltipShowExtraSpace = false,

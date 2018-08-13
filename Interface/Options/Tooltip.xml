@@ -138,6 +138,26 @@
 					<KeyValue key="xrpSetting" value="tooltipHideRace"/>
 				</KeyValues>
 			</CheckButton>
+			<Slider parentKey="TooltipMaxWidth" inherits="XRPOptionsSliderTemplate" valueStep="20" minValue="240" maxValue="760" stepsPerPage="5">
+				<Size x="200" y="17"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.TooltipHideRace" relativePoint="BOTTOMLEFT" x="10" y="-15"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="dependsOn" value="tooltipEnabled"/>
+					<KeyValue key="xrpSetting" value="tooltipMaxWidth"/>
+				</KeyValues>
+			</Slider>
+			<Slider parentKey="TooltipMaxMultiLines" inherits="XRPOptionsSliderTemplate" valueStep="1" minValue="1" maxValue="8" stepsPerPage="1">
+				<Size x="200" y="17"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.TooltipMaxWidth" relativePoint="RIGHT" x="64"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="dependsOn" value="tooltipEnabled"/>
+					<KeyValue key="xrpSetting" value="tooltipMaxMultiLines"/>
+				</KeyValues>
+			</Slider>
 		</Frames>
 	</Frame>
 </Ui>

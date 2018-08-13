@@ -41,6 +41,40 @@
 			<OnLoad method="OnLoad"/>
 		</Scripts>
 	</CheckButton>
+	<Slider name="XRPOptionsSliderTemplate" parentArray="controls" inherits="HorizontalSliderTemplate" mixin="XRPOptionsControl_Mixin,XRPOptionsSlider_Mixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="type" type="global" value="CONTROLTYPE_SLIDER"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Text" inherits="GameFontHighlight">
+					<Anchors>
+						<Anchor point="BOTTOM" relativePoint="TOP"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Low" inherits="GameFontHighlightSmall" text="LOW">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
+							<Offset x="-4" y="3"/>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="High" inherits="GameFontHighlightSmall" text="HIGH">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT">
+							<Offset x="4" y="3"/>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad inherit="prepend" method="OnLoad"/>
+			<OnEnable inherit="prepend" method="OnEnable"/>
+			<OnDisable inherit="prepend" method="OnDisable"/>
+			<OnValueChanged inherit="prepend" method="OnValueChanged"/>
+		</Scripts>
+	</Slider>
 	<Frame name="XRPOptionsDropDownTemplate" parentArray="controls" inherits="XRPDropDownTemplate" mixin="XRPOptionsControl_Mixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="type" value="CONTROLTYPE_DROPDOWN" type="global"/>
