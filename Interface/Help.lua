@@ -215,6 +215,33 @@ local EDITOR_BIOGRAPHY = {
 	},
 }
 
+local EDITOR_GLANCES = {
+	{
+		ButtonPos = { x = 36, y = -180 },
+		HighLightBox = { x = 10, y = -215, width = 88, height = 85 },
+		ToolTipDir = "RIGHT",
+		ToolTipText = L"Click on these icons to open the icon selection window.\n\nIn the selection window, you can search for an icon by filename, or just scroll through the list of 20,000+ icons to find one you like.",
+	},
+	{
+		ButtonPos = { x = 364, y = -208 },
+		HighLightBox = { x = 100, y = -215, width = 302, height = 33 },
+		ToolTipDir = "DOWN",
+		ToolTipText = L"The name lets you enter a quick, single line title for your \"glance\".\n\nThis is limited to 150 characters, though if you're over half that it may be a bit excessive already.",
+	},
+	{
+		ButtonPos = { x = 388, y = -245 },
+		HighLightBox = { x = 100, y = -249, width = 326, height = 51 },
+		ToolTipDir = "RIGHT",
+		ToolTipText = L"The description is for a more detailed description of whatever quick item about your character you're describing.\n\nThis is limited to 400 characters, though if you're much over half that, it may be a bit excessive already. Brevity is key here.",
+	},
+	{
+		ButtonPos = { x = 420, y = -212 },
+		HighLightBox = { x = 404, y = -223, width = 24, height = 24 },
+		ToolTipDir = "RIGHT",
+		ToolTipText = L"These buttons clear the contents of their respective entry completely.\n\nIt's an easy way to remove an entry without having to reset everything to blank yourself.",
+	},
+}
+
 local LARGE_SIZE = { width = 439, height = 500 }
 local AUTO_SIZE = { width = 648, height = 500 }
 
@@ -268,6 +295,31 @@ for i, helpPlate in ipairs(EDITOR_BIOGRAPHY) do
 	EDITOR_BIOGRAPHY_AUTO[#EDITOR_BIOGRAPHY_AUTO + 1] = helpPlate
 end
 
+local EDITOR_GLANCES_NOAUTO = {
+	FramePos = FRAME_POS,
+	FrameSize = LARGE_SIZE,
+}
+for i, helpPlate in ipairs(EDITOR_MAIN) do
+	EDITOR_GLANCES_NOAUTO[#EDITOR_GLANCES_NOAUTO + 1] = helpPlate
+end
+for i, helpPlate in ipairs(EDITOR_GLANCES) do
+	EDITOR_GLANCES_NOAUTO[#EDITOR_GLANCES_NOAUTO + 1] = helpPlate
+end
+
+local EDITOR_GLANCES_AUTO = {
+	FramePos = FRAME_POS,
+	FrameSize = AUTO_SIZE,
+}
+for i, helpPlate in ipairs(EDITOR_MAIN) do
+	EDITOR_GLANCES_AUTO[#EDITOR_GLANCES_AUTO + 1] = helpPlate
+end
+for i, helpPlate in ipairs(EDITOR_AUTO) do
+	EDITOR_GLANCES_AUTO[#EDITOR_GLANCES_AUTO + 1] = helpPlate
+end
+for i, helpPlate in ipairs(EDITOR_GLANCES) do
+	EDITOR_GLANCES_AUTO[#EDITOR_GLANCES_AUTO + 1] = helpPlate
+end
+
 function XRPEditorHelpButton_PreClick(self, button, down)
 	if XRPEditor.panes[1]:IsVisible() then
 		if XRPEditor.Automation:IsVisible() then
@@ -275,11 +327,17 @@ function XRPEditorHelpButton_PreClick(self, button, down)
 		else
 			XRPEditor.helpPlates = EDITOR_APPEARANCE_NOAUTO
 		end
-	else
+	elseif XRPEditor.panes[2]:IsVisible() then
 		if XRPEditor.Automation:IsVisible() then
 			XRPEditor.helpPlates = EDITOR_BIOGRAPHY_AUTO
 		else
 			XRPEditor.helpPlates = EDITOR_BIOGRAPHY_NOAUTO
+		end
+	else
+		if XRPEditor.Automation:IsVisible() then
+			XRPEditor.helpPlates = EDITOR_GLANCES_AUTO
+		else
+			XRPEditor.helpPlates = EDITOR_GLANCES_NOAUTO
 		end
 	end
 end
@@ -335,6 +393,12 @@ AddOn.help.viewer = {
 		ToolTipDir = "DOWN",
 		ToolTipText = L"The small handle here may be clicked and dragged to resize the viewer window.\n\nTo reset the size of the viewer, right-click on it instead.",
 	},
+	{
+		ButtonPos = { x = 433, y = -154 },
+		HighLightBox = { x = 434, y = -192, width = 41, height = 278 },
+		ToolTipDir = "RIGHT",
+		ToolTipText = L"\"Glances\", or quick information, display in this area. Hover your mouse over them to view their name and description, or click to pin the tooltip open.",
+	},
 }
 function XRPViewerHelpButton_PreClick(self, button, down)
 	if HelpPlate_IsShowing(XRPViewer.helpPlates) then return end
@@ -372,4 +436,7 @@ function XRPViewerHelpButton_PreClick(self, button, down)
 	plates[8].ButtonPos.y = 54 - height
 	plates[8].HighLightBox.x = width - 13
 	plates[8].HighLightBox.y = 39 - height
+	-- Glances
+	plates[9].ButtonPos.x = width - 6
+	plates[9].HighLightBox.x = width - 5
 end
