@@ -21,7 +21,7 @@
 	<Frame name="XRPViewer" parent="UIParent" inherits="XRPButtonFrameTemplate" resizable="true" clampedToScreen="true" mixin="XRPViewer_Mixin">
 		<Size x="439" y="525"/>
 		<ResizeBounds>
-			<minResize x="338" y="424"/>
+			<minResize x="338" y="500"/>
 			<maxResize x="702" y="803"/>
 		</ResizeBounds>
 		<Layers>
