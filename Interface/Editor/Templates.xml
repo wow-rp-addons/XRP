@@ -188,7 +188,7 @@
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Button>
-			<EditBox parentKey="NA" autoFocus="false" inherits="InputBoxTemplate" mixin="XRPEditorPeekText_Mixin">
+			<EditBox parentKey="NA" autoFocus="false" inherits="InputBoxTemplate" mixin="XRPEditorPeekText_Mixin" letters="150">
 				<Size y="20"/>
 				<KeyValues>
 					<KeyValue key="peekField" value="NA"/>
@@ -226,7 +226,7 @@
 					<OnMouseDown function="XRPTemplatesScrollFrame_OnMouseDown"/>
 				</Scripts>
 				<ScrollChild>
-					<EditBox parentKey="EditBox" multiLine="true" autoFocus="false" mixin="XRPEditorPeekText_Mixin">
+					<EditBox parentKey="EditBox" multiLine="true" autoFocus="false" mixin="XRPEditorPeekText_Mixin" letters="400">
 						<KeyValues>
 							<KeyValue key="peekField" value="DE"/>
 							<KeyValue key="cursorOffset" value="0" type="number"/>
