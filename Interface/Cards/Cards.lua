@@ -92,7 +92,7 @@ end
 
 function XRPCard_Mixin:Reload()
 	if not self.character or not self.character.VA then
-		if self:IsVisible() then
+		if not self:IsInvisibleOrFading() then
 			self.FadeOut:Play()
 		end
 	else
@@ -101,7 +101,7 @@ function XRPCard_Mixin:Reload()
 			self[field]:SetText(AddOn_XRP.RemoveTextFormats(self.character[field]) or fallback)
 		end
 		self:SetPE(self.character.PE)
-		if not self:IsVisible() then
+		if self:IsInvisibleOrFading() then
 			if self.bounceIn then
 				self.BounceIn:Play()
 			else
@@ -121,6 +121,10 @@ function XRPCard_Mixin:SetPE(PE)
 	else
 		self:SetHeight(165)
 	end
+end
+
+function XRPCard_Mixin:IsInvisibleOrFading()
+	return not self:IsVisible() or self.FadeOut:IsPlaying() or self.BounceOut:IsPlaying()
 end
 
 function XRPCard_Mixin:OnLoad()
@@ -211,7 +215,24 @@ end
 
 XRPCardAnimation_Mixin = {}
 
-function XRPCardAnimation_Mixin:ParentOnShow()
+function XRPCardAnimation_Mixin:OnLoad()
+	local parent = self:GetParent()
+	if not parent.anims then
+		parent.anims = {}
+	end
+	parent.anims[#parent.anims + 1] = self
+end
+
+function XRPCardAnimation_Mixin:OnPlay()
+	local parent = self:GetParent()
+	for i, anim in ipairs(parent.anims) do
+		if anim ~= self then
+			anim:Stop()
+		end
+	end
+end
+
+function XRPCardAnimation_Mixin:ShowParentOnPlay()
 	self:GetParent():Show()
 end
 

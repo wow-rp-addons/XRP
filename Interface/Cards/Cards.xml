@@ -25,6 +25,12 @@
 		</KeyValues>
 		<Size x="48" y="48"/>
 	</CheckButton>
+	<AnimationGroup name="XRPCardAnimationGroupTemplate" virtual="true" setToFinalAlpha="true" mixin="XRPCardAnimation_Mixin">
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnPlay method="OnPlay"/>
+		</Scripts>
+	</AnimationGroup>
 	<Button name="XRPCardTemplate" toplevel="true" parent="UIParent" frameStrata="LOW" frameLevel="1" movable="true" clampedToScreen="true" virtual="true" mixin="XRPCard_Mixin">
 		<Size x="335" y="165"/>
 		<Frames>
@@ -187,28 +193,28 @@
 			</Layer>
 		</Layers>
 		<Animations>
-			<AnimationGroup parentKey="BounceIn" setToFinalAlpha="true" mixin="XRPCardAnimation_Mixin">
+			<AnimationGroup parentKey="BounceIn" inherits="XRPCardAnimationGroupTemplate">
 				<Alpha startDelay="0" duration="0.25" fromAlpha="0" toAlpha="1"/>
 				<Scripts>
-					<OnPlay method="ParentOnShow"/>
+					<OnPlay inherit="prepend" method="ShowParentOnPlay"/>
 				</Scripts>
 			</AnimationGroup>
-			<AnimationGroup parentKey="BounceOut" setToFinalAlpha="true" mixin="XRPCardAnimation_Mixin">
+			<AnimationGroup parentKey="BounceOut" inherits="XRPCardAnimationGroupTemplate">
 				<Alpha startDelay="0" duration="0.15" fromAlpha="1" toAlpha="0"/>
 				<Scripts>
-					<OnFinished method="BounceOutOnFinished"/>
+					<OnFinished inherit="prepend" method="BounceOutOnFinished"/>
 				</Scripts>
 			</AnimationGroup>
-			<AnimationGroup parentKey="FadeIn" setToFinalAlpha="true" mixin="XRPCardAnimation_Mixin">
+			<AnimationGroup parentKey="FadeIn" inherits="XRPCardAnimationGroupTemplate">
 				<Alpha startDelay="0" duration="0.40" fromAlpha="0" toAlpha="1"/>
 				<Scripts>
-					<OnPlay method="ParentOnShow"/>
+					<OnPlay inherit="prepend" method="ShowParentOnPlay"/>
 				</Scripts>
 			</AnimationGroup>
-			<AnimationGroup parentKey="FadeOut" setToFinalAlpha="true" mixin="XRPCardAnimation_Mixin">
+			<AnimationGroup parentKey="FadeOut" inherits="XRPCardAnimationGroupTemplate">
 				<Alpha startDelay="0" duration="0.30" fromAlpha="1" toAlpha="0"/>
 				<Scripts>
-					<OnFinished function="HideParentPanel"/>
+					<OnFinished inherit="prepend" function="HideParentPanel"/>
 				</Scripts>
 			</AnimationGroup>
 		</Animations>
