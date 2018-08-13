@@ -175,11 +175,17 @@
 				<CheckedTexture file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD"/>
 			</CheckButton>
 			<Button parentKey="Clear" inherits="UIPanelCloseButtonNoScripts" mixin="XRPEditorGlancesTemplates_Mixin">
+				<HitRectInsets left="5" right="5" top="5" bottom="5"/>
+				<KeyValues>
+					<KeyValue key="tooltipKey" value="CLEAR"/>
+				</KeyValues>
 				<Anchors>
-					<Anchor point="RIGHT" x="-4" y="-16"/>
+					<Anchor point="TOPRIGHT" x="-1" y="-11"/>
 				</Anchors>
 				<Scripts>
 					<OnClick method="PeekClearOnClick"/>
+					<OnEnter function="XRPTemplates_TooltipText"/>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Button>
 			<EditBox parentKey="NA" autoFocus="false" inherits="InputBoxTemplate" mixin="XRPEditorPeekText_Mixin">
@@ -190,7 +196,7 @@
 				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.IC" relativePoint="TOPRIGHT" x="10" y="-9"/>
-					<Anchor point="RIGHT" relativeKey="$parent.Clear" relativePoint="LEFT"/>
+					<Anchor point="RIGHT" relativeKey="$parent.Clear" relativePoint="LEFT" x="3"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
@@ -214,8 +220,7 @@
 				<Size y="80"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.NA" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
-					<Anchor point="BOTTOM"/>
-					<Anchor point="RIGHT" relativeKey="$parent.Clear" relativePoint="LEFT" x="-5"/>
+					<Anchor point="BOTTOMRIGHT" x="-13"/>
 				</Anchors>
 				<Scripts>
 					<OnMouseDown function="XRPTemplatesScrollFrame_OnMouseDown"/>

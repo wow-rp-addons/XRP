@@ -223,6 +223,7 @@ COPY = "Copy"
 WARNING = "Warning"
 FORM_SET = "Form/set"
 PROFILE_FOR_FORM = "Profile for selected form/set"
+CLEAR = "Clear"
 
 -- ui/editor.xml
 AUTOMATION = "Automation"
