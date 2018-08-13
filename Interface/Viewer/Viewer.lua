@@ -57,6 +57,9 @@ local function SetField(field, contents, secondary, tertiary)
 	elseif field == "DE" or field == "MO" or field == "HI" then
 		-- Link URLs in scrolling fields.
 		contents = AddOn.LinkURLs(contents)
+		if field == "DE" or field == "HI" then
+			contents = contents .. "\n"
+		end
 	end
 	XRPViewer.fields[field]:SetText(contents)
 end
