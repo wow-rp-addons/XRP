@@ -33,8 +33,9 @@ local Tooltip, replace, rendering
 local GTTL, GTTR = "GameTooltipTextLeft%d", "GameTooltipTextRight%d"
 local XTTL, XTTR = "XRPTooltipTextLeft%d", "XRPTooltipTextRight%d"
 
-local TOOLTIP_WIDTH = 500
-local INLINE_LENGTH = 26
+local TOOLTIP_WIDTH = 400
+local MULTILINE_MAX = 2
+local INLINE_LENGTH = math.ceil(TOOLTIP_WIDTH / 20)
 
 local PROFILE_ADDONS = {
 	["XRP"] = "XRP",
@@ -68,7 +69,7 @@ local function ParseVersion(VA)
 end
 
 local oldLines, lineNum = 0, 0
-local function RenderLine(multiLine, left, right, lR, lG, lB, rR, rG, rB)
+local function RenderLine(multiLine, leftRatio, left, right, lR, lG, lB, rR, rG, rB)
 	if not left and not right then
 		return
 	elseif left == true then
@@ -80,7 +81,11 @@ local function RenderLine(multiLine, left, right, lR, lG, lB, rR, rG, rB)
 	if right then
 		right = right:gsub("\n+", " ")
 	end
-	local maxWidth = TOOLTIP_WIDTH / (left and right and 2 or 1)
+	if not leftRatio then
+		leftRatio = 0.5
+	end
+	local leftMax = TOOLTIP_WIDTH * (left and right and leftRatio or 1)
+	local rightMax = TOOLTIP_WIDTH * (left and right and (1 - leftRatio) or 1)
 	rendering = true
 	lineNum = lineNum + 1
 	local LeftLine = replace and _G[GTTL:format(lineNum)] or _G[XTTL:format(lineNum)]
@@ -107,19 +112,19 @@ local function RenderLine(multiLine, left, right, lR, lG, lB, rR, rG, rB)
 			Tooltip:AddLine(left or " ", lR or 1, lG or 0.82, lB or 0)
 		end
 	end
-	if LeftLine:GetWidth() > maxWidth then
-		LeftLine:SetWidth(maxWidth)
+	if LeftLine:GetWidth() > leftMax then
+		LeftLine:SetWidth(leftMax)
 		if multiLine then
-			LeftLine:SetMaxLines(2)
+			LeftLine:SetMaxLines(MULTILINE_MAX)
 		else
 			LeftLine:SetMaxLines(1)
 		end
 		maxLinesAdjusted[#maxLinesAdjusted + 1] = LeftLine
 	end
-	if RightLine:GetWidth() > maxWidth then
-		RightLine:SetWidth(maxWidth)
+	if RightLine:GetWidth() > rightMax then
+		RightLine:SetWidth(rightMax)
 		if multiLine then
-			RightLine:SetMaxLines(2)
+			RightLine:SetMaxLines(MULTILINE_MAX)
 		else
 			RightLine:SetMaxLines(1)
 		end
@@ -149,7 +154,7 @@ local function RenderTooltip()
 			XRPTooltip:ClearLines()
 			XRPTooltip:SetOwner(GameTooltip, "ANCHOR_TOPRIGHT")
 			if character.hidden then
-				RenderLine(false, L.HIDDEN, nil, 0.5, 0.5, 0.5)
+				RenderLine(false, 0.1, L.HIDDEN, nil, 0.5, 0.5, 0.5)
 				XRPTooltip:Show()
 				return
 			elseif (not showProfile or not character.VA) then
@@ -157,32 +162,32 @@ local function RenderTooltip()
 				return
 			end
 		end
-		RenderLine(false, currentUnit.nameFormat:format(showProfile and AddOn_XRP.RemoveTextFormats(character.NA) or character.name), currentUnit.icons)
+		RenderLine(false, 0.75, currentUnit.nameFormat:format(showProfile and AddOn_XRP.RemoveTextFormats(character.NA) or character.name), currentUnit.icons)
 		if replace and currentUnit.reaction then
-			RenderLine(false, currentUnit.reaction, nil, 1, 1, 1)
+			RenderLine(false, nil, currentUnit.reaction, nil, 1, 1, 1)
 		end
 		if showProfile then
 			local NI = AddOn_XRP.RemoveTextFormats(character.NI)
-			RenderLine(false, NI and (not NI:find(L.QUOTE_MATCH) and NI_FORMAT or NI_FORMAT_NOQUOTE):format(NI), nil, 0.6, 0.7, 0.9)
-			RenderLine(true, AddOn_XRP.RemoveTextFormats(character.NT), nil, 0.8, 0.8, 0.8)
+			RenderLine(false, nil,  NI and (not NI:find(L.QUOTE_MATCH) and NI_FORMAT or NI_FORMAT_NOQUOTE):format(NI), nil, 0.6, 0.7, 0.9)
+			RenderLine(true, nil, AddOn_XRP.RemoveTextFormats(character.NT), nil, 0.8, 0.8, 0.8)
 			if AddOn.Settings.tooltipShowHouse then
-				RenderLine(true, AddOn_XRP.RemoveTextFormats(character.NH), nil, 0.4, 0.6, 0.7)
+				RenderLine(true, nil, AddOn_XRP.RemoveTextFormats(character.NH), nil, 0.4, 0.6, 0.7)
 			end
 		end
 		if AddOn.Settings.tooltipShowExtraSpace then
-			RenderLine(false, true)
+			RenderLine(false, nil, true)
 		end
 		if replace then
-			RenderLine(false, currentUnit.guild, nil, 1, 1, 1)
+			RenderLine(false, nil, currentUnit.guild, nil, 1, 1, 1)
 			local color = COLORS[currentUnit.faction]
-			RenderLine(false, currentUnit.titleRealm, character.hidden and L.HIDDEN or showProfile and ParseVersion(character.VA), color.r, color.g, color.b, 0.5, 0.5, 0.5)
+			RenderLine(false, 0.75, currentUnit.titleRealm, character.hidden and L.HIDDEN or showProfile and ParseVersion(character.VA), color.r, color.g, color.b, 0.5, 0.5, 0.5)
 			if AddOn.Settings.tooltipShowExtraSpace then
-				RenderLine(false, true)
+				RenderLine(false, nil, true)
 			end
 		end
 		if showProfile then
 			local CU, CO = AddOn_XRP.RemoveTextFormats(character.CU), AddOn_XRP.RemoveTextFormats(character.CO)
-			RenderLine(true, (CU or CO) and CU_FORMAT:format(AddOn.MergeCurrently(AddOn.LinkURLs(CU), AddOn.LinkURLs(CO))), nil, 0.9, 0.7, 0.6)
+			RenderLine(true, nil, (CU or CO) and CU_FORMAT:format(AddOn.MergeCurrently(AddOn.LinkURLs(CU), AddOn.LinkURLs(CO))), nil, 0.9, 0.7, 0.6)
 		end
 		local RA = showProfile and not AddOn.Settings.tooltipHideRace and AddOn_XRP.RemoveTextFormats(character.RA) or Values.GR[character.GR] or UNKNOWN
 		local RAlen = #RA
@@ -196,34 +201,34 @@ local function RenderTooltip()
 		if #RC < RClen then
 			RC = RC .. CONTINUED
 		end
-		RenderLine(false, currentUnit.info:format(RA, RC), not replace and ParseVersion(character.VA), 1, 1, 1, 0.5, 0.5, 0.5)
+		RenderLine(false, nil, currentUnit.info:format(RA, RC), not replace and ParseVersion(character.VA), 1, 1, 1, 0.5, 0.5, 0.5)
 		if showProfile then
 			local FR, FC = AddOn_XRP.RemoveTextFormats(character.FR), AddOn_XRP.RemoveTextFormats(character.FC)
 			local color = COLORS[FC == "1" and "OOC" or "IC"]
-			RenderLine(false, Values.FR[FR] or FR ~= "0" and FR, Values.FC[FC] or FC ~= "0" and FC, color.r, color.g, color.b, color.r, color.g, color.b)
+			RenderLine(false, 0.5, Values.FR[FR] or FR ~= "0" and FR, Values.FC[FC] or FC ~= "0" and FC, color.r, color.g, color.b, color.r, color.g, color.b)
 		end
 		if replace then
-			RenderLine(false, currentUnit.location, nil, 1, 1, 1)
+			RenderLine(false, nil, currentUnit.location, nil, 1, 1, 1)
 		end
 	elseif currentUnit.type == "pet" then
-		RenderLine(false, currentUnit.nameFormat, currentUnit.icons)
+		RenderLine(false, 0.75, currentUnit.nameFormat, currentUnit.icons)
 		if currentUnit.reaction then
-			RenderLine(false, currentUnit.reaction, nil, 1, 1, 1)
+			RenderLine(false, nil, currentUnit.reaction, nil, 1, 1, 1)
 			if AddOn.Settings.tooltipShowExtraSpace then
-				RenderLine(false, true)
+				RenderLine(false, nil, true)
 			end
 		end
 		local color = COLORS[currentUnit.faction]
-		RenderLine(false, currentUnit.titleRealm:format(showProfile and AddOn_XRP.RemoveTextFormats(character.NA) or character.name), nil, color.r, color.g, color.b)
-		RenderLine(false, currentUnit.info, nil, 1, 1, 1)
+		RenderLine(false, nil, currentUnit.titleRealm:format(showProfile and AddOn_XRP.RemoveTextFormats(character.NA) or character.name), nil, color.r, color.g, color.b)
+		RenderLine(false, nil, currentUnit.info, nil, 1, 1, 1)
 	end
 
 	if replace then
 		for i, line in ipairs(currentUnit.lines) do
 			if line.double then
-				RenderLine(false, unpack(line))
+				RenderLine(false, nil, unpack(line))
 			else
-				RenderLine(false, line[1], nil, unpack(line, 2))
+				RenderLine(false, nil, line[1], nil, unpack(line, 2))
 			end
 		end
 		-- In rare cases (test case: target without RP addon, is PvP flagged)
