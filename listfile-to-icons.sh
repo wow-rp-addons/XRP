@@ -7,4 +7,4 @@ if [ ! -f "${LISTFILE}" ]; then
 	exit 1
 fi
 
-grep -e '^interface/icons' "${LISTFILE}" | cut -d'/' -f3 | cut -d'.' -f1 | sed -e 's/^/\t"/' -e 's/$/",/' -e '1s/^/select(2, ...).ICON_LIST = {\n/' -e '$s/$/\n}/' | unix2dos > "${ICONSLUA}"
+grep -e '^interface/icons' "${LISTFILE}" | cut -d'/' -f3 | cut -d'.' -f1 | sort | uniq | sed -e 's/^/\t"/' -e 's/$/",/' -e '1s/^/select(2, ...).ICON_LIST = {\n/' -e '$s/$/\n}/' | unix2dos > "${ICONSLUA}"
