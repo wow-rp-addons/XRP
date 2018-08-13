@@ -64,6 +64,15 @@
 					<KeyValue key="disableWarn" value="GUILD_IS_FRIENDS_DISABLE_WARNING"/>
 				</KeyValues>
 			</CheckButton>
+			<CheckButton parentKey="MainButtonClickToView" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.FriendsIncludeGuild" relativePoint="BOTTOMLEFT" x="-24" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="dependsOn" value="mainButtonEnabled"/>
+					<KeyValue key="xrpSetting" value="mainButtonClickToView"/>
+				</KeyValues>
+			</CheckButton>
 			<Button parentKey="CacheClear" inherits="UIPanelButtonTemplate" text="XRP_CACHE_CLEAR">
 				<KeyValues>
 					<KeyValue key="popup" value="XRP_CACHE_CLEAR"/>

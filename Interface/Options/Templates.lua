@@ -212,6 +212,7 @@ local OPTIONS_TEXT = {
 	menusUnits = L"Enable right-click menu on unit frames (disables \"Set Focus\", \"Report player Away\")",
 	mainButtonEnabled = L"Enable minimap button (if disabled, use /xrp commands to access XRP features)",
 	mainButtonDetached = L"Detach button from minimap (shift + right click and drag to move)",
+	mainButtonClickToView = L"View target's profile by clicking on detached button/minimap button",
 	ldbObject = L"Provide a LibDataBroker object (for Titan Panel, Chocolate Bar, etc.)",
 	tooltipEnabled = L"Enable tooltip",
 	tooltipReplace = L"Replace default tooltip for players and pets",

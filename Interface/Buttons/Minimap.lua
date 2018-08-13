@@ -33,17 +33,19 @@ local TEXTURES = {
 }
 
 local function XRPButton_UpdateIcon()
-	local target = AddOn_XRP.Characters.byUnit.target
-	if target and target.VA then
-		if Button then
-			Button:SetNormalTexture(TEXTURES.target)
-			Button:SetPushedTexture(TEXTURES.target)
+	if AddOn.Settings.mainButtonClickToView then
+		local target = AddOn_XRP.Characters.byUnit.target
+		if target and target.VA then
+			if Button then
+				Button:SetNormalTexture(TEXTURES.target)
+				Button:SetPushedTexture(TEXTURES.target)
+			end
+			if LDBObject then
+				LDBObject.icon = "Interface\\MINIMAP\\TRACKING\\Class"
+				LDBObject.text = L.VIEW_TARGET_LDB
+			end
+			return
 		end
-		if LDBObject then
-			LDBObject.icon = "Interface\\MINIMAP\\TRACKING\\Class"
-			LDBObject.text = L.VIEW_TARGET_LDB
-		end
-		return
 	end
 	local FC = AddOn_XRP.Characters.byUnit.player.FC
 	if not FC or FC == "0" or FC == "1" then
@@ -83,7 +85,7 @@ local function RenderTooltip(Tooltip)
 	end
 	Tooltip:AddLine(" ")
 	local target = AddOn_XRP.Characters.byUnit.target
-	if target and target.VA then
+	if AddOn.Settings.mainButtonClickToView and target and target.VA then
 		Tooltip:AddLine(L"Click to view your target's profile.", 1, 0.93, 0.67)
 	elseif not FC or FC == "0" or FC == "1" then
 		Tooltip:AddLine(L"Click for in character.", 0.4, 0.7, 0.5)
@@ -139,7 +141,7 @@ local ldbMenu
 function XRPButton_OnClick(self, button, down)
 	if button == "LeftButton" then
 		local target = AddOn_XRP.Characters.byUnit.target
-		if target and  target.VA then
+		if AddOn.Settings.mainButtonClickToView and target and  target.VA then
 			XRPViewer:View("target")
 		else
 			AddOn_XRP.ToggleStatus()

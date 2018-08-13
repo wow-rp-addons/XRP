@@ -88,6 +88,7 @@ AddOn.DEFAULT_SETTINGS = {
 	-- Buttons
 	mainButtonEnabled = true,
 	mainButtonDetached = false,
+	mainButtonClickToView = false,
 	mainButtonMinimapAngle = 193,
 	mainButtonDetachedX = 0,
 	mainButtonDetachedY = 0,
