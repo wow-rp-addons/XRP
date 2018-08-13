@@ -41,4 +41,7 @@
 	<Binding name="XRP_EDITOR" category="ADDONS">
 		XRPEditor:Edit()
 	</Binding>
+	<Binding name="XRP_CARD_TARGET" category="ADDONS">
+		XRPTargetCard:SetUnit("target")
+	</Binding>
 </Bindings>

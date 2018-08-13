@@ -1,0 +1,227 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+<!--
+	© Justin Snelgrove
+
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+	<Script file="Cards.lua"/>
+	<CheckButton name="XRPCardPeekTemplate" virtual="true" inherits="XRPPeekTemplate">
+		<KeyValues>
+			<KeyValue key="tooltipAnchor" value="ANCHOR_BOTTOMRIGHT"/>
+			<KeyValue key="tooltipX" type="number" value="-50"/>
+		</KeyValues>
+		<Size x="48" y="48"/>
+	</CheckButton>
+	<Button name="XRPCardTemplate" toplevel="true" parent="UIParent" frameStrata="LOW" frameLevel="1" movable="true" clampedToScreen="true" virtual="true" mixin="XRPCard_Mixin">
+		<Size x="335" y="165"/>
+		<Frames>
+			<PlayerModel parentKey="Model" scale="0.75" mixin="XRPCardModel_Mixin">
+				<Size x="115" y="115"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="12" y="-12"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Portrait" alphaMode="BLEND" atlas="TalkingHeads-Neutral-PortraitFrame" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-12" y="12"/>
+								<Anchor point="BOTTOMRIGHT" x="12" y="-12"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND">
+						<Texture alphaMode="BLEND" atlas="TalkingHeads-PortraitBg" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+								<Anchor point="BOTTOMRIGHT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnEvent function="Model_OnEvent"/>
+					<OnModelLoaded method="OnModelLoaded"/>
+				</Scripts>
+			</PlayerModel>
+			<CheckButton parentKey="PE1" inherits="XRPCardPeekTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM" relativePoint="BOTTOM" y="10"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton parentKey="PE2" inherits="XRPCardPeekTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.PE1" relativePoint="LEFT" x="-17"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton parentKey="PE3" inherits="XRPCardPeekTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.PE1" relativePoint="RIGHT" x="17"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton parentKey="PE4" inherits="XRPCardPeekTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.PE2" relativePoint="LEFT" x="-17"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton parentKey="PE5" inherits="XRPCardPeekTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.PE3" relativePoint="RIGHT" x="17"/>
+				</Anchors>
+			</CheckButton>
+		</Frames>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="NA" inherits="Fancy24Font" justifyH="LEFT" justifyV="TOP" maxLines="1" mixin="ShrinkUntilTruncateFontStringMixin">
+					<Size y="24"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Model" relativePoint="TOPRIGHT" x="8"/>
+						<Anchor point="RIGHT" x="-12"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="AG" inherits="GameFontWhite" justifyH="RIGHT" justifyV="TOP" maxLines="1" mixin="ShrinkUntilTruncateFontStringMixin">
+					<Size x="72" y="12"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.NA" relativePoint="BOTTOM" y="-10"/>
+						<Anchor point="RIGHT" x="-12"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="AGLabel" inherits="GameFontNormalTiny2" justifyH="RIGHT" maxLines="1">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.AG" relativePoint="TOPRIGHT"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="AH" inherits="GameFontWhite" justifyH="RIGHT" justifyV="TOP" maxLines="1" mixin="ShrinkUntilTruncateFontStringMixin">
+					<Size x="72" y="12"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.AG" relativePoint="BOTTOM" y="-10"/>
+						<Anchor point="RIGHT" x="-12"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="AHLabel" inherits="GameFontNormalTiny2" justifyH="RIGHT" maxLines="1">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.AH" relativePoint="TOPRIGHT"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="AW" inherits="GameFontWhite" justifyH="RIGHT" justifyV="TOP" maxLines="1" mixin="ShrinkUntilTruncateFontStringMixin">
+					<Size x="72" y="12"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.AH" relativePoint="BOTTOM" y="-10"/>
+						<Anchor point="RIGHT" x="-12"/>
+					</Anchors>
+				</FontString>
+				<!--
+					!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+					!!!!!!!!!! Hardcoded localiztion needs fixing !!!!!!!!!!!
+					!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+				-->
+				<FontString parentKey="AWLabel" inherits="GameFontNormalTiny2" justifyH="RIGHT" maxLines="1">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.AW" relativePoint="TOPRIGHT"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="NI" inherits="GameFontWhite" justifyH="LEFT" justifyV="TOP" maxLines="1" mixin="ShrinkUntilTruncateFontStringMixin">
+					<Size y="12"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.NA" relativePoint="BOTTOM" y="-10"/>
+						<Anchor point="LEFT" relativeKey="$parent.Model" relativePoint="RIGHT" x="8"/>
+						<Anchor point="RIGHT" relativeKey="$parent.AG" relativePoint="LEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="NILabel" inherits="GameFontNormalTiny2" justifyH="LEFT" maxLines="1">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.NI" relativePoint="TOPLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="HH" inherits="GameFontWhite" justifyH="LEFT" justifyV="TOP" maxLines="1" mixin="ShrinkUntilTruncateFontStringMixin">
+					<Size y="12"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.NI" relativePoint="BOTTOM" y="-10"/>
+						<Anchor point="LEFT" relativeKey="$parent.Model" relativePoint="RIGHT" x="8"/>
+						<Anchor point="RIGHT" relativeKey="$parent.AH" relativePoint="LEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="HHLabel" inherits="GameFontNormalTiny2" justifyH="LEFT" maxLines="1">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.HH" relativePoint="TOPLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="HB" inherits="GameFontWhite" justifyH="LEFT" justifyV="TOP" maxLines="1" mixin="ShrinkUntilTruncateFontStringMixin">
+					<Size y="12"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.HH" relativePoint="BOTTOM" y="-10"/>
+						<Anchor point="LEFT" relativeKey="$parent.Model" relativePoint="RIGHT" x="8"/>
+						<Anchor point="RIGHT" relativeKey="$parent.AW" relativePoint="LEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="HBLabel" inherits="GameFontNormalTiny2" justifyH="LEFT" maxLines="1">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.HB" relativePoint="TOPLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Text" inherits="GameFontHighlightLarge" justifyH="LEFT" justifyV="TOP" mixin="ShrinkUntilTruncateFontStringMixin">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.NA" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
+						<Anchor point="BOTTOMRIGHT" x="-42" y="12"/>
+					</Anchors>
+					<Color r="1" g="1" b="1"/>
+				</FontString>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture hidden="false" alphaMode="BLEND" setAllPoints="true">
+					<Color r="0" g="0" b="0" a="0.5"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="BounceIn" setToFinalAlpha="true" mixin="XRPCardAnimation_Mixin">
+				<Alpha startDelay="0" duration="0.25" fromAlpha="0" toAlpha="1"/>
+				<Scripts>
+					<OnPlay method="ParentOnShow"/>
+				</Scripts>
+			</AnimationGroup>
+			<AnimationGroup parentKey="BounceOut" setToFinalAlpha="true" mixin="XRPCardAnimation_Mixin">
+				<Alpha startDelay="0" duration="0.15" fromAlpha="1" toAlpha="0"/>
+				<Scripts>
+					<OnFinished method="BounceOutOnFinished"/>
+				</Scripts>
+			</AnimationGroup>
+			<AnimationGroup parentKey="FadeIn" setToFinalAlpha="true" mixin="XRPCardAnimation_Mixin">
+				<Alpha startDelay="0" duration="0.40" fromAlpha="0" toAlpha="1"/>
+				<Scripts>
+					<OnPlay method="ParentOnShow"/>
+				</Scripts>
+			</AnimationGroup>
+			<AnimationGroup parentKey="FadeOut" setToFinalAlpha="true" mixin="XRPCardAnimation_Mixin">
+				<Alpha startDelay="0" duration="0.30" fromAlpha="1" toAlpha="0"/>
+				<Scripts>
+					<OnFinished function="HideParentPanel"/>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnDragStart method="OnDragStart"/>
+			<OnDragStop method="OnDragStop"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnClick method="OnClick"/>
+			<OnEvent inherit="prepend" method="TargetOnEvent"/>
+		</Scripts>
+		<KeyValues>
+			<KeyValue key="lastClick" type="number" value="0"/>
+		</KeyValues>
+	</Button>
+	<Include file="TargetCard.xml"/>
+</Ui>

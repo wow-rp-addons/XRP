@@ -10,6 +10,7 @@
 	<Script file="Tooltip\Tooltip.lua"/>
 	<Include file="Templates.xml"/>
 	<Include file="Glances\Glances.xml"/>
+	<Include file="Cards\Cards.xml"/>
 	<Include file="Buttons\Minimap.xml"/>
 	<Include file="Export\Export.xml"/>
 	<Include file="Viewer\Viewer.xml"/>

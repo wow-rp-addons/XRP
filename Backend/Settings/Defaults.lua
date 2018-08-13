@@ -55,6 +55,10 @@ AddOn.DEFAULT_SETTINGS = {
 	viewerCloseOnEscape = true,
 	viewerMovable = false,
 
+	-- Cards
+	cardsTargetShowOnChanged = true,
+	cardsTargetHideOnLost = true,
+
 	-- Restricted mode
 	friendsOnly = false,
 	friendsIncludeGuild = true,

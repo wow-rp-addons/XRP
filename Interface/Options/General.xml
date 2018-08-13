@@ -37,9 +37,25 @@
 					<KeyValue key="xrpSetting" value="viewerCloseOnEscape"/>
 				</KeyValues>
 			</CheckButton>
-			<CheckButton parentKey="CursorEnabled" inherits="XRPOptionsCheckboxTemplate">
+			<CheckButton parentKey="CardsTargetShowOnChanged" inherits="XRPOptionsCheckboxTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.ViewerCloseOnEscape" relativePoint="BOTTOMLEFT" x="-24" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="xrpSetting" value="cardsTargetShowOnChanged"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="CardsTargetHideOnLost" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.CardsTargetShowOnChanged" relativePoint="BOTTOMLEFT" y="-8"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="xrpSetting" value="cardsTargetHideOnLost"/>
+				</KeyValues>
+			</CheckButton>
+			<CheckButton parentKey="CursorEnabled" inherits="XRPOptionsCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.CardsTargetHideOnLost" relativePoint="BOTTOMLEFT" y="-8"/>
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="xrpSetting" value="cursorEnabled"/>

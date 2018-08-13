@@ -20,6 +20,7 @@ local L = AddOn.GetText
 
 BINDING_HEADER_XRP = GetAddOnMetadata(FOLDER_NAME, "Title")
 BINDING_NAME_XRP_ARCHIVE = L"Toggle RP Profile Archive"
+BINDING_NAME_XRP_CARD_TARGET = L"Show Target Card"
 BINDING_NAME_XRP_EDITOR = L"Toggle RP Profile Editor"
 BINDING_NAME_XRP_STATUS = L"Toggle IC/OOC Status"
 BINDING_NAME_XRP_VIEWER = L"View RP Profile of Mouseover"
