@@ -225,7 +225,6 @@
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
 			<OnClick method="OnClick"/>
-			<OnEvent inherit="prepend" method="TargetOnEvent"/>
 		</Scripts>
 		<KeyValues>
 			<KeyValue key="lastClick" type="number" value="0"/>

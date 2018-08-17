@@ -48,13 +48,11 @@ local FALLBACK = {
 XRPCard_Mixin = {}
 
 function XRPCard_Mixin:SetUnit(unit)
-	if self.BounceOut:IsPlaying() then
+	if InCombatLockdown() or self.BounceOut:IsPlaying() then
 		return
 	end
 	local character = AddOn_XRP.Characters.byUnit[unit]
-	if character == self.character and not self.bounceIn then
-		return
-	elseif character then
+	if character then
 		self.unit = unit
 		if self:IsVisible() then
 			self.BounceOut:Play()

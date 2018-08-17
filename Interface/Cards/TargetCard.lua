@@ -24,13 +24,19 @@ XRPTargetCard_Mixin = {}
 
 function XRPTargetCard_Mixin:TargetOnLoad()
 	self:RegisterEvent("PLAYER_TARGET_CHANGED")
+	self:RegisterEvent("PLAYER_REGEN_DISABLED")
+	self:RegisterEvent("PLAYER_REGEN_ENABLED")
 end
 
 function XRPTargetCard_Mixin:TargetOnEvent(event)
-	if event == "PLAYER_TARGET_CHANGED" then
+	if event == "PLAYER_TARGET_CHANGED" or event == "PLAYER_REGEN_ENABLED" then
 		local exists = UnitExists("target")
 		if exists and AddOn.Settings.cardsTargetShowOnChanged or not exists and AddOn.Settings.cardsTargetHideOnLost then
 			self:SetUnit("target")
+		end
+	elseif event == "PLAYER_REGEN_DISABLED" then
+		if AddOn.Settings.cardsTargetHideOnLost then
+			self:SetUnit("none")
 		end
 	end
 end
