@@ -158,7 +158,11 @@ local function RenderTooltip()
 				return
 			end
 		end
-		RenderLine(false, 0.75, currentUnit.nameFormat:format(showProfile and AddOn_XRP.RemoveTextFormats(character.NA) or character.name), currentUnit.icons)
+		local PX, NA = character.PX, character.NA
+		if PX then
+			NA = ("%s %s"):format(PX, NA)
+		end
+		RenderLine(false, 0.75, currentUnit.nameFormat:format(showProfile and AddOn_XRP.RemoveTextFormats(NA) or character.name), currentUnit.icons)
 		if replace and currentUnit.reaction then
 			RenderLine(false, nil, currentUnit.reaction, nil, 1, 1, 1)
 		end

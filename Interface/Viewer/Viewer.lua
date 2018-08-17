@@ -54,6 +54,8 @@ local function SetField(field, contents, secondary, tertiary)
 	end
 	if not contents then
 		contents = ""
+	elseif field == "NA" and tertiary then
+		contents = ("%s %s"):format(tertiary, contents)
 	elseif field == "NI" and not contents:find(L.QUOTE_MATCH) then
 		contents = L.NICKNAME:format(contents)
 	elseif field == "DE" or field == "MO" or field == "HI" then
@@ -69,7 +71,7 @@ end
 local function Load(character)
 	for i, field in ipairs(DISPLAY) do
 		local contents = character[field]
-		SetField(field, contents, field == "CU" and character.CO or not contents and (field == "NA" and character.name or field == "RA" and character.GR or field == "RC" and character.GC), not contents and field == "RC" and character.GS)
+		SetField(field, contents, field == "CU" and character.CO or not contents and (field == "NA" and character.name or field == "RA" and character.GR or field == "RC" and character.GC), field == "NA" and character.PX or not contents and field == "RC" and character.GS)
 	end
 	XRPViewer.XC:SetText("")
 	failed = nil
@@ -93,6 +95,7 @@ local META_SUPPORTED = {
 	GR = "RA",
 	GC = "RC",
 	CO = "CU",
+	PX = "NA",
 }
 local function FIELD(event, name, field)
 	if not current or current.id ~= name or current.offline or name == AddOn.characterID then return end
@@ -101,7 +104,7 @@ local function FIELD(event, name, field)
 	end
 	if SUPPORTED[field] then
 		local contents = current[field]
-		SetField(field, contents, field == "CU" and current.CO or not contents and (field == "NA" and character.name or field == "RA" and current.GR or field == "RC" and current.GC), not contents and field == "RC" and current.GS)
+		SetField(field, contents, field == "CU" and current.CO or not contents and (field == "NA" and character.name or field == "RA" and current.GR or field == "RC" and current.GC), field == "NA" and current.PX or not contents and field == "RC" and current.GS)
 		lastUpdate = GetTime()
 	end
 end

@@ -55,8 +55,12 @@ function XRPArchiveList_update(self, force)
 		if index <= matches then
 			if force or button.character ~= character then
 				button.character = character
+				local PX, NA = character.PX, character.NA
+				if PX then
+					NA = ("%s %s"):format(PX, NA)
+				end
 				local name, realm = character.name, character.realm
-				button.NA:SetText(AddOn_XRP.RemoveTextFormats(character.NA) or name)
+				button.NA:SetText(AddOn_XRP.RemoveTextFormats(NA) or name)
 				button.Name:SetText(name)
 				button.Realm:SetText(realm)
 				local GR = character.GR

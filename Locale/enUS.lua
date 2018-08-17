@@ -48,6 +48,7 @@ FIELD_HI = "History"
 FIELD_FR = "Roleplaying style"
 FIELD_FC = "Character status"
 FIELD_VA = "Version"
+FIELD_PX = "Prefix"
 -- Below are implemented read-only.
 FIELD_CO = "Currently (OOC)"
 -- Below are metadata, not usually user-exposed.

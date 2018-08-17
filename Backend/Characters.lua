@@ -25,7 +25,7 @@ AddOn_XRP.Characters = {}
 local FILTER_SEARCH = {
 	NA = true, NI = true, NT = true, NH = true, AH = true, AW = true,
 	AE = true, RA = true, RC = true, CU = true, DE = true, AG = true,
-	HH = true, HB = true, MO = true, HI = true, CO = true,
+	HH = true, HB = true, MO = true, HI = true, CO = true, PX = true,
 }
 
 local RACE_FACTION = {
@@ -91,7 +91,16 @@ function CharacterMetatable:__index(index)
 		end
 		if xrpCache[characterID] and xrpCache[characterID].fields[field] then
 			local contents = AddOn.SanitizeText(xrpCache[characterID].fields[field])
-			if field == "PE" then
+			if field == "NA" then
+				local PX = xrpCache[characterID].fields.PX
+				if PX and contents:find(PX, nil, true) then
+					local numReplace
+					contents, numReplace = contents:gsub(("^%s "):format(PX), "")
+					if numReplace == 0 then -- Might have a color code...
+						contents = contents:gsub(("^(|c%%x%%x%%x%%x%%x%%x%%x%%x)%s "):format(PX), "%1")
+					end
+				end
+			elseif field == "PE" then
 				contents = AddOn.StringToPE(contents)
 			elseif field == "AH" then
 				contents = AddOn.ConvertHeight(contents)

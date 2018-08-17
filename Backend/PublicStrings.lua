@@ -48,6 +48,7 @@ Names.HI = L.FIELD_HI
 Names.FR = L.FIELD_FR
 Names.FC = L.FIELD_FC
 Names.VA = L.FIELD_VA
+Names.PX = L.FIELD_PX
 Names.CO = L.FIELD_CO
 Names.IC = L.FIELD_IC
 -- Metadata fields.

@@ -36,15 +36,26 @@
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset" relativePoint="BOTTOMRIGHT"/>
 				</Anchors>
 				<Frames>
+					<EditBox parentKey="PX" inherits="XRPEditorSingleLineTemplate">
+						<KeyValues>
+							<KeyValue key="field" value="PX"/>
+							<KeyValue key="nextField" value="NA"/>
+							<KeyValue key="safeLength" value="20" type="number"/>
+						</KeyValues>
+						<Size x="50" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="14" y="-18"/>
+						</Anchors>
+					</EditBox>
 					<EditBox parentKey="NA" inherits="XRPEditorSingleLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="NA"/>
 							<KeyValue key="nextField" value="NI"/>
 							<KeyValue key="safeLength" value="65" type="number"/>
 						</KeyValues>
-						<Size x="186" y="20"/>
+						<Size x="156" y="20"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="14" y="-18"/>
+							<Anchor point="LEFT" relativeKey="$parent.PX" relativePoint="RIGHT" x="10"/>
 						</Anchors>
 					</EditBox>
 					<EditBox parentKey="NI" inherits="XRPEditorSingleLineTemplate">
@@ -53,7 +64,7 @@
 							<KeyValue key="nextField" value="AH"/>
 							<KeyValue key="safeLength" value="58" type="number"/>
 						</KeyValues>
-						<Size x="136" y="20"/>
+						<Size x="116" y="20"/>
 						<Anchors>
 							<Anchor point="LEFT" relativeKey="$parent.NA" relativePoint="RIGHT" x="10"/>
 						</Anchors>
@@ -63,7 +74,7 @@
 							<KeyValue key="field" value="AH"/>
 							<KeyValue key="nextField" value="NT"/>
 						</KeyValues>
-						<Size x="65" y="20"/>
+						<Size x="55" y="20"/>
 						<Anchors>
 							<Anchor point="LEFT" relativeKey="$parent.NI" relativePoint="RIGHT" x="10"/>
 						</Anchors>
@@ -74,9 +85,9 @@
 							<KeyValue key="nextField" value="NH"/>
 							<KeyValue key="safeLength" value="130" type="number"/>
 						</KeyValues>
-						<Size x="186" y="20"/>
+						<Size x="196" y="20"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.NA" relativePoint="BOTTOMLEFT" y="-15"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.PX" relativePoint="BOTTOMLEFT" y="-15"/>
 						</Anchors>
 					</EditBox>
 					<EditBox parentKey="NH" inherits="XRPEditorSingleLineTemplate">
@@ -94,7 +105,7 @@
 							<KeyValue key="field" value="AW"/>
 							<KeyValue key="nextField" value="AE"/>
 						</KeyValues>
-						<Size x="65" y="20"/>
+						<Size x="55" y="20"/>
 						<Anchors>
 							<Anchor point="LEFT" relativeKey="$parent.NH" relativePoint="RIGHT" x="10"/>
 						</Anchors>
@@ -145,7 +156,7 @@
 					<ScrollFrame parentKey="DE" inherits="XRPEditorMultiLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="DE"/>
-							<KeyValue key="nextField" value="NA"/>
+							<KeyValue key="nextField" value="PX"/>
 						</KeyValues>
 						<Size x="402" y="264"/>
 						<Anchors>
