@@ -59,9 +59,9 @@ function XRPCard_Mixin:SetUnit(unit)
 			return
 		end
 		self.character = character
-		self.Model:SetModelScale(1)
-		self.Model:SetPosition(0, 0, 0)
 		if UnitIsVisible(unit) then
+			self.Model:SetModelScale(1)
+			self.Model:SetPosition(0, 0, 0)
 			self.Model:SetUnit(unit)
 		else
 			-- Unit needs to be cleared or else it will overwrite.
@@ -81,6 +81,7 @@ function XRPCard_Mixin:SetUnit(unit)
 		local class, GC = UnitClass(unit)
 		local r, g, b = RAID_CLASS_COLORS[GC]:GetRGB()
 		self.NA:SetTextColor(r, g, b, 1)
+		self.PX:SetTextColor(r, g, b, 1)
 	else
 		self.character = nil
 		self.unit = nil
@@ -95,6 +96,7 @@ function XRPCard_Mixin:Reload()
 		end
 	else
 		self.NA:SetText(AddOn_XRP.RemoveTextFormats(self.character.NA) or self.character.name)
+		self.PX:SetText(AddOn_XRP.RemoveTextFormats(self.character.PX) or "")
 		for field, fallback in pairs(FALLBACK) do
 			self[field]:SetText(AddOn_XRP.RemoveTextFormats(self.character[field]) or fallback)
 		end
@@ -115,9 +117,9 @@ function XRPCard_Mixin:SetPE(PE)
 		frame:SetPeek(PE and PE[map[i]])
 	end
 	if not PE then
-		self:SetHeight(104)
+		self:SetHeight(120)
 	else
-		self:SetHeight(165)
+		self:SetHeight(176)
 	end
 end
 

@@ -32,12 +32,12 @@
 		</Scripts>
 	</AnimationGroup>
 	<Button name="XRPCardTemplate" toplevel="true" parent="UIParent" frameStrata="LOW" frameLevel="1" movable="true" clampedToScreen="true" virtual="true" mixin="XRPCard_Mixin">
-		<Size x="335" y="165"/>
+		<Size x="345" y="176"/>
 		<Frames>
-			<PlayerModel parentKey="Model" scale="0.75" mixin="XRPCardModel_Mixin">
+			<PlayerModel parentKey="Model" scale="0.85" mixin="XRPCardModel_Mixin">
 				<Size x="115" y="115"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="12" y="-12"/>
+					<Anchor point="TOPLEFT" x="13" y="-13"/>
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
@@ -70,31 +70,38 @@
 			</CheckButton>
 			<CheckButton parentKey="PE2" inherits="XRPCardPeekTemplate">
 				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.PE1" relativePoint="LEFT" x="-17"/>
+					<Anchor point="RIGHT" relativeKey="$parent.PE1" relativePoint="LEFT" x="-18"/>
 				</Anchors>
 			</CheckButton>
 			<CheckButton parentKey="PE3" inherits="XRPCardPeekTemplate">
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.PE1" relativePoint="RIGHT" x="17"/>
+					<Anchor point="LEFT" relativeKey="$parent.PE1" relativePoint="RIGHT" x="18"/>
 				</Anchors>
 			</CheckButton>
 			<CheckButton parentKey="PE4" inherits="XRPCardPeekTemplate">
 				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.PE2" relativePoint="LEFT" x="-17"/>
+					<Anchor point="RIGHT" relativeKey="$parent.PE2" relativePoint="LEFT" x="-18"/>
 				</Anchors>
 			</CheckButton>
 			<CheckButton parentKey="PE5" inherits="XRPCardPeekTemplate">
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.PE3" relativePoint="RIGHT" x="17"/>
+					<Anchor point="LEFT" relativeKey="$parent.PE3" relativePoint="RIGHT" x="18"/>
 				</Anchors>
 			</CheckButton>
 		</Frames>
 		<Layers>
 			<Layer level="ARTWORK">
+				<FontString parentKey="PX" inherits="Fancy12Font" justifyH="LEFT" justifyV="TOP" maxLines="1">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Model" relativePoint="TOPRIGHT" x="7" y="3"/>
+						<Anchor point="RIGHT" x="-12"/>
+					</Anchors>
+				</FontString>
 				<FontString parentKey="NA" inherits="Fancy24Font" justifyH="LEFT" justifyV="TOP" maxLines="1" mixin="ShrinkUntilTruncateFontStringMixin">
 					<Size y="24"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Model" relativePoint="TOPRIGHT" x="8"/>
+						<Anchor point="TOP" relativeKey="$parent.PX" relativePoint="BOTTOM" y="-1"/>
+						<Anchor point="LEFT" relativeKey="$parent.Model" relativePoint="RIGHT" x="7"/>
 						<Anchor point="RIGHT" x="-12"/>
 					</Anchors>
 				</FontString>
@@ -129,11 +136,6 @@
 						<Anchor point="RIGHT" x="-12"/>
 					</Anchors>
 				</FontString>
-				<!--
-					!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-					!!!!!!!!!! Hardcoded localiztion needs fixing !!!!!!!!!!!
-					!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-				-->
 				<FontString parentKey="AWLabel" inherits="GameFontNormalTiny2" justifyH="RIGHT" maxLines="1">
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.AW" relativePoint="TOPRIGHT"/>
@@ -143,7 +145,7 @@
 					<Size y="12"/>
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.NA" relativePoint="BOTTOM" y="-10"/>
-						<Anchor point="LEFT" relativeKey="$parent.Model" relativePoint="RIGHT" x="8"/>
+						<Anchor point="LEFT" relativeKey="$parent.Model" relativePoint="RIGHT" x="7"/>
 						<Anchor point="RIGHT" relativeKey="$parent.AG" relativePoint="LEFT"/>
 					</Anchors>
 				</FontString>
@@ -156,7 +158,7 @@
 					<Size y="12"/>
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.NI" relativePoint="BOTTOM" y="-10"/>
-						<Anchor point="LEFT" relativeKey="$parent.Model" relativePoint="RIGHT" x="8"/>
+						<Anchor point="LEFT" relativeKey="$parent.Model" relativePoint="RIGHT" x="7"/>
 						<Anchor point="RIGHT" relativeKey="$parent.AH" relativePoint="LEFT"/>
 					</Anchors>
 				</FontString>
@@ -169,7 +171,7 @@
 					<Size y="12"/>
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.HH" relativePoint="BOTTOM" y="-10"/>
-						<Anchor point="LEFT" relativeKey="$parent.Model" relativePoint="RIGHT" x="8"/>
+						<Anchor point="LEFT" relativeKey="$parent.Model" relativePoint="RIGHT" x="7"/>
 						<Anchor point="RIGHT" relativeKey="$parent.AW" relativePoint="LEFT"/>
 					</Anchors>
 				</FontString>
@@ -186,12 +188,14 @@
 					<Color r="1" g="1" b="1"/>
 				</FontString>
 			</Layer>
-			<Layer level="BACKGROUND">
-				<Texture hidden="false" alphaMode="BLEND" setAllPoints="true">
-					<Color r="0" g="0" b="0" a="0.5"/>
-				</Texture>
-			</Layer>
 		</Layers>
+		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true" alphaMode="BLEND">
+			<EdgeSize val="16"/>
+			<TileSize val="16"/>
+			<BackgroundInsets left="4" right="4" top="4" bottom="4"/>
+			<Color r="0" g="0" b="0" a="0.75"/>
+			<BorderColor r="0.5" g="0.5" b="0.5" a="1"/>
+		</Backdrop>
 		<Animations>
 			<AnimationGroup parentKey="BounceIn" inherits="XRPCardAnimationGroupTemplate">
 				<Alpha startDelay="0" duration="0.25" fromAlpha="0" toAlpha="1"/>
