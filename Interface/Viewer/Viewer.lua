@@ -217,7 +217,7 @@ local function Menu_Click(self, arg1, arg2, checked)
 		XRPExport:Export(current.name, current.exportPlainText)
 	elseif arg1 == "XRP_REPORT" then
 		local approxTime = ("%02d:%02d"):format(GetGameTime())
-		StaticPopup_Show("XRP_REPORT", nil, nil, L"Logged addon message prefix: MSP; Player name: %s; Realm name: %s; Approximate game time: %s":format(character.name, character.realm, approxTime))
+		StaticPopup_Show("XRP_REPORT", nil, nil, L"Logged addon message prefix: MSP; Player name: %s; Realm name: %s; Approximate game time: %s":format(current.name, current.realm, approxTime))
 	elseif arg1 == "XRP_REFRESH_FORCE" then
 		StaticPopup_Show("XRP_FORCE_REFRESH", current.fullDisplayName, nil, current)
 	elseif arg1 == "XRP_CACHE_DROP" then
