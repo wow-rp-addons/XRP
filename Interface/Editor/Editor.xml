@@ -156,13 +156,42 @@
 					<ScrollFrame parentKey="DE" inherits="XRPEditorMultiLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="DE"/>
-							<KeyValue key="nextField" value="PX"/>
+							<KeyValue key="nextField" value="FR"/>
 						</KeyValues>
-						<Size x="402" y="264"/>
+						<Size x="402" y="224"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.CU" relativePoint="BOTTOMLEFT" y="-20"/>
 						</Anchors>
 					</ScrollFrame>
+					<EditBox parentKey="FR" inherits="XRPEditorSingleLineTemplate">
+						<KeyValues>
+							<KeyValue key="field" value="FR"/>
+							<KeyValue key="nextField" value="PX"/>
+							<KeyValue key="safeLength" value="35" type="number"/>
+						</KeyValues>
+						<Size x="199" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.DE" relativePoint="BOTTOMLEFT" y="-19"/>
+						</Anchors>
+					</EditBox>
+					<Frame name="$parentMenuFC" parentKey="FC" inherits="XRPEditorDropDownTemplate">
+						<KeyValues>
+							<KeyValue key="field" value="FC"/>
+							<KeyValue key="inherited" value="false" type="boolean"/>
+							<KeyValue key="baseMenuList" value="XRPEditorFC_baseMenuList" type="global"/>
+							<KeyValue key="width" value="188" type="number"/>
+						</KeyValues>
+						<Frames>
+							<CheckButton parentKey="Inherit" inherits="XRPEditorInheritCheckTemplate">
+								<Anchors>
+									<Anchor point="LEFT" relativeKey="$parent.Label" relativePoint="RIGHT"/>
+								</Anchors>
+							</CheckButton>
+						</Frames>
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.FR" relativePoint="RIGHT" x="-13" y="-5"/>
+						</Anchors>
+					</Frame>
 				</Frames>
 			</Frame>
 			<Frame parentKey="Biography" parentArray="panes" useParentLevel="true" hidden="true">
@@ -215,42 +244,24 @@
 					<ScrollFrame parentKey="HI" inherits="XRPEditorMultiLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="HI"/>
-							<KeyValue key="nextField" value="FR"/>
+							<KeyValue key="nextField" value="CO"/>
 						</KeyValues>
-						<Size x="402" y="294"/>
+						<Size x="402" y="251"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.MO" relativePoint="BOTTOMLEFT" y="-20"/>
 						</Anchors>
 					</ScrollFrame>
-					<EditBox parentKey="FR" inherits="XRPEditorSingleLineTemplate">
+					<ScrollFrame parentKey="CO" inherits="XRPEditorMultiLineTemplate">
 						<KeyValues>
-							<KeyValue key="field" value="FR"/>
+							<KeyValue key="field" value="CO"/>
 							<KeyValue key="nextField" value="AG"/>
-							<KeyValue key="safeLength" value="35" type="number"/>
+							<KeyValue key="safeLength" value="140" type="number"/>
 						</KeyValues>
-						<Size x="199" y="20"/>
+						<Size x="402" y="58"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.HI" relativePoint="BOTTOMLEFT" y="-19"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.HI" relativePoint="BOTTOMLEFT" y="-24"/>
 						</Anchors>
-					</EditBox>
-					<Frame name="$parentMenuFC" parentKey="FC" inherits="XRPEditorDropDownTemplate">
-						<KeyValues>
-							<KeyValue key="field" value="FC"/>
-							<KeyValue key="inherited" value="false" type="boolean"/>
-							<KeyValue key="baseMenuList" value="XRPEditorFC_baseMenuList" type="global"/>
-							<KeyValue key="width" value="188" type="number"/>
-						</KeyValues>
-						<Frames>
-							<CheckButton parentKey="Inherit" inherits="XRPEditorInheritCheckTemplate">
-								<Anchors>
-									<Anchor point="LEFT" relativeKey="$parent.Label" relativePoint="RIGHT"/>
-								</Anchors>
-							</CheckButton>
-						</Frames>
-						<Anchors>
-							<Anchor point="LEFT" relativeKey="$parent.FR" relativePoint="RIGHT" x="-13" y="-5"/>
-						</Anchors>
-					</Frame>
+					</ScrollFrame>
 				</Frames>
 			</Frame>
 			<Frame parentKey="Glances" parentArray="panes" useParentLevel="true" hidden="true" mixin="XRPEditorGlances_Mixin">

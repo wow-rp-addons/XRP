@@ -65,12 +65,18 @@ Names.VW = L.FIELD_VW
 local MenuNames = setmetatable({}, { __index = Names })
 MenuNames.FR = L.FIELD_FR_MENU
 MenuNames.FC = L.FIELD_FC_MENU
+MenuNames.CO = L.FIELD_CO_MENU
 -- Metadata fields.
 MenuNames.VP = L.FIELD_VP_MENU
 MenuNames.GC = L.FIELD_GC_MENU
 MenuNames.GF = L.FIELD_GF_MENU
 MenuNames.GR = L.FIELD_GR_MENU
 MenuNames.GS = L.FIELD_GS_MENU
+
+local ShortNames = setmetatable({}, { __index = Names })
+ShortNames.FR = L.FIELD_FR_SHORT
+ShortNames.FC = L.FIELD_FC_SHORT
+ShortNames.CO = L.FIELD_CO_SHORT
 
 local Values = {}
 
@@ -146,5 +152,6 @@ MenuValues.FR["4"] = L.VALUE_FR_4_MENU
 
 AddOn_XRP.Strings.Names = Names
 AddOn_XRP.Strings.Values = Values
+AddOn_XRP.Strings.ShortNames = ShortNames
 AddOn_XRP.Strings.MenuNames = MenuNames
 AddOn_XRP.Strings.MenuValues = MenuValues

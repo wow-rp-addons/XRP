@@ -17,18 +17,20 @@
 	You should have received a copy of the GNU General Public License along
 	with XRP. If not, see <http://www.gnu.org/licenses/>.
 -->
-	<Frame name="XRPViewerTextLineTemplate" enableMouse="true" virtual="true">
+	<Frame name="XRPViewerTextLineMinimalTemplate" enableMouse="true" virtual="true">
 		<Size y="13"/>
-		<Layers>
-			<Layer level="ARTWORK">
-				<FontString parentKey="Text" inherits="GameFontNormalSmall" maxLines="1" setAllPoints="true"/>
-			</Layer>
-		</Layers>
 		<Scripts>
 			<OnLoad function="XRPViewerControls_OnLoad"/>
 			<OnEnter function="XRPTemplates_TooltipTruncated"/>
 			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
+	</Frame>
+	<Frame name="XRPViewerTextLineTemplate" inherits="XRPViewerTextLineMinimalTemplate" enableMouse="true" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Text" inherits="GameFontNormalSmall" maxLines="1" setAllPoints="true"/>
+			</Layer>
+		</Layers>
 	</Frame>
 	<Frame name="XRPViewerSingleLineTemplate" virtual="true">
 		<Size y="20"/>

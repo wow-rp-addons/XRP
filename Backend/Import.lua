@@ -119,12 +119,8 @@ local function ImportTotalRP3()
 		profile.Field.NH = table.concat(NH, " | ")
 		profile.Field.MO = table.concat(MO, " | ")
 	end
-	local CU = {}
-	CU[#CU + 1] = oldProfile.player.character.CU
-	if oldProfile.player.character.CO then
-		CU[#CU + 1] = L.OOC_TEXT:format(oldProfile.player.character.CO)
-	end
-	profile.Field.CU = table.concat(CU, " ")
+	profile.Field.CU = oldProfile.player.character.CU
+	profile.Field.CO = oldProfile.player.character.CO
 	profile.Field.FC = tostring(oldProfile.player.character.RP)
 	if oldProfile.player.about.TE == 1 then
 		profile.Field.DE = oldProfile.player.about["T1"].TX

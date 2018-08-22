@@ -23,7 +23,7 @@ local L = AddOn.GetText
 local Names = AddOn_XRP.Strings.Names
 
 -- Fields to export.
-local EXPORT_FIELDS = { "NA", "NI", "NT", "NH", "RA", "RC", "AE", "AH", "AW", "AG", "HH", "HB", "CU", "MO", "DE", "HI" }
+local EXPORT_FIELDS = { "NA", "NI", "NT", "NH", "RA", "RC", "AE", "AH", "AW", "AG", "HH", "HB", "CU", "CO", "MO", "DE", "HI" }
 local ALLOW_INDENT = { CU = true, MO = true, DE = true, HI = true }
 local EXPORT_FORMATS = {}
 
@@ -60,9 +60,6 @@ function AddOn.ExportText(title, fields)
 	export[#export + 1] = "\n"
 	for i, field in ipairs(EXPORT_FIELDS) do
 		local fieldText = AddOn_XRP.RemoveTextFormats(fields[field], ALLOW_INDENT[field])
-		if field == "CU" then
-			fieldText = AddOn.MergeCurrently(fieldText, AddOn_XRP.RemoveTextFormats(fields.CO))
-		end
 		if ALLOW_INDENT[field] then
 			fieldText = AddOn.LinkURLs(fieldText)
 		end

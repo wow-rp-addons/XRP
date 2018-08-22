@@ -23,7 +23,7 @@
 	<Frame name="XRPViewer" parent="UIParent" inherits="XRPButtonFrameTemplate" resizable="true" clampedToScreen="true" mixin="XRPViewer_Mixin">
 		<Size x="439" y="525"/>
 		<ResizeBounds>
-			<minResize x="338" y="500"/>
+			<minResize x="338" y="424"/>
 			<maxResize x="702" y="803"/>
 		</ResizeBounds>
 		<Layers>
@@ -125,6 +125,7 @@
 							<Anchor point="TOPRIGHT" relativePoint="TOP" x="-57" y="-18"/>
 						</Anchors>
 					</Frame>
+					<!-- Anchors place this to the right of RC visually. -->
 					<Frame parentKey="AH" inherits="XRPViewerSingleLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="AH"/>
@@ -165,7 +166,7 @@
 						<KeyValues>
 							<KeyValue key="field" value="CU"/>
 						</KeyValues>
-						<Size y="45"/>
+						<Size y="35"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.AE" relativePoint="BOTTOMLEFT" y="-20"/>
 							<Anchor point="TOPRIGHT" relativeKey="$parent.AW" relativePoint="BOTTOMRIGHT" x="-5" y="-20"/>
@@ -178,7 +179,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.CU" relativePoint="BOTTOMLEFT" y="-24"/>
 							<Anchor point="TOPRIGHT" relativeKey="$parent.CU" relativePoint="BOTTOMRIGHT" y="-24"/>
-							<Anchor point="BOTTOMRIGHT" y="13"/>
+							<Anchor point="BOTTOM" y="13"/>
 						</Anchors>
 					</ScrollFrame>
 				</Frames>
@@ -195,16 +196,17 @@
 						</KeyValues>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="14" y="-18"/>
-							<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-8" y="-18"/>
+							<Anchor point="TOPRIGHT" relativePoint="TOP" x="-47" y="-18"/>
 						</Anchors>
 					</Frame>
+					<!-- Anchors place this to the right of HB visually. -->
 					<Frame parentKey="AG" inherits="XRPViewerSingleLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="AG"/>
 						</KeyValues>
-						<Size x="100" y="20"/>
+						<Size x="80" y="20"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.HH" relativePoint="BOTTOMLEFT" y="-15"/>
+							<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-8" y="-18"/>
 						</Anchors>
 					</Frame>
 					<Frame parentKey="HB" inherits="XRPViewerSingleLineTemplate">
@@ -212,18 +214,29 @@
 							<KeyValue key="field" value="HB"/>
 						</KeyValues>
 						<Anchors>
-							<Anchor point="TOPRIGHT" relativeKey="$parent.HH" relativePoint="BOTTOMRIGHT" y="-15"/>
-							<Anchor point="LEFT" relativeKey="$parent.AG" relativePoint="RIGHT" x="10"/>
+							<Anchor point="LEFT" relativeKey="$parent.HH" relativePoint="RIGHT" x="10"/>
+							<Anchor point="RIGHT" relativeKey="$parent.AG" relativePoint="LEFT" x="-10"/>
 						</Anchors>
 					</Frame>
-					<ScrollFrame parentKey="MO" inherits="XRPViewerMultiLineTemplate">
+					<Frame parentKey="MO" inherits="XRPViewerSingleLineTemplate">
 						<KeyValues>
 							<KeyValue key="field" value="MO"/>
 						</KeyValues>
-						<Size y="45"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.AG" relativePoint="BOTTOMLEFT" y="-20"/>
-							<Anchor point="TOPRIGHT" relativeKey="$parent.HB" relativePoint="BOTTOMRIGHT" x="-5" y="-20"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.HH" relativePoint="BOTTOMLEFT" y="-15"/>
+							<Anchor point="TOPRIGHT" relativeKey="$parent.AG" relativePoint="BOTTOMRIGHT" y="-15"/>
+						</Anchors>
+					</Frame>
+					<!-- Anchors place this after HI visually. -->
+					<ScrollFrame parentKey="CO" inherits="XRPViewerMultiLineTemplate">
+						<KeyValues>
+							<KeyValue key="field" value="CO"/>
+						</KeyValues>
+						<Size y="58"/>
+						<Anchors>
+							<Anchor point="BOTTOM" y="13"/>
+							<Anchor point="LEFT" relativeKey="$parent.MO" relativePoint="LEFT"/>
+							<Anchor point="RIGHT" relativeKey="$parent.MO" relativePoint="RIGHT" x="-5"/>
 						</Anchors>
 					</ScrollFrame>
 					<ScrollFrame parentKey="HI" inherits="XRPViewerMultiLineTemplate">
@@ -231,16 +244,16 @@
 							<KeyValue key="field" value="HI"/>
 						</KeyValues>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.MO" relativePoint="BOTTOMLEFT" y="-24"/>
-							<Anchor point="TOPRIGHT" relativeKey="$parent.MO" relativePoint="BOTTOMRIGHT" y="-24"/>
-							<Anchor point="BOTTOMRIGHT" y="13"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.MO" relativePoint="BOTTOMLEFT" y="-20"/>
+							<Anchor point="TOPRIGHT" relativeKey="$parent.MO" relativePoint="BOTTOMRIGHT" x="-5" y="-20"/>
+							<Anchor point="BOTTOM" relativeKey="$parent.CO" relativePoint="TOP" y="24"/>
 						</Anchors>
 					</ScrollFrame>
 				</Frames>
 			</Frame>
 			<CheckButton parentKey="Glance1" inherits="XRPViewerPeekTemplate" mixin="XRPViewerPeek_Mixin">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" y="-221"/>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" y="-66"/>
 				</Anchors>
 				<Scripts>
 					<OnShow inherit="prepend" method="OnShowFirst"/>
@@ -249,22 +262,22 @@
 			</CheckButton>
 			<CheckButton parentKey="Glance2" inherits="XRPViewerPeekTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.Glance1" relativePoint="BOTTOMLEFT" y="-26"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Glance1" relativePoint="BOTTOMLEFT" y="-22"/>
 				</Anchors>
 			</CheckButton>
 			<CheckButton parentKey="Glance3" inherits="XRPViewerPeekTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.Glance2" relativePoint="BOTTOMLEFT" y="-26"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Glance2" relativePoint="BOTTOMLEFT" y="-22"/>
 				</Anchors>
 			</CheckButton>
 			<CheckButton parentKey="Glance4" inherits="XRPViewerPeekTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.Glance3" relativePoint="BOTTOMLEFT" y="-26"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Glance3" relativePoint="BOTTOMLEFT" y="-22"/>
 				</Anchors>
 			</CheckButton>
 			<CheckButton parentKey="Glance5" inherits="XRPViewerPeekTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.Glance4" relativePoint="BOTTOMLEFT" y="-26"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Glance4" relativePoint="BOTTOMLEFT" y="-22"/>
 				</Anchors>
 			</CheckButton>
 			<Button parentKey="Menu" inherits="UIPanelButtonTemplate" text="v" mixin="XRPTemplatesMenu_Mixin">

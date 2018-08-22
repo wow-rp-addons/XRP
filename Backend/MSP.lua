@@ -161,7 +161,7 @@ local function DataLoadHandler(dataLoadName, char)
 end
 
 if not disabled then
-	msp:AddFieldsToTooltip{"PX", "RC"}
+	msp:AddFieldsToTooltip{"PX", "RC", "CO"}
 	msp.callback.status[#msp.callback.status + 1] = StatusHandler
 	msp.callback.updated[#msp.callback.updated + 1] = UpdatedHandler
 	msp.callback.received[#msp.callback.received + 1] = ReceivedHandler

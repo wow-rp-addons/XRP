@@ -26,7 +26,7 @@ local current, status, failed, lastUpdate
 
 -- This will request fields in the order listed.
 local DISPLAY = {
-	"VA", "NA", "NH", "NI", "NT", "RA", "RC", "CU", -- In TT.
+	"VA", "NA", "NH", "NI", "NT", "RA", "RC", "CU", "CO", -- In TT.
 	"AE", "AH", "AW", "AG", "HH", "HB", "MO", -- Not in TT.
 	"PE", "DE", "HI", -- High-bandwidth.
 }
@@ -38,11 +38,9 @@ local function SetField(field, contents, secondary, tertiary)
 		end
 		return
 	end
-	contents = AddOn_XRP.RemoveTextFormats(contents, field == "CU" or field == "DE" or field == "MO" or field == "HI")
+	contents = AddOn_XRP.RemoveTextFormats(contents, field == "CU" or field == "CO" or field == "DE" or field == "HI")
 	if field == "VA" then
 		contents = contents and contents:gsub(";", PLAYER_LIST_DELIMITER) or NONE
-	elseif field == "CU" then
-		contents = AddOn.MergeCurrently(AddOn.LinkURLs(contents), AddOn.LinkURLs(AddOn_XRP.RemoveTextFormats(secondary, true)))
 	elseif secondary then
 		if field == "NA" then
 			contents = secondary
@@ -58,7 +56,7 @@ local function SetField(field, contents, secondary, tertiary)
 		contents = ("%s %s"):format(tertiary, contents)
 	elseif field == "NI" and not contents:find(L.QUOTE_MATCH) then
 		contents = L.NICKNAME:format(contents)
-	elseif field == "DE" or field == "MO" or field == "HI" then
+	elseif field =="CU" or field == "CO" or field == "DE" or field == "HI" then
 		-- Link URLs in scrolling fields.
 		contents = AddOn.LinkURLs(contents)
 		if field == "DE" or field == "HI" then
@@ -71,7 +69,7 @@ end
 local function Load(character)
 	for i, field in ipairs(DISPLAY) do
 		local contents = character[field]
-		SetField(field, contents, field == "CU" and character.CO or not contents and (field == "NA" and character.name or field == "RA" and character.GR or field == "RC" and character.GC), field == "NA" and character.PX or not contents and field == "RC" and character.GS)
+		SetField(field, contents, not contents and (field == "NA" and character.name or field == "RA" and character.GR or field == "RC" and character.GC), field == "NA" and character.PX or not contents and field == "RC" and character.GS)
 	end
 	XRPViewer.XC:SetText("")
 	failed = nil
@@ -94,7 +92,6 @@ end
 local META_SUPPORTED = {
 	GR = "RA",
 	GC = "RC",
-	CO = "CU",
 	PX = "NA",
 }
 local function FIELD(event, name, field)
@@ -104,7 +101,7 @@ local function FIELD(event, name, field)
 	end
 	if SUPPORTED[field] then
 		local contents = current[field]
-		SetField(field, contents, field == "CU" and current.CO or not contents and (field == "NA" and character.name or field == "RA" and current.GR or field == "RC" and current.GC), field == "NA" and current.PX or not contents and field == "RC" and current.GS)
+		SetField(field, contents, not contents and (field == "NA" and character.name or field == "RA" and current.GR or field == "RC" and current.GC), field == "NA" and current.PX or not contents and field == "RC" and current.GS)
 		lastUpdate = GetTime()
 	end
 end

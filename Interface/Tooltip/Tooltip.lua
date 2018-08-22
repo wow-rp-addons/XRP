@@ -21,6 +21,7 @@ local FOLDER_NAME, AddOn = ...
 local L = AddOn.GetText
 
 local Names, Values = AddOn_XRP.Strings.Names, AddOn_XRP.Strings.Values
+local ShortNames = AddOn_XRP.Strings.ShortNames
 
 local currentUnit = {
 	lines = {},
@@ -72,10 +73,10 @@ local function RenderLine(multiLine, leftRatio, left, right, lR, lG, lB, rR, rG,
 		left = nil
 	end
 	if left then
-		left = left:gsub("\n+", " ")
+		left = left:gsub("%s+", " ")
 	end
 	if right then
-		right = right:gsub("\n+", " ")
+		right = right:gsub("%s+", " ")
 	end
 	if not leftRatio then
 		leftRatio = 0.5
@@ -130,15 +131,20 @@ local function RenderLine(multiLine, leftRatio, left, right, lR, lG, lB, rR, rG,
 end
 
 local COLORS = {
-	OOC = { r = 0.6, g = 0.4, b = 0.3 },
-	IC = { r = 0.4, g = 0.7, b = 0.5 },
-	Alliance = { r = 0.38, g = 0.42, b = 1.00},
-	Horde = { r = 1.00, g = 0.38, b = 0.42},
-	Neutral = FACTION_BAR_COLORS[4],
+	OOC = CreateColor(0.6, 0.4, 0.3),
+	IC = CreateColor(0.4, 0.7, 0.5),
+	CU = CreateColor(0.9, 0.7, 0.6),
+	CU_LABEL = CreateColor(0.63, 0.5, 0.31),
+	CO = CreateColor(0.6, 0.6, 0.6),
+	CO_LABEL = CreateColor(0.4, 0.4, 0.4),
+	Alliance = CreateColor( 0.38, 0.42, 1.00),
+	Horde = CreateColor(1.00, 0.38, 0.42),
+	Neutral = CreateColor(FACTION_BAR_COLORS[4].r, FACTION_BAR_COLORS[4].g, FACTION_BAR_COLORS[4].b),
 }
 local NI_FORMAT = ("|cff6070a0%s|r %s"):format(STAT_FORMAT:format(Names.NI), L.NICKNAME)
 local NI_FORMAT_NOQUOTE = ("|cff6070a0%s|r %s"):format(STAT_FORMAT:format(Names.NI), "%s")
-local CU_FORMAT = ("|cffa08050%s|r %%s"):format(STAT_FORMAT:format(Names.CU))
+local CU_FORMAT = COLORS.CU_LABEL:WrapTextInColorCode(STAT_FORMAT:format(Names.CU)) .. " %s"
+local CO_FORMAT = COLORS.CO_LABEL:WrapTextInColorCode(STAT_FORMAT:format(ShortNames.CO)) .. " %s"
 local function RenderTooltip()
 	oldLines = Tooltip:NumLines()
 	lineNum = 0
@@ -150,7 +156,7 @@ local function RenderTooltip()
 			XRPTooltip:ClearLines()
 			XRPTooltip:SetOwner(GameTooltip, "ANCHOR_TOPRIGHT")
 			if character.hidden then
-				RenderLine(false, 0.1, L.HIDDEN, nil, 0.5, 0.5, 0.5)
+				RenderLine(false, 1, L.HIDDEN, nil, 0.5, 0.5, 0.5)
 				XRPTooltip:Show()
 				return
 			elseif (not showProfile or not character.VA) then
@@ -186,10 +192,13 @@ local function RenderTooltip()
 			end
 		end
 		if showProfile then
-			local CU, CO = AddOn_XRP.RemoveTextFormats(character.CU), AddOn_XRP.RemoveTextFormats(character.CO)
-			RenderLine(true, nil, (CU or CO) and CU_FORMAT:format(AddOn.MergeCurrently(AddOn.LinkURLs(CU), AddOn.LinkURLs(CO))), nil, 0.9, 0.7, 0.6)
+			local CU = AddOn.LinkURLs(AddOn_XRP.RemoveTextFormats(character.CU))
+			RenderLine(true, nil, CU and CU_FORMAT:format(CU), nil, COLORS.CU.r, COLORS.CU.g, COLORS.CU.b)
+			local CO = AddOn.LinkURLs(AddOn_XRP.RemoveTextFormats(character.CO))
+			CO = CO and CO_FORMAT:format(CO) or nil
+			RenderLine(true, nil, CO, nil, COLORS.CO.r, COLORS.CO.g, COLORS.CO.b)
 		end
-		local inlineLength = math.ceil(AddOn.Settings.tooltipMaxWidth / 20)
+		local inlineLength = math.ceil(AddOn.Settings.tooltipMaxWidth / 15)
 		local RA = showProfile and not AddOn.Settings.tooltipHideRace and AddOn_XRP.RemoveTextFormats(character.RA) or Values.GR[character.GR] or UNKNOWN
 		local RAlen = #RA
 		RA = AddOn_Chomp.SafeSubString(RA, 1, inlineLength)
@@ -277,7 +286,7 @@ local UNITNAME_TITLE, UNITNAME_MATCH = {}, {}
 for i = 1, 99 do
 	local title = _G[("UNITNAME_SUMMON_TITLE%d"):format(i)]
 	if not title then break end
-	if title:find("%s", nil, true) and not title:find("^%%s$") then
+	if title:find("%s", nil, true) and title ~= "%s" then
 		UNITNAME_TITLE[#UNITNAME_TITLE + 1] = title
 		UNITNAME_MATCH[#UNITNAME_MATCH + 1] = title:format("(.+)")
 	end

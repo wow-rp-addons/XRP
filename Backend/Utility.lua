@@ -241,19 +241,6 @@ function AddOn.ConvertHeight(height, units)
 	return height
 end
 
-function AddOn.MergeCurrently(CU, CO)
-	if not CU and not CO then
-		return nil
-	elseif CU and not CO then
-		return CU
-	elseif not CU then
-		return L.OOC_TEXT:format(CO:match(L.OOC_STRIP) or CO)
-	elseif CU:find("\n", nil, true) or CO:find("\n", nil, true) then
-		return ("%s\n\n%s"):format(CU, L.OOC_TEXT:format(CO:match(L.OOC_STRIP) or CO))
-	end
-	return ("%s %s"):format(CU, L.OOC_TEXT:format(CO:match(L.OOC_STRIP) or CO))
-end
-
 local IC_STATUS = {
 	["2"] = true,
 	["3"] = true,

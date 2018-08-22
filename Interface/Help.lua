@@ -172,9 +172,21 @@ local EDITOR_APPEARANCE = {
 	},
 	{
 		ButtonPos = { x = 388, y = -178 },
-		HighLightBox = { x = 12, y = -185, width = 414, height = 287 },
+		HighLightBox = { x = 12, y = -185, width = 414, height = 246 },
 		ToolTipDir = "RIGHT",
 		ToolTipText = L"The description field is for a physical description of your character.\n\nGenerally it is most useful to restrict yourself to what would be visible to others about your character in a normal setting.\n\nAdditionally, try to keep this to a reasonable length. Much more than a few hundred words may be excessively long.",
+	},
+	{
+		ButtonPos = { x = 179, y = -426 },
+		HighLightBox = { x = 12, y = -433, width = 205, height = 34 },
+		ToolTipDir = "RIGHT",
+		ToolTipText = L"The roleplaying style field is for a brief description of any important information about your writing or story methods that needs to be immediately known.\n\nSometimes this is used to indicate someone who is always, no matter what, in-character, or to indicate an interest in a specific type of roleplay.",
+	},
+	{
+		ButtonPos = { x = 388, y = -426 },
+		HighLightBox = { x = 220, y = -433, width = 206, height = 34 },
+		ToolTipDir = "RIGHT",
+		ToolTipText = L"The character status field allows you to notify others as to whether you might be interested in roleplay at the moment or not.\n\nTypically, setting this to whatever state you're most commonly in, such as \"Out of character\", is sensible.\n\nXRP's minimap button can be used to temporarily toggle your status to the opposite of what is selected here.",
 	},
 }
 
@@ -205,21 +217,15 @@ local EDITOR_BIOGRAPHY = {
 	},
 	{
 		ButtonPos = { x = 388, y = -108 },
-		HighLightBox = { x = 12, y = -115, width = 414, height = 316 },
+		HighLightBox = { x = 12, y = -115, width = 414, height = 273 },
 		ToolTipDir = "RIGHT",
 		ToolTipText = L"The history field is for a brief outline of your character's history.\n\nTypically, it is most useful to fill out only the sort of information which would be readily available, if someone were to seek it out, or any aspects of their history which could be gleaned from observing them.\n\nAs with your description, keeping this short is often the best choice. Much more than a few hundred words may be excessive.",
 	},
 	{
-		ButtonPos = { x = 179, y = -427 },
-		HighLightBox = { x = 12, y = -434, width = 205, height = 32 },
+		ButtonPos = { x = 388, y = -384 },
+		HighLightBox = { x = 12, y = -391, width = 414, height = 80 },
 		ToolTipDir = "RIGHT",
-		ToolTipText = L"The roleplaying style field is for a brief description of any important information about your writing or story methods that needs to be immediately known.\n\nSometimes this is used to indicate someone who is always, no matter what, in-character, or to indicate an interest in a specific type of roleplay.",
-	},
-	{
-		ButtonPos = { x = 388, y = -427 },
-		HighLightBox = { x = 220, y = -434, width = 206, height = 32 },
-		ToolTipDir = "RIGHT",
-		ToolTipText = L"The character status field allows you to notify others as to whether you might be interested in roleplay at the moment or not.\n\nTypically, setting this to whatever state you're most commonly in, such as \"Out of character\", is sensible.\n\nXRP's minimap button can be used to temporarily toggle your status to the opposite of what is selected here.",
+		ToolTipText = L"The out of character, or OOC, field is used for brief out-of-character information.\n\nOther addons may not readily show more than five lines (counting blank lines) or 140 characters (whichever comes first) so keeping this to a minmum is strongly recommended.\n\nIf you add five lines followed by extra text, this may be used to have some brief information readily available to others, while also adding more detailed information after.",
 	},
 }
 
@@ -363,7 +369,7 @@ AddOn.help.viewer = {
 		ButtonPos = { x = 355, y = 1 },
 		HighLightBox = { x = 79, y = -1, width = 285, height = 42 },
 		ToolTipDir = "RIGHT",
-		ToolTipText = L"These lines show, from top to bottom, nicknames, titles, and house/clan/tribe.\n\nIf there is more text than can be shown (an ellipses will be visible at the end), you can mouseover the line to see the full text in a tooltip.",
+		ToolTipText = L"These lines show, from top to bottom, race/class, nicknames, and titles.\n\nIf there is more text than can be shown (an ellipses will be visible at the end), you can mouseover the line to see the full text in a tooltip.",
 	},
 	{
 		ButtonPos = { x = 424, y = -8 },
@@ -402,8 +408,8 @@ AddOn.help.viewer = {
 		ToolTipText = L"The small handle here may be clicked and dragged to resize the viewer window.\n\nTo reset the size of the viewer, right-click on it instead.",
 	},
 	{
-		ButtonPos = { x = 433, y = -154 },
-		HighLightBox = { x = 434, y = -192, width = 41, height = 278 },
+		ButtonPos = { x = 433, y = -290 },
+		HighLightBox = { x = 434, y = -37, width = 41, height = 262 },
 		ToolTipDir = "RIGHT",
 		ToolTipText = L"\"Glances\", or quick information, display in this area. Hover your mouse over them to view their name and description, or click to pin the tooltip open.",
 	},
