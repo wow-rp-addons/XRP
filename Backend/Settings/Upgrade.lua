@@ -291,7 +291,7 @@ AddOn.UpgradeAccountVars = {
 		xrpAccountSaved.settings.chatType = xrpAccountSaved.settings.chat
 		xrpAccountSaved.settings.chat = nil
 	end,
-	[20] = function() -- 2.0.0
+	[21] = function() -- 2.0.0
 		xrpAccountSaved.update = {}
 		xrpAccountSaved.settings.newversion = nil
 		xrpAccountSaved.settings.versionwarning = nil
@@ -347,7 +347,9 @@ AddOn.UpgradeVars = {
 	[8] = function() -- 2.0.0
 		xrpSaved.meta = nil
 		local overrideFields = xrpSaved.overrides.fields
-		overrideFields.logout = xrpSaved.overrides.logout
-		xrpSaved.overrides = overrideFields
+		if overrideFields then
+			overrideFields.logout = xrpSaved.overrides.logout
+			xrpSaved.overrides = overrideFields
+		end
 	end,
 }

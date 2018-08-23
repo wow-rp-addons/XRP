@@ -22,8 +22,8 @@ local L = AddOn.GetText
 
 AddOn.SettingsToggles = {}
 
-local DATA_VERSION = 7
-local DATA_VERSION_ACCOUNT = 20
+local DATA_VERSION = 8
+local DATA_VERSION_ACCOUNT = 21
 
 local function InitializeSavedVariables()
 	if not xrpCache then
@@ -35,6 +35,7 @@ local function InitializeSavedVariables()
 			hidden = {},
 			notes = {},
 			settings = {},
+			update = {},
 			dataVersion = DATA_VERSION_ACCOUNT,
 		}
 		for optionName, setting in pairs(AddOn.DEFAULT_SETTINGS) do
@@ -51,9 +52,7 @@ local function InitializeSavedVariables()
 	if not xrpSaved then
 		xrpSaved = {
 			auto = {},
-			overrides = {
-				fields = {},
-			},
+			overrides = {},
 			profiles = {
 				[DEFAULT] = {
 					fields = {},
