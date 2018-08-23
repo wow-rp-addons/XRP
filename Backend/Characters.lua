@@ -94,6 +94,7 @@ function CharacterMetatable:__index(index)
 			if field == "NA" then
 				local PX = xrpCache[characterID].fields.PX
 				if PX and contents:find(PX, nil, true) then
+					PX = PX:gsub("(%W)","%%%1")
 					local numReplace
 					contents, numReplace = contents:gsub(("^%s "):format(PX), "")
 					if numReplace == 0 then -- Might have a color code...
