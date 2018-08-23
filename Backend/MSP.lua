@@ -107,7 +107,7 @@ local function UpdatedHandler(updatedName, field, contents, version)
 	local name = AddOn.BuildCharacterID(updatedName)
 	if not name or type(field) ~= "string" or not field:find("^%u%u$") or contents and type(contents) ~= "string" or version and type(version) ~= "number" then
 		error("XRP: LibMSP updated callback receieved invalid arguments.")
-	elseif field == "VW" then
+	elseif field == "VW" and updatedName ~= AddOn.characterID then
 		if contents and xrpCache[name] and xrpCache[name].fields.VA and xrpCache[name].fields.VA:match("^XRP/([^;]+)") == xrpAccountSaved.update.xrpVersionUpdate then
 			AddOn.UpdateWoWVersion((";"):split(contents))
 		end
@@ -129,7 +129,7 @@ local function UpdatedHandler(updatedName, field, contents, version)
 	xrpCache[name].fields[field] = contents
 	xrpCache[name].versions[field] = version
 	AddOn.RunEvent("ADDON_XRP_FIELD_RECEIVED", name, field)
-	if field == "VA" and contents then
+	if field == "VA" and contents and updatedName ~= AddOn.characterID then
 		AddOn.CheckVersionUpdate(name, contents:match("^XRP/([^;]+)"))
 	end
 end
