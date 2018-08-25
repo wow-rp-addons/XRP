@@ -137,14 +137,12 @@ Values.GS["3"] = FEMALE
 local MenuValues = setmetatable({}, { __index = Values })
 
 MenuValues.FC = setmetatable({}, { __index = Values.FC })
-MenuValues.FC["0"] = PARENS_TEMPLATE:format(NONE)
 MenuValues.FC["1"] = L.VALUE_FC_1_MENU
 MenuValues.FC["2"] = L.VALUE_FC_2_MENU
 MenuValues.FC["3"] = L.VALUE_FC_3_MENU
 MenuValues.FC["4"] = L.VALUE_FC_4_MENU
 
 MenuValues.FR = setmetatable({}, { __index = Values.FR })
-MenuValues.FR["0"] = PARENS_TEMPLATE:format(NONE)
 MenuValues.FR["1"] = L.VALUE_FR_1_MENU
 MenuValues.FR["2"] = L.VALUE_FR_2_MENU
 MenuValues.FR["3"] = L.VALUE_FR_3_MENU

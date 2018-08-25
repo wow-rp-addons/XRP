@@ -196,10 +196,12 @@ local function FC_Click(self, arg1, arg2, checked)
 	end
 end
 
-local baseMenuList = {}
-for i = 0, 4 do
+local baseMenuList = {
+	{ text = PARENS_TEMPLATE:format(DEFAULT), checked = Checked, func = FC_Click }
+}
+for i = 1, 4 do
 	local s = tostring(i)
-	baseMenuList[i + 1] = { text = MenuValues.FC[s], checked = Checked, arg1 = i ~= 0 and s or nil, func = FC_Click }
+	baseMenuList[i + 1] = { text = MenuValues.FC[s], checked = Checked, arg1 = s, func = FC_Click }
 end
 XRPEditorFC_baseMenuList = baseMenuList
 
