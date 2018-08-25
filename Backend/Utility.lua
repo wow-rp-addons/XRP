@@ -257,8 +257,6 @@ function AddOn_XRP.SetStatus(status)
 	end
 	if Values.FC[status] then
 		AddOn_XRP.SetField("FC", status)
-	elseif status == "0" then
-		AddOn_XRP.SetField("FC", "")
 	else
 		local profileIC = AddOn.IsStatusIC(AddOn_XRP.Profiles.SELECTED.Full.FC)
 		if status == "ic" and profileIC then
@@ -270,7 +268,7 @@ function AddOn_XRP.SetStatus(status)
 		elseif status == "ooc" then
 			AddOn_XRP.SetField("FC", "1")
 		else
-			error("AddOn_XRP.SetStatus(): status: expected number in range 0-4 or string with value \"ic\" or \"ooc\"", 2)
+			error("AddOn_XRP.SetStatus(): status: expected number in range 1-4 or string with value \"ic\" or \"ooc\"", 2)
 		end
 	end
 end
