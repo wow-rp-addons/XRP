@@ -57,7 +57,7 @@ AddOn.RegisterGameEventCallback("PLAYER_LOGIN", function(event)
 		end
 	end
 	for name, data in pairs(xrpCache) do
-		if data.own and not OwnCharacters[name] and name:match("%-([^%-]+)$") == AddOn.characterRealm then
+		if data.own and not OwnCharacters[name] then
 			data.own = nil
 		end
 	end
