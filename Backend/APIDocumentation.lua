@@ -34,8 +34,8 @@ function AddOn_XRP.HasAPIFeature(apiVersion, apiFeatureLevel)
 end
 
 local GUARANEED_FIELDS = {
-	"VP", "VA", "NA", "NH", "NI", "NT", "RA", "CU", "FR", "FC", "RC",-- "CO",
-	"PE", "AH", "AW", "HH", "HB", "MO", "DE", "HI",
+	"VP", "VA", "NA", "NH", "NI", "NT", "RA", "CU", "FR", "FC", "RC", "CO",
+	"PX", "PE", "AH", "AW", "HH", "HB", "MO", "DE", "HI",
 	"GC", "GF", "GR", "GS", "GU",
 	"TT", "VW",
 }
@@ -65,7 +65,7 @@ local XRPCharacterTable = {
 	Fields = {
 		{ Name = "id", Type = "string", Nilable = false, Documentation = { "characterID for the table's subject." } },
 		{ Name = "name", Type = "string", Nilable = false, Documentation = { "Character name (in-game name)." } },
-		{ Name = "realm", Type = "string", Nilable = false, Documentation = { "Character realm. May or may not contain spaces or dashes (subject to final decision later)." } },
+		{ Name = "realm", Type = "string", Nilable = false, Documentation = { "Character realm, containing spaces and dashes." } },
 		{ Name = "inCharacter", Type = "bool", Nilable = false, Documentation = { "true if the table's subject has any in-character status set." } },
 		{ Name = "notes", Type = "string", Nilable = true, Documentation = { "Can be set as well as read." } },
 		{ Name = "bookmark", Type = "number", Nilable = true, Documentation = { "Can be set via boolean assignment.", "Returns time() timestamp of when the bookmark was added, or nil." } },
@@ -283,7 +283,7 @@ local XRPAPI = {
 			Type = "Structure",
 			Documentation = { "Unlike byName, this does *NOT* make automatic requests, and should only be used where cached data is explicitly desired." },
 			Fields = {
-				{ Name = "<characterName>", Type = "XRPCharacterTable", Nilable = true, Documentation = { "May be nil if the name is invalid.", "Name alone will only work for same home realm characters, use characterID (Name-RealmName) for crossrealm." } },
+				{ Name = "<characterName>", Type = "XRPCharacterTable", Nilable = true, Documentation = { "May be nil if the name is invalid." } },
 				{ Name = "<characterID>", Type = "XRPCharacterTable", Nilable = true, Documentation = { "May be nil if the characterID is invalid." } },
 			},
 		},
@@ -315,8 +315,8 @@ local XRPAPI = {
 			Type = "Structure",
 			Documentation = { "Peek tables are always contained in an array-type table. XRP permits unlimited indexes in this array, but other addons typically limit this to five." },
 			Fields = {
-				{ Name = "IC", Type = "string", Nilable = false, Documentation = { "The texture path to the icon for the peek.", "Uses valid placeholder if no data for this value was recieved." } },
-				{ Name = "NA", Type = "string", Nilable = false, Documentation = { "The name/title of the peek.", "Uses valid placeholder if no data for this value was recieved." } },
+				{ Name = "IC", Type = "string", Nilable = true, Documentation = { "The texture path to the icon for the peek." } },
+				{ Name = "NA", Type = "string", Nilable = true, Documentation = { "The name/title of the peek." } },
 				{ Name = "DE", Type = "string", Nilable = true, Documentation = { "The text description of the peek." } },
 			},
 		},
