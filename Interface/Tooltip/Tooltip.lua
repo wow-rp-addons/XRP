@@ -267,7 +267,7 @@ local SELECTION_COLORS = setmetatable({
 	["ffff00"] = RGBTableToColorCode(FACTION_BAR_COLORS[4]), -- Yellow
 }, {
 	__index = function(self, hex)
-		if hex ~= "ffff8b" then
+		if hex ~= "ffff80" then
 			return "|cffffffff"
 		end
 		if UnitIsPVP("player") then
@@ -350,12 +350,12 @@ local function SetUnit(unit)
 			local guildName, guildRank, guildIndex = GetGuildInfo(unit)
 			currentUnit.guild = guildName and (AddOn.Settings.tooltipShowGuildRank and (AddOn.Settings.tooltipShowGuildIndex and L.GUILD_RANK_INDEX or L.GUILD_RANK) or L.GUILD):format(AddOn.Settings.tooltipShowGuildRank and guildRank or guildName, AddOn.Settings.tooltipShowGuildIndex and guildIndex + 1 or guildName, guildName)
 
-			local realm = character.id:match("%-([^%-]+)$")
+			local name = UnitPVPName(unit) or character.name
+			local realm = character.realm
 			if realm == AddOn.characterRealm then
 				realm = nil
 			end
-			local name = UnitPVPName(unit) or character.name
-			currentUnit.titleRealm = (colorblind and L.ASIDE or "%s"):format(realm and character.fullDisplayName or name, colorblind and Values.GF[currentUnit.faction])
+			currentUnit.titleRealm = (colorblind and L.ASIDE or "%s"):format(realm and L.NAME_REALM:format(name, realm) or name, colorblind and Values.GF[currentUnit.faction])
 
 			local GS = colorblind and character.GS
 			currentUnit.reaction = colorblind and GetText(REACTION:format(UnitReaction("player", unit)), tonumber(GS))
@@ -363,7 +363,7 @@ local function SetUnit(unit)
 			local level = UnitLevel(unit)
 			local effectiveLevel = UnitEffectiveLevel(unit)
 			level = effectiveLevel == level and (level < 1 and L.LETHAL_LEVEL or tostring(level)) or effectiveLevel < 1 and tostring(level) or EFFECTIVE_LEVEL_FORMAT:format(tostring(effectiveLevel), tostring(level))
-			currentUnit.info = (TOOLTIP_UNIT_LEVEL_RACE_CLASS_TYPE):format(level, "%s", ("|c%s%%s|r"):format(RAID_CLASS_COLORS[GC] and RAID_CLASS_COLORS[GC].colorStr or "ffffffff"), colorblind and Values.GC[GS][GC] or PLAYER)
+			currentUnit.info = (TOOLTIP_UNIT_LEVEL_RACE_CLASS_TYPE):format(level, "%s", RAID_CLASS_COLORS[GC] and RAID_CLASS_COLORS[GC]:WrapTextInColorCode("%s") or "%s", colorblind and Values.GC[GS][GC] or PLAYER)
 
 			local location = connected and not UnitIsVisible(unit) and GameTooltipTextLeft3:GetText()
 			currentUnit.location = location and LOCATION:format(location)
@@ -408,7 +408,7 @@ local function SetUnit(unit)
 		currentUnit.faction = UnitFactionGroup(unit) or isOwnPet and playerFaction or character.GF or "Neutral"
 
 		local name = UnitName(unit)
-		local r, g, b = UnitSelectionColor(unit)
+		local r, g, b, a = UnitSelectionColor(unit)
 		local color = SELECTION_COLORS[("%02x%02x%02x"):format(math.ceil(math.floor((r * 10) + 0.5) * 25.5), math.ceil(math.floor((g * 10) + 0.5) * 25.5), math.ceil(math.floor((b * 10) + 0.5) * 25.5))]
 		currentUnit.nameFormat = ("%s%s|r"):format(color, name)
 
@@ -430,7 +430,7 @@ local function SetUnit(unit)
 		end
 
 		local realm = owner:match("%-([^%-]+)$")
-		currentUnit.titleRealm = (colorblind and L.ASIDE or "%s"):format(realm and character.fullDisplayName or petLabel, colorblind and Values.GF[currentUnit.faction])
+		currentUnit.titleRealm = (colorblind and L.ASIDE or "%s"):format(realm and L.NAME_REALM:format(petLabel, character.realm) or petLabel, colorblind and Values.GF[currentUnit.faction])
 
 		currentUnit.reaction = colorblind and GetText(REACTION:format(UnitReaction("player", unit)), UnitSex(unit))
 
