@@ -22,7 +22,7 @@ local L = AddOn.GetText
 
 local Names, Values = AddOn_XRP.Strings.Names, AddOn_XRP.Strings.Values
 
-local current, status, failed, lastUpdate
+local current, status, lastUpdate
 
 -- This will request fields in the order listed.
 local DISPLAY = {
@@ -71,14 +71,14 @@ local function Load(character)
 		local contents = character[field]
 		SetField(field, contents, not contents and (field == "NA" and character.name or field == "RA" and character.GR or field == "RC" and character.GC), field == "NA" and character.PX or not contents and field == "RC" and character.GS)
 	end
-	XRPViewer.XC:SetText("")
-	failed = nil
-	status = nil
 	if character == current then
 		if character.offline ~= current.offline then
 			current = character
 		end
 		return false
+	else
+		XRPViewer.XC:SetText("")
+		status = nil
 	end
 	current = character
 	lastUpdate = 0
@@ -108,11 +108,9 @@ end
 
 local function RECEIVE(event, name)
 	if current and current.id == name and not current.offline then
+		Load(current)
 		if name == AddOn.characterID then
-			Load(current)
 			return
-		elseif failed then
-			Load(current)
 		end
 		if status ~= "received" then
 			if lastUpdate < GetTime() - 10 then
@@ -140,7 +138,6 @@ end
 
 local function FAIL(event, name, reason)
 	if current and current.id == name then
-		failed = true
 		if not status then
 			if reason == "offline" then
 				XRPViewer.XC:SetText(L"Character is not online.")
