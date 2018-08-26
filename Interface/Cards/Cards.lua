@@ -168,8 +168,6 @@ function XRPCard_Mixin:OnClick(button)
 			else
 				XRPViewer:View(self.character.id)
 			end
-			self.character = nil
-			self:Reload()
 		else
 			self.lastClick = now
 		end
