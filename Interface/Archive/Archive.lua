@@ -59,10 +59,10 @@ function XRPArchiveList_update(self, force)
 				if PX then
 					NA = ("%s %s"):format(PX, NA)
 				end
-				local name, realm = character.name, character.realm
+				local name = character.name
 				button.NA:SetText(AddOn_XRP.RemoveTextFormats(NA) or name)
 				button.Name:SetText(name)
-				button.Realm:SetText(realm)
+				button.Realm:SetText(character.realm)
 				local GR = character.GR
 				local RA = AddOn_XRP.RemoveTextFormats(character.RA) or Values.GR[GR]
 				if RA then
@@ -201,7 +201,7 @@ local function Menu_Click(self, arg1, arg2, checked)
 		XRPExport:Export(character.name, character.exportPlainText)
 	elseif arg1 == "XRP_CACHE_DROP" then
 		local name, realm = UIDROPDOWNMENU_INIT_MENU.character.id:match("^([^%-]+)%-([^%-]+)")
-		StaticPopup_Show("XRP_CACHE_SINGLE", UIDROPDOWNMENU_INIT_MENU.character.fullDisplayName, nil, UIDROPDOWNMENU_INIT_MENU.character)
+		StaticPopup_Show("XRP_CACHE_SINGLE", UIDROPDOWNMENU_INIT_MENU.character.idDisplay, nil, UIDROPDOWNMENU_INIT_MENU.character)
 	end
 	if UIDROPDOWNMENU_MENU_LEVEL > 1 then
 		CloseDropDownMenus()

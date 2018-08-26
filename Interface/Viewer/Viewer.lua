@@ -216,9 +216,9 @@ local function Menu_Click(self, arg1, arg2, checked)
 		local approxTime = ("%02d:%02d"):format(GetGameTime())
 		StaticPopup_Show("XRP_REPORT", nil, nil, L"Logged addon message prefix: MSP; Player name: %s; Realm name: %s; Approximate game time: %s":format(current.name, current.realm, approxTime))
 	elseif arg1 == "XRP_REFRESH_FORCE" then
-		StaticPopup_Show("XRP_FORCE_REFRESH", current.fullDisplayName, nil, current)
+		StaticPopup_Show("XRP_FORCE_REFRESH", current.idDisplay, nil, current)
 	elseif arg1 == "XRP_CACHE_DROP" then
-		StaticPopup_Show("XRP_CACHE_SINGLE", current.fullDisplayName, nil, current)
+		StaticPopup_Show("XRP_CACHE_SINGLE", current.idDisplay, nil, current)
 	end
 	if arg2 then -- Second-level menu.
 		CloseDropDownMenus()

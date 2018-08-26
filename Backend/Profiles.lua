@@ -433,7 +433,7 @@ function ProfileMetatable:__index(index)
 	elseif index == "parent" then
 		return xrpSaved.profiles[name].parent
 	elseif index == "exportPlainText" then
-		return AddOn.ExportText(("%s - %s"):format(AddOn_XRP.Characters.byUnit.player.fullDisplayName, name), self.Full)
+		return AddOn.ExportText(("%s - %s"):format(AddOn_XRP.Characters.byUnit.player.idDisplay, name), self.Full)
 	end
 	error("AddOn_XRP.Profiles: ProfileTable: invalid index " .. index, 2)
 end

@@ -34,58 +34,6 @@ function AddOn.BuildCharacterID(name, realm)
 	return AddOn_Chomp.NameMergedRealm(name, realm)
 end
 
--- Realms just needing title case spacing are handled via gsub. These are more
--- complex, such as lower case words or dashes.
-local SPECIAL_REALMS = {
-	-- English
-	["AltarofStorms"] = "Altar of Storms",
-	["AzjolNerub"] = "Azjol-Nerub",
-	["ChamberofAspects"] = "Chamber of Aspects",
-	["SistersofElune"] = "Sisters of Elune",
-	-- French
-	["Arakarahm"] = "Arak-arahm",
-	["Chantséternels"] = "Chants éternels",
-	["ConfrérieduThorium"] = "Confrérie du Thorium",
-	["ConseildesOmbres"] = "Conseil des Ombres",
-	["CultedelaRivenoire"] = "Culte de la Rive noire",
-	["LaCroisadeécarlate"] = "La Croisade écarlate",
-	["MarécagedeZangar"] = "Marécage de Zangar",
-	["Templenoir"] = "Temple noir",
-	-- German
-	["DerabyssischeRat"] = "Der abyssische Rat",
-	["DerRatvonDalaran"] = "Der Rat von Dalaran",
-	["DieewigeWacht"] = "Die ewige Wacht",
-	["FestungderStürme"] = "Festung der Stürme",
-	["KultderVerdammten"] = "Kult der Verdammten",
-	["ZirkeldesCenarius"] = "Zirkel des Cenarius",
-	-- Russian
-	["Борейскаятундра"] = "Борейская тундра",
-	["ВечнаяПесня"] = "Вечная Песня",
-	["Пиратскаябухта"] = "Пиратская бухта ",
-	["ТкачСмерти"] = "Ткач Смерти",
-	["Корольлич"] = "Король-лич",
-	["Ревущийфьорд"] = "Ревущий фьорд",
-	["Свежевательдуш"] = "Свежеватель душ",
-	["СтражСмерти"] = "Страж Смерти",
-	["ЧерныйШрам"] = "Черный Шрам",
-	["Ясеневыйлес"] = "Ясеневый лес",
-	-- Italian
-	["Pozzodell'Eternità"] = "Pozzo dell'Eternità",
-	-- Korean
-	["불타는군단"] = "불타는 군단",
-}
-
-function AddOn.SplitCharacterID(characterID)
-	if not characterID then
-		return UNKNOWN, UNKNOWN
-	elseif type(characterID) ~= "string" then
-		error("XRP: AddOn.SplitCharacterID(): characterID: expected string, got " .. type(characterID), 2)
-	end
-	local name, realm = characterID:match("^([^%-]+)%-(.+)$")
-	realm = SPECIAL_REALMS[realm] or (realm:gsub("(%l)([%u%d])", "%1 %2"))
-	return name, realm
-end
-
 function AddOn.SanitizeText(text)
 	if not text or text == "" then
 		return nil
@@ -276,6 +224,3 @@ end
 function AddOn_XRP.ToggleStatus()
 	return AddOn_XRP.SetStatus(AddOn_XRP.Characters.byUnit.player.inCharacter and "ooc" or "ic")
 end
-
-AddOn.characterID = AddOn_Chomp.NameMergedRealm(UnitFullName("player"))
-AddOn.characterName, AddOn.characterRealm = AddOn.characterID:match("^([^%-]+)%-([^%-]+)$")

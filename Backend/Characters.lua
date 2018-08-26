@@ -57,6 +57,55 @@ local MERCENARY = {
 	Horde = "Alliance",
 }
 
+-- Realms just needing title case spacing are handled via gsub. These are more
+-- complex, such as lower case words or dashes.
+local SPECIAL_REALMS = {
+	-- English
+	["AltarofStorms"] = "Altar of Storms",
+	["AzjolNerub"] = "Azjol-Nerub",
+	["ChamberofAspects"] = "Chamber of Aspects",
+	["SistersofElune"] = "Sisters of Elune",
+	-- French
+	["Arakarahm"] = "Arak-arahm",
+	["Chantséternels"] = "Chants éternels",
+	["ConfrérieduThorium"] = "Confrérie du Thorium",
+	["ConseildesOmbres"] = "Conseil des Ombres",
+	["CultedelaRivenoire"] = "Culte de la Rive noire",
+	["LaCroisadeécarlate"] = "La Croisade écarlate",
+	["MarécagedeZangar"] = "Marécage de Zangar",
+	["Templenoir"] = "Temple noir",
+	-- German
+	["DerabyssischeRat"] = "Der abyssische Rat",
+	["DerRatvonDalaran"] = "Der Rat von Dalaran",
+	["DieewigeWacht"] = "Die ewige Wacht",
+	["FestungderStürme"] = "Festung der Stürme",
+	["KultderVerdammten"] = "Kult der Verdammten",
+	["ZirkeldesCenarius"] = "Zirkel des Cenarius",
+	-- Russian
+	["Борейскаятундра"] = "Борейская тундра",
+	["ВечнаяПесня"] = "Вечная Песня",
+	["Пиратскаябухта"] = "Пиратская бухта ",
+	["ТкачСмерти"] = "Ткач Смерти",
+	["Корольлич"] = "Король-лич",
+	["Ревущийфьорд"] = "Ревущий фьорд",
+	["Свежевательдуш"] = "Свежеватель душ",
+	["СтражСмерти"] = "Страж Смерти",
+	["ЧерныйШрам"] = "Черный Шрам",
+	["Ясеневыйлес"] = "Ясеневый лес",
+	-- Italian
+	["Pozzodell'Eternità"] = "Pozzo dell'Eternità",
+	-- Korean
+	["불타는군단"] = "불타는 군단",
+}
+
+local function PrettyRealmName(realm)
+	return SPECIAL_REALMS[realm] or (realm:gsub("(%l)([%u%d])", "%1 %2"))
+end
+
+local function SplitCharacterID(characterID)
+	return characterID:match("^([^%-]+)%-(.+)$")
+end
+
 local unitCache = {}
 AddOn.unitCache = unitCache
 
@@ -112,14 +161,14 @@ function CharacterMetatable:__index(index)
 		end
 		return nil
 	elseif index == "name" then
-		local name, realm = AddOn.SplitCharacterID(characterID)
+		local name, realm = SplitCharacterID(characterID)
 		return name
 	elseif index == "realm" then
-		local name, realm = AddOn.SplitCharacterID(characterID)
-		return realm
-	elseif index == "fullDisplayName" then
-		local name, realm = AddOn.SplitCharacterID(characterID)
-		return L.NAME_REALM:format(name, realm)
+		local name, realm = SplitCharacterID(characterID)
+		return PrettyRealmName(realm)
+	elseif index == "idDisplay" then
+		local name, realm = SplitCharacterID(characterID)
+		return L.NAME_REALM:format(name, PrettyRealmName(realm))
 	elseif CharacterMethods[index] then
 		return CharacterMethods[index]
 	elseif index == "inCharacter" then
@@ -142,7 +191,7 @@ function CharacterMetatable:__index(index)
 		if not xrpCache[characterID] then
 			return ""
 		end
-		return AddOn.ExportText(self.fullDisplayName, xrpCache[characterID].fields)
+		return AddOn.ExportText(self.idDisplay, xrpCache[characterID].fields)
 	end
 	error("AddOn_XRP.Characters: CharacterTable: invalid index " .. index, 2)
 end
@@ -378,3 +427,7 @@ function AddOn_XRP.SearchCharacters(query)
 	results.totalCount = totalCount
 	return results
 end
+
+AddOn.characterID = AddOn.BuildCharacterID(UnitFullName("player"))
+AddOn.characterName = SplitCharacterID(AddOn.characterID)
+AddOn.characterRealm = PrettyRealmName(select(2, SplitCharacterID(AddOn.characterID)))
