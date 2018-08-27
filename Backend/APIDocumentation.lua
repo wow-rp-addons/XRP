@@ -20,7 +20,7 @@
 local FOLDER_NAME, AddOn = ...
 
 local API = 2
-local FEATURE = 1
+local FEATURE = 2
 
 function AddOn_XRP.GetAPIVersion()
 	return API, FEATURE
