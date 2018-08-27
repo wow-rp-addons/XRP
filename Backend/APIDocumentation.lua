@@ -66,6 +66,7 @@ local XRPCharacterTable = {
 		{ Name = "id", Type = "string", Nilable = false, Documentation = { "characterID for the table's subject." } },
 		{ Name = "name", Type = "string", Nilable = false, Documentation = { "Character name (in-game name)." } },
 		{ Name = "realm", Type = "string", Nilable = false, Documentation = { "Character realm, containing spaces and dashes." } },
+		{ Name = "hasProfile", Type = "bool", Nilable = false, Documentation = { "true if the table's subject has an RP profile.", "Automatically queries tooltip to confirm." } },
 		{ Name = "inCharacter", Type = "bool", Nilable = false, Documentation = { "true if the table's subject has any in-character status set." } },
 		{ Name = "notes", Type = "string", Nilable = true, Documentation = { "Can be set as well as read." } },
 		{ Name = "bookmark", Type = "number", Nilable = true, Documentation = { "Can be set via boolean assignment.", "Returns time() timestamp of when the bookmark was added, or nil." } },

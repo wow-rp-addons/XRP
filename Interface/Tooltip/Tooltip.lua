@@ -159,7 +159,7 @@ local function RenderTooltip()
 				RenderLine(false, 1, L.HIDDEN, nil, 0.5, 0.5, 0.5)
 				XRPTooltip:Show()
 				return
-			elseif (not showProfile or not character.VA) then
+			elseif (not showProfile or not character.hasProfile) then
 				XRPTooltip:Hide()
 				return
 			end

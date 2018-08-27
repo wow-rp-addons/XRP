@@ -341,7 +341,7 @@ function XRPViewerMenu_PreClick(self, button, down)
 	else
 		self.baseMenuList[1].disabled = nil
 	end
-	local noProfile = not AddOn_XRP.Characters.byNameOffline[name].VA
+	local noProfile = not AddOn_XRP.Characters.byNameOffline[name].hasProfile
 	if isOwn or noProfile then
 		self.baseMenuList[3].disabled = true
 		self.baseMenuList[4].disabled = true

@@ -90,7 +90,7 @@ function XRPCard_Mixin:SetUnit(unit)
 end
 
 function XRPCard_Mixin:Reload()
-	if not self.character or not self.character.VA then
+	if not self.character or not self.character.hasProfile then
 		if not self:IsInvisibleOrFading() then
 			self.FadeOut:Play()
 		end

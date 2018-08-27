@@ -173,6 +173,9 @@ function CharacterMetatable:__index(index)
 		return CharacterMethods[index]
 	elseif index == "inCharacter" then
 		return AddOn.IsStatusIC(self.FC)
+	elseif index == "hasProfile" then
+		AddOn.QueueRequest(characterID, "TT")
+		return xrpCache[characterID] ~= nil
 	elseif index == "offline" then
 		return OfflineMap[self] or false
 	elseif index == "canRefresh" then
