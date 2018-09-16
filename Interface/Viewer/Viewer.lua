@@ -243,7 +243,7 @@ XRPViewerMenu_baseMenuList = {
 	MENU_BOOKMARK,
 	MENU_HIDE,
 	MENU_EXPORT,
-	MENU_REPORT,
+	--MENU_REPORT,
 	{ text = ADVANCED_LABEL, notCheckable = true, hasArrow = true, menuList = Advanced_menuList, },
 	{ text = CANCEL, notCheckable = true, func = AddOn.DoNothing, },
 }
