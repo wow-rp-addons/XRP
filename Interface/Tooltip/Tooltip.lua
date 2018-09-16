@@ -496,6 +496,7 @@ local function GameTooltip_AddDoubleLine_Hook(self, ...)
 end
 
 local function GameTooltip_OnTooltipCleared_Hook(self)
+	if not enabled then return end
 	active = nil
 	for i, line in ipairs(maxLinesAdjusted) do
 		line:SetMaxLines(0)
@@ -551,7 +552,9 @@ end
 
 AddOn.SettingsToggles.tooltipReplace = function(setting)
 	if not enabled then return end
-	GameTooltip:Hide()
+	if Tooltip then
+		GameTooltip:Hide()
+	end
 	if setting then
 		if replace == nil then
 			hooksecurefunc(GameTooltip, "AddLine", GameTooltip_AddLine_Hook)

@@ -221,17 +221,29 @@ local function Menu_Click(self, arg1, arg2, checked)
 		CloseDropDownMenus()
 	end
 end
+
+local MENU_ADV_FORCE_REFRESH = { text = L.FORCE_REFRESH .. CONTINUED, arg1 = "XRP_REFRESH_FORCE", arg2 = true, notCheckable = true, func = Menu_Click, }
+local MENU_ADV_DROP_CACHE = { text = L.DROP_CACHE .. CONTINUED, arg1 = "XRP_CACHE_DROP", arg2 = true, notCheckable = true, func = Menu_Click, }
+
 local Advanced_menuList = {
-	{ text = L.FORCE_REFRESH .. CONTINUED, arg1 = "XRP_REFRESH_FORCE", arg2 = true, notCheckable = true, func = Menu_Click, },
-	{ text = L.DROP_CACHE .. CONTINUED, arg1 = "XRP_CACHE_DROP", arg2 = true, notCheckable = true, func = Menu_Click, },
+	MENU_ADV_FORCE_REFRESH,
+	MENU_ADV_DROP_CACHE,
 }
+
+local MENU_REFRESH = { text = REFRESH, arg1 = "XRP_REFRESH", notCheckable = true, func = Menu_Click, }
+local MENU_FRIEND = { text = ADD_FRIEND, arg1 = "XRP_FRIEND", notCheckable = true, func = Menu_Click, }
+local MENU_BOOKMARK = { text = L.BOOKMARK, arg1 = "XRP_BOOKMARK", isNotRadio = true, checked = Menu_Checked, func = Menu_Click, }
+local MENU_HIDE = { text = L.HIDE_PROFILE, arg1 = "XRP_HIDE", isNotRadio = true, checked = Menu_Checked, func = Menu_Click, }
+local MENU_EXPORT = { text = L.EXPORT, arg1 = "XRP_EXPORT", notCheckable = true, func = Menu_Click, }
+local MENU_REPORT = { text=  L.REPORT_PROFILE .. CONTINUED, arg1 = "XRP_REPORT", notCheckable = true, func = Menu_Click, }
+
 XRPViewerMenu_baseMenuList = {
-	{ text = REFRESH, arg1 = "XRP_REFRESH", notCheckable = true, func = Menu_Click, },
-	{ text = ADD_FRIEND, arg1 = "XRP_FRIEND", notCheckable = true, func = Menu_Click, },
-	{ text = L.BOOKMARK, arg1 = "XRP_BOOKMARK", isNotRadio = true, checked = Menu_Checked, func = Menu_Click, },
-	{ text = L.HIDE_PROFILE, arg1 = "XRP_HIDE", isNotRadio = true, checked = Menu_Checked, func = Menu_Click, },
-	{ text = L.EXPORT, arg1 = "XRP_EXPORT", notCheckable = true, func = Menu_Click, },
-	{ text=  L.REPORT_PROFILE .. CONTINUED, arg1 = "XRP_REPORT", notCheckable = true, func = Menu_Click, },
+	MENU_REFRESH,
+	MENU_FRIEND,
+	MENU_BOOKMARK,
+	MENU_HIDE,
+	MENU_EXPORT,
+	--MENU_REPORT,
 	{ text = ADVANCED_LABEL, notCheckable = true, hasArrow = true, menuList = Advanced_menuList, },
 	{ text = CANCEL, notCheckable = true, func = AddOn.DoNothing, },
 }
@@ -322,7 +334,7 @@ function XRPViewerMenu_PreClick(self, button, down)
 	local name, isOwn = current.id, current.own
 	local GF = AddOn_XRP.Characters.byNameOffline[name].GF
 	if GF and GF ~= UnitFactionGroup("player") then
-		self.baseMenuList[2].disabled = true
+		MENU_FRIEND.disabled = true
 	else
 		local name = Ambiguate(name, "none")
 		local isFriend = isOwn
@@ -334,40 +346,40 @@ function XRPViewerMenu_PreClick(self, button, down)
 				end
 			end
 		end
-		self.baseMenuList[2].disabled = isFriend
+		MENU_FRIEND.disabled = isFriend
 	end
 	if not current.canRefresh then
-		self.baseMenuList[1].disabled = true
+		MENU_REFRESH.disabled = true
 	else
-		self.baseMenuList[1].disabled = nil
+		MENU_REFRESH.disabled = nil
 	end
 	local noProfile = not AddOn_XRP.Characters.byNameOffline[name].hasProfile
 	if isOwn or noProfile then
-		self.baseMenuList[3].disabled = true
-		self.baseMenuList[4].disabled = true
+		MENU_BOOKMARK.disabled = true
+		MENU_HIDE.disabled = true
 		if name == AddOn.characterID or noProfile then
-			self.baseMenuList[7].menuList[1].disabled = true
-			self.baseMenuList[7].menuList[2].disabled = true
+			MENU_ADV_FORCE_REFRESH.disabled = true
+			MENU_ADV_DROP_CACHE.disabled = true
 		else
-			self.baseMenuList[7].menuList[1].disabled = nil
-			self.baseMenuList[7].menuList[2].disabled = nil
+			MENU_ADV_FORCE_REFRESH.disabled = nil
+			MENU_ADV_DROP_CACHE.disabled = nil
 		end
-		self.baseMenuList[6].disabled = true
+		MENU_REPORT.disabled = true
 	else
-		self.baseMenuList[3].disabled = nil
-		self.baseMenuList[4].disabled = nil
+		MENU_BOOKMARK.disabled = nil
+		MENU_HIDE.disabled = nil
 		if current.GU and AddOn_Chomp.CheckReportGUID("MSP", current.GU) then
-			self.baseMenuList[6].disabled = nil
+			MENU_REPORT.disabled = nil
 		else
-			self.baseMenuList[6].disabled = true
+			MENU_REPORT.disabled = true
 		end
-		self.baseMenuList[7].menuList[1].disabled = nil
-		self.baseMenuList[7].menuList[2].disabled = nil
+		MENU_ADV_FORCE_REFRESH.disabled = nil
+		MENU_ADV_DROP_CACHE.disabled = nil
 	end
 	if noProfile then
-		self.baseMenuList[5].disabled = true
+		MENU_EXPORT.disabled = true
 	else
-		self.baseMenuList[5].disabled = nil
+		MENU_EXPORT.disabled = nil
 	end
 end
 
