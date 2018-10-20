@@ -200,6 +200,8 @@ local function IsInUse(name, field)
 	return false
 end
 
+local Profiles = setmetatable({}, AddOn.WeakValueMetatable)
+
 -- TODO: more error checking when indexing ProfileNameMap?
 local ProfileNameMap = setmetatable({}, AddOn.WeakKeyMetatable)
 
@@ -210,10 +212,9 @@ function ProfileMethods:Delete()
 	if IsInUse(name) then
 		error("AddOn_XRP.Profiles: ProfileTable:Delete(): in-use profile cannot be deleted: " .. name, 2)
 	end
-	local profiles = xrpSaved.profiles
-	for otherName, profile in pairs(profiles) do
+	for otherName, profile in pairs(xrpSaved.profiles) do
 		if profile.parent == name then
-			profile.parent = profiles[name].parent
+			profile.parent = xrpSaved.profiles[name].parent
 		end
 	end
 	for form, autoProfileName in pairs(xrpSaved.auto) do
@@ -221,7 +222,8 @@ function ProfileMethods:Delete()
 			AddOn.auto[form] = nil
 		end
 	end
-	profiles[name] = nil
+	Profiles[name] = nil
+	xrpSaved.profiles[name] = nil
 end
 
 function ProfileMethods:Rename(name)
@@ -242,6 +244,7 @@ function ProfileMethods:Rename(name)
 	if xrpSaved.selected == oldName then
 		xrpSaved.selected = name
 	end
+	Profiles[name] = self
 	ProfileNameMap[self] = name
 	for key, value in pairs(self) do
 		if ProfileNameMap[value] then
@@ -253,6 +256,7 @@ function ProfileMethods:Rename(name)
 			xrpSaved.auto[form] = name
 		end
 	end
+	Profiles[oldName] = nil
 	xrpSaved.profiles[oldName] = nil
 end
 
@@ -461,8 +465,6 @@ function ProfileMetatable:__newindex(index, value)
 end
 
 ProfileMetatable.__metatable = false
-
-local Profiles = setmetatable({}, AddOn.WeakValueMetatable)
 
 local ProfileAPIMetatable = {}
 
