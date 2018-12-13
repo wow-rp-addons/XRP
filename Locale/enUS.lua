@@ -229,6 +229,8 @@ WARNING = "Warning"
 FORM_SET = "Form/set"
 PROFILE_FOR_FORM = "Profile for selected form/set"
 CLEAR = "Clear"
+MOVEUP = "Move Up"
+MOVEDOWN = "Move Down"
 
 -- ui/editor.xml
 AUTOMATION = "Automation"

@@ -190,6 +190,34 @@
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Button>
+			<Button parentKey="Up" inherits="UIPanelCloseButtonNoScripts" mixin="XRPEditorGlancesTemplates_Mixin">
+				<HitRectInsets left="5" right="5" top="5" bottom="5"/>
+				<KeyValues>
+					<KeyValue key="tooltipKey" value="MOVEUP"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Clear" relativePoint="BOTTOMLEFT" y="5"/>
+				</Anchors>
+				<Scripts>
+					<OnClick method="PeekUpOnClick"/>
+					<OnEnter function="XRPTemplates_TooltipText"/>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Button>
+			<Button parentKey="Down" inherits="UIPanelCloseButtonNoScripts" mixin="XRPEditorGlancesTemplates_Mixin">
+				<HitRectInsets left="5" right="5" top="5" bottom="5"/>
+				<KeyValues>
+					<KeyValue key="tooltipKey" value="MOVEDOWN"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Up" relativePoint="BOTTOMLEFT"  y="10"/>
+				</Anchors>
+				<Scripts>
+					<OnClick method="PeekDownOnClick"/>
+					<OnEnter function="XRPTemplates_TooltipText"/>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Button>
 			<EditBox parentKey="NA" autoFocus="false" inherits="InputBoxTemplate" mixin="XRPEditorPeekText_Mixin" letters="150">
 				<Size y="20"/>
 				<KeyValues>
@@ -222,7 +250,8 @@
 				<Size y="80"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.NA" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
-					<Anchor point="BOTTOMRIGHT" x="-13"/>
+					<Anchor point="BOTTOM"/>
+					<Anchor point="RIGHT" relativeKey="$parent.NA" x="-5"/>
 				</Anchors>
 				<Scripts>
 					<OnMouseDown function="XRPTemplatesScrollFrame_OnMouseDown"/>

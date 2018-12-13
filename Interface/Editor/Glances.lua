@@ -29,6 +29,8 @@ function XRPEditorPeek_Mixin:SetPeek(peek)
 		self.NA:SetText("")
 		self.DE.EditBox:SetText("")
 		self.Clear:SetEnabled(false)
+		self.Up:SetEnabled(false)
+		self.Down:SetEnabled(false)
 	else
 		self.NA:ClearFocus()
 		self.DE.EditBox:ClearFocus()
@@ -39,8 +41,12 @@ function XRPEditorPeek_Mixin:SetPeek(peek)
 		self.DE.EditBox:SetCursorPosition(0)
 		if self:GetParent().inherited then
 			self.Clear:SetEnabled(false)
+			self.Up:SetEnabled(false)
+			self.Down:SetEnabled(false)
 		else
 			self.Clear:SetEnabled(true)
+			self.Up:SetEnabled(true)
+			self.Down:SetEnabled(true)
 		end
 	end
 	self.peek = peek or {}
@@ -161,8 +167,12 @@ function XRPEditorGlances_Mixin:UpdatePeeks()
 			end
 			self.contents[#self.contents + 1] = peek.peek
 			peek.Clear:SetEnabled(true)
+			peek.Up:SetEnabled(true)
+			peek.Down:SetEnabled(true)
 		else
 			peek.Clear:SetEnabled(false)
+			peek.Up:SetEnabled(false)
+			peek.Down:SetEnabled(false)
 		end
 	end
 	if self.contents and not next(self.contents) then
@@ -306,6 +316,28 @@ function XRPEditorGlancesTemplates_Mixin:PeekClearOnClick(button, down)
 	local peek = self:GetParent()
 	peek:SetPeek(nil)
 	peek:GetParent():UpdatePeeks()
+end
+
+function XRPEditorGlancesTemplates_Mixin:PeekUpOnClick(button, down)
+	local peekFrame = self:GetParent()
+	local PE, id = peekFrame:GetParent(), peekFrame:GetID()
+	local swapToFrame = PE.peeks[((id + 3) % 5) + 1]
+	local peek = peekFrame.peek
+	local newPeek = swapToFrame.peek
+	swapToFrame:SetPeek(peek)
+	peekFrame:SetPeek(newPeek)
+	PE:UpdatePeeks()
+end
+
+function XRPEditorGlancesTemplates_Mixin:PeekDownOnClick(button, down)
+	local peekFrame = self:GetParent()
+	local PE, id = peekFrame:GetParent(), peekFrame:GetID()
+	local swapToFrame = PE.peeks[(id % 5) + 1]
+	local peek = peekFrame.peek
+	local newPeek = swapToFrame.peek
+	swapToFrame:SetPeek(peek)
+	peekFrame:SetPeek(newPeek)
+	PE:UpdatePeeks()
 end
 
 function XRPEditorGlancesTemplates_Mixin:PopupIconOnClick(button, down)
