@@ -1,8 +1,8 @@
-## Interface: 80000
-## X-Interface: 80000
-## X-Interface-Required: 80000
-## X-WoW-Version: 8.0.1
-## X-WoW-Build: 27404
+## Interface: 80100
+## X-Interface: 80100
+## X-Interface-Required: 80100
+## X-WoW-Version: 8.1.0
+## X-WoW-Build: 29482
 ## Title: XRP Roleplay Profiles
 ## Version: 2.0.0-dev
 ## Author: Justin Snelgrove
