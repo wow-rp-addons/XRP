@@ -49,7 +49,7 @@ AddOn.RegisterGameEventCallback("PLAYER_LOGIN", function(event)
 	if xrpCache[AddOn.characterID] and not xrpCache[AddOn.characterID].own then
 		xrpCache[AddOn.characterID].own = true
 	end
-	for i, character in ipairs(GetAutoCompleteResults("", 0, 1, AUTO_COMPLETE_ACCOUNT_CHARACTER, 0)) do
+	for i, character in ipairs(GetAutoCompleteResults("", 0, 1, true, AUTO_COMPLETE_ACCOUNT_CHARACTER, 0)) do
 		local name = AddOn.BuildCharacterID(character.name)
 		OwnCharacters[name] = true
 		if xrpCache[name] and not xrpCache[name].own then
