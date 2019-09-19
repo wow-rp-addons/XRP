@@ -4,3 +4,6 @@
 [submodule "Libraries/LibMSP"]
 	path = Libraries/LibMSP
 	url = https://github.com/Ellypse/LibMSP.git
+[submodule "Libraries\\LibRPMedia"]
+	path = Libraries\\LibRPMedia
+	url = https://github.com/wow-rp-addons/LibRPMedia
