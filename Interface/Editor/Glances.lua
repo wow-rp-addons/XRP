@@ -201,9 +201,7 @@ function XRPEditorIconsFilter_Mixin:OnEditFocusGained()
 end
 
 function XRPEditorIconsFilter_Mixin:OnEditFocusLost()
-	if GetMouseFocus() ~= self.clearButton then
-		HideParentPanel(self)
-	else
+	if GetMouseFocus() == self.clearButton then
 		self:SetFocus()
 	end
 end
