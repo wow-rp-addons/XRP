@@ -4,7 +4,7 @@
 ## X-WoW-Version: 8.3.0
 ## X-WoW-Build: 33051
 ## Title: XRP Roleplay Profiles
-## Version: 2.0.4
+## Version: 2.0.5
 ## Author: Justin Snelgrove
 ## Notes: A pretty good roleplaying profile addon.
 ## X-Category: Roleplay
