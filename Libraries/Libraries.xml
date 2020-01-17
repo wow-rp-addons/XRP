@@ -4,7 +4,8 @@
 			error("XRP: Required interface version not met!")
 		end
 	</Script>
+	<Include file="LibRPMedia\Libs\LibStub\LibStub.lua"/>
 	<Include file="LibMSP\LibMSP.xml"/>
 	<Include file="BlueBugs\BlueBugs.xml"/>
-	<Include file="LibRPMedia\LibRPMedia-1.0.xml" />
+	<Include file="LibRPMedia\LibRPMedia-1.0.xml"/>
 </Ui>
