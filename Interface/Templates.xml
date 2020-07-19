@@ -183,15 +183,13 @@
 			</Layer>
 		</Layers>
 	</Button>
-	<Frame name="XRPPopoutTemplate" parentArray="popouts" toplevel="true" enableMouse="true" hidden="true" virtual="true">
+	<Frame name="XRPPopoutTemplate" parentArray="popouts" toplevel="true" enableMouse="true" hidden="true" virtual="true" inherits="BackdropTemplate">
 		<Anchors>
 			<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" y="-28"/>
 		</Anchors>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background-Dark" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets left="11" right="12" top="12" bottom="11"/>
-			<TileSize val="32"/>
-			<EdgeSize val="32"/>
-		</Backdrop>
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="XRP_BACKDROP_DIALOG_DARK_32_32" type="global"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture parentKey="Corner" file="Interface\DialogFrame\UI-DialogBox-Corner">
@@ -319,7 +317,7 @@
 		</Frames>
 		<Scripts>
 			<OnAttributeChanged function="XRPTemplatesNotes_OnAttributeChanged"/>
-			<OnLoad function="XRPTemplatesNotes_OnLoad"/>
+			<OnLoad inherit="prepend" function="XRPTemplatesNotes_OnLoad"/>
 			<OnShow inherit="prepend" function="XRPTemplatesNotes_OnShow"/>
 			<OnHide inherit="append" function="XRPTemplatesNotes_OnHide"/>
 		</Scripts>

@@ -20,6 +20,33 @@
 local FOLDER_NAME, AddOn = ...
 local L = AddOn.GetText
 
+-- Globals for Backdrop Templates (for 9.0 changes)
+XRP_BACKDROP_DIALOG_DARK_32_32 = {
+	bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background-Dark",
+	edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
+	tile = true,
+	tileEdge = true,
+	tileSize = 32,
+	edgeSize = 32,
+	insets = { left = 11, right = 12, top = 12, bottom = 11 },
+}
+
+XRP_BACKDROP_TOOLTIP_16_16_4444 = {
+	bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
+	edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+	tile = true,
+	tileEdge = true,
+	tileSize = 16,
+	edgeSize = 16,
+	insets = { left = 4, right = 4, top = 4, bottom = 4 },
+}
+
+XRP_CARD_BACKGROUND_COLOR = CreateColor(0, 0, 0, 0.75)
+
+XRP_CARD_BORDER_COLOR = CreateColor(0.5, 0.5, 0.5, 1)
+
+-- End Globals
+
 function XRPTemplates_CloseDropDownMenus(self, ...)
 	CloseDropDownMenus()
 end

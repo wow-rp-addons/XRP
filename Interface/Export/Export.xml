@@ -18,16 +18,14 @@
 	with XRP. If not, see <http://www.gnu.org/licenses/>.
 -->
 	<Script file="Export.lua"/>
-	<Frame name="XRPExport" toplevel="true" parent="UIParent" hidden="true" enableMouse="true" frameStrata="HIGH">
+	<Frame name="XRPExport" toplevel="true" parent="UIParent" hidden="true" enableMouse="true" frameStrata="HIGH" inherits="BackdropTemplate">
 		<Size x="500" y="350"/>
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background-Dark" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets left="11" right="11" top="12" bottom="10"/>
-			<TileSize val="32"/>
-			<EdgeSize val="32"/>
-		</Backdrop>
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="XRP_BACKDROP_DIALOG_DARK_32_32" type="global"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture parentKey="Header" file="Interface\DialogFrame\UI-DialogBox-Header">

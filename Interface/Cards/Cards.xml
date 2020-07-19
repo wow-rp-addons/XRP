@@ -31,7 +31,7 @@
 			<OnPlay method="OnPlay"/>
 		</Scripts>
 	</AnimationGroup>
-	<Button name="XRPCardTemplate" toplevel="true" parent="UIParent" frameStrata="LOW" frameLevel="1" movable="true" clampedToScreen="true" virtual="true" mixin="XRPCard_Mixin">
+	<Button name="XRPCardTemplate" toplevel="true" parent="UIParent" frameStrata="LOW" frameLevel="1" movable="true" clampedToScreen="true" virtual="true" mixin="XRPCard_Mixin" inherits="BackdropTemplate">
 		<Size x="345" y="176"/>
 		<Frames>
 			<PlayerModel parentKey="Model" scale="0.85" mixin="XRPCardModel_Mixin">
@@ -189,13 +189,12 @@
 				</FontString>
 			</Layer>
 		</Layers>
-		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true" alphaMode="BLEND">
-			<EdgeSize val="16"/>
-			<TileSize val="16"/>
-			<BackgroundInsets left="4" right="4" top="4" bottom="4"/>
-			<Color r="0" g="0" b="0" a="0.75"/>
-			<BorderColor r="0.5" g="0.5" b="0.5" a="1"/>
-		</Backdrop>
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="XRP_BACKDROP_TOOLTIP_16_16_4444" type="global"/>
+			<KeyValue key="backdropColor" value="XRP_CARD_BACKGROUND_COLOR" type="global"/>
+			<KeyValue key="backdropBorderColor" value="XRP_CARD_BORDER_COLOR" type="global"/>
+			<KeyValue key="backdropBorderBlendMode" value="BLEND" type="string"/>
+		</KeyValues>
 		<Animations>
 			<AnimationGroup parentKey="BounceIn" inherits="XRPCardAnimationGroupTemplate">
 				<Alpha startDelay="0" duration="0.25" fromAlpha="0" toAlpha="1"/>
@@ -223,7 +222,7 @@
 			</AnimationGroup>
 		</Animations>
 		<Scripts>
-			<OnLoad method="OnLoad"/>
+			<OnLoad method="OnLoad" inherit="prepend"/>
 			<OnDragStart method="OnDragStart"/>
 			<OnDragStop method="OnDragStop"/>
 			<OnEnter method="OnEnter"/>
