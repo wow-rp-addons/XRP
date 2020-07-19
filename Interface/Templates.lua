@@ -109,12 +109,12 @@ function XRPTemplatesDropDown_OnLoad(self)
 	if self.width then
 		UIDropDownMenu_SetWidth(self, self.width, 0)
 	end
-	if self.preClick then
-		_G[self:GetName() .. "Button"]:SetScript("PreClick", self.preClick)
-	end
 end
 
 local function Menu_Initialize(self, level, menuList)
+	if self.preClick then
+		self:preClick();	-- Fix for profile/automation dropdowns not updating properly before init
+	end
 	if level == 1 then
 		menuList = self.baseMenuList or self:GetParent().baseMenuList
 	end
