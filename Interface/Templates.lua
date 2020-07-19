@@ -41,9 +41,9 @@ XRP_BACKDROP_TOOLTIP_16_16_4444 = {
 	insets = { left = 4, right = 4, top = 4, bottom = 4 },
 }
 
-XRP_CARD_BACKGROUND_COLOR = CreateColor(0, 0, 0, 0.75)
+XRP_CARD_BACKGROUND_COLOR = CreateColor(0, 0, 0)
 
-XRP_CARD_BORDER_COLOR = CreateColor(0.5, 0.5, 0.5, 1)
+XRP_CARD_BORDER_COLOR = CreateColor(0.5, 0.5, 0.5)
 
 -- End Globals
 

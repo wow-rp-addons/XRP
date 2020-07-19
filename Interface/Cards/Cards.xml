@@ -192,6 +192,7 @@
 		<KeyValues>
 			<KeyValue key="backdropInfo" value="XRP_BACKDROP_TOOLTIP_16_16_4444" type="global"/>
 			<KeyValue key="backdropColor" value="XRP_CARD_BACKGROUND_COLOR" type="global"/>
+			<KeyValue key="backdropColorAlpha" value="0.75" type="number"/>
 			<KeyValue key="backdropBorderColor" value="XRP_CARD_BORDER_COLOR" type="global"/>
 			<KeyValue key="backdropBorderBlendMode" value="BLEND" type="string"/>
 		</KeyValues>
