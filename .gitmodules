@@ -3,7 +3,7 @@
 	url = https://github.com/Itarater/BlueBugs.git
 [submodule "Libraries/LibMSP"]
 	path = Libraries/LibMSP
-	url = https://github.com/Ellypse/LibMSP.git
+	url = https://github.com/wow-rp-addons/LibMSP.git
 [submodule "Libraries\\LibRPMedia"]
 	path = Libraries\\LibRPMedia
 	url = https://github.com/wow-rp-addons/LibRPMedia
