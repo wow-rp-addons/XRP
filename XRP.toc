@@ -1,10 +1,10 @@
-## Interface: 80300
-## X-Interface: 80300
-## X-Interface-Required: 80300
-## X-WoW-Version: 8.3.0
-## X-WoW-Build: 33051
+## Interface: 90001
+## X-Interface: 90001
+## X-Interface-Required: 90001
+## X-WoW-Version: 9.0.1
+## X-WoW-Build: 36163
 ## Title: XRP Roleplay Profiles
-## Version: 2.0.6
+## Version: 2.0.7
 ## Author: Justin Snelgrove
 ## Notes: A pretty good roleplaying profile addon.
 ## X-Category: Roleplay
