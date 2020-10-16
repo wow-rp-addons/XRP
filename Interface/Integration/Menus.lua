@@ -37,7 +37,10 @@ local function UnitPopup_OnClick_Hook(self)
 	elseif self.value == "XRP_VIEW_UNIT" then
 		XRPViewer:View(UIDROPDOWNMENU_INIT_MENU.unit)
 	elseif self.value == "XRP_VIEW_BN" then
-		local active, characterName, client, realmName = BNGetGameAccountInfo(select(6, BNGetFriendInfoByID(UIDROPDOWNMENU_INIT_MENU.bnetIDAccount)))
+		local gameAccountInfo = C_BattleNet.GetAccountInfoByID(UIDROPDOWNMENU_INIT_MENU.bnetIDAccount).gameAccountInfo;
+		local characterName = gameAccountInfo.characterName or "";
+		local client = gameAccountInfo.clientProgram;
+		local realmName = gameAccountInfo.realmName or "";
 		if client == BNET_CLIENT_WOW and realmName ~= "" then
 			XRPViewer:View(AddOn_Chomp.NameMergedRealm(characterName, realmName))
 		end
@@ -51,16 +54,13 @@ local function UnitPopup_HideButtons_Hook()
 			if not UIDROPDOWNMENU_INIT_MENU.bnetIDAccount then
 				UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][i] = 0
 			else
-				local bnetIDGameAccount = select(6, BNGetFriendInfoByID(UIDROPDOWNMENU_INIT_MENU.bnetIDAccount))
-				if not bnetIDGameAccount then
+				local gameAccountInfo = C_BattleNet.GetAccountInfoByID(UIDROPDOWNMENU_INIT_MENU.bnetIDAccount).gameAccountInfo;
+				local client = gameAccountInfo.clientProgram;
+				local realmName = gameAccountInfo.realmName or "";
+				if client ~= BNET_CLIENT_WOW or realmName == "" then
 					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][i] = 0
 				else
-					local active, characterName, client, realmName = BNGetGameAccountInfo(bnetIDGameAccount)
-					if not bnetIDGameAccount or client ~= BNET_CLIENT_WOW or not realmName or realmName == "" then
-						UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][i] = 0
-					else
-						UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][i] = 1
-					end
+					UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][i] = 1
 				end
 			end
 			break

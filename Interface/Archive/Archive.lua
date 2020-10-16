@@ -252,8 +252,8 @@ function XRPArchiveEntry_OnClick(self, button, down)
 			else
 				local name = Ambiguate(self.character.id, "none")
 				local isFriend
-				for i = 1, GetNumFriends() do
-					if GetFriendInfo(i) == name then
+				for i = 1, C_FriendList.GetNumFriends() do
+					if C_FriendList.GetFriendInfoByIndex(i) == name then
 						isFriend = true
 						break
 					end

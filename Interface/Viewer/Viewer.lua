@@ -339,8 +339,8 @@ function XRPViewerMenu_PreClick(self, button, down)
 		local name = Ambiguate(name, "none")
 		local isFriend = isOwn
 		if not isFriend then
-			for i = 1, GetNumFriends() do
-				if GetFriendInfo(i) == name then
+			for i = 1, C_FriendList.GetNumFriends() do
+				if C_FriendList.GetFriendInfoByIndex(i) == name then
 					isFriend = true
 					break
 				end

@@ -172,8 +172,8 @@ local gameFriends
 local function FRIENDLIST_UPDATE(event)
 	if not gameFriends then return end
 	table.wipe(gameFriends)
-	for i = 1, select(2, GetNumFriends()) do
-		gameFriends[AddOn.BuildCharacterID((GetFriendInfo(i)))] = true
+	for i = 1, C_FriendList.GetNumOnlineFriends() do
+		gameFriends[AddOn.BuildCharacterID(C_FriendList.GetFriendInfoByIndex(i))] = true
 	end
 end
 
@@ -182,8 +182,12 @@ local function BN_FRIEND_INFO_CHANGED(event)
 	if not bnetFriends then return end
 	table.wipe(bnetFriends)
 	for i = 1, select(2, BNGetNumFriends()) do
-		for j = 1, BNGetNumFriendGameAccounts(i) do
-			local active, characterName, client, realmName, realmID, faction, race, class, blank, zoneName, level, gameText, broadcastText, broadcastTime, isConnected, bnetIDGameAccount = BNGetFriendGameAccountInfo(i, j)
+		for j = 1, C_BattleNet.GetFriendNumGameAccounts(i) do
+			local gameAccountInfo = C_BattleNet.GetFriendGameAccountInfo(friendIndex, accountIndex);
+			local characterName = gameAccountInfo.characterName or "";
+			local client = gameAccountInfo.clientProgram;
+			local realmName = gameAccountInfo.realmName or "";
+			local isConnected = gameAccountInfo.isOnline;
 			if isConnected and client == BNET_CLIENT_WOW and realmName and realmName ~= "" then
 				bnetFriends[AddOn.BuildCharacterID(characterName, realm)] = true
 			end
