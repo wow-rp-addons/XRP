@@ -60,6 +60,7 @@ local function SetField(field, contents, secondary, tertiary)
 		-- Link URLs in scrolling fields.
 		contents = AddOn.LinkURLs(contents)
 		if field == "DE" or field == "HI" then
+			contents = msp:StripTRP3MarkupTags(contents);
 			contents = contents .. "\n"
 		end
 	end
