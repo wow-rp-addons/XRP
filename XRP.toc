@@ -1,10 +1,10 @@
-## Interface: 90001
-## X-Interface: 90001
-## X-Interface-Required: 90001
-## X-WoW-Version: 9.0.1
-## X-WoW-Build: 36163
+## Interface: 90002
+## X-Interface: 90002
+## X-Interface-Required: 90002
+## X-WoW-Version: 9.0.2
+## X-WoW-Build: 36639
 ## Title: XRP Roleplay Profiles
-## Version: 2.0.8
+## Version: 2.0.9
 ## Author: Justin Snelgrove
 ## Notes: A pretty good roleplaying profile addon.
 ## X-Category: Roleplay
