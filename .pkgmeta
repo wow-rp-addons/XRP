@@ -1,0 +1,18 @@
+package-as: XRP
+enable-nolib-creation: no
+
+ignore:
+  - build-zip.sh
+  - listfile-to-icons.sh
+  - Libraries/LibRPMedia/Exporter
+  - Libraries/LibRPMedia/Makefile
+  - Libraries/LibRPMedia/Tests
+  - Libraries/LibRPMedia/UI
+
+embedded-libraries:
+  - librpmedia
+  - libstub
+
+manual-changelog:
+  filename: CHANGELOG.md
+  markup-type: markdown
