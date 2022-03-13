@@ -290,7 +290,17 @@ function byGUIDMetatable:__index(GU)
 	-- client yet.
 	local success, class, GC, race, GR, GS, name, realm = pcall(GetPlayerInfoByGUID, GU)
 	if not success or not name or name == UNKNOWN then
-		return nil
+		-- GetPlayerInfoByGUID() can sometimes fail for the player on first login in 9.2 so hacking together an alternate way to grab the required info
+		if GU == UnitGUID("player") then
+			success = true
+			class, GC = UnitClass("player")
+			race, GR = UnitRace("player")
+			GS = UnitSex("player")
+			name, realm = UnitName("player")
+		end
+		if not success or not name or name == UNKNOWN then
+			return nil
+		end
 	end
 	local characterID = AddOn.BuildCharacterID(name, realm)
 	if not unitCache[characterID] then
