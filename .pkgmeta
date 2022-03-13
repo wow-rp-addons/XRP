@@ -8,8 +8,6 @@ ignore:
   - Libraries/LibRPMedia/Makefile
   - Libraries/LibRPMedia/Tests
   - Libraries/LibRPMedia/UI
-  - Libraries/LibRPMedia/LibRPMedia-Classic-1.0.lua
-  - Libraries/LibRPMedia/LibRPMedia-BCC-1.0.lua
 
 embedded-libraries:
   - librpmedia
