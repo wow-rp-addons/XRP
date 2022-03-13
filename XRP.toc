@@ -8,6 +8,7 @@
 ## Author: Justin Snelgrove
 ## Notes: A pretty good roleplaying profile addon.
 ## X-Category: Roleplay
+## X-Curse-Project-ID: 78630
 ## X-License: GPLv3
 ## SavedVariablesPerCharacter: xrpSaved
 ## SavedVariables: xrpAccountSaved, xrpCache
