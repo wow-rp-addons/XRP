@@ -105,7 +105,6 @@
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="xrpSetting" value="menusChat"/>
-					<KeyValue key="disableWarn" value="DISABLE_REQUIRES_RELOAD"/>
 				</KeyValues>
 			</CheckButton>
 			<CheckButton parentKey="MenusUnits" inherits="XRPOptionsCheckboxTemplate">
@@ -114,7 +113,6 @@
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="xrpSetting" value="menusUnits"/>
-					<KeyValue key="disableWarn" value="DISABLE_REQUIRES_RELOAD"/>
 				</KeyValues>
 			</CheckButton>
 			<CheckButton parentKey="MainButtonEnabled" inherits="XRPOptionsCheckboxTemplate">
