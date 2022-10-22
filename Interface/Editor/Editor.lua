@@ -220,7 +220,7 @@ function XRPEditorControls_OnAttributeChanged(self, name, value)
 			self:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b)
 			self.inherited = true
 		elseif not value and self.inherited then
-			self:SetTextColor(self:GetFontObject():GetTextColor())
+			self:SetTextColor(1, 1, 1)
 			self.inherited = false
 		end
 	end

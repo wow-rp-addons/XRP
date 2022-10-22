@@ -193,6 +193,7 @@ function XRPEditorIconsFilter_Mixin:OnTextChanged(userInput)
 end
 
 function XRPEditorIconsFilter_Mixin:OnEditFocusGained()
+	SearchBoxTemplate_OnEditFocusGained(self)
 	local PE = self:GetParent().selectedFrame:GetParent()
 	if PE.inherited then
 		PE:SetAttribute("inherited", false)
@@ -201,6 +202,7 @@ function XRPEditorIconsFilter_Mixin:OnEditFocusGained()
 end
 
 function XRPEditorIconsFilter_Mixin:OnEditFocusLost()
+	SearchBoxTemplate_OnEditFocusLost(self)
 	if GetMouseFocus() == self.clearButton then
 		self:SetFocus()
 	end
@@ -215,6 +217,7 @@ function XRPEditorIconsFilter_Mixin:OnTabPressed()
 end
 
 function XRPEditorIconsFilter_Mixin:OnLoad()
+	SearchBoxTemplate_OnLoad(self)
 	if self.instructionsText then
 		self.Instructions:SetText(L(self.instructionsText))
 	end
