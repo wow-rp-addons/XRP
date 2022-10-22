@@ -434,7 +434,7 @@ function XRPArchiveTab_OnClick(self, button, down)
 	end
 	Refresh()
 	PanelTemplates_SetTab(XRPArchive, tabID)
-	XRPArchive.TitleText:SetText(ARCHIVE_TAB[tabID])
+	XRPArchive.TitleContainer.TitleText:SetText(ARCHIVE_TAB[tabID])
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB)
 end
 

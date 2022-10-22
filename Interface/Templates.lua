@@ -195,8 +195,9 @@ function XRPTemplatesHelpButton_OnHide(self)
 end
 
 function XRPTemplatesPanel_OnLoad(self)
+	self.Tabs=nil
 	if self.portraitTexture then
-		SetPortraitToTexture(self.portrait, self.portraitTexture)
+		SetPortraitToTexture(self.PortraitContainer.portrait, self.portraitTexture)
 	end
 	if self.panes then
 		PanelTemplates_SetNumTabs(self, #self.panes)
@@ -204,12 +205,12 @@ function XRPTemplatesPanel_OnLoad(self)
 	if self.numTabs then
 		PanelTemplates_SetTab(self, 1)
 	end
-	self.TitleText:SetText(self.titleText or L[self.titleKey] or _G[self.titleKey])
+	self.TitleContainer.TitleText:SetText(self.titleText or L[self.titleKey] or _G[self.titleKey])
 end
 
 function XRPTemplatesPanel_OnShow(self)
 	if self.portraitUnit then
-		SetPortraitTexture(self.portrait, self.portraitUnit)
+		SetPortraitTexture(self.PortraitContainer.portrait, self.portraitUnit)
 	end
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN)
 end

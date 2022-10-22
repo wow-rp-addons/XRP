@@ -130,7 +130,7 @@ function XRPEditor_Edit(self, name)
 	self.Parent.contents = value
 	self.Parent:SetFormattedText(SUBTITLE_FORMAT, L.PARENT, value or NONE)
 
-	self.TitleText:SetFormattedText(SUBTITLE_FORMAT, L.PROFILE_EDITOR, name)
+	self.TitleContainer.TitleText:SetFormattedText(SUBTITLE_FORMAT, L.PROFILE_EDITOR, name)
 
 	CheckFields()
 end
