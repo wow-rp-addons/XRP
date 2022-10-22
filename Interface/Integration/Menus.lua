@@ -98,4 +98,7 @@ local function UnitPopup_OnShowMenu_Hook(dropdownMenu, menuType)
 	UIDropDownMenu_AddButton(buttons[allowedUnits[menuType]], UIDROPDOWNMENU_MENU_LEVEL)
 end
 
-hooksecurefunc("UnitPopup_ShowMenu", UnitPopup_OnShowMenu_Hook)
+-- Disabling UnitPopups because of Edit Mode conflict
+if xrpAccountSaved.settings.unitPopupsOverride == true then
+	hooksecurefunc("UnitPopup_ShowMenu", UnitPopup_OnShowMenu_Hook)
+end
