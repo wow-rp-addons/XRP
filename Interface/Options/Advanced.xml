@@ -19,7 +19,7 @@
 -->
 	<Script file="Advanced.lua"/>
 
-	<Frame parentKey="XRPAdvanced" parent="InterfaceOptionsFramePanelContainer" inherits="XRPOptionsTemplate">
+	<Frame name="XRPOptionsAdvanced" parentKey="XRPAdvanced" inherits="XRPOptionsTemplate">
 		<KeyValues>
 			<KeyValue key="paneID" value="ADVANCED"/>
 		</KeyValues>

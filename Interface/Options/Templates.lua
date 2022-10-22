@@ -20,6 +20,12 @@
 local FOLDER_NAME, AddOn = ...
 local L = AddOn.GetText
 
+local CONTROLTYPE_CHECKBOX = "CONTROLTYPE_CHECKBOX"
+local CONTROLTYPE_DROPDOWN = "CONTROLTYPE_DROPDOWN"
+local CONTROLTYPE_SLIDER = "CONTROLTYPE_SLIDER"
+
+AddOn.XRPOptions = {}
+
 XRPOptionsControl_Mixin = {}
 
 function XRPOptionsControl_Mixin:Get()
@@ -51,7 +57,7 @@ end
 
 XRPOptions_Mixin = {}
 
-function XRPOptions_Mixin:okay()
+function XRPOptions_Mixin:OnCommit()
 	if not self.controls then return end
 	for i, control in ipairs(self.controls) do
 		if control.CustomOkay then
@@ -62,7 +68,7 @@ function XRPOptions_Mixin:okay()
 	end
 end
 
-function XRPOptions_Mixin:refresh()
+function XRPOptions_Mixin:OnRefresh()
 	if not self.controls then return end
 	for i, control in ipairs(self.controls) do
 		if control.CustomRefresh then
@@ -90,6 +96,7 @@ function XRPOptions_Mixin:refresh()
 	end
 end
 
+-- Not an option anymore at the moment
 function XRPOptions_Mixin:cancel()
 	if not self.controls then return end
 	for i, control in ipairs(self.controls) do
@@ -115,7 +122,7 @@ function XRPOptions_Mixin:cancel()
 	end
 end
 
-function XRPOptions_Mixin:default()
+function XRPOptions_Mixin:OnDefault()
 	if not self.controls then return end
 	for i, control in ipairs(self.controls) do
 		if control.CustomDefault then
@@ -164,16 +171,19 @@ function XRPOptions_Mixin:OnLoad()
 	self.name = OPTIONS_NAME[self.paneID]
 	self.Title:SetFormattedText(SUBTITLE_FORMAT, "XRP", self.name)
 	self.SubText:SetText(OPTIONS_DESCRIPTION[self.paneID])
-	self:GetParent().XRP[self.paneID] = self
-	InterfaceOptions_AddCategory(self)
+	AddOn.XRPOptions[self.paneID] = self
+
+	local category = Settings.GetCategory(self.parent);
+	local subcategory = Settings.RegisterCanvasLayoutSubcategory(category, self, self.name, self.name);
+	subcategory.ID = self.name;
 end
 
 function XRPOptions_Mixin:OnShow()
 	if not self.wasShown then
 		self.wasShown = true
-		self:refresh()
+		self:OnRefresh()
 	end
-	self:GetParent().XRP.lastShown = self.paneID
+	AddOn.XRPOptions.lastShownID = self.name
 end
 
 local OPTIONS_TEXT = {

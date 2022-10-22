@@ -21,7 +21,7 @@
 
 	<CheckButton name="XRPOptionsCheckboxTemplate" parentArray="controls" inherits="XRPCheckBoxTemplate" mixin="XRPOptionsControl_Mixin,XRPOptionsCheckButton_Mixin" virtual="true">
 		<KeyValues>
-			<KeyValue key="type" value="CONTROLTYPE_CHECKBOX" type="global"/>
+			<KeyValue key="type" value="CONTROLTYPE_CHECKBOX"/>
 		</KeyValues>
 		<Size x="26" y="26"/>
 		<HitRectInsets left="0" right="-500" top="0" bottom="0"/>
@@ -41,9 +41,9 @@
 			<OnLoad method="OnLoad"/>
 		</Scripts>
 	</CheckButton>
-	<Slider name="XRPOptionsSliderTemplate" parentArray="controls" inherits="HorizontalSliderTemplate" mixin="XRPOptionsControl_Mixin,XRPOptionsSlider_Mixin" virtual="true">
+	<Slider name="XRPOptionsSliderTemplate" parentArray="controls" orientation="HORIZONTAL" mixin="XRPOptionsControl_Mixin,XRPOptionsSlider_Mixin" virtual="true">
 		<KeyValues>
-			<KeyValue key="type" type="global" value="CONTROLTYPE_SLIDER"/>
+			<KeyValue key="type" value="CONTROLTYPE_SLIDER"/>
 		</KeyValues>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -77,7 +77,7 @@
 	</Slider>
 	<Frame name="XRPOptionsDropDownTemplate" parentArray="controls" inherits="XRPDropDownTemplate" mixin="XRPOptionsControl_Mixin" virtual="true">
 		<KeyValues>
-			<KeyValue key="type" value="CONTROLTYPE_DROPDOWN" type="global"/>
+			<KeyValue key="type" value="CONTROLTYPE_DROPDOWN"/>
 		</KeyValues>
 		<Layers>
 			<Layer level="ARTWORK">

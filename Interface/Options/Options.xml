@@ -20,13 +20,13 @@
 	<Script file="Options.lua"/>
 	<Include file="Templates.xml"/>
 
-	<Frame parentKey="XRP" parent="InterfaceOptionsFramePanelContainer" hidden="true">
+	<Frame name="XRPOptions" parentKey="XRP" hidden="true">
 		<KeyValues>
 			<KeyValue key="name" value="XRP"/>
 		</KeyValues>
 		<Scripts>
 			<OnShow function="XRPOptionsAbout_OnShow"/>
-			<OnLoad function="InterfaceOptions_AddCategory"/>
+			<OnLoad function="XRPOptionsAbout_OnLoad"/>
 		</Scripts>
 		<Layers>
 			<Layer level="ARTWORK">

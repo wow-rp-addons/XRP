@@ -19,7 +19,7 @@
 -->
 	<Script file="Chat.lua"/>
 
-	<Frame parentKey="XRPChat" parent="InterfaceOptionsFramePanelContainer" inherits="XRPOptionsTemplate">
+	<Frame name="XRPOptionsChat" parentKey="XRPChat" inherits="XRPOptionsTemplate">
 		<KeyValues>
 			<KeyValue key="paneID" value="CHAT"/>
 		</KeyValues>

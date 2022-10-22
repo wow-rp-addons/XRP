@@ -17,7 +17,7 @@
 	You should have received a copy of the GNU General Public License along
 	with XRP. If not, see <http://www.gnu.org/licenses/>.
 -->
-	<Frame parentKey="XRPDisplay" parent="InterfaceOptionsFramePanelContainer" inherits="XRPOptionsTemplate">
+	<Frame name="XRPOptionsDisplay" parentKey="XRPDisplay" inherits="XRPOptionsTemplate">
 		<KeyValues>
 			<KeyValue key="paneID" value="DISPLAY"/>
 		</KeyValues>

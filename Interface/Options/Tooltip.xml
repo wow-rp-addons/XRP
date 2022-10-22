@@ -17,7 +17,7 @@
 	You should have received a copy of the GNU General Public License along
 	with XRP. If not, see <http://www.gnu.org/licenses/>.
 -->
-	<Frame parentKey="XRPTooltip" parent="InterfaceOptionsFramePanelContainer" inherits="XRPOptionsTemplate">
+	<Frame name="XRPOptionsTooltip" parentKey="XRPTooltip" inherits="XRPOptionsTemplate">
 		<KeyValues>
 			<KeyValue key="paneID" value="TOOLTIP"/>
 		</KeyValues>

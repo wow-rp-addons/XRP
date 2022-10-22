@@ -20,18 +20,25 @@
 local FOLDER_NAME, AddOn = ...
 local L = AddOn.GetText
 
+function XRPOptionsAbout_OnLoad(self)
+	local category = Settings.RegisterCanvasLayoutCategory(self, self.name, self.name);
+	category.ID = self.name;
+	Settings.RegisterAddOnCategory(category);
+end
+
 function XRPOptionsAbout_OnShow(self)
 	if not self.wasShown then
 		self.wasShown = true
-		InterfaceOptionsFrame_OpenToCategory(self.GENERAL)
+		Settings.OpenToCategory("XRP");
 	end
 end
 
-function AddOn.Options(pane)
-	local XRPOptions = InterfaceOptionsFramePanelContainer.XRP
+function AddOn.Options(paneID)
+	local XRPOptions = AddOn.XRPOptions
 	if not XRPOptions.wasShown then
 		XRPOptions.wasShown = true
-		InterfaceOptionsFrame_OpenToCategory(XRPOptions)
+		Settings.OpenToCategory("XRP")
 	end
-	InterfaceOptionsFrame_OpenToCategory(XRPOptions[pane] or XRPOptions[XRPOptions.lastShown] or XRPOptions.GENERAL)
+	Settings.OpenToCategory("XRP")
+	--Settings.OpenToCategory(paneID or XRPOptions.lastShownID or "XRP")
 end
