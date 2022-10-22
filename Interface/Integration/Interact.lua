@@ -104,7 +104,7 @@ end
 AddOn.SettingsToggles.viewOnInteract = function(setting)
 	if setting then
 		if keybind == nil then
-			hooksecurefunc("InteractUnit", InteractUnit_Hook)
+			hooksecurefunc(C_PlayerInteractionManager, "InteractUnit", InteractUnit_Hook)
 		end
 		keybind = true
 	elseif keybind ~= nil then
