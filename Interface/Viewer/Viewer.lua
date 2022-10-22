@@ -412,7 +412,7 @@ function XRPViewerResize_OnMouseUp(self, button)
 end
 
 function XRPViewer_OnLoad(self)
-	self.fields.NA = self.TitleText
+	self.fields.NA = self.TitleContainer.TitleText
 end
 
 AddOn_XRP.RegisterEventCallback("ADDON_XRP_FIELD_RECEIVED", FIELD)
@@ -452,10 +452,10 @@ XRPViewer_Mixin = {
 		end
 		local isNew = Load(character)
 		if isUnit then
-			SetPortraitTexture(self.portrait, player)
+			SetPortraitTexture(self.PortraitContainer.portrait, player)
 		elseif isNew then
 			local GF = character.GF
-			SetPortraitToTexture(self.portrait, GF == "Alliance" and "Interface\\Icons\\INV_BannerPVP_02" or GF == "Horde" and "Interface\\Icons\\INV_BannerPVP_01" or "Interface\\Icons\\INV_Misc_Book_17")
+			SetPortraitToTexture(self.PortraitContainer.portrait, GF == "Alliance" and "Interface\\Icons\\INV_BannerPVP_02" or GF == "Horde" and "Interface\\Icons\\INV_BannerPVP_01" or "Interface\\Icons\\INV_Misc_Book_17")
 		end
 		self.Notes:SetAttribute("character", character)
 		ShowUIPanel(self)

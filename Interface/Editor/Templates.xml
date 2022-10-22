@@ -182,7 +182,7 @@
 					<KeyValue key="tooltipKey" value="CLEAR"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="-1" y="-11"/>
+					<Anchor point="TOPRIGHT" x="-1" y="-16"/>
 				</Anchors>
 				<Scripts>
 					<OnClick method="PeekClearOnClick"/>

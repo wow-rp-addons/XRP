@@ -146,7 +146,7 @@
 								<Anchor point="BOTTOM" relativePoint="TOP" y="-1"/>
 							</Anchors>
 						</FontString>
-						<FontString parentKey="Instructions" justifyH="LEFT" justivyV="TOP" inherits="GameFontDisable" setAllPoints="true">
+						<FontString parentKey="Instructions" justifyH="LEFT" justifyV="CENTER" inherits="GameFontDisable" setAllPoints="true">
 							<Color r="0.35" g="0.35" b="0.35"/>
 						</FontString>
 					</Layer>
@@ -164,7 +164,7 @@
 			</Button>
 			<Button name="$parentTab2" parentKey="Tab2" inherits="XRPArchiveTabTemplate" id="2" text="XRP_ARCHIVE_OWN">
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.Tab1" relativePoint="RIGHT" x="-16"/>
+					<Anchor point="LEFT" relativeKey="$parent.Tab1" relativePoint="RIGHT" x="3"/>
 				</Anchors>
 			</Button>
 			<Button name="$parentTab3" parentKey="Tab3" inherits="XRPArchiveTabTemplate" id="3" text="XRP_ARCHIVE_RECENT">
@@ -172,7 +172,7 @@
 					<KeyValue key="resetOffset" value="true" type="boolean"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.Tab2" relativePoint="RIGHT" x="-16"/>
+					<Anchor point="LEFT" relativeKey="$parent.Tab2" relativePoint="RIGHT" x="3"/>
 				</Anchors>
 			</Button>
 			<Button name="$parentTab4" parentKey="Tab4" inherits="XRPArchiveTabTemplate" id="4" text="ALL">
@@ -180,7 +180,7 @@
 					<KeyValue key="resetOffset" value="true" type="boolean"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.Tab3" relativePoint="RIGHT" x="-16"/>
+					<Anchor point="LEFT" relativeKey="$parent.Tab3" relativePoint="RIGHT" x="3"/>
 				</Anchors>
 			</Button>
 			<Frame inherits="XRPNotesTemplate">

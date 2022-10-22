@@ -549,7 +549,7 @@
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
-								<FontString parentKey="Instructions" justifyH="LEFT" justivyV="TOP" inherits="GameFontDisable" setAllPoints="true">
+								<FontString parentKey="Instructions" justifyH="LEFT" justifyV="CENTER" inherits="GameFontDisable" setAllPoints="true">
 									<Color r="0.35" g="0.35" b="0.35"/>
 								</FontString>
 							</Layer>
@@ -564,7 +564,27 @@
 						</Scripts>
 						<FontString inherits="GameFontHighlight"/>
 					</EditBox>
-					<ScrollFrame parentKey="ScrollFrame" inherits="ListScrollFrameTemplate" mixin="XRPEditorIconsScrollFrame_Mixin">
+					<ScrollFrame parentKey="ScrollFrame" inherits="FauxScrollFrameTemplate" mixin="XRPEditorIconsScrollFrame_Mixin">
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="ScrollBarTop" name="$parentTop" atlas="macropopup-scrollbar-top" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-2" y="5"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="ScrollBarBottom" name="$parentBottom" atlas="macropopup-scrollbar-bottom" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-2" y="-2"/>
+									</Anchors>
+								</Texture>
+								<Texture name="$parentMiddle" atlas="!macropopup-scrollbar-middle" vertTile="true" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="TOP" relativeTo="$parentTop" relativePoint="BOTTOM"/>
+										<Anchor point="BOTTOM" relativeTo="$parentBottom" relativePoint="TOP"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.HeaderTop" relativePoint="BOTTOMLEFT" x="5" y="-2"/>
 							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.HeaderBottom" relativePoint="TOPRIGHT" x="-31" y="-3"/>
