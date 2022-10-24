@@ -1,4 +1,5 @@
-# Changelog version 2.0.12
+# Changelog version 2.0.13
 
-- Added icons and music files from patch 9.2.7.
-- Updated libraries to fix an issue with recent addon updates.
+- Added support for Retail 10.0.0.
+- Added 2246 icons from patch 10.0.0.
+- Removed temporarily right-click menu options in Retail due to a conflict with Edit Mode that can prevent the use of abilities in combat. They will be re-added once the conflict has been resolved.
