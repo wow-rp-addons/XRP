@@ -1,3 +1,7 @@
+# Changelog version 2.0.15
+
+- Fixed another missing library issue causing the addon not to load. All cases of missing libraries should now be fixed.
+
 # Changelog version 2.0.14
 
 - Fixed missing library issue causing the addon not to load.
