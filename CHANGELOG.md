@@ -1,3 +1,7 @@
+# Changelog version 2.0.14
+
+- Fixed missing library issue causing the addon not to load.
+
 # Changelog version 2.0.13
 
 - Added support for Retail 10.0.0.
