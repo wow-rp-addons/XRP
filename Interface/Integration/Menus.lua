@@ -99,6 +99,6 @@ local function UnitPopup_OnShowMenu_Hook(dropdownMenu, menuType)
 end
 
 -- Disabling UnitPopups because of Edit Mode conflict
-if xrpAccountSaved.settings.unitPopupsOverride == true then
+if xrpAccountSaved and xrpAccountSaved.settings and xrpAccountSaved.settings.unitPopupsOverride == true then
 	hooksecurefunc("UnitPopup_ShowMenu", UnitPopup_OnShowMenu_Hook)
 end
