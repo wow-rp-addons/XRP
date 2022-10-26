@@ -5,6 +5,7 @@
 		end
 	</Script>
 	<Include file="LibRPMedia\Libs\LibStub\LibStub.lua"/>
+	<Include file="CallbackHandler-1.0\CallbackHandler-1.0.xml"/>
 	<Include file="Chomp\Chomp.xml"/>
 	<Include file="LibMSP\LibMSP.xml"/>
 	<Include file="BlueBugs\BlueBugs.xml"/>
