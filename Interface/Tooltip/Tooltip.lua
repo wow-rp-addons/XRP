@@ -528,7 +528,7 @@ local function GameTooltip_OnTooltipSetUnit_Hook(self)
 end
 
 local function DoHooks()
-	GameTooltip:HookScript("OnTooltipSetUnit", GameTooltip_OnTooltipSetUnit_Hook)
+	TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Unit, GameTooltip_OnTooltipSetUnit_Hook)
 	GameTooltip:HookScript("OnTooltipCleared", GameTooltip_OnTooltipCleared_Hook)
 end
 
