@@ -1,10 +1,10 @@
-## Interface: 100000
-## X-Interface: 100000
-## X-Interface-Required: 100000
-## X-WoW-Version: 10.0.0
-## X-WoW-Build: 46181
+## Interface: 100002
+## X-Interface: 100002
+## X-Interface-Required: 100002
+## X-WoW-Version: 10.0.2
+## X-WoW-Build: 46619
 ## Title: XRP Roleplay Profiles
-## Version: 2.0.15
+## Version: 2.0.16
 ## Author: Justin Snelgrove
 ## Notes: A pretty good roleplaying profile addon.
 ## X-Category: Roleplay
