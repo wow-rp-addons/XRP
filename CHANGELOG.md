@@ -1,7 +1,7 @@
 # Changelog version 2.0.16
 
 - Added support for Retail 10.0.2.
-- Added X icons from patch 10.0.2.
+- Added 5 icons from patch 10.0.2.
 
 # Changelog version 2.0.15
 
