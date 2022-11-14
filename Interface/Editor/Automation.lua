@@ -85,14 +85,14 @@ function XRPEditorAutomationRevert_OnClick(self, button, down)
 end
 
 local function Profile_Checked(self)
-	return self.arg1 == UIDROPDOWNMENU_INIT_MENU.contents
+	return self.arg1 == MSA_DROPDOWNMENU_INIT_MENU.contents
 end
 
 local function Profile_Click(self, arg1, arg2, checked)
 	if not checked then
-		UIDROPDOWNMENU_INIT_MENU.contents = arg1
-		UIDROPDOWNMENU_INIT_MENU.Text:SetText(arg1 or NONE)
-		local parent = UIDROPDOWNMENU_INIT_MENU:GetParent()
+		MSA_DROPDOWNMENU_INIT_MENU.contents = arg1
+		MSA_DROPDOWNMENU_INIT_MENU.Text:SetText(arg1 or NONE)
+		local parent = MSA_DROPDOWNMENU_INIT_MENU:GetParent()
 		unsaved[parent.Form.contents] = arg1 or false
 		ToggleButtons(parent)
 	end
@@ -110,10 +110,10 @@ end
 local equipSets = {}
 local function equipSets_Click(self, arg1, arg2, checked)
 	if not checked then
-		local set = (UIDROPDOWNMENU_MENU_VALUE or "DEFAULT") .. self.value
-		UIDROPDOWNMENU_INIT_MENU.contents = set
-		UIDROPDOWNMENU_INIT_MENU.Text:SetText(MakeWords(set))
-		local parent = UIDROPDOWNMENU_INIT_MENU:GetParent()
+		local set = (MSA_DROPDOWNMENU_MENU_VALUE or "DEFAULT") .. self.value
+		MSA_DROPDOWNMENU_INIT_MENU.contents = set
+		MSA_DROPDOWNMENU_INIT_MENU.Text:SetText(MakeWords(set))
+		local parent = MSA_DROPDOWNMENU_INIT_MENU:GetParent()
 		local setProfile
 		if unsaved[set] ~= nil then
 			setProfile = unsaved[set] or nil
@@ -124,18 +124,18 @@ local function equipSets_Click(self, arg1, arg2, checked)
 		parent.Profile.Text:SetText(setProfile or NONE)
 		ToggleButtons(parent)
 	end
-	CloseDropDownMenus()
+	MSA_CloseDropDownMenus()
 end
 
 local function equipSets_Check(self)
-	return (UIDROPDOWNMENU_MENU_VALUE or "DEFAULT") .. self.value == UIDROPDOWNMENU_INIT_MENU.contents
+	return (MSA_DROPDOWNMENU_MENU_VALUE or "DEFAULT") .. self.value == MSA_DROPDOWNMENU_INIT_MENU.contents
 end
 
 local function forms_Click(self, arg1, arg2, checked)
 	if not checked then
-		UIDROPDOWNMENU_INIT_MENU.contents = self.value
-		UIDROPDOWNMENU_INIT_MENU.Text:SetText(MakeWords(self.value))
-		local parent = UIDROPDOWNMENU_INIT_MENU:GetParent()
+		MSA_DROPDOWNMENU_INIT_MENU.contents = self.value
+		MSA_DROPDOWNMENU_INIT_MENU.Text:SetText(MakeWords(self.value))
+		local parent = MSA_DROPDOWNMENU_INIT_MENU:GetParent()
 		local formProfile
 		if unsaved[self.value] ~= nil then
 			formProfile = unsaved[self.value] or nil
@@ -146,11 +146,11 @@ local function forms_Click(self, arg1, arg2, checked)
 		parent.Profile.Text:SetText(formProfile or NONE)
 		ToggleButtons(parent)
 	end
-	CloseDropDownMenus()
+	MSA_CloseDropDownMenus()
 end
 
 local function forms_Check(self)
-	return UIDROPDOWNMENU_INIT_MENU.contents == self.value
+	return MSA_DROPDOWNMENU_INIT_MENU.contents == self.value
 end
 
 local noSet = not isWorgen and not playerClass and { text = FORM_NAMES["DEFAULT"], value = "", checked = equipSets_Check, func = equipSets_Click, } or nil

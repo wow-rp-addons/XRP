@@ -287,9 +287,9 @@ function XRPOptionsCheckButton_Mixin:CheckDeps()
 				control:SetEnabled(self.value)
 			elseif control.type == CONTROLTYPE_DROPDOWN then
 				if self.value then
-					UIDropDownMenu_EnableDropDown(control)
+					MSA_DropDownMenu_EnableDropDown(control)
 				else
-					UIDropDownMenu_DisableDropDown(control)
+					MSA_DropDownMenu_DisableDropDown(control)
 				end
 			end
 		end
@@ -317,9 +317,9 @@ function XRPOptionsCheckButton_Mixin:OnEnable()
 				control:SetEnabled(self:GetChecked())
 			elseif control.type == CONTROLTYPE_DROPDOWN then
 				if self:GetChecked() then
-					UIDropDownMenu_EnableDropDown(control)
+					MSA_DropDownMenu_EnableDropDown(control)
 				else
-					UIDropDownMenu_DisableDropDown(control)
+					MSA_DropDownMenu_DisableDropDown(control)
 				end
 			end
 		end
@@ -333,7 +333,7 @@ function XRPOptionsCheckButton_Mixin:OnDisable()
 			if control.type == CONTROLTYPE_CHECKBOX or control.type == CONTROLTYPE_SLIDER then
 				control:SetEnabled(false)
 			elseif control.type == CONTROLTYPE_DROPDOWN then
-				UIDropDownMenu_DisableDropDown(control)
+				MSA_DropDownMenu_DisableDropDown(control)
 			end
 		end
 	end
@@ -362,14 +362,14 @@ end
 
 local function DropDown_OnClick(self, arg1, arg2, checked)
 	if not checked then
-		UIDROPDOWNMENU_INIT_MENU.Text:SetText(arg2)
-		UIDROPDOWNMENU_INIT_MENU.value = arg1
-		UIDROPDOWNMENU_INIT_MENU:Set(arg1)
+		MSA_DROPDOWNMENU_INIT_MENU.Text:SetText(arg2)
+		MSA_DROPDOWNMENU_INIT_MENU.value = arg1
+		MSA_DROPDOWNMENU_INIT_MENU:Set(arg1)
 	end
 end
 
 local function DropDown_Checked(self)
-	return self.arg1 == UIDROPDOWNMENU_INIT_MENU.value
+	return self.arg1 == MSA_DROPDOWNMENU_INIT_MENU.value
 end
 
 XRPOptionsGeneralHeight_baseMenuList = {

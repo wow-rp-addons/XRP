@@ -291,9 +291,9 @@ local function Menu_Click(self, arg1, arg2, checked)
 				SocialFrame_LoadUI()
 		end
 		SocialPostFrame:SetAttribute("action", "Show")
-		SocialPostFrame:SetAttribute("settext", ("|cff00aced%s|r "):format(UIDROPDOWNMENU_INIT_MENU.linkData))
+		SocialPostFrame:SetAttribute("settext", ("|cff00aced%s|r "):format(MSA_DROPDOWNMENU_INIT_MENU.linkData))
 	elseif arg1 == "XRP_URL" then
-		StaticPopup_Show("XRP_URL", nil, nil, ("https://twitter.com/%s"):format(UIDROPDOWNMENU_INIT_MENU.linkData:match("^@(.-)$")))
+		StaticPopup_Show("XRP_URL", nil, nil, ("https://twitter.com/%s"):format(MSA_DROPDOWNMENU_INIT_MENU.linkData:match("^@(.-)$")))
 	end
 end
 XRPViewerMultiline_baseMenuList = {

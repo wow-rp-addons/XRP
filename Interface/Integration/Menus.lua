@@ -25,15 +25,15 @@ local L = AddOn.GetText
 -- chat rosters).
 
 local function OpenPlayerProfile()
-	if UnitExists(UIDROPDOWNMENU_INIT_MENU.unit) then
-		XRPViewer:View(UIDROPDOWNMENU_INIT_MENU.unit)
+	if UnitExists(MSA_DROPDOWNMENU_INIT_MENU.unit) then
+		XRPViewer:View(MSA_DROPDOWNMENU_INIT_MENU.unit)
 	else
-		XRPViewer:View(AddOn_Chomp.NameMergedRealm(UIDROPDOWNMENU_INIT_MENU.name, UIDROPDOWNMENU_INIT_MENU.server))
+		XRPViewer:View(AddOn_Chomp.NameMergedRealm(MSA_DROPDOWNMENU_INIT_MENU.name, MSA_DROPDOWNMENU_INIT_MENU.server))
 	end
 end
 
 local function OpenBNetProfile()
-	local gameAccountInfo = C_BattleNet.GetAccountInfoByID(UIDROPDOWNMENU_INIT_MENU.bnetIDAccount).gameAccountInfo;
+	local gameAccountInfo = C_BattleNet.GetAccountInfoByID(MSA_DROPDOWNMENU_INIT_MENU.bnetIDAccount).gameAccountInfo;
 	local characterName = gameAccountInfo.characterName or "";
 	local client = gameAccountInfo.clientProgram;
 	local realmName = gameAccountInfo.realmName or "";
@@ -63,7 +63,7 @@ local allowedUnits = {
 local function UnitPopup_OnShowMenu_Hook(dropdownMenu, menuType)
 	if not dropdownMenu or dropdownMenu:IsForbidden() then
 		return  -- Invalid or forbidden menu.
-	elseif UIDROPDOWNMENU_MENU_LEVEL ~= 1 then
+	elseif MSA_DROPDOWNMENU_MENU_LEVEL ~= 1 then
 		return  -- We don't support submenus.
 	end
 
@@ -72,10 +72,10 @@ local function UnitPopup_OnShowMenu_Hook(dropdownMenu, menuType)
 	end
 
 	if menuType == "BN_FRIEND" then
-		if not UIDROPDOWNMENU_INIT_MENU.bnetIDAccount then
+		if not MSA_DROPDOWNMENU_INIT_MENU.bnetIDAccount then
 			return
 		else
-			local gameAccountInfo = C_BattleNet.GetAccountInfoByID(UIDROPDOWNMENU_INIT_MENU.bnetIDAccount).gameAccountInfo
+			local gameAccountInfo = C_BattleNet.GetAccountInfoByID(MSA_DROPDOWNMENU_INIT_MENU.bnetIDAccount).gameAccountInfo
 			local client = gameAccountInfo.clientProgram
 			local realmName = gameAccountInfo.realmName or ""
 			if client ~= BNET_CLIENT_WOW or realmName == "" then
@@ -84,7 +84,7 @@ local function UnitPopup_OnShowMenu_Hook(dropdownMenu, menuType)
 		end
 	end
 
-	if UnitExists(UIDROPDOWNMENU_INIT_MENU.unit) then
+	if UnitExists(MSA_DROPDOWNMENU_INIT_MENU.unit) then
 		if not xrpAccountSaved.settings.menusUnits then
 			return
 		end
@@ -94,8 +94,8 @@ local function UnitPopup_OnShowMenu_Hook(dropdownMenu, menuType)
 		end
 	end
 
-	UIDropDownMenu_AddSeparator()
-	UIDropDownMenu_AddButton(buttons[allowedUnits[menuType]], UIDROPDOWNMENU_MENU_LEVEL)
+	MSA_DropDownMenu_AddSeparator()
+	MSA_DropDownMenu_AddButton(buttons[allowedUnits[menuType]], MSA_DROPDOWNMENU_MENU_LEVEL)
 end
 
 -- Disabling UnitPopups because of Edit Mode conflict

@@ -148,7 +148,7 @@ function XRPEditorRevert_OnClick(self, button, down)
 end
 
 local function Checked(self)
-	return self.arg1 == UIDROPDOWNMENU_INIT_MENU.contents
+	return self.arg1 == MSA_DROPDOWNMENU_INIT_MENU.contents
 end
 
 local function Profiles_Click(self, arg1, arg2, checked)
@@ -171,8 +171,8 @@ end
 
 local function Parent_Click(self, arg1, arg2, checked)
 	if not checked then
-		UIDROPDOWNMENU_INIT_MENU.contents = arg1
-		UIDROPDOWNMENU_INIT_MENU:SetFormattedText(SUBTITLE_FORMAT, L.PARENT, arg1 or NONE)
+		MSA_DROPDOWNMENU_INIT_MENU.contents = arg1
+		MSA_DROPDOWNMENU_INIT_MENU:SetFormattedText(SUBTITLE_FORMAT, L.PARENT, arg1 or NONE)
 		CheckFields()
 	end
 end
@@ -189,9 +189,9 @@ function XRPEditorParent_PreClick(self, button, down)
 end
 
 local function FC_Click(self, arg1, arg2, checked)
-	if not checked or UIDROPDOWNMENU_INIT_MENU.inherited then
-		UIDROPDOWNMENU_INIT_MENU:SetAttribute("contents", arg1)
-		UIDROPDOWNMENU_INIT_MENU:SetAttribute("inherited", false)
+	if not checked or MSA_DROPDOWNMENU_INIT_MENU.inherited then
+		MSA_DROPDOWNMENU_INIT_MENU:SetAttribute("contents", arg1)
+		MSA_DROPDOWNMENU_INIT_MENU:SetAttribute("inherited", false)
 		CheckFields("FC")
 	end
 end

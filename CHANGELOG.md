@@ -2,6 +2,7 @@
 
 - Added support for Retail 10.0.2.
 - Added 5 icons from patch 10.0.2.
+- Added MSA-DropDownMenu library to fix taint issues with Edit Mode.
 
 # Changelog version 2.0.15
 

@@ -48,7 +48,7 @@ XRP_CARD_BORDER_COLOR = CreateColor(0.5, 0.5, 0.5)
 -- End Globals
 
 function XRPTemplates_CloseDropDownMenus(self, ...)
-	CloseDropDownMenus()
+	MSA_CloseDropDownMenus()
 end
 
 function XRPTemplates_HideParentParent(self, ...)
@@ -107,7 +107,7 @@ end
 
 function XRPTemplatesDropDown_OnLoad(self)
 	if self.width then
-		UIDropDownMenu_SetWidth(self, self.width, 0)
+		MSA_DropDownMenu_SetWidth(self, self.width, 0)
 	end
 end
 
@@ -120,7 +120,7 @@ local function Menu_Initialize(self, level, menuList)
 	end
 	for i, entry in ipairs(menuList) do
 		if (entry.text) then
-			UIDropDownMenu_AddButton(entry, level)
+			MSA_DropDownMenu_AddButton(entry, level)
 		end
 	end
 end
@@ -138,7 +138,7 @@ XRPTemplatesMenu_Mixin = {
 }
 
 function XRPTemplatesMenu_OnClick(self, button, down)
-	ToggleDropDownMenu(nil, nil, self.Menu or self, self.anchor or self)
+	MSA_ToggleDropDownMenu(nil, nil, self.Menu or self, self.anchor or self)
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
 end
 
@@ -181,7 +181,7 @@ end
 function XRPTemplatesHelpButton_OnClick(self, button, down)
 	local parent = self:GetParent()
 	if not HelpPlate_IsShowing(parent.helpPlates) then
-		CloseDropDownMenus()
+		MSA_CloseDropDownMenus()
 		HelpPlate_Show(parent.helpPlates, parent, self, true)
 	else
 		HelpPlate_Hide(true)

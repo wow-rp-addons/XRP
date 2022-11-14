@@ -164,47 +164,47 @@ end
 AddOn_XRP.RegisterEventCallback("ADDON_XRP_CACHE_DROPPED", DROP)
 
 local function Menu_Checked(self)
-	if self.disabled or not UIDROPDOWNMENU_INIT_MENU.character then
+	if self.disabled or not MSA_DROPDOWNMENU_INIT_MENU.character then
 		return false
 	elseif self.arg1 == "XRP_BOOKMARK" then
-		return UIDROPDOWNMENU_INIT_MENU.character.bookmark and true or false
+		return MSA_DROPDOWNMENU_INIT_MENU.character.bookmark and true or false
 	elseif self.arg1 == "XRP_HIDE" then
-		return UIDROPDOWNMENU_INIT_MENU.character.hidden and true or false
+		return MSA_DROPDOWNMENU_INIT_MENU.character.hidden and true or false
 	end
 end
 local function Menu_Click(self, arg1, arg2, checked)
 	if arg1 == "XRP_VIEW_CACHED" then
-		XRPViewer:View(UIDROPDOWNMENU_INIT_MENU.character)
+		XRPViewer:View(MSA_DROPDOWNMENU_INIT_MENU.character)
 	elseif arg1 == "XRP_VIEW_LIVE" then
-		XRPViewer:View(UIDROPDOWNMENU_INIT_MENU.character.id)
+		XRPViewer:View(MSA_DROPDOWNMENU_INIT_MENU.character.id)
 	elseif arg1 == "XRP_NOTES" then
-		XRPArchive.Notes:SetAttribute("character", UIDROPDOWNMENU_INIT_MENU.character)
+		XRPArchive.Notes:SetAttribute("character", MSA_DROPDOWNMENU_INIT_MENU.character)
 		XRPArchive.Notes:Show()
 	elseif arg1 == "XRP_FRIEND" then
-		local character = UIDROPDOWNMENU_INIT_MENU.character
+		local character = MSA_DROPDOWNMENU_INIT_MENU.character
 		local characterID = character.id
 		AddOrRemoveFriend(Ambiguate(characterID, "none"), AddOn_XRP.RemoveTextFormats(character.NA) or character.name)
 	elseif arg1 == "XRP_BOOKMARK" then
-		UIDROPDOWNMENU_INIT_MENU.character.bookmark = not checked
+		MSA_DROPDOWNMENU_INIT_MENU.character.bookmark = not checked
 		if request.bookmark then
 			request.offset = XRPArchive.List.scrollBar:GetValue()
 			Refresh()
 		end
 	elseif arg1 == "XRP_HIDE" then
-		UIDROPDOWNMENU_INIT_MENU.character.hidden = not checked
+		MSA_DROPDOWNMENU_INIT_MENU.character.hidden = not checked
 		if not request.showHidden then
 			request.offset = XRPArchive.List.scrollBar:GetValue()
 			Refresh()
 		end
 	elseif arg1 == "XRP_EXPORT" then
-		local character = UIDROPDOWNMENU_INIT_MENU.character
+		local character = MSA_DROPDOWNMENU_INIT_MENU.character
 		XRPExport:Export(character.name, character.exportPlainText)
 	elseif arg1 == "XRP_CACHE_DROP" then
-		local name, realm = UIDROPDOWNMENU_INIT_MENU.character.id:match("^([^%-]+)%-([^%-]+)")
-		StaticPopup_Show("XRP_CACHE_SINGLE", UIDROPDOWNMENU_INIT_MENU.character.idDisplay, nil, UIDROPDOWNMENU_INIT_MENU.character)
+		local name, realm = MSA_DROPDOWNMENU_INIT_MENU.character.id:match("^([^%-]+)%-([^%-]+)")
+		StaticPopup_Show("XRP_CACHE_SINGLE", MSA_DROPDOWNMENU_INIT_MENU.character.idDisplay, nil, MSA_DROPDOWNMENU_INIT_MENU.character)
 	end
-	if UIDROPDOWNMENU_MENU_LEVEL > 1 then
-		CloseDropDownMenus()
+	if MSA_DROPDOWNMENU_MENU_LEVEL > 1 then
+		MSA_CloseDropDownMenus()
 	end
 end
 local Advanced_menuList = {
@@ -224,7 +224,7 @@ XRPArchiveEntry_Mixin = {
 	},
 	onHide = function(level)
 		if level < 3 then
-			UIDROPDOWNMENU_INIT_MENU.Selected:Hide()
+			MSA_DROPDOWNMENU_INIT_MENU.Selected:Hide()
 		end
 	end,
 }
@@ -264,7 +264,7 @@ function XRPArchiveEntry_OnClick(self, button, down)
 			self.baseMenuList[6].disabled = nil
 			self.baseMenuList[7].menuList[2].disabled = nil
 		end
-		ToggleDropDownMenu(nil, nil, self, "cursor", nil, nil, self.baseMenuList)
+		MSA_ToggleDropDownMenu(nil, nil, self, "cursor", nil, nil, self.baseMenuList)
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
 	end
 end
@@ -279,13 +279,13 @@ local function Filter_Click(self, arg1, arg2, checked)
 			request[arg1][value] = nil
 		end
 		request[arg1].UNKNOWN = nil
-		UIDropDownMenu_Refresh(XRPArchive.FilterButton.Menu, nil, UIDROPDOWNMENU_MENU_LEVEL)
+		MSA_DropDownMenu_Refresh(XRPArchive.FilterButton.Menu, nil, MSA_DROPDOWNMENU_MENU_LEVEL)
 	elseif arg2 == "NONE" then
 		for i, value in pairs(lists[arg1]) do
 			request[arg1][value] = true
 		end
 		request[arg1].UNKNOWN = true
-		UIDropDownMenu_Refresh(XRPArchive.FilterButton.Menu, nil, UIDROPDOWNMENU_MENU_LEVEL)
+		MSA_DropDownMenu_Refresh(XRPArchive.FilterButton.Menu, nil, MSA_DROPDOWNMENU_MENU_LEVEL)
 	else
 		request[arg1][arg2] = not checked
 	end
@@ -338,7 +338,7 @@ local function Filter_Radio_Click(self, arg1, arg2, checked)
 	request[arg1] = arg2
 	request.offset = 0
 	Refresh()
-	UIDropDownMenu_Refresh(XRPArchive.FilterButton.Menu, nil, UIDROPDOWNMENU_MENU_LEVEL)
+	MSA_DropDownMenu_Refresh(XRPArchive.FilterButton.Menu, nil, MSA_DROPDOWNMENU_MENU_LEVEL)
 end
 local sortMenu = {
 	{ text = NAME, keepShownOnClick = true, arg1 = "sortType", arg2 = nil, checked = Filter_Radio_Checked, func = Filter_Radio_Click, },
@@ -423,7 +423,7 @@ local requests = {
 request = requests[1]
 
 function XRPArchiveTab_OnClick(self, button, down)
-	CloseDropDownMenus()
+	MSA_CloseDropDownMenus()
 	request.offset = XRPArchive.List.scrollBar:GetValue()
 	local now = GetTime()
 	request.lastRefresh = now
