@@ -12,6 +12,7 @@ ignore:
 embedded-libraries:
   - librpmedia
   - libstub
+  - msa-dropdownmenu-10
 
 manual-changelog:
   filename: CHANGELOG.md
