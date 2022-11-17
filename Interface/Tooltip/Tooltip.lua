@@ -470,13 +470,13 @@ end
 
 local function Tooltip_RECEIVE(event, name)
 	if not active or name ~= currentUnit.character.id then return end
-	local tooltip, unit = GameTooltip:GetUnit()
-	if tooltip then
+	local _, unit, guid = TooltipUtil.GetDisplayedUnit(GameTooltip)
+	if guid then
 		RenderTooltip()
 		-- If the mouse has already left the unit, the tooltip will get stuck
 		-- visible. This bounces it back into visibility if it's partly faded
 		-- out, but it'll just fade again.
-		if replace and not GameTooltip:IsUnit("mouseover") then
+		if replace and unit ~= "mouseover" then
 			Tooltip:FadeOut()
 		end
 	end
