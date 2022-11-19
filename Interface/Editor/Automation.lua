@@ -20,13 +20,14 @@
 local FOLDER_NAME, AddOn = ...
 local L = AddOn.GetText
 
-local isWorgen, playerClass = select(2, UnitRace("player")) == "Worgen", select(2, UnitClass("player"))
+local playerRace = select(2, UnitRace("player"))
+local isWorgen, isDracthyr, playerClass = playerRace == "Worgen", playerRace == "Dracthyr", select(2, UnitClass("player"))
 if not (playerClass == "DRUID" or playerClass == "PRIEST" or playerClass == "SHAMAN") then
 	playerClass = nil
 end
 
 local FORM_NAMES = {
-	["DEFAULT"] = isWorgen and AddOn_XRP.Strings.Values.GR.Worgen or playerClass and (playerClass == "PRIEST" and L"Standard Form" or L"Humanoid Form") or L"No Equipment Set",
+	["DEFAULT"] = isWorgen and AddOn_XRP.Strings.Values.GR.Worgen or isDracthyr and AddOn_XRP.Strings.Values.GR.Dracthyr or playerClass and (playerClass == "PRIEST" and L"Standard Form" or L"Humanoid Form") or L"No Equipment Set",
 	["CAT"] = L"Cat Form",
 	["BEAR"] = L"Bear Form",
 	["MOONKIN"] = L"Moonkin Form",
@@ -38,6 +39,7 @@ local FORM_NAMES = {
 	["SHADOWFORM"] = L"Shadowform",
 	["GHOSTWOLF"] = L"Ghost Wolf",
 	["HUMAN"] = AddOn_XRP.Strings.Values.GR.Human,
+	["VISAGE"] = L"Visage",
 	["DEFAULT\030SHADOWFORM"] = L"Shadowform (Worgen)",
 	["HUMAN\030SHADOWFORM"] = L"Shadowform (Human)",
 	["MERCENARY"] = L"Mercenary Mode",
@@ -47,7 +49,7 @@ local function MakeWords(text)
 	local form, equipment = text:match("^([^\029]+)\029?([^\029]*)$")
 	if not equipment or equipment == "" then
 		return FORM_NAMES[form]
-	elseif not isWorgen and not playerClass then
+	elseif not isWorgen and not isDracthyr and not playerClass then
 		return equipment
 	else
 		return SUBTITLE_FORMAT:format(FORM_NAMES[form], equipment)
@@ -153,8 +155,8 @@ local function forms_Check(self)
 	return MSA_DROPDOWNMENU_INIT_MENU.contents == self.value
 end
 
-local noSet = not isWorgen and not playerClass and { text = FORM_NAMES["DEFAULT"], value = "", checked = equipSets_Check, func = equipSets_Click, } or nil
-local mercenarySet = not isWorgen and not playerClass and { text = FORM_NAMES["MERCENARY"], value = "MERCENARY", checked = forms_Check, func = forms_Click, } or nil
+local noSet = not isWorgen and not isDracthyr and not playerClass and { text = FORM_NAMES["DEFAULT"], value = "", checked = equipSets_Check, func = equipSets_Click, } or nil
+local mercenarySet = not isWorgen and not isDracthyr and not playerClass and { text = FORM_NAMES["MERCENARY"], value = "MERCENARY", checked = forms_Check, func = forms_Click, } or nil
 
 XRPEditorAutomationForm_Mixin = {
 	preClick = function(self, button, down)
@@ -226,6 +228,12 @@ if isWorgen then
 			FormMenuItem("MERCENARY"),
 		}
 	end
+elseif isDracthyr then
+	XRPEditorAutomationForm_Mixin.baseMenuList = {
+		FormMenuItem("DEFAULT"),
+		FormMenuItem("VISAGE"),
+		FormMenuItem("MERCENARY"),
+	}
 else
 	if playerClass == "DRUID" then
 		XRPEditorAutomationForm_Mixin.baseMenuList = {

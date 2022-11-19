@@ -20,7 +20,9 @@
 local FOLDER_NAME, AddOn = ...
 local L = AddOn.GetText
 
-local isWorgen = select(2, UnitRace("player")) == "Worgen"
+local playerRace = select(2, UnitRace("player"));
+local isWorgen = playerRace == "Worgen"
+local isDracthyr = playerRace == "Dracthyr"
 local playerClass = select(2, UnitClass("player"))
 if not (playerClass == "DRUID" or playerClass == "PRIEST" or playerClass == "SHAMAN") then
 	playerClass = nil
@@ -81,6 +83,9 @@ local function GetCurrentForm()
 	local raceForm
 	if isWorgen and not FORM_NO_RACE[classForm] then
 		raceForm = select(2, C_PlayerInfo.GetAlternateFormInfo()) and "HUMAN" or "DEFAULT"
+	end
+	if isDracthyr and not FORM_NO_RACE[classForm] then
+		raceForm = select(2, C_PlayerInfo.GetAlternateFormInfo()) and "VISAGE" or "DEFAULT"
 	end
 
 	local equipSet
@@ -210,6 +215,9 @@ AddOn.RegisterGameEventCallback("PLAYER_LOGIN", function(event)
 		}
 		if isWorgen then
 			validForms["HUMAN"] = true
+		end
+		if isDracthyr then
+			validForms["VISAGE"] = true
 		end
 		if playerClass == "DRUID" then
 			validForms["CAT"] = true
