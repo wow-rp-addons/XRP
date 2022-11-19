@@ -80,7 +80,7 @@ local function GetCurrentForm()
 
 	local raceForm
 	if isWorgen and not FORM_NO_RACE[classForm] then
-		raceForm = select(2, HasAlternateForm()) and "HUMAN" or "DEFAULT"
+		raceForm = select(2, C_PlayerInfo.GetAlternateFormInfo()) and "HUMAN" or "DEFAULT"
 	end
 
 	local equipSet
