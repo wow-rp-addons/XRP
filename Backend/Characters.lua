@@ -39,6 +39,7 @@ local RACE_FACTION = {
 	LightforgedDraenei = "Alliance",
 	DarkIronDwarf = "Alliance",
 	KulTiran = "Alliance",
+	Mechagnome = "Alliance",
 	Orc = "Horde",
 	Tauren = "Horde",
 	Troll = "Horde",
@@ -49,7 +50,9 @@ local RACE_FACTION = {
 	HighmountainTauren = "Horde",
 	MagharOrc = "Horde",
 	ZandalariTroll = "Horde",
+	Vulpera = "Horde",
 	Pandaren = false, -- Can't tell faction.
+	Dracthyr = false, -- Can't tell faction.
 }
 
 local MERCENARY = {

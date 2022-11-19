@@ -108,6 +108,7 @@ Values.GF.Neutral = L.VALUE_GF_NEUTRAL
 
 Values.GR = {}
 Values.GR.BloodElf = L.VALUE_GR_BLOODELF
+Values.GR.Dracthyr = L.VALUE_GR_DRACTHYR
 Values.GR.Draenei = L.VALUE_GR_DRAENEI
 Values.GR.DarkIronDwarf = L.VALUE_GR_DARKIRONDWARF
 Values.GR.Dwarf = L.VALUE_GR_DWARF
@@ -118,6 +119,7 @@ Values.GR.Human = L.VALUE_GR_HUMAN
 Values.GR.KulTiran = L.VALUE_GR_KULTIRAN
 Values.GR.LightforgedDraenei = L.VALUE_GR_LIGHTFORGEDDRAENEI
 Values.GR.MagharOrc = L.VALUE_GR_MAGHARORC
+Values.GR.Mechagnome = L.VALUE_GR_MECHAGNOME
 Values.GR.NightElf = L.VALUE_GR_NIGHTELF
 Values.GR.Nightborne = L.VALUE_GR_NIGHTBORNE
 Values.GR.Orc = L.VALUE_GR_ORC
@@ -126,6 +128,7 @@ Values.GR.Scourge = L.VALUE_GR_SCOURGE
 Values.GR.Tauren = L.VALUE_GR_TAUREN
 Values.GR.Troll = L.VALUE_GR_TROLL
 Values.GR.VoidElf = L.VALUE_GR_VOIDELF
+Values.GR.Vulpera = L.VALUE_GR_VULPERA
 Values.GR.Worgen = L.VALUE_GR_WORGEN
 Values.GR.ZandalariTroll = L.VALUE_GR_ZANDALARITROLL
 
