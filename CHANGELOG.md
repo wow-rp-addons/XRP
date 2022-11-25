@@ -1,3 +1,9 @@
+# Changelog version 2.0.17
+
+- Added dracthyr form automation.
+- Fixed an issue with form automation not working.
+- Fixed an issue with the tooltip API sometimes returning invalid data.
+
 # Changelog version 2.0.16
 
 - Added support for Retail 10.0.2.
