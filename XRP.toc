@@ -5,6 +5,7 @@
 ## X-WoW-Build: 49444
 ## Title: XRP Roleplay Profiles
 ## Version: 2.0.18
+## IconTexture: Interface\Icons\Ability_Malkorok_BlightofYshaarj_Green
 ## Author: Justin Snelgrove
 ## Notes: A pretty good roleplaying profile addon.
 ## X-Category: Roleplay
