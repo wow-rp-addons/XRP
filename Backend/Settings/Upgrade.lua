@@ -20,7 +20,8 @@
 local FOLDER_NAME, AddOn = ...
 local L = AddOn.GetText
 
-if tonumber(GetAddOnMetadata(FOLDER_NAME, "X-Interface-Required")) > tonumber(select(4, GetBuildInfo())) then
+local interfaceCurrent = select(4, GetBuildInfo())
+if tonumber(C_AddOns.GetAddOnMetadata(FOLDER_NAME, "X-Interface-Required")) > tonumber(interfaceCurrent) then
 	error("XRP: Required interface version not met, refusing to load saved variables updates.")
 end
 

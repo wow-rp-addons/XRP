@@ -1,6 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
 	<Script>
-		if tonumber(GetAddOnMetadata("XRP", "X-Interface-Required")) &gt; tonumber(select(4, GetBuildInfo())) then
+		local interfaceCurrent = select(4, GetBuildInfo())
+		if tonumber(C_AddOns.GetAddOnMetadata("XRP", "X-Interface-Required")) &gt; tonumber(interfaceCurrent) then
 			error("XRP: Required interface version not met!")
 		end
 	</Script>
