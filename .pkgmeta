@@ -9,9 +9,15 @@ ignore:
   - Libraries/LibRPMedia/Tests
   - Libraries/LibRPMedia/UI
 
+externals:
+  totalRP3/Libs/CallbackHandler-1.0: https://repos.curseforge.com/wow/callbackhandler/trunk/CallbackHandler-1.0
+  totalRP3/Libs/Chomp: https://github.com/wow-rp-addons/Chomp
+  totalRP3/Libs/LibDropDownExtension: https://github.com/Vladinator/wow-addon-libdropdownextension
+  totalRP3/Libs/LibMSP: https://github.com/wow-rp-addons/LibMSP
+  totalRP3/Libs/LibRPMedia: https://github.com/wow-rp-addons/LibRPMedia
+  totalRP3/Libs/LibStub: https://repos.curseforge.com/wow/libstub/trunk
+
 embedded-libraries:
-  - librpmedia
-  - libstub
   - msa-dropdownmenu-10
 
 manual-changelog:
