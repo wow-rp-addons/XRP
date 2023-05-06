@@ -12,4 +12,5 @@
 	<Include file="BlueBugs\BlueBugs.xml"/>
 	<Include file="LibRPMedia\LibRPMedia-1.0.xml"/>
 	<Include file="MSA-DropDownMenu-1.0\MSA-DropDownMenu-1.0\MSA-DropDownMenu-1.0.xml"/>
+	<Include file="LibDropDownExtension\LibDropDownExtension.lua"/>
 </Ui>
