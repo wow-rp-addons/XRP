@@ -1,10 +1,10 @@
-## Interface: 100200
-## X-Interface: 100200
-## X-Interface-Required: 100200
-## X-WoW-Version: 10.2.0
-## X-WoW-Build: 51851
+## Interface: 100207
+## X-Interface: 100207
+## X-Interface-Required: 100207
+## X-WoW-Version: 10.2.7
+## X-WoW-Build: 54577
 ## Title: XRP Roleplay Profiles
-## Version: 2.0.20
+## Version: 2.0.21
 ## IconTexture: Interface\Icons\Ability_Malkorok_BlightofYshaarj_Green
 ## Author: Justin Snelgrove
 ## Notes: A pretty good roleplaying profile addon.
