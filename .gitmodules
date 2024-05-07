@@ -1,12 +1,3 @@
 [submodule "Libraries/BlueBugs"]
 	path = Libraries/BlueBugs
 	url = https://github.com/Itarater/BlueBugs.git
-[submodule "Libraries/LibMSP"]
-	path = Libraries/LibMSP
-	url = https://github.com/wow-rp-addons/LibMSP.git
-[submodule "Libraries/LibRPMedia"]
-	path = Libraries/LibRPMedia
-	url = https://github.com/wow-rp-addons/LibRPMedia.git
-[submodule "Libraries/Chomp"]
-	path = Libraries/Chomp
-	url = https://github.com/wow-rp-addons/Chomp/
