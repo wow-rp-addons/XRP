@@ -7,9 +7,9 @@
 	</Script>
 	<Include file="LibStub\LibStub.lua"/>
 	<Include file="CallbackHandler-1.0\CallbackHandler-1.0.xml"/>
+	<Include file="ChatThrottleLib\ChatThrottleLib.xml"/>
 	<Include file="Chomp\Chomp.xml"/>
 	<Include file="LibMSP\LibMSP.xml"/>
-	<Include file="BlueBugs\BlueBugs.xml"/>
 	<Include file="LibRPMedia\LibRPMedia-1.0.xml"/>
 	<Include file="MSA-DropDownMenu-1.0\MSA-DropDownMenu-1.0\MSA-DropDownMenu-1.0.xml"/>
 	<Include file="LibDropDownExtension\LibDropDownExtension.lua"/>
