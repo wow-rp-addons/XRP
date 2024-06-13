@@ -341,7 +341,7 @@ local XRPAPI = {
 	},
 }
 
-if IsAddOnLoaded("Blizzard_APIDocumentation") then
+if C_AddOns.IsAddOnLoaded("Blizzard_APIDocumentation") then
 	APIDocumentation:AddDocumentationTable(XRPAPI)
 else
 	local loaded = false

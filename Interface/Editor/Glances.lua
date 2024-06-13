@@ -203,7 +203,7 @@ end
 
 function XRPEditorIconsFilter_Mixin:OnEditFocusLost()
 	SearchBoxTemplate_OnEditFocusLost(self)
-	if GetMouseFocus() == self.clearButton then
+	if self.clearButton:IsMouseMotionFocus() then
 		self:SetFocus()
 	end
 end

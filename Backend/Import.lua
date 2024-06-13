@@ -20,7 +20,7 @@
 local FOLDER_NAME, AddOn = ...
 local L = AddOn.GetText
 
-local hasMRP, hasTRP3 = (GetAddOnEnableState(AddOn.characterName, "MyRolePlay") == 2), (GetAddOnEnableState(AddOn.characterName, "totalRP3") == 2)
+local hasMRP, hasTRP3 = (C_AddOns.GetAddOnEnableState(AddOn.characterName, "MyRolePlay") == 2), (C_AddOns.GetAddOnEnableState(AddOn.characterName, "totalRP3") == 2)
 if not (hasMRP or hasTRP3) then return end
 
 local MRP_NO_IMPORT = { TT = true, VA = true, VP = true, GC = true, GF = true, GR = true, GS = true, GU = true }
@@ -142,13 +142,13 @@ end
 
 AddOn.RegisterGameEventCallback("PLAYER_LOGIN", function(event)
 	local imported = false
-	if hasMRP and select(2, IsAddOnLoaded("MyRolePlay")) then
+	if hasMRP and select(2, C_AddOns.IsAddOnLoaded("MyRolePlay")) then
 		local count = ImportMyRolePlay()
 		if count > 0 then
 			imported = true
 		end
 	end
-	if hasTRP3 and select(2, IsAddOnLoaded("totalRP3")) then
+	if hasTRP3 and select(2, C_AddOns.IsAddOnLoaded("totalRP3")) then
 		local count = ImportTotalRP3()
 		if count > 0 then
 			imported = true

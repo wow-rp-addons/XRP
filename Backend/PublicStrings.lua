@@ -98,8 +98,8 @@ Values.GC = setmetatable({}, {
 		return self[tostring(fastrandom(2, 3))]
 	end,
 })
-Values.GC["2"] = FillLocalizedClassList({}, false) -- Male forms
-Values.GC["3"] = FillLocalizedClassList({}, true) -- Female forms
+Values.GC["2"] = LocalizedClassList(false) -- Male forms
+Values.GC["3"] = LocalizedClassList(true) -- Female forms
 
 Values.GF = {}
 Values.GF.Alliance = FACTION_ALLIANCE

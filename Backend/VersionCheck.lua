@@ -20,7 +20,7 @@
 local FOLDER_NAME, AddOn = ...
 local L = AddOn.GetText
 
-local VERSION = GetAddOnMetadata(FOLDER_NAME, "Version")
+local VERSION = C_AddOns.GetAddOnMetadata(FOLDER_NAME, "Version")
 
 local VERSION_MATCH = "^(%d+)%.(%d+)%.(%d+)%-?(%l*)(%d*)"
 local function CompareVersion(newVersion, oldVersion)
@@ -67,9 +67,9 @@ function AddOn.UpdateWoWVersion(remoteVersion, remoteBuild, remoteInterface)
 	remoteInterface = tonumber(remoteInterface)
 	local activeVersion, activeBuild, activeDate, activeInterface = GetBuildInfo()
 	activeBuild = tonumber(activeBuild)
-	local localVersion = GetAddOnMetadata(FOLDER_NAME, "X-WoW-Version")
-	local localBuild = tonumber(GetAddOnMetadata(FOLDER_NAME, "X-WoW-Build"))
-	local localInterface = tonumber(GetAddOnMetadata(FOLDER_NAME, "X-Interface"))
+	local localVersion = C_AddOns.GetAddOnMetadata(FOLDER_NAME, "X-WoW-Version")
+	local localBuild = tonumber(C_AddOns.GetAddOnMetadata(FOLDER_NAME, "X-WoW-Build"))
+	local localInterface = tonumber(C_AddOns.GetAddOnMetadata(FOLDER_NAME, "X-Interface"))
 	if CompareVersion(activeVersion, localVersion) > 0 and activeVersion == remoteVersion then
 		xrpAccountSaved.update.wowVersionUpdate = remoteVersion
 	end

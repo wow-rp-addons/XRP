@@ -24,8 +24,8 @@ local Values = AddOn_XRP.Strings.Values
 
 local SLASH_XRP = L"/xrp"
 local INFO = STAT_FORMAT:format("|cff99b3e6%s") .. "|r %s"
-local XRP_HEADER = ("|cffffd100<|r|cffabd473%s|r|cffffd100>:|r %%s"):format(GetAddOnMetadata(FOLDER_NAME, "Title"))
-local XRP_VERSION = INFO:format(GAME_VERSION_LABEL, GetAddOnMetadata(FOLDER_NAME, "Version") or UNKNOWN)
+local XRP_HEADER = ("|cffffd100<|r|cffabd473%s|r|cffffd100>:|r %%s"):format(C_AddOns.GetAddOnMetadata(FOLDER_NAME, "Title"))
+local XRP_VERSION = INFO:format(GAME_VERSION_LABEL, C_AddOns.GetAddOnMetadata(FOLDER_NAME, "Version") or UNKNOWN)
 
 local xrpCmds = {}
 

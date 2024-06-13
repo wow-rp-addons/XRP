@@ -53,7 +53,7 @@ local function Cursor_TurnOrActionStop()
 end
 
 local function Cursor_RECEIVE(event, name)
-	if name == XRPCursorBook.characterID and not InCombatLockdown() and not XRPCursorBook:IsVisible() and (not XRPCursorBook.mountInParty or not IsItemInRange(88589, "mouseover")) then
+	if name == XRPCursorBook.characterID and not InCombatLockdown() and not XRPCursorBook:IsVisible() and (not XRPCursorBook.mountInParty or not C_Item.IsItemInRange(88589, "mouseover")) then
 		XRPCursorBook:Show()
 	end
 end
@@ -65,7 +65,7 @@ local keybind
 local function InteractUnit_Hook(unit)
 	if not keybind or InCombatLockdown() or not UnitIsPlayer(unit) or UnitCanAttack("player", unit) then return end
 	local mountable = UnitVehicleSeatCount(unit) > 0
-	if mountable and ((UnitInParty(unit) or UnitInRaid(unit)) and IsItemInRange(88589, unit) or GetCVarBool("AutoInteract")) then return end
+	if mountable and ((UnitInParty(unit) or UnitInRaid(unit)) and C_Item.IsItemInRange(88589, unit) or GetCVarBool("AutoInteract")) then return end
 	if mountable then
 		UIErrorsFrame:Clear() -- Hides errors on inteactable mount players.
 	end
@@ -75,7 +75,7 @@ end
 AddOn.SettingsToggles.cursorEnabled = function(setting)
 	if setting then
 		if not XRPCursorBook then
-			IsItemInRange(88589, "player")
+			C_Item.IsItemInRange(88589, "player")
 			CreateFrame("Frame", "XRPCursorBook", UIParent, "XRPCursorBookTemplate")
 		end
 		AddOn_XRP.RegisterEventCallback("ADDON_XRP_PROFILE_RECEIVED", Cursor_RECEIVE)

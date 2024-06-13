@@ -31,13 +31,13 @@ local NO_PROFILE = {
 
 AddOn.RegisterGameEventCallback("ADDON_LOADED", function(event, addon)
 	local addonString = "%s/%s"
-	local VA = { addonString:format(FOLDER_NAME, GetAddOnMetadata(FOLDER_NAME, "Version")) }
+	local VA = { addonString:format(FOLDER_NAME, C_AddOns.GetAddOnMetadata(FOLDER_NAME, "Version")) }
 	for i, addon in ipairs({ "GHI", "Tongues" }) do
-		if IsAddOnLoaded(addon) then
-			VA[#VA + 1] = addonString:format(addon, GetAddOnMetadata(addon, "Version"))
+		if C_AddOns.IsAddOnLoaded(addon) then
+			VA[#VA + 1] = addonString:format(addon, C_AddOns.GetAddOnMetadata(addon, "Version"))
 		end
 	end
-	local VW = { GetAddOnMetadata(FOLDER_NAME, "X-WoW-Version"), GetAddOnMetadata(FOLDER_NAME, "X-WoW-Build"), GetAddOnMetadata(FOLDER_NAME, "X-Interface") }
+	local VW = { C_AddOns.GetAddOnMetadata(FOLDER_NAME, "X-WoW-Version"), C_AddOns.GetAddOnMetadata(FOLDER_NAME, "X-WoW-Build"), C_AddOns.GetAddOnMetadata(FOLDER_NAME, "X-Interface") }
 	AddOn.FallbackFields = {
 		FC = "1",
 		NA = AddOn.characterName,

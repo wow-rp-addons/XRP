@@ -238,7 +238,7 @@ function XRPTemplatesPanel_OnSizeChanged(self, width, height)
 end
 
 function XRPCursorBook_OnEvent(self, event)
-	if InCombatLockdown() or AddOn.Settings.cursorDisableInstance and (IsInInstance() or IsInActiveWorldPVP()) or AddOn.Settings.cursorDisablePvP and (UnitIsPVP("player") or UnitIsPVPFreeForAll("player")) or UnitIsUnit("player", "mouseover") or GetMouseFocus() ~= WorldFrame then
+	if InCombatLockdown() or AddOn.Settings.cursorDisableInstance and (IsInInstance() or IsInActiveWorldPVP()) or AddOn.Settings.cursorDisablePvP and (UnitIsPVP("player") or UnitIsPVPFreeForAll("player")) or UnitIsUnit("player", "mouseover") or WorldFrame:IsMouseMotionFocus() == false then
 		self:Hide()
 		return
 	end
@@ -252,7 +252,7 @@ function XRPCursorBook_OnEvent(self, event)
 	-- Following two must be separate for UIErrorsFrame:Clear().
 	self.mountable = self.characterID and UnitVehicleSeatCount("mouseover") > 0
 	self.mountInParty = self.mountable and (UnitInParty("mouseover") or UnitInRaid("mouseover"))
-	if self.characterID and character.hasProfile and (not self.mountInParty or not IsItemInRange(88589, "mouseover")) then
+	if self.characterID and character.hasProfile and (not self.mountInParty or not C_Item.IsItemInRange(88589, "mouseover")) then
 		XRPCursorBook_OnUpdate(self, 0)
 		self:Show()
 	else
@@ -263,9 +263,9 @@ end
 local previousX, previousY
 -- Crazy optimization crap since it's run every frame.
 do
-	local UnitIsPlayer, InCombatLockdown, GetMouseFocus, WorldFrame, GetCursorPosition, IsItemInRange, UIParent, GetEffectiveScale = UnitIsPlayer, InCombatLockdown, GetMouseFocus, WorldFrame, GetCursorPosition, IsItemInRange, UIParent, UIParent.GetEffectiveScale
+	local UnitIsPlayer, InCombatLockdown, WorldFrame, GetCursorPosition, IsItemInRange, UIParent, GetEffectiveScale = UnitIsPlayer, InCombatLockdown, WorldFrame, GetCursorPosition, C_Item.IsItemInRange, UIParent, UIParent.GetEffectiveScale
 	function XRPCursorBook_OnUpdate(self, elapsed)
-		if not UnitIsPlayer("mouseover") or InCombatLockdown() or GetMouseFocus() ~= WorldFrame then
+		if not UnitIsPlayer("mouseover") or InCombatLockdown() or WorldFrame:IsMouseMotionFocus() == false then
 			self:Hide()
 			return
 		end
