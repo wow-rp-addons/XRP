@@ -20,30 +20,6 @@
 local FOLDER_NAME, AddOn = ...
 local L = AddOn.GetText
 
-local LibDropDownExtension = LibStub:GetLibrary("LibDropDownExtension-1.0");
-
--- This adds "Roleplay Profile" menu entries to several menus for a more
--- convenient way to access profiles (including chat names, guild lists, and
--- chat rosters).
-
-local function OpenPlayerProfile()
-	if UnitExists(UIDROPDOWNMENU_INIT_MENU.unit) then
-		XRPViewer:View(UIDROPDOWNMENU_INIT_MENU.unit)
-	else
-		XRPViewer:View(AddOn_Chomp.NameMergedRealm(UIDROPDOWNMENU_INIT_MENU.name, UIDROPDOWNMENU_INIT_MENU.server))
-	end
-end
-
-local function OpenBNetProfile()
-	local gameAccountInfo = C_BattleNet.GetAccountInfoByID(UIDROPDOWNMENU_INIT_MENU.bnetIDAccount).gameAccountInfo;
-	local characterName = gameAccountInfo.characterName or "";
-	local client = gameAccountInfo.clientProgram;
-	local realmName = gameAccountInfo.realmName or "";
-	if client == BNET_CLIENT_WOW and realmName ~= "" then
-		XRPViewer:View(AddOn_Chomp.NameMergedRealm(characterName, realmName))
-	end
-end
-
 local buttons = {
 	player = {text = L.ROLEPLAY_PROFILE, func = OpenPlayerProfile, notCheckable = true},
 	bnet = {text = L.ROLEPLAY_PROFILE, func = OpenBNetProfile, notCheckable = true},
@@ -62,46 +38,104 @@ local allowedUnits = {
 	RAID_PLAYER = "player",
 }
 
-local function UnitPopup_OnShowMenu_Hook(dropdownMenu, _, options)
-	if not dropdownMenu or dropdownMenu:IsForbidden() then
-		return  -- Invalid or forbidden menu.
-	elseif UIDROPDOWNMENU_MENU_LEVEL ~= 1 then
-		return  -- We don't support submenus.
+local function GetBattleNetCharacterID(gameAccountInfo)
+	local characterName = gameAccountInfo.characterName;
+	local realmName = gameAccountInfo.realmName;
+	local ambiguatedName;
+
+	characterName = (characterName ~= "" and characterName or UNKNOWNOBJECT);
+	realmName = (realmName ~= "" and realmName or GetNormalizedRealmName());
+	ambiguatedName = Ambiguate(string.join("-", characterName, realmName), "none");
+
+	if string.find(ambiguatedName, UNKNOWNOBJECT, 1, true) == 1 then
+		ambiguatedName = nil;
 	end
 
-	table.wipe(options);
-
-	local menuType = dropdownMenu.which
-	if not allowedUnits[menuType] then
-		return  -- No buttons to be shown.
-	end
-
-	if menuType == "BN_FRIEND" then
-		if not UIDROPDOWNMENU_INIT_MENU.bnetIDAccount then
-			return
-		else
-			local gameAccountInfo = C_BattleNet.GetAccountInfoByID(UIDROPDOWNMENU_INIT_MENU.bnetIDAccount).gameAccountInfo
-			local client = gameAccountInfo.clientProgram
-			local realmName = gameAccountInfo.realmName or ""
-			if client ~= BNET_CLIENT_WOW or realmName == "" then
-				return
-			end
-		end
-	end
-
-	if UnitExists(UIDROPDOWNMENU_INIT_MENU.unit) then
-		if not xrpAccountSaved.settings.menusUnits then
-			return
-		end
-	else
-		if not xrpAccountSaved.settings.menusChat then
-			return
-		end
-	end
-
-	table.insert(options, buttons[allowedUnits[menuType]]);
-
-	return true;
+	return ambiguatedName;
 end
 
-LibDropDownExtension:RegisterEvent("OnShow", UnitPopup_OnShowMenu_Hook, MAX_DROPDOWN_LEVEL);
+local function ShouldShowOpenBattleNetProfile(contextData)
+	local accountInfo = contextData.accountInfo;
+	local gameAccountInfo = accountInfo and accountInfo.gameAccountInfo or nil;
+
+	if not gameAccountInfo then
+		return false;
+	elseif gameAccountInfo.clientProgram ~= BNET_CLIENT_WOW then
+		return false;
+	elseif gameAccountInfo.wowProjectID ~= WOW_PROJECT_ID then
+		return false;
+	elseif not gameAccountInfo.isInCurrentRegion then
+		return false;
+	end
+
+	local characterID = GetBattleNetCharacterID(gameAccountInfo);
+
+	if not characterID then
+		return false;
+	else
+		return true;
+	end
+end
+
+for menuTagSuffix, buttonType in pairs(allowedUnits) do
+	local function OnMenuOpen(owner, rootDescription, contextData)
+		if not owner or owner:IsForbidden() then
+			return nil;  -- Invalid or forbidden owner.
+		elseif (menuTagSuffix == "CHAT_ROSTER" and not xrpAccountSaved.settings.menusChat or
+				menuTagSuffix ~= "CHAT_ROSTER" and not xrpAccountSaved.settings.menusUnits) then
+			return nil;  -- Disabled in settings.
+		end
+
+		rootDescription:QueueDivider();
+
+		local OnClick;
+		if buttonType == "player" then
+			local unit = contextData.unit;
+			local name = contextData.name;
+			local server = contextData.server;
+			local fullName = string.join("-", name or UNKNOWNOBJECT, server or GetNormalizedRealmName());
+
+			local unitName;
+			if UnitExists(unit) then
+				unitName = unit;
+			elseif not string.find(fullName, UNKNOWNOBJECT, 1, true) then
+				unitName = fullName;
+			else
+				return nil;
+			end
+
+			OnClick = function(contextData)
+				XRPViewer:View(unitName);
+			end
+		elseif buttonType == "bnet" then
+			if not ShouldShowOpenBattleNetProfile(contextData) then
+				return nil;
+			end
+
+			OnClick = function(contextData)
+				local accountInfo = contextData.accountInfo;
+				local gameAccountInfo = accountInfo and accountInfo.gameAccountInfo or nil;
+
+				-- Only a basic sanity test is required here.
+				if not gameAccountInfo then
+					return;
+				end
+
+				local characterID = GetBattleNetCharacterID(gameAccountInfo);
+				XRPViewer:View(characterID);
+			end
+		else
+			return nil
+		end
+
+		local elementDescription = rootDescription:CreateButton(buttons[buttonType].text);
+		elementDescription:SetResponder(OnClick);
+		elementDescription:SetData(contextData);
+		--return elementDescription;
+
+		rootDescription:ClearQueuedDescriptions();
+	end
+
+	local menuTag = "MENU_UNIT_" .. menuTagSuffix;
+	Menu.ModifyMenu(menuTag, OnMenuOpen);
+end

@@ -13,7 +13,6 @@ externals:
   Libraries/CallbackHandler-1.0: https://repos.curseforge.com/wow/callbackhandler/trunk/CallbackHandler-1.0
   Libraries/ChatThrottleLib: https://repos.curseforge.com/wow/chatthrottlelib/trunk
   Libraries/Chomp: https://github.com/wow-rp-addons/Chomp
-  Libraries/LibDropDownExtension: https://github.com/Vladinator/wow-addon-libdropdownextension
   Libraries/LibMSP: https://github.com/wow-rp-addons/LibMSP
   Libraries/LibRPMedia: https://github.com/wow-rp-addons/LibRPMedia
   Libraries/LibStub: https://repos.curseforge.com/wow/libstub/trunk
