@@ -238,10 +238,18 @@ function XRPTemplatesPanel_OnSizeChanged(self, width, height)
 end
 
 function XRPCursorBook_OnEvent(self, event)
-	if InCombatLockdown() or AddOn.Settings.cursorDisableInstance and (IsInInstance() or IsInActiveWorldPVP()) or AddOn.Settings.cursorDisablePvP and (UnitIsPVP("player") or UnitIsPVPFreeForAll("player")) or UnitIsUnit("player", "mouseover") or WorldFrame:IsMouseMotionFocus() == false then
+	if InCombatLockdown() or AddOn.Settings.cursorDisableInstance and (IsInInstance() or IsInActiveWorldPVP()) or AddOn.Settings.cursorDisablePvP and (UnitIsPVP("player") or UnitIsPVPFreeForAll("player")) or UnitIsUnit("player", "mouseover") then
 		self:Hide()
 		return
 	end
+	-- Checking if focus is on world (with or without WorldFrame having mouse focus)
+	local mouseFoci = GetMouseFoci()
+	local isWorldFrameFocus = (#mouseFoci == 0 or #mouseFoci == 1 and mouseFoci[1] == WorldFrame)
+	if not isWorldFrameFocus then
+		self:Hide()
+		return
+	end
+
 	local character = AddOn_XRP.Characters.byUnit.mouseover
 	if not character or character.hidden then
 		self:Hide()
@@ -263,12 +271,20 @@ end
 local previousX, previousY
 -- Crazy optimization crap since it's run every frame.
 do
-	local UnitIsPlayer, InCombatLockdown, WorldFrame, GetCursorPosition, IsItemInRange, UIParent, GetEffectiveScale = UnitIsPlayer, InCombatLockdown, WorldFrame, GetCursorPosition, C_Item.IsItemInRange, UIParent, UIParent.GetEffectiveScale
+	local UnitIsPlayer, InCombatLockdown, GetMouseFoci, WorldFrame, GetCursorPosition, IsItemInRange, UIParent, GetEffectiveScale = UnitIsPlayer, InCombatLockdown, GetMouseFoci, WorldFrame, GetCursorPosition, C_Item.IsItemInRange, UIParent, UIParent.GetEffectiveScale
 	function XRPCursorBook_OnUpdate(self, elapsed)
-		if not UnitIsPlayer("mouseover") or InCombatLockdown() or WorldFrame:IsMouseMotionFocus() == false then
+		if not UnitIsPlayer("mouseover") or InCombatLockdown() then
 			self:Hide()
 			return
 		end
+		-- Checking if focus is on world (with or without WorldFrame having mouse focus)
+		local mouseFoci = GetMouseFoci()
+		local isWorldFrameFocus = (#mouseFoci == 0 or #mouseFoci == 1 and mouseFoci[1] == WorldFrame)
+		if not isWorldFrameFocus then
+			self:Hide()
+			return
+		end
+
 		local x, y = GetCursorPosition()
 		if x == previousX and y == previousY then return end
 		if self.mountInParty and IsItemInRange(88589, "mouseover") then
