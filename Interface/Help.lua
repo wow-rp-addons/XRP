@@ -415,7 +415,7 @@ AddOn.help.viewer = {
 	},
 }
 function XRPViewerHelpButton_PreClick(self, button, down)
-	if HelpPlate_IsShowing(XRPViewer.helpPlates) then return end
+	if HelpPlate.IsShowingHelpInfo(XRPViewer.helpPlates) then return end
 	local width, height = XRPViewer:GetWidth(), XRPViewer:GetHeight()
 	-- 439, 525 default
 	local plates = XRPViewer.helpPlates

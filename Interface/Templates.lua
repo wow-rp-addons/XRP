@@ -93,12 +93,12 @@ function XRPTemplatesTabButton_OnClick(self, button, down)
 			pane:Hide()
 		end
 	end
-	if parent.helpPlates and HelpPlate_IsShowing(parent.helpPlates) then
+	if parent.helpPlates and HelpPlate.IsShowingHelpInfo(parent.helpPlates) then
 		local PreClick = parent.HelpButton:GetScript("PreClick")
 		if PreClick then
 			PreClick(parent.HelpButton, "LeftButton", false)
-			if not HelpPlate_IsShowing(parent.helpPlates) then
-				HelpPlate_Show(parent.helpPlates, parent, self, true)
+			if not HelpPlate.IsShowingHelpInfo(parent.helpPlates) then
+				HelpPlate.Show(parent.helpPlates, parent, self, true)
 			end
 		end
 	end
@@ -180,17 +180,17 @@ end
 
 function XRPTemplatesHelpButton_OnClick(self, button, down)
 	local parent = self:GetParent()
-	if not HelpPlate_IsShowing(parent.helpPlates) then
+	if not HelpPlate.IsShowingHelpInfo(parent.helpPlates) then
 		MSA_CloseDropDownMenus()
-		HelpPlate_Show(parent.helpPlates, parent, self, true)
+		HelpPlate.Show(parent.helpPlates, parent, self, true)
 	else
-		HelpPlate_Hide(true)
+		HelpPlate.Hide(true)
 	end
 end
 
 function XRPTemplatesHelpButton_OnHide(self)
-	if HelpPlate_IsShowing(self:GetParent().helpPlates) then
-		HelpPlate_Hide()
+	if HelpPlate.IsShowingHelpInfo(self:GetParent().helpPlates) then
+		HelpPlate.Hide()
 	end
 end
 

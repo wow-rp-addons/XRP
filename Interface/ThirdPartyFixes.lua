@@ -27,10 +27,6 @@ local FOLDER_NAME, AddOn = ...
 -- re-enable it. If those addons want to disable it on default frames, it
 -- should be done just for those frames.
 AddOn.RegisterGameEventCallback("PLAYER_LOGIN", function(event)
-	if HelpPlate:GetParent() ~= UIParent then
-		HelpPlate:SetParent(UIParent)
-		HelpPlate:SetFrameStrata("DIALOG")
-	end
 	if HelpPlateTooltip:GetParent() ~= UIParent then
 		HelpPlateTooltip:SetParent(UIParent)
 		HelpPlateTooltip:SetFrameStrata("FULLSCREEN_DIALOG")
