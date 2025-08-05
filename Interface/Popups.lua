@@ -21,19 +21,19 @@ local FOLDER_NAME, AddOn = ...
 local L = AddOn.GetText
 
 local function ClickButton(self)
-	self:GetParent().button1:Click()
+	self:GetParent():GetButton1():Click()
 end
 
 local function ButtonToggle(self)
 	if self:GetText() ~= "" then
-		self:GetParent().button1:Enable()
+		self:GetParent():GetButton1():Enable()
 	else
-		self:GetParent().button1:Disable()
+		self:GetParent():GetButton1():Disable()
 	end
 end
 
 local function DisableButton(self)
-	self.button1:Disable()
+	self:GetButton1():Disable()
 end
 
 StaticPopupDialogs["XRP_NOTIFICATION"] = {
@@ -59,8 +59,8 @@ StaticPopupDialogs["XRP_URL"] = {
 	hasEditBox = true,
 	editBoxWidth = 250,
 	OnShow = function(self, url)
-		self.editBox:SetText(url or "")
-		self.editBox:HighlightText()
+		self:GetEditBox():SetText(url or "")
+		self:GetEditBox():HighlightText()
 	end,
 	EditBoxOnTextChanged = function(self, url)
 		self:SetText(url or "")
@@ -89,9 +89,9 @@ StaticPopupDialogs["XRP_REPORT"] = {
 	hasEditBox = true,
 	editBoxWidth = 250,
 	OnShow = function(self, info)
-		self.editBox:SetText(info or "")
-		self.editBox:HighlightText()
-		self.editBox:SetCursorPosition(0)
+		self:GetEditBox():SetText(info or "")
+		self:GetEditBox():HighlightText()
+		self:GetEditBox():SetCursorPosition(0)
 	end,
 	EditBoxOnTextChanged = function(self, info)
 		self:SetText(info or "")
@@ -114,22 +114,22 @@ StaticPopupDialogs["XRP_CURRENTLY"] = {
 	editBoxWidth = 350,
 	OnShow = function(self)
 		local CU = AddOn_XRP.Characters.byUnit.player.CU
-		self.editBox:SetText(CU or "")
-		self.editBox:HighlightText()
-		self.button1:Disable()
+		self:GetEditBox():SetText(CU or "")
+		self:GetEditBox():HighlightText()
+		self:GetButton1():Disable()
 		if CU == AddOn_XRP.Profiles.SELECTED.Full.CU then
-			self.button2:Disable()
+			self:GetButton2():Disable()
 		end
 	end,
 	EditBoxOnTextChanged = function(self)
 		if self:GetText() ~= (AddOn_XRP.Characters.byUnit.player.CU or "") then
-			self:GetParent().button1:Enable()
+			self:GetParent():GetButton1():Enable()
 		else
-			self:GetParent().button1:Disable()
+			self:GetParent():GetButton1():Disable()
 		end
 	end,
 	OnAccept = function(self)
-		AddOn_XRP.SetField("CU", self.editBox:GetText())
+		AddOn_XRP.SetField("CU", self:GetEditBox():GetText())
 	end,
 	OnCancel = function(self) -- Reset button.
 		AddOn_XRP.SetField("CU", nil)
@@ -206,7 +206,7 @@ StaticPopupDialogs["XRP_EDITOR_ADD"] = {
 	OnShow = DisableButton,
 	EditBoxOnTextChanged = ButtonToggle,
 	OnAccept = function(self)
-		local name = self.editBox:GetText()
+		local name = self:GetEditBox():GetText()
 		if AddOn_XRP.Profiles[name] then
 			StaticPopup_Show("XRP_ERROR", L"The profile \"%s\" already exists.":format(name))
 		else
@@ -247,7 +247,7 @@ StaticPopupDialogs["XRP_EDITOR_RENAME"] = {
 	OnShow = DisableButton,
 	EditBoxOnTextChanged = ButtonToggle,
 	OnAccept = function(self)
-		local name = self.editBox:GetText()
+		local name = self:GetEditBox():GetText()
 		if AddOn_XRP.Profiles[name] then
 			StaticPopup_Show("XRP_ERROR", L"The profile \"%s\" already exists.":format(name))
 		else
@@ -270,7 +270,7 @@ StaticPopupDialogs["XRP_EDITOR_COPY"] = {
 	OnShow = DisableButton,
 	EditBoxOnTextChanged = ButtonToggle,
 	OnAccept = function(self)
-		local name = self.editBox:GetText()
+		local name = self:GetEditBox():GetText()
 		if AddOn_XRP.Profiles[name] then
 			StaticPopup_Show("XRP_ERROR", L"The profile \"%s\" already exists.":format(name))
 		else
