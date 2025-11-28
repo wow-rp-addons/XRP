@@ -38,7 +38,7 @@ local function XRPGetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7
 	end
 
 	local chatType = event:sub(10)
-	local chatCategory = Chat_GetChatCategory(ChatTypeGroupInverted[event] or chatType)
+	local chatCategory = ChatFrameUtil.GetChatCategory(ChatTypeGroupInverted[event] or chatType)
 	if chatCategory == "CHANNEL" then
 		chatType = ("CHANNEL%d"):format(arg8)
 	end
@@ -59,7 +59,7 @@ local function XRPGetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7
 		nameFormat = chatCategory == "EMOTE" and (AddOn.Settings.chatEmoteBraced and "[%s]" or "%s") .. (arg9 or "") or "%s"
 	end
 
-	if character and Chat_ShouldColorChatByClass(ChatTypeInfo[chatType]) then
+	if character and ChatFrameUtil.ShouldColorChatByClass(ChatTypeInfo[chatType]) then
 		local color = RAID_CLASS_COLORS[character.GC]
 		if color and color.colorStr then
 			return nameFormat:format(("|c%s%s|r"):format(color.colorStr, name))
@@ -104,13 +104,13 @@ local function ChatFrame_AddMessageEventFilter_Hook(event, filter)
 	if not names or adding then return end
 	if event == "CHAT_MSG_EMOTE" then
 		adding = true
-		ChatFrame_RemoveMessageEventFilter("CHAT_MSG_EMOTE", MessageEventFilter_EMOTE)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_EMOTE", MessageEventFilter_EMOTE)
+		ChatFrameUtil.RemoveMessageEventFilter("CHAT_MSG_EMOTE", MessageEventFilter_EMOTE)
+		ChatFrameUtil.AddMessageEventFilter("CHAT_MSG_EMOTE", MessageEventFilter_EMOTE)
 		adding = nil
 	elseif event == "CHAT_MSG_TEXT_EMOTE" then
 		adding = true
-		ChatFrame_RemoveMessageEventFilter("CHAT_MSG_TEXT_EMOTE", MessageEventFilter_TEXT_EMOTE)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_TEXT_EMOTE", MessageEventFilter_TEXT_EMOTE)
+		ChatFrameUtil.RemoveMessageEventFilter("CHAT_MSG_TEXT_EMOTE", MessageEventFilter_TEXT_EMOTE)
+		ChatFrameUtil.AddMessageEventFilter("CHAT_MSG_TEXT_EMOTE", MessageEventFilter_TEXT_EMOTE)
 		adding = nil
 	end
 end
@@ -164,7 +164,7 @@ AddOn.RegisterGameEventCallback("PLAYER_LOGIN", function(event)
 			if not character then
 				return
 			end
-			local chatCategory = Chat_GetChatCategory(ChatTypeGroupInverted[event] or event:sub(10))
+			local chatCategory = ChatFrameUtil.GetChatCategory(ChatTypeGroupInverted[event] or event:sub(10))
 			if chatCategory == "CHANNEL" and type(message.ORG.CHANNEL) == "string" then
 				chatCategory = "CHANNEL_" .. message.ORG.CHANNEL:upper()
 			end
@@ -187,10 +187,10 @@ local OldGetColoredName
 AddOn.SettingsToggles.chatNames = function(setting)
 	if setting then
 		if names == nil then
-			hooksecurefunc("ChatFrame_AddMessageEventFilter", ChatFrame_AddMessageEventFilter_Hook)
+			hooksecurefunc(ChatFrameUtil, "AddMessageEventFilter", ChatFrame_AddMessageEventFilter_Hook)
 		end
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_EMOTE", MessageEventFilter_EMOTE)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_TEXT_EMOTE", MessageEventFilter_TEXT_EMOTE)
+		ChatFrameUtil.AddMessageEventFilter("CHAT_MSG_EMOTE", MessageEventFilter_EMOTE)
+		ChatFrameUtil.AddMessageEventFilter("CHAT_MSG_TEXT_EMOTE", MessageEventFilter_TEXT_EMOTE)
 		if GetColoredName ~= XRPGetColoredName then
 			OldGetColoredName = GetColoredName
 		end
@@ -200,8 +200,8 @@ AddOn.SettingsToggles.chatNames = function(setting)
 		end
 		names = true
 	elseif names ~= nil then
-		ChatFrame_RemoveMessageEventFilter("CHAT_MSG_EMOTE", MessageEventFilter_EMOTE)
-		ChatFrame_RemoveMessageEventFilter("CHAT_MSG_TEXT_EMOTE", MessageEventFilter_TEXT_EMOTE)
+		ChatFrameUtil.RemoveMessageEventFilter("CHAT_MSG_EMOTE", MessageEventFilter_EMOTE)
+		ChatFrameUtil.RemoveMessageEventFilter("CHAT_MSG_TEXT_EMOTE", MessageEventFilter_TEXT_EMOTE)
 		GetColoredName = OldGetColoredName
 		if pratModule then
 			Prat.UnregisterAllChatEvents(pratModule)
@@ -213,8 +213,10 @@ end
 AddOn.SettingsToggles.chatReplacements = function(setting)
 	if setting then
 		if replacements == nil then
-			hooksecurefunc("ChatEdit_ParseText", ChatEdit_ParseText_Hook)
-			hooksecurefunc("SubstituteChatMessageBeforeSend", SubstituteChatMessageBeforeSend_Hook)
+			for i = 1, Constants.ChatFrameConstants.MaxChatWindows do
+				hooksecurefunc(_G["ChatFrame" .. i .. "EditBox"], "ParseText", ChatEdit_ParseText_Hook);
+			end
+			hooksecurefunc(ChatFrameUtil, "SubstituteChatMessageBeforeSend", SubstituteChatMessageBeforeSend_Hook)
 		end
 		replacements = true
 	elseif replacements ~= nil then

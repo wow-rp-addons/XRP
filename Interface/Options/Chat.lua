@@ -46,7 +46,7 @@ local function AddChannel(channel, menuList)
 	end
 	local displayName
 	if channel:find("^CHANNEL_COMMUNITY") then
-		displayName = ChatFrame_ResolveChannelName(channel:match("^CHANNEL_COMMUNITY%:(.*)"))
+		displayName = ChatFrameUtil.ResolveChannelName(channel:match("^CHANNEL_COMMUNITY%:(.*)"))
 	else
 		displayName = channel:match("^CHANNEL_(.+)"):lower():gsub("^%l", string.upper)
 	end
