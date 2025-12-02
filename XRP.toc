@@ -1,10 +1,10 @@
-## Interface: 110200
-## X-Interface: 110200
-## X-Interface-Required: 110200
-## X-WoW-Version: 11.2.0
-## X-WoW-Build: 62417
+## Interface: 110207
+## X-Interface: 110207
+## X-Interface-Required: 110207
+## X-WoW-Version: 11.2.7
+## X-WoW-Build: 64632
 ## Title: XRP Roleplay Profiles
-## Version: 2.0.26
+## Version: 2.0.27
 ## IconTexture: Interface\Icons\Ability_Malkorok_BlightofYshaarj_Green
 ## Category-enUS: Roleplay
 ## Category-deDE: Rollenspiel
