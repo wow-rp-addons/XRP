@@ -20,7 +20,7 @@
 local FOLDER_NAME, AddOn = ...
 local L = AddOn.GetText
 
-local function XRPGetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14)
+local function XRPGetColoredName(event, _, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14)
 	local character = arg12 and AddOn_XRP.Characters.byGUID[arg12]
 
 	-- Emotes from ourselves don't have our name in them, and Blizzard's
@@ -183,7 +183,6 @@ AddOn.RegisterGameEventCallback("PLAYER_LOGIN", function(event)
 	end
 end)
 
-local OldGetColoredName
 AddOn.SettingsToggles.chatNames = function(setting)
 	if setting then
 		if names == nil then
@@ -191,10 +190,7 @@ AddOn.SettingsToggles.chatNames = function(setting)
 		end
 		ChatFrameUtil.AddMessageEventFilter("CHAT_MSG_EMOTE", MessageEventFilter_EMOTE)
 		ChatFrameUtil.AddMessageEventFilter("CHAT_MSG_TEXT_EMOTE", MessageEventFilter_TEXT_EMOTE)
-		if GetColoredName ~= XRPGetColoredName then
-			OldGetColoredName = GetColoredName
-		end
-		GetColoredName = XRPGetColoredName
+		ChatFrameUtil.AddSenderNameFilter(XRPGetColoredName);
 		if pratModule then
 			Prat.RegisterChatEvent(pratModule, "Prat_PreAddMessage")
 		end
@@ -202,7 +198,7 @@ AddOn.SettingsToggles.chatNames = function(setting)
 	elseif names ~= nil then
 		ChatFrameUtil.RemoveMessageEventFilter("CHAT_MSG_EMOTE", MessageEventFilter_EMOTE)
 		ChatFrameUtil.RemoveMessageEventFilter("CHAT_MSG_TEXT_EMOTE", MessageEventFilter_TEXT_EMOTE)
-		GetColoredName = OldGetColoredName
+		ChatFrameUtil.RemoveSenderNameFilter(XRPGetColoredName);
 		if pratModule then
 			Prat.UnregisterAllChatEvents(pratModule)
 		end
