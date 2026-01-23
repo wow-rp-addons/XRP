@@ -1,4 +1,5 @@
-# Changelog version 2.0.27
+# Changelog version 2.0.28
 
-- Added support for patch 11.2.7
-- Added icons and musics from patches 11.2.5 and 11.2.7
+- Added support for patch 12.0.0
+  - Due to the new API restrictions, there might be issues I haven't found during testing, please let me know on Github.
+- Added icons and musics from patch 12.0.0
