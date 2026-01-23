@@ -130,9 +130,7 @@ end
 function XRPCard_Mixin:OnLoad()
 	self:RegisterForClicks("LeftButtonUp", "RightButtonUp")
 	self:RegisterForDrag("LeftButton")
-	self.NA:SetFontObjectsToTry(Fancy24Font, Fancy22Font, Fancy20Font, Fancy18Font, Fancy16Font, Fancy14Font, Fancy12Font)
 	for i, field in ipairs{"AG", "AH", "AW", "NI", "HH", "HB"} do
-		self[field]:SetFontObjectsToTry(GameFontWhite, GameFontWhiteSmall, GameFontWhiteTiny, GameFontWhiteTiny2)
 		self[field .. "Label"]:SetText(AddOn_XRP.Strings.Names[field])
 	end
 	local function XRPEventCallback(event, characterID, field)
