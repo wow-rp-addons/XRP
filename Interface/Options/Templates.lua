@@ -173,8 +173,7 @@ function XRPOptions_Mixin:OnLoad()
 	self.SubText:SetText(OPTIONS_DESCRIPTION[self.paneID])
 	AddOn.XRPOptions[self.paneID] = self
 
-	local category = Settings.GetCategory(self.parent);
-	local subcategory = Settings.RegisterCanvasLayoutSubcategory(category, self, self.name, self.name);
+	local subcategory = Settings.RegisterCanvasLayoutSubcategory(AddOn.settingsCategory, self, self.name, self.name);
 	subcategory.ID = self.name;
 end
 
