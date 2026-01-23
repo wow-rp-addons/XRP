@@ -97,7 +97,7 @@
 						<Anchor point="RIGHT" x="-12"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="NA" inherits="Fancy24Font" justifyH="LEFT" justifyV="TOP" maxLines="1" mixin="ShrinkUntilTruncateFontStringMixin">
+				<FontString parentKey="NA" inherits="Fancy24Font" justifyH="LEFT" justifyV="TOP" maxLines="1" mixin="AutoScalingFontStringMixin">
 					<Size y="24"/>
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.PX" relativePoint="BOTTOM" y="-1"/>
@@ -105,7 +105,7 @@
 						<Anchor point="RIGHT" x="-12"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="AG" inherits="GameFontWhite" justifyH="RIGHT" justifyV="TOP" maxLines="1" mixin="ShrinkUntilTruncateFontStringMixin">
+				<FontString parentKey="AG" inherits="GameFontWhite" justifyH="RIGHT" justifyV="TOP" maxLines="1" mixin="AutoScalingFontStringMixin">
 					<Size x="72" y="12"/>
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.NA" relativePoint="BOTTOM" y="-10"/>
@@ -117,7 +117,7 @@
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.AG" relativePoint="TOPRIGHT"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="AH" inherits="GameFontWhite" justifyH="RIGHT" justifyV="TOP" maxLines="1" mixin="ShrinkUntilTruncateFontStringMixin">
+				<FontString parentKey="AH" inherits="GameFontWhite" justifyH="RIGHT" justifyV="TOP" maxLines="1" mixin="AutoScalingFontStringMixin">
 					<Size x="72" y="12"/>
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.AG" relativePoint="BOTTOM" y="-10"/>
@@ -129,7 +129,7 @@
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.AH" relativePoint="TOPRIGHT"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="AW" inherits="GameFontWhite" justifyH="RIGHT" justifyV="TOP" maxLines="1" mixin="ShrinkUntilTruncateFontStringMixin">
+				<FontString parentKey="AW" inherits="GameFontWhite" justifyH="RIGHT" justifyV="TOP" maxLines="1" mixin="AutoScalingFontStringMixin">
 					<Size x="72" y="12"/>
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.AH" relativePoint="BOTTOM" y="-10"/>
@@ -141,7 +141,7 @@
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.AW" relativePoint="TOPRIGHT"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="NI" inherits="GameFontWhite" justifyH="LEFT" justifyV="TOP" maxLines="1" mixin="ShrinkUntilTruncateFontStringMixin">
+				<FontString parentKey="NI" inherits="GameFontWhite" justifyH="LEFT" justifyV="TOP" maxLines="1" mixin="AutoScalingFontStringMixin">
 					<Size y="12"/>
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.NA" relativePoint="BOTTOM" y="-10"/>
@@ -154,7 +154,7 @@
 						<Anchor point="BOTTOMLEFT" relativeKey="$parent.NI" relativePoint="TOPLEFT"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="HH" inherits="GameFontWhite" justifyH="LEFT" justifyV="TOP" maxLines="1" mixin="ShrinkUntilTruncateFontStringMixin">
+				<FontString parentKey="HH" inherits="GameFontWhite" justifyH="LEFT" justifyV="TOP" maxLines="1" mixin="AutoScalingFontStringMixin">
 					<Size y="12"/>
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.NI" relativePoint="BOTTOM" y="-10"/>
@@ -167,7 +167,7 @@
 						<Anchor point="BOTTOMLEFT" relativeKey="$parent.HH" relativePoint="TOPLEFT"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="HB" inherits="GameFontWhite" justifyH="LEFT" justifyV="TOP" maxLines="1" mixin="ShrinkUntilTruncateFontStringMixin">
+				<FontString parentKey="HB" inherits="GameFontWhite" justifyH="LEFT" justifyV="TOP" maxLines="1" mixin="AutoScalingFontStringMixin">
 					<Size y="12"/>
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.HH" relativePoint="BOTTOM" y="-10"/>
@@ -180,7 +180,7 @@
 						<Anchor point="BOTTOMLEFT" relativeKey="$parent.HB" relativePoint="TOPLEFT"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="Text" inherits="GameFontHighlightLarge" justifyH="LEFT" justifyV="TOP" mixin="ShrinkUntilTruncateFontStringMixin">
+				<FontString parentKey="Text" inherits="GameFontHighlightLarge" justifyH="LEFT" justifyV="TOP" mixin="AutoScalingFontStringMixin">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.NA" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
 						<Anchor point="BOTTOMRIGHT" x="-42" y="12"/>
