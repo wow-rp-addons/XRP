@@ -197,7 +197,7 @@ end
 function XRPTemplatesPanel_OnLoad(self)
 	self.Tabs=nil
 	if self.portraitTexture then
-		SetPortraitToTexture(self.PortraitContainer.portrait, self.portraitTexture)
+		self.PortraitContainer.portrait:SetTexture(self.portraitTexture)
 	end
 	if self.panes then
 		PanelTemplates_SetNumTabs(self, #self.panes)

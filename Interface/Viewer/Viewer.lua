@@ -455,7 +455,7 @@ XRPViewer_Mixin = {
 			SetPortraitTexture(self.PortraitContainer.portrait, player)
 		elseif isNew then
 			local GF = character.GF
-			SetPortraitToTexture(self.PortraitContainer.portrait, GF == "Alliance" and "Interface\\Icons\\INV_BannerPVP_02" or GF == "Horde" and "Interface\\Icons\\INV_BannerPVP_01" or "Interface\\Icons\\INV_Misc_Book_17")
+			self.PortraitContainer.portrait:SetTexture(GF == "Alliance" and "Interface\\Icons\\INV_BannerPVP_02" or GF == "Horde" and "Interface\\Icons\\INV_BannerPVP_01" or "Interface\\Icons\\INV_Misc_Book_17")
 		end
 		self.Notes:SetAttribute("character", character)
 		ShowUIPanel(self)
