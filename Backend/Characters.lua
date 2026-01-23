@@ -340,7 +340,12 @@ function byUnitMetatable:__index(unit)
 	if unit ~= nil and type(unit) ~= "string" then
 		error("AddOn_XRP.Characters.byUnit: expected string or nil index, got " .. type(unit), 2)
 	end
-	local character = AddOn_XRP.Characters.byGUID[UnitGUID(unit)]
+	
+	if not canaccessvalue(unit) then return end
+	local unitGUID = UnitGUID(unit)
+	if not canaccessvalue(unitGUID) then return end
+
+	local character = AddOn_XRP.Characters.byGUID[unitGUID]
 	if not character then
 		return nil
 	end

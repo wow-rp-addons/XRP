@@ -328,7 +328,7 @@ local function SetUnit(unit)
 		local r, g, b = UnitSelectionColor(unit)
 		local color = SELECTION_COLORS[("%02x%02x%02x"):format(math.ceil(math.floor((r * 10) + 0.5) * 25.5), math.ceil(math.floor((g * 10) + 0.5) * 25.5), math.ceil(math.floor((b * 10) + 0.5) * 25.5))]
 
-		local watchIcon = AddOn.Settings.tooltipShowWatchEye and unit ~= "player" and UnitIsUnit("player", unit .. "target") and "|TInterface\\LFGFrame\\BattlenetWorking0:28:28:8:1|t"
+		local watchIcon = not C_Secrets.ShouldUnitIdentityBeSecret(unit .. "target") and AddOn.Settings.tooltipShowWatchEye and not UnitIsUnit("player", unit) and UnitIsUnit("player", unit .. "target") and "|TInterface\\LFGFrame\\BattlenetWorking0:28:28:8:1|t"
 		local bookmarkIcon = AddOn.Settings.tooltipShowBookmarkFlag and character.bookmark and "|TInterface\\MINIMAP\\POIICONS:18:18:4:0:256:512:54:72:54:72|t"
 		local GC = character.GC
 
@@ -520,6 +520,9 @@ end
 local function GameTooltip_OnTooltipSetUnit_Hook(self)
 	if not enabled then return end
 	local tooltip, unit = self:GetUnit()
+
+	if not canaccessvalue(unit) then return end
+
 	if not unit then
 		C_Timer.After(0, NoUnit)
 	else
