@@ -335,8 +335,10 @@ local function SetUnit(unit)
 		if replace then
 			local colorblind = GetCVarBool("colorblindMode")
 			-- Can only ever be one of AFK, DND, or offline.
-			local isAFK = connected and UnitIsAFK(unit)
-			local isDND = connected and not isAFK and UnitIsDND(unit)
+			local unitAFK = UnitIsAFK(unit);
+			local unitDND = UnitIsDND(unit);
+			local isAFK = connected and canaccessvalue(unitAFK) and unitAFK
+			local isDND = connected and canaccessvalue(unitDND) and not isAFK and unitAFK
 			currentUnit.nameFormat = ("%s%%s|r%s"):format(color, not connected and FLAG_OFFLINE or isAFK and FLAG_AFK or isDND and FLAG_DND or "")
 
 			local ffa = UnitIsPVPFreeForAll(unit)
