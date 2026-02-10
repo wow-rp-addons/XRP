@@ -81,8 +81,8 @@ local function RenderLine(multiLine, leftRatio, left, right, lR, lG, lB, rR, rG,
 	if not leftRatio then
 		leftRatio = 0.5
 	end
-	--local leftMax = AddOn.Settings.tooltipMaxWidth * (left and right and leftRatio or 1)
-	--local rightMax = AddOn.Settings.tooltipMaxWidth * (left and right and (1 - leftRatio) or 1)
+	local leftMax = AddOn.Settings.tooltipMaxWidth * (left and right and leftRatio or 1)
+	local rightMax = AddOn.Settings.tooltipMaxWidth * (left and right and (1 - leftRatio) or 1)
 	rendering = true
 	lineNum = lineNum + 1
 	local LeftLine = replace and _G[GTTL:format(lineNum)] or _G[XTTL:format(lineNum)]
@@ -109,24 +109,24 @@ local function RenderLine(multiLine, leftRatio, left, right, lR, lG, lB, rR, rG,
 			Tooltip:AddLine(left or " ", lR or 1, lG or 0.82, lB or 0)
 		end
 	end
-	--if LeftLine:GetWidth() > leftMax then
-	--	LeftLine:SetWidth(leftMax)
+	if replace or LeftLine:GetWidth() > leftMax then
+		LeftLine:SetWidth(leftMax)
 		if multiLine then
 			LeftLine:SetMaxLines(AddOn.Settings.tooltipMaxMultiLines)
 		else
 			LeftLine:SetMaxLines(1)
 		end
 		maxLinesAdjusted[#maxLinesAdjusted + 1] = LeftLine
-	--end
-	--if RightLine:GetWidth() > rightMax then
-	--	RightLine:SetWidth(rightMax)
+	end
+	if replace or RightLine:GetWidth() > rightMax then
+		RightLine:SetWidth(rightMax)
 		if multiLine then
 			RightLine:SetMaxLines(AddOn.Settings.tooltipMaxMultiLines)
 		else
 			RightLine:SetMaxLines(1)
 		end
 		maxLinesAdjusted[#maxLinesAdjusted + 1] = RightLine
-	--end
+	end
 	rendering = nil
 end
 
