@@ -1,4 +1,3 @@
-# Changelog version 2.0.29
+# Changelog version 2.0.30
 
-- Added support for patch 12.0.1
-- Restored partial functionality with the tooltip fields max width.
+- Fix an issue with profile exchange after a recent build.
