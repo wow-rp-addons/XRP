@@ -41,7 +41,7 @@
 			<OnLoad method="OnLoad"/>
 		</Scripts>
 	</CheckButton>
-	<Slider name="XRPOptionsSliderTemplate" parentArray="controls" orientation="HORIZONTAL" mixin="XRPOptionsControl_Mixin,XRPOptionsSlider_Mixin" virtual="true">
+	<Slider name="XRPOptionsSliderTemplate" parentArray="controls" inherits="MinimalSliderWithSteppersTemplate" orientation="HORIZONTAL" mixin="XRPOptionsControl_Mixin,XRPOptionsSlider_Mixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="type" value="CONTROLTYPE_SLIDER"/>
 		</KeyValues>
