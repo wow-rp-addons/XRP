@@ -23,7 +23,6 @@ local L = AddOn.GetText
 function XRPOptionsAbout_OnLoad(self)
 	AddOn.settingsCategory = Settings.RegisterCanvasLayoutCategory(self, self.name, self.name);
 	Settings.RegisterAddOnCategory(AddOn.settingsCategory);
-	print(AddOn.settingsCategory:GetID())
 end
 
 function XRPOptionsAbout_OnShow(self)
