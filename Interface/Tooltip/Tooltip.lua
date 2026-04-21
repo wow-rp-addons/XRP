@@ -509,19 +509,28 @@ local function GameTooltip_OnTooltipCleared_Hook(self)
 	end
 end
 
+local function GetTooltipUnitToken(tooltip)
+	if tooltip:IsTooltipType(Enum.TooltipDataType.Unit) then
+		local tooltipData = tooltip:GetPrimaryTooltipData();
+		local guid = tooltipData.guid;
+		local unitToken = guid and UnitTokenFromGUID(guid);
+		return unitToken;
+	end
+end
+
 local function NoUnit()
 	-- GameTooltip:GetUnit() will sometimes return nil, especially when custom
 	-- unit frames call GameTooltip:SetUnit() with something 'odd' like
 	-- targettarget. By the next frame draw, the tooltip will correctly be able
 	-- to identify such units (usually as mouseover).
-	local tooltip, unit = GameTooltip:GetUnit()
-	if not unit then return end
+	local unit = GetTooltipUnitToken(GameTooltip)
+	if not unit or not canaccessvalue(unit) then return end
 	SetUnit(unit)
 end
 
 local function GameTooltip_OnTooltipSetUnit_Hook(self)
 	if not enabled then return end
-	local tooltip, unit = self:GetUnit()
+	local unit = GetTooltipUnitToken(self)
 
 	if not canaccessvalue(unit) then return end
 
