@@ -34,6 +34,25 @@ local Tooltip, replace, rendering
 local GTTL, GTTR = "GameTooltipTextLeft%d", "GameTooltipTextRight%d"
 local XTTL, XTTR = "XRPTooltipTextLeft%d", "XRPTooltipTextRight%d"
 
+-- Widths set on tooltip lines are sticky: once widened, GetWidth() returns
+-- the set width rather than the text width, so a "cap only if wider" check
+-- can never shrink a line back down. Instead, size every line to its text
+-- width (via GetStringWidth, which ignores any previously set width),
+-- clamped to the max, on every render. Short tooltips shrink to fit;
+-- long lines wrap instead of stretching the tooltip.
+-- Midnight's secret values can make width queries return unreadable values,
+-- and any comparison on a secret throws a Lua error, so measure defensively:
+-- if the text width can't be read, fall back to the max (a capped line is
+-- always safer than a stretched tooltip).
+local issecretvalue = issecretvalue or function() return false end
+local function ClampedLineWidth(line, maxWidth)
+	local ok, width = pcall(line.GetStringWidth, line)
+	if not ok or issecretvalue(width) then
+		return maxWidth
+	end
+	return math.min(math.max(width, 1), maxWidth)
+end
+
 local PROFILE_ADDONS = {
 	["XRP"] = "XRP",
 	["MYROLEPLAY"] = "MRP",
@@ -85,11 +104,12 @@ local function RenderLine(multiLine, leftRatio, left, right, lR, lG, lB, rR, rG,
 	local rightMax = AddOn.Settings.tooltipMaxWidth * (left and right and (1 - leftRatio) or 1)
 	rendering = true
 	lineNum = lineNum + 1
-	local LeftLine = replace and _G[GTTL:format(lineNum)] or _G[XTTL:format(lineNum)]
-	local RightLine = replace and _G[GTTR:format(lineNum)] or _G[XTTR:format(lineNum)]
+	local leftName = (replace and GTTL or XTTL):format(lineNum)
+	local rightName = (replace and GTTR or XTTR):format(lineNum)
 	-- First case: If there's already a line to replace. This only happens if
 	-- using the GameTooltip, as XRPTooltip is cleared before rendering starts.
 	if lineNum <= oldLines then
+		local LeftLine, RightLine = _G[leftName], _G[rightName]
 		-- Can't have an empty left text line ever -- if a line exists, it
 		-- needs to have a space at minimum to not muck up line spacing.
 		LeftLine:SetText(left or " ")
@@ -109,22 +129,22 @@ local function RenderLine(multiLine, leftRatio, left, right, lR, lG, lB, rR, rG,
 			Tooltip:AddLine(left or " ", lR or 1, lG or 0.82, lB or 0)
 		end
 	end
-	if replace or LeftLine:GetWidth() > leftMax then
-		LeftLine:SetWidth(leftMax)
-		if multiLine then
-			LeftLine:SetMaxLines(AddOn.Settings.tooltipMaxMultiLines)
-		else
-			LeftLine:SetMaxLines(1)
-		end
+	-- Fetch the font strings after any new lines have been added, so the width
+	-- constraints below are applied to newly created lines as well. Every line
+	-- is sized to its text width clamped to the max, so the tooltip always
+	-- fits its content: short tooltips shrink, long lines wrap. Word wrap is
+	-- enabled explicitly to ensure the width constraint is honored.
+	local LeftLine, RightLine = _G[leftName], _G[rightName]
+	if LeftLine then
+		LeftLine:SetWidth(ClampedLineWidth(LeftLine, leftMax))
+		LeftLine:SetWordWrap(true)
+		LeftLine:SetMaxLines(multiLine and AddOn.Settings.tooltipMaxMultiLines or 1)
 		maxLinesAdjusted[#maxLinesAdjusted + 1] = LeftLine
 	end
-	if replace or RightLine:GetWidth() > rightMax then
-		RightLine:SetWidth(rightMax)
-		if multiLine then
-			RightLine:SetMaxLines(AddOn.Settings.tooltipMaxMultiLines)
-		else
-			RightLine:SetMaxLines(1)
-		end
+	if RightLine then
+		RightLine:SetWidth(ClampedLineWidth(RightLine, rightMax))
+		RightLine:SetWordWrap(true)
+		RightLine:SetMaxLines(multiLine and AddOn.Settings.tooltipMaxMultiLines or 1)
 		maxLinesAdjusted[#maxLinesAdjusted + 1] = RightLine
 	end
 	rendering = nil
@@ -326,7 +346,12 @@ local function SetUnit(unit)
 
 		local connected = UnitIsConnected(unit)
 		local r, g, b = UnitSelectionColor(unit)
-		local color = SELECTION_COLORS[("%02x%02x%02x"):format(math.ceil(math.floor((r * 10) + 0.5) * 25.5), math.ceil(math.floor((g * 10) + 0.5) * 25.5), math.ceil(math.floor((b * 10) + 0.5) * 25.5))]
+		-- Midnight secret values: unit data can be secret while in instances
+		-- or combat, and arithmetic on secrets throws a Lua error.
+		local color = "|cffffffff"
+		if canaccessvalue(r) and canaccessvalue(g) and canaccessvalue(b) then
+			color = SELECTION_COLORS[("%02x%02x%02x"):format(math.ceil(math.floor((r * 10) + 0.5) * 25.5), math.ceil(math.floor((g * 10) + 0.5) * 25.5), math.ceil(math.floor((b * 10) + 0.5) * 25.5))] or color
+		end
 
 		local watchIcon = not C_Secrets.ShouldUnitIdentityBeSecret(unit .. "target") and AddOn.Settings.tooltipShowWatchEye and not UnitIsUnit("player", unit) and UnitIsUnit("player", unit .. "target") and "|TInterface\\LFGFrame\\BattlenetWorking0:28:28:8:1|t"
 		local bookmarkIcon = AddOn.Settings.tooltipShowBookmarkFlag and character.bookmark and "|TInterface\\MINIMAP\\POIICONS:18:18:4:0:256:512:54:72:54:72|t"
@@ -350,9 +375,11 @@ local function SetUnit(unit)
 			end
 
 			local guildName, guildRank, guildIndex = GetGuildInfo(unit)
+			if not canaccessvalue(guildName) then guildName = nil end
 			currentUnit.guild = guildName and (AddOn.Settings.tooltipShowGuildRank and (AddOn.Settings.tooltipShowGuildIndex and L.GUILD_RANK_INDEX or L.GUILD_RANK) or L.GUILD):format(AddOn.Settings.tooltipShowGuildRank and guildRank or guildName, AddOn.Settings.tooltipShowGuildIndex and guildIndex + 1 or guildName, guildName)
 
-			local name = UnitPVPName(unit) or character.name
+			local pvpName = UnitPVPName(unit)
+			local name = (pvpName and canaccessvalue(pvpName) and pvpName) or character.name
 			local realm = character.realm
 			if realm == AddOn.characterRealm then
 				realm = nil
@@ -364,7 +391,12 @@ local function SetUnit(unit)
 
 			local level = UnitLevel(unit)
 			local effectiveLevel = UnitEffectiveLevel(unit)
-			level = effectiveLevel == level and (level < 1 and L.LETHAL_LEVEL or tostring(level)) or effectiveLevel < 1 and tostring(level) or EFFECTIVE_LEVEL_FORMAT:format(tostring(effectiveLevel), tostring(level))
+			-- Levels can be secret values in instances; comparisons throw.
+			if canaccessvalue(level) and canaccessvalue(effectiveLevel) then
+				level = effectiveLevel == level and (level < 1 and L.LETHAL_LEVEL or tostring(level)) or effectiveLevel < 1 and tostring(level) or EFFECTIVE_LEVEL_FORMAT:format(tostring(effectiveLevel), tostring(level))
+			else
+				level = UNKNOWN
+			end
 			currentUnit.info = (TOOLTIP_UNIT_LEVEL_RACE_TYPE):format(level, "%s " .. (RAID_CLASS_COLORS[GC] and RAID_CLASS_COLORS[GC]:WrapTextInColorCode("%s") or "%s"), colorblind and Values.GC[GS][GC] or PLAYER)
 
 			local location = connected and not UnitIsVisible(unit) and GameTooltipTextLeft3:GetText()
@@ -410,8 +442,13 @@ local function SetUnit(unit)
 		currentUnit.faction = UnitFactionGroup(unit) or isOwnPet and playerFaction or character.GF or "Neutral"
 
 		local name = UnitName(unit)
+		-- Creature names are secret while in instances; formatting secrets throws.
+		if not canaccessvalue(name) then name = UNKNOWN end
 		local r, g, b, a = UnitSelectionColor(unit)
-		local color = SELECTION_COLORS[("%02x%02x%02x"):format(math.ceil(math.floor((r * 10) + 0.5) * 25.5), math.ceil(math.floor((g * 10) + 0.5) * 25.5), math.ceil(math.floor((b * 10) + 0.5) * 25.5))]
+		local color = "|cffffffff"
+		if canaccessvalue(r) and canaccessvalue(g) and canaccessvalue(b) then
+			color = SELECTION_COLORS[("%02x%02x%02x"):format(math.ceil(math.floor((r * 10) + 0.5) * 25.5), math.ceil(math.floor((g * 10) + 0.5) * 25.5), math.ceil(math.floor((b * 10) + 0.5) * 25.5))] or color
+		end
 		currentUnit.nameFormat = ("%s%s|r"):format(color, name)
 
 		local ffa = UnitIsPVPFreeForAll(unit)
@@ -438,7 +475,11 @@ local function SetUnit(unit)
 
 		local level = UnitLevel(unit)
 		local effectiveLevel = UnitEffectiveLevel(unit)
-		level = effectiveLevel == level and (level < 1 and L.LETHAL_LEVEL or tostring(level)) or effectiveLevel < 1 and tostring(level) or EFFECTIVE_LEVEL_FORMAT:format(tostring(effectiveLevel), tostring(level))
+		if canaccessvalue(level) and canaccessvalue(effectiveLevel) then
+			level = effectiveLevel == level and (level < 1 and L.LETHAL_LEVEL or tostring(level)) or effectiveLevel < 1 and tostring(level) or EFFECTIVE_LEVEL_FORMAT:format(tostring(effectiveLevel), tostring(level))
+		else
+			level = UNKNOWN
+		end
 		currentUnit.info = TOOLTIP_UNIT_LEVEL_RACE_TYPE:format(level, GC and ("|c%s%s|r"):format(RAID_CLASS_COLORS[GC] and RAID_CLASS_COLORS[GC].colorStr or "ffffffff", race or creatureType or UNKNOWN) or race or creatureType or UNKNOWN, colorblind and GC and ("%s %s"):format(Values.GC[character.GS][GC], PET) or PET)
 
 		if currentUnit.icons then
@@ -502,6 +543,11 @@ local function GameTooltip_OnTooltipCleared_Hook(self)
 	active = nil
 	for i, line in ipairs(maxLinesAdjusted) do
 		line:SetMaxLines(0)
+		-- Explicit widths are sticky on these shared lines: without resetting
+		-- them here, later non-XRP tooltips (items, spells, ...) reusing the
+		-- same lines would inherit XRP's widths and stretch. A width of 0
+		-- returns the line to automatic sizing.
+		line:SetWidth(0)
 	end
 	table.wipe(maxLinesAdjusted)
 	if not replace then
