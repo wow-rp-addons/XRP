@@ -34,12 +34,13 @@ local Tooltip, replace, rendering
 local GTTL, GTTR = "GameTooltipTextLeft%d", "GameTooltipTextRight%d"
 local XTTL, XTTR = "XRPTooltipTextLeft%d", "XRPTooltipTextRight%d"
 
--- Explicit widths are sticky on tooltip lines, so reset to automatic sizing
--- before measuring: otherwise GetWidth() returns the previously set width
--- rather than the text width.
+-- Reset to automatic sizing before measuring (widths are sticky), and skip
+-- capping when the measured width is secret (e.g. unit name in instances),
+-- since secrets can't be compared.
 local function CapLineWidth(line, maxWidth)
 	line:SetWidth(0)
-	if line:GetWidth() > maxWidth then
+	local width = line:GetWidth()
+	if not issecretvalue(width) and width > maxWidth then
 		line:SetWidth(maxWidth)
 	end
 end
