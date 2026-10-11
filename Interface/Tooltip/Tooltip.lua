@@ -31,9 +31,6 @@ local maxLinesAdjusted = {}
 
 local Tooltip, replace, rendering
 
-local GTTL, GTTR = "GameTooltipTextLeft%d", "GameTooltipTextRight%d"
-local XTTL, XTTR = "XRPTooltipTextLeft%d", "XRPTooltipTextRight%d"
-
 -- Reset to automatic sizing before measuring (widths are sticky), and skip
 -- capping when the measured width is secret (e.g. unit name in instances),
 -- since secrets can't be compared.
@@ -65,7 +62,7 @@ local function ParseVersion(VA)
 		if PROFILE_ADDONS[addon] and not hasProfile then
 			short[#short + 1] = PROFILE_ADDONS[addon]
 			hasProfile = true
-		elseif EXTRA_ADDONS[addon]then
+		elseif EXTRA_ADDONS[addon] then
 			short[#short + 1] = EXTRA_ADDONS[addon]
 		end
 	end
@@ -74,6 +71,10 @@ local function ParseVersion(VA)
 		table.insert(short, 1, "RP")
 	end
 	return table.concat(short, PLAYER_LIST_DELIMITER)
+end
+
+local function GetAppropriateTooltip()
+	return replace and GameTooltip or XRPTooltip;
 end
 
 local oldLines, lineNum = 0, 0
@@ -98,8 +99,8 @@ local function RenderLine(multiLine, leftRatio, left, right, lR, lG, lB, rR, rG,
 	local rightMax = AddOn.Settings.tooltipMaxWidth * (left and right and (1 - leftRatio) or 1)
 	rendering = true
 	lineNum = lineNum + 1
-	local leftName = (replace and GTTL or XTTL):format(lineNum)
-	local rightName = (replace and GTTR or XTTR):format(lineNum)
+	local LeftLine = GetAppropriateTooltip():GetLeftLine(lineNum)
+	local RightLine = GetAppropriateTooltip():GetRightLine(lineNum)
 	-- First case: If there's already a line to replace. This only happens if
 	-- using the GameTooltip, as XRPTooltip is cleared before rendering starts.
 	if lineNum <= oldLines then
@@ -148,7 +149,7 @@ local COLORS = {
 	CU_LABEL = CreateColor(0.63, 0.5, 0.31),
 	CO = CreateColor(0.6, 0.6, 0.6),
 	CO_LABEL = CreateColor(0.4, 0.4, 0.4),
-	Alliance = CreateColor( 0.38, 0.42, 1.00),
+	Alliance = CreateColor(0.38, 0.42, 1.00),
 	Horde = CreateColor(1.00, 0.38, 0.42),
 	Neutral = CreateColor(FACTION_BAR_COLORS[4].r, FACTION_BAR_COLORS[4].g, FACTION_BAR_COLORS[4].b),
 }
@@ -257,8 +258,8 @@ local function RenderTooltip()
 		-- hides them, if they exist.
 		while lineNum < oldLines do
 			lineNum = lineNum + 1
-			_G[GTTL:format(lineNum)]:Hide()
-			_G[GTTR:format(lineNum)]:Hide()
+			GameTooltip:GetLeftLine(lineNum):Hide()
+			GameTooltip:GetRightLine(lineNum):Hide()
 		end
 	end
 
@@ -380,7 +381,7 @@ local function SetUnit(unit)
 			level = effectiveLevel == level and (level < 1 and L.LETHAL_LEVEL or tostring(level)) or effectiveLevel < 1 and tostring(level) or EFFECTIVE_LEVEL_FORMAT:format(tostring(effectiveLevel), tostring(level))
 			currentUnit.info = (TOOLTIP_UNIT_LEVEL_RACE_TYPE):format(level, "%s " .. (RAID_CLASS_COLORS[GC] and RAID_CLASS_COLORS[GC]:WrapTextInColorCode("%s") or "%s"), colorblind and Values.GC[GS][GC] or PLAYER)
 
-			local location = connected and not UnitIsVisible(unit) and GameTooltipTextLeft3:GetText()
+			local location = connected and not UnitIsVisible(unit) and GameTooltip:GetLeftLine(3):GetText()
 			currentUnit.location = location and LOCATION:format(location)
 
 			if pvpIcon then
@@ -403,7 +404,7 @@ local function SetUnit(unit)
 		end
 	elseif currentUnit.type == "pet" then
 		local colorblind = GetCVarBool("colorblindMode")
-		local ownership = _G[GTTL:format(colorblind and 3 or 2)]:GetText()
+		local ownership = GameTooltip:GetLeftLine(colorblind and 3 or 2):GetText()
 		if not ownership then return end
 		local owner, petLabel
 		for i, pattern in ipairs(UNITNAME_MATCH) do
@@ -470,8 +471,8 @@ local function SetUnit(unit)
 		local currentLines = GameTooltip:NumLines()
 		if defaultLines < currentLines then
 			for i = defaultLines + 1, currentLines do
-				local LeftLine = _G[GTTL:format(i)]
-				local RightLine = _G[GTTR:format(i)]
+				local LeftLine = GameTooltip:GetLeftLine(i)
+				local RightLine = GameTooltip:GetRightLine(i)
 				if RightLine:IsVisible() then
 					currentUnit.lines[#currentUnit.lines + 1] = { double = true, LeftLine:GetText(), RightLine:GetText(), LeftLine:GetTextColor(), RightLine:GetTextColor() }
 				else
