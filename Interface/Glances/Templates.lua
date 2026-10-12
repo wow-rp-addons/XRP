@@ -19,6 +19,7 @@
 
 local FOLDER_NAME, AddOn = ...
 local L = AddOn.GetText
+local LibRPMedia = LibStub:GetLibrary("LibRPMedia-1.2");
 
 XRPPeek_Mixin = {}
 
@@ -30,7 +31,15 @@ function XRPPeek_Mixin:SetPeek(peek)
 		return
 	end
 	self.IC = peek.IC
-	self:SetNormalTexture(self.IC or "Interface\\Icons\\inv_misc_questionmark")
+	if type(self.IC) == "string" then
+		self.IC = self.IC:lower():gsub("interface\\icons\\", "")
+	end
+	local iconSource, iconType = LibRPMedia:ResolveIcon(self.IC)
+	if iconType == LibRPMedia.IconType.Atlas then
+		self:SetNormalAtlas(iconSource)
+	else
+		self:SetNormalTexture(iconSource)
+	end
 	self.NA = peek.NA
 	self.DE = peek.DE
 	self:Show()

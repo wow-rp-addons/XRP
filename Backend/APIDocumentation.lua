@@ -316,7 +316,7 @@ local XRPAPI = {
 			Type = "Structure",
 			Documentation = { "Peek tables are always contained in an array-type table. XRP permits unlimited indexes in this array, but other addons typically limit this to five." },
 			Fields = {
-				{ Name = "IC", Type = "string", Nilable = true, Documentation = { "The texture path to the icon for the peek." } },
+				{ Name = "IC", Type = "number", Nilable = true, Documentation = { "The LibRPMedia icon ID for the peek." } },
 				{ Name = "NA", Type = "string", Nilable = true, Documentation = { "The name/title of the peek." } },
 				{ Name = "DE", Type = "string", Nilable = true, Documentation = { "The text description of the peek." } },
 			},

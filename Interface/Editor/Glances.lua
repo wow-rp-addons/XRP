@@ -19,6 +19,7 @@
 
 local FOLDER_NAME, AddOn = ...
 local L = AddOn.GetText
+local LibRPMedia = LibStub:GetLibrary("LibRPMedia-1.2");
 
 XRPEditorPeek_Mixin = {}
 
@@ -32,7 +33,15 @@ function XRPEditorPeek_Mixin:SetPeek(peek)
 	else
 		self.NA:ClearFocus()
 		self.DE.EditBox:ClearFocus()
-		self.IC:SetNormalTexture(peek.IC or "Interface\\Icons\\inv_misc_questionmark")
+		if type(peek.IC) == "string" then
+			peek.IC = peek.IC:lower():gsub("interface\\icons\\", "")
+		end
+		local iconSource, iconType = LibRPMedia:ResolveIcon(peek.IC)
+		if iconType == LibRPMedia.IconType.Atlas then
+			self.IC:SetNormalAtlas(iconSource)
+		else
+			self.IC:SetNormalTexture(iconSource)
+		end
 		self.NA:SetText(peek.NA or "")
 		self.NA:SetCursorPosition(0)
 		self.DE.EditBox:SetText(peek.DE or "")
@@ -180,15 +189,10 @@ function XRPEditorIconsFilter_Mixin:OnTextChanged(userInput)
 		search = nil
 	end
 	wipe(iconList)
-	iconList[1] = "Interface\\Icons\\inv_misc_questionmark"
-	for i, icon in ipairs(AddOn.ICON_LIST) do
-		if not search or icon:find(search, nil, true) then
-			local texturePath = "Interface\\Icons\\" .. icon
-			if GetFileIDFromPath(texturePath) then
-				iconList[#iconList + 1] = texturePath
-			end
-		end
+	for iconInfo in LibRPMedia:FindIcons(search, { method = "substring", reuseTable = {} }) do
+		table.insert(iconList, iconInfo.id);
 	end
+
 	self:GetParent().ScrollFrame:Update()
 end
 
@@ -256,18 +260,26 @@ function XRPEditorIconsScrollFrame_Mixin:Update()
 		local button = parent.buttons[i]
 		local index = (offset * 8) + i
 		local texture = iconList[index]
-		local texturePath = index ~= 1 and texture or nil
 
 		if ( index <= numIcons and texture ) then
-			button:SetNormalTexture(texture)
-			button.texturePath = texturePath
+			local iconSource, iconType = LibRPMedia:ResolveIcon(texture)
+			if iconType == LibRPMedia.IconType.Atlas then
+				button:SetNormalAtlas(iconSource)
+			else
+				button:SetNormalTexture(iconSource)
+			end
+			button.textureID = texture
 			button:Show()
 		else
 			button:SetNormalTexture("")
-			button.texturePath = nil
+			button.textureID = nil
 			button:Hide()
 		end
-		if parent.selectedFrame.peek.IC == texturePath then
+		local iconID = parent.selectedFrame.peek.IC
+		if type(iconID) == "string" then
+			iconID = LibRPMedia:GetIconIDByName(parent.selectedFrame.peek.IC)
+		end
+		if iconID and (iconID == texture) then
 			button:SetChecked(true)
 		else
 			button:SetChecked(false)
@@ -312,8 +324,12 @@ end
 function XRPEditorGlancesTemplates_Mixin:PopupIconOnClick(button, down)
 	local Icons = self:GetParent()
 	local peek = Icons.selectedFrame
-	peek.peek.IC = self.texturePath
-	peek.IC:SetNormalTexture(self.texturePath or "Interface\\Icons\\inv_misc_questionmark")
-	--peek:GetParent():UpdatePeeks()
+	peek.peek.IC = self.textureID
+	local iconSource, iconType = LibRPMedia:ResolveIcon(self.textureID)
+	if iconType == LibRPMedia.IconType.Atlas then
+		peek.IC:SetNormalAtlas(iconSource)
+	else
+		peek.IC:SetNormalTexture(iconSource)
+	end
 	Icons.ScrollFrame:Update()
 end
