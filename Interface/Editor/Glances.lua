@@ -229,6 +229,34 @@ end
 
 XRPEditorIcons_Mixin = {}
 
+local function BuildIconArray(parent, baseName, template, rowSize, numRows, onButtonCreated)
+	local previousButton = CreateFrame("CheckButton", baseName .. "1", parent, template);
+	local cornerButton = previousButton;
+	previousButton:SetID(1);
+	previousButton:SetPoint("TOPLEFT", 26, -85);
+	if ( onButtonCreated ) then
+		onButtonCreated(parent, previousButton);
+	end
+
+	local numIcons = rowSize * numRows;
+	for i = 2, numIcons do
+		local newButton = CreateFrame("CheckButton", baseName .. i, parent, template);
+		newButton:SetID(i);
+		if ( i % rowSize == 1 ) then
+			newButton:SetPoint("TOPLEFT", cornerButton, "BOTTOMLEFT", 0, -8);
+			cornerButton = newButton;
+		else
+			newButton:SetPoint("LEFT", previousButton, "RIGHT", 10, 0);
+		end
+
+		previousButton = newButton;
+		newButton:Hide();
+		if ( onButtonCreated ) then
+			onButtonCreated(parent, newButton);
+		end
+	end
+end
+
 function XRPEditorIcons_Mixin:OnShow()
 	if not self.iconsArrayBuilt then
 		self.iconsArrayBuilt = true
