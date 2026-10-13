@@ -257,10 +257,15 @@ function XRPOptionsControl_Mixin:OnLoad()
 		depends[#depends + 1] = self
 	end
 	if self.type == CONTROLTYPE_SLIDER then
+		self:Init(2, 1, 3, 3);
 		self:SetObeyStepOnDrag(true)
 		local min, max = self:GetMinMaxValues()
-		self.Low:SetFormattedText(AUCTION_MAIL_ITEM_STACK, self.Low:GetText(), min)
-		self.High:SetFormattedText(AUCTION_MAIL_ITEM_STACK, self.High:GetText(), max)
+		if not self.Low:GetText():find("%(") then
+			self.Low:SetFormattedText("%s (%d)", self.Low:GetText(), min)
+		end
+		if not self.High:GetText():find("%(") then
+			self.High:SetFormattedText("%s (%d)", self.High:GetText(), max)
+		end
 	end
 	local optionsText = self.xrpSetting and (self.xrpTable and OPTIONS_TEXT[self.xrpTable][self.xrpSetting] or OPTIONS_TEXT[self.xrpSetting])
 	if (self.type == CONTROLTYPE_CHECKBOX or self.type == CONTROLTYPE_SLIDER) and self.xrpSetting then

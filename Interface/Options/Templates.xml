@@ -55,14 +55,14 @@
 				<FontString parentKey="Low" inherits="GameFontHighlightSmall" text="LOW">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
-							<Offset x="-4" y="3"/>
+							<Offset x="-4" y="0"/>
 						</Anchor>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="High" inherits="GameFontHighlightSmall" text="HIGH">
 					<Anchors>
 						<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT">
-							<Offset x="4" y="3"/>
+							<Offset x="4" y="0"/>
 						</Anchor>
 					</Anchors>
 				</FontString>
