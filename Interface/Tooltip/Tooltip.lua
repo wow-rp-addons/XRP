@@ -34,6 +34,17 @@ local Tooltip, replace, rendering
 local GTTL, GTTR = "GameTooltipTextLeft%d", "GameTooltipTextRight%d"
 local XTTL, XTTR = "XRPTooltipTextLeft%d", "XRPTooltipTextRight%d"
 
+-- Reset to automatic sizing before measuring (widths are sticky), and skip
+-- capping when the measured width is secret (e.g. unit name in instances),
+-- since secrets can't be compared.
+local function CapLineWidth(line, maxWidth)
+	line:SetWidth(0)
+	local width = line:GetWidth()
+	if not issecretvalue(width) and width > maxWidth then
+		line:SetWidth(maxWidth)
+	end
+end
+
 local PROFILE_ADDONS = {
 	["XRP"] = "XRP",
 	["MYROLEPLAY"] = "MRP",
@@ -72,10 +83,12 @@ local function RenderLine(multiLine, leftRatio, left, right, lR, lG, lB, rR, rG,
 	elseif left == true then
 		left = nil
 	end
-	if left then
+	-- String functions reject secret values, so skip whitespace collapsing
+	-- when the text is secret (e.g. unit names in instanced combat).
+	if left and not issecretvalue(left) then
 		left = left:gsub("%s+", " ")
 	end
-	if right then
+	if right and not issecretvalue(right) then
 		right = right:gsub("%s+", " ")
 	end
 	if not leftRatio then
@@ -85,11 +98,12 @@ local function RenderLine(multiLine, leftRatio, left, right, lR, lG, lB, rR, rG,
 	local rightMax = AddOn.Settings.tooltipMaxWidth * (left and right and (1 - leftRatio) or 1)
 	rendering = true
 	lineNum = lineNum + 1
-	local LeftLine = replace and _G[GTTL:format(lineNum)] or _G[XTTL:format(lineNum)]
-	local RightLine = replace and _G[GTTR:format(lineNum)] or _G[XTTR:format(lineNum)]
+	local leftName = (replace and GTTL or XTTL):format(lineNum)
+	local rightName = (replace and GTTR or XTTR):format(lineNum)
 	-- First case: If there's already a line to replace. This only happens if
 	-- using the GameTooltip, as XRPTooltip is cleared before rendering starts.
 	if lineNum <= oldLines then
+		local LeftLine, RightLine = _G[leftName], _G[rightName]
 		-- Can't have an empty left text line ever -- if a line exists, it
 		-- needs to have a space at minimum to not muck up line spacing.
 		LeftLine:SetText(left or " ")
@@ -109,22 +123,19 @@ local function RenderLine(multiLine, leftRatio, left, right, lR, lG, lB, rR, rG,
 			Tooltip:AddLine(left or " ", lR or 1, lG or 0.82, lB or 0)
 		end
 	end
-	if replace or LeftLine:GetWidth() > leftMax then
-		LeftLine:SetWidth(leftMax)
-		if multiLine then
-			LeftLine:SetMaxLines(AddOn.Settings.tooltipMaxMultiLines)
-		else
-			LeftLine:SetMaxLines(1)
-		end
+	-- Fetch the font strings after any new lines have been added, so newly
+	-- created lines are capped as well.
+	local LeftLine, RightLine = _G[leftName], _G[rightName]
+	if LeftLine then
+		CapLineWidth(LeftLine, leftMax)
+		LeftLine:SetWordWrap(true)
+		LeftLine:SetMaxLines(multiLine and AddOn.Settings.tooltipMaxMultiLines or 1)
 		maxLinesAdjusted[#maxLinesAdjusted + 1] = LeftLine
 	end
-	if replace or RightLine:GetWidth() > rightMax then
-		RightLine:SetWidth(rightMax)
-		if multiLine then
-			RightLine:SetMaxLines(AddOn.Settings.tooltipMaxMultiLines)
-		else
-			RightLine:SetMaxLines(1)
-		end
+	if RightLine then
+		CapLineWidth(RightLine, rightMax)
+		RightLine:SetWordWrap(true)
+		RightLine:SetMaxLines(multiLine and AddOn.Settings.tooltipMaxMultiLines or 1)
 		maxLinesAdjusted[#maxLinesAdjusted + 1] = RightLine
 	end
 	rendering = nil
@@ -326,7 +337,9 @@ local function SetUnit(unit)
 
 		local connected = UnitIsConnected(unit)
 		local r, g, b = UnitSelectionColor(unit)
-		local color = SELECTION_COLORS[("%02x%02x%02x"):format(math.ceil(math.floor((r * 10) + 0.5) * 25.5), math.ceil(math.floor((g * 10) + 0.5) * 25.5), math.ceil(math.floor((b * 10) + 0.5) * 25.5))]
+		-- Selection colors are curated, not raw RGB: converting directly
+		-- renders oversaturated (e.g. friendly-player blue).
+		local color = canaccessallvalues(r, g, b) and SELECTION_COLORS[("%02x%02x%02x"):format(math.ceil(math.floor((r * 10) + 0.5) * 25.5), math.ceil(math.floor((g * 10) + 0.5) * 25.5), math.ceil(math.floor((b * 10) + 0.5) * 25.5))] or "|cffffffff"
 
 		local watchIcon = not C_Secrets.ShouldUnitIdentityBeSecret(unit .. "target") and AddOn.Settings.tooltipShowWatchEye and not UnitIsUnit("player", unit) and UnitIsUnit("player", unit .. "target") and "|TInterface\\LFGFrame\\BattlenetWorking0:28:28:8:1|t"
 		local bookmarkIcon = AddOn.Settings.tooltipShowBookmarkFlag and character.bookmark and "|TInterface\\MINIMAP\\POIICONS:18:18:4:0:256:512:54:72:54:72|t"
@@ -352,7 +365,7 @@ local function SetUnit(unit)
 			local guildName, guildRank, guildIndex = GetGuildInfo(unit)
 			currentUnit.guild = guildName and (AddOn.Settings.tooltipShowGuildRank and (AddOn.Settings.tooltipShowGuildIndex and L.GUILD_RANK_INDEX or L.GUILD_RANK) or L.GUILD):format(AddOn.Settings.tooltipShowGuildRank and guildRank or guildName, AddOn.Settings.tooltipShowGuildIndex and guildIndex + 1 or guildName, guildName)
 
-			local name = UnitPVPName(unit) or character.name
+			local name = scrubsecretvalues(UnitPVPName(unit)) or character.name
 			local realm = character.realm
 			if realm == AddOn.characterRealm then
 				realm = nil
@@ -410,8 +423,10 @@ local function SetUnit(unit)
 		currentUnit.faction = UnitFactionGroup(unit) or isOwnPet and playerFaction or character.GF or "Neutral"
 
 		local name = UnitName(unit)
-		local r, g, b, a = UnitSelectionColor(unit)
-		local color = SELECTION_COLORS[("%02x%02x%02x"):format(math.ceil(math.floor((r * 10) + 0.5) * 25.5), math.ceil(math.floor((g * 10) + 0.5) * 25.5), math.ceil(math.floor((b * 10) + 0.5) * 25.5))]
+		local r, g, b = UnitSelectionColor(unit)
+		-- Selection colors are curated, not raw RGB: converting directly
+		-- renders oversaturated (e.g. friendly-player blue).
+		local color = canaccessallvalues(r, g, b) and SELECTION_COLORS[("%02x%02x%02x"):format(math.ceil(math.floor((r * 10) + 0.5) * 25.5), math.ceil(math.floor((g * 10) + 0.5) * 25.5), math.ceil(math.floor((b * 10) + 0.5) * 25.5))] or "|cffffffff"
 		currentUnit.nameFormat = ("%s%s|r"):format(color, name)
 
 		local ffa = UnitIsPVPFreeForAll(unit)
@@ -502,6 +517,7 @@ local function GameTooltip_OnTooltipCleared_Hook(self)
 	active = nil
 	for i, line in ipairs(maxLinesAdjusted) do
 		line:SetMaxLines(0)
+		line:SetWidth(0)
 	end
 	table.wipe(maxLinesAdjusted)
 	if not replace then
