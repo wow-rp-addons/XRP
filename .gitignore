@@ -3,4 +3,7 @@
 Thumbs.db
 Libraries/*
 !Libraries/MSA-DropDownMenu-1.0
+.gitignore
+.idea
 .release
+.vscode/settings.json
