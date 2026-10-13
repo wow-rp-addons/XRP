@@ -19,6 +19,7 @@
 
 local FOLDER_NAME, AddOn = ...
 local L = AddOn.GetText
+local LibRPMedia = LibStub:GetLibrary("LibRPMedia-1.2");
 
 local GlancesCache = setmetatable({}, AddOn.WeakValueMetatable)
 
@@ -54,7 +55,7 @@ local function ClonePE(PE)
 end
 
 local function StringToPeek(str)
-	local icon = str:match("%f[^\n%z]|T([^:|]+)[^|]*|t%f[\n%z]")
+	local icon = str:match("%f[^\n%z]|[TA]([^:|]+)[^|]*|[ta]%f[\n%z]")
 	local name = str:match("%f[^\n%z]#+% *(.-)% *%f[\n%z]")
 	local description = str:match("%f[^\n%z]% *([^|#].-)%s*$")
 	return {
@@ -75,7 +76,8 @@ function AddOn.StringToPE(str)
 	local i = 1
 	while index do
 		local nextSplit, nextIndex = str:find("\n\n---\n\n", index, true)
-		PE[i] = StringToPeek(str:sub(index, nextSplit or #str))
+		local peekString = str:sub(index, nextSplit or #str)
+		PE[i] = StringToPeek(peekString)
 		i = i + 1
 		index = nextIndex
 	end
@@ -94,9 +96,16 @@ function AddOn.PEToString(PE)
 				peeks[#peeks + 1] = "\n\n---\n\n"
 			end
 			if peek.IC then
-				peeks[#peeks + 1] = "|T"
-				peeks[#peeks + 1] = peek.IC
-				peeks[#peeks + 1] = ":32:32|t\n"
+				if type(peek.IC) == "string" then
+					peek.IC = peek.IC:lower():gsub("interface\\icons\\", "")
+				end
+				-- Replace format in 13.0
+				if type(peek.IC) == "number" then
+                    peek.IC = LibRPMedia:GetIconNameByID(peek.IC)
+                end
+				peeks[#peeks + 1] = string.format("|Tinterface\\icons\\%s:%d:%d|t", peek.IC, 32, 32)
+				--peeks[#peeks + 1] = LibRPMedia:GenerateIconMarkup(peek.IC, 32, 32, 0, 0)
+				peeks[#peeks + 1] = "\n\n"
 			end
 			if peek.NA then
 				peeks[#peeks + 1] = "#"
