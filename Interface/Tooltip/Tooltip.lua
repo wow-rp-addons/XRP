@@ -104,7 +104,6 @@ local function RenderLine(multiLine, leftRatio, left, right, lR, lG, lB, rR, rG,
 	-- First case: If there's already a line to replace. This only happens if
 	-- using the GameTooltip, as XRPTooltip is cleared before rendering starts.
 	if lineNum <= oldLines then
-		local LeftLine, RightLine = _G[leftName], _G[rightName]
 		-- Can't have an empty left text line ever -- if a line exists, it
 		-- needs to have a space at minimum to not muck up line spacing.
 		LeftLine:SetText(left or " ")
