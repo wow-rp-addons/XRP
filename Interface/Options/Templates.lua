@@ -257,7 +257,8 @@ function XRPOptionsControl_Mixin:OnLoad()
 		depends[#depends + 1] = self
 	end
 	if self.type == CONTROLTYPE_SLIDER then
-		self:Init(2, 1, 3, 3);
+		MinimalSliderWithSteppersMixin.OnLoad(self)
+		self:Init(self.minValue, self.minValue, self.maxValue, (self.maxValue - self.minValue) / self.valueStep);
 		self:SetObeyStepOnDrag(true)
 		local min, max = self:GetMinMaxValues()
 		if not self.Low:GetText():find("%(") then
