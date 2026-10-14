@@ -125,7 +125,8 @@ local function RenderLine(multiLine, leftRatio, left, right, lR, lG, lB, rR, rG,
 	end
 	-- Fetch the font strings after any new lines have been added, so newly
 	-- created lines are capped as well.
-	local LeftLine, RightLine = _G[leftName], _G[rightName]
+	LeftLine = GetAppropriateTooltip():GetLeftLine(lineNum)
+	RightLine = GetAppropriateTooltip():GetRightLine(lineNum)
 	if LeftLine then
 		CapLineWidth(LeftLine, leftMax)
 		LeftLine:SetWordWrap(true)
