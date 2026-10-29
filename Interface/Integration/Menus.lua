@@ -41,14 +41,15 @@ local allowedUnits = {
 local function GetBattleNetCharacterID(gameAccountInfo)
 	local characterName = gameAccountInfo.characterName;
 	local realmName = gameAccountInfo.realmName;
-	local ambiguatedName;
+	local ambiguatedName = nil;
 
 	characterName = (characterName ~= "" and characterName or UNKNOWNOBJECT);
-	realmName = (realmName ~= "" and realmName or GetNormalizedRealmName());
-	ambiguatedName = Ambiguate(string.join("-", characterName, realmName), "none");
+	realmName = (realmName ~= "" and realmName or nil);
 
-	if string.find(ambiguatedName, UNKNOWNOBJECT, 1, true) == 1 then
-		ambiguatedName = nil;
+	local characterID = AddOn.BuildCharacterID(characterName, realmName);
+
+	if characterID then
+		ambiguatedName = Ambiguate(characterID, "none");
 	end
 
 	return ambiguatedName;
@@ -92,16 +93,14 @@ for menuTagSuffix, buttonType in pairs(allowedUnits) do
 		if buttonType == "player" then
 			local unit = contextData.unit;
 			local name = contextData.name;
-			local server = contextData.server;
-			local fullName = string.join("-", name or UNKNOWNOBJECT, server or GetNormalizedRealmName());
+			local qualifier = contextData.server or contextData.surname;
+			local fullName = AddOn.BuildCharacterID(name or UNKNOWNOBJECT, qualifier);
 
 			local unitName;
 			if UnitExists(unit) then
 				unitName = unit;
-			elseif not string.find(fullName, UNKNOWNOBJECT, 1, true) then
-				unitName = fullName;
 			else
-				return nil;
+				unitName = fullName;
 			end
 
 			OnClick = function(contextData)

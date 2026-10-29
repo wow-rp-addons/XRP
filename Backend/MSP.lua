@@ -189,7 +189,7 @@ local function BN_FRIEND_INFO_CHANGED(event)
 			local realmName = gameAccountInfo.realmName or "";
 			local isConnected = gameAccountInfo.isOnline;
 			if isConnected and client == BNET_CLIENT_WOW and realmName and realmName ~= "" then
-				bnetFriends[AddOn.BuildCharacterID(characterName, realm)] = true
+				bnetFriends[AddOn.BuildCharacterID(characterName, realmName)] = true
 			end
 		end
 	end
